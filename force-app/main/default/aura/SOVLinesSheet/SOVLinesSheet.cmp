@@ -1,0 +1,45 @@
+<aura:component controller="newPaymentAppOverrideController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,lightning:actionOverride,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="Iscommunity" type="Boolean" default = "false"/>
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="IsSubmitted" type="Boolean"/> 
+    <aura:attribute name="IsCompanyApproved" type="Boolean" />
+    <lightning:workspaceAPI aura:id="workspace" />
+    
+    
+    
+    <aura:if isTrue="{!v.Iscommunity}">
+        
+        <aura:html tag="style">
+            .cuf-content {
+            padding: 0 0rem !important;
+            }
+            .slds-p-around--medium {
+            padding: 0rem !important;
+            }       
+            .slds-modal__content{
+            overflow-y:hidden !important;
+            height:unset !important;
+            max-height:unset !important;
+            }
+        </aura:html>
+        
+
+        
+        <aura:if isTrue="{!v.IsCompanyApproved}">
+            
+            <!--Modal Body-->   
+            <div class="slds-modal__content slds-p-around--x-small slds-align_absolute-center slds-size_1-of-1 slds-is-relative">
+                <form class="slds-form--stacked">
+                    <h3 class="title slds-text-heading--medium" style="color:red;font-weight: bold;">This SOV Is Approved by Company, You cannot make any changes to this Record</h3>
+                </form> 
+            </div>
+            <!--End of Modal Body-->
+            
+            
+        </aura:if> 
+        
+    </aura:if> 
+    
+    
+</aura:component>

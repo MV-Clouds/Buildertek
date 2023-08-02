@@ -1,0 +1,34 @@
+<apex:page standardController="Budget__c" recordSetVar="budgets"> <!-- extensions="ImportBudgetController" -->
+    <apex:slds />
+    
+    <style>
+        body { background-color: #fff !important; }
+        
+        .slds-scope .slds-file-selector_images, .slds-scope .slds-file-selector--images {
+        	display: -webkit-box !important;
+        }
+        
+        .slds-scope .slds-file-selector__dropzone {
+            padding: .125rem;
+            border: none !important;
+            border-radius: .25rem;
+        }
+        
+        .slds-scope .slds-file-selector_images .slds-file-selector__dropzone, .slds-scope .slds-file-selector--images .slds-file-selector__dropzone {
+            display: -webkit-box !important;
+            padding-top: 2em;
+        }
+    </style>
+    
+    <div class="demo-only">
+        <div class="slds-form-element">
+            <div class="slds-form-element__control">
+                <div class="slds-file-selector slds-file-selector_images">
+                    <div class="slds-file-selector__dropzone">
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</apex:page>

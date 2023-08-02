@@ -1,0 +1,57 @@
+<aura:component implements="force:hasSObjectName,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction"
+                access="global" controller="BT_NewGanttChartCls">
+    <aura:attribute name="message" type="String" default="No selection"/>
+    <aura:registerEvent name="apprefreshEvent" type="c:refresheventForGantt"/>
+    <aura:handler event="c:refresh_componenent_event" action="{!c.handleRefreshFromTable}"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="projName" type="Object" />
+    <aura:attribute name="scheduleRec" type="Object" />
+
+    <aura:attribute name="tabClosedAtt" type="Boolean" default="false" />
+    <lightning:workspaceAPI aura:id="workspace" />
+    <!-- <aura:handler event="lightning:tabClosed" action="{! c.onTabClosed }"/> -->
+    <aura:handler event="lightning:tabFocused" action="{! c.onTabFocused }"/>
+     <aura:attribute name="tabFocusedAtt" type="Boolean" default="false" />
+   <aura:attribute name="sobjecttype" type="String" default="{!v.sObjectName}"/>
+
+    <aura:attribute name="isSchedulePage" type="Boolean" default="fal"/>
+    <div style="min-height:86em;">
+        <div style="padding: 1rem 0.5rem;background: #f3f4f5;font-size: 1rem;font-style: initial;">
+            <header style="background: #1b5297;padding: 11px 20px;">
+                <div class="left-box" style="display: inline-block;vertical-align: middle;width: 30%;" >
+                    <h1 style="margin: 0;color: #fff;font-size: 18px;" >
+                        Project -
+                        <aura:if isTrue="{!v.projName.buildertek__Project__c}">
+                            <span class="projNameCls">
+                                <ui:outputURL
+                                              value="{!'/one/one.app?#/sObject/'+ v.projName.buildertek__Project__c + '/view'}"
+                                              target="_blank" label="{!v.projName.buildertek__Project__r.Name}" />
+                            </span>
+
+                        </aura:if>
+
+                        <aura:if isTrue="{!v.projName.buildertek__Description__c}">
+                            <span class="">
+                               - {!v.projName.buildertek__Description__c}
+                            </span>
+
+                        </aura:if>
+
+
+                    </h1>
+                </div>
+            </header>
+        </div>
+
+        <aura:if isTrue="{!v.isSchedulePage}">
+            <aura:if isTrue="{!v.tabClosedAtt}">
+                <c:bryntum_Gantt_Blue aura:id="ganttchildfromaura"  recordId="{!v.recordId}" isTabClosed ="{!v.tabClosedAtt}"  onfilterchange="{!c.handleFilterChange}" />
+                <aura:set attribute="else">
+                    <c:bryntum_Gantt_Blue aura:id="ganttchildfromaura"  recordId="{!v.recordId}" isTabClosed ="{!v.tabClosedAtt}"  onfilterchange="{!c.handleFilterChange}" />
+                </aura:set>
+            </aura:if>
+
+        </aura:if>
+    </div>
+
+</aura:component>

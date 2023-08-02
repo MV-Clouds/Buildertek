@@ -1,0 +1,20 @@
+.THIS .row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.THIS .modal-container.slds-modal__container button.slds-button.slds-button_icon.slds-modal__close.closeIcon.slds-button_icon-bare.slds-button_icon-inverse{
+    display:none !important;
+}
+
+.THIS .custommodalContainer{
+   max-width: 72rem !important;
+   width:72% !important;
+}
+.THIS .slds-modal slds-fade-in-open{
+    height:20px;
+}
+.THIS .slds-resizable__divider:after {
+    height:0vh;
+}

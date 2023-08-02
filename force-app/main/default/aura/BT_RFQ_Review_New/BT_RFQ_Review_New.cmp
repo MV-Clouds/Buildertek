@@ -1,0 +1,258 @@
+<aura:component implements="force:appHostable,flexipage:availableForRecordHome,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes" controller="RFQDAO" access="global">
+    
+    
+    <aura:attribute name="rfqToVendorList" type="List" description="RFQ To Vendor Lsit records"/>
+    <aura:attribute name="vendorLoaded" type="Boolean" default="false"/>
+    <aura:attribute name="activeRFQVendor" type="Object" />
+    <aura:attribute name="showVendorActions" type="Boolean" />
+    <aura:attribute name="isCompare" type="Boolean" />
+    <aura:attribute name="isDisabled" type="Boolean" />
+    <aura:attribute name="selectedVendorList" type="List" />
+    <aura:attribute name="rfq" type="object" />
+    <aura:attribute name="selectedFiles" type="sObject[]" default="[]"/>
+    <aura:attribute name="modalPromise" type="Aura.Action"/>
+    <aura:attribute name="className" type="String"/>
+    <aura:attribute name="IsOnLoad" type="Boolean"/>
+    <aura:attribute name="OnLoadVendorActions" type="Boolean"/>
+    <aura:attribute name="contactId" type="String" />
+    <aura:attribute name="recordViewForm" type="Aura.Component[]" description="Place holder for question group record View Form"/>
+    <aura:attribute name="reviewInfoMessage" type="String" description="RFQ record object" default="Review your vendor RFQ(s) and award to any one vendor."/>
+    
+    <aura:handler name="change" value="{!v.vendorLoaded}" action="{!c.vendorLoaded}"/>
+    <aura:handler name="init" value="{!this}" action="{!c.initialize}"/>
+    <aura:attribute name="linedata" type="Object"/>
+    <aura:attribute name="columns" type="List"/>
+    
+    <aura:attribute name="objectAPI" type="String" access="global" default="buildertek__RFQ__c"/>
+    <aura:handler event="force:navigateToSObject" action="{!c.navigateToRecord}"/>
+    
+    <aura:registerEvent name="getvendoerrecords" type="c:AppEvent"/>
+    
+    <c:BT_Spinner /> 
+    <div class="vendor-container">
+    	<c:BT_Message aura:id="infoMessage" type="info" message="{!reviewInfoMessage}"/>
+        <lightning:layout >
+            <div class="page-left slds-size--3-of-12">
+            	
+                <lightning:layoutItem flexibility="auto" padding="around-medium" >
+                	
+                	<div>
+                		<div style="float:left;padding-left: 5px;">
+                		<lightning:input aura:id="vendorCheckall" type="checkbox" label="" onclick="{!c.checkAll}"/>
+                		<!--<ui:inputCheckbox aura:id="vendorCheckall" class="green-checkbox" change="{!c.checkAll}" />-->
+                		</div>
+                		<div style="float: right;margin: -8px;padding-right: 8px;">
+		                	<lightning:buttonGroup>
+						    	<lightning:buttonIcon iconName="utility:add" onclick="{!c.addVendors}" variant="border-filled" alternativeText="Add Vendor"/>
+						    	<lightning:buttonIcon iconName="utility:email" onclick="{!c.sendMassEmails}" variant="border-filled" alternativeText="Send Email" class="{!if(v.rfqToVendorList.length > 0,'slds-show','slds-hide')}"/>
+						    	<lightning:buttonIcon iconName="utility:list" onclick="{!c.compare}" variant="border-filled" alternativeText="Compare" class="{!if(v.rfqToVendorList.length > 0,'slds-show','slds-hide')}"/>
+                                <lightning:buttonIcon iconName="utility:file" onclick="{!c.uploadFile1}" variant="border-filled" alternativeText="Add Documents"/>
+						    	<lightning:buttonIcon iconName="utility:delete" onclick="{!c.deleteVendors}" variant="border-filled" alternativeText="Delete" class="{!if(v.rfqToVendorList.length > 0,'slds-show','slds-hide')}"/>
+						    	<lightning:buttonIcon iconName="utility:refresh" onclick="{!c.initialize}" variant="border-filled" alternativeText="Refresh" class="{!if(v.rfqToVendorList.length > 0,'slds-show','slds-hide')}"/>
+						    </lightning:buttonGroup>
+					    </div>
+				    </div>
+				    <br/>
+                	<ul class="slds-has-dividers_around slds-has-block-links_space" style="margin-top: 10px;">
+						<aura:if isTrue="{!v.rfqToVendorList.length > 0}">
+	                    	<aura:iteration items="{!v.rfqToVendorList}" var="vendor" loaded="{!v.vendorLoaded}" >
+								<li class="{!vendor.buildertek__Status__c}" onclick="{!c.showMoreDetails}" Id="{!_index}" style="padding: 4.5px;cursor: pointer;line-height: 3"> 
+									<table>
+										<tr>
+											<td align="left" width="90%" ><lightning:input aura:id="vendorselection" type="checkbox" label="{!vendor.Name}" value="{!_index}" onclick="{!c.uncheckAll}" style="cursor: pointer !important;"/></td>
+											<!--<td align="left" width="50%">{!vendor.Name}</td>-->
+											<td align="left" width="1%"></td>
+											<td align="left" >
+												<aura:if isTrue="{!vendor.buildertek__Status__c == 'Awarded'}">
+													<img src="{!$Resource.AcceptedIcon}" height="25" width="25"/>
+												</aura:if>
+												<aura:if isTrue="{!vendor.buildertek__Status__c == 'Accepted'}">
+													<img src="{!$Resource.AcceptedIcon}" height="25" width="25"/>
+												</aura:if>
+												<aura:if isTrue="{!vendor.buildertek__Status__c == 'Rejected'}">
+													<img src="{!$Resource.RejectIcon}" height="25" width="25"/>
+												</aura:if>
+											</td>
+										</tr>
+									</table>
+								</li>
+							</aura:iteration>	
+							<aura:set attribute="else">
+								<h2>Please click on the "+" icon to Add Vendors to this RFQ.</h2>
+							</aura:set>
+						</aura:if>
+                    </ul>
+                </lightning:layoutItem>
+            </div>
+            <lightning:layoutItem flexibility="auto" size="9">
+                <div class="page-right" style="min-height: 69.5vh;">
+                    <div aura:id="container" class="slds-box">
+                    	<div>
+                    	    <aura:if isTrue="{!v.IsOnLoad}"> 
+                    	        <div >
+	                    			<div style="float: right;">
+			                    		<lightning:buttonGroup>
+			                    			<aura:if isTrue="{!v.activeRFQVendor.buildertek__Status__c != 'Awarded' &amp;&amp; v.activeRFQVendor.buildertek__RFQ__r.buildertek__Status__c != 'Awarded'}"> 
+									        <lightning:button label="Send Email" onclick="{!c.sendRFQ}" variant="brand" />
+									        </aura:if>
+									        
+                                            <aura:if isTrue="{!v.activeRFQVendor.buildertek__Status__c != 'Awarded' &amp;&amp; v.activeRFQVendor.buildertek__RFQ__r.buildertek__Status__c != 'Awarded' &amp;&amp; v.activeRFQVendor.buildertek__RFQ__r.buildertek__Status__c != 'Accepted'}"> 
+                                                <!--<lightning:button label="Reject" onclick="{!c.rejectRFQ}" variant="brand"
+                                                                  class="{!if(v.activeRFQVendor.buildertek__Status__c == 'Quote Submitted','slds-show','slds-hide')}"/>-->
+                                                <lightning:button label="Award" onclick="{!c.awardRFQ}" variant="brand"
+                                                                  class="{!if(v.activeRFQVendor.buildertek__Status__c == 'Quote Submitted','slds-show','slds-hide')}"/>
+                                            </aura:if>
+                                            
+                                            <aura:if isTrue="{!v.activeRFQVendor.buildertek__RFQ__r.buildertek__Vendor__c == v.activeRFQVendor.Id}"> 
+                                                <lightning:button label="Canceled" onclick="{!c.canceledRFQ}" variant="brand"
+                                                                  class="{!if(v.activeRFQVendor.buildertek__Status__c == 'Awarded','slds-show','slds-hide')}"/>
+                                                <lightning:button label="Accepted" onclick="{!c.acceptedRFQ}" variant="brand"
+                                                                  class="{!if(v.activeRFQVendor.buildertek__Status__c == 'Awarded','slds-show','slds-hide')}"/>
+                                            </aura:if>
+									    </lightning:buttonGroup>
+								    </div>
+								    <br/>
+	                    		</div>
+	                    		<br/>
+							    <div>
+                    	        {!v.recordViewForm}
+                    	        </div>
+                    	        <br/>
+                    	        <div>
+	                    			<b><ul class="slds-badge" style="border-radius: 0 !important;width: 100%">Related Lines</ul></b>
+	                    			<lightning:datatable keyField="id" data="{! v.linedata }" columns="{! v.columns }" hideCheckboxColumn="true"/>
+	                    		</div>
+	                    		
+	                    		<br/>
+	                    		<div>
+	                    			
+	                    			<b><ul class="slds-badge" style="border-radius: 0 !important;width: 100%">Related Documents <a href="javascript:void();" class="slds-float_right" onclick="{!c.uploadFileToVendor}">&nbsp;&nbsp;Upload New Document</a> </ul></b>
+	                    			<aura:if isTrue="{!v.activeRFQVendor != null}">  
+					                    <aura:iteration items="{!v.activeRFQVendor.buildertek__RFQ_To_Vendor_Document_Links__r}" var="doc" >
+								  			<div ><div > &nbsp;<a href="{!doc.buildertek__File__r.buildertek__File_Presigned_URL__c}">{!doc.buildertek__File__r.Name} </a></div> </div>
+					                    </aura:iteration>
+	                    			</aura:if>
+	                    		</div>
+                                <br/>
+                                <div>
+	                    			
+	                    			<b><ul class="slds-badge" style="border-radius: 0 !important;width: 100%">Vendor Documents</ul></b>
+	                    			<aura:if isTrue="{!v.activeRFQVendor != null}">  
+					                    <aura:iteration items="{!v.activeRFQVendor.buildertek__Files__r}" var="doc" >
+                                            <div ><div > &nbsp;&nbsp;<a href="{!doc.buildertek__File_Presigned_URL__c}">{!doc.Name} </a></div> </div>
+					                    </aura:iteration>
+	                    			</aura:if>
+	                    		</div>
+                    	    </aura:if>
+                    		<aura:if isTrue="{!v.showVendorActions}"> 
+	                    		<div >
+	                    			<div style="float: right;">
+			                    		<lightning:buttonGroup> 
+			                    		   
+			                    			<aura:if isTrue="{!v.activeRFQVendor.buildertek__Status__c != 'Awarded' &amp;&amp; v.activeRFQVendor.buildertek__RFQ__r.buildertek__Status__c != 'Awarded' &amp;&amp; v.activeRFQVendor.buildertek__Status__c != 'Accepted' &amp;&amp; v.activeRFQVendor.buildertek__RFQ__r.buildertek__Status__c != 'Accepted'}"> 
+									        <lightning:button label="Send Email" onclick="{!c.sendRFQ}" variant="brand" />
+									        </aura:if>
+									        
+                                            <aura:if isTrue="{!v.activeRFQVendor.buildertek__Status__c != 'Awarded' &amp;&amp; v.activeRFQVendor.buildertek__RFQ__r.buildertek__Status__c != 'Awarded' &amp;&amp; v.activeRFQVendor.buildertek__RFQ__r.buildertek__Status__c != 'Accepted'}"> 
+                                                <!--<lightning:button label="Reject" onclick="{!c.rejectRFQ}" variant="brand"
+                                                                  class="{!if(v.activeRFQVendor.buildertek__Status__c == 'Quote Submitted','slds-show','slds-hide')}"/>-->
+                                                <lightning:button label="Award" onclick="{!c.awardRFQ}" variant="brand"
+                                                                  class="{!if(v.activeRFQVendor.buildertek__Status__c == 'Quote Submitted','slds-show','slds-hide')}"/>
+                                            </aura:if>
+                                            
+                                            <aura:if isTrue="{!v.activeRFQVendor.buildertek__RFQ__r.buildertek__Vendor__c == v.activeRFQVendor.Id}"> 
+                                                <lightning:button label="Canceled" onclick="{!c.canceledRFQ}" variant="brand"
+                                                                  class="{!if(v.activeRFQVendor.buildertek__Status__c == 'Awarded','slds-show','slds-hide')}"/>
+                                                <lightning:button label="Accepted" onclick="{!c.acceptedRFQ}" variant="brand"
+                                                                  class="{!if(v.activeRFQVendor.buildertek__Status__c == 'Awarded','slds-show','slds-hide')}"/>
+                                            </aura:if>
+									    </lightning:buttonGroup>
+								    </div>
+								    <br/>
+	                    		</div>
+	                    		<br/>
+							    <div>
+							        
+	                    			{!v.recordViewForm}
+	                    		</div>
+	                    		<br/>
+	                    		<div>
+	                    			<b><ul class="slds-badge" style="border-radius: 0 !important;width: 100%">Related Lines</ul></b>
+	                    			<lightning:datatable keyField="id" data="{! v.linedata }" columns="{! v.columns }" hideCheckboxColumn="true"/>
+	                    		</div>
+	                    		
+	                    		<br/>
+	                    		<div>
+	                    			
+	                    			<b><ul class="slds-badge" style="border-radius: 0 !important;width: 100%">Related Documents <a href="javascript:void();" class="slds-float_right" onclick="{!c.uploadFileToVendor}">&nbsp;&nbsp;Upload New Document</a> </ul></b>
+	                    			<aura:if isTrue="{!v.activeRFQVendor != null}">  
+					                    <aura:iteration items="{!v.activeRFQVendor.buildertek__RFQ_To_Vendor_Document_Links__r}" var="doc" >
+								  			<div ><div > &nbsp;<a href="{!doc.buildertek__File__r.buildertek__File_Presigned_URL__c}">{!doc.buildertek__File__r.Name} </a></div> </div>
+					                    </aura:iteration>
+	                    			</aura:if>
+	                    		</div>
+                                <br/>
+                                <div>
+	                    			
+	                    			<b><ul class="slds-badge" style="border-radius: 0 !important;width: 100%">Vendor Documents</ul></b>
+	                    			<aura:if isTrue="{!v.activeRFQVendor != null}">  
+					                    <aura:iteration items="{!v.activeRFQVendor.buildertek__Files__r}" var="doc" >
+                                            <div ><div > &nbsp;&nbsp;<a href="{!doc.buildertek__File_Presigned_URL__c}">{!doc.Name} </a></div> </div>
+					                    </aura:iteration>
+	                    			</aura:if>
+	                    		</div>
+	                    		
+	                    		<!--<aura:set attribute="else">
+	                    			<aura:if isTrue="{!!v.IsOnLoad}">
+							        	Select vendor from left side to see more details
+							        </aura:if>
+							    </aura:set>-->
+                    		</aura:if>
+                    		<aura:if isTrue="{!v.isCompare}">
+                    			<aura:iteration items="{!v.selectedVendorList}" var="vlist" > 
+                    			    <b>
+                    			        <ul class="slds-badge" style="font-size: 0.8rem;border-radius: 0 !important;width: 100%">
+                    			            {!vlist.Name}&nbsp;&nbsp;
+                    			            <!--<a target='_blank' data-name="{!vlist.Id}" onclick="{!c.openVendor}">{!vlist.Name}</a>&nbsp;&nbsp;-->
+                    			            <a data-name="{!vlist.Id}" onclick="{!c.openVendor}">View</a>
+                    			            <!--<a data-name="{!vlist.Id}" onclick="{!c.openRFQ}">View RFQ</a> -->
+                			                <aura:if isTrue="{!vlist.buildertek__RFQ__r.buildertek__Status__c != 'Awarded' &amp;&amp; vlist.buildertek__Status__c == 'Quote Submitted'}">
+                    			                <div style="padding-left:20px;"><a href="javascript:void();" data-name="{!vlist.Id}" class="slds-float_right" onclick="{!c.awardSelectedVendor}">Award</a></div>
+                    			                <aura:set attribute="else">
+                    			                    <aura:if isTrue="{!vlist.buildertek__Status__c == 'Awarded'}">
+                    			                        <span class="slds-float_right"><h2>&nbsp;&nbsp;Awarded</h2></span>    
+                    			                    </aura:if>
+                    			                </aura:set>
+                    			            </aura:if> 
+                    			        </ul>
+                    			    </b>
+                    				<!--<b><ul class="slds-badge" style="font-size: 0.8rem;border-radius: 0 !important;">{!vlist.Name}<div style="float: right;"> <ui:outputCurrency value="{!vlist.buildertek__Quote_Amount__c}"/></div></ul></b>-->
+                    				<lightning:datatable keyField="id" data="{! vlist.buildertek__Vendor_Items__r }" columns="{! v.columns }" hideCheckboxColumn="true"/>
+                    				<table width="100%">
+                    				    <tr>
+                    				        <td width="17%"></td>
+                    				        <td width="17%"></td>
+                    				        <td width="17%"></td>
+                    				        <td width="16%">
+                    				            <b><h2>Total</h2></b>
+                    				        </td>
+                    				        <td width="17%" style="text-align:left;">
+                    				            <ui:outputCurrency value="{!vlist.buildertek__Quote_Amount__c}" />
+                    				        </td>
+                    				        <td width="17%">
+                    				            
+                    				        </td>
+                    				    </tr>
+                    				</table> 
+                    				<br/>
+                    			</aura:iteration>
+                    		</aura:if>
+                    	</div>
+                       	
+                    </div>
+                </div>
+            </lightning:layoutItem>
+        </lightning:layout>
+    </div>
+    <lightning:overlayLibrary aura:id="overlayLib"/>
+</aura:component>

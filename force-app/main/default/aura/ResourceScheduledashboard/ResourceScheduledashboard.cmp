@@ -1,0 +1,329 @@
+<aura:component controller="ResourceScheduledashboardController"
+                implements="force:appHostable,flexipage:availableForAllPageTypes,force:hasRecordId" access="global">
+    <ltng:require styles="{!$Resource.ResourceCss3}" />
+    <ltng:require styles="{!join(',',
+                          $Resource.FaFaFont + '/css2.css',
+                          $Resource.FaFaFont + '/datepicker.css',
+                          $Resource.Sprites + '/css/fontawesome.min.css',
+                          $Resource.FaFaFont + '/owl.carousel.css')}" scripts="{!join(',',
+                                                                               $Resource.FaFaFont + '/bootstrap.min.js',
+                                                                               $Resource.FaFaFont + '/bootstrap-datepicker.js',
+                                                                               $Resource.FaFaFont + '/jquery.aCollapTable.js',
+                                                                               $Resource.FaFaFont + '/jquery-1.12.3.mindata analysis .js',
+                                                                               $Resource.FaFaFont + '/owl.carousel.min.js')}" />
+    <lightning:workspaceAPI aura:id="workspaceresource" />
+    <aura:attribute type="String" name="isConflictview" default="Standard" />
+    <aura:attribute type="String" name="calendarView" default="Dayview" />
+    <aura:attribute name="showSpinner" type="boolean" default="false" />
+    <aura:attribute type="String" name="displayView" default="project" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="type" type="String" default="info" />
+    <aura:attribute name="color" type="String" default="white" />
+    <aura:attribute name="index" type="String" default="" />
+    <aura:attribute name="contactList" type="contact[]" />
+
+    <aura:attribute type="String" name="headerDate" />
+    <aura:attribute type="String" name="ColorName1" />
+    <aura:attribute type="String" name="ColorName2" />
+    <aura:attribute name="weekDates" type="list" />
+    <aura:attribute name="beforeweekDate" type="list" />
+    <aura:attribute name="weekfirstDate" type="list" />
+    <aura:attribute name="weeklastDate" type="list" />
+    <aura:attribute name="currentDate" type="list" />
+    <aura:attribute name="nextDate" type="list" />
+    <aura:attribute name="previousDate" type="list" />
+    <aura:attribute type="String" name="weekName" default="Monday" />
+    <aura:attribute name="eventList" type="list" />
+    <aura:attribute type="boolean" name="NoSchedules" />
+
+    <aura:attribute name="currentYear" type="list" />
+    <aura:attribute name="fristMonth" type="list" />
+    <aura:attribute name="secondMonth" type="list" />
+
+
+    <aura:attribute name="ResourceCollapseText" type="String" default="[+]" />
+    <aura:attribute name="projectCollapseText" type="String" default="[+]" />
+    <aura:attribute name="projectTaskCollapseText" type="String" default="[+]" />
+    <aura:attribute name="projecttaskcontactlist" type="list" />
+    <aura:attribute name="SelectedOptions" type="list" default="[]" />
+    <aura:attribute name="childslectedOptions" type="list" default="[]" />
+    <aura:attribute name="ResslectedOptions" type="list" default="[]" />
+    <aura:attribute name="selectedLocations" type="list" />
+    <aura:attribute name="selectedContact" type="sObject" default="{}" />
+    <aura:attribute name="selectedTask" type="sObject" default="{}" />
+    <aura:attribute name="selectedproject" type="sObject" default="{}" />
+    <aura:attribute name="selectedTradetype" type="sObject" default="{}" />
+
+    <aura:attribute name="showModal" type="Boolean" default="fasle" />
+    <aura:attribute name="showModal1" type="Boolean" default="fasle" />
+    <aura:attribute name="contactScheduleItemList" type="List" default="" />
+
+    <aura:attribute name="tradeTypeScheduleItemList" type="List" default="" />
+
+    <aura:handler name="oSelectedRecordEvent" event="c:selectedsObjectRecordEvent" action="{!c.handleComponentEvent}" />
+
+    <aura:handler event="c:ClearLookupvalueEvent" action="{!c.ClearhandleComponentEvent}" />
+
+    <aura:method name="drawTable" action="{!c.resourcedrawTable}" description="drawTable">
+        <aura:attribute name="index" type="String" default="" />
+    </aura:method>
+
+    <aura:method name="drawTablebyweek" action="{!c.drawTablebyweek}" description="drawTable">
+        <aura:attribute name="index" type="String" default="" />
+    </aura:method>
+
+    <body style="font-family: 'Poppins', sans-serif;">
+        <div class="wrapper" style="background-color:white">
+            <header style="background: #1b5297;padding: 11px 20px;">
+                <div class="left-box" style="display: inline-block;vertical-align: middle;width: 25%;">
+
+                    <h1 style="margin: 0;color: #fff;font-size: 18px;">Resource Dashboard </h1>
+
+                </div>
+                <div class="right-box"
+                     style="display: inline-block;vertical-align: middle;width: 75%;margin-left: -5px;text-align: right;background-color:white;">
+                    <div
+                         style="margin-left: -4px !important;background: #fff;border-right: 1px solid #dedede !important;padding:4px;">
+                        <div class="slds-grid slds-wrap" style="text-align: left">
+
+                            <div class="slds-col slds-size_3-of-12">
+                                <div class="slds-form-element__control slds-input-has-icon"
+                                     style="margin: 10px;">
+                                    <!-- <lightning:icon iconName="utility:filterList" size="xx-small" class="slds-input__icon slds-icon-text-default innerIcon"/>
+                                    <input onkeyup="{!c.FilterprojectTasks}" id="SearchKeyValue2" type="text" style="width: 100%;" class="slds-input" placeholder="Filter Available Project" />
+                                 -->
+                                    <b> Project :</b>
+                                    <c:customLookup aura:id="projectId" objectAPIName="buildertek__Project__c"
+                                                    IconName="custom:custom24" selectedRecord="{!v.selectedproject}" fromComp="resourceCenter" />
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_3-of-12">
+                                <div class="slds-form-element__control slds-input-has-icon"
+                                     style="margin: 10px;">
+                                    <b> Trade Type : </b>
+                                    <c:customLookup aura:id="tradetypeid" objectAPIName="buildertek__Trade_Type__c"
+                                                    IconName="custom:custom67" selectedRecord="{!v.selectedTradetype}" fromComp="resourceCenter" />
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_3-of-12">
+                                <div class="slds-form-element__control slds-input-has-icon"
+                                     style="margin: 10px;">
+                                    <!--   <lightning:icon iconName="utility:filterList" size="xx-small" class="slds-input__icon slds-icon-text-default innerIcon"/>
+                                    <input onkeyup="{!c.FilterprojectTasks}" id="SearchTradeValue" type="text" style="width: 100%;" class="slds-input" placeholder="Filter Available Trade" />
+                                -->
+                                    <b> Resource :</b>
+                                    <c:customLookup aura:id="contactId" objectAPIName="Contact"
+                                                    IconName="standard:contact" selectedRecord="{!v.selectedContact}" fromComp="resourceCenter" />
+                                </div>
+                            </div>
+
+
+                            <div class="slds-col slds-size_3-of-12" style="margin-top:30px;">
+                                <div class="slds-form-element__control slds-input-has-icon">
+                                    <lightning:buttonGroup>
+                                        <lightning:button
+                                                          class="{!v.calendarView == 'Dayview' ? 'slds-button--brand ':''}"
+                                                          label="Day" onclick="{!c.doInit}" />
+                                        <lightning:button
+                                                          class="{!v.calendarView == 'weekview' ? 'slds-button--brand ':''}"
+                                                          label="Week" onclick="{!c.groupbyweek}" />
+
+                                    </lightning:buttonGroup>
+                                    <lightning:buttonGroup>
+
+                                        <lightning:button
+                                                          class="{!v.isConflictview == 'Standard' ? 'slds-button--brand ':''}"
+                                                          label="Standard" onclick="{!c.Standardview}" />
+                                        <lightning:button
+                                                          class="{!v.isConflictview == 'Conflicts' ? 'slds-button--brand ':''}"
+                                                          label="Conflicts" onclick="{!c.Conflictview}" />
+                                    </lightning:buttonGroup>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <div class="inner-wrapper-box">
+                <div class="side-detail-box" style="width: 450px;position: absolute;background-color:white">
+                    <div class="inner-header-left" style="height:1.8rem;">
+                        <!--<h2 style="width: 100%;text-align: center;padding: 10px 15px;font-size: 14px;">Work</h2>-->
+                        <h2 style="width: 100%;text-align: center;padding: 10px 15px;font-size: 14px;">Resource(s)</h2>
+                    </div>
+                    <div class="tab-content">
+                        <div class="tab-content" id="work-div">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="task-detail-box" style="width: 100%;height: 100%;padding-left: 450px;">
+
+                    <div class="inner-box clearfix">
+                        <div style="width: 100%;">
+                            <table>
+                                <tr>
+
+                                    <td
+                                        style="width:30px;text-align:center;vertical-align: middle;background: #f8f8f8;">
+                                        <!--<div style="height:80px;width:100%;"></div> -->
+
+                                        <aura:if isTrue="{!v.calendarView == 'Dayview'}">
+                                            <span aria-label="Previous" style="font-size: 30px;cursor:pointer"
+                                                  onclick="{!c.previousWeek}">‹</span>
+                                            <aura:set attribute="else">
+                                                <span aria-label="Previous" style="font-size: 30px;cursor:pointer"
+                                                      onclick="{!c.previousgroupbyWeek}">‹</span>
+                                            </aura:set>
+                                        </aura:if>
+                                    </td>
+                                    <td>
+                                        <div id="data-div" style="background-color:white" onclick='{!c.clickedDiv}' ondblclick= '{!c.clickedDiv1}'>
+                                            <!--   <div id="data-div" style="background-color:white" onclick='{!c.clickedDiv}'> -->
+                                        </div>
+                                    </td>
+                                    <td
+                                        style="width:35px;text-align:center;vertical-align: middle;background: #f8f8f8;">
+                                        <!-- <div style="height:80px;width:100%;background: #f8f8f8;"></div -->
+                                        <aura:if isTrue="{!v.calendarView == 'Dayview'}">
+                                            <span aria-label="Next" style="font-size: 30px;cursor:pointer"
+                                                  onclick="{!c.nextWeek}">›</span>
+                                            <aura:set attribute="else">
+                                                <span aria-label="Next" style="font-size: 30px;cursor:pointer"
+                                                      onclick="{!c.nextgroupbyWeek}">›</span>
+                                            </aura:set>
+                                        </aura:if>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="{!if(v.showModal == true,'slds-show','slds-hide')}">
+                <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open" >
+                    <div class="slds-modal__container"  style = "margin: 0 auto;  width: 90%;  max-width: 87rem;min-width: 50rem">
+                        <header class="slds-modal__header">
+                            <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Assigned Schedule Items</h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+
+
+
+
+
+                            <table class="slds-table slds-table--bordered ">
+                                <thead>
+                                    <tr>
+                                        <th scope="col"><span class="slds-truncate">Project</span></th>
+                                        <th scope="col"><span class="slds-truncate">Task Name</span></th>
+                                        <th scope="col"><span class="slds-truncate">Start Date</span></th>
+                                        <th scope="col"><span class="slds-truncate">End Date</span></th>
+                                        <th scope="col"><span class="slds-truncate">Contractor</span></th>
+                                        <th scope="col"><span class="slds-truncate">Contractor Resource</span></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{!v.contactScheduleItemList}" var="item">
+
+                                        <tr>
+                                            <td>{!item.buildertek__Schedule__r.buildertek__Project__r.Name}</td>
+                                            <td>
+                                                <ui:outputURL
+                                                              value="{!'/one/one.app?#/sObject/'+ item.Id + '/view'}"
+                                                              target="_blank" label="{!item.Name}" />
+
+                                                </td>
+                                             <td>{!item.buildertek__Start__c}</td>
+                                            <td>{!item.buildertek__Finish__c}</td>
+                                             <td>{!item.buildertek__Contractor__r.Name}</td>
+                                            <td>{!item.buildertek__Contractor_Resource__r.Name}</td>
+                                        </tr>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+
+
+
+
+                          <!--  <ul>
+                                <aura:iteration items="{!v.contactScheduleItemList}" var="item">
+                                    <li>
+                                        <b>Task Name:  </b> {!item.Name}
+                                    </li>
+                                    <li>
+                                        <b>Contract Resource:  </b> {!item.buildertek__Contractor_Resource__r.Name}
+                                    </li>
+                                    <br/>
+                                </aura:iteration>
+                            </ul>  -->
+                        </div>
+                        <footer class="slds-modal__footer">
+                            <button class="slds-button slds-button_neutral" onclick="{!c.closeModal}">Cancel</button>
+                           <!-- <button class="slds-button slds-button_brand">Save</button> -->
+                        </footer>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </div>
+
+
+            <div class="{!if(v.showModal1 == true,'slds-show','slds-hide')}">
+                <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open" >
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header">
+                            <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Edit Schedule Items</h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+
+
+                            <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                                <thead>
+                                    <tr class="slds-text-title_caps">
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Schedule items">Schedule items</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Contract Resource">Contract Resource</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{!v.tradeTypeScheduleItemList}" var="a">
+                                        <tr>
+                                            <td data-label="Schedule item">
+                                                <lightning:input type="String" label="" name="Schedule item" value="{!a.Name}" />
+                                                <!--<div class="slds-truncate" title="">{!a.Name}</div> -->
+                                            </td>
+                                            <td data-label="Contract Resource">
+                                               <!--  <lightning:input type="String" label="" name="Contract Resource" value="{!a.buildertek__Contractor_Resource__r.Name}" /> -->
+                                                <!-- <div class="slds-truncate" title="">{!a.buildertek__Contractor_Resource__r.Name}</div> -->
+
+                                               <c:BT_LightningLookup aura:id="productId" objectAPIName="Contact" selectedRecord="{!a.buildertek__Contractor_Resource__c}" />
+
+
+                                            </td>
+                                        </tr>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+
+                        </div>
+                        <footer class="slds-modal__footer">
+                            <button class="slds-button slds-button_neutral" onclick="{!c.closeModal1}">Cancel</button>
+                            <button class="slds-button slds-button_brand" onclick="{!c.SaveItems}" >Save</button>
+                        </footer>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </div>
+
+
+
+        </div>
+
+    </body>
+</aura:component>

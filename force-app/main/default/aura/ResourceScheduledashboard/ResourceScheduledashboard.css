@@ -1,0 +1,155 @@
+.THIS.span>mycircle {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-size: 15px;
+  color: #fff;
+  text-align: center;
+  background: #2a9fd8;
+  /* display: inline-block;*/
+}
+.THIS slds-select_container{
+    width: 95%;
+}
+
+.THIS table-bordered{
+    border: 1px solid #ddd !important;
+}
+
+.THIS .myCheckbox{
+  display: inline-block;
+  float: left;
+}
+
+.THIS a:hover {
+    text-decoration: none;
+}
+
+.THIS .top-td-box li:hover .hover-box {
+    display: block !important;
+}
+
+.THIS .fa-building-o::before {
+    content: "\f0f7" !important;
+}
+.THIS .fa {
+    /*display: inline-block;
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: 14px;
+    font-size: inherit;
+    text-rendering: auto;*/
+    font: normal normal normal 14px/1 FontAwesome;
+    
+}
+
+.THIS a:focus {
+    outline: none;
+    outline-offset: 0;
+    text-decoration: none;
+}
+
+.THIS .owl-carousel .owl-nav {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+}
+
+.THIS .owl-prev {
+    position: absolute;
+    font-size: 20px;
+}
+
+.THIS .owl-prev span{
+    font-size: 30px;
+}
+.THIS .owl-next span {
+    font-size: 30px;
+}
+
+.THIS .owl-next {
+    right: 10px;
+    position: absolute;
+}
+
+.THIS .owl-carousel.owl-drag .owl-item {
+    margin-right: 0 !important;
+}
+
+.THIS .act-more {
+    height: 14px;
+    width: 14px;
+    border: 1px solid #777;
+    text-align: center;
+    border-radius: 50%;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 5px;
+    font-size: 7px;
+}
+
+.THIS .act-more i {
+    top: 2px;
+}
+
+.THIS button.owl-next:focus{
+    border: none;
+    outline: none;
+}
+.THIS button.owl-prev:focus {
+    border: none;
+    outline: none;
+}
+
+.THIS .table>tbody>tr>td {
+    height: 40px !important;
+    padding: 6px;
+    border-top: 1px solid #ddd;
+    width:26px;
+}
+.THIS .table>tbody>tr>th {
+    height: 40px !important;
+    padding: 6px;
+    width:26px;
+}
+.THIS .table>tfoot>tr>td{
+    height: 40px !important;
+    padding: 6px;
+    width:26px;
+}
+
+.THIS .table>thead>tr>th {
+    height: 40px !important;
+    padding: 6px;
+    width:26px;
+}
+.THIS .table>thead>tr>td {
+    height: 51px !important;
+    padding: 6px;
+    width:26px;
+}
+.THIS .table>tfoot>tr>th{
+    height: 40px !important;
+    padding: 6px;
+    width:26px;
+}
+
+.THIS .top-ul-box li:hover .hover-box {
+    display: block !important;
+}
+
+.THIS .inner-header-left{
+    border-radius: 0;
+    background: #3a8ed8;
+    color: #fff;
+    height: 32px;
+    text-align: center !important;
+}
+.THIS .inner-header-right{
+    border-radius: 0;
+    background: #f8f8f8;
+    color: #fff;
+    height: 40px;
+    text-align: center !important;
+}

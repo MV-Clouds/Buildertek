@@ -1,0 +1,144 @@
+<aura:component controller="CaseTeamMemberHelper" implements="flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="memberId" type="Id" />
+    <aura:attribute name="roleId" type="Id" />
+    <aura:attribute type="sObject[]" name="sObjectData"/>
+    <aura:attribute type="sObject[]" name="filteredRecord"/>
+    
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}" />
+    
+    <aura:attribute name="loadComponent" type="Boolean" default="false"/>
+    <aura:attribute name="showInMobile" type="Boolean" default="false"/>
+    <aura:attribute name="emptyList" type="Boolean" default="false"/>
+    
+    <aura:attribute name="showContactSelection" type="Boolean" default="false"/>
+    
+    <aura:attribute name="rowsDisplayed" type="String" default="3"/>
+    <aura:attribute name="displayAll" type="Boolean" default="false"/>
+    <aura:attribute name="wraaperValue" type="Object[]" default=""/>
+    <aura:attribute name="headerTitle" type="Aura.Component[]">
+        <h2><b>Case Team ({!v.sObjectData.length})</b></h2>
+    </aura:attribute>
+    <aura:attribute name="mobileHeaderTitle" type="Aura.Component[]">
+        <h2>Case Team ({!v.sObjectData.length})</h2>
+    </aura:attribute>            
+    <aura:attribute name="isOpen" type="boolean" default="false"/>
+    <aura:attribute name="mapOfRoleDetails" type="Map" />
+    <aura:attribute name="listOfRoles" type="Sobject[]" />
+    <aura:attribute name="selectedUserRecordId" type="String"/>
+    <aura:attribute name="selectedContactRecordId" type="String"/>
+    <aura:attribute name="displayMessage" type="boolean" default="false"/>
+    <aura:attribute name="messageShown" type="String"/>
+    <aura:attribute name="selectedRecordList" type="List"/>
+    <aura:handler name="sendRecords" event="c:GetSelectedRecordFromTable" action="{!c.getSelectedRecords}"/>
+    <aura:If isTrue="{!$Browser.isPhone}">
+        <lightning:card class="slds-card__header-title slds-truncate" 
+                        iconName="standard:service_resource" 
+                        title ="{!v.mobileHeaderTitle}">
+            <aura:set attribute="actions">
+                <lightning:button label="Add Member" title="Add Member" onclick="{!c.addMember}"/>
+            </aura:set> 
+        </lightning:card>
+        <c:GenericTable sObjectData="{!v.sObjectData}" 
+                        wraaperValue="{!v.wraaperValue}"
+                        showCheckBox = "true"
+                        showSelectAll ="true"
+                        />
+        <aura:set attribute="else">
+            <lightning:card class="slds-card__header-title slds-truncate slds-m-right--xx-small slds-card_boundary" 
+                            iconName="standard:case" 
+                            title ="{!v.headerTitle}">
+                <aura:set attribute="actions">
+                    <lightning:buttonMenu aura:id="menu" 
+                                          class="slds-float_left" 
+                                          onselect="{!c.handleSelect }" 
+                                          alternativeText="Show menu" 
+                                          menuAlignment="right"
+                                          iconSize="x-small">
+                        <lightning:menuItem value="Add Member" label="Add Member" />
+                        <lightning:menuItem value="Delete" label="Delete" />
+                    </lightning:buttonMenu>
+                    
+                    <!-- lightning:button label="Add Member" title="Add Member" onclick="{!c.addMember}"/>
+                    <lightning:button label="Delete" title="Delete" onclick="{!c.deleteRecords}"/-->
+                </aura:set>           
+                
+                
+            </lightning:card>
+            <aura:If isTrue="{!v.displayAll}">
+                    <c:GenericTable sObjectData="{!v.sObjectData}" 
+                                    wraaperValue="{!v.wraaperValue}"
+                                    showCheckBox = "true"
+                                    showSelectAll ="true"
+                                    />
+   
+                    <aura:if isTrue="{! !lessthanorequal(v.sObjectData.length,v.rowsDisplayed)}">
+                        <div class="slds-p-around_small">
+                        	<a href="javascript:void(0)" onclick="{!c.viewLessRecord}">View Less</a>
+                        </div>
+                    </aura:if>               
+                    <aura:set  attribute="else">
+                        <aura:If isTrue="{!!v.emptyList}">
+                            <c:GenericTable sObjectData="{!v.filteredRecord}" 
+                                            wraaperValue="{!v.wraaperValue}"
+                                            showCheckBox = "true"
+                                            showSelectAll ="true"
+                                            />
+                            <div class="slds-p-around_small">
+                            	<a href="javascript:void(0)" onclick="{!c.viewAllRecord}">View All</a>
+                            </div>
+                        </aura:If>
+                    </aura:set>
+                </aura:If>
+        </aura:set>
+    </aura:If>
+    <aura:if isTrue="{!v.isOpen}">
+        <!--###### MODAL BOX Start######--> 
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- ###### MODAL BOX HEADER Start ######-->
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close"
+                                          onclick="{! c.closeModel }"
+                                          alternativeText="close"
+                                          variant="bare-inverse"
+                                          class="slds-modal__close"/>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Search for and add member</h2>
+                </header>
+                <!--###### MODAL BOX BODY Part Start######-->
+                <div class="slds-modal__content slds-p-around_medium add-member-modal-content" id="modal-content-id-1">   
+                    <aura:if isTrue="{!v.displayMessage}">
+                        <div class="slds-notify_container slds-is-relative">
+                            <div class="slds-notify slds-notify_toast slds-theme_error" role="alert">
+                                <div class="slds-notify__content">
+                                    <h2 class="slds-text-heading_small">{!v.messageShown}</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </aura:if>
+                    <lightning:recordEditForm objectApiName="WorkOrder">                        
+                        <lightning:inputField aura:id="selectedUser"  variant="label-hidden" fieldName="CSM__c" onchange="{!c.handleOnUserChange}"/>
+                        <lightning:select aura:id="roleNamePicklist" name="selectRole">
+                            <aura:iteration items="{!v.listOfRoles}" var="item">
+                                <option value="{!item.Name}" text="{!item.Name}"/>
+                            </aura:iteration>
+                        </lightning:select>
+                    </lightning:recordEditForm>                             
+                </div>
+                <!--###### MODAL BOX FOOTER Part Start ######-->
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral" 
+                                      label="Cancel"
+                                      title="Cancel"
+                                      onclick="{! c.closeModel }"/>
+                    <lightning:button variant="neutral" 
+                                      label="Save"
+                                      title="Save"
+                                      onclick="{! c.createCaseTeamMember}"/>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+        <!--###### MODAL BOX Part END Here ######-->
+    </aura:if>
+</aura:component>

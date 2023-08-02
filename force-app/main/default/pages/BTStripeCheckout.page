@@ -1,0 +1,40 @@
+<apex:page controller="BTStripeCheckoutController" id="pay"
+           action="{!redirectToGetway}"
+           showheader="false"
+           doctype="html-5.0"
+           sidebar="false"
+           standardStylesheets="false"
+       >
+  <head>
+    <title>checkout</title>
+  </head>
+  <script src="https://js.stripe.com/v3"></script>
+
+  <body>
+      <apex:outputPanel id="CheckOutHandler" rendered="{!CheckOutHandler}">
+          <button id="checkout-button">Checkout</button>
+          </apex:outputPanel>
+          <br/>
+          <br/>
+          <apex:outputPanel id="ErrorHandler" rendered="{!ErrorHandler}">
+              <div class="slds-text-heading_large" style="text-align:center;font-size: 30px">
+                 {!ErrorMsg}
+                  </div>
+          </apex:outputPanel>
+
+    <script type="text/javascript">
+        //alert('hi');
+    // Create an instance of the Stripe object with your publishable API key
+        //var stripe = Stripe('pk_test_51HpJdvHL7aX0OSdcweLNruqA9ElFo1k6JDTRgc5LkZYEN9zCctoimwdYIxws5SigoMOPWvQgeClhcXLii9HmVoxF00Ki11tFF8');
+    var stripePK = '{!StripeData}';
+    var stripe = Stripe(stripePK);
+    var checkoutButton = document.getElementById('checkout-button');
+    var valuefromApex = '{!getValue}';
+    var getWayURL = '{!getGetwayURL}';
+
+    // stripe.redirectToCheckout({ sessionId:valuefromApex });
+    stripe.redirectToCheckout({ successUrl: getWayURL});
+    </script>
+  </body>
+
+</apex:page>

@@ -1,0 +1,252 @@
+<aura:component controller="BT_SendEmailController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable" access="global">
+    <!-- <aura:html tag="style">
+        .slds-modal__close {
+        display: none !important;
+        }
+    </aura:html> -->
+   <!-- <aura:html tag="style">
+        .cuf-content {
+        padding: 0 0rem !important;
+        }
+        .slds-p-around-medium {
+        padding: 0rem !important;
+        }
+    </aura:html>-->
+	<aura:dependency resource="markup://force:navigateToURL" type="EVENT"/>
+
+    <aura:attribute name="message" type="String" />
+    <aura:attribute name="record" type="Object"/>
+    <aura:attribute name="changeOrder" type="Object"/>
+    <aura:attribute name="changeOrderLines" type="String"/>
+    <aura:attribute name="error" type="String"/>
+    <aura:attribute name="Header" type="String"/>
+    <aura:attribute name="templates" type="List" default="[]"/>
+    <aura:attribute name="selectedTemplate" type="String" default=""/>
+    <aura:attribute name="templatefolderName" type="String" />
+    <aura:attribute name="isTemplateSelected" type="Boolean" default="false"/>
+    <aura:attribute name="Spinner" type="Boolean" default="false"/>
+    <aura:attribute name="selectedToContact" type="sObject[]" default="[]"/>
+    <aura:attribute name="selectedCcContact" type="sObject[]" default="[]"/> 
+	<aura:attribute name="subject" type="String" default=""/>
+	<aura:attribute name="templateBody" type="String" default=""/>
+    
+    <aura:attribute name="isCreateSignature" type="boolean" default="false"/>
+    <aura:attribute name="SignatureName" type="string"/>
+    <aura:attribute name="parentId" type="string"  />
+    <aura:attribute name="fileimageId" type="string"  />
+	<aura:attribute name="isModalOpen" type="boolean" default="false"/>
+	<aura:attribute name="messageType" type="string" default="success"/>
+
+	<aura:attribute name="vfPath" type="String" default=""/>
+    <aura:attribute name="successMsg" type="Boolean" default="true"/>
+
+    <aura:method name="acceptandSendMethod" action="{!c.acceptandSendMethodCall}" access="public" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.init}" /> 
+	<aura:handler event="force:refreshView" action="{!c.init}" />
+    
+    <force:recordData aura:id="forceRecordCmp"
+                      recordId="{!v.recordId}"
+                      fields="buildertek__Project__r.Name, buildertek__Change_Order_No__c, buildertek__Total_Amount_Tax__c, buildertek__Total_Amount__c, buildertek__Tax_Rate__c"
+                      targetRecord="{!v.record}"
+                      targetFields="{!v.changeOrder}"
+                      targetError="{!v.error}" />
+    
+    <ltng:require styles="{!$Resource.ModalPreviewCSS}"/>
+    
+    <aura:html tag="style">
+        .slds-modal__container {
+        width:80% !important;      
+        max-width: 80% !important;   
+        overflow: hidden !important;
+        
+        }
+        .slds-modal__content {
+        overflow: hidden !important;
+        }
+        .slds-modal__close{
+        display:block !important;    
+        }
+    </aura:html>
+	
+    <!-- <div class="Customcloseicon" style="width: 97%;text-align: right;position: absolute; margin-top: -50px;">
+        <lightning:buttonIcon iconName="utility:close"    variant="border-inverse" title="Close"  alternativeText="Close Window" onclick="{!c.closeModel}" />
+    </div> -->
+	<!-- <c:ToastDisplay aura:id="toastCmp" />	 -->
+	<!-- <aura:if isTrue="{!v.messageType == 'success'}">
+		<h1 style="font-weight:bold;">Yay! Everything worked!</h1>
+		<aura:set attribute="else">
+				<h1 style="font-weight:bold;">Uh oh, something went wrong</h1>
+		</aura:set>
+	</aura:if> -->
+	<!-- <ui:message title="Confirmation" severity="confirm" closable="true">
+			This is a confirmation message.
+	</ui:message> -->
+	<div aura:id="mainDiv">
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+		<div class="slds-modal__container">
+			<div class="slds-modal__content ">
+				<div class="slds slds-scope">
+					<header class="slds-modal__header">
+						<lightning:buttonIcon iconName="utility:close" onclick="{! c.closeModel }" alternativeText="close"
+											variant="bare-inverse" class="slds-modal__close" />
+						
+						
+						<h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Signed Change Orders</h2>
+					</header>
+				<!--  <div class="slds-modal__content slds-p-around_medium slds-scrollable_y" id="modal-content-id-1" style="width:100%;height:100%;">-->
+					<div class=" slds-p-around_medium slds-scrollable--y" id="pageTop" style="height:auto;overflow-y:auto;height: 70vh;">
+						<div class="slds-modal__content slds-p-around_small slds-scrollable_y" style="width:100%;height:100%;">
+						<div class="slds-scrollable_y" > 
+							<aura:if isTrue="{!v.Spinner}">
+								<div aura:id="spinnerId" class="slds-spinner_container">
+									<div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+										<span class="slds-assistive-text">Loading</span>
+										<div class="slds-spinner__dot-a"></div>
+										<div class="slds-spinner__dot-b"></div>
+										<div class="custom-loading-text">
+											<b>Processing, Please Wait</b>
+										</div>
+										
+									</div>
+								</div>
+							</aura:if>
+							<aura:if isTrue="{!!v.isTemplateSelected}">
+								<aura:html tag="style">  
+							.slds-modal__container {
+							width:70% !important;      
+							max-width: 70% !important;    
+							height: 320px !important;
+							top:20% !important;
+							}
+							
+							.slds-modal__content {
+							padding: 0 0rem !important;
+							height:97% !important;
+							max-height:97% !important;
+							}
+							.cuf-content {
+							padding: 0 0rem !important;
+							}
+							.slds-p-around--medium {
+							padding: 0rem !important;
+							}         
+						</aura:html>  
+								<lightning:select name="templates" label="Select Template" aura:id="template" value="{!v.selectedTemplate}" onchange="{!c.preiewEmailTemplate}">
+									<option text="None" value="--None--"/>
+									<aura:iteration items="{!v.templates}" var="temp">
+										<option text="{!temp.Name}" value="{!temp.Id}"/>
+									</aura:iteration>
+								</lightning:select>
+							</aura:if>
+							<aura:if isTrue="{!v.isTemplateSelected}">
+								<aura:html tag="style">
+									
+									
+									.slds-modal__container {
+									width:70% !important;      
+									max-width: 70% !important;    
+									height: 99% !important;
+									}
+									
+									.slds-modal__content {
+									padding: 0 0rem !important;
+									height:97% !important;
+									max-height:97% !important;
+									}
+									.cuf-content {
+									padding: 0 0rem !important;
+									}
+									.slds-p-around--medium {
+									padding: 0rem !important;
+									}   
+									
+									
+								</aura:html>
+								<div class="slds-form-element slds-email-composer__combobox" style="padding-bottom: 10px;">
+									<label class="slds-form-element__label" for="recipients-to">To</label>
+									<div class="slds-form-element__control">
+										<div class="slds-combobox_container slds-has-inline-listbox" aria-autocomplete="none">
+											<c:BT_MultiSelectLookup objectAPIName="contact"
+																	IconName="standard:contact"
+																	lstSelectedRecords="{!v.selectedToContact}"
+																	label=""/>
+										</div>
+									</div>
+								</div>
+								
+								<div class="slds-form-element slds-email-composer__combobox" style="padding-top: 10px;padding-bottom: 10px;">
+									<label class="slds-form-element__label" for="recipients-cc">Cc</label>
+									<div class="slds-form-element__control">
+										<div class="slds-combobox_container slds-has-inline-listbox" aura:id="cc" aria-autocomplete="none">
+											<c:BT_MultiSelectLookup objectAPIName="contact"
+																	IconName="standard:contact"
+																	lstSelectedRecords="{!v.selectedCcContact}"
+																	label=""/>
+										</div>
+									</div>
+								</div>
+
+								<div class="slds-form-element" style="margin-top: 0.5rem;margin-bottom: 1rem;">
+									<label class="slds-form-element__label" >Email Subject</label>
+									<lightning:input type="text" placeholder="Enter Subject" value="{!v.subject}"/>
+								</div>
+								
+								<div class="slds-form-element" style="margin-top: 0.5rem;margin-bottom: 1rem;">
+									<label class="slds-form-element__label">Email Body</label>
+									<lightning:inputRichText aura:id="bodyId" placeholder="Email Body" value="{!v.templateBody}" />
+								</div>
+
+								<aura:unescapedHtml value="{!v.changeOrderLines}" /> 
+								<br/>							
+							</aura:if>
+						</div>
+					</div>
+					</div>
+					<footer role="contentinfo"  class="slds-docked-form-footer fixedFooter" style="display:block;text-align:right;padding-right:5px;">
+						<lightning:button name="cancel" variant="Neutral" label="Cancel" onclick="{!c.closeModel}"/>
+                		<lightning:button class="slds-float_right" name="Send" variant="brand" type="submit" label="Send" onclick="{!c.sendEmailMethod}"/>
+					</footer>				
+			</div>
+			</div>
+		</div>
+	</section>
+	</div>
+
+	<!-- <span aura:id="msg" class=""> -->
+		<aura:html tag="style">
+			.disnone{
+				display : none !important;
+			}
+		</aura:html>
+		<section aura:id="msg" role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open disnone">
+			<!-- <div class="slds-modal__container"> -->
+				<aura:if isTrue="{!v.successMsg}">
+					<div class="slds-modal__content ">
+						<div class="slds slds-scope">
+							<header class="slds-modal__header">
+								<ui:message title="Confirmation" severity="confirm" closable="true">
+									Email Sent Successfully!
+								</ui:message>
+							</header>
+						</div>
+					</div>
+					<aura:set attribute="else">
+						<div class="slds-modal__content ">
+							<div class="slds slds-scope">
+								<header class="slds-modal__header">
+									<ui:message title="Error" severity="error" closable="true">
+										Something went wrong. Please try again!
+									</ui:message>
+								</header>
+							</div>
+						</div>
+						</aura:set>
+				</aura:if>
+			<!-- </div> -->
+		</section>
+	
+
+
+	<div class="slds-backdrop slds-backdrop_open"></div>
+</aura:component>

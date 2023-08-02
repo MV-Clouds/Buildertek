@@ -1,0 +1,177 @@
+<aura:component controller="StripeSettingsController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:attribute name="options" type="list" />
+    <aura:attribute name="msaSettings" type="Stripe_Settings__c" default="{'sObjectType' : 'buildertek__Stripe_Settings__c'}"/>
+    <aura:attribute name="selectedValue" type="String" />
+    <aura:attribute name="isEdit" type="Boolean" default="false"/>
+    <aura:attribute name="results" type="List" />
+    <aura:attribute name="ShowPassword" type="Boolean" default ="false" />
+    <aura:attribute name="HidePassword" type="Boolean" default ="false" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <lightning:card >
+        <div class="slds slds-p-around_medium">
+            <div class="pageHeader slds-page-header slds-page-header_record-home">
+                <div class="slds-page-header__row">
+                    <div class="slds-page-header__col-title">
+                        <div class="slds-media">
+                            <div class="slds-media__figure">
+                                <span class="slds-icon_container">
+                                    <lightning:icon iconName="utility:settings" size="medium"/>	
+                                </span>
+                            </div>
+                            <div class="slds-media__body">
+                                <div class="slds-page-header__name">
+                                    <div class="slds-page-header__name-title">
+                                        <h1>
+                                            <span class="slds-text-heading_small">Stripe Settings</span>	
+                                        </h1>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-page-header__col-actions">
+                        <div class="slds-page-header__controls">
+                            <div class="slds-page-header__control">
+                                <aura:if isTrue="{!!v.isEdit}">
+                                    <lightning:button label="Edit" onclick="{!c.edit}" />
+                                </aura:if>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-page-header__row slds-page-header__row_gutters">
+                    
+                </div>
+            </div>
+            <div class="slds-p-around_medium" >
+                <aura:if isTrue="{!v.isEdit}">
+                    <div class="slds-form" role="list">
+                        <div class="slds-form__row">
+                            <div class="slds-form__item" role="listitem">
+                                <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                    <label class="slds-form-element__label" >Stripe publish Live Key</label>
+                                    <div class="slds-form-element__control">
+                                        <lightning:input type="text" label="" variant="label-hidden" value="{!v.msaSettings.buildertek__Stripe_Publishable_Live_Key__c}"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-form__item" role="listitem">
+                                <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                    <label class="slds-form-element__label" >Stripe publish Test Key</label>
+                                    <div class="slds-form-element__control">
+                                        <lightning:input type="text" label="" variant="label-hidden" value="{!v.msaSettings. buildertek__Stripe_Publishable_Test_Key__c}"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-form__row">
+                            <div class="slds-form__item" role="listitem">
+                                <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                    <label class="slds-form-element__label" >Stripe Secert Live Key</label>
+                                    <div class="slds-form-element__control">
+                                        <lightning:input type="text" label="" variant="label-hidden" value="{!v.msaSettings.buildertek__Stripe_Secret_Live_Key__c}"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-form__item" role="listitem">
+                                <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                    <label class="slds-form-element__label" >Stripe Secert Test Key</label>
+                                    <div class="slds-form-element__control">
+                                       <lightning:input  type="text"  label="" variant="label-hidden" value="{!v.msaSettings.buildertek__Stripe_Secret_Test_Key__c}" />
+                                         
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-form__row">
+                            <div class="slds-form__item" role="listitem">
+                                <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                    <label class="slds-form-element__label" >Is Live Envirorment</label>
+                                    <div class="slds-form-element__control">
+                                        <lightning:input type="checkbox" label="" variant="label-hidden" value="{!v.msaSettings.buildertek__Is_Live_Environment__c}" checked ="{!v.msaSettings.buildertek__Is_Live_Environment__c}" />
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            
+                            <div class="slds-form__item" role="listitem">
+                                <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                    <label class="slds-form-element__label" >Email Template Name</label>
+                                    <div class="slds-form-element__control">
+                                         <lightning:input  type="text"  label="" variant="label-hidden" value="{!v.msaSettings.buildertek__Email_Template_Name__c}" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-align_absolute-center slds-m-top_medium">
+                        <lightning:button label="Cancel" variant="neutral" onclick="{!c.cancel}" />&nbsp;&nbsp;
+                        <lightning:button label="Save" variant="brand" onclick="{!c.save}" />
+                    </div>
+                    <aura:set attribute="else">
+                        <div class="slds-form" role="list">
+                            <div class="slds-form__row">
+                                <div class="slds-form__item" role="listitem">
+                                    <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                        <label class="slds-form-element__label" style="font-weight: bold;">Stripe publish Live Key</label>
+                                        <div class="slds-form-element__control">
+                                            {!v.msaSettings.buildertek__Stripe_Publishable_Live_Key__c}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-form__item" role="listitem"  >
+                                    <div class="slds-form-element slds-form-element_horizontal slds-is-editing" style="word-break: break-all;">
+                                        <label class="slds-form-element__label" style="font-weight: bold;">Stripe publish Test Key</label>
+                                        <div class="slds-form-element__control" >
+                                            {!v.msaSettings.buildertek__Stripe_Publishable_Test_Key__c}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-form__row">
+                                <div class="slds-form__item" role="listitem">
+                                    <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                        <label class="slds-form-element__label" style="font-weight: bold;">Stripe Secert Live Key</label>
+                                            <div class="slds-form-element__control">
+                                                 **********
+                                            </div>
+                                    </div>
+                                </div>
+                                <div class="slds-form__item" role="listitem">
+                                    <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                        <label class="slds-form-element__label" style="font-weight: bold;">Stripe Secert Test Key</label>
+                                        <div class="slds-form-element__control">
+                                            <!--<ui:outputCurrency aura:id="curr" value="{!v.msaSettings.Stripe_Secret_Test_Key__c}" format="**********"/>-->
+                                            **********
+                                            <!--{!v.msaSettings.Stripe_Secret_Test_Key__c}-->
+                                            <!--<ui:inputSecret aura:id="pwd" label=" " class="field" value="{!v.msaSettings.Stripe_Secret_Test_Key__c}" maxlength="10" placeholder="Password" required="false"/>-->
+                                    
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-form__row">
+                                <div class="slds-form__item" role="listitem">
+                                    <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                        <label class="slds-form-element__label" style="font-weight: bold;">Is Live Envirorment?</label>
+                                        <div class="slds-form-element__control">
+                                            {!v.msaSettings.buildertek__Is_Live_Environment__c}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-form__item" role="listitem">
+                                    <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                        <label class="slds-form-element__label" style="font-weight: bold;">Email Template Name</label>
+                                        <div class="slds-form-element__control">
+                                            {!v.msaSettings.buildertek__Email_Template_Name__c}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </aura:set>
+                </aura:if>
+            </div>
+        </div>
+    </lightning:card>
+</aura:component>

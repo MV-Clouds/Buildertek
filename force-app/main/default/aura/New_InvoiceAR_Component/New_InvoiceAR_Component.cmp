@@ -1,0 +1,97 @@
+<aura:component implements="force:appHostable,flexipage:availableForRecordHome,force:lightningQuickActionWithoutHeader,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes"
+    controller="New_InvoiceAR_ComponentController" access="global">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="allFieldsLabel" type="List" />
+    <aura:attribute name="parentprojectRecordId" type="String" />
+    <aura:attribute name="parentRecordId" type="String" default="" />
+    <aura:attribute name="parentChangeOrderRecordId" type="String" default="" />
+    <aura:attribute name="buildertek__Contract__c" type="String" default="" />
+
+
+
+
+    <lightning:notificationsLibrary aura:id="notifLib"/>
+    <lightning:workspaceAPI aura:id="workspace"/>
+    <aura:attribute name="isSaveAndNew" type="Boolean" default="false" />
+    <aura:attribute name="Spinner" type="boolean" default="false"/>
+
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </aura:if>
+
+
+    <aura:html tag="style">
+        .slds-modal__container{
+            width: 60% !important;
+            padding: 0 !important;
+            max-width: 80rem !important;
+        }        
+        .slds-modal__content{
+            overflow-y:hidden !important;
+        }
+
+    </aura:html>
+    <!-- Mian section start -->
+    <div class="slds-modal__container">
+         <!-- Header -->
+        <div class="slds-modal__header">
+             <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate" style="font-size: 1.2rem;">New Sales Invoice (AR)</h1>
+        </div>
+        <!-- Body -->
+        <div class="slds-modal__content" id="modal-content-id-1">
+            <lightning:recordEditForm aura:id="recordEditForm" objectApiName="buildertek__Billings__c"  onsubmit="{!c.handleSubmit}" density="Comfy">    
+                <lightning:messages />
+                <div style="height:50vh;overflow-y:scroll">
+                    <lightning:layout multipleRows="true">
+                        <!-- Display fields -->
+                        <aura:iteration items="{!v.allFieldsLabel}" var="field">
+                            <aura:if isTrue="{!and(field.name != 'buildertek__Project__c' , field.name != 'buildertek__Change_Order__c', field.name != 'buildertek__Contract__c')}">
+                                <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small"> 
+                                    <lightning:inputField fieldName="{!field.name}"/>
+                                </lightning:layoutItem>
+                                <aura:set attribute="else">
+                                    <aura:if isTrue="{!field.name=='buildertek__Project__c'}" > 
+                                        <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small"> 
+                                            <lightning:inputField fieldName="{!field.name}" value="{!v.parentprojectRecordId}" />
+                                        </lightning:layoutItem>
+                                    </aura:if>
+
+                                    <aura:if isTrue="{!field.name=='buildertek__Change_Order__c'}" > 
+                                        <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small"> 
+                                            <lightning:inputField fieldName="{!field.name}" value="{!v.parentChangeOrderRecordId}" />
+                                        </lightning:layoutItem>
+                                    </aura:if>
+
+                                    <aura:if isTrue="{!field.name=='buildertek__Contract__c'}" > 
+                                        <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small"> 
+                                            <lightning:inputField fieldName="{!field.name}" value="{!v.parentContractRecordId}" />
+                                        </lightning:layoutItem>
+                                    </aura:if>
+                                </aura:set>
+
+                            </aura:if>
+
+                        </aura:iteration>
+                    </lightning:layout>
+                </div>
+        
+                <!-- Footer -->
+                <div class="slds-modal__footer">
+                    <lightning:button  variant="neutral" label="Cancel" onclick="{!c.Cancel}" />
+                    <lightning:button variant="neutral" type="submit" title="Save &amp; New" label="Save &amp; New" onclick="{!c.handlesaveNnew}" />
+                    <lightning:button variant="brand" type="submit" label="Save" />
+                </div>
+        
+
+            </lightning:recordEditForm>
+
+        </div>
+    </div>
+    
+</aura:component>

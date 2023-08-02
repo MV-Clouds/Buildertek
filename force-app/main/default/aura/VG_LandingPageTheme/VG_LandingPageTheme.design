@@ -1,0 +1,4 @@
+<design:component>
+<design:attribute name="includePreview" label="Include Preview Content?" description="display Preview components"/>    
+	
+</design:component>

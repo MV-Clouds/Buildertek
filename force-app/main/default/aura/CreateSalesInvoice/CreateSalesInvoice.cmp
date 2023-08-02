@@ -1,0 +1,96 @@
+<aura:component implements="force:appHostable,flexipage:availableForRecordHome,force:lightningQuickActionWithoutHeader,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes"
+    controller="CreateSalesInvoiceController" access="global">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="allFieldsLabel" type="List" />
+    <aura:attribute name="parentprojectRecordId" type="String" />
+    <aura:attribute name="parentRecordId" type="String" default="" />
+    <aura:attribute name="parentChangeOrderRecordId" type="String" default="" />
+    <aura:attribute name="buildertek__Contract__c" type="String" default="" />
+    <aura:attribute name="desableProjectSelection" type="boolean" default="false" />
+    <aura:attribute name="SalesInvoice" type="Billings__c" default="{'sobjectType':'Billings__c'}" />
+    <aura:attribute name="recordId" type="String" />
+
+    <lightning:notificationsLibrary aura:id="notifLib"/>
+    <lightning:workspaceAPI aura:id="workspace"/>
+    <aura:attribute name="isSaveAndNew" type="Boolean" default="false" />
+    <aura:attribute name="Spinner" type="boolean" default="false"/>
+
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </aura:if> 
+
+
+    <aura:html tag="style">
+        .quick-actions-panel {
+            overflow: hidden !important;
+        }
+        .slds-modal__content{
+            overflow: hidden !important;
+        }
+        .slds-docked-form-footer{
+            bottom: auto !important;
+            Display: block !important;
+        }
+        .slds-modal__content .slds-m-around--medium{
+            margin:0px !important;
+
+        }
+    </aura:html>
+
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/>
+    <div class="slds-modal__content ">
+        <div class="slds slds-scope">
+            <header class="slds-modal__header">
+                <lightning:buttonIcon iconName="utility:close" alternativeText="close12"
+                                      variant="bare-inverse" class="slds-modal__close" />
+                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Create Sales Invoice</h2>
+            </header>
+            <div class="slds-modal__content" id="modal-content-id-1" style="height:100%">
+                <div class="slds-m-around_medium">
+                    <lightning:recordEditForm aura:id="recordEditForm" objectApiName="buildertek__Billings__c"  onsubmit="{!c.handleSubmit}" density="Comfy">    
+                        <lightning:messages />
+                        <div>
+                            <lightning:layout multipleRows="true">
+                                <!-- Display fields -->
+                                <aura:iteration items="{!v.allFieldsLabel}" var="field">
+                                    <aura:if isTrue="{!field.name == 'buildertek__Project__c'}">
+                                        <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small"> 
+                                            <lightning:inputField  disabled="true" fieldName="{!field.name}" value="{!v.recordId}"/>
+                                        </lightning:layoutItem>
+                                        <aura:set attribute="else">
+                                            <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small"> 
+                                                <lightning:inputField aura:id="field" fieldName="{!field.name}"/>
+                                            </lightning:layoutItem>
+                                        </aura:set>
+                                    </aura:if>
+                                </aura:iteration>
+                            </lightning:layout>
+                        </div>
+               
+                        <div class="slds-m-top_medium">    
+                            <div class="slds-docked-form-footer slds-modal__footer customFooter" style="height:55px;">
+                                <div style="float:right !important;">
+                                    <lightning:button label="Cancel" title="Cancel" onclick="{!c.Cancel}" class="myBtn"/>
+                                    <lightning:button variant="neutral" type="submit" title="Save &amp; New" label="Save &amp; New" onclick="{!c.handlesaveNnew}" />
+                                    <lightning:button variant="brand" label="Save" title="Save"  type="submit" class="myBtn2"/>
+                                </div>
+                            </div>    
+                        </div>
+                
+                    </lightning:recordEditForm>
+                
+                </div>
+            </div>
+            
+        </div>
+
+    </div>
+    
+    
+</aura:component>

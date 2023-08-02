@@ -1,0 +1,94 @@
+<aura:component access="global" implements="forceCommunity:availableForAllPageTypes,force:appHostable,flexipage:availableForAllPageTypes" controller="VG_GlobalSearchController">		
+    <aura:attribute name="People" type="User[]"/>
+    <aura:attribute name="Articles" type="Object[]"/>
+    <aura:attribute name="Announcements" type="Object[]"/>
+    <aura:attribute name="Events" type="Object[]"/>		
+    <aura:attribute name="placeholderTxt" type="String" default="Global Search"/>
+    
+    
+    
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> 
+    <!-- records matching typeahead text -->				
+    
+    <!-- <aura:attribute name="selectFields" type="String" required="true" description="Comma seperated fields to display" default="Name,Title,City,MobilePhone"/>
+  <aura:attribute name="AnnouncementFields" type="String" required="true" description="Comma seperated fields to display" default="Name,Start_Date__c,End_Date__c,Department__c,Action_URL__c"/> -->
+    <div class="slds-form-element">
+        <div class="searchDiv slds-form-element__control lookup__search-control slds-input-has-icon slds-input-has-icon--left"  id="input_container">
+            <input  type="text" id="searchInputBox" aura:id="searchInputBox" class="slds-input slds-p-left-large searchinput" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-label="Lookup" label="Lookup"  placeholder="{!v.placeholderTxt}" 
+                   onkeyup="{!c.searchKeyChange}" /> 
+            <lightning:icon iconName="utility:search" class="black" size="x-small" />					
+        </div>
+        
+        <div aura:id="lookupDiv" id="a_lookupDiv" style="   background-color: white;color: black;float: left;margin-top: 42px;box-shadow: 1px 1px 1px 2px rgba(0,0,0,0.14);width:309px;   margin-left: -345px;    border-radius: 4px; z-index: 99;position: relative;"   role="listbox"  onclick="{!c.showResults}">
+            <ul class="slds-list--vertical">
+                <li class="slds-list__item" style="margin-top: 3%;    margin-left: 3%;margin-right: 3%;">
+                    <aura:if isTrue="{!v.People.length == 0 ? false : true}"> 
+                        <div class="slds-border_bottom">
+                            <div>People</div>
+                            <aura:iteration var="record" items="{!v.People}">
+                                <div style="margin-left:1%;padding-bottom: 3%;">
+                                    <img src="{!$Resource.UserProfile}" height="20" width="20" style="background-color:#F48F82 ;border-radius: 50%;float:left;margin-top: 1%;"/>
+                                    <!--  <a href="" id="{!record.Id}"  class="slds-truncate" onclick="{!c.navigate}" style="font-size:15px;font-family:gotham-medium;text-align: inherit;padding: 0px;padding-left: 10px;float: unset;">
+                                                <h1 class="employee">{!record.FirstName+' '+ record.LastName} </h1>
+                                            </a> -->
+                                    <ui:outputURL  label="{!record.FirstName+' '+ record.LastName}" class="slds-truncate employee globalsearchresults" value="{!'/s/profile/'+record.Id}" />
+                                </div>
+                                
+                            </aura:iteration>
+                        </div>
+                    </aura:if>
+                </li>
+                
+                <li class="slds-list__item " style="margin-left: 3%;margin-right: 3%;margin-top: 3%;">
+                    <aura:if isTrue="{!v.Announcements.length == 0 ? false : true}">
+                        <div class="slds-border_bottom">
+                            <div>Announcements</div>
+                            <aura:iteration var="record" items="{!v.Announcements}">
+                                <div style="margin-left:1%;padding-bottom: 3%;">
+                                    <!--   <a href="" id="{!record.Id}"  onclick="{!c.navigateToAnnouncement}" style="font-size:15px;font-family:gotham-medium;text-align: inherit;padding: 0px;padding-left: 10px;margin-left:1%;float: unset;">
+                                                <h1 >{!record.Name} </h1>
+                                            </a> -->
+                                    <ui:outputURL  label="{!record.Name}" class="globalsearchresults" value="{!'/s/announcementsdetail?id='+record.Id}" />
+                                    
+                                </div>
+                                
+                            </aura:iteration>
+                        </div>
+                    </aura:if>
+                    
+                </li>
+                <li class="slds-list__item " style="margin-top: 3%;    margin-left: 3%;margin-right: 3%;">
+                    <aura:if isTrue="{!v.Articles.length == 0 ? false : true}">
+                        <div class="slds-border_bottom">
+                            <div>Articles</div>
+                            <aura:iteration var="record" items="{!v.Articles}">	
+                                <div style="margin-left:1%;padding-bottom: 3%;">
+                                  <!--    <a href="{! '/s/article/'+record.Id}" id="{!record.Id}" onclick="{!c.navigate}" style="font-size:15px;font-family:gotham-medium;text-align: inherit;padding: 0px;padding-left: 10px;float: unset;">
+                                        <h1 > {!record.Title} </h1>
+                                    </a>   -->
+                                     <ui:outputURL  label="{!record.Title}" class="globalsearchresults" value="{! $Label.c.VG_Baseurl+'article/'+record.Id}" />  
+                                </div>
+                            </aura:iteration>
+                        </div>
+                    </aura:if>
+                </li>
+                <li class="slds-list__item " style="margin-left: 3%;margin-right: 3%;margin-top: 3%;">
+                    <aura:if isTrue="{!v.Events.length == 0 ? false : true}">
+                        <div class="">
+                            <div>Events</div>
+                            <aura:iteration var="record" items="{!v.Events}">	
+                                <div style="margin-left:1%;padding-bottom: 3%;">
+                                    <!--   <a href="" id="{!record.Id}"  onclick="{!c.navigate}" style="text-align: inherit;padding: 0px;padding-left: 10px;margin-left:1%;float: unset;">
+                                        <h1 >{!record.Subject} </h1>
+                                    </a> -->
+                                    <ui:outputURL  label="{!record.Subject}" class="globalsearchresults" value="{!'/s/event/'+record.Id}" />
+                                </div>
+                            </aura:iteration>
+                        </div>
+                    </aura:if>
+                </li>
+            </ul>
+        </div>												  
+    </div>	 
+</aura:component>

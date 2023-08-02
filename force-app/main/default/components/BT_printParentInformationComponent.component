@@ -1,0 +1,38 @@
+<apex:component controller="BT_PrintParentInformationController"> 
+	<apex:attribute name="objName" type="string" required="true"
+		description="The object to be displayed." assignTo="{!objectName}"/>
+	<apex:attribute name="fieldName" type="string" required="true"
+		description="The Fields to be displayed." assignTo="{!viewFieldApi}"/> 
+	<apex:attribute name="secName" type="string" required="true"
+		description="The object to be displayed." assignTo="{!SectionName}"/>
+	
+	<html>
+	    <style>
+	        .sectionName{
+	            margin-left: 10px !important;
+	            font-size: 20px !important;
+	            padding-top: 35px !important;
+	            text-transform: uppercase !important;
+	            font-family: 'Salesforce Sans',Arial,sans-serif !important;
+	            width: 100% !important;
+	        }
+	        .fieldsRow{
+	            height: 20px !important;
+	            width: 48% !important;
+	            margin-left: 10px !important;
+	            margin-top: 20px !important;
+	            float: left !important;
+	            font-family: 'Salesforce Sans',Arial,sans-serif !important;
+	        }
+	    </style>
+		<body>
+			<div class="sectionName">{!SectionName}</div>
+			<apex:repeat value="{!ApiList}" var="rec">      
+				<div class="fieldsRow">
+					{!mapForLabel[rec]}:&nbsp;&nbsp;{!parentobjRecord[rec]}
+				</div>
+			</apex:repeat>
+			<br/><br/>
+		</body>
+	</html>
+</apex:component>

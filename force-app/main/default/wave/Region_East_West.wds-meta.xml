@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WaveDataset xmlns="http://soap.sforce.com/2006/04/metadata">
+    <application>buildertek__Learning_Adventure</application>
+    <masterLabel>Region_East_West</masterLabel>
+    <templateAssetSourceName>Region_East_West</templateAssetSourceName>
+    <type>default</type>
+</WaveDataset>

@@ -1,0 +1,54 @@
+<aura:component >
+    <aura:registerEvent name="choose" type="c:autoCompleteChoose"/>
+    
+    <aura:attribute name="record" type="String[]" description="Matching records based on typeahead"/>
+    <aura:attribute name="navigateToObject" type="boolean" default="true" description="Flag to indicate onclick navigate to object"/>
+    <aura:attribute name="url" type="String" description="URL of the object"/>
+    
+    <!-- <li class="slds-dropdown__item slds-has-icon-left" role="menuitem option">
+
+        <a href="javascript:void(0);"  onclick="{!c.chooseItem}" class="slds-truncate">{!v.record[1]}</a>
+    </li> -->
+    <li class="slds-item slds-p-vertical--x-small">
+        <div class="slds-tile">
+            <div class="slds-grid">
+                <div class="slds-size--6-of-6 slds-truncate" title="{!v.record.Title}">
+                     <ui:outputURL value="{! $Label.c.VG_Baseurl+'article/'+v.record.Id}" label="{!v.record.Title}" />  
+                  <!--  <a href="javascript:void" onclick="{!c.chooseItem}" class="articleResult">{!v.record.Title}</a> -->
+                </div>
+                
+            </div>
+            <div class="slds-tile__detail slds-text-body_small" style="color:black">
+                <ul class="slds-list--horizontal slds-wrap slds-has-dividers_right">
+                    <li class="slds-item">{!v.record.ArticleNumber}</li>
+                    <li class="slds-item"><lightning:formattedDateTime value="{!v.record.LastPublishedDate}" year="numeric" month="numeric" day="numeric"  hour="2-digit" minute="2-digit" /></li>
+                </ul>
+            </div>
+        </div>
+    </li>
+    
+    
+    <!-- <li class="slds-item">
+    <div class="slds-tile slds-media">
+      <div class="slds-media__body">     
+        <a href="javascript:void(0);" onclick="{!c.chooseItem}" class="slds-truncate"><h2 style="font-family:Gotham-book;font-size:14px;">{!v.record.Title}</h2></a>  
+       
+          
+          
+          <div class="slds-tile__detail slds-text-body-small">
+          <section class="slds-clearfix">
+              <div class="slds-float-left">
+                  <p style="font-family:Gotham-Medium;font-size:12px;">
+                  <aura:iteration var="TopicAssignment" items="{!v.record.TopicAssignments}">
+                      {!TopicAssignment.Topic.Name},
+                      </aura:iteration>
+                  </p>
+              </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </li>-->
+    
+    
+</aura:component>

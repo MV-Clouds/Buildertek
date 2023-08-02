@@ -1,0 +1,149 @@
+<aura:component controller="PreQualificationTemplatesController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:attribute name="options" type="list" />
+    <aura:attribute name="selectedTemplatesList" type="list" />
+    <aura:attribute name="selectedValue" type="String" />
+    <aura:attribute name="isEdit" type="Boolean" default="false"/>
+     <aura:attribute name="isError" type="Boolean" access="global"/>
+    <aura:attribute name="isSuccess" type="Boolean" access="global"/>
+    <aura:attribute name="message" type="String" access="global"/>
+    <aura:attribute name="isText" type="Boolean" access="global" default="false"/>
+    
+    
+    <aura:attribute name="fileName" type="String" default="" />
+     <aura:attribute name="imgUrl" type="String" default=""/>
+    <aura:attribute name="Url" type="String" default=""/>
+    <aura:attribute name="Text" type="String" default=""/>
+    <aura:attribute name="isMultiPrequal" type="Boolean" access="global" default="false"/>
+      <aura:attribute name="isEnableBox" type="Boolean" access="global" default="false"/>
+    <aura:method name="sampleMethod"  action="{!c.doInit}" access="public"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <div class="slds-form-element" style="padding-left: 1rem;
+    font-weight: bold;">
+        <label class="slds-checkbox_toggle slds-grid">
+            <span class="slds-form-element__label slds-m-bottom_none">Change PreQual Type</span>
+            <!--<input type="checkbox" name="checkbox-toggle-16" value="checkbox-toggle-16" aria-describedby="checkbox-toggle-16" checked="{!v.isMultiPrequal}" onchange="{!c.selectChange}"/>-->
+            <ui:inputCheckbox aura:id="chkbox" class="slds-input" change="{!c.selectChange}" value="{!v.isMultiPrequal}"/>
+            <span id="checkbox-toggle-16" class="slds-checkbox_faux_container" aria-live="assertive">
+                <span class="slds-checkbox_faux"></span>
+                <span class="slds-checkbox_on">Multiple Pre Qual</span>
+                <span class="slds-checkbox_off">Single Pre Qual</span>
+            </span>
+        </label>
+    </div>
+    
+  
+   <div style="padding-left:15px;padding-top:20px; display:flex;"> 
+      <b>Save Files in Box</b>
+       <div style="padding-left:18px;"> <lightning:input type="checkbox" label="" name="input1" onchange="{!c.checkBoxChange}" checked="{!v.isEnableBox}"/></div>
+        
+    </div>
+   
+   
+    
+    <div class="slds slds-p-around_medium">
+        <aura:if isTrue="{!v.isEdit}">
+            <lightning:dualListbox name="Pre Qualification Templates"
+                               label= "Pre Qualification Templates"
+                               sourceLabel="Available Templates"
+                               selectedLabel="Selected Templates"
+                               fieldLevelHelp="Select your preferred templates"
+                               options="{!v.options}"
+                               value="{!v.selectedTemplatesList}"    
+                               onchange="{! c.handleChange }"
+                               disableReordering="true"
+                               addButtonLabel="Add"
+                               removeButtonLabel="Remove"/>
+            <div class="slds-align_absolute-center slds-m-top_medium">
+                <lightning:button label="Cancel" variant="neutral" onclick="{!c.cancel}" />&nbsp;&nbsp;
+                <lightning:button label="Save" variant="brand" onclick="{!c.save}" />
+            </div>
+            <aura:set attribute="else">
+                <table>
+                    <tr width="100%">
+                        <td width="40%">
+
+                        </td>
+                        <td width="50%">
+                            <lightning:button label="edit" variant="neutral" onclick="{!c.editList}"/>
+                        </td>
+                    </tr>
+                </table> 
+                <table class="slds-table slds-table_bordered slds-table_fixed-layout" role="grid">
+                    <thead>
+                        <tr>
+                            <th>
+                                Template Name
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <aura:iteration items="{!v.selectedTemplatesList}" var="temp">
+                            <tr>
+                                <td>
+                                    {!temp}
+                                </td>
+                            </tr>
+                        </aura:iteration>
+                    </tbody>
+                </table>
+            </aura:set>
+        </aura:if>
+        <div id="pageTop">
+        <aura:if isTrue="{!v.isSuccess}">
+                        <div class="slds-notify slds-notify_alert slds-alert_success" role="alert" style="background-color:green">
+                            <span class="slds-assistive-text">success</span>
+                            <h2>
+                                {!v.message}
+                            </h2>
+                            <div class="slds-notify__close">
+                                
+                            </div>
+                        </div>
+                    </aura:if>
+              <aura:if isTrue="{!v.isError}">
+                        <div class="slds-notify slds-notify_alert slds-alert_error" role="alert" >
+                            <span class="slds-assistive-text">success</span>
+                            <h2>
+                                {!v.message}
+                            </h2>
+                            <div class="slds-notify__close">
+                                
+                            </div>
+                        </div>
+                    </aura:if>
+ 
+        </div>
+         <div style="border:1px solid lightgray;border-radius:5px;padding:10px;margin-top:10px" >
+              			<lightning:layout multipleRows = "true">
+                <lightning:layoutitem size="3">
+                    <div style="padding-bottom: 5px;"><label style="font-size:15px;font-weight:600">Select Logo</label></div>
+                    <div><lightning:input aura:id="fileId" onchange="{!c.handleFilesChange}" type="file" variant="label-hidden" name="file" label="" multiple="false" accept="image/png,image/jpeg,image/jpg"/>
+                  
+                  <aura:if isTrue="{!v.isText}">
+                    <div class="slds-text-body_small slds-text-color_error">{!v.fileName} </div>
+                  </aura:if>
+         
+                        <!--use aura:if for show-hide the loading spinner image--> 
+                       <aura:if isTrue="{!v.showLoadingSpinner}">
+                          <div class="slds-text-body_small slds-text-color_error">Uploading... 
+                             <img src="/auraFW/resources/aura/images/spinner.gif" class="spinner-img" alt="Loading"/>'
+                          </div>
+                        </aura:if><br/>
+                        <button class="slds-button slds-button_brand" onclick="{!c.doSave}">Save</button>
+                    </div>
+                </lightning:layoutitem>
+                <lightning:layoutitem size="6">
+                     <div style="width: 100%;text-align: center;margin-bottom: 20px;">
+                          <img src="{!v.imgUrl}" id="logoImg" />
+                     </div>
+                </lightning:layoutitem>
+ 			</lightning:layout>
+ 
+   			
+        </div>
+
+        
+    </div>
+    
+</aura:component>

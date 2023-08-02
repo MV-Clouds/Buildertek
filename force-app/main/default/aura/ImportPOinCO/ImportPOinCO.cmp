@@ -1,0 +1,53 @@
+<aura:component controller='ImportPOinCOController' implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global">
+    <!-- attributes -->
+    <aura:attribute name="data" type="Object" />
+    <aura:attribute name="columns" type="List" />
+    <aura:attribute name="selectedRowsCount" type="Integer" default="0" />
+    <aura:attribute name="maxRowSelection" type="Integer" default="1" />
+    <aura:attribute name="poRecordId" type="String" />
+    <aura:attribute name="Spinner" type="Boolean" default="false" />
+    <aura:attribute name="isEmpty" type="Boolean" default="false" />
+    <aura:attribute name="openModal" type="Boolean" default="true" />
+
+
+
+
+    <!-- handlers-->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
+    <!-- ==== SPINNER ==== -->
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </aura:if>
+    <aura:html tag="style">
+        .quick-actions-panel { overflow: hidden !important; } .slds-modal__content{ overflow: hidden !important; }
+    </aura:html>
+
+    <aura:if isTrue="{!v.openModal}">
+        <div class="maindiv">
+            <div class="slds-modal__header header">
+                Import PO
+            </div>
+            <div class="slds-modal__content slds-p-around--large">
+                <lightning:datatable columns="{!v.columns }" data="{!v.data }" keyField="id" maxRowSelection="{!v.maxRowSelection }" onrowselection="{!c.selectPurchaseOrder }" />
+                <aura:if isTrue="{!v.isEmpty}">
+                    <div class="dataNotFound">
+                        No Data Found !!
+                    </div>
+                </aura:if>
+            </div>
+
+        </div>
+
+        <footer class="slds-modal__footer">
+            <lightning:button label="Cancel" title="Cancel" onclick="{!c.cancel }" />
+            <lightning:button variant="brand" label="Import" title="Create" onclick="{!c.createCO }" />
+        </footer>
+    </aura:if>
+</aura:component>

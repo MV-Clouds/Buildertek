@@ -1,0 +1,84 @@
+.THIS .pop-body{
+    display: flex;
+}
+
+.THIS .sv-btn {
+    background: rgb(1, 118, 211) !important;
+    border-radius: 6px !important;
+    font-family: 'Verdana';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    color: #FFFFFF;
+    width: 77px !important;
+    height: 32px !important;
+    border: none !important;
+}
+
+.THIS .clc-btn {
+    width: 86px !important;
+    height: 32px !important;
+    color: rgb(1, 118, 211) !important;
+    font-size: 14px;
+    border: 1px solid rgba(0, 0, 0, 0.5) !important;
+    border-radius: 6px !important;
+}
+
+/* .THIS hr{
+    margin: 0px !important;
+} */
+
+.THIS .sv-new-btn {
+    min-width: 119px !important;
+    font-size: 14px;
+    height: 32px !important;
+    color: rgb(1, 118, 211) !important;
+    border: 1px solid rgba(0, 0, 0, 0.5) !important;
+    border-radius: 6px !important;
+}
+
+.THIS .md-header {
+    background: rgb(1, 118, 211) !important;
+    /* border-radius: 17px 17px 0px 0px; */
+    color: #FFFFFF !important;
+    font-family: 'Verdana' !important;
+    border: none !important;
+    font-weight: 400 !important;
+    font-size: 22px !important;
+    /* line-height: 38px; */
+}
+
+.THIS .lbl-tx {
+    font-family: 'Verdana' !important;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 22px;
+    display: flex;
+    align-items: center;
+    color: #000000;
+    padding: 8px 4px;
+}
+
+.THIS .file-upld {
+    padding: 8px 16px;
+}
+
+.THIS .cross{
+    color: red;
+}
+
+.THIS .main-file-cmp {
+    display: flex;
+    align-items: center;
+}
+
+.THIS .file-div-tab {
+    display: flex;
+    width: auto;
+    height: 120px;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    margin: 4px 16px 0px 16px;
+    overflow-x: auto;
+}

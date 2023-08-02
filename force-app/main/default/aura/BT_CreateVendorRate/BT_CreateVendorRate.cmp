@@ -1,0 +1,94 @@
+<aura:component implements="force:hasRecordId,force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable,lightning:actionOverride,force:hasSObjectName"
+    access="global" controller="CreateVendorRateController" >
+    
+      
+    <aura:html tag="style">
+        .slds-modal__container {
+        min-width: 60vw;
+        }
+        .slds-modal__close {
+        display: none !important;  
+        }                
+    </aura:html>
+    
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="parentRecordId" type="String" default="" />
+    <aura:attribute name="isLoading" type="Boolean" />
+    <aura:attribute name="listOfFields" type="List" />
+    <aura:attribute name="ismessage" type="boolean" default="false" />
+    <aura:attribute name="isdisabled" type="boolean" default="false" />
+    <aura:attribute name="isnew" type="boolean" default="true" />
+    <aura:attribute name="sobjecttype" type="String" default="{!v.sObjectName}"/>
+    <ltng:require styles="{!$Resource.ModalPreview62moreMedia}"/>
+    <lightning:workspaceAPI aura:id="workspace" />
+
+    <aura:if isTrue="{!v.isnew}">
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+        aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+            <header class="slds-modal__header">
+                 <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeModel }" alternativeText="close"
+                    variant="bare-inverse" class="slds-modal__close" /> 
+                <p></p>
+                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New Rate</h2>
+                <p></p>
+            </header>
+            <div class="slds-modal__content" id="modal-content-id-1">
+                <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__Rates__c"
+                    onsubmit="{!c.handleSubmit}" onsuccess="{!c.onRecordSuccess}" onerror = "{!c.handleError}">
+                   <lightning:layout class="slds-m-horizontal_x-large slds-m-top_large" horizontalAlign="space" verticalAlign="center" 
+                                     multipleRows="true">
+                   <!-- <lightning:layout multipleRows="true"> -->
+                        <aura:iteration items="{!v.listOfFields}" var="field">
+                          <!--  <lightning:layoutItem size="12" mediumDeviceSize="12" padding="around-small"> -->
+                                <lightning:layoutItem flexibility="auto" size="6" smallDeviceSize="12" mediumDeviceSize="6" largeDeviceSize="6">
+                                    <aura:if  isTrue="{!field.name !='buildertek__Account__c'}" >     
+                                         <lightning:inputField fieldName="{!field.name}"  />
+                                      <!--  <lightning:inputField fieldName="{! field.name }" required="{!field.Required}" />  -->
+                                        <aura:set attribute="else"> 
+                                            <aura:if  isTrue="{!field.name =='buildertek__Account__c'}" >                                            
+                                                <lightning:inputField fieldName="{! field.name }" aura:id="account"  value = "{!v.parentRecordId}"  disabled="{!v.isdisabled}" />
+                                            </aura:if>
+                                        </aura:set>
+                                    </aura:if>
+                                   <!-- <aura:if isTrue="{!and(field.name=='buildertek__Project__c',v.parentRecordId)}">
+                                         <lightning:inputField fieldName="{!field.name}" value="{!v.parentRecordId}" />
+                                        <aura:set attribute="else">
+                                            <lightning:inputField fieldName="{!field.name}"  value="{!if(field.name=='buildertek__Start_Time__c',v.todayDateTime,if(field.name=='buildertek__Entry_Date__c',v.todayDateTime,null))}" />
+                                        </aura:set>
+                                    </aura:if> -->
+                                    
+                            	</lightning:layoutItem>
+                                            <p></p>
+                <p></p>
+
+                        </aura:iteration>
+                    </lightning:layout>
+                    <footer aura:id="footer" class="slds-modal__footer">
+                        <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{! c.closeModel }" />
+                        <!-- <lightning:button variant="neutral" title="Save &amp; New" label="Save &amp; New"
+                            onclick="{!c.saveAndNew}" /> -->
+                        <lightning:button variant="brand" type="submit" name="save" label="Save" />
+                    </footer>
+                </lightning:recordEditForm>
+            </div>
+        </div>
+    </section>
+    </aura:if>
+
+    <aura:if isTrue="{!v.isLoading}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+            </div>
+        </div>
+    </aura:if>
+
+    
+</aura:component>

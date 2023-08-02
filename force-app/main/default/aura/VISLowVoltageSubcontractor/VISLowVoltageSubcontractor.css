@@ -1,0 +1,44 @@
+.THIS .inputText {
+    text-align: right;
+}
+.THIS .page1 {
+    position:relative;
+}
+.THIS .innertext {
+  color: #101010;
+    font-size:20px;
+    padding-top : 15px;
+    
+}
+.THIS .vertical-center {
+  margin: 0;
+  position: absolute;
+  
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+.THIS .label-hidden > label {
+    display: none;
+}
+.THIS .myclass {
+
+border-bottom: 1px solid;
+
+}
+.THIS .myUniqueClass svg {
+width: .75rem;
+height: .75rem;
+fill:red;
+
+}
+.THIS .custom-loading-text {
+    transform: rotate(-90deg);
+    position: absolute;
+    top: -0.5rem;
+    left: 1rem;
+    white-space: nowrap;
+    font-size: 20px;
+}
+.THIS .changetoerror {
+    border-color: red;
+}

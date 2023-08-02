@@ -1,0 +1,4 @@
+<apex:page >
+    <c:QuoteGroupFromBom relatedTo_id="a081K00000yiUCMQA2" querystringfields="Name,buildertek__Quantity__c,buildertek__Net_Unit__c,buildertek__Net_Total_Price__c" />
+    <!-- <c:QuoteGroupFromBom relatedTo_id="{!relatedTo.id}" querystringfields="Name,buildertek__Quantity__c,buildertek__Net_Unit__c,buildertek__Net_Total_Price__c" /> -->
+</apex:page>

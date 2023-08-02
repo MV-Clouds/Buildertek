@@ -1,0 +1,12 @@
+<aura:component controller="InvoicesForCustomersController" 
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,lightning:actionOverride,force:lightningQuickActionWithoutHeader" access="global">
+	<aura:attribute name="AccountId" type="String" default="0014100000wa3tEAAQ"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <lightning:workspaceAPI aura:id="workspace" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+    <lightning:card aura:id="lightCard" class="slds-card_boundary slds-page-header" title="Invoices(AP)">
+       
+    </lightning:card>
+    
+</aura:component>

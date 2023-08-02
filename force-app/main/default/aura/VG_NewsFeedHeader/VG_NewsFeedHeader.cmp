@@ -1,0 +1,7 @@
+<aura:component access="global" implements="forceCommunity:availableForAllPageTypes,force:appHostable,flexipage:availableForAllPageTypes">
+	
+    
+    <h2 class="slds-truncate slds-text-heading--small slds-p-left_small slds-p-right_small slds-p-top_small bottom_none" style="font-family:Gotham-Bold;font-size:16px">News Feed
+    <span style=" float: right;"><a style="test-decoration:none;color:#F06C5C;font-family:gotham-medium;font-size:14px" href="https://view.com/company/newsroom" >View All</a></span></h2>
+    
+</aura:component>

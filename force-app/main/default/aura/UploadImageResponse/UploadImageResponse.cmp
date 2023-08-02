@@ -1,0 +1,70 @@
+<aura:component controller="ImageUploadService" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >  
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="readResults" type="List" />
+    <aura:attribute name="pageResults" type="List" />
+    <aura:attribute name="Spinner" type="boolean" default="false"/>
+    <ltng:require styles="{!$Resource.ModalPreviewCSS}"/>
+    <div class="slds">
+        <lightning:notificationsLibrary aura:id="notifLib"/>
+        <div class="contentbox">
+            <div class="slds-page-header header">Image Response</div>
+            <table class="slds-table">
+                <thead>
+                    <tr>
+                        <th>
+                            Read Results
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                	<aura:iteration items="{!v.readResults}" var="item">
+                        <aura:iteration items="{!item.lines}" var="rec">
+                            <tr>
+                            	<td>
+                                    {!rec.text}
+                                </td>
+                        	</tr>
+                        </aura:iteration>                    	    
+                    </aura:iteration>    
+                </tbody>
+            </table><br/>
+            <aura:iteration items="{!v.pageResults}" var="page" indexVar="pageNumber">
+                <aura:if isTrue="{!page.page == pageNumber + 1}">
+                    <aura:iteration items="{!page.tables}" var="table">
+                        <table>
+                            <aura:iteration items="{!table.rowsList}" var="rows">
+                                <tr>
+                                    <aura:iteration items="{!table.columnsList}" var="cols">
+                                        <aura:iteration items="{!table.cells}" var="cells">
+                                            <aura:if isTrue="{!cells.columnIndex == cols.columnNumber &amp;&amp; cells.rowIndex == cols.rowNumber &amp;&amp; rows.rowNumber == cols.rowNumber}" >
+                                                <td>
+                                                    {!cells.text}
+                                                </td>
+                                            </aura:if>
+                                        </aura:iteration>
+                                    </aura:iteration>
+                                </tr>
+                            </aura:iteration>	
+                        </table>
+                        <br/>
+                    </aura:iteration>
+                </aura:if>
+            </aura:iteration>
+            <aura:if isTrue="{!v.Spinner}">
+                <div class="slds-spinner_container">
+                    <div class="slds-spinner slds-spinner--medium" aria-hidden="false" role="alert">
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                        
+
+
+<div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+                        
+                    </div>
+                </div>
+            </aura:if>
+        </div>
+    </div>
+</aura:component>

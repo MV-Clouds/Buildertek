@@ -1,0 +1,5 @@
+<design:component >
+<design:attribute name="tileStyle" label="Tile Style" datasource="small" description="Type of style: small" />
+<design:attribute name="includePreview" label="Include Preview Content?" description="display Preview components"/>    
+<design:attribute name="siteName" label="Site Name" description="Site Name"/>  
+</design:component>

@@ -1,0 +1,65 @@
+.THIS a:hover {
+    text-decoration: none;
+}
+
+.THIS a:focus {
+    outline: none;
+    outline-offset: 0;
+    text-decoration: none;
+}
+
+.THIS .slds-gutters .slds-col {
+    padding: 0px !important;
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+
+}
+
+.THIS .table>tbody>tr>td,
+.THIS .table>tbody>tr>th,
+.THIS .table>tfoot>tr>td,
+.THIS .table>tfoot>tr>th,
+.THIS .table>thead>tr>td,
+.THIS .table>thead>tr>th {
+    line-height: 1.5;
+    vertical-align: middle;
+    border-bottom: 1px solid #ddd;
+}
+
+
+.THIS .awardIcon1 {
+    margin: 5px;
+    width: 2rem;
+    height: 2rem;
+}
+
+.THIS .awardIcon1 svg {
+    fill: white !important;
+    color: #337ab7 !important;
+    width: 2rem;
+    height: 2rem;
+}
+
+.THIS .awardIcon1:hover svg {
+    fill: #1b5297 !important;
+    width: 2.2rem;
+    height: 2.2rem;
+}
+
+.THIS .awardedIcon {
+    border-radius: 50%;
+    width: 2.5rem;
+    height: 2.5rem;
+}
+
+.THIS .awardedIcon svg {
+    color: white !important;
+    width: 2.5rem;
+    height: 2.5rem;
+}
+
+.THIS .awardedIcon:hover svg {
+    fill: white !important;
+    width: 2.5rem;
+    height: 2.5rem;
+}

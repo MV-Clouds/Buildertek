@@ -1,0 +1,2 @@
+<aura:event type="COMPONENT" description="Clear data from Parent comp">
+    </aura:event>

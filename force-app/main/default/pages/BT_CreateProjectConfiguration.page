@@ -1,0 +1,14 @@
+<apex:page controller="BT_ProjectConfiguration" sidebar="false" lightningStylesheets="true">
+    <apex:slds />
+    <apex:form >
+        <apex:pageBlock mode="maindetail">
+            <apex:pageMessages />
+            <apex:pageblocksection >
+                <apex:inputcheckbox value="{!isCreateChangeOrderonOverage}" label="Retreive Aerial Photo of project?">
+                </apex:inputcheckbox> 
+                <apex:inputtext value="{!apikey}" label="Google Map API Key"/>
+                <apex:commandButton value="Save" id="onCreateChangeOrderonOverage" styleClass="slds-button slds-button_brand" action="{!onCreateChangeOrderonOverage}"></apex:commandButton>
+            </apex:pageblocksection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

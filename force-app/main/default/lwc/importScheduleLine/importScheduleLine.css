@@ -1,0 +1,30 @@
+.custom-loading-text {
+    transform: rotate(-90deg);
+    position: absolute;
+    top: -0.5rem;
+    left: 1rem;
+    white-space: nowrap;
+    font-size: 20px;
+}
+
+.download {
+    margin-left: 14%;
+    background-color: #3a84d8;
+    color: white;
+    padding: 5px;
+}
+
+.import {
+    width: 70px;
+    padding-left: 10px;
+    background-color: #3a84d8;
+    color: white;
+}
+
+.cancel {
+    background-color: white;
+    border: #ccc;
+    color: #3a84d8;
+    width: 70px;
+    padding-left: 10px;
+}

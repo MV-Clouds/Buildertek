@@ -1,0 +1,4 @@
+<aura:event type="COMPONENT" description="Event template">
+	<aura:attribute name="id" type="object" description="RFQ To Vendor Id"/>
+	<aura:attribute name="status" type="String" description="Status to update"/>
+</aura:event>

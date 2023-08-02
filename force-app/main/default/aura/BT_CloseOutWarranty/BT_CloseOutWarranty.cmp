@@ -1,0 +1,51 @@
+<aura:component implements="force:hasRecordId,force:lightningQuickActionWithoutHeader,lightning:actionOverride"
+    access="global" controller="CloseOutWarranty">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="recordId" type="String" default="" />
+    <aura:attribute name="warrantyvalue" type="String" default="" />
+    <aura:attribute name="iswarranty" type="boolean" default="false" />
+    <aura:attribute name="islocked" type="boolean" default="false" />
+    <aura:attribute name="isnextwarrantyLocked" type="boolean" default="false" />
+    
+     <lightning:workspaceAPI aura:id="workspace" />
+    
+    <aura:if isTrue="{!v.islocked}">
+        <div class="" >
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                <p><center style=" font-size: medium ">You cannot edit this Record because Warranty is Locked</center>
+                </p>
+            </div>
+            <br/>
+        </div>
+        
+    </aura:if>
+    <aura:if isTrue="{!v.isnextwarrantyLocked}">
+        <div class="" >
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                <p><center style=" font-size: medium ">You cannot Move Warranty Items to Next Warranty because Next Warranty is Locked</center>
+                </p>
+            </div>
+            <br/>
+        </div>
+        
+    </aura:if>
+    <aura:if isTrue="{!v.iswarranty}">
+        <div class="" >
+            <header class="slds-modal__header">
+                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">
+                </h2>
+            </header>
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                <p><center style=" font-size: medium ">You are closing out the Warranty with Open Warranty Items. By closing out this Warranty you are agreeing that all Warranty Items are closed.</center>
+                </p>
+            </div>
+            <br/>
+            <footer class="slds-modal__footer">
+                <lightning:button variant="neutral" title="No" label="No" onclick="{! c.closeModel }" />
+                <lightning:button variant="brand" title="Yes" label="Yes"
+                                  onclick="{!c.updatewarranty}" />
+            </footer>
+        </div>
+        
+    </aura:if>
+</aura:component>

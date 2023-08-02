@@ -1,0 +1,16 @@
+<!-- 
+	Lightning Componnet: To handle rendering of SVG Icons.
+-->
+<aura:component access="global" >
+  <aura:attribute name="svgPath"        default="" type="String" description="Path of icon from static resources" access="global"/>
+  <aura:attribute name="name"           default="" type="String" description="Icon name" access="global"/>
+  <aura:attribute name="class"          default="" type="String" description="Class of svg tag" access="global"/>
+  <aura:attribute name="containerClass" default="" type="String" description="Container class name" access="global"/>
+  <aura:attribute name="category"       default="" type="String" description="Category of icon" access="global"/>
+  <aura:attribute name="size"           default="" type="String" description="Size of icon" access="global"/>
+  <aura:attribute name="assistiveText"  default="" type="String" description="Description name" access="global"/>
+  <aura:attribute name="aria-hidden" default="" type="Boolean" access="global"/>
+  <span aura:id="container" class="{!v.containerClass}">
+    <span aura:id="assistiveText" class="slds-assistive-text">{!v.assistiveText}</span>
+  </span>
+</aura:component>

@@ -1,0 +1,95 @@
+<aura:component controller="MasterQuoteItemDAO" implements="force:hasRecordId,force:lightningQuickActionWithoutHeader,lightning:actionOverride" access="global">
+   <aura:attribute name="onSuccess" type="Object"/>
+	<aura:attribute name="onCancel" type="Object"/>
+    <aura:attribute name="mainObjectFieldAPI" type="string" />
+    <aura:attribute name="mainObjectId" type="string" />
+    <aura:attribute name="Spinner" type="Boolean" />
+    <aura:attribute name="selectedCostCode" type="sObject"/>
+    <aura:attribute name="selectedTradeType" type="sObject"/>
+    <aura:attribute name="selectedAccount" type="sObject"/> 
+    <aura:attribute name="selectedMasterBudget" type="sObject"/>
+    <aura:attribute name="selectedGroup" type="sObject"/>
+    <aura:attribute name="selectedLookUpRecord" type="string" /> 
+    <aura:attribute name="pricebookoptions" type="List"/>
+    <aura:attribute name="pricebookName" type="string"/>
+    <aura:attribute name="productId" type="string"/>
+    <aura:attribute name="productName" type="string"/>
+    <aura:attribute name="masterQuoteId" type="string"/>
+    <aura:attribute name="clearLookupValue" type="Aura.Action" />
+    <aura:attribute name="newQuoteItem" type="Master_Quote_Item__c" default="{ 'sobjectType': 'Master_Quote_Item__c'}" access="global"/>
+    <aura:handler name="oSelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.handleComponentEvent}"/>
+	<aura:handler name="SelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.handleComponentEvents}"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+   
+    <ltng:require styles="{!$Resource.ModalPreview62moreMedia}"/> 
+    <lightning:notificationsLibrary aura:id="notifLib"/>
+    <div aura:id="coContainer" class="c-container">
+        <h3 class="slds-section__title slds-theme--shade primaryPaletteBorder test-id__section-header-container">
+    		<span class="test-id__section-header-title section-header-title slds-p-horizontal--small slds-truncate">Information</span>
+    	</h3>
+        <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__Master_Quote_Item__c">
+                            	<lightning:layout multipleRows="true" >
+                            		<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                            		    <label>Product</label>
+                            			<c:BT_LightningLookup aura:id="productId" objectAPIName="Product2" IconName="standard:product" selectedRecord="{!v.selectedLookUpRecord}" parentId="{! v.pricebookName }"/>
+                            		</lightning:layoutItem>
+                            		<!-- <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                            		    <label>Master Quote</label>
+                            		    <c:customLookup aura:id="MQId" objectAPIName="buildertek__Master_Quote__c" IconName="custom:custom18" selectedRecord="{!v.selectedMasterQuote}" />	
+                            		    <div aura:id="errorId" style="display: none;">
+                            		        <h2>Complete this field</h2>    
+                            		    </div>
+                            		</lightning:layoutItem> -->
+                                    	<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                            		    <label>Group</label>
+                            		    <c:customLookup aura:id="groupId" objectAPIName="buildertek__Quote_Line_Group__c" IconName="custom:custom18" selectedRecord="{!v.selectedGroup}" />	
+                            		</lightning:layoutItem>
+                            		<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                            		    <lightning:input aura:id="NameId" type="text" value="{!v.newQuoteItem.buildertek__Master_Quote_Item_Name__c}" label="Quote Item Name" autocomplete="off"/>
+                            		</lightning:layoutItem>
+                            		
+                                    <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                            		    <label>Cost Code</label>
+                            		    <c:customLookup aura:id="costCodeId" objectAPIName="buildertek__Cost_Codes__c" IconName="custom:custom18" selectedRecord="{!v.selectedCostCode}" />	
+                            		</lightning:layoutItem>
+                                    
+                            		<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                            			<lightning:input aura:id="quantityId" type="number" value="{!v.newQuoteItem.buildertek__Quantity__c}" label="Quantity" autocomplete="off"/>
+                            		</lightning:layoutItem>
+                            		
+                                      <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                            		    <label>Vendor</label>
+                            			<c:customLookup aura:id="accountId" objectAPIName="Account" IconName="standard:account" selectedRecord="{!v.selectedAccount}" />
+                            		</lightning:layoutItem>
+                                    
+                            		<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                            			<lightning:input type="number" formatter="currency" aura:id="unitPriceId" value="{!v.newQuoteItem.buildertek__Unit_Price__c}" label="Unit Price" autocomplete="off" step="0.01" />
+                            		</lightning:layoutItem>
+                          
+                            		<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                            		    
+                            		</lightning:layoutItem>
+                            	</lightning:layout>
+                        	</lightning:recordEditForm>
+                        
+            <aura:if isTrue="{!v.Spinner}">
+    		<div aura:id="spinnerId" class="slds-spinner_container">
+    		   <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+    			 <span class="slds-assistive-text">Loading</span>
+    			 <div class="slds-spinner__dot-a"></div>
+    			 <div class="slds-spinner__dot-b"></div>
+                   <div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+    		   </div>
+    		</div>    
+    	</aura:if>
+    </div>  
+    <div class="slds-hide">
+	    <div aura:id="footer">
+    		<button class="slds-button slds-button_neutral" onclick="{!c.doCancel}">Cancel</button>
+    		<button class="slds-button slds-button_neutral" onclick="{!c.doSaveAndNew}">Save &amp; New</button>
+    		<button class="slds-button slds-button_brand" onclick="{!c.doSave}">Save</button>
+    	</div>
+    </div>
+</aura:component>

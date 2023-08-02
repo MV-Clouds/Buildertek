@@ -1,0 +1,14 @@
+<apex:page controller="PreQualProcessController" showHeader="false" sidebar="false">
+    <apex:includeLightning />
+    <div id="lightning" />
+    <script>
+    
+        $Lightning.use("buildertek:Pre_QualProcessApp", function() {
+            $Lightning.createComponent("buildertek:Pre_QualForm",
+            {isPreview : '{!isPreview}', RecordId : '{!recordId}', documentURL : '{!documentURL}'},                          
+            "lightning",
+             function(cmp) {
+             });
+        });        
+      </script>
+</apex:page>

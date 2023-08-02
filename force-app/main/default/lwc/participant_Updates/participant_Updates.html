@@ -1,0 +1,854 @@
+<template>   
+    <template if:true={isModalOpen}>
+        <!-- Modal/Popup Box LWC starts here -->
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open" >
+            <div class="slds-modal__container" >
+                <!-- Modal/Popup Box LWC header here -->
+                <header class="slds-modal__header ">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeModal}>
+                        <lightning-icon icon-name="utility:close"
+                            alternative-text="close"
+                            variant="inverse"
+                            size="small" ></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Resend email to <b>{pname}</b></h2>
+                </header>
+                <!-- Modal/Popup Box LWC body starts here -->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1"  >
+                    <lightning-radio-group name="radioGroup"
+                    label="Email Options"
+                    options={options}
+                    value={value}
+                    onchange={handleOptions}
+                    type="radio" style="margin-left:200px;line-height: 3;cursor: pointer;"></lightning-radio-group>
+
+                        
+                </div>
+                <!-- Modal/Popup Box LWC footer starts here -->
+                <footer class="slds-modal__footer">
+                <lightning-button variant="brand" label="Cancel" title="Cancel" onclick={closeModal} class="slds-m-left_x-small"></lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+
+
+
+        <template if:true={NoRecordsToDeleteModel}>
+            <!-- Modal/Popup Box LWC starts here -->
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open" >
+                <div class="slds-modal__container" >
+                    <!-- Modal/Popup Box LWC header here -->
+                    <header class="slds-modal__header slds-box slds-theme_shade slds-theme_alert-texture slds-theme_error">
+                        <p style="font-size:large;">Delete participant from course</p> 
+                        
+                    </header>
+                    <!-- Modal/Popup Box LWC body starts here -->
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-14"  >
+                        <p style="font-size:medium;padding:10px;">Please select records to delete.</p>
+                    </div>
+                    <!-- Modal/Popup Box LWC footer starts here -->
+                    <footer class="slds-modal__footer">
+                        <lightning-button variant="brand" label="Ok" title="Ok" access-key={index} id={index} onclick={closeModal} class="slds-m-left_x-small"></lightning-button>
+                    <lightning-button variant="brand" label="Cancel" title="Cancel" onclick={closeModal} class="slds-m-left_x-small"></lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+
+        <template if:true={isMassdeleteModalOpen}>
+            <!-- Modal/Popup Box LWC starts here -->
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open" >
+                <div class="slds-modal__container" >
+                    <!-- Modal/Popup Box LWC header here -->
+                    <header class="slds-modal__header slds-box slds-theme_shade slds-theme_alert-texture slds-theme_error">
+                        <p style="font-size:large;">Delete participant(s) from course</p> 
+                        
+                    </header>
+                    <!-- Modal/Popup Box LWC body starts here -->
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-13"  >
+                        <p style="font-size:medium;padding:10px;">Are you sure you want to delete selected participants from this course?</p>
+                    </div>
+                    <!-- Modal/Popup Box LWC footer starts here -->
+                    <footer class="slds-modal__footer">
+                        <lightning-button variant="brand" label="Yes" title="Cancel" access-key={index} id={index} onclick={MassdeleteRow} class="slds-m-left_x-small"></lightning-button>
+                    <lightning-button variant="brand" label="No" title="Cancel" onclick={closeModal} class="slds-m-left_x-small"></lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+
+        <template if:true={isMassEmailModalOpen}>
+            <!-- Modal/Popup Box LWC starts here -->
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open" >
+                <div class="slds-modal__container" >
+                    <!-- Modal/Popup Box LWC header here -->
+                    <header class="slds-modal__header slds-box slds-theme_shade slds-theme_alert-texture slds-theme_error">
+                        <p style="font-size:large;">Delete participant from course</p> 
+                        
+                    </header>
+                    <!-- Modal/Popup Box LWC body starts here -->
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-16"  >
+                        <p style="font-size:medium;padding:10px;">Are you sure you want to delete selected participants from this course?</p>
+                    </div>
+                    <!-- Modal/Popup Box LWC footer starts here -->
+                    <footer class="slds-modal__footer">
+                        <lightning-button variant="brand" label="Yes" title="Cancel" access-key={index} id={index} onclick={MassdeleteRow} class="slds-m-left_x-small"></lightning-button>
+                    <lightning-button variant="brand" label="No" title="Cancel" onclick={closeModal} class="slds-m-left_x-small"></lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>        
+
+        <template if:true={NoRecordsToMassEmailModel}>
+            <!-- Modal/Popup Box LWC starts here -->
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open" >
+                <div class="slds-modal__container" >
+                    <!-- Modal/Popup Box LWC header here -->
+                    <header class="slds-modal__header slds-box slds-theme_shade slds-theme_alert-texture slds-theme_error">
+                        <p style="font-size:large;">Send mass email to participants</p> 
+                        
+                    </header>
+                    <!-- Modal/Popup Box LWC body starts here -->
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-17"  >
+                        <p style="font-size:medium;padding:10px;">Please select records to send mass email.</p>
+                    </div>
+                    <!-- Modal/Popup Box LWC footer starts here -->
+                    <footer class="slds-modal__footer">
+                        <lightning-button variant="brand" label="Ok" title="Ok" access-key={index} id={index} onclick={closeModal} class="slds-m-left_x-small"></lightning-button>
+                    <lightning-button variant="brand" label="Cancel" title="Cancel" onclick={closeModal} class="slds-m-left_x-small"></lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+
+
+        <template if:true={isResendMassEmailModalOpen}>
+            <!-- Modal/Popup Box LWC starts here -->
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open" >
+                <div class="slds-modal__container" >
+                    <!-- Modal/Popup Box LWC header here -->
+                    <header class="slds-modal__header ">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeModal}>
+                            <lightning-icon icon-name="utility:close"
+                                alternative-text="close"
+                                variant="inverse"
+                                size="small" ></lightning-icon>
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 id="modal-heading-017" class="slds-text-heading_medium slds-hyphenate">Resend Email to selected participants</b></h2>
+                    </header>
+                    <!-- Modal/Popup Box LWC body starts here -->
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-18"  >
+                        <lightning-radio-group name="radioGroup"
+                        label="Email Option"
+                        options={options}
+                        value={value}
+                        onchange={handleMassEmailOptions}
+                        type="radio" style="margin-left:200px;line-height: 3;cursor: pointer;"></lightning-radio-group>
+    
+                            
+                    </div>
+                    <!-- Modal/Popup Box LWC footer starts here -->
+                    <footer class="slds-modal__footer">
+                    <lightning-button variant="brand" label="Cancel" title="Cancel" onclick={closeModal} class="slds-m-left_x-small"></lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+    
+        <template if:true={isMassRegistraitonModalOpen}>
+            <!-- Modal/Popup Box LWC starts here -->
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open" >
+                <div class="slds-modal__container" >
+                    <!-- Modal/Popup Box LWC header here -->
+                    <header class="slds-modal__header slds-box slds-theme_shade slds-theme_alert-texture slds-theme_error">
+                        <p style="font-size:large;">Resend mass emails!</p>  
+                        
+                    </header>
+                    <!-- Modal/Popup Box LWC body starts here -->
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-19"  >
+                        <p style="font-size:medium;padding:10px;">Are you sure you want to resend Registration Email to selected participants?</p>
+                    </div>
+                    <!-- Modal/Popup Box LWC footer starts here -->
+                    <footer class="slds-modal__footer">
+                        <lightning-button variant="brand" label="Yes" title="Cancel" access-key={index} id={index} onclick={sendMassRegistrationMail} class="slds-m-left_x-small"></lightning-button>
+                    <lightning-button variant="brand" label="No" title="Cancel" onclick={closeRegistrationModal} class="slds-m-left_x-small"></lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+
+
+        <template if:true={isMassCourseCompletionModalOpen}>
+            <!-- Modal/Popup Box LWC starts here -->
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open" >
+                <div class="slds-modal__container" >
+                    <!-- Modal/Popup Box LWC header here -->
+                    <header class="slds-modal__header slds-box slds-theme_shade slds-theme_alert-texture slds-theme_error">
+                        <p style="font-size:large;">Resend emails!</p>  
+                        
+                    </header>
+                    <!-- Modal/Popup Box LWC body starts here -->
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-20"  >
+                        <p style="font-size:medium;padding: 10px 4px;">Are you sure you want to resend Course Completion Email to selected participants?</p>
+                    </div>
+                    <!-- Modal/Popup Box LWC footer starts here -->
+                    <footer class="slds-modal__footer">
+                        <lightning-button variant="brand" label="Yes" title="Cancel" access-key={index} id={index} onclick={sendMassCourseCompletionMail} class="slds-m-left_x-small"></lightning-button>
+                    <lightning-button variant="brand" label="No" title="Cancel" onclick={closeCourseCompletionModal} class="slds-m-left_x-small"></lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+
+
+        <template if:true={isMassRegistraitonCompletionModalOpen}>
+            <!-- Modal/Popup Box LWC starts here -->
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open" >
+                <div class="slds-modal__container" >
+                    <!-- Modal/Popup Box LWC header here -->
+                    <header class="slds-modal__header slds-box slds-theme_shade slds-theme_alert-texture slds-theme_error">
+                        <p style="font-size:large;">Resend emails!</p>  
+                    </header>
+                    <!-- Modal/Popup Box LWC body starts here -->
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-21"  >
+                        <p style="font-size:medium;padding:10px;">Are you sure you want to resend Registration Completion Email to selected participants?</p>
+                    </div>
+                    <!-- Modal/Popup Box LWC footer starts here -->
+                    <footer class="slds-modal__footer">
+                        <lightning-button variant="brand" label="Yes" title="Cancel" access-key={index} id={index} onclick={sendMassRegistrationCompletionMail} class="slds-m-left_x-small"></lightning-button>
+                    <lightning-button variant="brand" label="No" title="Cancel" onclick={closeRegistrationCompletionModal} class="slds-m-left_x-small"></lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+
+    
+        <template if:true={isdeleteModalOpen}>
+            <!-- Modal/Popup Box LWC starts here -->
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open" >
+                <div class="slds-modal__container" >
+                    <!-- Modal/Popup Box LWC header here -->
+                    <header class="slds-modal__header slds-box slds-theme_shade slds-theme_alert-texture slds-theme_error">
+                        <p style="font-size:large;">Delete participant from course</p> 
+                        
+                    </header>
+                    <!-- Modal/Popup Box LWC body starts here -->
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-2"  >
+                        <p style="font-size:medium;padding:10px;">Are you sure you want to remove <b>{pname}</b> from this <b>{courseName}</b> ?</p>
+                    </div>
+                    <!-- Modal/Popup Box LWC footer starts here -->
+                    <footer class="slds-modal__footer">
+                        <lightning-button variant="brand" label="Yes" title="Cancel" access-key={index} id={index} onclick={deleteRow} class="slds-m-left_x-small"></lightning-button>
+                    <lightning-button variant="brand" label="No" title="Cancel" onclick={closeModal} class="slds-m-left_x-small"></lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+            </template>
+            <template if:true={isRegistraitonModalOpen}>
+                <!-- Modal/Popup Box LWC starts here -->
+                <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open" >
+                    <div class="slds-modal__container" >
+                        <!-- Modal/Popup Box LWC header here -->
+                        <header class="slds-modal__header slds-box slds-theme_shade slds-theme_alert-texture slds-theme_error">
+                            <p style="font-size:large;">Resend emails!</p>  
+                            
+                        </header>
+                        <!-- Modal/Popup Box LWC body starts here -->
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-3"  >
+                            <p style="font-size:medium;padding:10px;">Are you sure you want to resend Registration Email to <b>{pname}</b> ?</p>
+                        </div>
+                        <!-- Modal/Popup Box LWC footer starts here -->
+                        <footer class="slds-modal__footer">
+                            <lightning-button variant="brand" label="Yes" title="Cancel" access-key={index} id={index} onclick={sendRegistrationMail} class="slds-m-left_x-small"></lightning-button>
+                        <lightning-button variant="brand" label="No" title="Cancel" onclick={closeRegistrationModalformail} class="slds-m-left_x-small"></lightning-button>
+                        </footer>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </template>
+
+
+                <template if:true={isCourseCompletionModalOpen}>
+                    <!-- Modal/Popup Box LWC starts here -->
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open" >
+                        <div class="slds-modal__container" >
+                            <!-- Modal/Popup Box LWC header here -->
+                            <header class="slds-modal__header slds-box slds-theme_shade slds-theme_alert-texture slds-theme_error">
+                                <p style="font-size:large;">Resend emails!</p>  
+                                
+                            </header>
+                            <!-- Modal/Popup Box LWC body starts here -->
+                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-4"  >
+                                <p style="font-size:medium;padding:10px;">Are you sure you want to resend Course Completion Email to <b>{pname}</b> ?</p>
+                            </div>
+                            <!-- Modal/Popup Box LWC footer starts here -->
+                            <footer class="slds-modal__footer">
+                                <lightning-button variant="brand" label="Yes" title="Cancel" access-key={index} id={index} onclick={sendCourseCompletionMail} class="slds-m-left_x-small"></lightning-button>
+                            <lightning-button variant="brand" label="No" title="Cancel" onclick={closeCourseCompletionModalformail} class="slds-m-left_x-small"></lightning-button>
+                            </footer>
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+                </template>
+                <template if:true={isMassCourseCompletionValidationModalOpen}>
+                    <!-- Modal/Popup Box LWC starts here -->
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open" >
+                        <div class="slds-modal__container" >
+                            <!-- Modal/Popup Box LWC header here -->
+                            <header class="slds-modal__header slds-box slds-theme_shade slds-theme_alert-texture slds-theme_error">
+                                <p style="font-size:large;">Course completion date validation!</p>  
+                                
+                            </header>
+                            <!-- Modal/Popup Box LWC body starts here -->
+                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-23"  >
+                                <p style="font-size:medium;padding:10px;">Some of the selected participants have no Completion Date. Please fill completion date and then send email</b></p>
+                            </div>
+                            <!-- Modal/Popup Box LWC footer starts here -->
+                            <footer class="slds-modal__footer">
+                                <lightning-button variant="brand" label="Ok" title="Cancel" onclick={closeAlert} class="slds-m-left_x-small"></lightning-button>
+                            </footer>
+                            
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+                </template>
+
+
+                <template if:true={isCourseCompletionValidationModalOpen}>
+                    <!-- Modal/Popup Box LWC starts here -->
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open" >
+                        <div class="slds-modal__container" >
+                            <!-- Modal/Popup Box LWC header here -->
+                            <header class="slds-modal__header slds-box slds-theme_shade slds-theme_alert-texture slds-theme_error">
+                                <p style="font-size:large;">{alterheader}</p>  
+                                
+                            </header>
+                            <!-- Modal/Popup Box LWC body starts here -->
+                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-22"  >
+                                <p style="font-size:medium;padding:10px;">{alertMessage} <b>{pname}</b>.</p>
+                            </div>
+                            <!-- Modal/Popup Box LWC footer starts here -->
+                            <footer class="slds-modal__footer">
+                                <lightning-button variant="brand" label="Ok" title="Cancel" onclick={closeAlert} class="slds-m-left_x-small"></lightning-button>
+                            </footer>
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+                </template>
+
+                <template if:true={isRegistraitonCompletionModalOpen}>
+                    <!-- Modal/Popup Box LWC starts here -->
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open" >
+                        <div class="slds-modal__container" >
+                            <!-- Modal/Popup Box LWC header here -->
+                            <header class="slds-modal__header slds-box slds-theme_shade slds-theme_alert-texture slds-theme_error">
+                                <p style="font-size:large;">Resend emails!</p>  
+                            </header>
+                            <!-- Modal/Popup Box LWC body starts here -->
+                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-5"  >
+                                <p style="font-size:medium;padding:10px;">Are you sure you want to resend Registration Completion Email to <b>{pname}</b> ?</p>
+                            </div>
+                            <!-- Modal/Popup Box LWC footer starts here -->
+                            <footer class="slds-modal__footer">
+                                <lightning-button variant="brand" label="Yes" title="Cancel" access-key={index} id={index} onclick={sendRegistrationCompletionMail} class="slds-m-left_x-small"></lightning-button>
+                            <lightning-button variant="brand" label="No" title="Cancel" onclick={closeRegistrationCompletionModalformail} class="slds-m-left_x-small"></lightning-button>
+                            </footer>
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+                </template>
+
+
+
+    <lightning-card>
+
+        <template if:true={updateMessage}>
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open" >
+                <div class="slds-modal__container" >
+                    <!-- Modal/Popup Box LWC header here -->
+                    <header class="slds-modal__header slds-box slds-theme_shade slds-theme_alert-texture slds-theme_success">
+                        <p style="font-size:large;">Participants updated successfully!</p>  
+                        
+                    </header>
+                    <!-- Modal/Popup Box LWC body starts here -->
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-10"  >
+                        <p style="font-size:medium;padding:10px;">{alertMessage}</p>
+                    </div>
+                    <!-- Modal/Popup Box LWC footer starts here -->
+                    <footer class="slds-modal__footer">
+                       
+                    <lightning-button variant="brand" label="Ok" title="Cancel" onclick={gotoCourseSessionPage} class="slds-m-left_x-small"></lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+                       </template>
+
+                       <template if:true={failupdateMessage}>
+                        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open" >
+                            <div class="slds-modal__container" >
+                                <!-- Modal/Popup Box LWC header here -->
+                                <header class="slds-modal__header slds-box slds-theme_shade slds-theme_alert-texture slds-theme_error">
+                                    <p style="font-size:large;">Participants update fail!</p>  
+                                    
+                                </header>
+                                <!-- Modal/Popup Box LWC body starts here -->
+                                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-11"  >
+                                    <p style="font-size:medium;padding:10px;">{alertMessage}</p>
+                                </div>
+                                <!-- Modal/Popup Box LWC footer starts here -->
+                                <footer class="slds-modal__footer">
+                                   
+                                <lightning-button variant="brand" label="Ok" title="Cancel" onclick={closeAlert} class="slds-m-left_x-small"></lightning-button>
+                                </footer>
+                            </div>
+                        </section>
+                        <div class="slds-backdrop slds-backdrop_open"></div>
+                                   </template>
+                                   <template if:true={noRecords}>
+                                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open" >
+                                        <div class="slds-modal__container" >
+                                            <!-- Modal/Popup Box LWC header here -->
+                                            <header class="slds-modal__header slds-box slds-theme_shade slds-theme_alert-texture slds-theme_error">
+                                                <p style="font-size:large;">No participants to update.</p>  
+                                                
+                                            </header>
+                                            <!-- Modal/Popup Box LWC body starts here -->
+                                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-12"  >
+                                                <p style="font-size:medium;padding:10px;">{alertMessage}</p>
+                                            </div>
+                                            <!-- Modal/Popup Box LWC footer starts here -->
+                                            <footer class="slds-modal__footer">
+                                               
+                                            <lightning-button variant="brand" label="Ok" title="Cancel" onclick={closeAlert} class="slds-m-left_x-small"></lightning-button>
+                                            </footer>
+                                        </div>
+                                    </section>
+                                    <div class="slds-backdrop slds-backdrop_open"></div>
+                                </template>
+
+        <template if:true={massdelsuccessMessage}>
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open" >
+                <div class="slds-modal__container" >
+                    <!-- Modal/Popup Box LWC header here -->
+                    <header class="slds-modal__header slds-box slds-theme_shade slds-theme_alert-texture slds-theme_error">
+                        <p style="font-size:large;">Deleted successfully!</p>  
+                        
+                    </header>
+                    <!-- Modal/Popup Box LWC body starts here -->
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-15"  >
+                        <p style="font-size:medium;padding:10px;">{alertMessage}</p>
+                    </div>
+                    <!-- Modal/Popup Box LWC footer starts here -->
+                    <footer class="slds-modal__footer">
+                        
+                    <lightning-button variant="brand" label="Ok" title="Cancel" onclick={closeMassDelSucessAlert} class="slds-m-left_x-small"></lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>                                
+        <template if:true={delsuccessMessage}>
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open" >
+                <div class="slds-modal__container" >
+                    <!-- Modal/Popup Box LWC header here -->
+                    <header class="slds-modal__header slds-box slds-theme_shade slds-theme_alert-texture slds-theme_error">
+                        <p style="font-size:large;">Deleted successfully!</p>  
+                        
+                    </header>
+                    <!-- Modal/Popup Box LWC body starts here -->
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-9"  >
+                        <p style="font-size:medium;padding:10px;">{alertMessage}</p>
+                    </div>
+                    <!-- Modal/Popup Box LWC footer starts here -->
+                    <footer class="slds-modal__footer">
+                       
+                    <lightning-button variant="brand" label="Ok" title="Cancel" onclick={closeAlert} class="slds-m-left_x-small"></lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+
+        <template if:true={successMessage}>
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open" >
+                <div class="slds-modal__container" >
+                    <!-- Modal/Popup Box LWC header here -->
+                    <header class="slds-modal__header slds-box slds-theme_shade slds-theme_alert-texture slds-theme_success">
+                        <p style="font-size:large;">Email sent successfully!</p>  
+                        
+                    </header>
+                    <!-- Modal/Popup Box LWC body starts here -->
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-6"  >
+                        <p style="font-size:medium;padding:10px;">{alertMessage}</p>
+                    </div>
+                    <!-- Modal/Popup Box LWC footer starts here -->
+                    <footer class="slds-modal__footer">
+                       
+                    <lightning-button variant="brand" label="Ok" title="Cancel" onclick={closeAlert} class="slds-m-left_x-small"></lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+            </template>
+
+            <template if:true={errorMessage}>
+                <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open" >
+                    <div class="slds-modal__container" >
+                        <!-- Modal/Popup Box LWC header here -->
+                        <header class="slds-modal__header slds-box slds-theme_shade slds-theme_alert-texture slds-theme_error">
+                            <p style="font-size:large;">Failed to resend email! </p>
+                            
+                        </header>
+                        <!-- Modal/Popup Box LWC body starts here -->
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-7"  >
+                            <p style="font-size:medium;padding:10px;">{alertMessage}</p>
+                        </div>
+                        <!-- Modal/Popup Box LWC footer starts here -->
+                        <footer class="slds-modal__footer">
+                           
+                        <lightning-button variant="brand" label="Ok" title="Cancel" onclick={closeAlert} class="slds-m-left_x-small"></lightning-button>
+                        </footer>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+
+        </template>
+
+
+    <div style="width:100%;">
+    <h3 slot="title">
+        <div>
+            &nbsp;&nbsp;&nbsp;            
+            <lightning-icon icon-name="standard:timesheet" alternative-text="Event" size="small"></lightning-icon>
+            &nbsp;Participant updates
+        </div>
+    </h3>
+
+    <br/>
+    <div style=" padding:5px;">
+        <lightning-layout multiple-rows="true" >
+            <lightning-layout-item size="6" style="position: relative;top:10px;" ><a href={url}>{coursrsessionName}</a></lightning-layout-item>
+            <lightning-layout-item size="6">
+                <div style="width: 100%;text-align:right;">
+                    <lightning-button label="Mass Delete" variant="brand" onclick={MassDelete}></lightning-button>&nbsp;&nbsp;&nbsp;
+                    <lightning-button label="Mass Email" variant="brand" onclick={MassEmail}></lightning-button>&nbsp;&nbsp;&nbsp;
+                    <lightning-button label="Update" variant="brand" onclick={handleSave}></lightning-button> &nbsp;&nbsp;&nbsp;  
+                    <lightning-button label="Cancel" variant="brand" onclick={navigateToCourseSessionPage}></lightning-button> 
+                </div>
+            </lightning-layout-item>
+        </lightning-layout>
+    </div>    
+    <div class="slds-table--header-fixed_container" style="width:100%;">
+        <div class="slds-scrollable_x " style="width:100%;">
+            <table class="slds-table slds-table_bordered  slds-table_cell-buffer" style="padding:10px;" >
+        <thead>                      
+            <!-- <tr>               
+                <th colspan="9"> <a href={url}>{coursrsessionName}</a> </th>
+                <th style="text-align: right;">                    
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <lightning-button label="Update" variant="brand" onclick={handleSave}></lightning-button> &nbsp;&nbsp;&nbsp;  
+                    <lightning-button label="Cancel" variant="brand" onclick={navigateToCourseSessionPage}></lightning-button> 
+                </th>
+            </tr> -->
+            <tr class="slds-line-height_reset">
+                <th   scope="col">
+                    <div class="slds-truncate">No</div>
+                </th>
+                <th  >
+                    <label class="slds-form-element__label">
+                        <abbr title="required" class="slds-required"></abbr>
+                        <lightning-input type="checkbox" name="selectAll"  checked= {isSelected} onchange={selectAllRecords} style="text-align:right;cursor: pointer;padding: 5px;"> </lightning-input>
+                    </label>
+                </th>
+                <th  >
+                    <label class="slds-form-element__label">
+                        <abbr title="required" class="slds-required"></abbr>
+                        <label class="slds-form-element__label textwrap" style="margin-left:10px;">Actions </label>
+                        
+                    </label>
+                </th>
+               
+                
+                <th  >
+                    <label class="slds-form-element__label">
+                        <abbr title="required" class="slds-required"></abbr>
+                        <label class="slds-form-element__label textwrap" style="margin-right: 0.5rem;">Participant Name </label>
+                    </label> 
+                </th>
+                <th >
+                    <label class="slds-form-element__label">
+                        <abbr title="required" class="slds-required"></abbr>
+                        <label class="slds-form-element__label textwrap" style="margin-right: 0.5rem;">Participant Company </label>
+                    </label> 
+                </th>
+                <th >
+                    <label class="slds-form-element__label">
+                        <abbr title="required" class="slds-required"></abbr>
+                        <label class="slds-form-element__label textwrap" style="margin-right: 0.5rem;">Title</label>
+                    </label> 
+                </th>
+                <th >
+                    <label class="slds-form-element__label">
+                        <abbr title="required" class="slds-required"></abbr>
+                        <label class="slds-form-element__label textwrap" style="margin-right: 0.5rem;">Participant Phone </label>
+                    </label> 
+                </th>
+                <th >
+                    <label class="slds-form-element__label">
+                        <abbr title="required" class="slds-required"></abbr>
+                        <label class="slds-form-element__label textwrap" style="margin-right: 0.5rem;">Participant Email </label>
+                    </label> 
+                </th>
+                <th  >
+                    <label class="slds-form-element__label">
+                        <abbr title="required" class="slds-required"></abbr>
+                        <label class="slds-form-element__label textwrap" style="margin-right: 0.5rem;">Participant Attended </label>
+                    </label> 
+                </th>
+                <th>
+                    <label class="slds-form-element__label">
+                        <abbr title="required" class="slds-required"></abbr>
+                        <label class="slds-form-element__label textwrap" style="margin-right: 0.5rem;">Is Participant Attending</label>
+                    </label> 
+                </th>
+                <th  >
+                    <label class="slds-form-element__label">
+                        <abbr title="required" class="slds-required"></abbr>
+                        <label class="slds-form-element__label textwrap" style="margin-right: 0.5rem;">Participant Skill Level </label>
+                    </label> 
+                </th> 
+                <th >
+                    <label class="slds-form-element__label">
+                        <abbr title="required" class="slds-required"></abbr>
+                        <label class="slds-form-element__label textwrap" style="margin-right: 0.5rem;">Participant Score </label>
+                    </label> 
+                </th>
+               
+                
+                
+                <!-- <th>
+                    <label class="slds-form-element__label">
+                        <abbr title="required" class="slds-required"></abbr>
+                        <label class="slds-form-element__label" style="margin-right: 0.5rem;">Training Expiration Date </label>
+                    </label> 
+                </th>-->
+                <th >
+                    <label class="slds-form-element__label">
+                        <abbr title="required" class="slds-required"></abbr>
+                        <label class="slds-form-element__label textwrap" style="margin-right: 0.5rem;">Course Completed </label>
+                    </label> 
+                </th >
+                <th  >
+                    <label class="slds-form-element__label">
+                        <abbr title="required" class="slds-required"></abbr>
+                        <label class="slds-form-element__label textwrap" style="margin-right: 0.5rem;">Course Completion Date </label>
+                    </label> 
+                </th>
+                <th>
+                    <label class="slds-form-element__label">
+                        <abbr title="required" class="slds-required"></abbr>
+                        <label class="slds-form-element__label textwrap" style="margin-right: 0.5rem;">Notes </label>
+                    </label> 
+                </th>
+                
+
+            </tr> 
+        </thead>
+        
+        <tbody>
+
+            <template for:each={ParticipantsWrapper} for:item = "rec" for:index="index" >
+                <tr key={rowIndex} class="slds-hint-parent">
+
+                    <td class="slds-size_5-of-10"> 
+                        <div>
+                            <label>{rec.RowNumber} </label> 
+                        </div>  
+                    </td>
+
+                    <td class="slds-size_5-of-10"> 
+                        <div style="width: 10px;margin-left:0px;cursor: pointer;">
+                            <lightning-input type="checkbox" name="input1" access-key={index} id={index} data-id="checkboxId" checked= {isChecked} onchange={checkboxvalues} style="cursor: pointer;padding: 5px;"> </lightning-input>
+                        </div>  
+                    </td>
+                    <td class="slds-size_5-of-10"> 
+                        <div style="width:30px;margin-left:0px;">
+                            <lightning-button icon-name="action:email" variant="base" access-key={index} id={index} 
+                            alternative-text="Email"  title="Email"
+                            onclick={openCreateContactModal} style="cursor: pointer;padding:5px;">
+                                </lightning-button>  
+                                <lightning-button icon-name="action:delete" variant="base" access-key={index} id={index} 
+                            alternative-text="Delete Row"  title="Delete Row"
+                            onclick={openDeletewarrningModel} style="cursor: pointer;padding:5px;" >
+                                </lightning-button>  
+                            
+                        </div>  
+                    </td>
+                    <td class="slds-size_5-of-10">  
+                        <div>
+                            <lightning-input name="ParticipantName" type="text" 
+                            access-key={index} id={index}
+                            value={rec.ParticipantName} read-only
+                            style="width:150px;"
+                            ></lightning-input>                              
+                        </div>                                                                        
+                    </td>
+                    <td class="slds-size_5-of-10">  
+                        <div>
+                            <lightning-input name="ParticipantCompany" type="text" 
+                            access-key={index} id={index}
+                            value={rec.ParticipantCompany} read-only
+                            style="width:150px;"
+                            ></lightning-input>                             
+                        </div>                                                                        
+                    </td>
+                    <td class="slds-size_5-of-10">  
+                        <div>
+                            <lightning-input name="ParticipantTitle" type="text" 
+                            access-key={index} id={index}
+                            value={rec.ParticipantTitle} onchange={ParticipantChangeHandler}  read-only
+                            style="width:150px;"
+                            ></lightning-input>
+                        </div>                                                                        
+                    </td>
+                    <td class="slds-size_5-of-10">  
+                        <div>
+                            <lightning-input name="ParticipantPhone" type="text" 
+                            access-key={index} id={index}
+                            value={rec.ParticipantPhone} onchange={ParticipantChangeHandler} read-only
+                            style="width:140px;"
+                            ></lightning-input>
+                        </div>                                                                        
+                    </td>
+                    <td class="slds-size_5-of-10">  
+                        <div>
+                            <lightning-input name="ParticipantEmail" type="text" 
+                            access-key={index} id={index}
+                            value={rec.ParticipantEmail} onchange={ParticipantChangeHandler}  read-only
+                            style="width:200px;"
+                            ></lightning-input>
+                        </div>                                                                        
+                    </td>
+                    <td class="slds-size_5-of-10">  
+                        <div>                       
+                            <lightning-combobox 
+                            name="ParticipantAttended" 
+                            access-key={index} id={index}
+                            options={YesNoOptions}
+                            onchange={ParticipantChangeHandler}
+                            value={rec.ParticipantAttended}
+                           
+                            >
+                            </lightning-combobox> 
+                        </div>                                                                        
+                    </td>
+                    <td class="slds-size_2-of-10">  
+                        
+                            <lightning-input name="IsParticipantAttend" type="text" 
+                            access-key={index} id={index} style="text-align:center;"
+                            value={rec.IsParticipantAttend} onchange={ParticipantChangeHandler}  readonly 
+                           
+                            ></lightning-input>
+                                                                                                
+                    </td>
+                     <td class="slds-size_5-of-8">  
+                        
+                            <lightning-dual-listbox 
+                            name="SkillLevel"
+                            label="Select Options"
+                            source-label="Available Options"
+                            selected-label="Selected Options"
+                            options={listOptions}
+                            value={rec.SkillLevel}        
+                            onchange={ParticipantChangeHandler} 
+                            access-key={index}
+                            disable-reordering="true"
+                            id={index}
+                           
+                            > 
+                        </lightning-dual-listbox>
+                                                     
+                                                                                              
+                    </td> 
+                    <td class="slds-size_5-of-10">  
+                        <div>
+                            <lightning-input name="ParticipantScore" type="text" 
+                            access-key={index} id={index}
+                            value={rec.ParticipantScore} onchange={ParticipantChangeHandler} 
+                            
+                            ></lightning-input>
+                        </div>                                                                        
+                    </td>
+                   
+                   
+                   
+                    <!-- <td class="slds-size_5-of-10">  
+                        <div>
+                            <lightning-input name="TrainingExpirationDate" type="date" 
+                            access-key={index} id={index}
+                            value={rec.TrainingExpirationDate} onchange={ParticipantChangeHandler} 
+                            ></lightning-input>
+                        </div>                                                                        
+                    </td>-->
+                    <td class="slds-size_5-of-10">  
+                        <div>                          
+                            <lightning-combobox 
+                            name="CourseCompleted" 
+                            access-key={index} id={index}
+                            options={YesNoOptions}
+                            onchange={ParticipantChangeHandler}
+                            value={rec.CourseCompleted}
+                            
+                            >
+                            </lightning-combobox>
+                        </div>                                                                        
+                    </td>
+                    <td class="slds-size_5-of-10">  
+                        <div>       
+                            <lightning-input name="CourseCompletionDate" type="date" 
+                            access-key={index} id={index}
+                            value={rec.CourseCompletionDate} onchange={ParticipantChangeHandler} 
+                            style="width:150px;"
+                            ></lightning-input>                                                
+                        </div>                                                                        
+                    </td>
+                    <td class="slds-size_5-of-10">  
+                        <div>
+                            <lightning-input name="Notes" type="text" 
+                            access-key={index} id={index} 
+                            value={rec.Notes} onchange={ParticipantChangeHandler} 
+                            style="width:200px"
+                            ></lightning-input>
+                        </div>                                                                        
+                    </td>
+                    
+                </tr> 
+            </template>  
+                                          
+        </tbody> 
+
+    </table>
+</div>
+</div>
+
+    </div>        
+
+
+    <br/>
+</lightning-card>        
+</template>

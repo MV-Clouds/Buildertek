@@ -1,0 +1,44 @@
+<aura:component controller="QuoteLinesController">
+    <aura:attribute name="sObjectName" type="String" />
+    <aura:attribute name="strMessage" type="String"/>
+    <aura:attribute name="strSearch" type="String"/>
+	<aura:attribute name="selectedRecord" type="object"/>
+    <aura:attribute name="listOfSearchRecords" type="object[]"/>
+    
+    <div aura:id="searchRes" class="slds-form-element slds-lookup slds-is-close" data-select="single" style="width:100% !important;">
+        <!--This part is for display search bar for lookup-->  
+        <div class="slds-form-element__control" style="width:100% !important;">
+            <div class="slds-input-has-icon slds-input-has-icon--right">
+                <lightning:icon class="slds-input__icon slds-show" iconName="utility:search" size="x-small" alternativeText="search"/> 
+                <!-- This markup is for when an record is selected -->
+                <div aura:id="lookup-pill" class="slds-pill-container slds-hide">
+                    <lightning:pill class="pillSize" label="{!v.selectedRecord.strName}" name="{!v.selectedRecord.strName}" onremove="{!c.clear}">
+                          <aura:set attribute="media">
+                          </aura:set>
+                    </lightning:pill>
+                </div>
+                
+                <div aura:id="lookupField" class="slds-show">
+                    <span class="slds-icon_container  slds-combobox__input-entity-icon" title="record">
+                        <span class="slds-assistive-text"></span>
+                    </span>
+                    <ui:inputText updateOn="keyup" keyup="{!c.keyPressController}" class="slds-lookup__search-input slds-input leftPaddingClass" value="{!v.strSearch}" placeholder="Search.." blur="{!c.onblur}" />
+                </div>   
+            </div>
+        </div>
+        <!--This part is for Display typehead lookup result List-->  
+        <ul style="min-height:40px;" class="slds-listbox slds-listbox_vertical slds-dropdown slds-dropdown_fluid slds-lookup__menu slds" role="listbox">
+            <lightning:spinner class="slds-hide" variant="brand" size="small" aura:id="mySpinner"/>
+            <center> {!v.strMessage}</center>
+            <aura:iteration items="{!v.listOfSearchRecords}" var="singleRec">
+                <li role="presentation" class="slds-listbox__item" onclick="{!c.selectRecord}" data-record="{!singleRec.strId}">
+                    <span id="listbox-option-unique-id-01" style="width: 100%;" class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta" role="option">
+                        <span class="slds-media__body">  
+                            <span class="slds-listbox__option-text slds-listbox__option-text_entity">{!singleRec.strName}</span>
+                        </span>
+                    </span>
+                </li>
+            </aura:iteration>
+        </ul>
+    </div>
+</aura:component>

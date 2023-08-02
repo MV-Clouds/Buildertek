@@ -1,0 +1,131 @@
+<!--**********************************************************************************
+* Copyright © 2017-2017, BuilderTek.
+* All rights reserved
+*
+* VisualForce Page: BT_FileDetail
+* Created by Sagar
+
+* - File detail with download history
+
+* - Modifications:
+* - Sagar - Initial 
+***********************************************************************************-->
+<apex:page controller="BT_FileDetailController" showHeader="false" title="{!$Label.buildertek__File_Download}" tabStyle="File__c">
+    <c:BT_JsAndCssIncludeComponent importJquery="true" importAppurinUtil="true" importJQueryLayout="false" importFancyTree="false"
+        importJqGrid="false" importEasyTooltip="false" importAppurinCss="true" importCkEditor="false" importGnattChart="false"
+        importLightningDesign="true" />
+
+
+    <script>
+        // Close the window if file downloaded.
+        j$(document).ready(function () {
+            if ({!!isShowMsg
+        }){
+            downloadFile();
+        }
+	    });
+        // function downloadFile() {
+        //     download();
+        // }
+        function cancel() {
+            window.close();
+            //var recordId = '{!id}';
+            // alert(recordId);
+            //sforce.one.navigateToSObject(recordId, "DETAIL");
+        	/*if(Appurin.lightning.isLightningExperience()){
+        	    alert('Lightning Exp');
+            	Appurin.lightning.back(true);
+            } else {
+                if(retURL != ''){
+                    window.open(retURL, '_self');
+                } else if(window.parent =! null){
+                    window.close();
+                }else{
+                    window.close();
+                }
+            }*/
+            //return false;
+        }
+
+        window.onload = onload();
+        function onload() {
+            //  loadData();
+        }
+    </script>
+
+    <apex:actionStatus id="splashStatus" onstart="startSplash();" onstop="endSplash();" />
+
+    <div class="slds">
+        <div id="splashDiv" class="apInitiallyDivDisplayNone" style="z-index:9998;">
+            <div class="slds-spinner_container apLightningSpinnerContainer">
+                <div role="status" class="slds-spinner slds-spinner--medium slds-spinner--brand">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <apex:form id="form">
+        <apex:actionFunction name="loadData" action="{!init}" />
+        <apex:actionFunction name="downloadFile" action="{!download}" rerender="form" onComplete="window.open('{!JSENCODE(fileDownloadURL)}', '_self');"
+        />
+        <apex:outputPanel layout="block" styleClass="slds">
+            <div style="background:#f4f6f9; padding:1rem;">
+                <div class="slds-panel slds-nowrap" style="background:#f4f6f9;">
+                    <div class="apLightningOneTile">
+                        <apex:outputPanel id="errorMessage" layout="block" rendered="{!isShowMsg}">
+                            <div style="padding:10px 0px 10px 0px;">
+                                <apex:outputLabel value="{!errMessage}"></apex:outputLabel>
+                                <apex:outputLabel value="{!$Label.buildertek__Close_Window_Message}"></apex:outputLabel>
+                            </div>
+                            <div>
+                                <apex:commandButton value="{!$Label.buildertek__Close}" style="width:100%; margin:0px !important;" styleClass="slds-button slds-button_neutral"
+                                    onClick="cancel(); return false;" />
+                            </div>
+                        </apex:outputPanel>
+                        <apex:outputPanel id="downloadindMessage" layout="block" rendered="{!!isShowMsg}">
+                            <div>
+                                <div style="padding:10px 0px 10px 0px;">
+                                    <apex:outputLabel value="{!$Label.buildertek__Downloading}"></apex:outputLabel>
+                                    <apex:outputLabel value="{!$Label.buildertek__Manual_File_Download_Message}"></apex:outputLabel>
+                                </div>
+                                <apex:outputPanel layout="block" styleClass="slds-form-element">
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                        <apex:outputLabel title="{!$ObjectType.File__c.fields.Name.inlineHelpText}" value="{!$ObjectType.File__c.fields.Name.label}"></apex:outputLabel>
+                                    </apex:outputPanel>
+                                    <c:BT_LightningHelpText rendered="{!$ObjectType.File__c.fields.Name.inlineHelpText != null}" helptext="{!$ObjectType.File__c.fields.Name.inlineHelpText}"
+                                    />
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                        <apex:outputLink value="/{!objFile.Id}">{!objFile.Name}</apex:outputLink>
+                                    </apex:outputPanel>
+                                </apex:outputPanel>
+                                <apex:outputPanel layout="block" styleClass="slds-form-element">
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                        <apex:outputLabel title="{!$ObjectType.File__c.fields.Size__c.inlineHelpText}" value="{!$ObjectType.File__c.fields.Size__c.label}"></apex:outputLabel>
+                                    </apex:outputPanel>
+                                    <c:BT_LightningHelpText rendered="{!$ObjectType.File__c.fields.Size__c.inlineHelpText != null}" helptext="{!$ObjectType.File__c.fields.Size__c.inlineHelpText}"
+                                    />
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                        <apex:outputField value="{!objFile.Size__c}" />
+                                    </apex:outputPanel>
+                                </apex:outputPanel>
+                            </div>
+                            <div>
+                                <apex:commandButton value="{!$Label.buildertek__Download}" styleClass="apLightningOneTileButton slds-button slds-button_brand"
+                                    onClick="downloadFile(); return false;" />
+                                <!--<button class="slds-button slds-button_neutral" onClick="cancel();">Close</button>-->
+                                <apex:commandButton value="{!$Label.buildertek__Close}" style="width:100%; margin:0px !important;" styleClass="slds-button slds-button_neutral"
+                                    onClick="cancel();return false;" />
+                            </div>
+                        </apex:outputPanel>
+                    </div>
+                </div>
+            </div>
+        </apex:outputPanel>
+    </apex:form>
+    <script>
+        j$("form[id$='form']").parent().css('background', '#f4f6f9');
+    </script>
+</apex:page>

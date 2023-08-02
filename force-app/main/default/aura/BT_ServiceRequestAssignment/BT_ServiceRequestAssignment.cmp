@@ -1,0 +1,124 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" controller="BTServiceRequestAssignment" access="global" >
+    <ltng:require styles="{!$Resource.BTjquery + '/jquery/css/ui-smoothness/jqgrid-ui-custom.min.css'}"
+                  scripts="{!join(',',$Resource.BTjquery + '/jquery/js/jquery-2.2.4.min.js',$Resource.BTjquery + '/jquery/js/jquery-ui-1.11.4.min.js')}"
+                  afterScriptsLoaded="{!c.scriptsLoaded}" />
+  
+    <aura:attribute name="recordList" type="sobject[]"/>
+    
+    <div class="slds-grid slds-wrap slds-box">
+        <div class="slds-size--1-of-1" >
+            <ui:message severity="info" closable="false">
+               
+                &nbsp;Drag and drop service request left to right
+            </ui:message>
+            <div style="float:right;margin-bottom: 10px">
+                <div class="slds-button-group" role="group">
+                    <span onclick="{!c.createNewServiceRecord}" class="slds-button slds-button_brand">
+                        
+                        New Service Request
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="slds-size--1-of-2"  style="padding-right: 1rem;">
+            <article class="forceBaseCard">
+                <div class="card-header">
+                    <h2 class="card-header-title">Un-Assigned Service Request</h2>
+                    <div class="card-header-right"></div>
+                </div>
+                <div class="card-body slds-scrollable--y">
+                    <div class="DivSai" >
+                        
+                    </div>
+                    
+                        <ul class="droptrue recentsRecordCardList homeRecentsRecordCardListView">
+                            <aura:iteration items="{!v.recordList}" var="obj">
+                            <li class="recentsRecordCardRow   newSR">
+                                <div class="template withIcon homeRecentsItemStencil">
+                                    <div class="iconContainer srNoTitle">
+                                        {!obj.Name}
+                                    </div>
+                                    <div class="primaryField truncate">
+                                        <div style="font-weight:bold;">{!obj.buildertek__Service_Request_Name__c}</div> <div style="font-weight:bold;"><span>{!obj.createdDate}</span></div>
+                                    </div>
+                                </div>
+                            </li>
+                                </aura:iteration>
+                        </ul>
+                    
+                </div>
+                <div class="card-footer"><a href="javascript:void(0);"><span class="viewAllLabel" >View All</span></a></div>
+            </article>
+        </div>
+        
+        <div class="slds-size--1-of-2">
+            <article class="forceBaseCard">
+                <div class="card-header">
+                    <h2 class="card-header-title">Assigned Service Requests</h2>
+                    <div class="card-header-right"></div>
+                </div>
+                <div class="card-body slds-scrollable--y">
+                    <div class="card-header-right userTitle">Sagar 1</div>
+                    <ul class="dropfalse recentsRecordCardList homeRecentsRecordCardListView newSR">
+                        <li class="recentsRecordCardRow   newSR">
+                            <div class="template withIcon homeRecentsItemStencil">
+                                <div class="iconContainer srNoTitle">
+                                    SR-0002
+                                </div>
+                                <div class="primaryField truncate">
+                                    <div >Email Supplier for Invoice</div> <div style="font-weight:bold;"><span id="j_id0:j_id3:j_id5:0:j_id7">12/3/2012 5:18 AM</span></div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                    
+                    <div class="card-header-right userTitle">Sagar 2</div>
+                    <ul class="dropfalse recentsRecordCardList homeRecentsRecordCardListView">
+                        <li class="recentsRecordCardRow  newSR">
+                            <div class="template withIcon homeRecentsItemStencil">
+                                <div class="iconContainer srNoTitle">
+                                    	SR-0005
+                                </div>
+                                <div class="primaryField truncate">
+                                    <div >Email Supplier for Invoice</div> <div style="font-weight:bold;"><span id="j_id0:j_id3:j_id5:0:j_id7">12/3/2012 5:18 AM</span></div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                    
+                    <div class="card-header-right userTitle">Sagar 3</div>
+                    <ul class="dropfalse recentsRecordCardList homeRecentsRecordCardListView newSR">
+                        <li class="recentsRecordCardRow  newSR">
+                            <div class="template withIcon homeRecentsItemStencil">
+                                <div class="iconContainer srNoTitle">
+                                    SR-0006
+                                </div>
+                                <div class="primaryField truncate">
+                                    <div >Email Supplier for Invoice</div> <div style="font-weight:bold;"><span id="j_id0:j_id3:j_id5:0:j_id7">12/3/2012 5:18 AM</span></div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                    
+                    <div class="card-header-right userTitle">Sagar 4</div>
+                    <ul class="dropfalse recentsRecordCardList homeRecentsRecordCardListView newSR">
+                        <li class="recentsRecordCardRow">
+                            <div class="template withIcon homeRecentsItemStencil">
+                                <div class="iconContainer srNoTitle">
+                                    SR-0009
+                                </div>
+                                <div class="primaryField truncate">
+                                    <div >Email Supplier for Invoice</div> <div style="font-weight:bold;"><span id="j_id0:j_id3:j_id5:0:j_id7">12/3/2012 5:18 AM</span></div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-footer" ><a href="javascript:void(0);"><span class="viewAllLabel" >View All</span></a></div>
+            </article>
+        </div>
+    </div>
+    <aura:handler name="init" value="{!this}" action="{!c.initialize}"/>
+    <aura:handler event="aura:waiting" action="{!c.showSpinner}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>
+</aura:component>

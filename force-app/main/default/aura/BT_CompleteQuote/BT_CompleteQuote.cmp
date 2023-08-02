@@ -1,0 +1,35 @@
+<aura:component controller="BT_CompleteQuoteController" implements="flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction,lightning:actionOverride" access="global">
+    <aura:attribute name="record" type="Object" />
+    <aura:attribute name="QuoteRecord" type="Object" />
+    <aura:attribute name="message" type="String" />
+    <aura:attribute name="type" type="String" />
+    <aura:attribute name="recordError" type="String" />
+    <aura:attribute name="status" type="String" />
+    <aura:attribute name="Spinner" type="boolean" default="false"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> 
+    
+    <force:recordData aura:id="record"
+                        layoutType="FULL"
+                        fields="buildertek__Status__c"
+                        recordId="{!v.recordId}"
+                        targetError="{!v.recordError}"
+                        targetRecord="{!v.record}"
+                        targetFields ="{!v.QuoteRecord}"/>
+    
+    <span class="slds-text-body–regular"> 
+        <aura:unescapedHtml value="{!v.message}"/>   
+    </span>   
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+           <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+             <span class="slds-assistive-text">Loading</span>
+             <div class="slds-spinner__dot-a"></div>
+             <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+                
+           </div>
+        </div>
+     </aura:if>
+</aura:component>

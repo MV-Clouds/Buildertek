@@ -1,0 +1,66 @@
+<aura:component implements="force:hasRecordId,force:lightningQuickActionWithoutHeader" controller="CloneMeetingController">
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="oldMeeting" type="Meeting__c" default="{ 'sobjectType': 'Meeting__c' }" access="public" />
+    <aura:attribute name="Spinner" type="Boolean" default="false" />
+
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
+
+    <div class="mainDiv">
+        <!-- ===Header=== -->
+        <div class="slds-modal__header">
+            <h4 class="title slds-text-heading--medium">
+                <ui:outputText value="New Meeting" />
+            </h4>
+        </div>
+
+        <!-- ===Start Main Content=== -->
+        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+            <!-- ====SPINNER==== -->
+            <aura:if isTrue="{!v.Spinner}">
+                <div aura:id="spinnerId" class="slds-spinner_container">
+                    <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                        <span class="slds-assistive-text">Loading</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                    </div>
+                </div>
+            </aura:if>
+            <lightning:spinner aura:id="spinner" variant="brand" class="slds-hide" />
+            <!-- ====SPINNER==== -->
+
+            <!-- === Start Input Field layout=== -->
+            <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__Meeting__c">
+                <div style="background-color: white;">
+
+                    <div class="slds-grid">
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning:inputField fieldName="buildertek__Subject__c" value="{!v.oldMeeting.buildertek__Subject__c}" />
+                            <lightning:inputField fieldName="buildertek__Meeting_Date__c" value="{!v.oldMeeting.buildertek__Meeting_Date__c}" />
+                            <lightning:inputField fieldName="buildertek__Status__c" value="{!v.oldMeeting.buildertek__Status__c}" />
+                            <lightning:inputField fieldName="buildertek__Start_Time__c" value="{!v.oldMeeting.buildertek__Start_Time__c}" />
+                            <lightning:inputField fieldName="buildertek__Duration__c" value="{!v.oldMeeting.buildertek__Duration__c}" />
+                            <lightning:inputField fieldName="buildertek__End_Time__c" value="{!v.oldMeeting.buildertek__End_Time__c}" />
+                        </div>
+
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning:inputField fieldName="buildertek__Location__c" value="{!v.oldMeeting.buildertek__Location__c}" />
+                            <lightning:inputField fieldName="buildertek__Project__c" value="{!v.oldMeeting.buildertek__Project__c}" />
+                            <lightning:inputField fieldName="buildertek__Opportunity__c" value="{!v.oldMeeting.buildertek__Opportunity__c}" />
+                        </div>
+                    </div>
+
+                </div>
+            </lightning:recordEditForm>
+            <!-- === End Input Field layout=== -->
+        </div>
+        <!-- ===End Main Content=== -->
+    </div>
+    <!-- ===Footer=== -->
+    <div class="slds-modal__footer">
+        <button class="slds-button slds-button_neutral" aria-label="Cancel and close" onclick="{!c.Cancel}">Cancel</button>
+        <button class="slds-button slds-button_brand" onclick="{!c.Save}">Save</button>
+    </div>
+    <!-- ===Footer=== -->
+
+</aura:component>

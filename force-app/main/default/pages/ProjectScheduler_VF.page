@@ -1,0 +1,410 @@
+<apex:page controller="ProjectScheduler_AC" sidebar="false" standardstylesheets="true" showHeader="false"  applyBodyTag="false" docType="html-5.0" >
+
+
+ <apex:slds />
+
+    
+        <!--<apex:pageMessages ></apex:pageMessages>-->
+        <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<apex:stylesheet value="{!URLFOR($Resource.SLDS, 'assets/styles/salesforce-lightning-design-system-vf.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.SLDS212, 'assets/styles/salesforce-lightning-design-system-vf.css')}" />
+        
+         <script>
+             function showSpinner(){
+                document.getElementById('opaque').style.display='block';
+                var popUp = document.getElementById('spinner');
+                popUp.style.display = 'block';
+                } 
+         </script> 
+         <script>
+            function decimalOnly(e){
+              e.value = e.value.replace(/[^0-9\.]/g,'');
+              if(e.value.split('.').length>2) e.value = e.value.replace(/\.+$/,"");
+            };        
+        </script>
+  <apex:form id="formid" >
+     
+    <style>
+      body{
+       display: block;
+       overflow:scroll;
+      -webkit-overflow-scrolling:touch;
+      }
+      input[type=checkbox] {
+        position: relative;
+        width: 1.5rem !important;
+        height: 1.5rem;
+        top: 0.25rem;
+      }
+      
+       
+        .message {
+            border-radius: 3px;
+            margin: 15px 15px 0 24px;  
+            padding: 12px;
+            font-size: 14px;
+            color: #16325C;
+            display: inline-block;
+            background: none;
+        }
+        .msgIcon {
+            background: none;
+            width: 0;
+            height: 0;
+        }
+        .messageText, .message.errorM3 .messageText, .message.errorM4 .messageText, .message.errorM5 .messageText, .message.errorM6 .messageText {
+            color: #cc0000;
+        }
+        
+         .table-responsive{
+            overflow-y :scroll;
+            -webkit-overflow-scrolling:touch;
+            
+        }
+        
+        
+    </style>
+    <html>
+        <head>
+            <title>Project Scheduler </title>
+           
+        </head> 
+        <body >    
+            
+     <style>
+         #spinner{
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            text-align:center;
+            padding:10px;
+            margin-left: -100px;
+            margin-top: -100px;
+            z-index:2;
+            overflow: auto;
+            z-index:100;
+            padding:5px;
+            line-height:20px;
+        }
+             #opaque {
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            width: 100%;
+            height: 100%;    
+            z-index: 1;
+            display: none;
+            background-color: gray;
+            filter: alpha(opacity=30);
+            opacity: 0.3;
+            -moz-opacity:0.3;
+            -khtml-opacity:0.3
+        }
+        *html #opaque {
+            position: absolute;
+        }
+
+ 
+    .custom-input {
+    background-color: white;
+    color: #16325c;
+    border: 1px solid #d8dde6;
+    border-radius: 4px;
+    width: 100%;
+    -webkit-transition: border 0.1s linear, background-color 0.1s linear;
+    transition: border 0.1s linear, background-color 0.1s linear;
+    display: inline-block;
+    padding: 0 16px 0 12px;
+    line-height: 34px;
+    min-height: calc(34px + 2px);
+    }
+    .lookupInput a { 
+        border: none !important;
+        width: 60px !important ;
+    }
+    
+     
+         .slds {
+                
+                max-height:900px;
+                overflow:visible;
+            }
+         
+    
+input[type=checkbox] {
+    position: relative;
+    width: 1rem !important;
+    height: 1rem;
+    top: 0.25rem;
+}   
+    
+</style>       
+                      
+        
+                <div class="slds table-responsive" id="BodyMaps"  style="max:height:900px;overflow-y:scroll">
+                    <apex:outputpanel id="spinnerId">
+                        <div id="opaque"/>
+                        
+                        <div id="spinner">
+                             <p align="center">
+                                <div class="slds-spinner--medium">
+                                    <img src="{!URLFOR($Resource.Spinnerforstatus)}"/>
+                                </div>
+                             </p>
+                        </div>
+                         <apex:outputpanel id="opaque">
+                        <apex:actionStatus id="spinner">
+                            <apex:facet name="start">
+                                <div style="position: fixed; top: 100; left: 0; right: 0; bottom: 0; opacity: 0.25; z-index: 10000; background-color: black;"></div>
+                                
+                                   <p align="center">
+                                        <div class="slds-spinner--medium" style="margin-left:500px;">
+                                            <img src="{!URLFOR($Resource.buildertek__Spinnerforstatus)}"/>
+                                        </div>
+                                    </p>
+                               
+                            </apex:facet>
+                        </apex:actionStatus>
+                        </apex:outputpanel>
+                        </apex:outputpanel>
+                    <apex:outputpanel rendered="{!firstpage}">
+                        <div class="slds-page-header" role="banner">
+                            <div class="slds-grid">
+                                <div class="slds-col">
+                                    <div class="slds-media"> 
+                                        <div class="slds-media__body">
+                                            <apex:outputPanel > 
+                                                <p class="slds-text-heading--label">Project Form</p>
+                                                <h1 class="slds-text-heading--medium">Project Detail Form</h1>
+                                            </apex:outputPanel>
+                                          <!--  <a href="/home/home.jsp" class="slds-button slds-button--neutral" style="float:right"  >Home</a> -->
+    
+                                        </div>
+                                    </div>
+                                </div>
+                             </div>
+                           </div>
+                      </apex:outputPanel>
+                        <apex:outputpanel id="firstpageIds" style="width:100%"> 
+                            <apex:outputpanel rendered="{!firstpage}">
+                            <div class="slds-grid slds-wrap" style="margin-left:10px">
+                            
+                            <div class="slds-size--9-of-12 slds-medium-size--5-of-12 slds-small-size--9-of-12 slds-large-size--5-of-12">
+                                <div class="slds-form-element slds-m-top--large slds-p-right--large">
+                                    <label class="slds-form-element__label" for="text-input-01">Project Name </label>
+                                   <apex:inputfield value="{!projectSch.Project__c}" styleclass="slds-input" >  
+                                          </apex:inputfield>
+                                </div>
+                                <apex:outputLabel rendered="{!isError4}" value="Error:You must enter the value." style="color: red;"/>
+
+                            </div>
+                            <div class="slds-size--3-of-12 slds-medium-size--1-of-12 slds-small-size--3-of-12 slds-large-size--1-of-12">
+                                <div class="slds-form-element slds-m-top--large slds-p-right--large">
+                                
+                                        <div class="slds-form-element__control">
+                                        </div>
+                                
+                                </div>
+                            </div>
+                            
+                            
+                            <div class="slds-size--9-of-12 slds-medium-size--9-of-12 slds-small-size--9-of-12 slds-large-size--5-of-12">
+                                <div class="slds-form-element slds-m-top--large slds-p-right--large">
+                                    <label class="slds-form-element__label" for="text-input-01">Purchage Order </label>
+                                    <div class="slds-form-element__control">
+                                        <apex:inputField value="{!projectSch.Purchase_Order__c}" styleclass="slds-input" > 
+                                          </apex:inputField>
+                                          <div> 
+                                          </div>
+                                    </div>
+                                </div>
+                            </div>  
+                           
+                            
+                             <div class="slds-size--9-of-12 slds-medium-size--9-of-12 slds-small-size--9-of-12 slds-large-size--5-of-12">
+                                <div class="slds-form-element slds-m-top--large slds-p-right--large">
+                                    <label class="slds-form-element__label" for="text-input-01">Crew Size </label>
+                                    <div class="slds-form-element__control">
+                                        <apex:inputField value="{!projectSch.Number_of_resoures__c}" styleclass="slds-input" > 
+                                          </apex:inputField>
+                                          <div>
+                                            <apex:outputLabel rendered="{!isError}" value="Error:You must enter the value." style="color: red;"/>
+                                          </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-size--3-of-12 slds-medium-size--1-of-12 slds-small-size--3-of-12 slds-large-size--1-of-12">
+                                <div class="slds-form-element slds-m-top--large slds-p-right--large">
+                                
+                                        <div class="slds-form-element__control">
+                                        </div>
+                                
+                                </div>
+                            </div>
+                            
+                           
+                            <div class="slds-size--9-of-12 slds-medium-size--9-of-12 slds-small-size--9-of-12 slds-large-size--5-of-12">
+                                <div class="slds-form-element slds-m-top--large slds-p-right--large">
+                                    <label class="slds-form-element__label" for="text-input-01">Number of project Tasks </label>
+                                    <div class="slds-form-element__control">
+                                      <apex:inputField value="{!projectSch.Number_of_Project_Tasks__c}" styleclass="slds-input"   id="Inj">
+                                          </apex:inputField>
+                                      <div>
+                                        <apex:outputLabel rendered="{!isError1}" value="Error:You must enter value." style="color: red;"/>
+                                      </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                             
+                            
+                            
+                             <div class="slds-size--9-of-12 slds-medium-size--9-of-12 slds-small-size--9-of-12 slds-large-size--5-of-12">
+                                <div class="slds-form-element slds-m-top--large slds-p-right--large">
+                                    <label class="slds-form-element__label" for="text-input-01">Project Start Date </label>
+                                    <div class="slds-form-element__control">
+                                      <apex:inputField value="{!projectSch.Project_Start_Date__c}" styleclass="slds-input" />
+                                          
+                                      <div>
+                                        <apex:outputLabel rendered="{!isError2}" value="Error:You must select the date." style="color: red;"/>
+                                      </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-size--3-of-12 slds-medium-size--1-of-12 slds-small-size--3-of-12 slds-large-size--1-of-12">
+                                <div class="slds-form-element slds-m-top--large slds-p-right--large">
+                                
+                                        <div class="slds-form-element__control">
+                                        </div>
+                                
+                                </div>
+                            </div>
+                            
+                           <!--
+                            <div class="slds-size--9-of-12 slds-medium-size--9-of-12 slds-small-size--9-of-12 slds-large-size--5-of-12">
+                                <div class="slds-form-element slds-m-top--large slds-p-right--large">
+                                    <label class="slds-form-element__label" for="text-input-01">Project End Date </label>
+                                    <div class="slds-form-element__control">
+                                        <apex:inputField value="{!projectSch.Project_End_Date__c}" styleclass="slds-input" /> 
+                                         
+                                          <div>
+                                            <apex:outputLabel rendered="{!isError3}" value="Error:You must select the date." style="color: red;"/>
+                                          </div>
+                                    </div>
+                                </div>
+                            </div> 
+                            -->
+                            <div class="slds-size--9-of-12 slds-medium-size--9-of-12 slds-small-size--9-of-12 slds-large-size--5-of-12">
+                                <div class="slds-form-element slds-m-top--large slds-p-right--large">
+                                    <label class="slds-form-element__label" for="text-input-01">Project Duration in Days</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:inputField value="{!projectSch.Project_Duration_in_Days__c}" styleclass="slds-input" /> 
+                                         
+                                          <div>
+                                            <apex:outputLabel rendered="{!isError3}" value="Error:You must enter the days." style="color: red;"/>
+                                          </div>
+                                    </div>
+                                </div>
+                            </div>                             
+                            
+                             
+                      
+                      <div class="slds-size--9-of-12 slds-medium-size--9-of-12 slds-small-size--9-of-12 slds-large-size--5-of-12">
+                                <div class="slds-form-element slds-m-top--large slds-p-right--large">
+                                    <label class="slds-form-element__label" for="text-input-01">Project Working Days </label>
+                                    <div class="slds-form-element__control" style="margin-bottom: 15px;">
+                                        <!--
+                                            <apex:inputField value="{!projectSch.Project_Working_Days__c}" Style="width:1.4em;height:1.4em;float:left;margin-right: 8px;"> 
+                                            
+                                            </apex:inputField>
+                                            -->
+                                            <apex:selectcheckboxes id="check" layout="pageDirection" value="{!selectedWorkingDays}" >                   
+                                                <apex:selectoptions value="{!workingDays}" />          
+                                            </apex:selectcheckboxes>
+                                    </div>
+                                        
+                                </div>  
+                            </div>
+                      <div class="slds-size--3-of-12 slds-medium-size--1-of-12 slds-small-size--3-of-12 slds-large-size--1-of-12">
+                                <div class="slds-form-element slds-m-top--large slds-p-right--large">
+                                
+                                        <div class="slds-form-element__control">
+                                        </div>
+                                
+                                </div>
+                            </div> 
+                  
+
+                </div>
+                   <apex:commandbutton value="Next" action="{!chcekError}" onclick="showSpinner()"   reRender="formid" styleclass="slds-button slds-button--neutral slds-button--brand"  style="float:right"/>
+                     </apex:outputpanel>
+                </apex:outputpanel>
+                
+                
+                
+                 <apex:outputpanel rendered="{!Nextpage}" style="width:100%">
+
+                           <apex:variable var="count" value="{!1}"   />   
+                            <apex:repeat value="{!projectInnList}" var="IncInn"> 
+                                     
+                                <div class="slds" style="margin-top: 2px;">
+                                    <div class="slds-page-header" role="banner"> 
+                                         <p class="slds-text-heading--label">Add</p>
+                                         <h1 class="slds-text-heading--medium">Work Order and Resoures</h1>
+                                        <!-- <apex:outputText value="{0,date,MM/dd/yy}" style="float:right"> 
+                                         <apex:param value="{!IncInn.dt}" /> 
+                                         </apex:outputText> --> 
+                                    </div>
+                                    
+                                    <div class="slds-grid slds-wrap" style="margin-left:10px">
+                                        <apex:repeat value="{!IncInn.EquRecord}" var="IncField">
+                                        <div class="slds-size--9-of-12 slds-medium-size--5-of-12 slds-small-size--9-of-12 slds-large-size--5-of-12">
+                                         <div class="slds-form-element slds-m-top--large slds-p-right--large">
+                                                
+                                                    <label class="slds-form-element__label" for="text-input-01">Project Task </label>
+                                                <div class="slds-form-element__control">
+                                                    <apex:inputField styleclass="slds-input"  value="{!IncField.Dependency__c}" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="slds-size--3-of-12 slds-medium-size--1-of-12 slds-small-size--3-of-12 slds-large-size--1-of-12">
+                                            <div class="slds-form-element slds-m-top--large slds-p-right--large">
+                                                
+                                                    <label class="slds-form-element__label" for="text-input-01"> </label>
+                                                <div class="slds-form-element__control">
+                                                
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                         <div class="slds-size--9-of-12 slds-medium-size--5-of-12 slds-small-size--9-of-12 slds-large-size--5-of-12">
+                                            <div class="slds-form-element slds-m-top--large slds-p-right--large">
+                                                <label class="slds-form-element__label" for="text-input-01">Resource</label>
+                                                <div class="slds-form-element__control">
+                                                    <apex:inputField styleclass="slds-input"  value="{!IncField.Contractor_Resource__c}" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        </apex:repeat>
+                                    </div>
+                                </div>    
+                                    <apex:variable var="count" value="{!count+1}"   />   
+                            </apex:repeat>
+                        <div class="slds" >
+                            <apex:commandbutton value="Save" action="{!Save}" styleclass="slds-button slds-button--neutral"  style="float:right" onclick="showSpinner()"/>
+                           <apex:commandbutton value="Back" action="{!back}" styleclass="slds-button slds-button--neutral"  style="float:right" onclick="showSpinner()"/>
+                           
+                           </div>
+                        </apex:outputpanel>
+                </div>
+                
+               </body>
+                
+                
+               
+            </html>
+            </apex:form>
+</apex:page>

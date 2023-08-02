@@ -1,0 +1,117 @@
+<aura:component access="global" controller="ProjectMassUpdate">
+    <aura:attribute name="record" type="sObject" description="record which is being displayed" />
+    <aura:attribute name="field" type="Object" description="field object which is being rendered" />
+    <aura:attribute name="cellValue" type="Object" />
+    <aura:attribute name="dropDown" type="List" />
+    <aura:attribute name="cellLabel" type="String" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="dropDownValue" type="String" />
+    <aura:attribute name="childObjectName" type="String" />
+    <aura:attribute name="index" type="Integer" />
+    <aura:attribute name="fieldName" type="String" />
+    <aura:attribute name="isEditable" type="boolean" default="true" />
+    <aura:attribute name="isTextField" type="boolean" default="false" />
+    <aura:attribute name="isTextAreaField" type="boolean" default="false" />
+    <aura:attribute name="isDoubleField" type="boolean" default="false" />
+    <aura:attribute name="isPercentField" type="boolean" default="false" />
+    <aura:attribute name="isDropDownField" type="boolean" default="false" />
+    <aura:attribute name="isMassUpdateEnable" type="boolean" default="false" />
+    <aura:attribute name="isReferenceField" type="boolean" default="false" />
+    <aura:attribute name="isDateField" type="boolean" default="false" />
+    <aura:attribute name="isDateTimeField" type="boolean" default="false" />
+    <aura:attribute name="isCurrencyField" type="boolean" default="false" />
+
+    <aura:attribute name="isProfiteMargin" type="boolean" default="false" />
+    <aura:attribute name="isGrossProfte" type="boolean" default="false" />
+    <aura:handler name="onSelectEvt" event="c:BT_LookupEvent" action="{!c.getLookUpValues}" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <!--Editable Fields-->
+    <aura:if isTrue="{!v.isMassUpdateEnable}">
+        <aura:if isTrue="{!v.isTextField}">
+            <lightning:input value="{!v.cellValue}" name="{!v.index+'-'+v.fieldName}" onchange="{!c.onInputChange}" />
+        </aura:if>
+        <aura:if isTrue="{!v.isProfiteMargin}">
+            <ui:outputText value="{!v.cellValue}" />
+        </aura:if>
+        <aura:if isTrue="{!v.isGrossProfte}">
+            <ui:outputText value="{!v.cellValue}" />
+        </aura:if>
+        <aura:if isTrue="{!v.isTextAreaField}">
+            <lightning:textarea value="{!v.cellValue}" name="{!v.index+'-'+v.fieldName}"
+                onchange="{!c.onInputChange}" />
+        </aura:if>
+        <aura:if isTrue="{!v.isDateField}">
+            <lightning:input type="date" value="{!v.cellValue}" name="{!v.index+'-'+v.fieldName}"
+                onchange="{!c.onInputChange}" />
+        </aura:if>
+        <aura:if isTrue="{!v.isDoubleField}">
+            <lightning:input type="number" value="{!v.cellValue}" name="{!v.index+'-'+v.fieldName}"
+                onchange="{!c.onInputChange}" />
+        </aura:if>
+        <aura:if isTrue="{!v.isPercentField}">
+            <lightning:input type="number" formatter="percent-fixed" value="{!v.cellValue}"
+                name="{!v.index+'-'+v.fieldName}" onchange="{!c.onInputChange}" />
+        </aura:if>
+        <aura:if isTrue="{!v.isDropDownField}">
+            <lightning:select aura:id="select" class="field label-hidden" name="{!v.index+'-'+v.fieldName}"
+                variant="label-hidden" onchange="{!c.onInputChange}">
+                <option value="None">None</option>
+                <aura:iteration items="{!v.dropDown}" var="item" indexVar="i">
+                    <option value="{!item}" selected="{!v.cellValue == item}">
+                        {!item}</option>
+                </aura:iteration>
+            </lightning:select>
+        </aura:if>
+        <aura:if isTrue="{!v.isDateTimeField}">
+            <lightning:input type="datetime" name="{!v.index+'-'+v.fieldName}" value="{!v.cellValue}"
+                onchange="{!c.onInputChange}" />
+        </aura:if>
+        <aura:if isTrue="{!v.isCurrencyField}">
+            <lightning:input name="{!v.index+'-'+v.fieldName}" value="{!v.cellValue}" onchange="{!c.onInputChange}" />
+        </aura:if>
+        <aura:if isTrue="{!v.isReferenceField}">
+            <c:BT_LookupFields selectedRecordId="{!v.cellValue}" childObjectName="{!v.childObjectName}"
+                fieldName="{!v.fieldName}" record="{!v.record}" />
+        </aura:if>
+    </aura:if>
+
+    <!--Text Fields-->
+    <aura:if isTrue="{!!v.isMassUpdateEnable}">
+        <aura:if isTrue="{!v.isTextField}">
+            <ui:outputText value="{!v.cellValue}" />
+        </aura:if>
+        <aura:if isTrue="{!v.isProfiteMargin}">
+            <ui:outputText value="{!v.cellValue}" />
+        </aura:if>
+        <aura:if isTrue="{!v.isGrossProfte}">
+            <ui:outputText value="{!v.cellValue}" />
+        </aura:if>
+        <aura:if isTrue="{!v.isTextAreaField}">
+            <ui:outputText value="{!v.cellValue}" />
+        </aura:if>
+        <aura:if isTrue="{!v.isDoubleField}">
+            <ui:outputNumber value="{!v.cellValue}" />
+        </aura:if>
+        <aura:if isTrue="{!v.isPercentField}">
+            <ui:outputNumber value="{!v.cellValue}" />
+        </aura:if>
+        <aura:if isTrue="{!v.isDropDownField}">
+            <ui:outputText value="{!v.cellValue}" />
+        </aura:if>
+        <aura:if isTrue="{!v.isDateField}">
+            <ui:outputDate value="{!v.cellValue}" />
+        </aura:if>
+        <aura:if isTrue="{!v.isDateTimeField}">
+            <ui:outputDateTime value="{!v.cellValue}" />
+        </aura:if>
+        <aura:if isTrue="{!v.isCurrencyField}">
+            <ui:outputCurrency value="{!v.cellValue}" />
+        </aura:if>
+        <aura:if isTrue="{!v.isReferenceField}">
+            <ui:outputURL value="{!'/one/one.app?#/sObject/'+ v.cellValue + '/view'}" target="_blank"
+                label="{!v.cellLabel}" />
+        </aura:if>
+    </aura:if>
+</aura:component>

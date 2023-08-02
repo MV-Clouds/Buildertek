@@ -1,0 +1,20 @@
+<apex:component access="global" controller="ImageAttachmentController">
+    <table width="100%" style="border-collapse: collapse;">
+        <tr>
+            <td>
+                <!-- <apex:outputText value="{!img.Description__c}" style="justify-content: left" /> -->
+            </td>
+        </tr>
+        <br />
+        <tr>
+            <td>
+                <!-- <img src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=="
+                    alt="Red dot" /> -->
+                    <apex:image value="data:image;base64,{!blobBody}" />
+                <!--apex:image url="{!''data:image/jpeg;base64, '+rec.buildertek__Image1__c}" style="margin-bottom: 10px;" height="350"  /-->
+            </td>
+        </tr>
+        <br />
+        <br />
+    </table>
+</apex:component>

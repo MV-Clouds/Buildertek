@@ -1,0 +1,8 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,force:appHostable" access="global" Controller="QuoteDAO">
+    <!--<ltng:require styles="{!join(',',$Resource.BTDrag + '/BT-Drag.min.css')}"
+                  scripts="{!join(',',$Resource.Jquery + '/jquery/lightning/js/jquery-3.2.1.min.js',$Resource.BTDrag+ '/BT-Drag.min.js')}"
+                  afterScriptsLoaded="{!c.initialize}"/>-->
+    
+    
+    
+</aura:component>

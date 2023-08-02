@@ -1,0 +1,84 @@
+.THIS {
+}
+
+.THIS .av-item {
+	border: 0;
+}
+
+.THIS .bttableheade .slds-th__action-button {
+	display:none !important;
+}
+
+.THIS .bttableheader tbody{
+	display:none !important;
+}
+
+.THIS .slds-th__action-button {
+	display:none !important;
+}
+
+.THIS .slds-th__action {
+	background-color: grey !important;    
+}
+.THIS .slds-th__action:hover {
+    background-color: grey !important;
+}
+
+.THIS .slds-truncate {
+	overflow: unset !important;
+    text-overflow: unset !important;
+    white-space: normal !important;
+}
+.THIS .slds-button__icon {
+    fill: white;
+}
+
+.THIS .slds-button_icon-border{
+    background: grey;
+}
+.THIS .slds-icon-text-default {
+    fill: grey;
+}
+.THIS .slds-text-link_reset {
+    background-color: grey !important;
+    color: white !important;
+}
+.THIS .slds-cell-fixed {
+    background-color: grey !important;
+    width: 326px !important; 
+    color: white !important;
+}
+.THIS .slds-scrollable_x {
+    overflow-x: hidden;
+}
+.THIS .slds-table thead th{
+    color: white !important;
+    font-size: smaller !important;
+    background-color: grey !important;
+}
+.THIS .sldsButtonGroup {
+    background-color: grey !important;
+    color: white !important;
+}
+
+.THIS .slds-icon-text-default.slds-m-left_small.slds-shrink-none.slds-icon_x-small{
+    fill: grey !important;
+}
+.THIS .slds-icon-text-default.slds-icon_x-small {
+    fill: white !important;
+}
+
+.THIS .slds-table--header-fixed_container {
+    position: relative;
+    padding-top: 2rem;
+    background-color: rgb(127, 127, 125) !important;
+    overflow: hidden;
+}
+.THIS .custom-loading-text {
+    transform: rotate(-90deg);
+    position: absolute;
+    top: -0.5rem;
+    left: 1rem;
+    white-space: nowrap;
+    font-size: 20px;
+}

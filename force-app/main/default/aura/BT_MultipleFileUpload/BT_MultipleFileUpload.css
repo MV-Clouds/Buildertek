@@ -1,0 +1,51 @@
+.THIS .closeBtnClass>lightning-primitive-icon>svg>use {
+    fill: rgb(255, 255, 255, 1);
+}
+
+.THIS .slds-file-selector {
+    display: block !important;
+}
+
+.THIS .slds-file-selector__dropzone {
+    display: flex !important;
+    justify-content: center !important;
+    align-content: center !important;
+    align-items: center !important;
+    margin: auto !important;
+    padding: 1rem !important;
+    max-height: 150px !important;
+}
+
+.THIS .slds-wrap {
+    justify-content: center !important;
+}
+
+.THIS slot[interop-primitiveFileDroppableZone_primitiveFileDroppableZone] {
+    display: inline-block !important;
+    width: 100% !important;
+}
+
+.THIS .slds-file-selector_files .slds-file-selector__body {
+    display: block !important;
+    text-align: center !important;
+}
+
+.THIS .slds-file-selector__button .slds-button .slds-button_neutral {
+    display: inline-flex !important;
+    align-items: center !important;
+    max-height: 2rem !important;
+    line-height: 2rem !important;
+}
+
+.THIS .slds-file-selector_files .slds-file-selector__text {
+    margin-top: .75rem !important;
+}
+
+.THIS .slds-file-selector__dropzone {
+    border: 1px dashed rgb(217, 219, 221) !important;
+}
+
+.THIS .forceContentFileCard {
+    width: 12rem !important;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.40) !important;
+}

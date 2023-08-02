@@ -1,0 +1,9 @@
+<apex:page controller="BT_Task_Manager_Controller" docType="html-5.0" sidebar="false" standardStylesheets="false" showHeader="false" applyHtmlTag="true">
+     <apex:includeLightning />
+    <div id="lightning" ></div> 
+    <script>
+        var recordId = '{!JSENCODE($CurrentPage.parameters.recordId)}';
+        $Lightning.use("buildertek:ImportMasterSchedulesApp", function() {$Lightning.createComponent("buildertek:BT_ImportSchedule",
+          {},"lightning",function(cmp) {});});
+    </script> 
+</apex:page>

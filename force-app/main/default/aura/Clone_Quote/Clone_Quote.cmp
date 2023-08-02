@@ -1,0 +1,42 @@
+<aura:component controller="Clone_Quote_Controller" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global">
+    <aura:attribute name="recordId" type="Id" />  
+    <aura:attribute name="versionValue" type="String" /> 
+    <aura:attribute name="reason" type="String" />
+    <aura:attribute name="quote" type="Quote__c" default="{ 'sobjectType': 'Quote__c' }"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="Spinner" type="Boolean" default="false" />
+    
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth50}"/>
+    
+    <div class="slds-modal__header" style="font-size:17px;">
+        New Version
+    </div>
+    <div class="slds-modal__content slds-p-around--large">
+        <div class="slds slds-scope">
+            <lightning:input aura:id="CV" label="Current Version" value="{!v.quote.buildertek__Version_Number__c}" name="CurrnetVersion"  disabled="true" />
+            <br></br>
+            <lightning:input aura:id="NV" label="New Version" name="NewVersion" value="{!v.versionValue}"  placeholder="Enter New Version" required="true" />
+            <br></br>
+            <lightning:input aura:id="RNV" label="Reason for New Version" name="ReasonforNewVersion" value="{!v.reason}"  placeholder="Enter Reason for New Version" />
+            <br></br>
+            <br/>
+            
+        </div> 
+        <aura:if isTrue="{!v.Spinner}">
+            <div aura:id="spinnerId" class="slds-spinner_container">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                  <!--  <div class="custom-loading-text">
+                        <b>Processing, Please Wait</b>
+                    </div> -->
+                </div>
+            </div>
+        </aura:if>
+    </div>
+    <div class="slds-modal__footer">
+        <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}" >Cancel</button>
+        <lightning:button variant="brand" label="Save" title="Save" onclick="{! c.handleClick }" />
+    </div>
+</aura:component>

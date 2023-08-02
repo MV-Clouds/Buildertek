@@ -1,0 +1,99 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" access="global" controller="BudgetDAO">
+	
+<!--	<ltng:require styles="{!join(',',$Resource.BTDrag + '/BT-Drag.min.css')}"
+                  scripts="{!join(',',$Resource.Jquery + '/jquery/lightning/js/jquery-3.2.1.min.js',$Resource.BTDrag+ '/BT-Drag.min.js')}"
+                  afterScriptsLoaded="{!c.initialize}"/>-->
+	
+	<aura:handler name="budgetItemEvent" event="c:BT_Budget_Item_Component_Event" action="{!c.eventAction}"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+	<aura:handler event="force:showToast" action="{!c.onSaveSuccess}" />
+	 
+	<aura:attribute name="recordId" type="string" default="a1Q41000001jbezEAA"/> 
+    <aura:attribute name="groupFilter" type="string" />
+	
+	<aura:attribute name="refreshGridAction" type="Aura.Action" default="{!c.refreshList}"/>
+    
+    <aura:attribute name="newBi" type="Budget_Item__c" default="{ 'sobjectType': 'Budget_Item__c' }" access="public"/>
+    
+    
+    <aura:attribute name="newBudgetLine" type="Budget_Item__c" default="{ 'sobjectType':'Budget_Item__c',
+                                                                              'buildertek__Quantity__c':1}" access="global"/>
+    <aura:attribute name="selectedLookUpRecord" type="sObject" default="{}"/>
+    
+    
+    <aura:attribute name="newRFQ" type="RFQ__c" default="{ 'sobjectType': 'RFQ__c' }" access="public"/>
+    <aura:attribute name="newRFQItems" type="RFQ_Item__c[]" access="public"/>
+    
+    <aura:attribute name="newPO" type="Purchase_Order__c" default="{ 'sobjectType': 'Purchase_Order__c' }" access="public"/>
+    <aura:attribute name="newPOItems" type="Purchase_Order_Item__c[]" access="public"/>
+    
+    <aura:attribute name="newCO" type="Change_Order__c" default="{ 'sobjectType': 'Change_Order__c' }" access="public"/>
+    <aura:attribute name="newCOItems" type="Change_Order_Item__c[]" access="public"/>
+    
+    
+    <aura:attribute name="newSubContract" type="Contract__c" default="{ 'sobjectType': 'Contract__c' }" access="public"/>
+    <aura:attribute name="newSubContractItems" type="Contract__c[]" access="public"/>
+    
+    <aura:attribute name="newRecord" type="Object" access="private"/>
+    <aura:attribute name="sampleNewRecord" type="Object" access="private"/>
+    <aura:attribute name="newRecordError" type="String" access="private"/>
+    
+    <aura:handler name="oSelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.handleComponentEvent}"/>
+    <aura:attribute name="productId" type="string"/>
+    <aura:attribute name="productName" type="string"/>
+    
+    <aura:attribute name="selectedRows" type="List"/>
+    <aura:attribute name="groupListSize" type="Integer"  default="0" description="Section list size"/>
+    <aura:attribute name="deleteRecords" type="list"/>
+    <aura:attribute name="selectedCol" type="list" />
+    <aura:attribute name="selectedList" type="list" />
+    <aura:attribute name="selectedListCol" type="list" />
+    <aura:handler name="change" value="{!v.selectedRows}" action="{!c.handleValueChange }"/>
+    <aura:handler name="change" value="{!v.selectedList}" action="{!c.handleCheckboxChange }"/>
+    <aura:method name="refreshData" action="{!c.doInit}" access="public" />
+    <force:recordData aura:id="newforcerecord"
+			        layoutType="FULL"
+			        recordId="{!v.recordId}"
+			        targetRecord="{!v.newRecord}"
+			        targetFields="{!v.sampleNewRecord}"
+			        targetError="{!v.newRecordError}"
+			        />
+    <c:BT_Spinner />
+    <div style="margin-top: -35px;">
+    	<div style="float:right;margin-top: 25px;margin-right: 10px;">
+            
+                <lightning:buttonGroup>
+                    <lightning:button iconName="utility:add" iconPosition="left" onclick="{!c.newGroup}" label="Add Group" class="sldsButtonGroup"/>
+                    <aura:if isTrue="{!v.groupListSize > 0}">
+                    <lightning:button label="Add Product" onclick="{!c.addProduct}" class="sldsButtonGroup"/>
+                    <lightning:button label="New RFQ" onclick="{!c.newRFQ}" class="sldsButtonGroup"/>
+                    <lightning:button label="New CO" onclick="{!c.newCO}" class="sldsButtonGroup"/>
+                    <lightning:button label="New PO" onclick="{!c.newPO}" class="sldsButtonGroup"/>
+                    <lightning:button label="New Sub-Contract" onclick="{!c.newSubContract}" class="sldsButtonGroup"/>
+                    <!-- <lightning:button label="Import CSV" onclick="{!c.importCSV}"/> -->
+                    <!--  <lightning:button label="Save" onclick="{!c.saveQuoteItems}"/> -->
+                    <lightning:button label="Delete" onclick="{!c.deleteSelectedItem}" class="sldsButtonGroup"/>
+                    <button onclick="{!c.refreshList}" class="slds-button slds-button--icon-border" style="background: grey;">
+                        <span class="slds-button__icon" style="color:white;">
+                            <lightning:icon iconName="utility:refresh" size="x-small" />
+                        </span> 
+                    </button>
+                        </aura:if>
+                </lightning:buttonGroup>
+            
+           </div>
+           <br/>
+
+        <div aura:id="budgetItem"/>
+        <div class="av slds-box" id="{!v.recordId + 'groups'}"  style="min-height:50vh;padding:0px !important;">
+            <c:BT_BudgetGroupList aura:id="ItemList" groupFilter="{!v.groupFilter}" budgetId="{!v.recordId}" selectedRows="{!v.selectedRows}" 
+                                    groupListSize="{!v.groupListSize}" />
+        </div>
+    </div>
+    
+	<lightning:notificationsLibrary aura:id="notifLib"/>
+	<lightning:overlayLibrary aura:id="overlayLib"/>
+	
+	<div aura:id="newItem"/>
+	
+</aura:component>

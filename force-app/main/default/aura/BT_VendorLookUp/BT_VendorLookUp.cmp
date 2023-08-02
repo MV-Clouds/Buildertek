@@ -1,0 +1,14 @@
+<aura:component controller="OpenPOForVendor">
+    <aura:attribute name="childObjectName" type="String" required="true" />
+    <aura:attribute name="fieldName" type="String" required="true" />
+    <aura:attribute name="selectedRecordId" type="String" />
+    <aura:attribute name="POList" type="List" />
+
+    <aura:registerEvent name="onSelectEvt" type="c:BT_VendorLookUpEvent" />
+
+    <lightning:recordEditForm onload="{!c.setSelectedRecordId}" objectApiName="{!v.childObjectName}">
+        <lightning:inputField aura:id="lookupField" variant="label-stacked" fieldName="{!v.fieldName}"
+            onchange="{!c.fireOnSelectEvt}" class="slds-size--1-of-1" />
+
+    </lightning:recordEditForm>
+</aura:component>

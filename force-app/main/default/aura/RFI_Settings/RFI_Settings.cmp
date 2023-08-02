@@ -1,0 +1,150 @@
+<aura:component controller="RFISettingsController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:attribute name="options" type="list" />
+    <aura:attribute name="msaSettings" type="RFI_Settings__c" default="{'sObjectType' : 'buildertek__RFI_Settings__c'}"/>
+    <aura:attribute name="selectedValue" type="String" />
+     <aura:attribute name="communities" type="Boolean" default=""/>
+    <aura:attribute name="email" type="Boolean" default=""/>
+    <aura:attribute name="isEdit" type="Boolean" default="false"/>
+    <aura:attribute name="results" type="List" />
+    <aura:attribute name="ShowPassword" type="Boolean" default ="false" />
+    <aura:attribute name="HidePassword" type="Boolean" default ="false" />
+    <aura:attribute name="ismessage" type="Boolean" default="false"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <lightning:card >
+        <div class="slds slds-p-around_medium">
+            <div class="pageHeader slds-page-header slds-page-header_record-home">
+                <div class="slds-page-header__row">
+                    <div class="slds-page-header__col-title">
+                        <div class="slds-media">
+                            <div class="slds-media__figure">
+                                <span class="slds-icon_container">
+                                    <lightning:icon iconName="utility:settings" size="medium"/>	
+                                </span>
+                            </div>
+                            <div class="slds-media__body">
+                                <div class="slds-page-header__name">
+                                    <div class="slds-page-header__name-title">
+                                        <h1>
+                                            <span class="slds-text-heading_small">RFI Settings1</span>	
+                                        </h1>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-page-header__row slds-page-header__row_gutters">
+                    
+                </div>
+            </div>
+            <aura:if isTrue="{!v.ismessage}">
+                <div class="slds-notify slds-notify_alert slds-theme_alert-texture" role="alert" style="padding-top:20px;padding-bottom:20px;">
+                    <h2  style="font-size:15px;font-weight:600">RFI Settings saved successfully!
+                    </h2>                
+                </div>     
+            </aura:if> 
+            <div class="slds-p-around_small" >
+                <!-- <aura:if isTrue="{!v.isEdit}">-->
+               <div class="slds-form" role="list">
+                <!-- <div class="slds-size_1-of-2">-->
+                    <div class="slds-form__row">
+                        <div class="slds-form__item slds-p-right_medium" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <label class="slds-form-element__label" >Using Communities</label>
+                                <div class="slds-p-top_x-small">
+                                    <!--<lightning:input type="checkbox" label="" variant="label-hidden" value="{!v.msaSettings.buildertek__Using_Communities__c}" checked ="{!v.msaSettings.buildertek__Using_Communities__c}"change="{!c.onCheck1}"/>-->
+                                    <ui:inputCheckbox aura:id="checkbox" label="" change="{!c.onCheck1}" value="{!v.msaSettings.buildertek__Using_Communities__c}"/>
+                                </div>
+                            </div>
+                        </div>
+                               <!--<div class="slds-size_1-of-2">-->
+                       <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <label class="slds-form-element__label" >Using Email</label>
+                                <div class="slds-p-top_x-small">
+                                    <ui:inputCheckbox aura:id="checkbox1" label="" change="{!c.onCheck2}" value="{!v.msaSettings.buildertek__Using_Email__c}"/>
+                                    <!--<lightning:input type="text" label="" variant="label-hidden" value="{!v.msaSettings. buildertek__Stripe_Publishable_Test_Key__c}"/>-->
+                                </div>
+                          
+                            </div>
+                        </div>
+                        
+                        <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <label class="slds-form-element__label" >RFI Default Queue &nbsp;&nbsp;&nbsp;</label>
+                                <div class="slds-p-top_x-small">
+                                    <lightning:input type="text" label="" variant="label-hidden" value="{!v.msaSettings.buildertek__Queue_Name__c}"/>                                    
+                                </div>
+                          
+                            </div>
+                        </div>
+                        
+                        
+                          <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <label class="slds-form-element__label" >RFI Default Owner &nbsp;&nbsp;&nbsp;[give valid username]</label>
+                                <div class="slds-p-top_x-small">
+                                    <lightning:input type="text" label="" variant="label-hidden" value="{!v.msaSettings.buildertek__RFI_Default_Owner__c}"/>                                    
+                                </div>
+                          
+                            </div>
+                        </div>
+                        
+                         <!-- <div class="slds-size_1-of-1">-->
+                        
+                   </div>
+                    <div class="slds-form__row">
+                        <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                               
+                                <div class="slds-p-top_x-small">
+                                <hr></hr>
+                                </div>
+                          
+                            </div>
+                        </div>
+                   </div>
+                   <div class="slds-form__row">
+                       <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <label class="slds-form-element__label" >New RFI Notification Template: </label>
+                                <div class="slds-p-top_x-small">
+                                   <!-- <ui:inputCheckbox aura:id="checkbox1" label="" change="{!c.onCheck2}" value="{!v.msaSettings.buildertek__Using_Email__c}"/>-->
+                                    <lightning:input type="text" label="" variant="label-hidden" value="{!v.msaSettings.buildertek__New_RFI_Notification_Template__c}"/>
+                                </div>
+                          
+                            </div>
+                        </div>
+                        <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <label class="slds-form-element__label" style="margin-top:10px;">Vendor Notification Template: </label>
+                                <div class="slds-p-top_x-small" style="margin-left:10px;margin-bottom:50px;">
+                                   <!-- <ui:inputCheckbox aura:id="checkbox1" label="" change="{!c.onCheck2}" value="{!v.msaSettings.buildertek__Using_Email__c}"/>-->
+                                    <lightning:input type="text" label="" variant="label-hidden" value="{!v.msaSettings.buildertek__Vendor_Notification_Template__c}" style="width:350px;"/>
+                                </div>
+                          
+                            </div>
+                        </div>
+                        <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <label class="slds-form-element__label" style="margin-top:10px;" >Recipient Notification Template: </label>
+                                <div class="slds-p-top_x-small" style="margin-left:10px;margin-bottom:50px;">
+                                   <!-- <ui:inputCheckbox aura:id="checkbox1" label="" change="{!c.onCheck2}" value="{!v.msaSettings.buildertek__Using_Email__c}"/>-->
+                                    <lightning:input type="text" label="" variant="label-hidden" value="{!v.msaSettings.buildertek__Recipient_Notification_Template__c }" style="width:350px;"/>
+                                </div>
+                          
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="slds-m-top_medium">
+                        <lightning:button label="Save" variant="brand" onclick="{!c.save}" />
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </lightning:card>
+    
+</aura:component>

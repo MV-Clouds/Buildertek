@@ -1,0 +1,49 @@
+<aura:component implements="forceCommunity:availableForAllPageTypes" access="global" controller="VG_AnnouncementsController">	
+    <aura:attribute name="Announcements" type="EC_Content__C" />
+    <aura:attribute name="recordId" type="string"/>
+    <aura:attribute name="bgImage" type="string" />
+    <aura:attribute name="announcementid" type="string" />
+    <aura:handler name="init" value="this" action="{!c.doinit}"/>	
+    <div style="border-radius: 4px;/* margin-top: .5%; margin-left: 1%; */">
+        
+        <lightning:card title="" class="slds-card_boundary Cardstyle">
+            <div class="slds-p-left_large slds-p-right_medium">
+                <lightning:breadcrumbs>        
+                    <lightning:breadcrumb label="HOME PAGE"  onclick="{! c.navigateToHome }"/>
+                    <!-- <lightning:breadcrumb label="ANNOUNCEMENTS"  onclick="{! c.navigateToHome }"/>-->
+                    <lightning:breadcrumb label="ALL ANNOUNCEMENTS"  onclick="{! c.navigateToAllAnnouncements }"/>
+                    <lightning:breadcrumb label="ANNOUNCEMENT " />
+                </lightning:breadcrumbs>
+            </div>
+        </lightning:card>
+        <!--  <aura:if isTrue="{! v.Announcements.ContentDocumentLinks[0].ContentDocument !=null}">
+            <div class="bg-img" style="{!empty(v.bgImage)?'background-color:#'+v.Announcements.Primary_BgColor__c+';color:#'+v.Announcements.Primary_FgColor__c+';height: 380px;':'background-color:#ffffff'+';height: 380px;background:'+ ' url(/sfc/servlet.shepherd/version/renditionDownload?rendition=ORIGINAL_Png&amp;versionId='+v.bgImage+') no-repeat;background-position: center;background-size: cover;'}" >
+                <img src="{!(and(not(empty(v.Announcements.ContentDocumentLinks[0])),v.Announcements.ContentDocumentLinks[0].ContentDocument !=null))? '/sfc/servlet.shepherd/version/renditionDownload?rendition=ORIGINAL_Png&amp;versionId='+v.Announcements.ContentDocumentLinks[0].ContentDocument.LatestPublishedVersionId: ''}" style="height:380px;width:95%;margin-left:2.5%"/>
+                
+            </div>
+        </aura:if>-->
+        <div class="slds-card__header slds-col headerTop" style="padding-top: 0;/* padding-left: 3%;*/">
+            
+            <div class="slds-p-top--x-small">
+                <h2 class="slds-text-heading_medium  marker" >&nbsp;&nbsp;<ui:outputDateTime aura:id="EndDateField" value="{!v.Announcements.Start_Date__c}"  format="MM/dd/yyyy"/>
+                </h2>
+            </div>  
+            <div class="slds-media__body" >
+                <h2 class="Title" style="font-family:Gotham-Bold;font-size:30px;" ><b>{!v.Announcements.Primary_Text__c}</b></h2>
+                
+                <p class=" slds-text-body--small " style="font-family:Gotham-Book;padding-top: 1%; font-size:25px;">{!v.Announcements.Secondary_Text__c}</p>
+                
+                <div class="slds-p-top--x-small" escape="false" linkify="true">
+                    <p class="slds-text-body--small slds-text-longform text">
+                        <ui:outputRichText   aura:id="outputRT" value="{!v.Announcements.Secondary_Summary_Detail__c}" />
+                    </p>
+                </div><br/>
+            </div>
+            
+        </div>
+        
+    </div>  
+    
+    
+    
+</aura:component>

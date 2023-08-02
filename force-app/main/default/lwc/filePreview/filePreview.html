@@ -1,0 +1,43 @@
+<template>
+   
+        <template if:true={isFileExist}>
+            <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                <thead>
+                    <tr class="slds-text-title_caps">
+                        <th scope="col">
+                            <div title="Key">File Name</div>
+                        </th>
+                        <th scope="col" style="width:50%;">
+                            <div title="Value">File Extension</div>
+                        </th>
+                        <th scope="col" style="width:1rem;">
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template for:each={files} for:item="keyValue">
+                        <tr key={keyValue.Id}>
+                            <td scope="col">
+                                <div style="white-space: pre-wrap;">{keyValue.Title}</div>
+                            </td>
+                            <td scope="col">
+                                <div>{keyValue.FileExtension}</div>
+                            </td>
+                            <td scope="col" style="width:1rem;">    
+                                <!-- Using Dataset Property to get ContentDocumentId -->
+                                <lightning-button data-id={keyValue.ContentDocumentId} 
+                                                  label="Preview" 
+                                                  variant="brand" 
+                                                  value="file preview" 
+                                                  onclick={filePreview}></lightning-button>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </template>
+        <template if:false={isFileExist}>
+            There are no files for this item
+        </template>
+  
+</template>

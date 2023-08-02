@@ -1,0 +1,176 @@
+<aura:component controller="CustomCalendar_AC" implements="force:appHostable,flexipage:availableForAllPageTypes,force:hasRecordId" access="global">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:method name="drawTable" action="{!c.drawTable}" description="drawTable"> 
+     <aura:attribute name="index" type="String" default="" />
+    </aura:method> 
+    
+    <aura:attribute name="weekDates" type="date[]" />  
+    <aura:attribute name="beforeweekDate" type="date[]" />
+    <aura:attribute name="weekfirstDate" type="date[]" />
+    <aura:attribute name="weeklastDate" type="date[]" />
+    <aura:attribute name="currentDate" type="date[]" />
+    <aura:attribute name="nextDate" type="date[]" />
+    <aura:attribute name="previousDate" type="date[]" />
+    <aura:attribute name="eventList" type="CalendarWrap[]" />
+    <aura:attribute name="EList" type="CalendarListWrap[]" />
+    <aura:attribute name="RList" type="CalendarListWrap[]" />
+    <aura:attribute type="String" name="headerDate"/>
+    <aura:attribute type="String" name="calendarView" default="week"/>
+    <aura:attribute type="String" name="displayView" default="crewMembers"/>
+    <aura:attribute type="String" name="weekName" default="Monday"/>
+
+    <aura:attribute type="String" name="recordId" default=""/>
+    <aura:attribute type="String" name="ResourceId"/>
+    <aura:attribute type="String" name="DataType"/>
+    <aura:attribute type="String" name="ResourceSetDate"/>
+    <aura:attribute type="String" name="ProjectId"/>
+    <aura:attribute type="String" name="ScheduleId"/>
+    <aura:attribute type="String" name="Role"/>
+    <aura:attribute type="boolean" name="NoSchedules" />
+    
+    <aura:attribute type="String" name="ColorName1"/>
+    <aura:attribute type="String" name="ColorName2"/>
+
+    
+   
+    
+    <aura:attribute name="contactList" type="contact[]" />
+    <aura:attribute name="equipmentList" type="Project_Task__c[]" /> 
+    <aura:attribute name="ResourceCollapseText" type="String" default="[+]"/>
+    <aura:attribute name="EquipmentCollapseText" type="String" default="[+]"/>
+    
+    <aura:attribute type="String" name="ProjectJunctionId"/>
+    <aura:attribute type="String" name="ResourceJunctionId"/>
+    <aura:attribute type="String" name="UnitId"/>
+    <aura:attribute type="String" name="Model"/>
+    <aura:attribute name="leftpanelshoworhide" type="Boolean" default=""/>
+    
+    <aura:attribute name="showSpinner" type="boolean" default="false"/>
+    <aura:if isTrue="{!v.showSpinner}">
+        <div class="slds-spinner_container">
+            <lightning:spinner aura:id="spinner" variant="brand" size="medium"/>
+        </div>
+    </aura:if>
+    
+<!-- modal-->
+<div class="slds">
+    <div aria-hidden="true" role="dialog" class="slds-modal slds-modal--prompt slds-fade-in-hide" aura:id="modaldialog">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--info">
+                <h2 class="slds-text-heading--medium">Select the Schedular</h2>
+            </div>  
+            
+            <aura:if isTrue="{!!v.NoSchedules}" > 
+            <div class="slds-modal__content">
+				<ui:inputSelect label="Select Schedular" class="slds-select" aura:id="InputSelectSchedular" value="{!v.Role}" required="true"/>
+            </div> 
+           
+            </aura:if>
+            <aura:if isTrue="{!v.NoSchedules}" > 
+                <div class="slds-modal__content slds-p-around--medium">
+            		<ui:outputText value="No Scheduler avalible click save to create new"/>  
+                </div>
+            </aura:if>
+            
+            <div class="{!v.DataType == 'Resource'? 'slds-modal__content slds-p-around--medium slds-show' : 'slds-modal__content slds-p-around--medium slds-hide'}" >
+			<ui:inputSelect label="Select Role" class="slds-select" aura:id="InputSelectDynamic"  required="true"/>
+            </div>
+       
+            <div class="slds-modal__footer">
+                <div class="slds-x-small-buttons--horizontal">
+                    <button class="slds-button slds-button--neutral slds-button--brand" onclick="{!c.closeModal}"  >Close</button>
+                    <button class="slds-button slds-button--neutral slds-button--brand" onclick="{!c.SaveCrewmember}">Save</button>
+                </div>                
+            </div>
+            
+        </div>
+    </div>
+
+    <div class="slds-backdrop slds-backdrop--hide" aura:id="backdrop"></div>
+</div>
+<!-- modal-->    
+    
+    <div class="slds slds-grid">
+        <div class="slds-col slds-size--4-of-4" >  
+            <div class="slds slds-box slds-m-around--small">
+                <!-- 2nd Row-->
+                <div class="slds-grid slds-wrap">
+                    <div class="
+                                slds-col
+                                slds-order--3 slds-medium-order--1
+                                slds-size--1-of-1 slds-medium-size--1-of-3
+                                slds-p-bottom--small">
+                        <lightning:buttonGroup class="">
+                            
+                            <lightning:button class="{!v.calendarView == 'day' ? 'slds-show ':'slds-hide'}" iconName="utility:chevronleft" onclick="{!c.previousDay}"/>
+                            <lightning:button class="{!v.calendarView == 'day' ? 'slds-show ':'slds-hide'}" iconName="utility:chevronright" onclick="{!c.nextDay}"/>
+                            
+                            <lightning:button class="{!v.calendarView == 'week' ? 'slds-show ':'slds-hide'}" iconName="utility:chevronleft" onclick="{!c.previousWeek}"/>
+                            <lightning:button class="{!v.calendarView == 'week' ? 'slds-show ':'slds-hide'}" iconName="utility:chevronright" onclick="{!c.nextWeek}"/> 
+                            
+                            <lightning:button class="{!v.calendarView == 'twoweeks' ? 'slds-show ':'slds-hide'}" iconName="utility:chevronleft" onclick="{!c.previousTwoWeeks}"/>
+                            <lightning:button class="{!v.calendarView == 'twoweeks' ? 'slds-show ':'slds-hide'}" iconName="utility:chevronright" onclick="{!c.nextTwoWeeks}"/>                             
+                            
+                            <lightning:button class="{!v.calendarView == 'threeweeks' ? 'slds-show ':'slds-hide'}" iconName="utility:chevronleft" onclick="{!c.previousThreeWeeks}"/>
+                            <lightning:button class="{!v.calendarView == 'threeweeks' ? 'slds-show ':'slds-hide'}" iconName="utility:chevronright" onclick="{!c.nextThreeWeeks}"/>                             
+                            
+                            <lightning:button class="{!v.calendarView == 'day' ? 'slds-show ':'slds-hide'}"  label="Today" onclick="{!c.dayView}"/>
+                            <lightning:button class="{!v.calendarView == 'week' ? 'slds-show ':'slds-hide'}" label="Today" onclick="{!c.doInit}"/>
+                            <lightning:button class="{!v.calendarView == 'twoweeks' ? 'slds-show ':'slds-hide'}" label="Today" onclick="{!c.twoWeeks}"/>
+                            <lightning:button class="{!v.calendarView == 'threeweeks' ? 'slds-show ':'slds-hide'}" label="Today" onclick="{!c.threeWeeks}"/>
+                            
+                            
+                            <lightning:button class="{!v.calendarView == 'day' ? 'slds-button--brand ':''}" label="Day" onclick="{!c.dayView}"/>
+                            <lightning:button class="{!v.calendarView == 'week' ? 'slds-button--brand ':''}" label="Week" onclick="{!c.oneWeek}"/>
+                            <lightning:button class="{!v.calendarView == 'twoweeks' ? 'slds-button--brand ':''}" label="2&nbsp;Weeks" onclick="{!c.twoWeeks}"/>
+                            <lightning:button class="{!v.calendarView == 'threeweeks' ? 'slds-button--brand ':''}" label="3&nbsp;Weeks" onclick="{!c.threeWeeks}"/>
+                        </lightning:buttonGroup>
+                    </div>
+                    <div class="
+                                slds-col
+                                slds-order--2 slds-medium-order--2
+                                slds-align--absolute-center
+                                slds-p-bottom--small"><ui:outputText value="{!v.headerDate}"/>
+                        
+                    </div>
+                    <div class="
+                                slds-col
+                                slds-order--1 slds-medium-order--3
+                                slds-size--1-of-1 slds-medium-size--1-of-4
+                                slds-p-bottom--small" style="display: inline-flex;">
+                        
+                        <div class="equipment-span">&nbsp;</div>&nbsp;<ui:outputText value="{!v.ColorName1}"/>&nbsp;&nbsp;&nbsp;<div class="resource-span">&nbsp;</div>&nbsp;<ui:outputText value="{!v.ColorName2}"/>
+                        
+                    </div>
+                </div>
+
+                
+             
+                
+                <ui:scrollerWrapper class="TableWrap slds-scrollable style-4" >    
+                <!--Resource Block-->
+                <div id="crewMembersView" class="{!v.displayView == 'crewMembers' ? 'slds-show ':'slds-hide'}">
+                    <table width="100%" class="calendarTable HeaderSticky" style="border:1px solid black">
+                    <thead>
+                        <tr >
+                            <th style="width:228px !important;border:1px solid black;text-aling:center !important;" align="center" class="tdc">
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Resources&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            </th>
+                            <aura:iteration items="{!v.weekDates}" var="row">
+                                <th style="min-width:100px;border:1px solid black;text-aling:center !important;" align="center" class="tdc">
+                                    {!row.Day}<br/>{!row.Date}
+                                </th>
+                            </aura:iteration>
+                        </tr>
+                    </thead>
+                    <tbody class="tbody">
+                        
+                    </tbody>
+                </table> 
+                </div>
+                    <!--Resource Block End-->
+                </ui:scrollerWrapper>
+            </div>
+        </div>
+    </div>
+</aura:component>

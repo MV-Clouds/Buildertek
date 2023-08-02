@@ -1,0 +1,60 @@
+<aura:component controller="BT_QuestionnaireBuilder" implements="flexipage:availableForRecordHome,force:hasRecordId"
+    access="global">
+
+    <!-- Attributes -->
+    <aura:attribute name="adId" type="string" access="public" description="Authority document id" />
+    <aura:attribute name="recordTypeDeveloperName" type="string" default=""
+        description="Record Type Developer Name of Authority document" />
+    <aura:attribute name="headerFields" type="List" default="" description="Section header fields" />
+    <aura:attribute name="parentId" type="string" access="public" description="parent section id if any exist." />
+    <aura:attribute name="sectionByParentId" type="Map" access="public" default="{}"
+        description="Section details by parent id map" />
+    <aura:attribute name="sections" type="List" description="section detail list" />
+    <aura:attribute name="initReference" type="Aura.Action" default="{!c.init}"
+        description="Init Reference action used to call from child components" />
+    <aura:attribute name="sectionLoaded" type="Boolean" default="false"
+        description="This boolean will be true once all section list loaded through aura itration." />
+    <aura:attribute name="sectionListSize" type="Integer" default="0" description="Section list size" />
+    <aura:attribute name="initChildReference" type="Aura.Action" default="{!c.initChild}"
+        description="Init Reference action used to call from child components" />
+    <aura:attribute name="save" type="Aura.Action" description="Save action Reference action" />
+    <aura:attribute name="newSection" type="string" description="Newly created section" />
+    <aura:attribute name="callerName" type="String" />
+    <!-- Handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <aura:handler name="change" value="{!v.sectionLoaded}" action="{!c.sectionLoaded}" />
+    <aura:handler name="refreshEvent" event="c:refreshComponent" action="{!c.openNewSectionModal}" />
+
+    <aura:registerEvent name="refreshTreeNodeEvent" type="c:BT_RefreshTreeNodeEvent" />
+    <aura:if isTrue="{!v.adId != null}">
+        <div style="padding:10px;" class="{!if(v.callerName == 'builder','','slds-hide')}">
+            <lightning:button variant="brand" iconName="utility:add" iconPosition="left"
+                onclick="{!c.openNewSectionComponent}" label="Add Selection Category" />
+        </div>
+        <aura:if isTrue="{!and(v.sectionListSize == 0, v.sectionLoaded)}">
+            <div class="av-list">
+                <div style="margin-top:5rem;">
+                    <c:BT_Illustration name="Setup" title="Add selection category to start selection sheet" />
+                </div>
+            </div>
+        </aura:if>
+    </aura:if>
+    <aura:if isTrue="{!v.sectionListSize > 0}">
+        <ol class="slds-accordion av-list">
+            <aura:iteration items="{!v.sections}" var="section" loaded="{!v.sectionLoaded}">
+                <li class="slds-accordion__list-item av-item" data-id="{!section.Id}" id="{!section.Id}">
+                    <c:BT_SectionAccordion aura:id="sectionAccordion" selectionId="{!v.adId}"
+                        callerName="{!v.callerName}" newSection="{!v.newSection}" section="{!section}"
+                        headerFields="{!v.headerFields}" recordTypeDeveloperName="{!v.recordTypeDeveloperName}"
+                        index="{!_index}" initReference="{!v.initReference}" parentId="{!section.Id}"
+                        initChildReference="{!v.initChildReference}" />
+                    <c:BT_SectionList aura:id="childsectionlist" callerName="{!v.callerName}" save="{!v.save}"
+                        parentId="{!section.Id}" sectionByParentId="{!v.sectionByParentId}"
+                        headerFields="{!v.headerFields}" recordTypeDeveloperName="{!v.recordTypeDeveloperName}"
+                        initReference="{!v.initReference}" />
+                </li>
+            </aura:iteration>
+        </ol>
+    </aura:if>
+    <lightning:overlayLibrary aura:id="overlayLib" />
+</aura:component>

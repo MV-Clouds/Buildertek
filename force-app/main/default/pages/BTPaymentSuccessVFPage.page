@@ -1,0 +1,19 @@
+<apex:page showheader="false" 
+           doctype="html-5.0" 
+           sidebar="false" 
+           showChat="false"
+           wizard="true" 
+           standardStylesheets="false" controller="BTPaymentSuccessController" action="{!createPayment}" 
+       >    
+     <!-- Javascript -->
+     
+     <br/><br/><br/><br/>   
+   <div style="width:100%;text-align:center">                   
+         <apex:form >
+             <label style="font-size:24px;">Your Invoice <b> <label style="color:#000080;">{!InvoiceData.name}</label> </b> Amount : <b><label style="color:#000080;">{!amount}</label></b> has been paid.  Thank you! </label>
+             <br/><br/> <br/> 
+             <!-- <apex:commandbutton value="Close" action="{!doCancel}"/> --> 
+         </apex:form>
+         
+    </div>
+</apex:page>

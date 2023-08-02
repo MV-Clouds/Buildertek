@@ -1,0 +1,67 @@
+<!--
+	@ PURPOSE : 1. LAUNCHES FROM THE LIGHTNING COMPONENT => IssuesCreatedAndUpdate.xml
+				2. DISPLAYS TABLE TO ADD AND REMOVE ROWS OF ISSUES DYNAMICALLY.
+	@ Name    : dynamicIssueRowsContainer.xml
+-->
+<aura:component controller="IssueManagementCtrl" Implements="flexipage:availableForRecordHome,force:hasRecordId">
+    
+	<lightning:workspaceAPI aura:id="workspace"/>
+	
+	<aura:attribute name="recordWorkOrder" type="Object" />
+    <aura:attribute name="listOfRecordTypes" type="Object[]" default="[]"/>
+	<aura:attribute name="isConsoleNavigation" type="Boolean" default="false"/>
+	
+	<aura:attribute name="issueList" type="Issue__c[]"/> 
+    <aura:attribute name="showSpinner" type="boolean" default="false" />
+	
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>   
+    <aura:handler name="DeleteRowEvt" event="c:DeleteRowEvt" action="{!c.removeRow}"/>
+    <aura:handler name="AddRowEvt" event="c:AddNewRowEvt" action="{!c.addNewRow}"/> 
+    
+    <aura:registerEvent name="refreshIssuesReportedTableEvt" type="c:RefreshIssuesReportedTable"/>
+    
+    <aura:if isTrue="{!v.showSpinner}">
+        <lightning:spinner alternativeText="Loading" size="large" />
+    </aura:if>
+    
+    <!--Table Part-->           
+    <table class="slds-table slds-table_bordered slds-table_cell-buffer"> 
+        <thead>
+            <tr>
+                <th scope="col">
+                    <div class="slds-truncate" title="Phone">Notes &amp; Comments</div>
+                </th>
+                <th scope="col">
+                    <div class="slds-truncate" title="Description">Issue Description</div>
+                </th>
+                <th scope="col">
+                    <div class="slds-truncate" title="Last Name">Control Panel</div>
+                </th>
+                <th scope="col">
+                    <div class="slds-truncate" title="First Name">Window Id</div>
+                </th>
+                
+                <th scope="col">
+                    <div class="slds-truncate" title="Recordtype">Record Type</div>
+                </th>
+				<th scope="col">
+                    <div class="slds-truncate" title="DateIdentified">Date Identified</div>
+                </th>
+            </tr>
+        </thead>   
+        <tbody>        
+            <aura:iteration items="{!v.issueList}" var="item" indexVar="index">
+                <c:dynamicIssueRows IssueInstance="{!item}" rowIndex="{!index}"
+                                    totalIssues="{!v.issueList.length}" listOfRecordTypes="{!v.listOfRecordTypes}"/>
+            </aura:iteration>
+        </tbody>
+    </table>
+    <br/> 
+	
+    <div class="slds-align_absolute-center ">
+        <button class="slds-button slds-button_brand" onclick="{!c.save}">Save Issues</button>
+		<button class="slds-button slds-button_neutral" onclick="{!c.cancel}">Cancel</button>
+    </div> 
+	<br/>
+	
+</aura:component>

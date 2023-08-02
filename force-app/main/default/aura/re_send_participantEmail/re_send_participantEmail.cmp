@@ -1,0 +1,59 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+     <aura:html tag="style">
+   .slds-modal__close  {
+    display: none;     
+} 
+  </aura:html> 
+    <div class="slds-p-right_xx-large" style="width:800px;">
+    <c:resend_Email_to_participants recordId="{!v.recordId}"/>  
+    </div>
+   
+    
+  <!-- <lightning:notificationsLibrary aura:id="notifLib" />
+      <aura:attribute name="radiobuttons" type="boolean" default="true"/>
+     <aura:attribute name="SendMailBox" type="boolean" />
+    <aura:attribute name="options" type="List" default="[
+                                                        { label: 'Registration', value: 'option1' },
+                                                        { label: 'Registration Completed ', value: 'option2' },
+                                                        { label: 'Course Completed ', value: 'option3' }
+                                                        ]"/>
+    <aura:attribute name="value" type="String"/>
+      <aura:if isTrue="{!v.radiobuttons}">
+        <lightning:radioGroup name="radioGroup"
+                              label="Radio Group"
+                              options="{! v.options }"
+                              value="{! v.value }"
+                              type="radio"
+                              onchange="{! c.handleChange }" />
+    
+    
+    </aura:if>
+     <aura:if isTrue="{!v.SendMailBox}">
+         
+         <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open" >
+                        <div class="slds-modal__container" >
+                           
+                            <header class="slds-modal__header slds-box slds-theme_shade slds-theme_alert-texture slds-theme_error">
+                                <p style="font-size:large;">Resend emails!</p>  
+                            </header>
+                            
+                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-5"  >
+                                <p style="font-size:medium;padding:10px;">Are you sure you want to resend Registration Completion Email to ?</p>
+                            </div>
+                          
+                            <footer class="slds-modal__footer">
+                                <lightning:button variant="brand"
+                              label="Yes"
+                              title="Yes"
+                              onclick="{!c.Send }"/>
+            <lightning:button variant="neutral"
+                              label="No"
+                              title="No"
+                              onclick="{!c.Cancel}"/>
+                            </footer>
+                        </div>
+                    </section>
+                   
+         
+    </aura:if>-->
+</aura:component>

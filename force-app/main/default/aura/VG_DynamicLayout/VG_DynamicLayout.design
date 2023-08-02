@@ -1,0 +1,4 @@
+<design:component>
+	<design:attribute name="PreviewMode" label="Preview Mode" description="Is it a Preview."  /> 
+    <design:attribute name="SiteType" label="Site Type" description="Type of Site."  datasource="apex://VG_FetchSiteType"/> 
+</design:component>

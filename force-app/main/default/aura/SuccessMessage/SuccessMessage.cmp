@@ -1,0 +1,23 @@
+<aura:component >
+     <aura:handler event="c:SuccessMessageEvnt" action="{!c.doInt}"/>
+    <aura:attribute name="SuccessMsg" type="String" default=""/>
+    <aura:attribute name="isSuccess" type="Boolean" default="false"/>
+    
+    <aura:if isTrue="{!v.isSuccess}" > 
+        <div class="slds-notify_container">
+            <div class="slds-notify slds-notify--alert slds-theme--success slds-theme--alert-texture" role="alert">
+                <button class="slds-button slds-notify__close slds-button--icon-inverse" title="Close" onclick="{!c.close}">
+                    
+                    <lightning:icon iconName="utility:close" size="x-small" class="iconFill"  />
+                    
+                    <span class="slds-assistive-text">Close</span>
+                </button>
+                <span class="slds-assistive-text">Success</span>
+                <h2>
+                    <lightning:icon iconName="utility:custom_apps" size="x-small"  class="iconFill"/>
+                    {!v.SuccessMsg}
+                </h2>
+            </div>
+        </div>
+    </aura:if>          
+</aura:component>

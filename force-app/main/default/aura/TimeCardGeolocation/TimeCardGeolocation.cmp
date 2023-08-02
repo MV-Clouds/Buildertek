@@ -1,0 +1,25 @@
+<aura:component controller="TimecardGeoLocationController"
+    implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader"
+    access="global">
+    
+    <aura:attribute name="latitude" type="decimal" default="" />
+    <aura:attribute name="longitude" type="decimal" default="" />
+    <aura:attribute name="UserStartTime" type="string" default="Startime" />
+    <aura:attribute name="isstarttime" type="Boolean" default="false" />
+    
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="newTimecard" type="Time_Cards__c" default="{ 'sobjectType': 'Time_Cards__c'}"
+        access="public" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+     <aura:if isTrue="{!v.isstarttime}">
+        <div class="" >
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                <p><center style=" font-size: medium ">Start Time cannot be greater than the End Time</center>
+                </p>
+            </div>
+            <br/>
+        </div>
+        
+    </aura:if>
+    <lightning:overlayLibrary aura:id="overlayLib" />
+</aura:component>

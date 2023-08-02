@@ -1,0 +1,64 @@
+<aura:component >
+
+	<aura:attribute name="itemPickerName" type="String" default="" required="true" description="Item picker name, based on component will shoe the records"/>
+    <aura:attribute name="title" type="String" required="true" description="Title of modal pop up"/>
+    <aura:attribute name="leftSideTitle" type="String" default="Available Items"/>
+    <aura:attribute name="rightSideTitle" type="String" default="Selected Items"/>
+    
+    <aura:attribute name="closable" type="Boolean" default="true"/>
+    <aura:attribute name="closeLabel" type="String" default="Close"/> 
+    <aura:attribute name="confirmLabel" type="String" default="OK"/>
+    
+    <aura:attribute name="onclose" type="Aura.Action" default="{!c.defaultCloseAction}"/> 
+    <aura:attribute name="onconfirm" type="Aura.Action" default="{!c.defaultCloseAction}"/>
+    
+    <aura:attribute name="leftSideComponent" type="Aura.Component[]" /> 
+    <aura:attribute name="rightSideComponent" type="Aura.Component[]" />
+    
+    <aura:attribute name="parentId" type="String" description="Parent record Id"/>
+    
+    <aura:attribute name="parentComponentAction" type="Aura.Action" description="Actoin to call parent component"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doinit}"/>
+    
+    <div class="slds-scope">
+        <div class="c-container slds-box">
+                 <div class="slds-grid slds-wrap">
+                     <div class="slds-size_1-of-2 slds-large-size_6-of-12">
+                         <div style="float:left;width:90%;">
+                             <lightning:card >
+                                 <aura:set attribute="title">
+                                     <lightning:icon iconName="utility:cases" size="x-small" /> &nbsp;{!v.leftSideTitle}
+                                 </aura:set>
+                                 
+                                 <p class="slds-p-horizontal--small">
+                                     {! v.leftSideComponent }
+                                 </p>
+                             </lightning:card>
+                         </div>
+                         <div style="margin-top: 60px;"> 
+                              <div onclick="{! c.addSelectedItems }" style="cursor:pointer" title="Add Selected Items">
+                                  <lightning:icon iconName="utility:right" size="medium" class="slds-p-left_small"/>
+                              </div>
+                              <br/>
+                              <div onclick="{! c.removeSelectedItems }" style="cursor:pointer" title="Remove Selected Items">
+                                  <lightning:icon iconName="utility:left" size="medium" class="slds-p-left_small"/>
+                              </div>
+                         </div>
+                     </div>
+                     
+                     <div class="slds-size_1-of-2 slds-large-size_6-of-12">
+                         <lightning:card >
+                             <aura:set attribute="title">
+                                 <lightning:icon iconName="utility:task" size="x-small" /> &nbsp;{!v.rightSideTitle}
+                             </aura:set>
+                            
+                             <p class="slds-p-horizontal--small">
+                                 {! v.rightSideComponent }
+                             </p>
+                         </lightning:card>
+                     </div>
+                 </div>
+             </div>
+    </div>
+</aura:component>

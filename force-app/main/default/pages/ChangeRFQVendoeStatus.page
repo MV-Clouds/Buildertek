@@ -1,0 +1,3 @@
+<apex:page >
+<button value='No Bidding' style='border-radius:10px; background:#6699CC; border:none; color:#fff;font-size: 14px; padding: 11px 50px; border-radius: 32px; text-decoration: none; margin:0px 20px'  onclick="changeStatus()" >Not Bidding</button>
+</apex:page>

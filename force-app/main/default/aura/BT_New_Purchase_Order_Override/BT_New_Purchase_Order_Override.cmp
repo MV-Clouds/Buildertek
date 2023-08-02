@@ -1,0 +1,100 @@
+<aura:component controller="PurchaseOrderDAO" implements="force:hasRecordId,force:lightningQuickActionWithoutHeader,lightning:actionOverride" access="global">
+    <aura:attribute name="onSuccess" type="Object"/>
+	<aura:attribute name="onCancel" type="Object"/>
+    <aura:attribute name="mainObjectFieldAPI" type="string" />
+    <aura:attribute name="mainObjectId" type="string" />
+    <aura:attribute name="Spinner" type="Boolean" />
+    <aura:attribute name="selectedCostCode" type="sObject"/>
+    <aura:attribute name="selectedGLAccount" type="sObject"/>
+    <aura:attribute name="selectedLAAccount" type="sObject"/> 
+    <aura:attribute name="selectedBudgetItem" type="sObject"/>
+    <aura:attribute name="selectedLookUpRecord" type="string" />
+    <aura:attribute name="pricebookoptions" type="List"/>
+    <aura:attribute name="pricebookName" type="string"/>
+    <aura:attribute name="productId" type="string"/>
+    <aura:attribute name="productName" type="string"/>
+    <aura:attribute name="clearLookupValue" type="Aura.Action" />
+    <aura:attribute name="newPOItem" type="Purchase_Order_Item__c" default="{ 'sobjectType': 'Purchase_Order_Item__c'}" access="global"/>
+    <aura:handler name="oSelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.handleComponentEvent}"/>
+	<aura:handler name="SelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.handleComponentEvents}"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <lightning:notificationsLibrary aura:id="notifLib"/>
+    <div aura:id="coContainer" class="c-container">
+        <h3 class="slds-section__title slds-theme--shade primaryPaletteBorder test-id__section-header-container">
+    		<span class="test-id__section-header-title section-header-title slds-p-horizontal--small slds-truncate">Information</span>
+    	</h3>
+    	<lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__Purchase_Order_Item__c">
+        	<lightning:layout multipleRows="true" >
+        	    <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+        	        <label>Pricebook</label>
+        			<ui:inputSelect value="{! v.pricebookName }" class="pricebook-class">
+                        <aura:iteration var="option" items="{! v.pricebookoptions }">
+                            <option value="{! option.value }" selected="{!option.value == v.pricebookName}">{! option.key }</option>
+                        </aura:iteration>
+                    </ui:inputSelect>
+        		</lightning:layoutItem>
+        		<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+        		    <label>Product Description</label>
+        			<c:BT_LightningLookup aura:id="productId" objectAPIName="Product2" IconName="standard:product" selectedRecord="{!v.selectedLookUpRecord}" parentId="{! v.pricebookName }"/>
+        		</lightning:layoutItem>
+        		<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+        			<lightning:input aura:id="submittalId" type="text" value="{!v.newPOItem.Name}" label="Purchase Order Item" autocomplete="off"/>
+        		</lightning:layoutItem>
+        		<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+        		    <lightning:inputField aura:id="POId" fieldName="buildertek__Purchase_Order__c" label="Purchase Order"/>
+        		</lightning:layoutItem>
+        		<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+        			<lightning:input aura:id="quantityId" type="number" value="{!v.newPOItem.buildertek__Quantity__c}" label="Quantity" autocomplete="off"/>
+        		</lightning:layoutItem>
+        		<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+        		    <label>Expense GL Account</label>
+        		    <c:customLookup aura:id="expenseId" objectAPIName="buildertek__GL_Account__c" IconName="custom:custom5" selectedRecord="{!v.selectedGLAccount}" />
+        		</lightning:layoutItem>
+        		<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+        			<lightning:input type="number" formatter="currency" aura:id="unitPriceId" value="{!v.newPOItem.buildertek__Unit_Price__c}" label="Unit Price" autocomplete="off" />
+        		</lightning:layoutItem>
+        		<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+        		    <label>Liability GL Account</label>
+        			<c:customLookup aura:id="liabilityId" objectAPIName="buildertek__GL_Account__c" IconName="custom:custom5" selectedRecord="{!v.selectedLAAccount}" />
+        		</lightning:layoutItem>
+        		<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+        			<lightning:inputField aura:id="uomId" fieldName="buildertek__UOM__c" value="{!v.newPOItem.buildertek__UOM__c}" label="UOM" />
+        		</lightning:layoutItem>
+        		<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+        		    <label>Cost Code</label>
+        		    <c:customLookup aura:id="costCodeId" objectAPIName="buildertek__Cost_Codes__c" IconName="custom:custom18" selectedRecord="{!v.selectedCostCode}" />	
+        		</lightning:layoutItem>
+        		<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+        			<lightning:input aura:id="taxId" type="number" value="{!v.newPOItem.buildertek__Tax__c}" label="Tax Rate %" autocomplete="off"/>
+        		</lightning:layoutItem>
+        		<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+        		    <label>Budget Item</label>
+        		    <c:customLookup aura:id="budgetItemId" objectAPIName="buildertek__Budget_Item__c" IconName="custom:custom5" selectedRecord="{!v.selectedBudgetItem}" />
+        		</lightning:layoutItem>
+        		<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+        			
+        		</lightning:layoutItem>
+        		<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+        			<lightning:input type="date" aura:id="dateId" value="{!v.newPOItem.buildertek__Ordered_Date__c}" label="Ordered Date" autocomplete="off" />
+        		</lightning:layoutItem>
+        	</lightning:layout>
+    	</lightning:recordEditForm>
+    	<aura:if isTrue="{!v.Spinner}">
+    		<div aura:id="spinnerId" class="slds-spinner_container">
+    		   <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+    			 <span class="slds-assistive-text">Loading</span>
+    			 <div class="slds-spinner__dot-a"></div>
+    			 <div class="slds-spinner__dot-b"></div>
+    		   </div>
+    		</div>    
+    	</aura:if>
+    </div>  
+    <div class="slds-hide">
+	    <div aura:id="footer">
+    		<button class="slds-button slds-button_neutral" onclick="{!c.doCancel}">Cancel</button>
+    		<button class="slds-button slds-button_neutral" onclick="{!c.doSaveAndNew}">Save &amp; New</button>
+    		<button class="slds-button slds-button_brand" onclick="{!c.doSave}">Save</button>
+    	</div>
+    </div>
+</aura:component>

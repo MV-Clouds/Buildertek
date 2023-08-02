@@ -1,0 +1,46 @@
+<apex:component >
+<style>
+P.goright {text-align: right}
+.row{
+margin-bottom:10px;
+}
+.lookupInput a{
+display:block;
+position:absolute;
+top:30px;
+}
+.lookupInput img{
+float:right;
+margin-right: -0.2em;
+}
+span .lookupInput {
+position:relative;
+display:inherit;
+}
+.lookupInput a,.lookupInput a
+{
+border:none !important;
+background:none !important;
+box-shadow:none !important;
+}
+
+.zen .zen-tabMenu a {
+    font-size: 13px;
+    }
+    #userNavLabel {
+    font-size: 11px;
+    }
+    #tsidButton{
+    font-size: 14px;
+    }
+    .headerSearchLeftRoundedCorner #phSearchInput {
+    font-size: 12px;
+    }
+    .navLinks .linkElements>a {
+    font-size: 11px;
+    }
+    #tsidButton {
+    min-width: 120px;
+    }
+</style>
+</apex:component>

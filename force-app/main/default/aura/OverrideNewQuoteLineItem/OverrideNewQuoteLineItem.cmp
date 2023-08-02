@@ -1,0 +1,235 @@
+<aura:component controller="OverrideNewQuoteLineItemController" implements="force:hasRecordId,force:lightningQuickActionWithoutHeader,lightning:actionOverride" access="global">
+    <aura:attribute name="parentRecordId" type="String"/>
+    <aura:attribute name="isOpen" type="boolean" default="false"/>
+    <aura:attribute name="Spinner" type="boolean" default="false"/>
+    <aura:attribute name="IsConsole" type="boolean" default="false" />
+    <aura:attribute name="AppName" type="String" default="" />
+    <aura:attribute name="selectedCostCode" type="sObject"/>
+    <aura:attribute name="selectedGroup" type="sObject"/>
+	<aura:attribute name="selectedQuote" type="sObject"/>
+    <aura:attribute name="selectedPoItem" type="sObject"/>
+    <aura:attribute name="selectedPORecord" type="sObject" />
+	<aura:attribute name="selectedQuoteRecord" type="sObject" />
+    <aura:attribute name="isSaveNew" type="boolean" default="false"/>
+
+    
+    <aura:attribute name="productfamily" type="string"/>
+    <aura:attribute name="productfamilyoptions" type="List"/>
+    <aura:attribute name="listofproductfamily" type="List"/>
+    
+    <aura:attribute name="selectedLookUpRecord" type="string" />
+    <!-- <aura:handler name="change" value="{!v.selectedLookUpRecord}" action="{!c.changeProduct}" /> -->
+    <aura:attribute name="pricebookoptions" type="List"/>
+    <aura:attribute name="pricebookName" type="string"/> 
+    <aura:attribute name="productId" type="string"/>
+    <aura:attribute name="productName" type="string"/>
+    <aura:attribute name="clearLookupValue" type="Aura.Action" />
+    <aura:attribute name="saveAndNew" type="Boolean" default="false" />
+   
+	 <aura:attribute name="newQuoteItem" type="Quote_Item__c" default="{ 'sobjectType': 'Quote_Item__c'}" access="global"/>
+    <!-- <aura:handler name="oSelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.handleComponentEvent}"/>  -->
+	<aura:handler name="SelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.handleComponentEvents}"/>
+<aura:handler  event="c:ClearLookupvalueEvent" action="{!c.ClearhandleComponentEvent}"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+<!--    <ltng:require styles="{!$Resource.ModalPreview62moreMedia}"/>-->
+
+     <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/>
+    
+    <lightning:notificationsLibrary aura:id="notifLib"/>
+    <lightning:workspaceAPI aura:id="workspace"/>
+    
+    <!-- Add it over here -->
+    <!-- <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner-brand  slds-spinner slds-spinner-large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                    <b>Processing, Please Wait</b>
+                </div>
+            </div>
+        </div>
+    </aura:if> -->
+    <!-- <aura:if isTrue="{!v.isOpen}"> 
+        <div class="slds-modal__content " style="width:60%;margin:20px auto;">
+            <div class="slds slds-scope">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeModel }" alternativeText="close"
+                                          variant="bare-inverse" class="slds-modal__close" />
+                    
+                                            
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New Quote Line</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="height:100%">
+                  <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__Quote_Item__c">
+                            	<lightning:layout multipleRows="true" >
+                            	   <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                            	        <label>Pricebook</label>
+                     
+										<ui:inputSelect value="{! v.pricebookName }" change="{!c.changeEvent}" class="pricebook-class">
+                                            <aura:iteration var="option" items="{! v.pricebookoptions }">
+                                                <option value="{! option.value }" selected="{!option.value == v.pricebookName}">{! option.key }</option>
+                                            </aura:iteration>
+                                        </ui:inputSelect>  
+                            		</lightning:layoutItem> 
+                                    
+                                    <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                            	        <label>Product Family</label>
+                            			 <ui:inputSelect value="{!v.productfamily}" change="{!c.changefamily}" class="pricebook-class">
+                                                <aura:iteration var="option" items="{!v.listofproductfamily}">
+                                                    <option value="{!option.productfamilyvalues}" selected="{!option.productfamilyvalues == v.productfamily}">{!option.productfamilyvalues}</option>
+                                                </aura:iteration>
+                                            </ui:inputSelect>
+                            		</lightning:layoutItem> 
+                            		<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                            		    <label>Product </label>
+                            			<c:BT_LightningLookup aura:id="productId" objectAPIName="Product2" IconName="standard:product" selectedRecord="{!v.selectedLookUpRecord}" parentId="{! v.pricebookName }" prodctfamly ="{!v.productfamily}" />
+                            		</lightning:layoutItem>
+                            		<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                            			<lightning:input aura:id="submittalId" type="text" value="{!v.newQuoteItem.Name}" label="Product Description" autocomplete="off" />
+                            		</lightning:layoutItem>
+                            	
+									<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                            			<lightning:input aura:id="quantityId" type="number" value="{!v.newQuoteItem.buildertek__Quantity__c}" label="Quantity" autocomplete="off"/>
+                            		</lightning:layoutItem>
+                                    
+									<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                            		    <label>Group</label>
+                            			<c:customLookup aura:id="groupid" objectAPIName="buildertek__Quote_Line_Group__c" IconName="custom:custom5" selectedRecord="{!v.selectedGroup}" />
+                            		</lightning:layoutItem>
+									
+                                    
+                                     <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                            			<lightning:input type="number" formatter="currency" aura:id="unitPriceId" value="{!v.newQuoteItem.buildertek__Unit_Price__c}" label="List Price" step="0.01" />
+                            		</lightning:layoutItem>
+                                    
+                                    <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                            			<lightning:input type="number" formatter="currency" aura:id="unitcostId" value="{!v.newQuoteItem.buildertek__Unit_Cost__c}" label="Unit Cost" step="0.01" />
+                            		</lightning:layoutItem>
+                                    
+                            		<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                            		    <label>Cost Code</label>
+                            		    <c:customLookup aura:id="costCodeId" objectAPIName="buildertek__Cost_Codes__c" IconName="custom:custom18" selectedRecord="{!v.selectedCostCode}" />	
+                            		</lightning:layoutItem>
+                            		<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                            			<lightning:input aura:id="markupId" type="number" value="{!v.newQuoteItem.buildertek__Markup__c}" label="Markup %" autocomplete="off"/>
+                            		</lightning:layoutItem>
+									
+                            		<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                            		    <label>Purchase Order</label>
+                            		    <c:customLookup aura:id="PurchaseId" objectAPIName="buildertek__Purchase_Order__c" IconName="custom:custom5" selectedRecord="{!v.selectedPORecord}" />
+                            		</lightning:layoutItem>
+                                    
+                                    
+									
+									<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                            			<lightning:input type="textarea" aura:id="NotesId" value="{!v.newQuoteItem.buildertek__Notes__c}" label="Notes" autocomplete="off" />
+                            		</lightning:layoutItem>
+                            	</lightning:layout>
+                        	</lightning:recordEditForm>
+                </div>
+                <footer class="slds-modal__footer">
+                   <lightning:button variant="neutral" 
+                                              label="Cancel"
+                                              title="Cancel"
+                                              onclick="{! c.closeModel }"/>
+                            <lightning:button variant="neutral" 
+                                              label="Save &amp; New"
+                                              title="Save &amp; New"
+                                              onclick="{!c.saveAndNew}"/>                  
+                            <lightning:button variant="brand" 
+                                              label="Save"
+                                              title="Save"
+                                              onclick="{!c.save}"/>
+                </footer>
+            </div>
+        </div>
+    </aura:if> -->
+
+    <aura:attribute name="listOfFields0" type="List" default="[]"/>
+    <aura:attribute name="isLoading" type="Boolean" default="true" />
+    <aura:attribute name="listOfFields" type="List" />
+
+    <aura:if isTrue="{!v.isLoading}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                    <b>Processing, Please Wait</b>
+                </div>
+            </div>
+        </div>
+    </aura:if>
+    <aura:if isTrue="{!not(v.isLoading)}">      
+        <div class="slds-modal__content " style="width:60%;margin:20px auto;">
+            <div class="slds slds-scope">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeModel }" alternativeText="close"
+                                          variant="bare-inverse" class="slds-modal__close" />
+                    
+                                            
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New Quote Line</h2>
+                </header>
+
+                <lightning:recordEditForm aura:id="newQuoteLine" objectApiName="buildertek__Quote_Item__c" onsubmit="{!c.handleSubmit}" density="Comfy" >
+                    <lightning:layout multipleRows="true">
+                        <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                            <label>Pricebook</label>
+            
+                            <ui:inputSelect value="{! v.pricebookName }" change="{!c.changeEvent}" class="pricebook-class">
+                                <aura:iteration var="option" items="{! v.pricebookoptions }">
+                                    <option value="{! option.value }" selected="{!option.value == v.pricebookName}">{! option.key }</option>
+                                </aura:iteration>
+                            </ui:inputSelect>  
+                        </lightning:layoutItem>
+
+
+                        <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                            <label>Product Family</label>
+                                <ui:inputSelect value="{!v.productfamily}" change="{!c.changefamily}" class="pricebook-class">
+                                    <aura:iteration var="option" items="{!v.listofproductfamily}">
+                                        <option value="{!option.productfamilyvalues}" selected="{!option.productfamilyvalues == v.productfamily}">{!option.productfamilyvalues}</option>
+                                    </aura:iteration>
+                                </ui:inputSelect>
+                        </lightning:layoutItem> 
+
+                        <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                            <label>Product </label>
+                            <c:BT_LightningLookup aura:id="productId" objectAPIName="Product2" IconName="standard:product" selectedRecord="{!v.selectedLookUpRecord}" parentId="{! v.pricebookName }" prodctfamly ="{!v.productfamily}" />
+                        </lightning:layoutItem>
+                        <aura:iteration items="{!v.listOfFields0}" var="field">
+                            <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                                <aura:if isTrue="{! (field.name == 'Name' || field.name == 'buildertek__Unit_Cost__c' || field.name=='buildertek__Quote__c')}">
+                                    <aura:if isTrue="{!field.name == 'buildertek__Quote__c'}">
+                                        <lightning:inputField fieldName="{!field.name}" value="{!v.newQuoteItem.buildertek__Item_Name__c}"/>
+                                    </aura:if>
+
+                                    <aura:if isTrue="{!field.name == 'Name'}">
+                                        <lightning:inputField fieldName="{!field.name}" value="{!v.newQuoteItem.Name}"/>
+                                    </aura:if>
+                                    
+                                    <aura:if isTrue="{!field.name == 'buildertek__Unit_Cost__c'}">
+                                        <lightning:inputField fieldName="{!field.name}" value="{!v.newQuoteItem.buildertek__Unit_Cost__c}"/>
+                                    </aura:if>
+                                    <aura:set attribute="else">
+                                        <lightning:inputField fieldName="{!field.name}" />
+                                    </aura:set>  
+                                </aura:if>
+                            </lightning:layoutItem>
+                        </aura:iteration>
+                    </lightning:layout>
+                    <footer aura:id="footer" class="slds-modal__footer">
+                        <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{! c.closeModel }" />
+                        <lightning:button variant="neutral" type="submit" title="Save &amp; New" label="Save &amp; New" onclick="{!c.handlesaveNnew}" />
+                        <lightning:button variant="brand" type="submit" name="save" label="Save" disabled="{!v.isDisabled}" />
+                    </footer>
+                </lightning:recordEditForm>
+
+            </div>
+        </div>
+    </aura:if>   
+
+</aura:component>

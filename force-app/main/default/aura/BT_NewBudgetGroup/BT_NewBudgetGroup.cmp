@@ -1,0 +1,55 @@
+<aura:component controller="BudgetDAO">
+    <aura:attribute name="groupFields" type="List" description="Group fields from fieldset" />
+    <aura:attribute name="budgetId" type="String" description="budget record Id" />
+    <aura:attribute name="groupId" type="String" description="budget record Id" />
+    <aura:attribute name="onSuccess" type="Aura.Action" description="parent component method Reference action used to call from child components on record Save" />
+	<aura:attribute name="onDelete" type="Aura.Action" description=""/>
+	<aura:attribute name="lines" type="List" default="[]"/>
+	<aura:attribute name="modalPromise" type="Aura.Action" description="Reference action used to call from child components"/>
+    
+    <aura:handler name="init" value="{! this }" action="{! c.init }" />
+
+    <div style="min-height:50vh;">
+        <!-- Spinner -->
+        <c:BT_Spinner/>
+
+        <lightning:recordEditForm aura:id="recordEditForm" objectApiName="buildertek__Quote_Line_Group__c" recordId="{!v.groupId}" onsubmit="{!c.submit}" onsuccess="{!c.onSuccess}" onerror="{!c.handleError}">
+
+            <lightning:messages />
+            <lightning:tabSet>
+                <lightning:tab label="Setup" Id="setup">
+                    <div class="slds-grid slds-wrap slds-scrollable">
+                        <aura:iteration items="{!v.groupFields}" var="setupField">
+                            <div class="{!setupField.isHtmlFormatted ? 'slds-col slds-size_1-of-1': 'slds-col slds-size_1-of-2' }">
+                                <div class="slds-m-around_x-small">
+                                    <lightning:inputField aura:id="inputFields" class="{!setupField.isRequired ? 'customvalidation' :''}" fieldName="{!setupField.fieldName}" />
+                                	<div aura:id="inputErrorMessage" class="slds-form-element__help slds-required slds-hide"></div>
+                                </div>
+                            </div>
+                        </aura:iteration>
+                    </div>
+                </lightning:tab>
+
+                <lightning:tab label="Lines" Id="Advance Settings">
+                    Budget Lines<br/>
+                    <c:BT_ProductPicker lines="{!v.lines}"/>
+                </lightning:tab>
+            </lightning:tabSet>
+
+            <div class="slds-hide">
+                <div aura:id="footer">
+                	<aura:if isTrue="{!v.groupId != null}">
+                    	<lightning:button name="delete" class="slds-float_left" variant="brand" label="Delete" onclick="{!c.onDelete}" />
+                    </aura:if>
+                    <button class="slds-button slds-button--neutral" onclick="{!c.close}" >Cancel</button>
+    	            <button class="slds-button slds-button--brand" onclick="{!c.save}">Save</button>
+                    <!--<lightning:button name="cancel" class="slds-float_right" variant="neutral" label="Cancel" onclick="{!c.close}" />&nbsp;
+                    <lightning:button name="save" class="slds-float_right" variant="brand" type="submit" label="Save" onclick="{!c.save}" />-->
+                </div>
+                <button class="slds-hide" id="saveBudgetGroupButton" name="save" type="submit" />
+            </div>
+
+        </lightning:recordEditForm>
+    </div>
+    <lightning:overlayLibrary aura:id="overlayLib" />
+</aura:component>

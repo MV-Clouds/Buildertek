@@ -1,0 +1,13 @@
+<apex:page >
+    <apex:includeLightning />
+    <div id="lightning" />
+    <script>
+    	$Lightning.use("buildertek:MSASettingsApp", function() {
+            $Lightning.createComponent("buildertek:StripeSettings",
+          	{},
+            "lightning",
+             function(cmp) {
+             });
+        });        
+      </script>
+</apex:page>

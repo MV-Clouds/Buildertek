@@ -1,0 +1,70 @@
+<aura:component controller="Pricing_Request_From_Option" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> 
+    <aura:attribute name="Spinner" type="Boolean" default="false"/>
+    <aura:attribute name="pricingRequest" type="Pricing_Request__c" default="{'sobjectType':'Pricing_Request__c', 'Name':''}" />
+
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </aura:if>
+
+    <aura:html tag="style">
+        .slds-modal__content {
+            height: unset !important;
+            max-height: unset !important;
+            overflow: hidden !important;
+        } 
+        .slds-modal__container{
+            max-width: 60rem !important;
+            width:70% !important;
+        }   
+        .container{
+            height: auto !important;
+        }
+        .slds-modal__close{
+            display:block !important;    
+        }
+        .slds-docked-form-footer{
+            bottom: auto;
+        }
+        .slds-p-around--medium{
+            padding: 0;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content{
+            padding: 0;
+        }
+        .modalBodyDiv{
+            text-align: center;
+            font-weight: 600;
+            line-height: 10rem;
+            font-size: 18px;
+        }
+    </aura:html>
+    <div class="slds-modal__content">
+        <div class="slds">
+            <header class="slds-modal__header">
+                <div class="" id="header" style="font-size:20px;">
+                    Create Pricing Request
+                </div>
+            </header>  
+
+            <div style="max-height: 75vh;overflow:auto;">
+                <div style="padding: 10px;">
+                    <lightning:recordEditForm objectApiName="buildertek__Pricing_Request__c">
+                        <lightning:inputField fieldName="Name" value="{!v.pricingRequest.Name}" required = "true"/>
+                    </lightning:recordEditForm>
+                </div>
+            </div>
+
+            <footer role="contentinfo" class="slds-docked-form-footer fixedFooter" style="display:block;text-align:right;padding-right:5px;">
+                <button class="slds-button slds-button--neutral" onclick="{!c.closeModal}"> Cancel </button>
+                <button class="slds-button slds-button--brand" onclick="{!c.createRecord}" style="margin: 0 0.5rem;"> Create </button>
+            </footer>
+        </div>
+    </div>
+</aura:component>

@@ -1,0 +1,44 @@
+<apex:page controller="CreateFileController" showHeader="false" sidebar="false" applyBodyTag="false" standardStylesheets="false" >
+    
+
+    <script src="/soap/ajax/32.0/connection.js" type="text/javascript"></script>
+    
+    <script>
+    
+    function uploadContentVersion(files) {
+        
+        var contentVersionList = [];
+        for(var i=0;i<files.length;i++){
+        var contentVersion = new sforce.SObject('ContentVersion');
+        contentVersion.Title = files[i].fileName;
+        contentVersion.PathOnClient = '/' + files[i].fileName;
+        contentVersion.FirstPublishLocationId = files[i].parentId;
+        contentVersion.VersionData = files[i].fileContent;
+        contentVersionList.push(contentVersion);
+        }
+        alert('contentVersionList ------> '+JSON.stringify(contentVersionList));
+        alert('contentVersionList ------> '+contentVersionList.length);
+        var results = sforce.connection.create(contentVersionList);
+        alert('results ------> '+JSON.stringify(results));
+        for (var i = 0; i < results.length; i++) {
+            if (results[i].getBoolean("success")) {
+                alert('New ContentVersion record created:' + results[i].id);
+            }
+            else {
+                alert('Failed:' + results[i]);
+            }
+        }
+    }
+    
+    window.addEventListener('message', (message)=>{
+        console.log(message.data);
+        var file = message.data;
+        console.log('file -------> '+JSON.stringify(file));
+        uploadContentVersion(file);
+    });
+        
+    window.parent.postMessage('loaded', "*")
+    </script>
+    
+    <body></body>
+</apex:page>

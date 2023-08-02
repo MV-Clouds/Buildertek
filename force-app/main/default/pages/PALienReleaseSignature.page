@@ -1,0 +1,20 @@
+<apex:page controller="PALienReleaseSignatureController"  renderAs="pdf" applyBodyTag="false">
+    <head>
+        <style> 
+            body { font-family: 'Arial Unicode MS'; }
+            .companyName { font: bold 30px; color: red; }  
+        </style>
+    </head>
+    <body>
+        
+        <p>{!LienText}</p>
+
+        <apex:form >
+             <div style="margin-top:20px">Signature : </div>
+             <div style="margin-top:10px;">
+                 <apex:image url="/sfc/servlet.shepherd/version/download/{!ImageId}" style="width: 500px;"/> 
+            </div>
+        </apex:form>
+    </body>
+    
+</apex:page>

@@ -1,0 +1,21 @@
+<apex:component access="global" controller="ProposalImagesController">
+    <apex:attribute name="imageDescription" type="String" description="This is the Id of the account" assignTo="{!ProposalImageDescription}" access="global" />
+    <apex:attribute name="imageURL" type="String" description="This is the Id of the account" assignTo="{!ProposalImageURL}" access="global" />
+    <apex:attribute name="imageText" type="String" description="This is the Id of the account" assignTo="{!ProposalImage}" access="global" />
+    
+    <body>
+        <table width="100%" style="border-collapse: collapse;">
+            <tr>
+                <td>
+                    <apex:outputText value="{!ProposalImageDescription}" style="justify-content: left"/>
+                </td>
+            </tr> <br/>
+            <tr>
+                <td>
+                    <apex:image url="{!imageURL}{!imageText}" style="margin-bottom: 10px;" height="234" width="300"  />
+                </td>
+            </tr>
+            <br/><br/>
+        </table> 
+    </body>    
+</apex:component>

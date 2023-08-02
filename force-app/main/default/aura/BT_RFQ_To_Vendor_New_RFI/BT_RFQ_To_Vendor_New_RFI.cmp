@@ -1,0 +1,220 @@
+<aura:component controller = "BT_New_RFI_Controller" 
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global" 
+                >
+    <aura:attribute name="fieldSetValues" type="List"  />
+    
+    <aura:html tag="style">
+        .slds-modal__container {
+        min-width: 60vw;
+        }
+        .slds-modal__header--empty{
+        dispaly:none !important;
+        }
+        .slds-scrollable {
+        overflow: HIDDEN !important;  
+        }
+        .slds-modal__close {
+        display: none;
+        }
+        
+        
+    </aura:html>
+    
+    <aura:attribute name="rfq_Id" type="string"  />
+    
+     <aura:attribute name="selectedFiles" type="sObject[]" default="[]"/>
+    <aura:attribute name="selectedfilesFill" type="list"/>
+    <aura:attribute name="selectedfileslist" type="Object"/>
+    
+    
+    <!-- <aura:attribute name="modalPromise" type="Aura.Action"/>-->
+    <aura:attribute name="fileOptsList" type="Object"/>
+    <aura:attribute name="isRFQsubmitted" type="Boolean"  />
+    <aura:attribute name="showpopup" type="Boolean" default="false" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> 
+    <aura:attribute name="fileName" type="String" default="" />
+    <aura:attribute name="uploadedFileIds" type="List" default="[]" />
+    <aura:attribute name="rfiId" type="String" access="public" /> 
+    <aura:attribute name="projRecordId" type="String" default="" />
+    <aura:attribute name="rfqRecord" type="RFQ__c"/>
+    <aura:attribute name="parentprojectRecordId" type="String" default="" />
+    <aura:attribute name="rfqrec" type="RFQ__c"/>
+    <aura:attribute name="projectname" type="String" default="" />
+    <aura:attribute name="contactid" type="String" />
+    <aura:attribute name="userInfo" type="string"/>
+    <aura:attribute name="userdata" type="User"/>
+     <aura:attribute name="files1" type="List"/>
+    <aura:attribute name="Isfileuploaded" type="Boolean" default="false" />
+    <force:recordData aura:id="newrfqrecord" layoutType="FULL" recordId="{!v.projRecordId}" fields="buildertek__Project__c"
+                      targetFields="{!v.rfqRecord}" targetError="{!v.newRecordError}" />
+    
+    <!-- <buildertek:bT_New_RFI_Mass/> -->
+    
+    <aura:attribute name="accountList" type="RFI__c[]"/>
+    
+    <aura:attribute name="currentTab" type="Boolean" default="false" />
+    <aura:attribute name="IsSpinner" type="Boolean" default="false" />
+    <aura:attribute name="question" type="String" />
+    
+       <aura:html tag="style">
+            
+            .slds-modal__close {
+            display: block !important;  
+            }
+            
+            
+        </aura:html>
+    <!-- <lightning:overlayLibrary aura:id="overlay"/> -->
+    <aura:if isTrue="{!v.IsSpinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                    <b>Processing, Please Wait</b>
+                </div>
+                
+            </div>
+        </div>
+    </aura:if>
+    
+    <aura:if isTrue="{!v.showpopup}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container ">
+                <header class="slds-modal__header">
+                 
+                    <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeModel }" alternativeText="close"
+                                          variant="bare-inverse" class="slds-modal__close" />
+                    <p></p>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New RFI </h2>
+                    <p></p>
+                </header>
+                  <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__RFI__c"
+                                              onsubmit="{!c.handleSubmit}" onsuccess="{!c.onRecordSuccess}">
+                <div class="slds-modal__content " id="modal-content-id-1">
+                  
+                        <lightning:messages />
+                        
+                        
+                         <table class="slds-table slds-table--bordered':'slds-table--bordered'" >
+                       <tbody>  
+                            <tr >
+                            <td> <label class="slds-form-element__label" > &nbsp; &nbsp;&nbsp;RFQ : </label></td>
+                            <td>{!v.rfqrec.Name}</td>
+                            </tr>
+                              <aura:iteration items="{!v.fieldSetValues}" var="field">
+                                  <tr >
+                                <aura:if  isTrue="{!field.name =='buildertek__Subject__c'}"> 
+                                                <td role="gridcell">
+                                               <label class="slds-form-element__label" ><abbr class="slds-required" title="required">* </abbr> Subject </label>
+                                                </td>
+                                                <td role="gridcell">
+                                             <lightning:inputField fieldName="{! field.name }" 
+                                                              required="true" variant="label-hidden" class="nolabel" 
+                                                              style="position:relative;left:-10px;" />
+                                                </td>
+                                            </aura:if>
+                                  </tr>
+                            <tr >
+                                 <aura:if isTrue="{!field.name =='buildertek__Question__c'}">
+                                                <td role="gridcell">
+                                               <label class="slds-form-element__label" ><abbr class="slds-required" title="required">* </abbr>Question</label>
+                                                </td>
+                                                <td role="gridcell">
+                                             <lightning:inputField fieldName="{! field.name }"  value = "{!v.question}" 
+                                                              required="true" variant="label-hidden" class="nolabel" 
+                                                              style="position:relative;left:-10px;" />
+                                                </td>
+                                            </aura:if>
+                                  </tr>
+                                  <tr>
+                                 <aura:if  isTrue="{!field.name =='buildertek__Due_Date__c'}">
+                                                <td role="gridcell">
+                                               <label class="slds-form-element__label" ><abbr class="slds-required" title="required">* </abbr>Due Date :</label>
+                                                </td>
+                                                <td role="gridcell">
+                                            <lightning:inputField fieldName="{! field.name }"   required="true" variant="label-hidden" class="nolabel" style="position:relative;left:-10px;" />  
+                                                </td>
+                                            </aura:if>
+                                  </tr>
+                                  <tr>
+                                 <aura:if  isTrue="{!field.name =='buildertek__RFI_Assigned_To__c'}">
+                                                <td role="gridcell">
+                                               <label class="slds-form-element__label" >&nbsp; &nbsp;&nbsp;Assigned To :</label>
+                                                </td>
+                                                <td role="gridcell">
+                                             <lightning:input fieldName="{! field.name }"  value="{!v.rfqrec.buildertek__RFI_Owner__r.Name}"  readonly="true"  
+                                                                 style="position:relative;top:-10px;"  /> 
+                                                </td>
+                                            </aura:if>
+                                  </tr>
+                            </aura:iteration>
+                             </tbody>
+                        </table>
+                        <!--<div >
+                            <lightning:button name="Add" variant="brand" label="Add" onclick="{!c.uploadFile}" />
+                        </div>-->
+                        <!--<c:BT_MultiSelectLookup objectAPIName="buildertek__File__c"
+                                                IconName="standard:file"
+                                                lstSelectedRecords="{!v.selectedFiles}"
+                                                label=""
+                                                placeholder="Attachments"/>-->
+                            
+                                            <div style="border:1px solid lightgray;border-radius:5px;padding:10px;margin-top:10px">
+                        <lightning:layout multipleRows = "true">
+                            <lightning:layoutitem >
+                                <div>
+                                    <!-- <lightning:input aura:id="fuploader" onchange="{!c.handleFilesChange}" type="file" variant="label-hidden" name="file" label="" multiple="true" accept="image/png,image/jpeg,image/jpg"/> -->
+                                    <!-- <div class="slds-text-body_small slds-text-color_error">{!v.fileName} </div>  -->                                  
+                                    
+                                    <lightning:fileUpload label="Upload files"
+                                                          multiple="true"
+                                                          accept=".pdf, .png, .jpg, .jpeg, .csv, .DOC, .DOCX, .TXT, .XLS, .XLSX, .ZIP, .PDF, .PNG, .webm"
+                                                          recordId="{!v.recordId}"
+                                                          aura:id="multipleUpload"
+                                                          onuploadfinished="{!c.handleUploadFinished}" />
+                                    
+                                    <!-- <div class="container">
+                                        <input type="file" class="file" aura:id="file" />                                        
+                                        <div aura:id="uploading" class="notUploading">
+                                            <img src="/resource/paura__images/loading-gray.gif" alt="uploading" class="small-spinner" /> Uploading...
+                                        </div>
+                                    </div> -->                                  
+                                    
+                                    <aura:iteration items="{!v.selectedfilesFill}" var="sr">
+                                        <lightning:pill class="slds-m-around_xx-small slds-text-body_small slds-text-color_error" label="{!sr.Name}" name="{!sr.Name}" onremove="{! c.clear }">
+                                            <aura:set attribute="media">
+                                                <lightning:icon iconName="standard:file" size="x-small" alternativeText="icon"/>
+                                            </aura:set>
+                                        </lightning:pill>
+                                    </aura:iteration>
+                                </div>
+                            </lightning:layoutitem>                          
+                        </lightning:layout>
+                    </div>
+                        <!--<input aura:id="fuploader" onchange="{!c.handleFilesChange}" type="file" name="file" label="Upload Attachment" multiple="true" style="margin:15px;"/>
+                            <div class="slds-text-body_small" style="margin:15px;">{!v.fileName} </div>
+                        </lightning:layoutItem>-->
+                       <footer class="slds-modal__footer" style = "padding-top: 10px">
+                          
+                                <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{!c.closeModel }" />
+                                <!-- <lightning:button variant="neutral" title="Save &amp; New" label="Save &amp; New"
+                                                  onclick="{!c.saveAndNew}" /> -->
+                                <lightning:button variant="neutral" type="submit" name="submitrfi" label="Submit RFI"  />
+                         
+                        </footer>
+                 
+                    
+                    
+                    
+                </div>
+                         </lightning:recordEditForm>
+            </div>
+        </section>
+          
+    </aura:if>
+    
+</aura:component>

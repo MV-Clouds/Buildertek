@@ -1,0 +1,116 @@
+<aura:component controller="ImportmasterInspectionClass"
+    implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader"
+    access="global">
+    <aura:attribute name="masterInspectionList" type="object" />
+    <aura:attribute name="Spinner" type="Boolean" />
+
+    <!-- Attribute Declration For Pagination -->
+
+    <aura:attribute name="PaginationList" type="Object" />
+    <aura:attribute name="startPage" type="Integer" />
+    <aura:attribute name="endPage" type="Integer" />
+    <aura:attribute name="totalRecords" type="Integer" />
+    <aura:attribute name="pageSize" type="Integer" default="10" />
+
+    <!-- Attribute Declration For Pagination End-->
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
+    <div class="slds-modal__header" style="font-size:17px;">
+        Import Master Inspection
+    </div>
+    <div class="slds-modal__content slds-p-around--large">
+        <div class="slds slds-scope">
+            <table class="slds-table slds-table_bordered slds-table_fixed-layout" role="grid">
+                <thead>
+                    <tr class="slds-text-title_caps">
+                        <th scope="col"
+                            style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-left-radius:5px;vertical-align: top;line-height: 2;width: 30px !important;">
+                            <ui:inputCheckbox aura:id="checkContractors" change="{!c.selectAll}" />
+                        </th>
+                        <th
+                            style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                            IS #
+                        </th>
+                        <th
+                            style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                            Name
+                        </th>
+                        <th
+                            style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                            <span style="padding-left:98px"> Notes</span>
+                        </th>
+                        <th
+                            style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                            <span style="padding-left:106px"> Type</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.PaginationList}" var="rec">
+                        <tr class="slds-hint-parent">
+                            <aura:if isTrue="{!rec.masterInspectionRecord != null}">
+                                <td width="3%">
+                                    <ui:inputCheckbox aura:id="checkContractor" value="{rec.inspectionCheck}"
+                                        text="{!rec.masterInspectionRecord.Id}" change="{!c.handleCheck}" />
+                                </td>
+                                <td width="50%" role="gridcell">
+                                    <ui:outputText value="{!rec.masterInspectionRecord.Name}" />
+                                </td>
+                                <td width="50%" role="gridcell">
+                                    <ui:outputText value="{!rec.masterInspectionRecord.buildertek__Name__c}" />
+                                </td>
+                                <td width="30%" role="gridcell">
+                                    <span style="padding-left:98px">
+                                        <ui:outputText value="{!rec.masterInspectionRecord.buildertek__Details__c}" />
+                                    </span>
+                                </td>
+                                <td width="27%" role="gridcell">
+                                    <span style="padding-left:106px">
+                                        <ui:outputText
+                                            value="{!rec.masterInspectionRecord.buildertek__Type_Clone__c}" />
+                                    </span>
+                                </td>
+                            </aura:if>
+
+                        </tr>
+                    </aura:iteration>
+                </tbody>
+            </table>
+            <br />
+
+        </div>
+        <aura:if isTrue="{!v.Spinner}">
+            <div aura:id="spinnerId" class="slds-spinner_container">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                    <div class="custom-loading-text">
+                        <b>Processing, Please Wait</b>
+                    </div>
+                </div>
+            </div>
+        </aura:if>
+    </div>
+    <div class="slds-modal__footer">
+        <div class="slds-clearfix">
+            <div class="slds-float_left">
+                <lightning:buttonGroup>
+                    <lightning:button label="Previous" disabled="{!v.startPage == 0}" onclick="{!c.previous}"
+                        variant="brand" iconName='utility:back' class="BorderRadius" />
+                    &nbsp; &nbsp; &nbsp;
+                    <lightning:button label="Next" disabled="{!v.endPage >= v.totalRecords}" onclick="{!c.next}"
+                        variant="brand" iconName='utility:forward' iconPosition='right' class="BorderRadius" />
+                </lightning:buttonGroup>
+            </div>
+            <div class="slds-float_right">
+                <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}">Cancel</button>
+                <button class="slds-button slds-button--brand" onclick="{!c.importBudget}">Import Master
+                    Inspection</button>
+            </div>
+        </div>
+
+
+    </div>
+</aura:component>

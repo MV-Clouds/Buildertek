@@ -1,0 +1,424 @@
+<!--
+  @description       :
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             :
+  @last modified on  : 02-07-2022
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<template>
+    <!-- <div style="padding: 1rem 0.5rem;background: #f3f4f5;font-size: 1rem;font-style: initial;">
+     <header style="background: #1b5297;padding: 11px 20px;">
+       <div class="left-box" style="display: inline-block;vertical-align: middle;width: 30%;" >
+         <h1 style="margin: 0;color: #fff;font-size: 18px;" >
+
+         </h1>
+       </div>
+     </header>
+   </div>  -->
+   <div class="container mainContainer" lwc:dom="manual"  ondrop={droprow} ondragover={allowDrop}></div> <!---->
+   <div class="container1" lwc:dom="manual"></div>
+
+   <template if:true={isLoaded}>
+     <div  class="slds-spinner_container" style="position:fixed;opacity:1;">
+       <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+           <span class="slds-assistive-text">Loading</span>
+           <div class="slds-spinner__dot-a"></div>
+           <div class="slds-spinner__dot-b"></div>
+           <div class="custom-loading-text">
+               <b>Processing, Please Wait</b>
+           </div>
+       </div>
+       </div>
+     <div class="slds-backdrop slds-backdrop_open" style="opacity: 0;"></div>
+   </template>
+   <template if:true={isLoaded2}>
+     <div  class="slds-spinner_container" style="position:fixed;opacity:1;">
+       <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+           <span class="slds-assistive-text">Loading</span>
+           <div class="slds-spinner__dot-a"></div>
+           <div class="slds-spinner__dot-b"></div>
+           <div class="custom-loading-text">
+               <b>Processing, Please Wait</b>
+           </div>
+       </div>
+       </div>
+     <div class="slds-backdrop slds-backdrop_open" style="opacity: 0;"></div>
+   </template>
+
+   <template if:true={showpopup}>
+       <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+           <div class="slds-modal__container">
+               <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                 <lightning-card title="Upload File" icon-name="custom:custom19"><!-- accept={acceptedFormats} -->
+                   <lightning-file-upload
+                         label="Attach file"
+                         name="fileUploader"
+                         record-id={fileTaskId}
+                         onuploadfinished={handleUploadFinished}
+                         multiple>
+                   </lightning-file-upload>
+                 </lightning-card>
+               </div>
+               <footer class="slds-modal__footer">
+                 <button class="slds-button slds-button_neutral" onclick={closeUploadModal} title="Close">Close</button>
+                 <!-- <button class="slds-button slds-button_brand" onclick={submitDetails} title="OK">OK</button> -->
+               </footer>
+           </div>
+       </section>
+       <div class="slds-backdrop slds-backdrop_open"></div>
+
+   </template>
+   <template if:true={showEditPopup}>
+     <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-02" aria-modal="true" aria-describedby="modal-content-id-2" class="slds-modal slds-fade-in-open">
+       <div class="slds-modal__container">
+           <header class="slds-modal__header">
+             <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeEditPopup}>
+                 <lightning-icon icon-name="utility:close"
+                     alternative-text="close"
+                     variant="inverse"
+                     size="small" ></lightning-icon>
+                 <span class="slds-assistive-text">Close</span>
+             </button>
+             <h2 if:false={taskRecordId} id="modal-heading-02" class="slds-text-heading_medium slds-hyphenate">New Schedule Item</h2>
+             <h2 if:true={taskRecordId}  class="slds-text-heading_medium slds-hyphenate">Edit Record</h2>
+           </header>
+
+           <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-2">
+               <div if:true={isLoaded} class="slds-p-around_x-large">
+                 <lightning-spinner alternative-text="Loading" class="spins" size="large" variant="brand"></lightning-spinner>
+               </div>
+
+               <lightning-layout multiple-rows>
+                 <lightning-layout-item size="6"  padding="around-small">
+                     <div onchange={changeInputVal} data-inputname='Name'>
+                       <lightning-input type="text" label="Name" autocomplete="off" required="true"   value={newTaskRecordCreate.Name} >
+                       </lightning-input>
+                     </div>
+                   </lightning-layout-item>
+                   <lightning-layout-item size="6"  padding="around-small">
+                     <template if:true={newTaskRecordCreate.buildertek__Phase__c}>
+                       <lightning-combobox
+                                     name="Phase"
+                                     label="Phase"
+                                     value={newTaskRecordCreate.buildertek__Phase__c}
+                                     placeholder=""
+                                     options={picklistValues.data.values}
+                                     onchange={selectOptionChanveValue} >
+                                 </lightning-combobox>
+                     </template>
+                     <template if:false={newTaskRecordCreate.buildertek__Phase__c}>
+                       <lightning-combobox
+                                     name="Phase"
+                                     label="Phase"
+                                     value=""
+                                     placeholder=""
+                                     options={picklistValues.data.values}
+                                     onchange={selectOptionChanveValue} >
+                                 </lightning-combobox>
+                     </template>
+
+                   </lightning-layout-item>
+                   <lightning-layout-item size="6"  padding="around-small">
+                     <template if:true={newTaskRecordCreate.buildertek__Type__c}>
+                       <lightning-combobox
+                                     name="Type"
+                                     label="Type"
+                                     value={newTaskRecordCreate.buildertek__Type__c}
+                                     placeholder=""
+                                     options={selectTargetTypeValues.data}
+                                     onchange={selectOptionChanveTypeValue} >
+                                 </lightning-combobox>
+                     </template>
+                     <template if:false={newTaskRecordCreate.buildertek__Type__c}>
+                       <lightning-combobox
+                                     name="Type"
+                                     label="Type"
+                                     value=""
+                                     placeholder=""
+                                     options={selectTargetTypeValues.data}
+                                     onchange={selectOptionChanveTypeValue} >
+                                 </lightning-combobox>
+                     </template>
+
+                   </lightning-layout-item>
+                   <lightning-layout-item size="6"  padding="around-small">
+
+                     <div  data-inputname='buildertek__Dependency__c'>
+                       <label>Predecessor</label><!--conchange={changeInputVal}-->
+
+                       <c-custom-lwc-lookup field-api-name="buildertek__Dependency__c" value-from-parent={newTaskRecordCreate.buildertek__Dependency__c}  obj-name="buildertek__Project_Task__c" search-placeholder="Search Schedule Items" schedule-id ={recordId} icon-name="custom:custom70" onlookupselected={handleAccountSelection}>
+                       </c-custom-lwc-lookup>
+                     </div>
+                   </lightning-layout-item>
+                   <lightning-layout-item size="6"  padding="around-small">
+                     <div onchange={changeInputVal} data-inputname='buildertek__Completion__c'>
+                       <lightning-input type ="number" label="% Completion" autocomplete="off" value={newTaskRecordCreate.buildertek__Completion__c}>
+                       </lightning-input>
+                     </div>
+                   </lightning-layout-item>
+                   <lightning-layout-item size="6"  padding="around-small">
+                     <div onchange={changeInputVal}  data-inputname='buildertek__Start__c'>
+                       <lightning-input type ="date" label="Start Date" autocomplete="off" value={newTaskRecordCreate.buildertek__Start__c}>
+                       </lightning-input>
+                     </div>
+                   </lightning-layout-item>
+                   <lightning-layout-item size="6"  padding="around-small">
+                     <div onchange={changeInputVal}  data-inputname='buildertek__Finish__c'>
+                       <lightning-input type ="date" label="End Date" autocomplete="off" value={newTaskRecordCreate.buildertek__Finish__c}>
+                       </lightning-input>
+                     </div>
+                   </lightning-layout-item>
+                   <lightning-layout-item size="6"  padding="around-small">
+                     <div onchange={changeInputVal} data-inputname='buildertek__Duration__c'>
+                       <lightning-input type="number" label="Duration" autocomplete="off" value={newTaskRecordCreate.buildertek__Duration__c}>
+                       </lightning-input>
+                     </div>
+                   </lightning-layout-item>
+                   <lightning-layout-item size="6"  padding="around-small">
+                     <div onchange={changeInputVal} data-inputname='buildertek__Lag__c'>
+                       <lightning-input type="number" label="Lag" autocomplete="off" value={newTaskRecordCreate.buildertek__Lag__c} disabled={blankPredecessor}>
+                       </lightning-input>
+                     </div>
+                   </lightning-layout-item>
+                   <!-- <lightning-layout-item size="6"  padding="around-small">
+                     <div onchange={changeInputVal} data-inputname='buildertek__Budget__c'>
+                       <lightning-input type="number" label="Budget" autocomplete="off" value={newTaskRecordCreate.buildertek__Budget__c}>
+                       </lightning-input>
+                     </div>
+                   </lightning-layout-item> -->
+                   <lightning-layout-item size="6"  padding="around-small">
+                     <label>Internal Resource</label>
+                     <div data-inputname='buildertek__Resource__c'> <!-- onchange={changeInputVal}-->
+                       <c-custom-lwc-lookup field-api-name="buildertek__Resource__c" value-from-parent={newTaskRecordCreate.buildertek__Resource__c} obj-name="Contact" search-placeholder="Search Contacts" icon-name="standard:contact" schedule-id ="" onlookupselected={handleAccountSelection}>
+
+                       </c-custom-lwc-lookup>
+                     </div>
+                   </lightning-layout-item>
+                   <lightning-layout-item size="6"  padding="around-small">
+                     <div data-inputname='buildertek__Contractor__c'>
+                       <label>Contractor</label>
+                       <c-custom-lwc-lookup field-api-name="buildertek__Contractor__c" value-from-parent={newTaskRecordCreate.buildertek__Contractor__c} obj-name="Account" search-placeholder="Search Accounts" icon-name="standard:account" schedule-id ="" onlookupselected={handleAccountSelection}>
+                       </c-custom-lwc-lookup>
+                     </div>
+
+                   </lightning-layout-item>
+                   <lightning-layout-item size="6"  padding="around-small">
+                     <label>Contractor Resource</label>
+                     <div data-inputname='buildertek__Contractor_Resource__c'>
+                       <c-custom-lwc-lookup field-api-name="buildertek__Contractor_Resource__c" value-from-parent={newTaskRecordCreate.buildertek__Contractor_Resource__c} obj-name="Contact" search-placeholder="Search Contacts" icon-name="standard:contact" schedule-id ="" onlookupselected={handleAccountSelection}>
+                       </c-custom-lwc-lookup>
+                   </div>
+                   </lightning-layout-item>
+
+                   <lightning-layout-item size="6"  padding="around-small">
+                     <div onchange={changeInputVal} data-inputname='buildertek__Notes__c'>
+                       <lightning-textarea label="Notes" autocomplete="off" value={newTaskRecordCreate.buildertek__Notes__c}>
+                       </lightning-textarea>
+                     </div>
+                   </lightning-layout-item>
+                   <!-- <lightning-layout-item size="6"  padding="around-small">
+                     <div onchange={changeInputVal} data-inputname='buildertek__Add_To_All_Active_Schedules__c'>
+                       <lightning-input type="checkbox" label="Add To All Active Schedules"  value={newTaskRecordCreate.buildertek__Add_To_All_Active_Schedules__c}>
+                       </lightning-input>
+                     </div>
+                   </lightning-layout-item> -->
+
+                 <br />
+
+               </lightning-layout>
+               <br />
+           </div>
+
+           <div if:true={taskRecordId}>
+             <footer class="slds-modal__footer">
+               <button class="slds-button slds-button_neutral" variant="neutral" title="Cancel" label="Cancel" onclick={closeEditPopup}>Cancel</button>
+               <button class="slds-button slds-button_brand" variant="brand" type="submit" name="save" label="Save" onclick={saveeditRecord}>Save</button>
+
+             </footer>
+           </div>
+           <div if:false={taskRecordId}>
+             <footer class="slds-modal__footer">
+               <button class="slds-button slds-button_neutral" variant="neutral" title="Cancel" label="Cancel" onclick={closeEditPopup}>Cancel</button>
+               <button class="slds-button slds-button_brand" variant="brand" type="submit" name="save" label="Save" onclick={saveeditRecord}>Save</button>
+               <button class="slds-button slds-button_brand" variant="brand" type="submit" name="saveNew" label="Save and New" onclick={saveeditRecord}>Save and New</button>
+             </footer>
+           </div>
+
+           <!-- <footer class="slds-modal__footer">
+             <button class="slds-button slds-button_neutral" onclick={closeEditPopup} title="Cancel">Cancel</button>
+             <button class="slds-button slds-button_brand" onclick={saveeditRecord} title="Save">Save</button>
+           </footer> -->
+       </div>
+     </section>
+     <div class="slds-backdrop slds-backdrop_open"></div>
+
+   </template>
+   <template if:true={showDeletePopup}>
+     <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-03" aria-modal="true" aria-describedby="modal-content-id-3" class="slds-modal slds-fade-in-open">
+       <div class="slds-modal__container">
+           <header class="slds-modal__header">
+             <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeEditPopup}>
+                 <lightning-icon icon-name="utility:close"
+                     alternative-text="close"
+                     variant="inverse"
+                     size="small" ></lightning-icon>
+                 <span class="slds-assistive-text">Close</span>
+             </button>
+             <h2 id="modal-heading-03" class="slds-text-heading_medium slds-hyphenate">Delete Item</h2>
+           </header>
+
+           <div  class="slds-text-align_center slds-modal__content slds-p-around_medium" id="modal-content-id-3">
+             Are you sure, do you want to delete?
+           </div>
+           <footer class="slds-modal__footer">
+             <button class="slds-button slds-button_neutral" variant="neutral" title="Cancel" label="Cancel" onclick={closeEditPopup}>Cancel</button>
+             <button class="slds-button slds-button_brand" variant="brand"  name="Delete" label="Delete" onclick={deleteRecord}>Delete</button>
+           </footer>
+       </div>
+     </section>
+     <div class="slds-backdrop slds-backdrop_open"></div>
+   </template>
+
+ <template if:true={showFilePopup}>
+   <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-04" aria-modal="true" aria-describedby="modal-content-id-4" class="slds-modal slds-fade-in-open">
+     <div class="slds-modal__container">
+         <header class="slds-modal__header">
+           <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeEditPopup}>
+               <lightning-icon icon-name="utility:close"
+                   alternative-text="close"
+                   variant="inverse"
+                   size="small" ></lightning-icon>
+               <span class="slds-assistive-text">Close</span>
+           </button>
+           <h2 id="modal-heading-04" class="slds-text-heading_medium slds-hyphenate">Files</h2>
+         </header>
+
+         <div  class="slds-text-align_center slds-modal__content slds-p-around_medium" id="modal-content-id-4">
+           <c-file-preview rec-id-list={showFileForRecord}>
+           </c-file-preview>
+         </div>
+         <footer class="slds-modal__footer">
+           <button class="slds-button slds-button_neutral" variant="neutral" title="Close" label="Close" onclick={closeEditPopup}>Close</button>
+        </footer>
+     </div>
+   </section>
+   <div class="slds-backdrop slds-backdrop_open"></div>
+ </template>
+ <template if:true={showCommentPopup}>
+   <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-05" aria-modal="true" aria-describedby="modal-content-id-5" class="slds-modal slds-fade-in-open">
+     <div class="slds-modal__container" style="width:60%;">
+       <!-- <div if:true={saveCommentSpinner}>
+         <lightning-spinner alternative-text="Loading" class="spins" size="large" variant="brand"></lightning-spinner>
+       </div> -->
+       <header class="slds-modal__header">
+           <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeEditPopup}>
+               <lightning-icon icon-name="utility:close"
+                   alternative-text="close"
+                   variant="inverse"
+                   size="small" ></lightning-icon>
+               <span class="slds-assistive-text">Close</span>
+           </button>
+           <h2 id="modal-heading-05" class="slds-text-heading_medium slds-hyphenate">Comments</h2>
+         </header>
+
+         <div  class="slds-modal__content slds-p-around_medium" id="modal-content-id-5">
+           <template for:each={notesList} for:item="rec">
+             <div style ="border-bottom: 1px solid grey" if:true={rec.Id} key={rec.Id}>
+               <br key={rec.Id}/>
+               <p>{rec.timeStamp} - {rec.TextPreview} - {rec.createdUsername}</p>
+               <br key={rec.Id}/>
+             </div>
+
+           </template>
+           <br/>
+           <template for:each={newNotesList} for:item="noteRec" for:index="index">
+             <div if:true={noteRec} key={noteRec.Id} data-nodeid={noteRec.Id}  data-index={index} onchange={commentValueChange}>
+               <lightning-textarea name="input3" label="Comments" variant="label-hidden" placeholder="type here..."  value={noteRec.TextPreview}></lightning-textarea>
+               <br key={noteRec.Id}/>
+             </div>
+           </template>
+
+           <button class="slds-button slds-button_brand" variant="brand" style="margin-top: 0.8rem;" name="Add Comment" label="Add Comment" onclick={addComment}>Add Comment</button>
+         <!-- <lightning-textarea name="input3" label="Comments" placeholder="type here..." value={schItemComment} onchange={commentValueChange}></lightning-textarea>-->
+
+       </div>
+         <footer class="slds-modal__footer">
+           <button class="slds-button slds-button_neutral" variant="neutral" title="Close" label="Close" onclick={closeEditPopup}>Close</button>
+           <button class="slds-button slds-button_brand" variant="brand"  name="Save Comment" label="Save Comment" onclick={saveComment}>Save Comment</button>
+         </footer>
+     </div>
+   </section>
+   <div class="slds-backdrop slds-backdrop_open"></div>
+ </template>
+ <template if:true={showEditResourcePopup}>
+   <c-edit-resources field-api-name={selectedContactApiName} selected-resourceid={selectedResourceContact}
+    oncontactselected={handlecontactSelection} onclosepopuevent={closeEditPopup} onsaveres={saveSelectedContact}>
+   </c-edit-resources>
+   <!-- <div class="slds-backdrop slds-backdrop_open"></div> -->
+ </template>
+
+ <!--Added for contract-->
+   <template if:true={showContractor}>
+       <c-edit-acc-resources field-api-name={selectedContactApiName} selected-resourceid={selectedResourceAccount}
+       oncontactselected={handleaccountSelectionContractor} onclosepopuevent={closeEditPopup} onsaveres={saveSelectedContact}>
+       </c-edit-acc-resources>
+   </template>
+
+   <!-- Schedule originals start and end date modal -->
+   <template if:true={showOriginalDateModal}>
+       <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open dateModal">
+           <div class="slds-modal__container">
+               <header class="slds-modal__header">
+                   <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeModal}>
+                       <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse" size="small" ></lightning-icon>
+                       <span class="slds-assistive-text">Close</span>
+                   </button>
+                   <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Change Original Dates</h2>
+               </header>
+               <div class="slds-modal__content slds-p-around_medium" style="display: flex; justify-content: center;">
+                 <div>
+                   <p>
+                     Are you sure you want to update the Original Dates of this Project?
+                   </p>
+                 </div>
+               </div>
+               <footer class="slds-modal__footer">
+                   <button class="slds-button slds-button_neutral" onclick={closeModal} title="Cancel"> Cancel </button>
+                   <button class="slds-button slds-button_brand" onclick={changeOriginalDate} title="OK"> Yes </button>
+               </footer>
+           </div>
+       </section>
+       <div class="slds-backdrop slds-backdrop_open dateModalDiv"></div>
+   </template>
+
+   <template if:true={showExportPopup}>
+     <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+     <div class="slds-modal__container">
+       <header class="slds-modal__header">
+         <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={hideModalBox}>
+             <lightning-icon icon-name="utility:close"
+               alternative-text="close"
+               variant="inverse"
+               size="small" ></lightning-icon>
+             <span class="slds-assistive-text">Close</span>
+         </button>
+         <h2  class="slds-text-heading_medium slds-hyphenate">Export Schedule</h2>
+       </header>
+
+       <!-- modal body start -->
+       <div class="slds-modal__content slds-p-around_medium" >
+         <lightning-input type="text" label="File Name" autocomplete="off"  value={fileName}  onchange={changeFileName}> </lightning-input>
+       </div>
+
+       <!-- modal footer start-->
+       <footer class="slds-modal__footer">
+         <button class="slds-button slds-button_neutral" onclick={hideModalBox}>Cancel</button>
+         <button class="slds-button slds-button_brand" onclick={exportScheduleData}>Export</button>
+
+       </footer>
+
+     </div>
+     </section>
+     <div class="slds-backdrop slds-backdrop_open"></div>
+   </template>
+ </template>

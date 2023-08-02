@@ -1,0 +1,162 @@
+<!--**********************************************************************************
+* Copyright � 2017-2017, BuilderTek.
+* All rights reserved
+*
+* VisualForce Page: BT_MultiFileUpload
+* Created by Sagar
+
+* - Upload multiple files for folder
+
+* - Modifications:
+* - Sagar - Initial 
+***********************************************************************************-->
+<apex:page extensions="BT_MultiFileUploadController" title="{!$Label.buildertek__New} {!$ObjectType.Folder__c.label}" sidebar="false" showHeader="{!!isChildWindow}"  standardController="Folder__c">
+	<c:BT_JsAndCssIncludeComponent importJquery="true"
+                              importAppurinUtil="true"
+                              importJQueryLayout="false"
+                              importFancyTree="false"
+                              importJqGrid="false"
+                              importEasyTooltip="true"
+                              importAppurinCss="true"
+                              importCkEditor="true"
+                              importGnattChart="false"
+                              importLightningDesign="true"/>
+    <style>
+    	.apLightningOneTile{
+   		    margin-top: 25px !important;
+		    margin-right: 20% !important;
+		    margin-left: 20% !important;
+    	}
+    </style>
+    
+    <script>
+        j$(document).ready(function() {
+			easyToolTipForAll();
+		});
+		
+        function easyToolTipForAll() {
+            j$('.apHelpText').easyTooltip({width: '200px', isLightning:true, isFormatted:true});
+            resizeWindow();
+            return false;
+        }
+        
+        function resizeWindow(){
+            var caller = '{!JSENCODE($CurrentPage.parameters.clr)}';
+            if({!isChildWindow}){
+                if(caller == '1'){
+                    window.parent.resizeNewFolderWindow();
+                }
+            }
+        }
+        
+        function closeWindow(){
+            var retURL = '{!JSENCODE($CurrentPage.parameters.retURL)}';
+            var caller = '{!JSENCODE($CurrentPage.parameters.clr)}';
+            if({!isChildWindow}){
+                if(caller == '1'){
+                    window.parent.closeWindowForNewFolder();
+                }
+            } else {
+                if(Appurin.lightning.isLightningExperience()){
+                    Appurin.lightning.back(true);                
+                } else{
+                    if(retURL != ''){
+                        window.open(retURL, '_self');
+                    }
+                }
+            }
+            return false;
+        }
+    </script>
+    
+    <apex:actionStatus id="splashStatus" onstart="startSplash();" onstop="endSplash(); " />
+	<div class="slds">
+        <div id="splashDiv" class="apInitiallyDivDisplayNone" style="z-index:9998;">
+            <div class="slds-spinner_container apLightningSpinnerContainer">
+                <div role="status" class="slds-spinner slds-spinner--medium slds-spinner--brand">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <apex:outputPanel rendered="{!isError}">
+        <apex:pagemessages id="pageLoadErrorMessage"/>
+        <script>
+            Appurin.lightning.createLightningPageMessage({'classicPageMessageId' : '{!$Component.pageLoadErrorMessage}'});   
+        </script>
+    </apex:outputPanel>
+    
+    <apex:form rendered="{! !isError}" id="form">
+        <apex:outputPanel layout="block" styleClass="slds">
+        	<div style="background:#f4f6f9; {!IF(isChildWindow, '', 'padding: 1rem;')}">
+				<div class="slds-panel slds-nowrap" style="background:#f4f6f9;">
+					<div class="{!IF(isChildWindow, '', 'apLightningOneTile')}" style="{!IF(isChildWindow, '', 'padding: 0px;')}">
+			            <div class="slds-grid" style="background:#f4f6f9; padding:0px;">
+			                <div class="slds-panel slds-grid slds-grid--vertical slds-nowrap slds-is-editing" style="box-shadow: none;">
+			                    <div class="slds-form--stacked slds-grow slds-scrollable--y">
+			                        <div class="slds-panel__section slds-has-divider--bottom">
+			                            <div class="slds-media">
+			                                <div class="slds-media__body">
+			                                    <p class="slds-truncate slds-text-heading--small"><a href="javascript:void(0);">{!$Label.buildertek__New} {!$Objecttype.Folder__c.label}</a></p>
+			                                </div>
+			                            </div>
+			                        </div>
+			                        <apex:outputPanel >
+			                            <apex:pagemessages id="errorMessages"/>
+			                            <script>
+			                                Appurin.lightning.createLightningPageMessage({'classicPageMessageId' : '{!$Component.errorMessages}'});   
+			                            </script>
+			                        </apex:outputPanel>
+			                        <div class="slds-panel__section">
+			                            <h3 class="slds-text-heading--small slds-m-bottom--medium">{!$Label.buildertek__Detail}</h3>
+			                            <apex:outputPanel layout="block">
+			                                <apex:outputPanel layout="block" styleClass="slds-form-element">
+			                                    <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+			                                        <abbr class="slds-required" title="required">*</abbr><apex:outputLabel title="{!$ObjectType.Folder__c.fields.Name.inlineHelpText}" value="{!$ObjectType.Folder__c.fields.Name.label}"></apex:outputLabel>
+			                                    </apex:outputPanel>
+			                                    <c:BT_LightningHelpText rendered="{!AND(!isChildWindow, $ObjectType.Folder__c.fields.Name.inlineHelpText != null)}" helptext="{!$ObjectType.Folder__c.fields.Name.inlineHelpText}"/>
+			                                    <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+			                                        <apex:inputField required="true" styleClass="slds-input" value="{!folder.Name}"/>
+			                                    </apex:outputPanel>
+			                                </apex:outputPanel>
+			                                <apex:outputPanel layout="block" styleClass="slds-form-element">
+			                                    <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+			                                        <apex:outputLabel title="{!$ObjectType.Folder__c.fields.Description__c.inlineHelpText}" value="{!$ObjectType.Folder__c.fields.Description__c.label}"></apex:outputLabel>
+			                                    </apex:outputPanel>
+			                                    <c:BT_LightningHelpText rendered="{!AND(!isChildWindow, $ObjectType.Folder__c.fields.Description__c.inlineHelpText != null)}" helptext="{!$ObjectType.Folder__c.fields.Description__c.inlineHelpText}"/>
+			                                    <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+			                                        <apex:inputField styleClass="slds-input" value="{!folder.Description__c}"/>
+			                                    </apex:outputPanel>
+			                                </apex:outputPanel>
+			                                <apex:outputPanel layout="block" styleClass="slds-form-element">
+			                                    <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+			                                        <apex:outputLabel title="{!$ObjectType.Folder__c.fields.Access_Type__c.inlineHelpText}" value="{!$ObjectType.Folder__c.fields.Access_Type__c.label}"></apex:outputLabel>
+			                                    </apex:outputPanel>
+			                                    <c:BT_LightningHelpText rendered="{!AND(!isChildWindow, $ObjectType.Folder__c.fields.Access_Type__c.inlineHelpText != null)}" helptext="{!$ObjectType.Folder__c.fields.Access_Type__c.inlineHelpText}"/>
+			                                    <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+			                                        <apex:inputField styleClass="slds-select" value="{!folder.Access_Type__c}"/>
+			                                    </apex:outputPanel>
+			                                </apex:outputPanel>
+			                            </apex:outputPanel>
+			                        </div>
+			                    </div>
+			                    <div class="slds-panel__actions slds-has-divider--top">
+			                        <div class="slds-grid slds-grid--align-center">
+			                            <apex:commandButton styleClass="slds-button slds-button_neutral" value="{!$Label.buildertek__Cancel}" immediate="true" onClick="return closeWindow();"/>
+			                            <apex:commandButton styleClass="slds-button slds-button_brand" value="{!$Label.buildertek__Create}" action="{!save}" status="splashStatus" onComplete="if({!isSuccess} && Appurin.lightning.isLightningExperience()){Appurin.lightning.back(true);} else{easyToolTipForAll();}" rerender="form"/>
+			                        </div>
+			                    </div>
+			                </div>
+			            </div>
+		            </div>
+	            </div>
+            </div>
+        </apex:outputPanel>
+    </apex:form>
+    <script>
+    	j$("table[id$='bodyTable']").parent().css('background', '#f4f6f9');
+    </script>
+</apex:page>

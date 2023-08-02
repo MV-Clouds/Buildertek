@@ -1,0 +1,8 @@
+<aura:component >
+	<aura:attribute name="cancellbl" type="String" default="Cancel" access="public"/>
+    <aura:attribute name="savelbl" type="String" default="Save" access="public"/>
+    <aura:attribute name="savecallback" type="object"  access="public"/>
+    
+	<button class="slds-button slds-button_brand" onclick="{!c.cancel}">{!v.cancellbl}</button>
+    <button class="slds-button slds-button_brand" onclick="{!c.save}">{!v.savelbl}</button>
+</aura:component>

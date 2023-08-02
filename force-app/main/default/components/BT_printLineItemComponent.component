@@ -1,0 +1,177 @@
+<apex:component controller="BT_PrintLineItemController">
+	<apex:attribute name="childObjectName" type="string" required="true" description="The object to be displayed." assignTo="{!childObjName}"/>
+	<apex:attribute name="childObjectFields" type="string" required="true" description="The object to be displayed." assignTo="{!childFieldApi}"/>
+	<apex:attribute name="parentObjectName" type="string" required="true"	description="The object to be displayed." assignTo="{!parentObjName}"/>	
+	<apex:attribute name="groupName" type="string" 	description="The object to be displayed." assignTo="{!groupBy}"/>
+	<apex:attribute name="groupObj" type="string" description="The object to be displayed." assignTo="{!groupObject}"/>
+	<apex:attribute name="groupObjs" type="string" description="The object to be displayed." assignTo="{!groupObjects}"/>
+	<apex:attribute name="sumOfFields" type="string" description="The object to be displayed." assignTo="{!totalSumOfFields}"/>				
+	<html>
+	    <style>
+            .parent:nth-child(even) { 
+                background-color: lightgray !important;
+                box-shadow: inset 0 0 0 1000px lightgray;
+                word-wrap: break-word;
+                word-break: break-all;
+            }
+            .parent:nth-child(odd) {
+                background-color: white !important;
+                box-shadow: inset 0 0 0 100px white;
+                word-wrap: break-word;
+                word-break: break-all;
+            }
+            .parent td:nth-child(2) { 
+                text-align: center;
+                word-wrap: break-word;
+                word-break: break-all;
+            }
+            .tableHeader{
+                height: 40px !important;
+                float: left !important;
+                width: {!widthOfLineItemTable}%;
+                font-weight: bold !important;
+                font-size: 11px !important;
+                background-color: lightgray !important;
+                font-family: 'Salesforce Sans',Arial,sans-serif;
+                box-shadow: inset 0 0 0 100px lightgray;
+                background-size: auto;
+                text-align: center;
+                word-wrap: break-word;
+            }
+            .tableHeaderOne{
+                height: 40px !important;
+                float: left !important;
+                width: {!widthOfLineItemTable}%;
+                font-weight: bold !important;
+                font-size: 11px !important;
+                background-color: lightgray !important;
+                font-family: 'Salesforce Sans',Arial,sans-serif;
+                box-shadow: inset 0 0 0 100px lightgray;
+                background-size: auto;
+                text-align: center;
+                word-wrap: break-word;
+            }
+            .tableHeaderLine{
+                height: 50px !important;
+                background-color: black !important;
+                float: left !important;
+                width: {!widthOfLineItemTable}%;
+                font-weight: bold !important;
+                font-size: 11px !important;
+                font-family: 'Salesforce Sans',Arial,sans-serif;
+                box-shadow: inset 0 0 0 100px black;
+                background-size: auto;
+                text-align: center;
+                word-wrap: break-word;
+                word-break: break-all;
+                padding: 1px;
+            }
+            .tableHeaderLine:nth-child({!totalNumberOfChildFields}) {
+                width: {!widthOfLastHeaderValue}%;
+            }
+            
+            .tableHeaderOne:last-child({!totalNumberOfChildFields}) {
+                width: {!widthOfLastHeaderValue}%;
+            }
+            .groupHeader{
+                height: 55px !important;
+                background-color: black !important;
+                color: white !important;
+                width: 100% !important;
+                font-weight: bold !important;
+                font-size: 11px !important;
+                padding-top: 10px !important;
+                font-family: 'Salesforce Sans',Arial,sans-serif; 
+                box-shadow: inset 0 0 0 100px black;
+                
+            }
+        </style>        
+		<body>
+		    <center><h3 style="font-family:'Salesforce Sans',Arial,sans-serif;font-size:23px;text-transform:uppercase;padding-top:30px;">{!$ObjectType[childObjName].label} Information</h3></center>
+		    <apex:outputpanel rendered="{!IF(groupBy == 'false',true,false)}">
+    			<table width="100%">
+    	            <apex:repeat value="{!ChildRecordsList}" var="row">
+    		             <div class="tableHeaderOne">
+    		                {!mapForLabel[row]}
+    		            </div>
+    	            </apex:repeat>
+        		    <apex:repeat value="{!childObjRecords}" var="list"> 
+    			        <tr class="parent" >
+    			            <apex:repeat value="{!ChildRecordsList}" var="rec">
+        			            <td style="height:{!widthOfLineItemTable}%;width:{!widthOfLineItemTable}%;float: left;text-align:center !important;font-family:'Salesforce Sans',Arial,sans-serif;">
+                				    {!list[rec]} 
+        			            </td>
+    			            </apex:repeat>
+        				</tr>  
+    		        </apex:repeat>
+    			</table>
+			</apex:outputpanel>
+			<apex:outputpanel rendered="{!IF(groupBy == 'false',false,true)}">
+	            <apex:repeat value="{!ChildRecordsList}" var="row">
+	                <div class="tableHeader">     
+    	                <span>{!mapForLabel[row]}</span>
+    	            </div>
+	            </apex:repeat><br/><br/><br/>
+    	        <apex:outputpanel rendered="{!IF(ShowValues == false,false,true)}">
+    	            <apex:repeat value="{!childObjGroups}" var="recs"> 
+						<div class="groupHeader">
+						    <div class="tableHeaderLine">{!recs['Name']}</div>
+						    <apex:repeat value="{!wrapperClassList}" var="war">
+						        <apex:outputpanel rendered="{!IF((recs['Name'] == war.groupName) && (war.fieldType != 'false'),true,false)}">
+						            <div class="tableHeaderLine">
+						               <!-- ${!war.totalValue}-->
+						                <apex:outputText value="${0, number, ###,##0.00}">
+                                            <apex:param value="{!war.totalValue}"/>
+                                        </apex:outputText>
+						            </div>
+						        </apex:outputpanel>
+						        <apex:outputpanel rendered="{!IF((recs['Name'] == war.groupName) && (war.fieldType == 'false'),true,false)}">
+						            <div class="tableHeaderLine"></div>
+						        </apex:outputpanel>
+						    </apex:repeat>
+						</div>
+						<table width="100%">
+							<apex:repeat value="{!childObjRecords}" var="list">
+								<apex:outputpanel rendered="{!IF(recs.Id == list[groupObject],true,false)}">
+									<tr class="parent" >    
+										<apex:repeat value="{!ChildRecordsList}" var="rec">
+						                    <td  style="height:{!widthOfLineItemTable}%;width:{!widthOfLineItemTable}%;float: left;font-family:'Salesforce Sans',Arial,sans-serif;text-align:center;">
+    					                        <apex:outputPanel rendered="{!IF(mapForFieldType[rec] == 'CURRENCY',true,false)}"> 
+    										       <!-- ${!list[rec]} -->
+    										        <apex:outputText value="${0, number, ###,##0.00}">
+                                                        <apex:param value="{!list[rec]}"/>
+                                                    </apex:outputText>
+    										    </apex:outputPanel>
+    										    <apex:outputPanel rendered="{!IF(mapForFieldType[rec] != 'CURRENCY',true,false)}"> 
+    										        {!list[rec]} 
+    										    </apex:outputPanel>
+    										</td>    
+										</apex:repeat>
+									</tr>
+								</apex:outputpanel>
+							</apex:repeat>
+						</table>
+    			</apex:repeat>
+    			</apex:outputpanel>
+    			<apex:outputpanel rendered="{!IF(ShowValues == false,true,false)}">
+					<apex:repeat value="{!childObjGroups}" var="recs"> 
+						<div class="groupHeader">{!recs[groupObject]}</div>
+						<table width="100%">
+							<apex:repeat value="{!childObjRecords}" var="list">
+								<apex:outputpanel rendered="{!IF(recs[groupObject] == list[groupObject],true,false)}">
+									<tr class="parent" >    
+										<apex:repeat value="{!ChildRecordsList}" var="rec">	 
+											<td  style="height:{!widthOfLineItemTable}%;width:{!widthOfLineItemTable}%;float: left;font-family:'Salesforce Sans',Arial,sans-serif;"> 
+												!list[rec]} 
+											</td> 
+										</apex:repeat>
+									</tr>
+								</apex:outputpanel>
+							</apex:repeat>
+						</table>
+					</apex:repeat>
+					</apex:outputpanel>
+			</apex:outputpanel>
+		</body>
+	</html>
+</apex:component>

@@ -1,0 +1,136 @@
+<aura:component controller="BT_New_RFI_Controller" implements="force:appHostable,flexipage:availableForAllPageTypes,force:hasRecordId,force:lightningQuickActionWithoutHeader" access="global">
+    <aura:html tag="style">
+        .slds-modal__container {
+        width: 70% !important;      
+        max-width: 70% !important;
+        
+        }
+        
+        .slds-modal__content:last-child, .slds-modal__content_has-hidden-footer{
+        box-shadow: none !important;
+        }
+    </aura:html>
+    <aura:attribute name="ReplyTo" type="String" access="public" />
+    <aura:attribute name="selectedContacts" type="sObject[]"  />
+    <aura:attribute name="selectedUsers" type="sObject[]"  />
+    <aura:attribute name="onSuccess" type="Object"/>
+    <aura:attribute name="onCancel" type="Object"/>
+    <aura:attribute name="selectedToContact" type="sObject[]" default="[]"/>
+    <aura:attribute name="selectedCcContact" type="sObject[]" default="[]"/>
+    <aura:attribute name="selectedFiles" type="sObject[]" default="[]"/>
+    
+    <aura:attribute name="pdfFileName" type="String" default="Change Order"/>
+    <aura:attribute name="templatefolderName" type="String" />
+    <aura:attribute name="templates" type="List" default="[]"/>
+    <aura:attribute name="fileAttachments" type="List" default="[]"/>
+    <aura:attribute name="selectedTemplate" type="String" default=""/>
+    <aura:attribute name="documentsList" type="List" default="[]"/>
+    
+    <aura:attribute name="templateBody" type="String" default=""/>
+    <aura:attribute name="subject" type="String" default=""/>
+    <aura:attribute name="showTemplate" type="Boolean" default="true"/>
+    
+    <aura:attribute name="objectAPI" type="String" />
+    
+    <aura:attribute name="modalPromise" type="Aura.Action"/>
+    <aura:attribute name="fileOptsList" type="Object"/>
+    
+    <aura:method name="refreshData" action="{!c.init}"></aura:method>
+    <aura:attribute name="toEmail" type="String" />
+    <aura:attribute name="emailIds" type="List" />
+    <aura:attribute name="fieldSetValues" type="List"  />
+    <aura:attribute name="rfiresponsefieldSetValues" type="List"  />
+    <aura:attribute name="rfiresponseId" type="String" access="public" />
+    
+    <aura:attribute name="recordId" type="String" access="public" />
+    <aura:attribute name="Isnewrfiresponse" type="Boolean" default="false" />
+    <aura:attribute name="userInfo" type="string"/>
+    <aura:attribute name="fileName" type="string"/>
+    <aura:attribute name="rfiId" type="string"  />
+    <aura:attribute name="rfqId" type="string"  />
+    <aura:attribute name="IsSpinner" type="Boolean" default="false" />
+    <aura:attribute name="newRFI" type="Boolean" default="false" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <aura:attribute name="showBodyTemplate" type="Boolean" default="false"/>
+    <aura:attribute name="bodytemplatesList" type="List" default="[]"/>
+    <aura:attribute name="selectedbodyTemplateItem" type="String" default=""/>
+    <aura:attribute name="selectedInvoiceBodyContent" type="String" default="" />
+    <aura:attribute name="showpopup" type="Boolean" default="false" />
+    <aura:attribute name="responseValue" type="string"  />
+    <aura:attribute name="newRFIResponse" type="String" />
+    
+    <lightning:overlayLibrary aura:id="overlay"/>
+    <c:BT_Spinner/>
+    <aura:if isTrue="{!v.showpopup}">   
+        
+        <div class="slds-modal__content slds-p-around--large " >
+            <div class="slds slds-scope " >
+                <header class="slds-modal__header" >
+                    <lightning:buttonIcon iconName="utility:close" onclick="{! c.doCancel }" alternativeText="close"
+                                          variant="bare-inverse" class="slds-modal__close" />
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New Response</h2>
+                </header> 
+                <div class="slds-form-element slds-email-composer__combobox" style="margin-right: 30px;padding-top: 10px;padding-bottom: 10px;">
+                    <label class="slds-form-element__label" for="recipients-to">Reply To </label>
+                    <div class="slds-form-element__control" >
+                        <div class="slds-combobox_container slds-has-inline-listbox" style="margin-left:60px;">
+                            <b> {!v.ReplyTo}</b>
+                        </div>
+                    </div>
+                </div>
+                <aura:if isTrue="{!!v.Isnewrfiresponse}">
+                <div class="slds-form-element slds-email-composer__combobox" style="padding-top: 10px;padding-bottom: 10px;">
+                    <label class="slds-form-element__label" for="recipients-to">BT Account</label>
+                    <div class="slds-form-element__control "  style="margin-left:60px;">
+                        <div class="slds-combobox_container slds-has-inline-listbox">
+                            <c:BT_MultiSelectLookup objectAPIName="user"
+                                                    IconName="standard:user"
+                                                    lstSelectedRecords="{!v.selectedUsers}"
+                                                    label=""/>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="slds-form-element slds-email-composer__combobox" style="padding-top: 10px;padding-bottom: 10px;">
+                    <label class="slds-form-element__label" for="recipients-cc">External Contact</label>
+                    <div class="slds-form-element__control" style="margin-left:60px;">
+                        <div class="slds-combobox_container slds-has-inline-listbox" >
+                            <c:BT_MultiSelectLookup objectAPIName="contact"
+                                                    IconName="standard:contact"
+                                                    lstSelectedRecords="{!v.selectedContacts}"
+                                                    label=""/>
+                        </div>
+                    </div>
+                </div>
+                </aura:if>
+                <!--<div class="slds-form-element" style="margin-top: -0.5rem;margin-bottom: 0.5rem;">
+                    <lightning:input type="text" placeholder="Enter Subject" value="{!v.subject}"/>
+                </div>-->
+                
+                <div class="slds-form-element">
+                    <lightning:inputRichText aura:id="bodyId" placeholder="Response" value="{!v.templateBody}" required="true"/>
+                </div>
+                <br/>
+                <div Style="padding-bottom:10px;">
+                    <div >
+                        <lightning:button name="Add" variant="brand" label="Add" onclick="{!c.uploadFile}" />
+                    </div>
+                    <c:BT_MultiSelectLookup objectAPIName="buildertek__File__c"
+                                            IconName="standard:file"
+                                            lstSelectedRecords="{!v.selectedFiles}"
+                                            label=""
+                                            placeholder="Attachments"/>
+                </div>
+                
+            </div>
+            <footer class="slds-modal__footer" >
+                <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{!c.doCancel }" />
+                <!-- <lightning:button variant="neutral" title="Save &amp; New" label="Save &amp; New"
+                                              onclick="{!c.saveAndNew}" /> -->
+                <lightning:button variant="brand" type="submit" name="save" label="Respond"  onclick="{!c.sendResponse}"/>
+            </footer>
+        </div>
+        
+    </aura:if>
+</aura:component>

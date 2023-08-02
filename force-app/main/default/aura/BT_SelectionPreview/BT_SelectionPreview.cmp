@@ -1,0 +1,124 @@
+<aura:component
+	implements="force:appHostable,flexipage:availableForRecordHome,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes"
+	controller="BT_QuestionnaireBuilder" access="global">
+	<aura:attribute name="icone" type="String" default="chevrondown"
+		description="This attribute is used to twiste accordion icone" />
+	<aura:attribute name="selectionCatagorys" type="List" description="List of all catagorys" />
+	<aura:attribute name="projectName" type="string" />
+	<aura:attribute name="sectionPrefix" type="String" default="" />
+	<aura:attribute name="catagoryHeaderFields" type="List" description="List of all catagorys" />
+	<aura:attribute name="typeHeaderFields" type="List" description="List of all catagorys" />
+	<aura:attribute name="optionHeaderFields" type="List" description="List of all catagorys" />
+	<aura:attribute name="defaultTreeFilterCondition" type="String" default=""
+		description="Default filter condition for the tree." />
+	<aura:handler event="c:BT_TreeNodeClickEvent" action="{!c.handleTreeNodeClick}" />
+	<aura:handler event="c:BT_RefreshTreeNodeEvent" action="{!c.doInit}" />
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+	<aura:handler event="force:refreshView" action="{!c.doInit}" />
+	<aura:attribute name="recordId" access="global" type="string" />
+
+	<!-- Spinner -->
+	<c:BT_Spinner />
+	<div style="min-height: 69vh;">
+		<lightning:layout>
+			<div class="page-left slds-size--3-of-12 slds-p-vertical_medium"
+				style="max-width: 300px;margin-right: 1rem;overflow: auto;">
+				<lightning:layoutItem flexibility="auto">
+					<aura:if isTrue="{!v.defaultTreeFilterCondition != ''}">
+						<c:BT_LightningTree treeType="Other" checkable="false" maxAutoExpandLevel="1"
+							treeConfigurationName="Section Tree"
+							defaultFilterCondition="{!v.defaultTreeFilterCondition}" showProgress="true"
+							treeDataFields="Parent__c" isResponse="true"/>
+					</aura:if>
+				</lightning:layoutItem>
+			</div>
+			<lightning:layoutItem flexibility="auto">
+				<div style="min-height: 69.5vh;">
+					<aura:if isTrue="{!v.selectionCatagorys.length == 0}">
+						<div style="margin-top:5rem;">
+							<c:BT_Illustration name="Going-Camping"
+								title="Click on category name on left side to start selection." />
+						</div>
+						<aura:set attribute="else">
+							<aura:iteration items="{!v.selectionCatagorys}" var="sc" indexVar="i">
+								<div id="{!'accordion'+sc.selectionCatagory.Id}"
+									class="slds-accordion__section slds-is-open" style="padding: 0;">
+									<div style="background: #16325c;color:#fff;padding-left: 5px;padding: 10px;">
+										<h3 class="av-nodrag slds-text-heading_small slds-accordion__summary-heading">
+											<button aria-expanded="true" style="cursor: default;"
+												class="slds-button slds-accordion__summary-action"
+												data-selected-id="{!sc.selectionCatagory.Id}"
+												onclick="{!c.twistAccordion}">
+												<div data-selected-id="{!sc.selectionCatagory.Id}">
+													<!-- <lightning:icon iconName="{!'utility:'+v.icone}" size="x-small" />  -->
+													<lightning:icon iconName="standard:entity"
+														alternativeText="entity" />
+												</div>
+												<span class="slds-truncate" style="font-size: 1rem;color:#000;"
+													title="{!sc.selectionCatagory.buildertek__Title__c}">
+													<div style="float:left;color:#fff !important;"><b>
+															&nbsp;{!sc.selectionCatagory.buildertek__Title__c} </b>
+													</div>
+												</span>
+												<br />
+											</button>
+											<aura:if isTrue="{!sc.selectionCatagory.buildertek__Locked__c}">
+												<span class="slds-truncate" style="font-size: 1rem;color:#000;">
+													<div style="float:right;color:#fff !important;">
+														<lightning:icon iconName="utility:lock" alternativeText="Lock"
+															title="Lock" />
+													</div>
+												</span>
+												<aura:set attribute="else">
+													<span class="slds-truncate" style="font-size: 1rem;color:#000;">
+														<div style="float:right;color:#fff !important;">
+															<lightning:icon iconName="utility:unlock"
+																alternativeText="Unlock" title="Unlock" />
+														</div>
+													</span>
+												</aura:set>
+											</aura:if>
+										</h3>
+									</div>
+									<div aria-hidden="false" class="av-nodrag slds-accordion__content"
+										style="cursor: default;">
+										<div class="slds-box" style="border-radius: 0 !important;">
+											<!-- Header fields -->
+											<div class="slds-grid">
+												<div class="slds-col slds-has-flexi-truncate">
+													<lightning:layout multipleRows="true">
+														<aura:iteration items="{!v.catagoryHeaderFields}" var="cHeader">
+															<lightning:layoutItem flexibility="auto" size="12"
+																smallDeviceSize="6" mediumDeviceSize="5"
+																largeDeviceSize="3" padding="around-small" class="">
+																<c:BT_OutPutField record="{!sc.selectionCatagory}"
+																	field="{!cHeader.fieldPath}"
+																	type="{!cHeader.dataType}"
+																	label="{!cHeader.fieldlabel}" />
+															</lightning:layoutItem>
+														</aura:iteration>
+													</lightning:layout>
+												</div>
+											</div>
+											<aura:iteration items="{!sc.selectionTypes}" var="selectionType"
+												indexVar="j">
+												<div style="padding-right:10px;margin-top: -10px;">
+													<c:BT_SelectionPreviewQuestionGroup selectionId="{!v.recordId}"
+														projectName="{!v.projectName}"
+														selectionCatagory="{!sc.selectionCatagory}"
+														st="{!selectionType}" typeHeaderFields="{!v.typeHeaderFields}"
+														optionHeaderFields="{!v.optionHeaderFields}" />
+												</div>
+											</aura:iteration>
+										</div>
+									</div>
+								</div>
+							</aura:iteration>
+						</aura:set>
+					</aura:if>
+				</div>
+			</lightning:layoutItem>
+		</lightning:layout>
+	</div>
+	<lightning:overlayLibrary aura:id="overlayLib" />
+</aura:component>

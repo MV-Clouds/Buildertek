@@ -1,0 +1,33 @@
+<apex:page controller="CreateProjectfromQuoteAcceptanceonOpp" sidebar="false" lightningStylesheets="true">
+    <apex:slds />
+    <apex:form >
+        <apex:pageBlock mode="maindetail">
+            <apex:pageMessages />  
+            <apex:pageblocksection >
+                <apex:inputcheckbox value="{!isCreateProjectfromQuoteAcceptanceonOpp}" label="Create Project from Quote Acceptance on Opportunity">
+                </apex:inputcheckbox>
+                <apex:inputcheckbox value="{!isCreatesendcustomerquoteaftersignature}" label="Send Owner Email after Quote acceptance">
+                </apex:inputcheckbox>
+                <apex:inputtext value="{!emailsubject}" label="Email Subject"/>
+                <apex:inputcheckbox value="{!isCreateProjectfromOpp}" label="Create Project on Opportunity Closed Won">
+                </apex:inputcheckbox>
+                <apex:inputcheckbox value="{!isUpdatetheOppAmount}" label="Update the Opp Amount">
+                </apex:inputcheckbox>
+                <apex:inputField value="{!admininterface.Default_Project_Owner__c}" styleClass="slds-input" style="width:320px;"/>
+                <apex:inputtext value="{!isBaseUrl}" label="Org URL"/>
+                <apex:inputcheckbox value="{!isRemovesingleQuoteLineOption}" label="Remove Single Quote Line Option">
+                </apex:inputcheckbox>
+                <apex:inputcheckbox value="{!hideGlobalMargin}" label="Hide Global Margin">
+                </apex:inputcheckbox>
+                <apex:inputcheckbox value="{!hideGlobalMarkup}" label="Hide Global Markup">
+                </apex:inputcheckbox>
+                <!-- Labbel changed from : Reject Quote on Rejected Lines based on CHB-35 -->
+                <apex:inputcheckbox value="{!reject_Quote_on_Rejected_Lines}" label="Reject all or Acccept all">
+                </apex:inputcheckbox>
+                <center>
+                    <apex:commandButton value="Save" id="onCreateProjectfromQuoteAcceptanceonOpp" styleClass="slds-button slds-button_brand" action="{!onCreateProjectfromQuoteAcceptanceonOpp}"></apex:commandButton>
+                </center>
+            </apex:pageblocksection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,11 @@
+.THIS .slds-form-element__label {
+    display : none;
+    visibility : hidden;
+}
+.THIS lightning-helptext {
+    float: right;
+   /* margin: 2px 2px;*/
+}
+.THIS .lightning-primitive-icon{
+         display: none;
+}

@@ -1,0 +1,220 @@
+<aura:component controller="TrainingSettingsController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:attribute name="options" type="list" />
+    <aura:attribute name="bTSettings" type="Training_Settings__c" default="{'sObjectType' : 'buildertek__Training_Settings__c'}"/>
+    <aura:attribute name="selectedValue" type="String" />
+    <aura:attribute name="isEdit" type="Boolean" default="false"/>
+    <aura:attribute name="results" type="List" />
+    <aura:attribute name="ShowPassword" type="Boolean" default ="false" />
+    <aura:attribute name="HidePassword" type="Boolean" default ="false" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="isWarning" type="Boolean" default="false"/>
+    <aura:attribute name="isSaved" type="Boolean" default="false"/>
+    <aura:attribute name="isSettingsSaved" type="Boolean" default="false"/>
+    
+    <!--ChecklistSettings-->
+    <aura:attribute name="fileName" type="String" default="" />
+    <aura:attribute name="imgUrl" type="String" default=""/>
+    <aura:attribute name="siteUrl" type="String" default=""/>
+    <aura:method name="doinit"  action="{!c.doInit}"/>
+    
+    <lightning:card >
+        <div class="slds slds-p-around_medium">
+            <div class="pageHeader slds-page-header slds-page-header_record-home">
+                <div class="slds-page-header__row">
+                    <div class="slds-page-header__col-title">
+                        <div class="slds-media">
+                            <div class="slds-media__figure">
+                                <span class="slds-icon_container">
+                                    <lightning:icon iconName="utility:settings" size="medium"/>	
+                                </span>
+                            </div>
+                            <div class="slds-media__body">
+                                <div class="slds-page-header__name">
+                                    <div class="slds-page-header__name-title">
+                                        <h1>
+                                            <span class="slds-text-heading_small">Training Settings</span>	
+                                        </h1>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-page-header__col-actions">
+                        <div class="slds-page-header__controls">
+                            <div class="slds-page-header__control">
+                                <aura:if isTrue="{!!v.isEdit}">
+                                    <lightning:button label="Edit" onclick="{!c.edit}" />
+                                </aura:if>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-page-header__row slds-page-header__row_gutters">
+                    
+                </div>
+            </div>
+            <div class="slds-p-around_medium" >
+                <aura:if isTrue="{!v.isEdit}">
+                    <div class="slds-form" role="list">
+                        <div class="slds-form__row">
+                            <div class="slds-form__item" role="listitem">
+                                <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                    <label class="slds-form-element__label" >Contact Info:</label>
+                                    <div class="slds-form-element__control">
+                                        <lightning:textarea  type="textarea"  label="Contact Info" variant="label-hidden" value="{!v.bTSettings.buildertek__Contact_Info__c}" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-form__item" role="listitem">
+                                <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                    <label class="slds-form-element__label" >Registration Email Template</label>
+                                    <div class="slds-form-element__control">
+                                        <lightning:input type="text" label="" variant="label-hidden" value="{!v.bTSettings.buildertek__Registration_Email_Template__c}"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-form__row">
+                            <div class="slds-form__item" role="listitem">
+                                <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                    <label class="slds-form-element__label" >Registration Completed Email Template</label>
+                                    <div class="slds-form-element__control">
+                                        <lightning:input type="text" label="" variant="label-hidden" value="{!v.bTSettings.buildertek__Registration_Completed_Email_Template__c}"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-form__item" role="listitem">
+                                <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                    <label class="slds-form-element__label" >Course Completed Email Template</label>
+                                    <div class="slds-form-element__control">
+                                       <lightning:input  type="text"  label="" variant="label-hidden" value="{!v.bTSettings.buildertek__Course_Completed_Email_Template__c}" />
+                                         
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-form__item" role="listitem">
+                                <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                    <label class="slds-form-element__label" >Site URL</label>
+                                    <div class="slds-form-element__control">
+                                       <lightning:input  type="text"  label="" variant="label-hidden" value="{!v.bTSettings.buildertek__Site_URL__c}" />
+                                         
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                   
+                    <aura:set attribute="else">
+                       
+                        <div class="slds-form" role="list">
+                            <div class="slds-form__row">
+                                <div class="slds-form__item" role="listitem">
+                                    <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                        <label class="slds-form-element__label" style="font-weight: bold;">Contact Info:</label>
+                                        <div class="slds-form-element__control">
+                                            {!v.bTSettings.buildertek__Contact_Info__c}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-form__item" role="listitem"  >
+                                    <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                        <label class="slds-form-element__label" style="font-weight: bold;">Registration Email Template</label>
+                                        <div class="slds-form-element__control" >
+                                            	{!v.bTSettings.buildertek__Registration_Email_Template__c}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-form__row">
+                                <div class="slds-form__item" role="listitem">
+                                    <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                        <label class="slds-form-element__label" style="font-weight: bold;">Registration Completed Email Template</label>
+                                            <div class="slds-form-element__control">
+                                                {!v.bTSettings.buildertek__Registration_Completed_Email_Template__c}
+                                            </div>
+                                    </div>
+                                </div>
+                                <div class="slds-form__item" role="listitem">
+                                    <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                        <label class="slds-form-element__label" style="font-weight: bold;">Course Completed Email Template</label>
+                                        <div class="slds-form-element__control">
+                                           {!v.bTSettings.buildertek__Course_Completed_Email_Template__c}
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                           <br></br>
+                                <div class="slds-form__item" role="listitem">
+                                    <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                        <label class="slds-form-element__label" style="font-weight: bold;">Site URL</label>
+                                        <div class="slds-form-element__control">
+                                           {!v.bTSettings.buildertek__Site_URL__c }
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </aura:set>
+                                    </aura:if>
+                 <aura:if isTrue="{!v.isSettingsSaved}">
+            <div class="slds-notify slds-notify_alert slds-theme_alert-texture" role="alert" style="padding-top:20px;padding-bottom:20px;">
+                <h2  style="font-size:15px;font-weight:600">Settings saved successfully!
+                </h2>                
+            </div>     
+            </aura:if>
+
+                 <aura:if isTrue="{!v.isEdit}">
+                <button class="slds-button slds-button_brand" onclick="{!c.save}" style="margin:10px;">Save</button>
+                </aura:if>
+            </div>
+            
+            <br/>
+            <aura:if isTrue="{!v.isWarning}">
+            <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert" style="padding-top:20px;padding-bottom:20px;">
+                <span class="slds-assistive-text">error</span>
+                <h2  style="font-size:15px;font-weight:600">Please Select a Valid File.
+                </h2>
+                <div class="slds-notify__close">
+                    <button class="slds-button slds-button_icon slds-button_icon-small slds-button_icon-inverse" title="Close">
+                            <lightning:icon iconName="action:close" alternativeText="close" size="small" title="close" onclick="{!c.handleClose}" />
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                </div>
+            </div>     
+            </aura:if>
+            <br/>
+            <aura:if isTrue="{!v.isSaved}">
+            <div class="slds-notify slds-notify_alert slds-theme_alert-texture" role="alert" style="padding-top:20px;padding-bottom:20px;">
+                <h2  style="font-size:15px;font-weight:600">File uploaded
+                </h2>                
+            </div>     
+            </aura:if>
+            
+            <div style="border:1px solid lightgray;border-radius:5px;padding:10px;margin-top:10px">
+                <lightning:layout multipleRows = "true">
+                    <lightning:layoutitem size="3">
+                        <div style="padding-bottom: 5px;"><label style="font-size:15px;font-weight:600">Select Logo</label></div>
+                        <div><lightning:input aura:id="fileId" onchange="{!c.handleFilesChange}" type="file" variant="label-hidden" name="file" label="" multiple="false" accept="image/png,image/jpeg,image/jpg"/>
+                            <div class="slds-text-body_small slds-text-color_error">{!v.fileName} </div>
+                            
+                            <!--use aura:if for show-hide the loading spinner image--> 
+                            <aura:if isTrue="{!v.showLoadingSpinner}">
+                                <div class="slds-text-body_small slds-text-color_error">Uploading... 
+                                    <img src="/auraFW/resources/aura/images/spinner.gif" class="spinner-img" alt="Loading"/>'
+                                </div>
+                            </aura:if><br/>
+                            <button class="slds-button slds-button_brand" onclick="{!c.doSave}">Save</button>
+                        </div>
+                    </lightning:layoutitem>
+                    <lightning:layoutitem size="6">
+                        <div style="width: 100%;text-align: center;margin-bottom: 20px;">
+                            <img src="{!v.imgUrl}" id="logoImg" />
+                        </div>
+                    </lightning:layoutitem>
+                </lightning:layout>
+            </div>
+        </div>
+    </lightning:card>
+</aura:component>

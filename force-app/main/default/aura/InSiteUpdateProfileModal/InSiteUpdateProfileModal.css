@@ -1,0 +1,16 @@
+.THIS {
+}
+
+.THIS .display-horizontal .slds-form-element__control .slds-radio {
+	display: inline-block !important;
+}
+
+.THIS .submit-btn {
+	float: right;
+}
+
+.THIS .submit-btn:after, .THIS .submit-btn::after {
+	display: none;
+	clear: both;
+	content: '';
+}

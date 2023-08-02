@@ -1,0 +1,19 @@
+.THIS .navigation {
+    border-bottom:2px solid #44B4C8;
+}
+
+.THIS .forceCalendar>.calendarSidebar {
+    z-index:0 !important;
+}
+
+.THIS .forceCalendar {
+    z-index:0 !important;
+}
+
+.THIS .primaryFieldRow {
+    z-index:0 !important;
+}
+
+.THIS .slds-page-header__detail-row {
+    z-index:0!important;
+}

@@ -1,0 +1,171 @@
+<aura:component controller="AddRFQToQuote_AC" implements="force:hasRecordId,force:lightningQuickActionWithoutHeader" access="global" >
+     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+     <aura:attribute name="RFQList" type="list" />
+     <aura:attribute name="Searchstring" type="string" />
+     <aura:attribute name="Quotestring" type="string" />
+     <aura:attribute name="Quotes" type="list" />  
+     <aura:attribute name="QuoteId" type="string" /> 
+     <aura:attribute name="RFQName" type="Boolean" default="true" />
+     <aura:attribute name="RFQDescription" type="Boolean" default="true" />
+     <aura:attribute name="RFQAmount" type="Boolean" default="true" />
+     <aura:attribute name="isAsc" type="boolean" default="true" /> 
+     <aura:attribute name="selectedTabsoft" type="string" />
+     <aura:attribute name="Spinner" type="boolean" default="false"/>
+     
+    <!-- <ltng:require styles="{!$Resource.ModalWidthCSS}"/> -->
+    <aura:html tag="style">
+        .slds-modal__container { 
+        	width : 92% !important; 
+        	max-width : 95% !important; 
+        } 
+        .slds-modal__content{
+       		max-height: 40rem !important;
+        	height: 40rem !important;
+        }
+    </aura:html>
+    
+    <div class="modal__content" >
+             <div class="slds-page-header">
+                <div class="slds-page-header__row">
+                  <div class="slds-page-header__col-title">
+                    <div class="slds-media">
+                        <div class="slds-media__body">
+                            <div class="demo-only demo-only--sizing slds-grid slds-wrap">
+                                
+                              <div class="slds-size_1-of-3"> 
+                                <div class="slds-box_x-small slds-text-align_center slds-m-around_x-small">
+                                    
+                                </div>
+                              </div>
+                              
+                              <div class="slds-size_1-of-3"> 
+                                <div class="slds-box_x-small slds-text-align_center slds-m-around_x-small">
+                                    <h1>
+                                    <span class="slds-page-header__title slds-truncate" title="Add RFQ To Quote">Add RFQ To Quote</span>
+                                    </h1>
+                                </div>
+                              </div>
+                              <div class="slds-size_1-of-3">  
+                                <div class=" slds-box_x-small slds-text-align_center slds-m-around_x-small" style="float: right;">
+                                    <ui:button aura:id="button" buttonTitle="Click to see what you put into the field" class="button" label="Submit" press="{!c.AddPurchase}" />
+                                </div>
+                              </div>
+                             </div>
+                        </div>
+                     </div>
+                  </div>
+                </div>
+             </div>
+        
+        <div class="slds-grid slds-wrap slds-text-align_center custom-container" >
+           
+            <div class="slds-size_8-of-12 slds-max-small-size_1-of-1" style="border: 1px solid lightgray;border-radius: 2px;margin-left: -2px;">
+                <table class="slds-table slds-table_bordered slds-table_cell-buffer" style="border-top:none">
+                    <tr style="font-weight: bold;font-size: 18px; background-color: rgb(243, 242, 242)">
+                        RFQ
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <input type="text" id="filterInput" class="slds-input" placeholder="Search" onkeyup="{!c.SearchFunction}" value="{!v.Searchstring}"/>
+                        </td>
+                    </tr>
+                </table>
+                 <table id="myTable" class="slds-table slds-table_bordered slds-table_cell-buffer" style="border-top:none;border-bottom:none;">
+                    <tr>
+                            <th class="slds-truncate">
+                                <!--<ui:inputCheckbox aura:id="checkbox" change="{!c.onCheck}" value="{!Pur.purcheckbox}"/>-->
+                            </th>
+                            
+                            <th class="slds-is-sortable slds-text-title--caps" scope="col" onclick="{!c.sortByName}" style="white-space: pre-wrap;width: 10%">
+                            	<span class="slds-truncate" title="Name">Name</span>
+                            	<aura:if isTrue="{!v.POName}"><lightning:icon iconName="utility:up"  size="xx-small" alternativeText="Indicates approval"/>
+                            		<aura:set attribute="else">
+                            			<lightning:icon iconName="utility:down"  size="xx-small" alternativeText="Indicates approval"/>
+                            		</aura:set>
+                            	</aura:if>
+                            </th>
+                            <th class="slds-is-sortable slds-text-title--caps" scope="col" onclick="{!c.sortByDescription}" style="white-space: pre-wrap;width: 10%">
+                            	<span class="slds-truncate" title="Description">Description</span>
+                            	<aura:if isTrue="{!v.PODescription}"><lightning:icon iconName="utility:up"  size="xx-small" alternativeText="Indicates approval"/>
+                            		<aura:set attribute="else">
+                            			<lightning:icon iconName="utility:down"  size="xx-small" alternativeText="Indicates approval"/>
+                            		</aura:set>
+                            	</aura:if>
+                            </th>
+                            <th class="slds-is-sortable slds-text-title--caps" scope="col" onclick="{!c.sortByAmount}" style="white-space: pre-wrap;width: 10%">
+                            	<span class="slds-truncate" title="Amount">Amount</span>
+                            	<aura:if isTrue="{!v.POAmount}"><lightning:icon iconName="utility:up"  size="xx-small" alternativeText="Indicates approval"/>
+                            		<aura:set attribute="else">
+                            			<lightning:icon iconName="utility:down"  size="xx-small" alternativeText="Indicates approval"/>
+                            		</aura:set>
+                            	</aura:if>
+                            </th>
+                        </tr>
+                    <aura:iteration items="{!v.RFQList}" var="rfq">
+                        
+                        <tr>
+                            <td class="slds-truncate" width="5%">
+                                <ui:inputCheckbox aura:id="checkbox" change="{!c.onCheck}" value="{!rfq.purcheckbox}"/>
+                            </td>
+                            <td class="slds-truncate" width="25%">
+                                {!rfq.getPurchaseOrderList.buildertek__RFQ_Number__c}
+                                <!--<ui:outputtext value="{!Pur.getPurchaseOrderList.Name}" />-->
+                            </td>
+                            <td class="slds-truncate" width="40%">  
+                                {!rfq.getPurchaseOrderList.Name}
+                                <!--<ui:outputtext value="{!Pur.getPurchaseOrderList.Name}" />-->
+                            </td>
+                            <td class="slds-truncate" width="30%">  
+                                <ui:outputCurrency value="{!rfq.getPurchaseOrderList.buildertek__Vendor_Quote__c}" /> 
+                                <!--<ui:outputtext value="{!Pur.getPurchaseOrderList.Name}" />-->
+                            </td>
+                        </tr>
+                    </aura:iteration>
+                </table>
+            </div>
+            <div class="slds-size_4-of-12 slds-max-small-size_1-of-1" style="border: 1px solid lightgray;border-radius: 2px;margin-left: 2px;">
+                <table class="slds-table slds-table_bordered slds-table_cell-buffer" style="border-top:none">
+                    <tr style="font-weight: bold;font-size: 18px; background-color: rgb(243, 242, 242)">
+                        Quotes
+                    </tr>
+                    <tr>
+                        
+                        <td colspan="2">
+                            <!--<ui:inputtext value="{!v.Quotestring}" placeholder="Search"  keypress="{!c.QuoteSearchFunction}"/>-->
+                            <input type="text" id="quoteFilterInput" class="slds-input" placeholder="Search" onkeyup="{!c.QuoteSearchFunction}" value="{!v.Quotestring}"/>
+                        </td>
+                    </tr>
+                </table>
+                <table id="myTables" class="slds-table slds-table_bordered slds-table_cell-buffer" style="border-top:none;border-bottom:none;">
+                    <aura:iteration items="{!v.Quotes}" var="Quot">
+                        <tr>
+                            <td class="slds-truncate">
+                                <ui:inputRadio aura:id="{!Quot.getQuotelist.Id}" name="others"  change="{!c.onGroup}" value="{!Quot.Quotecheckbox}"/>  
+                                <!--<ui:inputCheckbox aura:id="checkbox" change="{!c.onkeyCheck}"  value="{!Quot.Quotecheckbox}"/>-->
+                            </td>
+                            <td class="slds-truncate">
+                                {!Quot.getQuotelist.Name}
+                                <!--<ui:outputtext value="{!Quot.getQuotelist.Name}" />-->
+                            </td>
+                        </tr>
+                    </aura:iteration>
+                </table>
+            </div>
+            
+        </div>
+        <aura:if isTrue="{!v.Spinner}">
+            <div aura:id="spinnerId" class="slds-spinner_container">
+               <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                 <span class="slds-assistive-text">Loading</span>
+                 <div class="slds-spinner__dot-a"></div>
+                 <div class="slds-spinner__dot-b"></div>
+                     <div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+                
+               </div>
+            </div>
+        </aura:if>
+    </div>
+     
+</aura:component>

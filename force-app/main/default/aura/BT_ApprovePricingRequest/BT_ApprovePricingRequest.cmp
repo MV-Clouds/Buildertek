@@ -1,0 +1,55 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" 
+                access="global" controller="NewPricingRequestController">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="isLoading" type="Boolean" />
+    <aura:attribute name="ApprovePR" type="Boolean" default="false"/>
+    <aura:attribute name="isdisabled" type="Boolean" default="false"/>
+    <aura:attribute name="recordId" type="String" />
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/>
+    <lightning:notificationsLibrary aura:id="notifLib"/>
+    <lightning:workspaceAPI aura:id="workspace" />
+    <aura:html tag="style">
+        .quick-actions-panel {
+        overflow: hidden !important;
+        }
+        .slds-modal__content{
+        overflow: hidden !important;
+        }
+    </aura:html>
+    <aura:if isTrue="{!v.isLoading}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                    <b>Processing, Please Wait</b>
+                </div>
+            </div>
+        </div>
+    </aura:if>
+    <aura:if isTrue='{!v.ApprovePR}'>
+        <div class="slds-modal__content" >
+            <div class="slds slds-scope">
+                <header class="slds-modal__header" >
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Approve Pricing Request</h2>
+                </header>
+                <div class="slds-modal__content" id="modal-content-id-1" style="height:100%">
+                    <div class="slds-m-horizontal_x-large slds-m-top_large">
+                        <div class="custom-box">
+                            <center>
+                                Are you sure you want to Approve the Pricing Request?
+                            </center>
+                        </div>
+                    </div>
+                </div>
+                <br/>
+                <div class="slds-col modal-footer slds-modal__footer slds-buttoncustom" >
+                    <lightning:button variant="neutral" title="No" label="No" onclick="{!c.cancelrequest}" />
+                    <lightning:button variant="brand" type="yes" name="yes" label="Yes" onclick="{!c.updatePR}" disabled="{!v.isdisabled}"/>
+                </div> 
+                
+            </div>
+        </div>
+    </aura:if>
+</aura:component>

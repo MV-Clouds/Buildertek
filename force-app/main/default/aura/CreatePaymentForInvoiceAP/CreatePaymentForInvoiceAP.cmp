@@ -1,0 +1,159 @@
+<aura:component controller="CreatePaymentForInvoiceAP" implements="force:appHostable,flexipage:availableForAllPageTypes,lightning:isUrlAddressable,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader,forceCommunity:availableForAllPageTypes,forceCommunity:layout" access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="InvoiceDetails" type="List" /> 
+    <aura:attribute name="InvoiceLinesList" type="List" />
+    <aura:attribute name="projectName" type="String" />
+    <aura:attribute name="SubTotal" type="Decimal" />
+    <aura:attribute name="invoiceName" type="String" />
+    <aura:attribute name="paymentLinelist" type="BT_Payment_Line__c[]" />
+    <aura:attribute name="paymentAmount" type="String" />
+    <aura:attribute name="selectedPayLineIds" type="List" default="[]"/>
+    <aura:attribute name="sovValues" type="Object" />
+    <aura:attribute name="isInvoiceLines" type="Boolean" />
+    <aura:attribute name="Spinner" type="Boolean" />
+    <aura:attribute name="showMessage" type="Boolean" default="false" />
+    <aura:attribute name="listOfFields" type="List" />
+    <aura:attribute name="invoiceId" type="String" />
+    <aura:attribute name="vendorId" type="String" />
+    <ltng:require styles="{!$Resource.ModalPreviewCSS}" />
+    
+    
+    <aura:html tag="style">
+        .slds-modal__container {
+        width:70% !important;      
+        max-width: 70% !important;    
+        
+        }
+        .slds-modal__content {
+        //overflow: hidden !important;
+        }
+    </aura:html>
+    
+    
+    
+    
+    <aura:if isTrue="{!v.isInvoiceLines}">
+        
+        <div class="slds-m-around--xx-small" style="position:relative">
+            
+            <lightning:messages />
+            
+            <!--Custom Styles for Modal Header and Footer--> 
+            <aura:html tag="style">
+                .cuf-content {
+                padding: 0 0rem !important;
+                }
+                .slds-p-around--medium {
+                padding: 0rem !important;
+                }       
+                .slds-modal__content{
+                overflow-y:hidden !important;
+                height:unset !important;
+                max-height:unset !important;
+                }
+                .layoutItem {
+                padding: 20px;
+                }
+            </aura:html>
+            
+            
+            <div class="slds-modal__content ">
+                <div class="slds slds-scope">
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close" onclick="{! c.doCancel }" alternativeText="close"
+                                              variant="bare-inverse" class="slds-modal__close" />
+                        
+                        
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Create Payment</h2>
+                    </header>
+                    
+                    
+                    <!-- <lightning:button variant="brand-outline" label="Cancel" title="Cancel" onclick="{! c.close }"/> -->
+                    
+                    <div class="slds-modal__content" >
+                        <div class="slds slds-scope">
+                            
+                            <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__BT_Payment__c"
+                                                      onsubmit="{!c.handleSubmit}" onsuccess="{!c.onRecordSuccess}">
+                                <div class="slds-grid slds-gutters">
+                                    
+                                    <div class="slds-scrollable" style="height:100%;width:100%">
+                                        <lightning:layout multipleRows="true">
+                                            <aura:iteration items="{!v.listOfFields}" var="field">
+                                                <br />
+                                                <br />
+                                                <lightning:layoutItem size="12" mediumDeviceSize="6" class="slds-p-around_x-small layoutItem">
+                                                    <div>
+                                                        <aura:if  isTrue="{!and(and(field.name !='buildertek__Invoices_AP__c',field.name !='buildertek__Payee__c'),field.name !='buildertek__Amount__c')}" >                                 
+                                                            <lightning:inputField fieldName="{!field.name}" value="" />
+                                                            <aura:set attribute="else"> 
+                                                                <aura:if  isTrue="{!and(field.name =='buildertek__Invoices_AP__c')}" >                                            
+                                                                    <lightning:inputField fieldName="{!field.name}" value="{!v.invoiceId}" disabled = "true" />                                              
+                                                                </aura:if>
+                                                                <aura:if  isTrue="{!field.name =='buildertek__Payee__c'}" >                                            
+                                                                    <lightning:inputField fieldName="{!field.name}"  value="{!v.vendorId}"/>   <!--  required = "{!field.required}"  -->                                            
+                                                                </aura:if>
+                                                                <aura:if  isTrue="{!field.name =='buildertek__Amount__c'}" >                                            
+                                                                    <lightning:inputField fieldName="{!field.name}"  required = "{!field.required}" autocomplete="off"/>   <!--  required = "{!field.required}"  -->                                            
+                                                                </aura:if>
+                                                            </aura:set>
+                                                        </aura:if> 
+                                                        
+                                                    </div>
+                                                </lightning:layoutItem>
+                                                <br />
+                                            </aura:iteration>
+                                        </lightning:layout>
+                                        <br />
+                                    </div>
+                                    
+                                </div>
+                                <footer class="slds-modal__footer">
+                                    <lightning:button variant="Neutral" class="slds-button" label="Close" onclick="{!c.CloseScreen}"/>
+                                    <lightning:button type="submit" label="Save" variant="Neutral"/>
+                                    
+                                </footer>                                    
+                            </lightning:recordEditForm>
+                            
+                        </div>            
+                    </div>
+                    
+                </div>
+            </div>
+            
+        </div>
+        
+        <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative"
+                 role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                    <b>Processing, Please Wait</b>
+                </div>
+            </div>
+        </div>
+    </aura:if>
+        
+    </aura:if>
+    
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative"
+                 role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                    <b>Processing, Please Wait</b>
+                </div>
+            </div>
+        </div>
+    </aura:if>
+    
+    
+    
+</aura:component>

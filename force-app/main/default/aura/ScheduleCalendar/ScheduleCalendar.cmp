@@ -1,0 +1,119 @@
+<aura:component controller="ScheduleCalendarController" implements="force:appHostable,flexipage:availableForAllPageTypes,force:hasRecordId" access="global" >
+    <aura:attribute name="projectsList" type="list" />
+    <aura:attribute name="scheduleItemsList" type="list" />
+    <!-- <aura:attribute name="selectedScheduleStatus" type="String" default="Active"/> -->
+    <aura:attribute name="selectedProjectId" type="String" default=""/>  <!-- All -->
+    <aura:attribute name="selectedTradeTypeId" type="String" default=""/>  <!-- All -->
+    <aura:attribute name="selectedVendorId" type="String" default=""/>  <!-- All -->
+
+    <aura:attribute name="selectedProjectIdName" type="String" default=""/> <!-- All -->
+    <aura:attribute name="selectedTradeTypeIdName" type="String" default=""/>  <!-- All -->
+    <aura:attribute name="selectedVendorIdName" type="String" default=""/>  <!-- All -->
+
+
+    <aura:attribute name="selectedTask" type="sObject" default="{}"/>
+    <aura:attribute name="selectedVendor" type="sObject" default="{}"/>
+    <aura:attribute name="selectedproject" type="sObject" default="{}"/>
+    <aura:attribute name="selectedTradetype" type="sObject" default="{}"/>
+
+    <aura:attribute name="scheduleStatusList" type="list" />
+    <aura:attribute name="tradeTypesList" type="list" />
+    <aura:attribute name="vendorsList" type="list" />
+    <aura:attribute name="selectedEvents" type="list" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="finishDate" type="String" />
+    <aura:attribute name="endDate" type="String" />
+    <aura:attribute name="Spinner" type="Boolean" />
+    <aura:attribute name="defaultDate" type="Date" />
+    <aura:attribute name="ProjectRecordList" type="sObject[]" />
+
+    <!-- <aura:handler name="selectedSearchValue" event="c:BT_SelectedSearchValue" action="{!c.handleComponentEvent}"/> -->
+
+     <aura:handler name="oSelectedRecordEvent" event="c:selectedsObjectRecordEvent" action="{!c.handleComponentEvent}"/>
+
+    <aura:handler  event="c:ClearLookupvalueEvent" action="{!c.ClearhandleComponentEvent}"/>
+
+    <aura:handler event="c:passRecordListEvent" action="{!c.handleRecordListEvent}"/>
+
+    <ltng:require styles="{!$Resource.ResourceCss3}" />
+    <ltng:require styles="{!$Resource.FullCalendarJS     + '/FullCalendar/fullcalendar.min.css'}"
+                  scripts="{!join(',',
+                           $Resource.FullCalendarJS  + '/FullCalendar/jquery.min.js',
+                           $Resource.FullCalendarJS  + '/FullCalendar/moment.js',
+                           $Resource.FullCalendarJS  + '/FullCalendar/fullcalendar.js',
+                            $Resource.FullCalendarJS  + '/FullCalendar/theme.js'
+                           )}"
+                  afterScriptsLoaded="{!c.afterScriptsLoaded}" />
+
+    <ltng:require styles="{!$Resource.FontAwesome}"/>
+    <ltng:require styles="{!$Resource.DateTimePicker}"/>
+    <lightning:workspaceAPI aura:id="workspacecalendar" />
+    <aura:handler name="change" value="{!v.finishDate}" action="{!c.startDateChange}"/>
+    <aura:handler name="change" value="{!v.endDate}" action="{!c.endDateChange}"/>
+    <body style="font-family: 'Poppins', sans-serif;background: white">
+        <div class="wrapper">
+        <header style="background: #1b5297;padding: 11px 20px;">
+            <div class="left-box" style="display: inline-block;vertical-align: middle;width: 30%;">
+            	<h1 style="margin: 0;color: #fff;font-size: 18px;">Schedule Dashboard</h1>
+            </div>
+        </header>
+        <div class="slds">
+            <div class="slds-col slds-size_12-of-12 slds-m-top_small">
+                <div class="slds-grid slds-wrap slds-grid--pull-padded">
+                    <!-- <div class="slds-col slds-size_2-of-12 slds-m-left_xx-large">
+                    	<label class="slds-form-element__label" style="font-weight: bold;font-size: 14px;">Schedule Status</label>
+                        <div class="slds-form-element__control">
+                            <ui:inputSelect class="slds-select" aura:id="scheduleItemId" change="{!c.onScheduleItemChange}" value="{!v.selectedScheduleStatus}">
+                                <ui:inputSelectOption text="All" label="All"/>
+                                <ui:inputSelectOption text="Active" label="Active"/>
+                                <ui:inputSelectOption text="Completed" label="Completed"/>
+                            </ui:inputSelect>
+                        </div>
+                    </div> -->
+                    <div class="slds-col slds-size_2.5-of-12" style="padding-left: 1rem;">
+                        <div class="slds-form-element__control" style="margin:0.5rem;">
+                            <b> Project :</b>   <c:customLookup aura:id="projectId"  objectAPIName="buildertek__Project__c" IconName="custom:custom24" selectedRecord="{!v.selectedproject}" fromComp="resourceCenter" SelectMultiRecord="true"/>
+                            <!-- <c:BT_SearchWithDropDown label="Project" inputValue="All" results="{!v.projectsList}" myInputId="projectId" myULId="projectULId" selectedOption="{!v.selectedProjectId}"/> -->
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_2.5-of-12">
+                        <div class="slds-form-element__control" style="margin:0.5rem;">
+                            <b> Trade Type : </b> <c:customLookup aura:id="tradetypeid" objectAPIName="buildertek__Trade_Type__c" IconName="custom:custom67" selectedRecord="{!v.selectedTradetype}" fromComp="resourceCenter" />
+                            <!-- <c:BT_SearchWithDropDown label="Trade Type" inputValue="All" results="{!v.tradeTypesList}" myInputId="tradeTypeId" myULId="tradeTypeULId" selectedOption="{!v.selectedTradeTypeId}"/> -->
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_2.5-of-12">
+                        <div class="slds-form-element__control" style="margin:0.5rem;">
+                            <b> Vendor : </b> <c:customLookup aura:id="accountId" objectAPIName="Account" IconName="standard:account" selectedRecord="{!v.selectedVendor}" fromComp="resourceCenter" />
+                            <!-- <c:BT_SearchWithDropDown label="Vendor" inputValue="All" results="{!v.vendorsList}" myInputId="vendorId" myULId="vendorULId" selectedOption="{!v.selectedVendorId}"/> -->
+                        </div>
+                    </div>
+
+                    <div class="slds-col slds-size_1.5-of-12">
+                    	<lightning:button class="slds-m-top_large slds-m-left_medium" variant="brand" label="Filter" title="Filter" onclick="{!c.filterRecords}" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="inner-wrapper-box" style="padding: 20px;">
+            <div id="wrapper">
+                <div id="loading"></div>
+                <div class="print-visible" id="calendar"></div>
+            </div>
+        </div>
+        <aura:if isTrue="{!v.Spinner}">
+            <div aura:id="spinnerId" class="slds-spinner_container">
+               <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                 <span class="slds-assistive-text">Loading</span>
+                 <div class="slds-spinner__dot-a"></div>
+                 <div class="slds-spinner__dot-b"></div>
+                   <div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+               </div>
+            </div>
+ 		</aura:if>
+    </div>
+    </body>
+
+</aura:component>

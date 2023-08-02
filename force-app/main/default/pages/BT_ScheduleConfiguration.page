@@ -1,0 +1,15 @@
+<apex:page controller="BT_ScheduleConfigurationCtrl" sidebar="false" lightningStylesheets="true">
+    <apex:slds />
+    <apex:form >
+       <!-- <apex:pageBlock mode="maindetail">
+            <apex:pageMessages />
+            <apex:pageblocksection >
+                <apex:inputcheckbox value="{!isScheduleImportEnabled}" label="Enable Schedule Items Import">
+                </apex:inputcheckbox>
+                <center>
+                <apex:commandButton value="Save" id="onSave" styleClass="slds-button slds-button_brand" action="{!onSave}"></apex:commandButton>
+                </center>
+            </apex:pageblocksection>
+        </apex:pageBlock> -->
+    </apex:form>
+</apex:page>

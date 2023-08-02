@@ -1,0 +1,4 @@
+<aura:component controller="BoxUserReset" implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader" access="GLOBAL"   >
+	<aura:attribute name="recordId" type="Id" />
+    <lightning:button label="Box User Reset" title="Box User Reset" onclick="{!c.BoxUserReset}"/> 
+</aura:component>

@@ -1,0 +1,18 @@
+.THIS {
+}
+
+.THIS .chart-label {
+	color: #fff;
+}
+
+.THIS .pie-chart-legend td {
+	padding: 4px 0;
+}
+
+.THIS .pie-chart-legend .legendColorBox {
+	width: 10%;
+}
+
+.THIS .pie-chart-legend .legendLabel {
+	width: 40%;
+}

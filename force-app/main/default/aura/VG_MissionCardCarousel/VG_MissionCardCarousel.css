@@ -1,0 +1,63 @@
+.THIS.container {	width: 100%;
+    padding: 10px 0px;
+    margin: 0px;
+}
+
+.THIS .center {
+    margin: 0px auto;
+}
+.THIS .slick-dots li.slick-active button:before {
+    color: #44B4C8 !important;
+    font-size: 11px;
+    
+}
+.THIS .slick-dots li button::before {
+    font-size: 11px;
+    color: #95d1dc;
+    opacity: 0.7;
+}
+.THIS .slick-dots {
+    position: relative;
+    bottom: 8px; }
+.THIS .content {
+    max-width: 768px;
+    font-size: 12px;
+    color: #3c3d3e;
+}
+
+
+.THIS .prevBtn {
+    font-size: 0;
+    line-height: 0;
+    position: absolute;
+    top: 50%;
+    display: block;
+    width: 20px;
+    height: 20px;
+    margin-top: -10px;
+    padding: 0;
+    cursor: pointer;
+    color: grey;
+    border: none;
+    outline: none;
+    background: transparent;
+    left: -25px;
+}
+
+.THIS .nextBtn {
+    font-size: 0;
+    line-height: 0;
+    position: absolute;
+    top: 50%;
+    display: block;
+    width: 20px;
+    height: 20px;
+    margin-top: -10px;
+    padding: 0;
+    cursor: pointer;
+    color: grey;
+    border: none;
+    outline: none;
+    background: transparent;
+    right: -25px;
+}

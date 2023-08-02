@@ -1,0 +1,243 @@
+<aura:component controller="PreQualController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global" >
+    <aura:attribute name="templatesList" type="list" />
+    <aura:attribute name="selectedTemplate" type="String" />
+    <aura:attribute name="selectedToContact" type="sObject[]" default="[]"/>
+    <aura:attribute name="selectedCcContact" type="sObject[]" default="[]"/>
+    <aura:attribute name="toEmail" type="String" />
+    <aura:attribute name="emailIds" type="List" />
+    <aura:attribute name="showPreview" type="Boolean" />
+    <aura:attribute name="Spinner" type="Boolean" default="false"/>
+    <aura:attribute name="isStageValid" type="Boolean"/>
+    
+    <aura:attribute name="fileData2" type="List" access="global"/>
+    <aura:attribute name="fileBody" type="string" access="global"/>
+    <aura:attribute name="fileName2" type="String" access="global"/>
+    <aura:attribute name="uploadFile2" type="Boolean" access="global"/>
+    <aura:attribute name="message" type="String" />
+    <aura:attribute name="FileLabelList" type="List" default="[]"/>
+    <aura:attribute name="FileNameList" type="List" />
+    <aura:attribute name="deleteFileName" type="String" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <!-- <ltng:require styles="{!$Resource.ModalPreviewCSS}"/>-->
+    
+    <aura:html tag="style">
+        
+        
+        .slds-modal__container {
+        width:70% !important;      
+        max-width: 70% !important;    
+        height: 99% !important;
+        }
+        
+        .slds-modal__content {
+        padding: 0 0rem !important;
+        height:97% !important;
+        max-height:97% !important;
+        }
+        .cuf-content {
+        padding: 0 0rem !important;
+        }
+        .slds-p-around--medium {
+        padding: 0rem !important;
+        }   
+        
+        
+    </aura:html>  
+    <aura:if isTrue="{!v.isStageValid}">
+        
+        <aura:if isTrue="{!v.Spinner}">
+            <div aura:id="spinnerId" class="slds-spinner_container">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                    <span class="slds-assistive-text">Loading...</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                    <div class="custom-loading-text">
+                        <b>Processing, Please Wait</b>
+                    </div>
+                </div>
+            </div>
+            
+        </aura:if>
+        
+        
+        <div class="" id="pageTop"> 
+            <div class=" " >
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeModel }" alternativeText="close"
+                                          variant="bare-inverse" class="slds-modal__close" />
+                    
+                    
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Pre-Qual</h2>
+                </header>
+                <div class=" slds-p-around_medium slds-scrollable--y" id="pageTop" style="height:auto;overflow-y:auto">
+                    <div class="slds-form-element " style="padding-bottom: 10px;">
+                        <div class="slds-form-element__control">
+                            
+                            <c:BT_MultiSelectLookup objectAPIName="contact" IconName="standard:contact" label="To"
+                                                    lstSelectedRecords="{!v.selectedToContact}" isPreQualProcess="true" recordId="{!v.recordId}"/>
+                            
+                        </div>
+                    </div>   
+                    <hr style="margin:0px"></hr>
+                    <!-- <div class="slds-form-element "
+                    style="padding-top: 10px;padding-bottom: 10px;">
+                <label class="slds-form-element__label" for="recipients-cc">Cc</label>
+                <div class="slds-form-element__control">
+                    <div class="slds-combobox_container slds-has-inline-listbox">
+                        <c:BT_MultiSelectLookup objectAPIName="contact" IconName="standard:contact"
+                                                lstSelectedRecords="{!v.selectedCcContact}" label="" />
+                    </div>
+                </div>
+            </div> -->
+                    <div class="slds-form-element "
+                         style="padding-top: 10px;padding-bottom: 10px;">
+                        <div class="slds-form-element__control">
+                            <lightning:input aura:id="emailForm" type="email" name="toEmail" value="{!v.toEmail}" label="Additional Email" class="slds-size_1-of-1" /> 
+                            
+                        </div>
+                    </div>
+                    
+                    <lightning:layout multipleRows="true">
+                        <lightning:layoutItem size="12" padding="">
+                            <h2>Attach documents to email</h2>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem size="12" padding="">
+                            <div class="slds-form-element__control">
+                                <div class="slds-file-selector slds-file-selector_files"> 
+                                    <div class="slds-file-selector__dropzone">
+                                        <input type="file" class="slds-file-selector__input slds-assistive-text" id="file-upload-input-02" onchange="{!c.handleFilesChange2}" aria-labelledby="file-selector-primary-label file-selector-secondary-label"  multiple="true"/>
+                                        
+                                        <label class="slds-file-selector__body" for="file-upload-input-02" id="file-selector-secondary-label2"> 
+                                            <span class="slds-file-selector__button slds-button slds-button_neutral">
+                                                Upload Files
+                                            </span>
+                                            <!--<span class="slds-file-selector__text slds-medium-show">or Drop Files</span>-->
+                                        </label>
+                                    </div>
+                                </div>
+                                <!--<div class="slds-text-body_small slds-text-color_success">{!v.fileName2} </div>-->
+                                <div>
+                                    <aura:iteration items="{!v.FileNameList}" var="item" indexVar="indx">
+                                        <!-- <div> <lightning:icon iconName="action:delete" alternativeText="Delete" title="{!item}" size="xx-small" onclick="{!c.handleDelete}"/> </div><br/>-->
+                                        
+                                        <lightning:layout >
+                                            <lightning:layoutItem  size="2.5" padding="around-small" class="myclass">
+                                                <div>
+                                                    {!item}
+                                                </div>
+                                            </lightning:layoutItem>
+                                            <lightning:layoutItem  size=".5" padding="around-small" class="myclass">
+                                                <div  onclick="{!c.removeRow}" title="{!indx}" style="padding-top:5px">
+                                                    <lightning:icon iconName="utility:close" class="myUniqueClass" size="xx-small" alternativeText="left" />
+                                                </div>
+                                            </lightning:layoutItem>
+                                            <lightning:layoutItem  size="9" padding="around-small">
+                                            </lightning:layoutItem>
+                                        </lightning:layout>
+                                        
+                                        
+                                        
+                                        <!--<div style="display:inline-flex;" padding="around-small"><div> {!item} </div> &nbsp;&nbsp;&nbsp;&nbsp;<div  onclick="{!c.removeRow}" title="{!indx}" >
+                                                                <lightning:icon iconName="action:delete" class="arrows" size="x-small" alternativeText="left" />
+                                              </div> </div><br/>-->
+                                    </aura:iteration>
+                                    
+                                </div>
+                            </div>
+                            <!--div>
+                                    <iframe aura:id="vfFrame" 
+                                            src="https://builderteklightning-developer-edition.na75.force.com/buildertek__CreateFile"
+                                            style="border: none;height: 5px;"/>
+                                </div>-->
+                        </lightning:layoutItem>
+                        <br></br><br></br>
+                    </lightning:layout>
+                    
+                    <hr style="margin:0px"></hr>
+                    <div style="padding-top:10px;padding-bottom:50px">
+                        <lightning:select name="select templates" label="Select Template"  value="{!v.selectedTemplate}" onchange="{!c.preview}">
+                            <option value="">choose one...</option>
+                            <aura:iteration items="{!v.templatesList}" var="temp">
+                                 <aura:if isTrue="{!temp.label == 'Standard_PreQual_VF'}"> 
+                                      <option value="{!temp.value}">Standard Pre-Qual</option>
+                                     <aura:set attribute="else">
+                                		<option value="{!temp.value}">{!temp.label}</option>  
+                                     </aura:set>
+                                </aura:if>
+                            </aura:iteration>
+                        </lightning:select>
+                        <aura:if isTrue="{!v.selectedTemplate}"> 
+                            <aura:if isTrue="{!v.showPreview}">
+                                
+                                <iframe src="{!('/apex/'+v.selectedTemplate+'?preview=yes')}"
+                                        width="100%"
+                                        style="border: none; overflow: scroll;height:75em"
+                                        height="75em"
+                                        frameBorder="0"
+                                        sandbox="allow-same-origin allow-scripts allow-forms"
+                                        scrolling="yes" />
+                            </aura:if>
+                        </aura:if>
+                    </div>
+                </div>
+                <footer role="contentinfo"  class="slds-docked-form-footer fixedFooter" style="display:block;text-align:right;">
+                    <!-- LAYOUT GRID -->
+                    <div class="slds-grid slds-grid_align-spread" style="padding: 10px;border-radius: 5px;">
+                        <p class="slds-col"></p>
+                        <p class="slds-col">
+                            <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}" >Cancel</button>
+                    <button class="slds-button slds-button--brand" onclick="{!c.sendEmail}">Send Email</button>
+                        </p>
+                    </div>
+                    <!-- / LAYOUT GRID -->
+                </footer>
+                
+            </div>
+        </div>
+        
+    </aura:if>
+    <aura:if isTrue="{!v.isStageValid == false}">
+        <aura:html tag="style">
+            .cuf-content {
+            padding: 0 0rem !important;
+            }
+            .slds-p-around--medium {
+            padding: 0rem !important;
+            }  
+            .slds-modal__content{
+            height:350px !important;
+            max-height:350px !important;
+            }
+            .slds-modal__content{
+            //overflow-y:hidden !important;
+            height:unset !important;
+            max-height:unset !important;
+            }
+        </aura:html>
+        
+        <!--Modal Header-->  
+        <div class="modal-header slds-modal__header slds-size_1-of-1">
+            <h4 class="title slds-text-heading--medium">Qualified</h4>
+        </div>
+        <!--End Modal Header-->  
+        
+        <!--Modal Body-->   
+        <div class="slds-modal__content slds-p-around--x-small slds-align_absolute-center slds-size_1-of-1 slds-is-relative">
+            <form class="slds-form--stacked">
+                <h3 style = "font-size: 18px; font-weight: bold;text-align: center;"> {!v.message}
+                </h3>
+            </form> 
+        </div>
+        <!--End of Modal Body--> 
+        
+        <!--Modal Footer-->
+        <div class="modal-footer slds-modal__footer slds-size_1-of-1" style="background-color: white;">
+            <lightning:button variant="Neutral" class="slds-button" label="OK" onclick="{!c.handleCancel}"/>
+        </div>
+        <!--End of Modal Footer-->
+        
+    </aura:if>
+    
+    
+</aura:component>

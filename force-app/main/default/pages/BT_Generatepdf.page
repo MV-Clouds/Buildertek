@@ -1,0 +1,24 @@
+<apex:page controller="BT_GeneratePDF" standardStylesheets="false" applyHtmlTag="false" applyBodyTag="false" showHeader="false"  renderAs="PDF" action="{!createPDF}" >
+
+<apex:form >
+<!--<apex:actionFunction name="loadData" action="{!createPDF}" />--> 
+<apex:outputText value="{!strBody}" escape="false"/>
+
+<!-- <br/>
+<br/> <br/> -->
+
+<apex:outputPanel rendered="{!filerecid != null}" >
+<div >
+Signature 
+<div style="border:1px solid black;">   
+<apex:image url="/sfc/servlet.shepherd/version/download/{!filerecid}"/>
+</div> <br/>
+Accepted Date :
+<apex:outputText value="{0,date,dd' 'MMMMM' 'yyyy}"> 
+                   <apex:param value="{!CustomerAcceptedDate}" /> 
+</apex:outputText>
+
+</div>
+</apex:outputPanel>
+</apex:form> 
+</apex:page>

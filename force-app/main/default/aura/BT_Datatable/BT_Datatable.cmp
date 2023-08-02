@@ -1,0 +1,27 @@
+<aura:component controller="BT_Lightning_Utils">
+	
+	<!-- Additional attributes for parent -->
+    <aura:attribute name="filterConditions" type="String" description="This will be queary string to apply in SOQL" default=""/>
+    <aura:attribute name="objectName" type="String" description="This will be target object to get record data" default="Account"/>
+    <aura:attribute name="fieldSetName" type="String" description="Field set name for grid columns" default="BT_Filter_Criteria_Fields"/>
+    <aura:attribute name="gridType" type="String" default="LIST" description="defaine grid type, you can pass picker name heare"/>
+    <aura:attribute name="parentId" type="String" default="" description="parent record id for child records"/>
+    
+    
+    
+    <!-- Data table attributes -->
+	<aura:attribute name="data" type="Object"/>
+    <aura:attribute name="columns" type="List"/>
+    <aura:attribute name="selectedRows" type="List" access="PRIVATE"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.initializeData}"/>
+    
+    <div>
+    	<lightning:datatable 
+            columns="{! v.columns }"
+            data="{! v.data }"
+            selectedRows="{! v.selectedRows }"
+            showRowNumberColumn="true"
+            keyField="id"/>
+    </div>
+</aura:component>

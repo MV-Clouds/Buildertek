@@ -1,0 +1,28 @@
+<aura:component controller="BT_QuestionnaireBuilder">
+	
+    <aura:attribute name="sectionId" type="string" access="public" description="Related section record id"/>
+    <aura:attribute name="selectionId" type="String" />
+    <aura:attribute name="questionGroups"  type="List" description="Question group list"/>
+    <aura:attribute name="questionGroupListSize" type="Integer"  default="0" description="Question group list size"/>
+    <aura:attribute name="questionGroupLoaded" type="Boolean"  default="false" description="This boolean will be true once all question Group list loaded through aura itration."/>
+    <aura:attribute name="recordTypeDeveloperName" type="string" default="" description="Record type developer name of section record"/>
+    <aura:attribute name="headerFields" type="List" default="" description="Header field list to show additional information"/>
+    <aura:attribute name="section" type="object" access="public" description="Section details"/>
+    <aura:attribute name="initReference" type="Aura.Action" default="{!c.init}" description="Init Reference action used to call from child components"/>
+	<aura:attribute name="parentId" type="string" access="public" description="parent id if any exist."/>
+    <aura:attribute name="questionGroupByParentId" type="Map" access="public" default="{}" description="Question Group details by parent id map"/>
+	<aura:attribute name="callerName" type="String" />
+    <aura:handler name="change" value="{!v.questionGroupLoaded}" action="{!c.questionGroupLoaded}"/>
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <aura:registerEvent name="refreshTreeNodeEvent" type="c:BT_RefreshTreeNodeEvent"/>
+    <aura:if isTrue="{!v.questionGroupListSize > 0}">
+	    <ul class="slds-accordion av-list" style="{!if(v.sectionId != null,'padding-left:0.7rem !important;','')}">
+	        <aura:iteration items="{!v.questionGroups}" var="questionGroup" loaded="{!v.questionGroupLoaded}">
+	            <li class="slds-accordion__list-item av-questionGroup" data-id="{!questionGroup.Id}" id="{!questionGroup.Id}">
+	                <c:BT_QuestionGroupAccordion selectionId="{!v.selectionId}" callerName="{!v.callerName}" questionGroup="{!questionGroup}" headerFields="{!v.headerFields}" section="{!v.section}" initReference="{!v.initReference}"/>
+	                <c:BT_QuestionGroupList callerName="{!v.callerName}" parentId="{!questionGroup.Id}" questionGroupByParentId="{!v.questionGroupByParentId}" headerFields="{!v.headerFields}"/>
+	            </li>
+	        </aura:iteration>
+	    </ul>
+    </aura:if>
+</aura:component>

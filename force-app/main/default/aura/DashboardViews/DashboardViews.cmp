@@ -1,0 +1,47 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,force:hasRecordId" access="global">
+    <aura:attribute type="string" name="Dashboardview" default="taskview" />
+    <lightning:workspaceAPI aura:id="workspaceDashboardview" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <div class="slds-form-element">
+        <header style="background: #1b5297;padding: 5px 10px;">
+            <div class="left-box" style="display: inline-block;vertical-align: middle;width: 100%;">
+                <h1 style="margin: 0;color: #fff;font-size: 18px;text-align:center"></h1>
+
+                <div style="background: #fff;border-right: 1px solid #dedede !important;padding:4px;">
+                    <div class="slds-grid slds-wrap">
+                        <div class="slds-col slds-size_5-of-12">
+                        </div>
+                        <div class="slds-col slds-size_4-of-12">
+                            <lightning:buttonGroup>
+                                <lightning:button
+                                    class="{!v.Dashboardview == 'Resourceview' ? 'slds-button--brand ':''}"
+                                    label="Resource Schedules" onclick="{!c.onresourceview}" />
+                                <lightning:button class="{!v.Dashboardview == 'taskview' ? 'slds-button--brand ':''}"
+                                    label="Project Tasks" onclick="{!c.onTaskview}" />
+                                <lightning:button class="{!v.Dashboardview == 'calendarView' ? 'slds-button--brand ':''}"
+                                    label="Calendar" onclick="{!c.onCalendarview}" />
+                            </lightning:buttonGroup>
+                        </div>
+                        <div class="slds-col slds-size_3-of-12">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+    </div>
+
+    <div class="slds-form-element">
+        <aura:if isTrue="{!v.Dashboardview == 'Resourceview'}">
+            <c:ResourceScheduledashboard />
+        </aura:if>
+        <aura:if isTrue="{!v.Dashboardview == 'taskview'}">
+            <c:TaskScheduleDashboard />
+        </aura:if>
+        <aura:if isTrue="{!v.Dashboardview == 'projectView'}">
+            <c:ProjectScheduleDashboard />
+        </aura:if>
+        <aura:if isTrue="{!v.Dashboardview == 'calendarView'}">
+            <c:ScheduleCalendar />
+        </aura:if>
+    </div>
+</aura:component>

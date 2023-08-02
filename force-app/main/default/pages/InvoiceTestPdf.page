@@ -1,0 +1,12 @@
+<apex:page controller="BT_GeneratePDF" standardStylesheets="false" applyHtmlTag="false" applyBodyTag="false" showHeader="false"  renderAs="pdf" action="{!createPDF}" >
+<!--<script>
+        window.onload = onload;
+        function onload{
+            loadData();
+        }
+</script>-->
+<apex:form >
+<!--<apex:actionFunction name="loadData" action="{!createPDF}" />--> 
+<apex:outputText value="{!strBody}" escape="false"/>
+</apex:form> 
+</apex:page>

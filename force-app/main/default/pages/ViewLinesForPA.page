@@ -1,0 +1,21 @@
+<apex:page >
+  <apex:includeLightning />
+        <div id="one">
+            
+        </div>
+        <script>
+        alert("vf page")
+        $Lightning.use("CommVFViewLines",function(){
+            $Lightning.createComponent(
+                "lightning:ContinuationViewLines".
+                {"recordId": "a2d1K000008HYcUQAW"}
+                "one"
+                function(cmp){
+                alert("lightning button created");
+            }
+            )
+        });
+        
+        </script>
+   
+</apex:page>

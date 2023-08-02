@@ -1,0 +1,176 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" 
+                controller = "opportunityclosewon" >
+    <aura:attribute name="opportunityRecord" type="Opportunity"/>
+    <aura:attribute name="recordError" type="String"/>
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}" access="global" />
+    <aura:attribute name="listOfSelectedIds" type="List" default="[]"/>
+    <aura:attribute name="PageNumber" type="integer" default="1" />
+    <aura:attribute name="pageSize" type="integer" default="10" />
+    <aura:attribute name="TotalPages" type="integer" default="0" />
+    <aura:attribute name="TotalRecords" type="integer" default="0" />
+    <aura:attribute name="RecordStart" type="integer" default="0" />
+    <aura:attribute name="RecordEnd" type="integer" default="0" />
+    <aura:attribute name="projLst" type="Project__c[]"/> 
+    <aura:attribute name="options" type="List" access="PRIVATE"/>
+    <aura:attribute name="openModal" type="Boolean" default="false" />
+    <aura:attribute name="open" type="Boolean" default="false" />
+    <aura:attribute name="openAcc" type="Boolean" default="false" />
+    <aura:attribute name="isadmin" type="Boolean" default="true" />
+    <aura:attribute name="searchProjectNameFilter" type="String" default="" />
+    <aura:attribute name="searchCommunityFilter" type="String" default="" />
+    <aura:attribute name="searchAddressFilter" type="String" default="" />
+    
+    <aura:attribute name="opptyStageValue" type="String" default="" />
+    <aura:attribute name="showRecordData" type="Boolean" default="false" />
+    
+    <aura:handler name="change" value="{!v.searchProjectNameFilter}" action="{!c.doprojSearch}" />
+    <aura:handler name="change" value="{!v.searchCommunityFilter}" action="{!c.doprojSearch}" />
+    <!--<aura:handler name="change" value="{!v.searchAddressFilter}" action="{!c.doprojSearch}" />-->
+    
+   <aura:if isTrue="{!v.showRecordData}">
+        <force:recordData aura:id="opportunityRecordCmp"
+                          recordId="{!v.recordId}"
+                          fields="Id,StageName,AccountId"
+                          targetFields="{!v.opportunityRecord}"
+                          recordUpdated="{!c.openModal}"
+                          targetError="{!v.recordError}" 
+                          mode="EDIT"/>
+ 
+    </aura:if>
+    Line 1
+    {!v.isadmin}
+    <aura:if isTrue="{!v.isadmin}" > 
+        Line 2
+        <aura:if isTrue="{!not(empty(v.projLst))}">
+            Line 3
+            <aura:if isTrue="{!v.open}" >
+                <div class="demo-only" style="height: 100px;">
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                        <div class="slds-modal__container" style="min-width:30rem;">
+                            <header class="slds-modal__header">
+                                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Confirmation
+                                </h2>
+                            </header>
+                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                                There is no Account Name in the opportunity
+                            </div>
+                            <footer class="slds-modal__footer">  
+                                <lightning:button variant="brand" label="Ok" title="Cancel" onclick="{! c.Cancel }" />   
+                            </footer>
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+                </div>
+            </aura:if>
+            
+            <aura:if isTrue="{!v.openModal}" >
+                <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/> 
+                <div class="demo-only" style="height: 100px;">
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open" style="width:100%">
+                        <div class="slds-modal__container" style="width:60%">
+                            <header class="slds-modal__header">
+                                <lightning:buttonIcon iconName="utility:close" class="slds-modal__close" size="small" variant="bare" alternativeText="Close" onclick="{! c.handleCancel }"/>
+                                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Project Records</h2>
+                                <div class="searchCointainer" style="padding-top:1px">
+                                    <div class="slds-p-left_xx-large">
+                                        <lightning:input
+                                                         style="width: 43%; display: inline-block;padding: 0% 2% 0% 0%;"
+                                                         autocomplete="off"
+                                                         aura:id="searchProjectName"
+                                                         name="enter-search"
+                                                         type="search"
+                                                         placeholder="Project Name"
+                                                         value="{!v.searchProjectNameFilter}"
+                                                         />
+                                        <lightning:input 
+                                                         style="width: 43%; display: inline-block;padding: 0% 2% 0% 0%;"
+                                                         autocomplete="off"
+                                                         aura:id="searchCommunity"
+                                                         name="enter-search"
+                                                         type="search"
+                                                         placeholder="Community"
+                                                         value="{!v.searchCommunityFilter}"
+                                                         />
+                                    </div>
+                                    <!-- <lightning:input
+                             
+                             style="width: 33%; display: inline-block; padding: 0% 2% 0% 0%;"
+                             autocomplete="off"
+                             aura:id="searchAddress"
+                             name="enter-search"
+                             type="search"
+                             placeholder="Address"
+                             value="{!v.searchAddressFilter}"
+                             />-->
+                                    
+                                </div>
+                            </header>  
+                            
+                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="width:100%">
+                                <div class="slds-card__body">    
+                                    <table class="slds-table slds-table_bordered slds-no-row-hover slds-table_cell-buffer">
+                                        <thead>
+                                            
+                                            <tr class="slds-text-title_caps">
+                                                <th class="slds-is-sortable" scope="col" width="5px">
+                                                    <lightning:input type="checkbox" aura:id="headCheckpj" checked="false" onchange="{!c.selectAllproj}"/> 
+                                                </th>
+                                                <th scope="col">
+                                                    <div class="slds-truncate" title="Name">Name</div>
+                                                </th>
+                                                <th scope="col">
+                                                    <div class="slds-truncate" title="buildertek__Community__c">Community</div>
+                                                </th>
+                                                <th scope="col">
+                                                    <div class="slds-truncate" title="buildertek__Address__c">Address</div>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <aura:iteration items="{!v.projLst}" var="proj"> 
+                                                <tr class="slds-hint-parent">
+                                                    <td style="width:30px;">
+                                                        <lightning:input type="checkbox" aura:id="checkpj" checked="false" name="{!proj.Id}" onchange="{!c.selectproj}"/>                         
+                                                    </td>
+                                                    <td>
+                                                        <div class="slds-truncate" title="{!proj.Name}" >
+                                                            {!proj.Name}
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="slds-truncate" title="{!proj.buildertek__Community__c}">{!proj.buildertek__Community__c}</div>
+                                                    </td>
+                                                    <td>
+                                                        
+                                                        <div class="slds-truncate" title="{!proj.buildertek__Address__c}">{!proj.buildertek__Address__c}</div>
+                                                    </td>
+                                                </tr>                     
+                                            </aura:iteration>
+                                        </tbody>
+                                    </table>
+                                </div></div>
+                            
+                            <footer class="slds-modal__footer">
+                                <lightning:button disabled="{!v.PageNumber == 1}" variant="brand" aura:id="prevPage" label="Prev"
+                                                  onclick="{!c.handlePrev}" class="next-prev_button"/>
+                                <lightning:button disabled="{!v.PageNumber >= v.TotalPages}" aura:id="nextPage" variant="brand"
+                                                  label="Next" onclick="{!c.handleNext}" class="next-prev_button"/>
+                                <lightning:button variant="brand" label="Save" title="Save" onclick="{!c.addToprojects}" />
+                                <lightning:button variant="neutral" label="Cancel" title="Cancel" onclick="{! c.handleCancel }" />   
+                            </footer>
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+                </div>
+            </aura:if>
+            <aura:if isTrue="{!not(empty(v.recordError))}">
+                <div class="recordError">
+                    <ui:message title="Error" severity="error" closable="true">
+                        {!v.recordError}
+                    </ui:message>
+                </div>
+            </aura:if>
+        </aura:if>
+    </aura:if>
+    <lightning:workspaceAPI aura:id="workspace"/>
+</aura:component>

@@ -1,0 +1,18 @@
+<aura:component implements="forceCommunity:themeLayout">
+     <aura:attribute name="includePreview" type="Boolean" default="false" />
+    <div>        
+        <div >
+             <c:VG_NavBar/>
+            
+            <c:VG_Announcements includePreview="{!v.includePreview}"/> 
+        </div>
+        
+        <div role="main" aria-label="Landing Page Content" class="mainContentArea">
+            {!v.body}
+        </div>
+        <div role="contentinfo"  aria-label="Footer" class="footer">
+            <c:VG_Footer/>
+        </div>
+    </div>
+    
+</aura:component>

@@ -1,0 +1,578 @@
+<aura:component
+                implements="force:appHostable,force:lightningQuickAction,flexipage:availableForRecordHome,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes"
+                controller="AddProductForSSTL" access="global">
+    
+    <aura:attribute name="productIds" type="List" default="[]" />
+    <aura:attribute name="productsList" type="List" default="[]" />
+    <aura:attribute name="takeOffLinesList" type="List" default="[]" />
+    <aura:attribute name="filteredTakeOffLines" type="List" default="[]" />
+    <aura:attribute name="selectionSheetTakeOffLinesToDelete" type="String" default="" />
+    <aura:attribute name="projectSelectionTakeOffRec" type="Object" />
+    <aura:attribute name="productsToAdd" type="List" default="[]" />
+    <aura:attribute name="selectionSheetTakeOffLines" type="List" default="[]" />
+    <aura:attribute name="takeOffLinesToDelete" type="List" default="[]" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="productId" type="String" default="" />
+    <aura:attribute name="isDeleteModal" type="Boolean" default="false" />
+    <aura:attribute name="isEditModeOpen" type="Boolean" default="false" />
+    <aura:attribute name="deleteConfirmationBody" type="String" default="" />
+    <aura:attribute name="SSTLId" type="String" default="" />
+    <aura:attribute name="isSpinner" type="Boolean" default="true" />
+    <aura:attribute name="isProductSelected" type="Boolean" default="false" />
+    <aura:attribute name="isMoreProductSelected" type="Boolean" default="false" />
+    <aura:attribute name="divHeight" type="Integer" />
+    <aura:attribute name="NewProduct" type="List" default="[]" />
+    
+    <aura:attribute name="isReplaceAll" type="Boolean" default="false" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+    <!-- Pagination -->
+    <!-- Product Pagination -->
+    <aura:attribute name="productPageNumber" type="Integer" default="1" />
+    <aura:attribute name="productPageSize" type="Integer" default="10" />
+    <aura:attribute name="productTotalPages" type="Integer" default="0" />
+    <aura:attribute name="productTotalRecords" type="Integer" default="0" />
+    <aura:attribute name="productRecordStart" type="Integer" default="0" />
+    <aura:attribute name="productRecordEnd" type="Integer" default="0" />
+    <aura:attribute name="productIsNextDisabled" type="Boolean" default="true" />
+    
+    <!-- TakeOff Lines Pagination -->
+    <aura:attribute name="pageNumber" type="Integer" default="1" />
+    <aura:attribute name="pageSize" type="Integer" default="20" />
+    <aura:attribute name="totalPages" type="Integer" default="0" />
+    <aura:attribute name="totalRecords" type="Integer" default="0" />
+    <aura:attribute name="recordStart" type="Integer" default="0" />
+    <aura:attribute name="recordEnd" type="Integer" default="0" />
+    <aura:attribute name="isNextDisabled" type="Boolean" default="true" />
+    
+    <!-- SSTL Pagination -->
+    <aura:attribute name="SSTLPageNumber" type="Integer" default="1" />
+    <aura:attribute name="SSTLPageSize" type="Integer" default="10" />
+    <aura:attribute name="SSTLTotalPages" type="Integer" default="0" />
+    <aura:attribute name="SSTLTotalRecords" type="Integer" default="0" />
+    <aura:attribute name="SSTLRecordStart" type="Integer" default="0" />
+    <aura:attribute name="SSTLRecordEnd" type="Integer" default="0" />
+    <aura:attribute name="SSTLIsNextDisabled" type="Boolean" default="true" />
+    
+    <lightning:workspaceAPI aura:id="workspace" />
+    
+    <div class="slds-card">
+        <div class="slds-grid slds-gutters cardCss">
+            <div class="slds-col">
+                <span>
+                    <span style=" color: #6b6d70;">Project</span>
+                    <h2 class="slds-card__header-title">
+                        <span>
+                            <ui:outputURL
+                                          value="{!'/one/one.app?#/sObject/'+ v.projectSelectionTakeOffRec.Id + '/view'}"
+                                          target="_blank" label="{!v.projectSelectionTakeOffRec.Name}" />
+                        </span>
+                    </h2>
+                </span>
+            </div>
+            <div class="slds-col">
+                <span>
+                    <span style=" color: #6b6d70;">Stage</span>
+                    <h2 class="slds-card__header-title">
+                        <span>
+                            <ui:outputURL
+                                          value="{!'/one/one.app?#/sObject/'+ v.projectSelectionTakeOffRec.Id + '/view'}"
+                                          target="_blank" label="{!v.projectSelectionTakeOffRec.buildertek__Stage__c}" />
+                        </span>
+                    </h2>
+                </span>
+            </div>
+            <div class="slds-col">
+                <span>
+                    <span style=" color: #6b6d70;">Type</span>
+                    <h2 class="slds-card__header-title">
+                        <span>
+                            {!v.projectSelectionTakeOffRec.buildertek__Type__c}
+                        </span>
+                    </h2>
+                </span>
+            </div>
+         
+            <div class="slds-col">
+            </div>
+            <div class="slds-col">
+            </div>
+        </div>
+    </div>
+    <div class="slds-p-bottom--small"></div>
+    <div class="slds-grid slds-gutters">
+        <div class="slds-col slds-col slds-size_1-of-2">
+            <lightning:card aura:id="lightCard0" class="slds-card_boundary slds-page-header">
+                <div>
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_1-of-6">
+                            <span class="slds-card__header-title" style="white-space: nowrap;margin-top: 7px;">
+                                TakeOff Lines
+                            </span>
+                        </div>
+                         <div class="slds-col slds-size_1-of-6">
+                            <span>
+                                <lightning:input name="buildPhase" placeholder="Build Phase" label="" aura:id="buildPhase"
+                                                 type="search" variant="label-hidden" onchange="{!c.onInputChange}" />
+                            </span>
+                        </div>
+                        <div class="slds-col slds-size_1-of-6">
+                            <span>
+                                <lightning:input name="tradeType" placeholder="Trade Type" label="" aura:id="tradeType"
+                                                 type="search" variant="label-hidden" onchange="{!c.onInputChange}" />
+                            </span>
+                        </div>
+                        <div class="slds-col slds-size_1-of-6">
+                            <span>
+                                <lightning:input name="category" placeholder="Category" label="" aura:id="category"
+                                                 type="search" variant="label-hidden" onchange="{!c.onInputChange}" />
+                            </span>
+                        </div>
+                        <div class="slds-col slds-size_1-of-6">
+                            <span>
+                                <lightning:input name="productType" placeholder="Product Type" label=""
+                                                 aura:id="productType" type="search" onchange="{!c.onInputChange}"
+                                                 variant="label-hidden" />
+                            </span>
+                        </div>
+                        <div class="slds-col slds-size_1-of-6">
+                            <span>
+                                <lightning:input name="locationSearch" placeholder="Location" label=""
+                                                 aura:id="locationSearch" type="search" onchange="{!c.onInputChange}"
+                                                 variant="label-hidden" />
+                            </span>
+                        </div>
+                    </div>
+                    <div style="text-align:center;padding-top: 5px;">
+                        <lightning:button iconName="utility:back" class="slds-button slds-button_neutral"
+                                          iconPosition="left" disabled="{!v.pageNumber == 1}" aura:id="prevPage" label="Previous"
+                                          onclick="{!c.handlePrev}" />
+                        <lightning:button iconName="utility:forward" class="slds-button slds-button_neutral"
+                                          iconPosition="right" disabled="{!v.isNextDisabled}" aura:id="nextPage" label="Next"
+                                          onclick="{!c.handleNext}" />
+                    </div>
+                    <div class="slds-card__body slds-scrollable">
+                        <table class="slds-table slds-table--bordered">
+                            <thead>
+                            </thead>
+                            <tbody>
+                                <aura:if isTrue="{!v.takeOffLinesList.length == 0}">
+                                    <div class="slds-align_absolute-center slds-m-around_xx-large">
+                                        <p class="slds-text-title_bold" style="text-align: center;">
+                                            No TakeOff Lines found.
+                                        </p>
+                                    </div>
+                                    <div class="slds-m-around_xx-large slds-align_absolute-center">
+                                    </div>
+                                    <aura:set attribute="else">
+                                        <aura:iteration items="{!v.takeOffLinesList}" var="rec" indexVar="groupIndex">
+                                            <tr class="groupHeader">
+                                                <td>
+                                                </td>
+                                                <td>
+                                                    <div class="slds-grid slds-gutters">
+                                                        <div class="slds-col slds-size_6-of-12"
+                                                             data-index='{!groupIndex}'>
+                                                            {!rec.groupName}
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td colspan="5">
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>
+                                                    <lightning:input type="checkbox" name="{!groupIndex}"
+                                                                     checked="{!rec.isSelected}" class="customCheckBoxCss" />
+                                                </th>
+                                                <th>Name</th>
+                                                <th>Category</th>
+                                                <th>Product Type</th>
+                                                <th>Location</th>
+                                                <th>Quantity</th>
+                                                <th>Build Phase</th>
+                                                <th> </th>
+                                            </tr>
+                                            <aura:iteration items="{!rec.groupedRecords}" var="row" indexVar="index">
+                                                <tr>
+                                                    <td style="padding:5px; margin:5px;line-height:2;">
+                                                        <lightning:input type="checkbox" name="{!groupIndex+'-'+index}"
+                                                                         checked="{!row.isSelected}" class="customCheckBoxCss"
+                                                                         onchange="{!c.onTakeOffCheckBoxChange}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputURL
+                                                                      value="{!'/one/one.app?#/sObject/'+ row.Id + '/view'}"
+                                                                      target="_blank" label="{!row.Name}" />
+                                                    </td>
+                                                    <td>
+                                                        {!row.buildertek__Categories__r.Name}
+                                                    </td>
+                                                    <td>
+                                                        {!row.buildertek__Product_Type__r.Name}
+                                                    </td>
+                                                    <td>
+                                                        {!row.buildertek__Location__c}
+                                                    </td>
+                                                    <td>
+                                                        {!row.buildertek__Quantity__c}
+                                                    </td>
+                                                    <td>
+                                                    	{!row.buildertek__Build_Phase__r.Name}
+                                                    </td>
+                                                    <td>
+                                                    </td>
+                                                </tr>
+                                            </aura:iteration>
+                                        </aura:iteration>
+                                    </aura:set>
+                                </aura:if>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="slds-card__footer">
+                        <lightning:button iconName="utility:back" class="slds-button slds-button_neutral"
+                                          iconPosition="left" disabled="{!v.pageNumber == 1}" aura:id="prevPage" label="Previous"
+                                          onclick="{!c.handlePrev}" />
+                        <lightning:button iconName="utility:forward" class="slds-button slds-button_neutral"
+                                          iconPosition="right" disabled="{!v.isNextDisabled}" aura:id="nextPage" label="Next"
+                                          onclick="{!c.handleNext}" />
+                    </div>
+                </div>
+                <aura:if isTrue="{!v.isSpinner}">
+                    <div aura:id="spinnerId" class="slds-spinner_container">
+                        <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative"
+                             role="alert">
+                            <span class="slds-assistive-text">Loading</span>
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                            <div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+                        </div>
+                    </div>
+                </aura:if>
+            </lightning:card>
+        </div>
+        <div class="slds-col slds-col slds-size_1-of-2">
+            <lightning:card aura:id="lightCard1" class="slds-card_boundary slds-scrollable slds-page-header">
+                <div>
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_1-of-6">
+                            <span class="slds-card__header-title" style="white-space: nowrap;margin-top: 7px;">
+                                Products
+                            </span>
+                        </div>
+                        <div class="slds-col slds-size_1-of-6">
+                            <span>
+                                <lightning:input name="tradeType" placeholder="Trade Type" label=""
+                                                 aura:id="packageLinesTradeType" type="search" variant="label-hidden"
+                                                 onchange="{!c.onProductInputChange}" />
+                            </span>
+                        </div>
+                        <div class="slds-col slds-size_1-of-6">
+                            <span>
+                                <lightning:input name="category" placeholder="Category" label=""
+                                                 aura:id="packageLinesCategory" type="search" variant="label-hidden"
+                                                 onchange="{!c.onProductInputChange}" />
+                            </span>
+                        </div>
+                        <div class="slds-col slds-size_1-of-6">
+                            <span>
+                                <lightning:input name="productType" placeholder="Product Type" label=""
+                                                 aura:id="packageLinesProductType" type="search" onchange="{!c.onProductInputChange}"
+                                                 variant="label-hidden" />
+                            </span>
+                        </div>
+                        <div class="slds-col slds-size_1-of-6">
+                            <span>
+                                <lightning:input name="collection" placeholder="Collection" label=""
+                                                 aura:id="collection" type="search" variant="label-hidden"
+                                                 onchange="{!c.onProductInputChange}" />
+                            </span>
+                        </div>
+                        <div class="slds-col slds-size_1-of-6">
+                            <span>
+                                <lightning:button class="slds-button slds-button_neutral fullWidth" aura:id="addSSTL"
+                                                  label="Add To SSTL" onclick="{!c.addSSTL}" />
+                            </span>
+                        </div>
+                    </div>
+                    <!-- <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_1-of-4"></div>
+                        <div class="slds-col slds-size_1-of-4"></div>
+                        <div class="slds-col slds-size_1-of-4"></div>
+                        <div class="slds-col slds-size_1-of-4">
+                            <lightning:button class="slds-button slds-button_neutral fullWidth" aura:id="addSSTL"
+                                label="Add To SSTL" onclick="{!c.addSSTL}" />
+                        </div>
+                    </div> -->
+                </div>
+                <div class="slds-card__body slds-scrollable">
+                    <table class="slds-table slds-table--bordered">
+                        <thead> </thead>
+                        <tbody>
+                            <aura:if isTrue="{!v.productsList.length != 0}">
+                                <aura:iteration items="{!v.productsList}" var="rec" indexVar="groupIndex">
+                                    <tr class="groupHeader">
+                                        <td>
+                                        </td>
+                                        <td colspan="2">
+                                            {!rec.groupName}
+                                        </td>
+                                        <td colspan="6"></td>
+                                    </tr>
+                                    <tr> 
+                                        <th>
+                                            <lightning:input type="checkbox" name="{!groupIndex}" onchange="{!c.onProductGroupSelect}"
+                                                             checked="{!rec.isSelected}" class="customCheckBoxCss" />
+                                        </th>
+                                        <th></th>
+                                        <th>Name</th>
+                                        <th>Category</th>
+                                        <th>Product Type</th>
+                                        <th>Vendor</th>
+                                        <th>Product SKU</th>
+                                         <th>Series</th>
+                                    </tr>
+                                    <aura:iteration items="{!rec.groupedRecords}" var="row" indexVar="index">
+                                        <tr>
+                                            <td style="padding:5px; margin:5px;line-height:2;">
+                                                <lightning:input type="checkbox" name="{!index}"
+                                                                 checked="{!row.isSelected}" />
+                                            </td>
+                                            <td>
+                                                <lightning:icon iconName="action:preview" class="iconStyle"
+                                                                alternativeText="{!groupIndex+'-'+index}" title="View"
+                                                                onclick="{!c.onClickOpenProductImageModal}" />
+                                            </td>
+                                            <td>
+                                                <ui:outputURL value="{!'/one/one.app?#/sObject/'+ row.Id + '/view'}"
+                                                              target="_blank" label="{!row.Name}" />
+                                            </td>
+                                            <td>
+                                                {!row.buildertek__Category__r.Name}
+                                            </td>
+                                             
+                                            <td>
+                                                {!row.buildertek__Product_Type__r.Name}
+                                            </td>
+                                            <td>
+                                                {!row.buildertek__Vendor__r.Name}
+                                            </td>
+                                            <td>
+                                                {!row.StockKeepingUnit}
+                                            </td>
+                                            <td>
+                                                {!row.buildertek__Series__c}
+                                            </td>
+                                        </tr>
+                                    </aura:iteration>
+                                    
+                                </aura:iteration>
+                                <aura:set attribute="else">
+                                    <div class="slds-align_absolute-center slds-m-around_xx-large">
+                                        <p class="slds-text-title_bold" style="text-align: center;">
+                                            No Products match found!
+                                        </p>
+                                    </div>
+                                    <div class="slds-m-around_xx-large slds-align_absolute-center">
+                                    </div>
+                                </aura:set>
+                            </aura:if>
+                            
+                        </tbody>
+                    </table>
+                </div>
+                <div class="slds-card__footer">
+                    <lightning:button iconName="utility:back" class="slds-button slds-button_neutral"
+                                      iconPosition="left" disabled="{!v.productPageNumber == 1}" aura:id="productPrevPage"
+                                      label="Previous" onclick="{!c.handleProductPrev}" />
+                    <lightning:button iconName="utility:forward" class="slds-button slds-button_neutral"
+                                      iconPosition="right" disabled="{!v.productIsNextDisabled}" aura:id="productNextPage"
+                                      label="Next" onclick="{!c.handleProductNext}" />
+                </div>
+                <aura:if isTrue="{!v.isSpinner}">
+                    <div aura:id="spinnerId" class="slds-spinner_container">
+                        <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative"
+                             role="alert">
+                            <span class="slds-assistive-text">Loading</span>
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                        </div>
+                    </div>
+                </aura:if>
+            </lightning:card>
+            <div class="slds-p-bottom--small"></div>
+            <lightning:card aura:id="lightCard3" class="slds-card_boundary slds-scrollable slds-page-header">
+                <div>
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_2-of-5">
+                            <span class="slds-card__header-title" style="white-space: nowrap;margin-top: 7px;">
+                                Selected Products
+                            </span>
+                        </div>
+                        <div class="slds-col slds-size_1-of-5">
+                            <span>
+                                <lightning:input name="tradeType" placeholder="Trade Type" label=""
+                                                 aura:id="tradeTypeSSTL" type="search" variant="label-hidden"
+                                                 onchange="{!c.onInputChange}" />
+                            </span>
+                        </div>
+                        <div class="slds-col slds-size_1-of-5">
+                            <span>
+                                <lightning:input name="category" placeholder="Category" label="" aura:id="categorySSTL"
+                                                 type="search" variant="label-hidden" onchange="{!c.onInputChange}" />
+                            </span>
+                        </div>
+                        <div class="slds-col slds-size_1-of-5">
+                            <span>
+                                <lightning:input name="productType" placeholder="Product Type" label=""
+                                                 aura:id="productTypeSSTL" type="search" onchange="{!c.onInputChange}"
+                                                 variant="label-hidden" />
+                            </span>
+                        </div>
+                    </div>
+                    <div style="text-align:center;padding-top: 5px;">
+                        <lightning:button iconName="utility:back" class="slds-button slds-button_neutral"
+                                          iconPosition="left" disabled="{!v.SSTLPageNumber == 1}" aura:id="prevPage" label="Previous"
+                                          onclick="{!c.handleSSTLPrev}" />
+                        <lightning:button iconName="utility:forward" class="slds-button slds-button_neutral"
+                                          iconPosition="right" disabled="{!v.SSTLIsNextDisabled}" aura:id="nextPage" label="Next"
+                                          onclick="{!c.handleSSTLNext}" />
+                        <lightning:button label="Manage Product Lines" disabled="false" 
+                                          onclick="{!c.manageProductLines}"/>
+                    </div>
+                    
+                </div>
+                <div class="slds-card__body slds-scrollable">
+                    <table class="slds-table slds-table--bordered">
+                        <thead>
+                        </thead>
+                        <tbody>
+                            <aura:if isTrue="{!v.selectionSheetTakeOffLines.length == 0}">
+                                <div class="slds-align_absolute-center slds-m-around_xx-large">
+                                    <p class="slds-text-title_bold" style="text-align: center;">
+                                        No Selection Sheet TakeOff Lines found.
+                                    </p>
+                                </div>
+                                <div class="slds-m-around_xx-large slds-align_absolute-center">
+                                </div>
+                                <aura:set attribute="else">
+                                    <aura:iteration items="{!v.selectionSheetTakeOffLines}" var="rec"
+                                                    indexVar="groupIndex">
+                                        <tr class="groupHeader">
+                                            <td>
+                                            </td>
+                                            <td>
+                                                <div class="slds-grid slds-gutters">
+                                                    <div class="slds-col slds-size_6-of-12" data-index='{!groupIndex}'>
+                                                        {!rec.groupName}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td colspan="9">
+                                                <!--<lightning:button
+                                                                  class="slds-button slds-button_neutral slds-float_right fontSize"
+                                                                  iconPosition="right" aura:id="assignProduct" label="Assign Product"
+                                                                  title="{!groupIndex}" onclick="{!c.assignProduct}" />-->
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>
+                                                <lightning:input type="checkbox" name="{!groupIndex}"
+                                                                 checked="{!rec.isSelected}" class="customCheckBoxCss" />
+                                            </th>
+                                            <th>Name</th>
+                                            <th>Product</th>
+                                            <th>Category</th>
+                                            <th>Product Type</th>
+                                            <th>Vendor</th>
+                                            <th>Quantity</th>
+                                            <th>TakeOff Lines</th>
+                                            <th>Location</th>
+                                            <th>Build Phase</th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+                                        <aura:iteration items="{!rec.groupedRecords}" var="row" indexVar="index">
+                                            <tr>
+                                                <td style="padding:5px; margin:5px;line-height:2;">
+                                                    <lightning:input type="checkbox" name="{!groupIndex+'-'+index}"
+                                                                     checked="{!row.isSelected}" class="customCheckBoxCss" />
+                                                </td>
+                                                <td>
+                                                    <ui:outputURL value="{!'/one/one.app?#/sObject/'+ row.Id + '/view'}"
+                                                                  target="_blank" label="{!row.Name}" />
+                                                </td>
+                                                <td>
+                                                    <ui:outputURL
+                                                                  value="{!'/one/one.app?#/sObject/'+ row.buildertek__Product__c + '/view'}"
+                                                                  target="_blank" label="{!row.buildertek__Product__r.Name}" />
+                                                </td>
+                                                <td>
+                                                    {!row.buildertek__Category__r.Name}
+                                                </td>
+                                                <td>
+                                                    {!row.buildertek__Product_Type__r.Name}
+                                                </td>
+                                                <td>
+                                                    {!row.buildertek__Vendor__r.Name}
+                                                </td>
+                                                <td>
+                                                    {!row.buildertek__Takeoff_Line__r.buildertek__Quantity__c}
+                                                </td>
+                                                <td>
+                                                    <ui:outputURL
+                                                                  value="{!'/one/one.app?#/sObject/'+ row.buildertek__Takeoff_Line__c + '/view'}"
+                                                                  target="_blank"
+                                                                  label="{!row.buildertek__Takeoff_Line__r.Name}" />
+                                                </td>
+                                                <td>
+                                                    {!row.buildertek__Takeoff_Line__r.buildertek__Location__c}
+                                                </td>
+                                                <td>
+                                                	{!row.buildertek__Build_Phase__r.Name}
+                                                </td>
+                                                <td>
+                                                    <lightning:icon iconName="action:delete" class="iconStyle"
+                                                                    alternativeText="{!groupIndex+'-'+index}" title="Delete"
+                                                                    onclick="{!c.onClickOpenDeleteModal}" />
+                                                </td>
+                                                <td>
+                                                    <lightning:icon iconName="action:edit" class="iconStyle"
+                                                                    alternativeText="{!groupIndex+'-'+index}" title="Edit"
+                                                                    onclick="{!c.onClickOpenEditModal}" />
+                                                </td>
+                                            </tr>
+                                        </aura:iteration>
+                                    </aura:iteration>
+                                </aura:set>
+                            </aura:if>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="slds-card__footer">
+                    <lightning:button iconName="utility:back" class="slds-button slds-button_neutral"
+                                      iconPosition="left" disabled="{!v.SSTLPageNumber == 1}" aura:id="prevPage" label="Previous"
+                                      onclick="{!c.handleSSTLPrev}" />
+                    <lightning:button iconName="utility:forward" class="slds-button slds-button_neutral"
+                                      iconPosition="right" disabled="{!v.SSTLIsNextDisabled}" aura:id="nextPage" label="Next"
+                                      onclick="{!c.handleSSTLNext}" />
+                </div>
+                <aura:if isTrue="{!v.isSpinner}">
+                    <div aura:id="spinnerId" class="slds-spinner_container">
+                        <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative"
+                             role="alert">
+                            <span class="slds-assistive-text">Loading</span>
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                        </div>
+                    </div>
+                </aura:if>
+            </lightning:card>
+        </div>
+    </div>
+ 
+</aura:component>

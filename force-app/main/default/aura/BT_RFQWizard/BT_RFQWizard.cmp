@@ -1,0 +1,75 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId" access="global" controller="RFQDAO">
+	
+	<ltng:require styles="{!join(',',
+                          $Resource.Jquery + '/jquery/css/ui-smoothness/jquery-ui.min.css',
+                          $Resource.Jquery + '/jquery/css/ui-smoothness/jqgrid-ui-custom.min.css')}"
+                  scripts="{!join(',',
+                           $Resource.Jquery + '/jquery/lightning/js/jquery-3.2.1.min.js',
+                           $Resource.Jquery + '/jquery/lightning/js/jquery-migrate-1.4.1.min.js',
+                           $Resource.Jquery + '/jquery/lightning/js/jquery-ui-1.12.1.min.js',
+                           $Resource.Jquery + '/jquery/lightning/js/BT-lightningutil.min.js',
+                           $Resource.Jquery + '/jquery/jqgrid/grid.locale-en.min.js',
+                           $Resource.Jquery + '/jquery/jqgrid/jquery.jqGrid.min.js')}" 
+                  afterScriptsLoaded="{!c.initialize}"/>
+                  
+    <aura:attribute name="currentComponent" type="Aura.Component[]" Description="Current status componet"/>
+    <aura:attribute name="recordId" type="string" description="Current Record Id" /> 
+    <aura:attribute name="record" type="Object" />
+	<aura:attribute name="rfq" type="Object" />
+	<aura:attribute name="rfqConfig" type="Object" />
+	<aura:attribute name="recordError" type="String" />
+	
+	<aura:attribute name="step1" type="String" default="{!$Label.c.RFQ_Workflow_Step1}"/>
+	<aura:attribute name="step2" type="String" default="{!$Label.c.RFQ_Workflow_Step2}"/>
+	<aura:attribute name="step3" type="String" default="{!$Label.c.RFQ_Workflow_Step3}"/>
+	<aura:attribute name="step4" type="String" default="{!$Label.c.RFQ_Workflow_Step4}"/>
+	<aura:attribute name="step5" type="String" default="{!$Label.c.RFQ_Workflow_Step5}"/>
+	
+	 
+	<force:recordData aura:id="recordEditor"
+						layoutType="FULL"
+						recordId="{!v.recordId}"
+						targetError="{!v.recordError}"
+						targetRecord="{!v.record}"
+						targetFields="{!v.rfq}"
+						fields="Id, buildertek__Status__c, buildertek__Budget__c, buildertek__Vendor__c, buildertek__RFQ_Workflow_Stage__c"
+						mode="EDIT" 
+						recordUpdated="{!c.recordUpdated}"/>
+	    
+    <c:BT_Spinner />
+    <div>
+    	<!-- Display Lightning Data Service errors, if any -->
+	    <aura:if isTrue="{!not(empty(v.recordError))}">
+	        <div class="recordError">
+	            <ui:message title="Error" severity="error" closable="true">
+	                {!v.recordError}
+	            </ui:message>
+	        </div>
+	    </aura:if>
+	    
+	    
+        <div class="slds-path slds-is-expanded">
+            <div class="slds-grid slds-path__track">
+                <div class="slds-grid slds-path__scroller-container">
+                    <button class="slds-button slds-button_icon slds-button_icon-border-filled slds-path__trigger slds-flip_vertical" title="">
+                        <lightning:icon iconName="utility:chevrondown" size="x-small" alternativeText="chevrondown" />
+                        <span class="slds-assistive-text"></span>
+                    </button>
+                    <div class="slds-path__scroller" role="application">
+                        <lightning:progressIndicator aura:id="progressbar" currentStep="1" type="path" variant="base">
+                            <lightning:progressStep label="{!v.step1}" value="1" onclick="{!c.navigateTo}"/>
+                            <lightning:progressStep label="{!v.step2}" value="2" onclick="{!c.navigateTo}"/>
+                            <lightning:progressStep label="{!v.step3}" value="3" onclick="{!c.navigateTo}"/>
+                            <lightning:progressStep label="{!v.step4}" value="4" onclick="{!c.navigateTo}"/>
+                            <lightning:progressStep label="{!v.step5}" value="5" onclick="{!c.navigateTo}"/>
+                        </lightning:progressIndicator>                        
+                    </div>
+                </div>
+            </div>
+            <div  class="slds-path__content">
+                {!v.currentComponent}
+            </div>
+        </div>
+        
+    </div>
+</aura:component>

@@ -1,0 +1,156 @@
+<aura:component implements="force:hasRecordId,force:lightningQuickActionWithoutHeader" controller="RFQDAO"
+	access="global">
+	<aura:attribute name="recordId" type="string" />
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+	<ltng:require styles="{!$Resource.ModalPreviewCSS}" />
+	<aura:attribute name="newRFQ" type="RFQ__c" default="{ 'sobjectType': 'RFQ__c' }" access="public" />
+	<aura:attribute name="newRFQItems" type="RFQ_Item__c[]" access="public" />
+	<aura:attribute name="newRFQItem" type="RFQ_Item__c"
+		default="{ 'sobjectType': 'RFQ_Item__c',
+                                                                                         'buildertek__Product__c': null,
+                                                                                         'buildertek__Description__c': '',
+                                                                                         'buildertek__Quantity__c': null,
+                                                                                         'buildertek__Unit_Price__c': null}" />
+
+	<aura:attribute name="cancelCallback" type="object" access="public" />
+	<aura:attribute name="saveCallback" type="Aura.Action" access="public" />
+
+	<aura:attribute name="rfqItemsToInsert" type="List" />
+	<aura:attribute name="Spinner" type="Boolean" />
+	<div aura:id="btspinner" class="slds-hide" style="position: relative; height: 80px;">
+		<lightning:spinner alternativeText="Loading" size="medium" variant="brand" />
+	</div>
+
+	<div aura:id="rfqContainer" class="c-container">
+		<h3 class="slds-section__title slds-theme--shade primaryPaletteBorder test-id__section-header-container">
+			<span class="test-id__section-header-title section-header-title slds-p-horizontal--small slds-truncate">RFQ
+				Details</span>
+		</h3>
+		<lightning:layout multipleRows="true">
+			<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+				<lightning:input aura:id="Name" label = "RFQ Name" value="{!v.newRFQ.Name}" required="true" />
+			</lightning:layoutItem>
+			<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+				
+				<lightning:input aura:id="duedate" label = "Due Date" type="date" value="{!v.newRFQ.buildertek__Due_Date__c}" required="true" />
+			</lightning:layoutItem>
+			<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+				
+				<lightning:input aura:id="description" label = "RFQ Details" value="{!v.newRFQ.buildertek__RFQ_Details__c}"/>
+			</lightning:layoutItem>
+		</lightning:layout>
+
+		<div aura:id="rfqItemComp">
+			<h3 class="slds-section__title slds-theme--shade primaryPaletteBorder test-id__section-header-container">
+				<span
+					class="test-id__section-header-title section-header-title slds-p-horizontal--small slds-truncate">RFQ
+					Item(s)</span>
+			</h3>
+			<br />
+			<table class="slds-table slds-table_bordered slds-table_cell-buffer">
+				<thead>
+					<tr class="slds-text-title_caps">
+						<th scope="col" width="5%">
+							S.NO
+						</th>
+						<th scope="col">
+							<div class="slds-truncate" title="Product Name">Product Name</div>
+						</th>
+						<th scope="col">
+							<div class="slds-truncate" title="Description">Description</div>
+						</th>
+                         <th scope="col">
+							<div class="slds-truncate" title="Trade Type">Trade Type</div>
+						</th> 
+						<th scope="col" width="5%">
+							<div class="slds-truncate" title="Quantity">Quantity</div>
+						</th>
+						<th scope="col" width="5%">
+							<div class="slds-truncate" title="Unit Price">Unit Price</div>
+						</th>
+						<th scope="col" width="5%">
+
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<aura:iteration items="{!v.rfqItemsToInsert}" var="item">
+						<tr>
+							<td class="slds-truncate">{!item.rowIndex+1}</td>
+							<td>
+								<!--<div class="slds-truncate" title="{!item.Name}"><lightning:input name="product item" label=" " value="{!item.changeOrderItem.Name}" /></div>-->
+								<div class="slds-truncate">
+									<lightning:recordEditForm aura:id="recordViewForm"
+										objectApiName="buildertek__RFQ_Item__c">
+										<lightning:messages />
+										<lightning:inputField fieldName="buildertek__Product__c"
+											value="{!item.rfqItem.buildertek__Product__c}" variant="label-hidden" />
+									</lightning:recordEditForm>
+								</div>
+							</td>
+							<td>
+								<div class="slds-truncate" title="{!item.rfqItem.buildertek__Description__c}" style = "padding-bottom: 10px;">
+                                    <lightning:textarea name="item description" label=" "
+                                                        value="{!item.rfqItem.buildertek__Description__c}" />
+                                </div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate">
+                                    <lightning:recordEditForm aura:id="recordViewForm1"
+                                                              objectApiName="buildertek__RFQ_Item__c">
+                                        <lightning:messages />
+                                        <lightning:inputField fieldName="buildertek__Trade_Type__c"
+                                                              value="{!item.rfqItem.buildertek__Trade_Type__c}" variant="label-hidden" />
+                                    </lightning:recordEditForm>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate" title="{!item.rfqItem.buildertek__Quantity__c}" style = "padding-bottom: 20px;">
+                                    <lightning:input name="quantity" label=" "
+                                                     value="{!item.rfqItem.buildertek__Quantity__c}" />
+								</div>
+							</td>
+							<td>
+								<div class="slds-truncate" title="{!item.rfqItem.buildertek__Unit_Price__c}" style = "padding-bottom: 20px;">
+									<lightning:input name="unitPrice" label=" "
+										value="{!item.rfqItem.buildertek__Unit_Price__c}" />
+								</div>
+							</td>
+							<td>
+								<div class="slds-truncate">
+									<button class="slds-button" data-name="{!item.rowIndex}"
+										onclick="{!c.removeProduct}">
+										<lightning:icon iconName="action:delete" size="x-small" alternativeText="Error!"
+											variant="error" class="imageAction" />
+									</button>
+								</div>
+							</td>
+						</tr>
+					</aura:iteration>
+				</tbody>
+			</table>
+			<div class="slds-truncate" style = "padding-left: 18px; padding-top: 13px; padding-bottom: 1px;">
+				<button class="slds-button" onclick="{!c.addProduct}">
+					<lightning:icon iconName="utility:add" size="x-small" class="imageAction" />
+				</button>
+			</div>
+		</div>
+		<div aura:id="footer" style="display:none">
+			<button class="slds-button slds-button_neutral" onclick="{!c.doCancel}">Cancel</button>
+			<button class="slds-button slds-button_brand" onclick="{!c.doSave}">Save</button>
+		</div>
+		<aura:if isTrue="{!v.Spinner}">
+			<div aura:id="spinnerId" class="slds-spinner_container">
+				<div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+					<span class="slds-assistive-text">Loading</span>
+					<div class="slds-spinner__dot-a"></div>
+					<div class="slds-spinner__dot-b"></div>
+                    <div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+				</div>
+			</div>
+		</aura:if>
+	</div>
+	<lightning:notificationsLibrary aura:id="notifLib" />
+</aura:component>

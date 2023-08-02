@@ -1,0 +1,85 @@
+<!--<aura:component controller="ImportBudgetController"
+    implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction"
+    access="global">-->
+    <aura:component
+                implements="force:appHostable,force:lightningQuickActionWithoutHeader,flexipage:availableForRecordHome,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes"
+                controller="ImportBudgetController" access="global">
+    <aura:attribute name="recordId" type="Id" />
+	 <lightning:workspaceAPI aura:id="workspace"/>
+    <aura:handler event="aura:waiting" action="{!c.waiting}" />
+    <aura:handler event="aura:doneWaiting" action="{!c.doneWaiting}" />
+   <!-- <ltng:require styles="{!$Resource.ModalPreviewCSS}" />-->
+ <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
+    
+       <div class="slds-modal__header" style="font-size:17px;">
+        Import Budget Lines
+    </div>
+        <div class="slds-modal__content slds-p-around--large">
+    <div class="slds-box slds-theme_default slds-box_small">
+        <p>
+            <strong>Note: </strong> This import functionality will import Grouping, Product Name, Quantity, Unit
+            Price and Tax fields in Budget Lines.
+        </p>
+    </div>
+        </div>
+    <br />
+    <div class="container" style = "height:15vh;">
+         <!--<div class="slds-col">
+               <lightning:input aura:id="file" type="file" name="file" multiple="false" onchange="{!c.onFileSelected}" variant = "label-hidden" />
+                <div class="slds-text-body_small">{!v.fileName} </div>
+                <aura:if isTrue="{!v.isErrorOccured}">
+                    <div class="slds-text-body_small">
+                        
+                        <div class="slds-text-color_error">
+                            {!v.errorMessage}
+                        </div>
+                        
+                    </div>
+                </aura:if>
+            </div>-->
+            
+        <input type="file" aura:id="file" class="slds-file-selector__input slds-assistive-text"
+            onchange="{!c.onFileSelected}" accept=".csv" id="file-upload-input-01"
+            aria-labelledby="file-selector-primary-label file-selector-secondary-label" />
+        <label   class="slds-file-selector__body" for="file-upload-input-01" id="file-selector-secondary-label">
+             
+            <span  style = "margin-left:1.5rem;" class="slds-file-selector__button slds-button slds-button_neutral">
+                <lightning:icon iconName="utility:upload" size="small" />
+                &nbsp;Select File
+            </span>
+       </label>
+        &nbsp;&nbsp;
+        
+       <!-- <div class="slds-col">-->
+                 <button class="slds-button slds-button--brand" onclick="{!c.downloadCsv}" style =" float:right; margin-right:1.5rem;">Download CSV</button> <br/><br/>
+                <!--<aura:if isTrue="{!v.isSelect}">
+            &nbsp; &nbsp;
+            <lightning:pill label="{!v.selectedFile}" onremove="{! c.handleRemove }" />&nbsp;
+        </aura:if>-->
+                
+                
+                
+           <!-- </div>-->
+      <!--  <ui:button class="slds-button slds-button_brand" label="Import Budget Lines" press="{!c.save}" />-->
+        <span style  = "padding-left:2rem;" id="fileName" class="slds-file-selector__text slds-medium-show"></span>
+
+        <div aura:id="uploading" class="notUploading">
+            <div class="demo-only" style="height: 6rem;z-index:9998;">
+                <div role="status" class="slds-spinner slds-spinner--large slds-spinner--brand">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                    <div class="custom-loading-text">
+                        <b>Processing, Please Wait</b>
+                    </div>
+                  <span id="uploadingCSVSpinnerText" class="spinnerLoadingText"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+         <div class="slds-modal__footer">
+        <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}">Cancel</button>
+              <ui:button class="slds-button slds-button_brand" label="Import Budget Lines" press="{!c.save}" />
+        <!--<ui:button class="slds-button slds-button_brand" label="Import Budget Lines" press="{!c.save}" disabled = "{!v.isSelect}" />-->
+    </div>
+</aura:component>

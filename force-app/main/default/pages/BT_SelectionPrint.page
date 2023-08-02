@@ -1,0 +1,60 @@
+<apex:page controller="SelectionPrintPDF" title="Selection" renderAs="PDF">
+
+    <div style="clear: both; overflow: hidden;padding: 22px 40px;">
+        <center>
+            <div style="float: left;">
+                <apex:image url="{!$Resource.Company_Logo}" width="200" height="20" />
+            </div>
+        </center>
+        <div style="float: right;text-align: right;">
+            <span style="color: #16325c;font-size: 18px;font-weight: normal;display:block;line-height: 1.6">
+                <b>Selection: &nbsp;
+                </b>
+                <apex:outputText value="{!selectionName}" />
+            </span>
+        </div>
+    </div>
+
+
+    <br/>
+    <table style="width: 100%;text-align: left;border-spacing: 0;">
+        <thead style="background: #ddd;color: #16325c;">
+            <tr>
+                <th style="width:25% !important;font-size: 15px;border-bottom: 1px solid #ccc; border-right: 1px solid #ccc;padding: 5px 15px;text-align:left">Image</th>
+                <th style="width:30% !important;font-size: 15px;border-bottom: 1px solid #ccc; border-right: 1px solid #ccc;padding: 5px 15px;text-align:left">Option Name</th>
+                <th style="width:20% !important;font-size: 15px;border-bottom: 1px solid #ccc; border-right: 1px solid #ccc;padding: 5px 15px;text-align:left">Details</th>
+                <th style="width:25% !important;font-size: 15px;border-bottom: 1px solid #ccc; border-right: 1px solid #ccc;padding: 5px 15px;text-align:left">Attributes</th>
+            </tr>
+        </thead>
+        <apex:repeat value="{!questionsWrapper}" var="rec">
+            <tr>
+                <td style="font-size: 14px;padding: 5px 15px;color:black;text-align: left;border-bottom:  1px solid  #ccc;border-right:  1px solid  #ccc;">
+                    <apex:outputpanel rendered="{!rec.imgId != ''}">
+                        <apex:image height="150" width="180" url="/sfc/servlet.shepherd/version/download/{!rec.imgId}" />
+                    </apex:outputpanel>
+                    <apex:outputpanel rendered="{!rec.imgId == ''}">
+                        <apex:image url="{!$Resource.NoImageFound}" height="150" width="180" />
+                    </apex:outputpanel>
+                </td>
+                <td style="font-size: 14px;padding: 5px 15px;color:black;text-align: left;border-bottom:  1px solid  #ccc;border-right:  1px solid  #ccc;">
+                    <apex:outputText value="{!rec.name}" style="color: #16325c;font-weight: bold;" />
+                </td>
+                <td style="font-size: 14px;padding: 5px 15px;color:black;text-align: left;border-bottom:  1px solid  #ccc;border-right:  1px solid  #ccc;">
+                    <apex:outputText value="${0, number, 0.00}">
+                        <apex:param value="{!rec.cost}" />
+                    </apex:outputText>
+                </td>
+                <td style="font-size: 14px;padding: 5px 15px;color:black;text-align: left;border-bottom:  1px solid  #ccc;border-right:  1px solid  #ccc;">
+                    <apex:repeat value="{!rec.attributeWrapper}" var="attributes">
+                        <b>
+                            <apex:outputText value="{!attributes.name}" style="color: #16325c;font-weight: bold;" />
+                        </b>
+                        <br/>
+                        <apex:outputText value="{!attributes.value}" style="color: #333;font-weight: normal;" />
+                        <br/>
+                    </apex:repeat>
+                </td>
+            </tr>
+        </apex:repeat>
+    </table>
+</apex:page>

@@ -1,0 +1,59 @@
+<aura:component implements="force:appHostable,flexipage:availableForRecordHome,force:hasRecordId,flexipage:availableForAllPageTypes" access="global" controller="AccountController" >
+    <aura:attribute name="DocuSignAuthentication" type="DocuSign_Authentication__c" default="{ 'sobjectType': 'DocuSign_Authentication__c',
+                                                                                             'buildertek__Account_Id__c': '',
+                                                                                             'buildertek__User_Id__c': '',
+                                                                                             'buildertek__Password__c': '',
+                                                                                             'buildertek__Integration_Key__c': '',
+                                                                                             'buildertek__Public_Key__c': '',
+                                                                                             'buildertek__Private_Key__c': ''
+                                                                                             }"/>
+    
+    <aura:attribute name="Objectnames" type="List"/>
+    
+    
+    <Form>
+        <div style = "background-color: white; padding: 8px;">
+            
+            <ui:inputText aura:id="AccountId" label="Account Id"
+                          class="slds-input"
+                          labelClass="slds-form-element__label"
+                          value="{!v.DocuSignAuthentication.buildertek__Account_Id__c}"
+                          required="true"/>
+            <ui:inputText aura:id="UserId" label="User Id"
+                          class="slds-input"
+                          labelClass="slds-form-element__label"
+                          value="{!v.DocuSignAuthentication.buildertek__User_Id__c}"
+                          required="true"/>
+            <ui:inputText aura:id="Password" label="Password"
+                          class="slds-input"
+                          labelClass="slds-form-element__label"
+                          value="{!v.DocuSignAuthentication.buildertek__Password__c}"
+                          required="true"/>
+            
+            <ui:inputText aura:id="IntegrationKey" label="Integration Key"
+                          class="slds-input"
+                          labelClass="slds-form-element__label"
+                          value="{!v.DocuSignAuthentication.buildertek__Integration_Key__c}"
+                          required="true"/>
+            <ui:inputText aura:id="PublicKey" label="Public Key"
+                          class="slds-input"
+                          labelClass="slds-form-element__label"
+                          value="{!v.DocuSignAuthentication.buildertek__Public_Key__c}"
+                          required="true"/>
+            <ui:inputText aura:id="PrivateKey" label="Private Key"
+                          class="slds-input"
+                          labelClass="slds-form-element__label"
+                          value="{!v.DocuSignAuthentication.buildertek__Private_Key__c}"
+                          required="true"/>
+            
+        </div>
+        <div style = "background-color: white; padding: 8px;">
+            
+            <ui:button label="Save Credentials" 
+                       class="slds-button slds-button--neutral"
+                       labelClass="label"
+                       press="{!c.createAccount}"/>
+            
+        </div>
+    </Form>
+</aura:component>

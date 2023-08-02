@@ -1,0 +1,15 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" 
+                access="global" controller="ContractDAO">
+    
+    <aura:attribute name="selectedRows" type="List"/>
+    <aura:attribute name="groupListSize" type="Integer"  default="0" description="Section list size"/>
+    <aura:attribute name="groupFilter" type="string"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.initialize}"/>
+    
+	<c:BT_Spinner />
+    
+    <div class="av slds-box" id="{!v.recordId + 'groups'}"  style="min-height:50vh;padding:0px !important;">
+        <c:BT_ContractGroupList aura:id="ItemList" groupFilter="{!v.groupFilter}" contractId="{!v.recordId}" selectedRows="{!v.selectedRows}" groupListSize="{!v.groupListSize}"/>
+    </div>
+</aura:component>

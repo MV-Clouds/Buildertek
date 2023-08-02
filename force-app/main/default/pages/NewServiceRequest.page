@@ -1,0 +1,76 @@
+<apex:page Controller="newServiceRequest" showheader="false" id="pageId">
+<c:BT_JsAndCssIncludeComponent importJquery="true"
+                                  importAppurinUtil="true"
+                                  importJQueryLayout="true"
+                                  importFancyTree="false"
+                                  importJqGrid="false"
+                                  importEasyTooltip="true"
+                                  importAppurinCss="true"
+                                  importCkEditor="false"
+                                  importGnattChart="false"
+                                  importLightningDesign="true"/>
+                                  
+     
+    <style>
+        .hideListButton {
+            float:left;
+        }
+        
+        .showListButton {
+            float:left;
+        }
+        .bPageBlock {
+            border-top: unset;
+       }
+       .pbHeader{
+           display: none;
+        }
+        .helpOrb {
+            display: none;
+        }
+    </style>
+
+    <apex:form id="srform">
+        <apex:actionFunction name="acfsubmintSR" action="{!saveNewSR}"  rerender="srform" />
+        <div class="slds-scope" style="width:80%;margin: 0 auto;padding: 50px;">
+            <div class="slds-box">
+                <center><b><ul><h2 style="font-size: 1.3rem;text-transform: uppercase;text-decoration: underline;">
+                    <apex:outputPanel rendered="{!isNewSRCreated}">
+                        New Service Request submitted successfully
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!!isNewSRCreated}">
+                        New Service Request
+                    </apex:outputPanel>
+                    
+                </h2></ul></b></center><br/>
+                <apex:pageBlock title="" mode="Edit">
+                    <apex:pageBlockSection title="Contact Details" columns="2">
+                       <apex:repeat value="{!$ObjectType.Contact.FieldSets.NewContact}" var="f"> 
+                           <apex:inputField value="{!newContact[f.fieldPath]}" required="{!f.Required || f.DBRequired}" styleclass="slds-input" style="width: 50%;" rendered="{!!isNewSRCreated}"/>
+                           <apex:outputField value="{!newContact[f.fieldPath]}" rendered="{!isNewSRCreated}"/>
+                       </apex:repeat>
+                    </apex:pageBlockSection>
+                    <br/>
+                </apex:pageBlock>
+                <apex:pageBlock id="pb2" mode="Edit">
+                    <apex:pageBlockSection title="Service Request Details" columns="1">
+                        <apex:repeat value="{!$ObjectType.Service_Request__c.FieldSets.NewServiceRequestFields}" var="f"> 
+                            <apex:inputField value="{!newSR[f.fieldPath]}" required="{!f.Required || f.DBRequired}" styleclass="slds-input" style="width: 50%;" rendered="{!!isNewSRCreated}"/>
+                            <apex:outputField value="{!newSR[f.fieldPath]}" rendered="{!isNewSRCreated}"/>
+                        </apex:repeat>
+                    </apex:pageBlockSection>
+                    <br/>
+                </apex:pageBlock>
+                
+                 <div style="height: 180px;">
+                    <center>
+                      <button type="button" class="slds-button slds-button_neutral" onclick="var win = window.open('about:blank', '_self'); win.close();">Close</button>
+                      <apex:outputPanel rendered="{!!isNewSRCreated}">
+                          <button type="button" class="slds-button slds-button_brand" onclick="acfsubmintSR();" >Submit</button>
+                      </apex:outputPanel>
+                    </center>
+                </div>
+            </div>
+        </div>
+    </apex:form>
+</apex:page>

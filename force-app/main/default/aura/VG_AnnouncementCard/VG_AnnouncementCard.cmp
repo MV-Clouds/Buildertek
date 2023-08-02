@@ -1,0 +1,48 @@
+<aura:component controller="VG_ContentService"  access="global" implements="forceCommunity:availableForAllPageTypes,force:appHostable,flexipage:availableForAllPageTypes">
+    <aura:attribute name="title" type="string" default=" " />
+    <aura:attribute name="subTitle" type="string" default=" " />
+    <aura:attribute name="text" type="string" default=" " />
+    <aura:attribute name="actionLabel" type="string" default=" " />
+    <aura:attribute name="actionURL" type="string" default=" " />
+    <aura:attribute name="actionBgColor" type="string" default=" " />
+    <aura:attribute name="bgImage" type="string" default="068e0000000k6zIAAQ" />
+    <aura:attribute name="type" type="string" default=" " />
+    <aura:attribute name="urlPrefix" type="String"/>
+    <aura:attribute name="BGColor" type="String" default="44B4C8"/>
+    <aura:attribute name="FGColor" type="String" default="ffffff"/>
+    <aura:attribute name="Gradient" type="String" default=""/>
+     <aura:attribute name="announcementText" type="string" default=" " />
+  
+    
+  <!--  <aura:handler name="init" value="{!this}" action="{!c.doInit}"/> -->
+   
+    <div class="bg-img" style="{!empty(v.bgImage)?'background-color:#'+v.BGColor+';height: auto;margin-top:0px':'background-color:#'+v.BGColor+';height: auto;background:'+ ' linear-gradient('+v.Gradient+'),url(/sfc/servlet.shepherd/version/renditionDownload?rendition=ORIGINAL_Png&amp;versionId='+v.bgImage+') no-repeat;background-position: center;background-size: cover;margin-top:0px'}">
+        
+        <div class="slds-card__header slds-col headerTop" style="{! 'color: #'+v.FGColor+';'}">
+            
+            
+            <div class="slds-media__body" style="{! 'color: #'+v.FGColor+';'}" >
+                <center><h3 class="slds-truncate Title" ><b>{!v.title}</b></h3></center>
+                <center><p class=" slds-text-body--small Subtitle">{!v.subTitle}</p></center>
+                <div class="slds-p-top--x-small">
+                    <center> <p class="slds-text-body--small text">{!v.text}</p></center>
+                </div>
+                <div class="slds-p-top--x-small" >
+                    <center> <p style="color:#333F48;" class="slds-text-body--small text"><ui:outputRichText value="{!v.announcementText}"/></p></center>
+                </div>
+            </div>
+            
+        </div>
+        
+        <div class="slds-card__footer" >
+            <aura:if isTrue="{! and(v.actionLabel != null,v.actionLabel != '') }">
+                <center>
+                    <lightning:button label="{!v.actionLabel}" class="slds-p-around_x-small slds-text-title_caps button" onclick="{!c.goToURL}"/> 
+                    
+                </center>
+            </aura:if>
+        </div>
+    
+    </div>
+    
+</aura:component>

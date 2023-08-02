@@ -1,0 +1,25 @@
+/*.THIS .slds-lookup__menu{
+    width: 42% !important;
+}
+
+.THIS .slds-listbox{
+    width: 100% !important
+}
+
+.THIS .buildertekBT_LightningLookup .slds-pill-container {
+    min-width: 210px !important;
+    max-width: 250px !important;
+}
+
+.THIS .slds-input-has-icon{
+    width: 250px !important;
+}*/
+
+.THIS .cuf-content {
+    padding: 0 0rem !important;
+}
+.THIS .slds-modal__content {
+    height: unset !important;
+    max-height: unset !important;
+    box-shadow: none !important;
+}

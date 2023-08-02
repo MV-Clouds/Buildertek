@@ -1,0 +1,127 @@
+<!--
+	@ PURPOSE : 1. DISPLAYS RECORDS WHEN SEARCH KEYWORD PROVIDED.
+				2. FIRES COMPONENT EVENT WHEN POP-UP MODAL IS CLOSED WITH RECORD SELECTED.
+	@ Name    : ProductLookupCmp.xml
+-->
+<aura:component controller="IssueManagementCtrl" access="global">
+    
+	<aura:attribute name="headerText" type="String" default="" required="true"/>
+	
+	<aura:attribute name="recordIndex" type="Integer" default="-1" required="true"/>
+	
+	<aura:attribute name="searchKeyword" type="String" default="" required="false"/>
+	
+	<aura:attribute name="productFamily" type="String" default="" required="true"/>
+	
+	<aura:attribute name="listName" type="String" default="" required="true"/>
+	
+	<aura:attribute name="fieldName" type="String" default="" required="true"/>
+	
+	<aura:attribute name="opportunityPricebook2Id" type="String" required="true"/>
+	
+	<aura:attribute name="opportunityCurrencyCode" type="String" required="false"/>
+	
+	<aura:attribute name="showSpinner" type="Boolean" />
+	
+	<aura:attribute name="listOfSearchedResults" type="Object[]" default="[]"/>
+    <aura:attribute name="listOfSearchedResultsTrunk" type="Object[]" default="[]"/>
+	<aura:attribute name="componentName" type="String" default="" />
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+	
+	<aura:registerEvent name="productRecordSelectEvt" type="c:CloseProductModalEvt"/>
+    <aura:registerEvent name="IGUprdRecordSelectEvt" type="c:CloseIGUProductModalEvt"/>
+    <aura:registerEvent name="CHWprdRecordSelectEvt" type="c:CloseIGUProductModalEvt"/>
+	
+	<!-- START MODAL -->
+    <div style="height: 800px; width:auto;">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+				 
+			<!-- START SPINNER -->
+			<aura:if isTrue="{!v.showSpinner}">
+				<lightning:spinner alternativeText="Loading" size="large" />
+			</aura:if>
+			<!-- END SPINNER -->
+			
+            <div class="slds-modal__container">
+                
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" class="slds-modal__close"
+										  size="large" variant="bare" alternativeText="Close"
+										  onclick="{! c.closeModal }"/>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">
+						{!v.headerText}
+					</h2>
+                </header>
+				
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+					
+					<div class="searchSection">
+                        <span onkeypress="{!c.keyCheck}" onkeyup="{!c.keyCheck}">
+						<lightning:input type="search" value="{!v.searchKeyword}"/>
+                        </span>
+						<button class="slds-button slds-button_brand product_selection_btn"
+                                onclick="{!c.doInit}">Search</button>
+					</div>
+					
+					<!-- START TABLE -->
+					<div class="product_table">
+						<table class="slds-table slds-table_bordered slds-table_cell-buffer"> 
+							<thead>
+								<tr>						
+									<th scope="col" style="width:150px;">
+										<div class="slds-truncate prod_col" title="Name">Name</div>
+									</th>
+									<th scope="col">
+										<div class="slds-truncate prod_col" title="Product Code">Product Code</div>
+									</th>
+									<th scope="col">
+										<div class="slds-truncate prod_col" title="Product SKU">Product SKU</div>
+									</th>
+								</tr>
+							</thead>   
+							<tbody>
+								<aura:iteration items="{!v.listOfSearchedResults}" var="wrapper" indexVar="index">
+									<tr>
+										<td>
+                                        	<div>
+												<pre><a id="{!index}" onclick="{!c.handleProductSelect}" >
+												{!wrapper.recordProduct.Name}
+												</a></pre>
+                                            </div>
+										</td>
+										<td>
+											<a id="{!index}" onclick="{!c.handleProductSelect}">
+												{!wrapper.recordProduct.ProductCode}
+											</a>
+										</td>
+										<td>
+											<a id="{!index}" onclick="{!c.handleProductSelect}">
+												{!wrapper.recordProduct.Product_SKU__c}
+											</a>
+										</td>
+									</tr>
+								</aura:iteration>
+							</tbody>
+						</table>
+					</div>
+					<!-- END TABLE -->
+                    
+					
+                </div> 
+                
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="brand" label="Cancel" title="Cancel"
+									  onclick="{! c.closeModal }" />   
+                </footer>
+				
+            </div>
+			
+        </section>
+		
+        <div class="slds-backdrop slds-backdrop_open"></div>
+		
+    </div>
+    <!-- END MODAL -->
+	
+</aura:component>

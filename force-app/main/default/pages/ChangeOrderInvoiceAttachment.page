@@ -1,0 +1,16 @@
+<apex:page controller="ChangeOrderInvoiceAttachmentController" action="{!attachPDF}">
+    <script type="text/javascript">
+        window.onload = setupPage;
+        function setupPage() {
+            sforce.one.showToast({
+                "title": "Success!",
+                "message": "Change Order Created Successfully!!",
+                "type": "success"
+            });
+            redirectToPage();
+        }
+    </script>
+    <apex:form >
+        <apex:actionFunction name="redirectToPage" action="{!redirectToPage}"></apex:actionFunction>
+    </apex:form>
+</apex:page>

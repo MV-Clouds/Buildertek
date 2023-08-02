@@ -1,0 +1,17 @@
+.THIS .budgetLineInput .slds-input{
+    padding-left: 2rem;
+}
+
+.THIS .budgetLineInput .slds-input__icon_left{
+    display: none;
+}
+
+.THIS .searchIcon{
+    padding-left: 5px; 
+    padding-top: 3px;
+}
+
+.THIS .searchIcon .slds-icon-text-default{
+    width: 1rem;
+    height: 1rem;
+}

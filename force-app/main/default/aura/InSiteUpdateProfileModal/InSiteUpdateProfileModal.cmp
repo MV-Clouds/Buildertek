@@ -1,0 +1,78 @@
+<aura:component controller="InSiteUpdateProfileController">
+	<aura:attribute name="userId" type="Integer"/>
+	<aura:attribute name="projectId" type="String" />
+	<aura:attribute name="isLoading" type="Boolean" default="true"/>
+	<aura:attribute name="statusOptions" type="List" default="[
+		{'label': 'Cold', 'value': '1'},
+		{'label': 'Warm', 'value': '2'},
+		{'label': 'Hot', 'value': '3'},
+		{'label': 'Builder', 'value': '4'},
+		{'label': 'Deposit', 'value': '5'},
+		{'label': 'Purchased', 'value': '6'},
+		{'label': 'Archived', 'value': '7'},
+	]"/>
+	<aura:attribute name="selectedStatus" type="String" default="1"/>
+	<aura:handler name="init" value="{!this}" action="{!c.init}"/>
+
+	<aura:if isTrue="{!v.isLoading}">
+		<div class="slds-is-relative slds-grid slds-gutters slds-p-horizontal_small slds-m-bottom_large slds-m-top_large">
+			<div class="slds-col slds-size_1-of-1">
+				<lightning:spinner class="slds-align_absolute-center" alternativeText="Loading" size="large"/>
+			</div>
+		</div>
+		<aura:set attribute="else">
+			<div class="slds-grid slds-wrap slds-gutters slds-p-horizontal_small slds-m-bottom_large">
+				<div class="slds-col slds-size_1-of-1">
+					<lightning:radioGroup
+						aura:id="status"
+						class="display-horizontal"
+						variant="label-stacked"
+						name="status"
+						label="Select Status"
+						options="{!v.statusOptions}"
+						value="{!v.selectedStatus}"
+						type="radio"
+						required="true"/>
+				</div>
+			</div>
+
+			<aura:if isTrue="{!equals(v.selectedStatus, '5') || equals(v.selectedStatus, '6')}">
+				<div class="slds-grid slds-wrap slds-gutters slds-p-horizontal_small slds-m-bottom_large">
+					<div class="slds-col slds-size_1-of-1">
+						<div class="slds-box" style="width: 100%;">
+
+							<div class="slds-grid slds-wrap slds-gutters slds-p-horizontal_small slds-m-bottom_small">
+								<div class="slds-col slds-size_1-of-1">
+									<div class="slds-text-heading_small">Sale/Deposit Details</div>
+								</div>
+							</div>
+
+							<div>
+								<div class="slds-grid slds-wrap slds-gutters slds-p-horizontal_small slds-m-bottom_large">
+									<div class="slds-col slds-size_1-of-2">
+										<lightning:input aura:id="purchaseDate" type="date" name="purchaseDate" label="Purchase Date" required="true"/>
+									</div>
+									<div class="slds-col slds-size_1-of-2">
+										<lightning:input aura:id="purchaseRef" type="text" name="purchaseRef" label="Purchase Reference" required="true"/>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</aura:if>
+
+			<div class="slds-grid slds-wrap slds-gutters slds-p-horizontal_small slds-m-bottom_large">
+				<div class="slds-col slds-size_1-of-1">
+					<lightning:textarea aura:id="note" name="note" label="Note" required="true"/>
+				</div>
+			</div>
+
+			<div class="slds-grid slds-wrap slds-gutters slds-p-horizontal_small">
+				<div class="slds-col slds-size_1-of-1">
+					<lightning:button onclick="{!c.onSubmitClicked}" class="submit-btn" variant="brand" label="Submit"/>
+				</div>
+			</div>
+		</aura:set>
+	</aura:if>
+</aura:component>

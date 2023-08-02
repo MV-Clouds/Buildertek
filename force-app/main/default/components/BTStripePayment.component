@@ -1,0 +1,7 @@
+<apex:component controller="BTStripePaymentController" access="global"  >
+    <apex:attribute name="OrderRecId" description="Order Id" type="String" assignTo="{!RecId}" />
+    <!--Hello <b>{!BTBillings.buildertek__Customer_Account__r.Name}</b>,
+    <br/><br/><br/>-->
+     <a href=" {!MsaUrl.Site_URL__c}buildertek__BTStripeCheckout?Id={!BTBillings.Id} " style = "text-decoration:none;color: white">Pay Invoice</a> 
+    
+</apex:component>

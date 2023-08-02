@@ -1,0 +1,1161 @@
+<aura:component
+                implements="force:appHostable,flexipage:availableForRecordHome,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes"
+                controller="RFQDAO" access="global">
+    <ltng:require styles="{!join(',',
+                          $Resource.FaFaFont + '/css2.css',
+                          $Resource.FaFaFont + '/datepicker.css',
+                          $Resource.Sprites + '/css/fontawesome.min.css',
+                          $Resource.FaFaFont + '/owl.carousel.css')}" scripts="{!join(',',
+                                                                               $Resource.FaFaFont + '/bootstrap.min.js',
+                                                                               $Resource.FaFaFont + '/bootstrap-datepicker.js',
+                                                                               $Resource.FaFaFont + '/jquery.aCollapTable.js',
+                                                                               $Resource.FaFaFont + '/jquery-1.12.3.mindata analysis .js',
+                                                                               $Resource.FaFaFont + '/owl.carousel.min.js')}" afterScriptsLoaded="{!c.scriptsLoaded}" />
+
+
+    <aura:attribute name="nonPortalUserContactList" type="List" default="[]" />
+    <aura:attribute name="isNonPortalContactPopUP" type = "Boolean" default = "false"/>
+
+
+    <aura:attribute name="files" type="List"/>
+    <aura:attribute name="Isbtvalue" type = "Boolean" default = "false"/>
+    <aura:attribute name="isPortalUser" type = "Boolean" default = "false"/>
+
+    <aura:attribute name="Isfiles" type="Boolean" default="false" />
+    <aura:attribute name="noFiles" type="Boolean" default="false" />
+    <aura:attribute name="selectedfilesFill" type="list"/>
+    <aura:attribute name="selectedfileslist" type="Object"/>
+    <aura:attribute name="currencycode" type="String"/>
+    <aura:attribute name="multicurrency" type="Boolean"/>
+    <aura:attribute name="isQuotelinedelete" type="Boolean" default="false" />
+    <aura:attribute name="QuotelinePopupHeader" type="String" default="" />
+    <aura:attribute name="QuotelinePopupDescription" type="String" default="" />
+    <aura:method name="doinit" action="{!c.initialize}" access="public"/>
+
+    <aura:attribute name="IsEmailPresent" type="String" default="" />
+    <aura:handler event="force:showToast" action="{!c.refreshAll}"/>
+
+    <aura:attribute name="rfqToVendorList" type="List" description="RFQ To Vendor Lsit records" />
+    <aura:attribute name="vendorLoaded" type="Boolean" default="false" />
+    <aura:attribute name="activeRFQVendor" type="Object" />
+    <aura:attribute name="showVendorActions" type="Boolean" />
+    <aura:attribute name="isCompare" type="Boolean" default="false" />
+    <aura:attribute name="isComparePopupOpen" type="Boolean" default="false" />
+    <aura:attribute name="isDisabled" type="Boolean" />
+    <aura:attribute name="selectedVendorList" type="List" />
+    <aura:attribute name="selectedVendor" type="List" />
+    <aura:attribute name="rfq" type="object" />
+    <aura:attribute name="selectedFiles" type="sObject[]" default="[]" />
+    <aura:attribute name="modalPromise" type="Aura.Action" />
+    <aura:attribute name="className" type="String" />
+    <aura:attribute name="IsOnLoad" type="Boolean" />
+    <aura:attribute name="isMultipleAwardedClick" type="Boolean" />
+    <aura:attribute name="isCancelRFQ" type="Boolean" />
+    <aura:attribute name="isAccepted" type="Boolean" default="false" />
+    <aura:attribute name="vendorList" type="List" />
+    <aura:attribute name="OnLoadVendorActions" type="Boolean" />
+    <aura:attribute name="isAwarded" type="Boolean" />
+    <aura:attribute name="MultipleAwardedClick" type="Boolean" />
+    <aura:attribute name="isAwardedClick" type="Boolean" />
+    <aura:attribute name="isAttachDocClick" type="Boolean" />
+    <aura:attribute name="isdeleteClick" type="Boolean" />
+    <aura:attribute name="vendorName" type='String' default="" />
+    <aura:attribute name="vendorId" type='String' default="" />
+    <aura:attribute name="accrecordid" type='String' default="" />
+    <aura:attribute name="contactId" type="String" />
+    <aura:attribute name="selectallid" type="Boolean" />
+    <aura:attribute name="isvoidRFQ" type="Boolean" />
+    <aura:attribute name="recordViewForm" type="Aura.Component[]"
+                    description="Place holder for question group record View Form" />
+    <aura:attribute name="reviewInfoMessage" type="String" description="RFQ record object"
+                    default="Review your vendor RFQ(s)and award to any vendor." />
+    <aura:attribute name="IsSpinner" type="Boolean" default="false" />
+
+    <aura:handler name="change" value="{!v.vendorLoaded}" action="{!c.vendorLoaded}" />
+    <aura:handler name="init" value="{!this}" action="{!c.initialize}" />
+    <aura:attribute name="linedata" type="Object" />
+    <aura:attribute name="columns" type="List" />
+    <aura:attribute name="dynamicClass" type='String' />
+    <aura:attribute name="dynamicStyle" type='String' />
+    <aura:attribute name="objectAPI" type="String" access="global" default="buildertek__RFQ__c" />
+    <aura:attribute name="ReasonforCancelling" type="String"/>
+    <aura:attribute name="openModal" type="Boolean" default="false" />
+    <aura:attribute name="rfqStatus" type="String" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:handler event="force:navigateToSObject" action="{!c.navigateToRecord}" />
+    <aura:attribute name="fileName" type="string" default="" />
+
+    <aura:attribute name="iscontactModalOpen" type="Boolean" default="false" />
+    <aura:attribute name="ContactList" type="Contact[]"/>
+    <aura:attribute name="Contractids" type="List" />
+    <aura:attribute name="PageNumber" type="integer" default="1"/>
+    <aura:attribute name="TotalPages" type="integer" default="0"/>
+    <aura:attribute name="TotalRecords" type="integer" default="0"/>
+    <aura:attribute name="RecordStart" type="integer" default="0"/>
+    <aura:attribute name="RecordEnd" type="integer" default="0"/>
+    <aura:attribute name="PageSize" type="integer" default="30"/>
+    <aura:attribute name="listOfSelectedSOVIds" type="List" default="[]"/>
+    <aura:attribute name="contactvendor" type="List" default="[]"/>
+    <aura:attribute name="checkThis" type="Boolean" default="false"/>
+
+
+
+
+
+    <aura:registerEvent name="getvendoerrecords" type="c:AppEvent" />
+    <c:BT_Spinner />
+
+    <div style="font-family: 'Poppins', sans-serif;">
+        <div class="wrapper">
+            <c:BT_Message aura:id="infoMessage" type="info" message="{!reviewInfoMessage}" />
+            <header style="background: #1b5297;padding: 11px 5px 11px 15px;">
+                <div class="left-box" style="display: inline-block;vertical-align: middle;width: 20%;">
+                    <div style="display:flex;">
+                        <!-- <ui:inputCheckbox aura:id="checkAllRFQs" change="{!c.selectAll}" class="checkAllStyle" /> -->
+                        <ui:inputCheckbox aura:id="checkAllRFQs"   change="{!c.selectAll}" value="{!v.checkThis}"  class="checkAllStyle" />
+
+
+                        <td style="margin-top: 0px;margin-right: 5px;"
+                            >
+                            <!--  <span style="display:inline-block;" class="{!v.currentTab+' expandAllBtn_'+v.budgetId}" data-iconattr ="{!'expandAllBtn_'+v.budgetId}" data-iconname="Expand All" onclick="{!c.expandCollapeAll}"> -->
+
+                            <span style="display:inline-block;" class="{!v.recordId+'expandGrpIcon_'}" onclick="{!c.expandAll}">
+                                <lightning:buttonIcon aura:id="expandCollapeseAllBtn" iconName="utility:add"
+                                                      variant="border-filled" iconClass="dark" alternativeText="Expand All"
+                                                      title="Expand All"  class="expandIcon"/>
+                            </span>
+                            <span style="display:none;" class="{!v.recordId+'collapseGrpIcon_'}" onclick="{!c.CollapeAll}">
+                                <!--  <span style="display:none;" class="{!v.currentTab+' CollapeseAllBtn_'+v.budgetId}" data-iconattr ="{!'CollapeseAllBtn_'+v.budgetId}" data-iconname="Collapse All"  onclick="{!c.expandCollapeAll}"> -->
+                                <lightning:buttonIcon aura:id="expandCollapeseAllBtn2" iconName="utility:dash"
+                                                      variant="border-filled" iconClass="dark" alternativeText="Collapse All"
+                                                      title="Collapse All" class="collapseIcon"/>
+                            </span>
+                        </td>
+                        <h1 style="margin: 0;color: #fff;font-size: 17px;">RFQ Details</h1>
+                    </div>
+                </div>
+                <div class="right-box"
+                     style="display: inline-block;vertical-align: middle;width: 80%;margin-left:-5px;">
+                    <ul
+                        style="padding-left: 0;margin:0;background: #fff;border-radius: 3px;float: right;border: 1px solid #ccc;">
+
+                        <li
+                            style="display: inline-block;border-right: 1px solid #ccc;">
+                            <lightning:button iconName="utility:add" iconPosition="left" variant="bare"
+                                              onclick="{!c.addVendors}" label="Add Vendors" class="iconWithoutBorder" />
+                        </li>
+                        <li style="display: inline-block;vertical-align: middle;border-right: 1px solid #ccc;"
+                            class="{!if(v.rfqToVendorList.length > 0,'slds-show iconWithoutBorder','slds-hide')}">
+                            <lightning:button variant="bare" iconName="utility:email" iconPosition="left"
+                                              onclick="{!c.sendMassEmails}" label="Email Vendors"
+                                              class="{!if(v.rfqToVendorList.length > 0,'slds-show iconWithoutBorder','slds-hide')}" />
+                        </li>
+
+                        <li style="display: inline-block;vertical-align: middle;border-right: 1px solid #ccc; "
+                            class="{!if(v.rfqToVendorList.length > 0,'slds-show iconWithoutBorder','slds-hide')}">
+                            <lightning:button variant="bare" iconPosition="left" iconName="utility:list"
+                                              onclick="{!c.compare}" label="Level RFQ's"
+                                              class="{!if(v.rfqToVendorList.length > 0,'slds-show iconWithoutBorder','slds-hide')}" />
+                        </li>
+                        <li
+                            style="display: inline-block;vertical-align: middle;border-right: 1px solid #ccc;">
+                            <!-- <lightning:button variant="bare" iconPosition="left"
+                                onclick="{!c.uploadFile1}" label="Attach Documents" class="iconWithoutBorder" /> -->
+                            <lightning:button variant="bare" iconPosition="left" iconName="utility:attach"
+                                              onclick="{!c.attachDocument}" label="Attach Documents" class="iconWithoutBorder" />
+                        </li>
+                        <li style="display: inline-block;vertical-align: middle;border-right: 1px solid #ccc;">
+                            <lightning:button variant="bare" iconPosition="left" iconName="utility:ribbon"
+                                              onclick="{!c.awardMultipleVendor}" label="Award RFQ" class="multipleAwardedIcon" />
+                        </li>
+
+                        <li style="display: inline-block;vertical-align: middle;border-right: 1px solid #ccc;"
+                            class="{!if(v.rfqToVendorList.length > 0,'slds-show iconWithoutBorder','slds-hide')}">
+                            <lightning:button variant="bare" iconPosition="left" iconName="utility:delete"
+                                              onclick="{!c.deleteVendors}" label="Delete Vendors"
+                                              class="{!if(v.rfqToVendorList.length > 0,'slds-show iconWithoutBorder','slds-hide')}" />
+                        </li>
+                        <li
+                            style="display: inline-block;vertical-align: middle;border-right: 1px solid #ccc; ">
+                            <lightning:button iconName="utility:close" iconPosition="left" variant="bare"
+                                              onclick="{!c.cancelRFQ}" label="Cancel RFQ" class="iconWithoutBorder" />
+                        </li>
+                        <!-- <li
+                            style="display: inline-block;vertical-align: middle;border-right: 1px solid #ccc;">
+                            <lightning:button iconName="utility:close" iconPosition="left" variant="bare"
+                                              onclick="{!c.cancelvoidRFQ}" label="Void RFQ" class="iconWithoutBorder" />
+                        </li> -->
+                    </ul>
+                </div>
+            </header>
+
+            <div class="inner-wrapper-box">
+                <div class="side-detail-box">
+                    <div class="tab-content">
+                        <aura:if isTrue="{!!empty(v.selectedVendorList)}">
+                            <aura:iteration items="{!v.selectedVendorList}" var="vlist">
+                                <div class="inner-box">
+                                    <div class="{!or(vlist.buildertek__Status__c=='Awarded',vlist.buildertek__Status__c=='Accepted')?'box Awardedbox':'box NonAwardedBox'}">
+                                        <div class="left-box" style="display: inline-block;vertical-align: middle;
+                                                                        width:100%;">
+                                            <div class="checkbox check-btn"
+                                                    style="display: inline-block; vertical-align: middle;margin: 0 auto;">
+                                                <aura:if isTrue="{!vlist.buildertek__Status__c=='Rejected'}">
+                                                        <label class="custom-radio-check">
+                                                            <lightning:input aura:id="vendorselection" type="checkbox"
+                                                                        variant="lable-hidden"
+                                                                        checked="{!vlist.buildertek__IS_VENDOR_SELECTED__c}"
+                                                                        name="{!vlist.Id}" onchange="{!c.onVendorSelectionChange}"
+                                                                        style="padding-bottom: 30px;padding-right: 0px; display:none"  />
+                                                        </label>
+
+                                                    <aura:set attribute="else">
+                                                        
+                                                        <label class="custom-radio-check">
+                                                            <lightning:input aura:id="vendorselection" type="checkbox"
+                                                                            variant="lable-hidden"
+                                                                            checked="{!vlist.buildertek__IS_VENDOR_SELECTED__c}"
+                                                                            name="{!vlist.Id}" onchange="{!c.onVendorSelectionChange}"
+                                                                            style="padding-bottom: 30px;padding-right: 0px;" />
+                                                        </label>
+                                                    </aura:set>
+                                                </aura:if>
+                                            </div>
+                                            <h3
+                                                style="display: inline-block;margin: 0;vertical-align: middle;  font-size: 15px;padding-left: 12px;width:95%;">
+                                                <div
+                                                        style="vertical-align: middle;display: inline-block;padding-left: 5px;">
+                                                    <span
+                                                            style="{!or(vlist.buildertek__Status__c=='Awarded',vlist.buildertek__Status__c=='Accepted')?'vertical-align: middle;display: inline-block;font-weight: 500;padding-left: 5px;color:white;':'vertical-align: middle;display: inline-block;padding-left: 5px;font-weight: 500;'}">
+                                                        <ui:outputURL
+                                                                        class="{!or(vlist.buildertek__Status__c=='Awarded',vlist.buildertek__Status__c=='Accepted')?'slds-text-color_inverse':''}"
+                                                                        value="{!'/one/one.app?#/sObject/'+ vlist.buildertek__Vendor__c + '/view'}"
+                                                                        target="_blank" label="{!vlist.buildertek__Vendor__r.Name}" />
+                                                    </span>
+                                                    <span
+                                                            style="{!or(vlist.buildertek__Status__c=='Awarded',vlist.buildertek__Status__c=='Accepted')?'vertical-align: middle;display: inline-block;padding-left: 5px;color:white;':'vertical-align: middle;display: inline-block;padding-left: 5px;'}">
+                                                        -
+                                                        <ui:outputURL
+                                                                        class="{!or(vlist.buildertek__Status__c=='Awarded',vlist.buildertek__Status__c=='Accepted')?'slds-text-color_inverse':''}"
+                                                                        value="{!'/one/one.app?#/sObject/'+ vlist.buildertek__Contact__r.Id + '/view'}"
+                                                                        target="_blank" label="{!vlist.buildertek__Contact__r.Name}" />
+                                                    </span>
+
+                                                    <div style="float: right;">
+                                                        <aura:if isTrue="{!vlist.buildertek__Files__r.length > 0}">
+
+                                                            <a onclick="{! c.filelist}"
+                                                                id="{!vlist.buildertek__Vendor__c}" >
+                                                                <lightning:icon title="Files" size="x-small"
+                                                                                iconName="utility:attach"
+                                                                                class="{!or(vlist.buildertek__Status__c=='Awarded',vlist.buildertek__Status__c=='Accepted')?'iconWithoutBorder1':'iconWithoutBorder'}"
+                                                                                />
+                                                            </a>
+                                                        </aura:if>
+                                                    </div>
+
+                                                    <aura:if
+                                                                isTrue="{!vlist.isEmail}" >
+                                                        <span style="padding-left:5px">
+                                                            <lightning:icon title="No Primary Contact or Valid Email"
+                                                                            iconName="utility:error" variant="Error" size="xx-small" />
+                                                        </span>
+                                                        <!-- <aura:set attribute = 'else'>
+                                                            <aura:if
+                                                                        isTrue="{!!vlist.isValidEmail}" >
+                                                                <span style="padding-left:5px">
+                                                                    <lightning:icon title="No Primary Contact or Valid Email"
+                                                                                    iconName="utility:error" variant="Error" size="xx-small" />
+                                                                </span>
+
+                                                            </aura:if>
+                                                        </aura:set> -->
+
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!or(vlist.buildertek__Status__c=='Awarded',vlist.buildertek__Status__c=='Accepted')}">
+                                                        <span style="margin-left:1rem;CURSOR: pointer;">
+                                                            <a onclick="{!c.AddContactsButtonClick}"
+                                                                id="{!vlist.buildertek__Vendor__c+'_'+vlist.Id}"
+
+                                                                >
+                                                                <lightning:icon class='redColor' iconName="utility:add" alternativeText="Add" title="Add" size="x-small"    />
+                                                            </a>
+                                                        </span>
+                                                        <aura:set attribute="else">
+                                                            <span style="margin-left:1rem; CURSOR: pointer;">
+                                                                <a onclick="{!c.AddContactsButtonClick}"
+                                                                    id="{!vlist.buildertek__Vendor__c+'_'+vlist.Id}"
+
+                                                                    >
+                                                                    <lightning:icon class='bluecolor' iconName="utility:add" alternativeText="Add" title="Add" size="x-small"   />
+
+
+                                                                </a>
+                                                            </span>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!vlist.buildertek__Vendor__r.buildertek__Pre_Qualified__c == true}">
+
+                                                        <!-- <span>
+                                                            <lightning:button variant="brand" label="Add" title="" onclick="{!c.AddContactsButtonClick }"/>
+                                                        </span> -->
+                                                        <span style="float: right; padding-left: 20px;">
+                                                            <a onclick="{!c.openVendoraccount}"
+                                                                id="{!vlist.buildertek__Vendor__c}">
+                                                                <lightning:icon title="Pre Qualified"
+                                                                                iconName="utility:linked" variant="bare"
+                                                                                class="{!or(vlist.buildertek__Status__c=='Awarded',vlist.buildertek__Status__c=='Accepted')?'awardedlinkIcon':'linkIcon'}" />
+                                                            </a>
+                                                        </span>
+                                                        <aura:set attribute="else">
+                                                            <span style="float: right; padding-left: 20px;">
+                                                                <a onclick="{!c.openVendoraccount}"
+                                                                    id="{!vlist.buildertek__Vendor__c}">
+                                                                    <lightning:icon title="Un Qualified"
+                                                                                    iconName="utility:unlinked" variant="bare"
+                                                                                    class="{!or(vlist.buildertek__Status__c=='Awarded',vlist.buildertek__Status__c=='Accepted')?'awardedunlinkedIcon':'unlinkedIcon'}" />
+                                                                </a>
+                                                            </span>
+                                                        </aura:set>
+                                                    </aura:if>
+
+                                                </div>
+                                                <span style="{!or(vlist.buildertek__Status__c=='Awarded',vlist.buildertek__Status__c=='Accepted')?'vertical-align: middle;display: inline-block;padding-left: 5px;color:white;padding-bottom: 15px;':'vertical-align: middle;display: inline-block;padding-left: 5px;padding-bottom: 15px;'}">
+                                                    {!vlist.buildertek__Status__c}
+                                                </span>
+                                                <!-- Icon-->
+                                                <!-- <span>
+                                                        <lightning:button variant="brand" label="Add" title="" onclick="{!c.AddContactsButtonClick }"/>
+                                                    </span> -->
+                                                <div
+                                                        style="vertical-align: middle;display: inline-block;font-weight: 500;padding-left: 5px;float:right;">
+                                                    <span
+                                                            style="{!or(vlist.buildertek__Status__c=='Awarded',vlist.buildertek__Status__c=='Accepted')?'vertical-align: middle;display: inline-block;font-weight: 500;padding-left: 5px;color: white;float:left;':'vertical-align: middle;display: inline-block;font-weight: 500;padding-left: 5px;color: #1b5297;float:left;'}">
+                                                        <!--{!vlist.buildertek__Quote_Amount__c}-->
+                                                        <!--<lightning:formattedNumber value="{!vlist.buildertek__Quote_Amount__c}"
+                                                                                        style="currency" currencyCode="USD" currencyDisplayAs="code"/>-->
+                                                        <aura:if isTrue='{!v.multicurrency}'>
+                                                            <lightning:formattedNumber value="{!vlist.buildertek__Quote_Amount__c}"
+                                                                                        style="currency" currencyCode="{!vlist.CurrencyIsoCode}" currencyDisplayAs="code"/>
+                                                        </aura:if>
+                                                        <aura:if isTrue='{!!v.multicurrency}'>
+                                                            <lightning:formattedNumber value="{!vlist.buildertek__Quote_Amount__c}"
+                                                                                        style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code"/>
+                                                        </aura:if>
+                                                    </span>
+
+                                                    <aura:if isTrue="{!or(v.isAwarded,v.isAccepted)}">
+
+                                                        <aura:if isTrue="{!vlist.buildertek__Status__c=='Awarded'}">
+                                                            <span style="float:right;" class="awardedIcon">
+                                                                Awarded
+                                                            </span>
+                                                            <aura:set attribute="else">
+                                                                <aura:if
+                                                                            isTrue="{!vlist.buildertek__Status__c=='Accepted'}">
+                                                                    <span style="float:right;" class="awardedIcon">
+                                                                        Accepted
+                                                                    </span>
+                                                                    <aura:set attribute="else">
+                                                                        <span style="float:right;" class="awardedIcon">
+                                                                        </span>
+                                                                    </aura:set>
+                                                                </aura:if>
+                                                            </aura:set>
+                                                        </aura:if>
+
+                                                        <aura:set attribute="else">
+                                                            <!--<span style="float:right;margin-right: -30%;"> -->
+                                                            <span style="float:right;">
+                                                                <lightning:buttonIcon aura:id="{!vlist.Id}"
+                                                                                        name="{!vlist.Id}" title="Delete"
+                                                                                        iconName="utility:delete"
+                                                                                        onclick="{!c.deleteselectedVendor}" variant="bare"
+                                                                                        alternativeText="{!vlist.Name}" class="deleteIcon" />
+                                                            </span>
+                                                            <!-- <span style="float:right;margin-right: 19%;"> -->
+                                                            <span style="float:right;">
+                                                                <lightning:buttonIcon aura:id="{!vlist.Id}"
+                                                                                        name="{!vlist.Id}" title="Award"
+                                                                                        iconName="utility:ribbon"
+                                                                                        onclick="{!c.awardSelectedVendor}" variant="bare"
+                                                                                        alternativeText="{!vlist.Name}" class="awardIcon" />
+                                                            </span>
+
+                                                        </aura:set>
+                                                    </aura:if>
+
+
+                                                    <!--<span style="float: left;margin-right: -10%;">-->
+                                                    <span style="float:right;">
+                                                        <lightning:buttonIcon aura:id="{!vlist.Id}" name="{!vlist.Id}"
+                                                                                iconName="utility:preview" onclick="{!c.openVendor}"
+                                                                                variant="bare" alternativeText="View"
+                                                                                class="{!or(vlist.buildertek__Status__c=='Awarded',vlist.buildertek__Status__c=='Accepted')?'awardedViewIcon':'viewIcon'}" />
+                                                    </span>
+
+
+
+
+                                                    <div style="float: right;">
+                                                        <aura:if isTrue="{!vlist.buildertek__Files__r.length > 0}">
+
+                                                            <a  onclick="{! c.filelist1}"
+                                                                id="{!vlist.buildertek__Vendor__c+'_'+vlist.Id}">
+
+                                                                <lightning:icon title="Files" size="x-small"
+                                                                                iconName="utility:attach" style = " padding-left: 1rem;"
+                                                                                class="{!or(vlist.buildertek__Status__c=='Awarded',vlist.buildertek__Status__c=='Accepted')?'iconWithoutBorder1':'iconWithoutBorder'}"
+                                                                                />
+                                                            </a>
+                                                            <aura:set attribute="else">
+                                                                <a onclick="{! c.filelist1}"
+                                                                    id="{!vlist.buildertek__Vendor__c+'_'+vlist.Id}">
+                                                                    <lightning:icon title="No Files" size="x-small"
+                                                                                    iconName="utility:attach"  style = "color:green; padding-left: 1rem;" class = "fileiconcolor"
+
+                                                                                    />
+                                                                </a>
+                                                            </aura:set>
+
+                                                        </aura:if>
+                                                    </div>
+
+
+
+
+
+
+                                                </div>
+
+                                            </h3>
+                                        </div>
+                                    </div>
+                                    <table class="table table-hover" id="demo-1"
+                                            style="border: 1px solid #ededed;margin-bottom: 0;margin-top: -1px;">
+                                        <tbody>
+                                            <!--<div class="slds-scrollable_x" style=" max-width:100%">-->
+                                            <tr data-id="1" data-parent="">
+                                                <td style="border-right: 1px solid #ededed;width:13%;font-weight: bold;padding-left: 50px;"
+                                                    class="tdPadding">
+                                                    <aura:if isTrue="{!vlist.buildertek__IS_VENDOR_EXPANDED__c}">
+                                                        <lightning:buttonIcon iconName="utility:dash" name="{!vlist.Id}"
+                                                                                onclick="{!c.collapseVendor}" variant="border-filled"
+                                                                                alternativeText="Collapse" class="collapseIcon" />
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!!vlist.buildertek__IS_VENDOR_EXPANDED__c}">
+                                                        <lightning:buttonIcon iconName="utility:add" name="{!vlist.Id}"
+                                                                                onclick="{!c.expandVendor}" variant="border-filled"
+                                                                                alternativeText="Expand" class="expandIcon" />
+                                                    </aura:if>
+                                                    {!vlist.Name}
+                                                </td>
+                                                <td style="border-right: 1px solid #ededed;width:11%;font-weight: bold;"
+                                                    class="tdPadding">Item Name</td>
+                                                <td style="border-right: 1px solid #ededed;width:11%;font-weight: bold;"
+                                                    class="tdPadding">Description</td>
+                                                <td style="border-right: 1px solid #ededed;width:11%;font-weight: bold;"
+                                                    class="tdPadding">Vendor Notes</td>
+                                                <td style="border-right: 1px solid #ededed;width:11%;font-weight: bold;"
+                                                    class="tdPadding">Estimated Work (Days)</td>
+                                                <td style="border-right: 1px solid #ededed;width:11%;font-weight: bold;"
+                                                    class="tdPadding">Quantity</td>
+                                                <td style="border-right: 1px solid #ededed;width:11%;font-weight: bold;"
+                                                    class="tdPadding">Unit Price</td>
+                                                <td style="border-right: 1px solid #ededed;width:11%;font-weight: bold;"
+                                                    class="tdPadding">Total Price</td>
+                                            </tr>
+
+                                            <aura:if isTrue="{!vlist.buildertek__IS_VENDOR_EXPANDED__c}">
+                                                <aura:iteration items="{!vlist.buildertek__Vendor_Items__r}"
+                                                                var="recordList">
+                                                    <aura:if isTrue="{!!recordList.buildertek__isVendorRFQSubmited__c}">
+                                                        <tr data-id="{recordList.Id}" data-parent="1">
+                                                            <td style="border-right: 1px solid #ededed;width:13%;"
+                                                                class="tdPadding"></td>
+                                                            <td style="border-right: 1px solid #ededed;width:13%;"
+                                                                class="tdPadding">{!recordList.Name}</td>
+                                                            <td style="border-right: 1px solid #ededed;width:13%;"
+                                                                class="tdPadding">{!recordList.buildertek__Description__c}</td>
+                                                            <td style="border-right: 1px solid #ededed;width:13%;"
+                                                                class="tdPadding">{!recordList.buildertek__Vendor_Note__c}</td>
+                                                            <td style="border-right: 1px solid #ededed;width:13%;"
+                                                                class="tdPadding">{!recordList.buildertek__Estimated_Work_Days__c}</td>
+                                                            <td style="border-right: 1px solid #ededed;width:13%;"
+                                                                class="tdPadding">{!recordList.buildertek__Quantity__c}</td>
+                                                            <td style="border-right: 1px solid #ededed;width:13%;"
+                                                                class="tdPadding"><!--{!recordList.buildertek__Unit_Price__c}-->
+                                                                <!--<lightning:formattedNumber value="{!recordList.buildertek__Unit_Price__c}"
+                                                                                        style="currency" currencyCode="USD" currencyDisplayAs="code"/>-->
+                                                                <aura:if isTrue='{!v.multicurrency}'>
+                                                                    <lightning:formattedNumber value="{!recordList.buildertek__Unit_Price__c}"
+                                                                                                style="currency" currencyCode="{!recordList.CurrencyIsoCode}" currencyDisplayAs="code"/>
+                                                                </aura:if>
+                                                                <aura:if isTrue='{!!v.multicurrency}'>
+                                                                    <lightning:formattedNumber value="{!recordList.buildertek__Unit_Price__c}"
+                                                                                                style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code"/>
+                                                                </aura:if>
+
+                                                            </td>
+                                                            <td style="border-right: 1px solid #ededed;width:13%;"
+                                                                class="tdPadding"><!--{!recordList.buildertek__Total_Price__c}-->
+                                                                <!--<lightning:formattedNumber value="{!recordList.buildertek__Total_Price__c}"
+                                                                                        style="currency" currencyCode="USD" currencyDisplayAs="code"/>-->
+                                                                <aura:if isTrue='{!v.multicurrency}'>
+                                                                    <lightning:formattedNumber value="{!recordList.buildertek__Total_Price__c}"
+                                                                                                style="currency" currencyCode="{!recordList.CurrencyIsoCode}" currencyDisplayAs="code"/>
+                                                                </aura:if>
+                                                                <aura:if isTrue='{!!v.multicurrency}'>
+                                                                    <lightning:formattedNumber value="{!recordList.buildertek__Total_Price__c}"
+                                                                                                style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code"/>
+                                                                </aura:if>
+
+                                                            </td>
+                                                        </tr>
+                                                    </aura:if>
+                                                </aura:iteration>
+                                                <tr data-id="6" data-parent="1">
+                                                    <td colspan="7"
+                                                        style="border-right: 1px solid #ededed;text-align: right;padding-right:1.5rem;font-weight: 700;"
+                                                        class="tdPadding">Total:</td>
+                                                    <td colspan="3"
+                                                        style="border-right: 1px solid #ededed;padding-right: 8px; padding-left:0.5rem;">
+                                                        <!--{!vlist.buildertek__Quote_Amount__c}-->
+                                                        <!--<lightning:formattedNumber value="{!vlist.buildertek__Quote_Amount__c}"
+                                                                                        style="currency" currencyCode="USD" currencyDisplayAs="code"/>-->
+                                                        <aura:if isTrue='{!v.multicurrency}'>
+                                                            <lightning:formattedNumber value="{!vlist.buildertek__Quote_Amount__c}"
+                                                                                        style="currency" currencyCode="{!vlist.CurrencyIsoCode}" currencyDisplayAs="code"/>
+                                                        </aura:if>
+                                                        <aura:if isTrue='{!!v.multicurrency}'>
+                                                            <lightning:formattedNumber value="{!vlist.buildertek__Quote_Amount__c}"
+                                                                                        style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code"/>
+                                                        </aura:if>
+
+                                                    </td>
+                                                </tr>
+                                            </aura:if>
+                                            <!--  </div>-->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </aura:iteration>
+                            <aura:set attribute="else">
+                                <div class="slds-grid slds-grid_vertical">
+                                    <div class="slds-col slds-m-bottom_medium slds-m-top_large">
+                                         <center class="noSelectedVendor">Please choose a Vendor using the Add Vendors Button.</center>
+                                    </div>
+                                    <div class="slds-col" style="margin:auto;margin-top:0.2rem;margin-bottom:1rem">
+                                        <lightning:button iconName="utility:add" iconPosition="left" onclick="{!c.addVendors}" label="Add Vendors" class="iconWithoutBorder" />
+                                    </div>
+                                </div>
+                            </aura:set>
+                        </aura:if>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <aura:if isTrue='{!v.isAwardedClick}'>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="min-width:30rem;">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">RFQ Award Confirmation
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height:50px;">
+                    <center>
+                        Are you sure you want to Award this bid to {!v.vendorName}?
+                    </center>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button label="No" title="No" onclick="{!c.cancelAward}" />
+                    <lightning:button variant="brand" label="Yes" title="Yes" onclick="{!c.confirmAward}" />
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    <aura:if isTrue='{!v.isdeleteClick}'>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="min-width:30rem;max-width: 50%;">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Delete Vendor
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height:50px">
+                    <center>
+                        Are you sure you want to delete this {!v.vendorName}?
+                    </center>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button label="No" title="No" onclick="{!c.cancelvendor}" />
+                    <lightning:button variant="brand" label="Yes" title="Yes" onclick="{!c.confirmdelete}" />
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    <aura:if isTrue='{!v.isMultipleAwardedClick}'>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="min-width:30rem;max-width: 50%;" >
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">RFQ Award Confirmation
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height:50px;text-align:center;">
+
+                    Are you sure you want to Award these bids?
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button label="No" title="No" onclick="{!c.cancelMultipleAwards}" />
+                    <lightning:button variant="brand" label="Yes" title="Yes" onclick="{!c.confirmMultipleAwards}" />
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+
+
+
+
+
+    <aura:if isTrue="{!v.isQuotelinedelete}">
+
+        <div class="slds-m-around_xx-large">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                     aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container" style="min-width:30rem;max-width: 50%;">
+                    <header class="slds-modal__header">
+                        <aura:if isTrue="{!v.isQuotelinedelete}">
+                            <lightning:buttonIcon iconName="utility:close"
+                                                  onclick="{!c.closeQuotelineModel}" alternativeText="close"
+                                                  variant="bare-inverse" class="slds-modal__close" />
+                        </aura:if>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">
+                            {!v.QuotelinePopupHeader}</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium " id="modal-content-id-1">
+                        <center>
+                            <h2>{!v.QuotelinePopupDescription}</h2>
+                        </center>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <aura:if isTrue="{!v.isQuotelinedelete}">
+                            <lightning:button variant="neutral" label="Cancel" title="Cancel"
+                                              onclick="{!c.closeQuotelineModel}" />
+                            <lightning:button variant="brand" label="Delete" title="Delete"
+                                              onclick="{!c.removeVendors}" />
+                        </aura:if>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+    </aura:if>
+    <aura:if isTrue='{!v.isvoidRFQ}'>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="min-width:30rem;max-width: 50%;">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Void RFQ
+                    </h2>
+                </header>
+                <div class="slds-modal__content" id="modal-content-id-1">
+                    <div class="slds-p-around_large">
+                        <center><b style = "font-size: 110%;">Are you sure you want to void this RFQ?</b>
+                        </center>
+                    </div>
+                </div>
+                <!--<div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height:50px">
+                    Are you sure you want to Cancel RFQ?
+                </div>-->
+                <footer class="slds-modal__footer">
+                    <lightning:button label="No" title="No" onclick="{!c.cancelvoidconfirmModelRFQ}" />
+                    <lightning:button variant="brand" label="Yes" title="Yes" onclick="{!c.voidconfirmModelRFQ}" />
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+
+    <aura:if isTrue='{!v.isCancelRFQ}'>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="min-width:30rem;max-width: 50%;">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">RFQ Cancel Confirmation
+                    </h2>
+                </header>
+                <div class="slds-modal__content" id="modal-content-id-1">
+                    <div class="slds-p-around_large">
+
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-col slds-size_6-of-12">
+                                <label class="slds-form-element__label">What is the Reason for Cancelling this RFQ?</label>
+                                <lightning:textarea value="{!v.ReasonforCancelling}" />
+                            </div>
+                            <div class="slds-col slds-size_6-of-12">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--<div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height:50px">
+                    Are you sure you want to Cancel RFQ?
+                </div>-->
+                <footer class="slds-modal__footer">
+                    <lightning:button label="No" title="No" onclick="{!c.cancelModelRFQ}" />
+                    <!--   <lightning:button variant="brand" label="Yes" title="Yes" onclick="{!c.confirmModelRFQ}" /> -->
+                    <lightning:button variant="brand" label="Yes" title="Yes" onclick="{!c.cancelconfirmModelRFQ}" />
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    <!-- <aura:if isTrue='{!v.isCancelRFQ}'>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+            aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="min-width:30rem;max-width: 50%;">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">RFQ Cancel Confirmation
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height:50px">
+                    Are you sure you want to Cancel RFQ?
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button label="No" title="No" onclick="{!c.cancelModelRFQ}" />
+                    <lightning:button variant="brand" label="Yes" title="Yes" onclick="{!c.confirmModelRFQ}" />
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>-->
+    <aura:if isTrue='{!v.isComparePopupOpen}'>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="min-width:95%;width:95%;!important"> <!--  style="min-width:85rem;" -->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height:400px">
+                    <c:BT_RFQ_Review_Compare selectedVendor="{!v.selectedVendor}" dynamicStyle="{!v.dynamicStyle}"
+                                             dynamicClass="{!v.dynamicClass}" isAwarded="{!v.isAwarded}" vendorId="{!v.vendorId}"
+                                             vendorName="{!v.vendorName}" confirmAward="{!c.confirmAward}"></c:BT_RFQ_Review_Compare>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="brand" label="Close" title="Close" onclick="{!c.closeModel}" />
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    <aura:if isTrue='{!v.openModal}'>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container slds-p-around_large" style="width:50rem;min-width:40rem;">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Confirmation
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height:50px">
+                    <center><h3>
+                        You cannot add vendors to an RFQ that has been {!v.rfqStatus}
+                        </h3> </center>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="brand" label="Close" title="Close" onclick="{!c.closeStatusModel}" />
+
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+
+    <aura:if isTrue='{!v.iscontactModalOpen}'>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container slds-p-around_large" style="width:45rem;min-width:40rem;">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close"
+                                          onclick="{! c.close }"
+                                          alternativeText="close"
+                                          variant="bare-inverse"
+                                          class="slds-modal__close"/>
+                    <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Contacts</h2>
+
+                </header>
+                <div style="height:500px;overflow:auto;overflow-x: hidden;max-width: 100%;background-color: white;">
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                        <thead>
+                            <tr class="slds-text-title_caps">
+
+                                <th class="slds-is-sortable" scope="col" width="5px" style=" color:white; border-top-left-radius:5px;vertical-align: top;line-height: 2;width: 5%;padding-top: 8px;">
+                                    <lightning:input type="checkbox" aura:id="headCheckRFQ" checked="false" onchange="{!c.selectAllRfq}"/>
+                                </th>
+                                <th scope="col">
+                                    <strong><div class="slds-truncate" title="Name">Name</div></strong>
+                                </th>
+                                <th scope="col">
+                                    <strong><div class="slds-truncate" title="Phone">Phone</div></strong>
+                                </th>
+                                <th scope="col">
+                                    <strong><div class="slds-truncate" title="Email">Email</div></strong>
+                                </th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <!--   <aura:if isTrue="{!v.ContactList.length == 0}">
+                               <div class="slds-align_absolute-center slds-m-around_xx-large">
+                                        <p class="slds-text-title_bold" >
+                                            No Contacts for the Account .
+                                        </p>
+                                    </div>
+                                    <div class="slds-m-around_xx-large slds-align_absolute-center">
+                                    </div>
+                                    <aura:set attribute="else">-->
+
+                            <aura:iteration items="{!v.ContactList}" var="con">
+
+                                <aura:if isTrue="{!v.IsSpinner}">
+                                    <div aura:id="spinnerId" class="slds-spinner_container">
+                                        <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative"
+                                             style="z-index: 1;" role="alert">
+                                            <span class="slds-assistive-text">Loading</span>
+                                            <div class="slds-spinner__dot-a"></div>
+                                            <div class="slds-spinner__dot-b"></div>
+                                            <div class="custom-loading-text">
+                                                <b>Processing, Please Wait</b>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </aura:if>
+
+
+                                <tr>
+                                    <th>
+
+                                        <!-- <aura:if isTrue="{!v.Contractids.length == 1}">
+                                  <lightning:input type="checkbox" aura:id="checkRFQ"  checked="true" name="{!con.Id}" onchange="{!c.selectRfq}"   />
+                               <aura:set attribute="else">-->
+
+
+                                                <lightning:input type="checkbox" aura:id="checkRFQ"  checked="{!con.isChecked}" name="{!con.Id}" onchange="{!c.selectRfq}"   />
+
+
+
+                                        <!-- </aura:set>
+                            </aura:if>-->
+                                    </th>
+                                    <th scope="row" data-label="Name">
+                                        <div class="slds-truncate" title="{!con.Name}">{!con.Name}</div>
+                                    </th>
+                                    <th scope="row" data-label="Phone">
+                                        <div class="slds-truncate" title="{!con.Phone}">{!con.Phone}</div>
+                                    </th>
+                                    <th scope="row" data-label="Email">
+                                        <div class="slds-truncate" title="{!con.Email}">{!con.Email}</div>
+                                    </th>
+                                </tr>
+                            </aura:iteration>
+                            <!--</aura:set>
+                </aura:if>-->
+                        </tbody>
+                    </table>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button  variant="Neutral"  label="Cancel" onclick="{!c.close}" />
+
+                    <lightning:button  variant="brand"  label="Save" onclick="{!c.savecontact}" />
+
+                </footer>
+                <!-- <div class="slds-clearfix">
+            <div class="slds-page-header" role="banner" style="border-radius: 0px">
+                <div class="slds-float_right">
+                    <lightning:button  variant="Neutral"  label="Cancel" onclick="{!c.close}" />
+                     <lightning:button  variant="Neutral"  label="Save" onclick="{!c.savecontact}" />
+
+
+                </div>-->
+                <!--<p class="slds-page-header__title">{!v.RecordStart}-{!v.RecordEnd} of {!v.TotalRecords} | Page {!v.PageNumber} of {!v.TotalPages}</p>-->
+                <!--  <lightning:button disabled="{!v.PageNumber == 1}" variant="brand" aura:id="prevPage" label="Prev" onclick="{!c.handlePrev}" />
+                    <lightning:button disabled="{!v.PageNumber == v.TotalPages}" aura:id="nextPage" variant="brand" label="Next" onclick="{!c.handleNext}"/>-->
+                <!--  </div>
+        </div>-->
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+
+    </aura:if>
+
+
+
+    <aura:html tag="style">
+        @media (min-width: 48em){
+            .mymodal .slds-modal__container {
+                margin: 0 auto;
+                width: 75% !important;
+                max-width: 80rem !important;
+                min-width: 20rem;
+            }
+        }
+
+        .mymodal .slds-modal__content {
+            overflow: hidden;
+            overflow-y: auto;
+        }
+
+        .mymodal .slds-p-around--medium{
+            padding: var(--lwc-spacingMedium,1rem) !important;
+        }
+
+        .mymodal .scrollable{
+            height: auto !important;
+        }
+
+        .DESKTOP.open.active .mymodal .modal-container{
+            display: flex !important;
+        }
+        <lightning:overlayLibrary aura:id="overlayLib" />
+    </aura:html>
+
+    <aura:if isTrue="{!v.Isfiles}">
+
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container slds-p-around_large" style="width:50rem;min-width:40rem;">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Files</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" >
+
+
+                    <aura:iteration items="{!v.files}" var="obj">
+                        <div>
+                            <a href="{!obj.buildertek__File_Presigned_URL__c}" title="{!obj.buildertek__Amazon_File_Key__c}" target="_blank" style="font-size:20px;">{!obj.buildertek__Amazon_File_Key__c}</a>
+                            <!-- <a href="{!obj.buildertek__File_Presigned_URL__c}" title="{!obj.Name}" target="_blank" style="font-size:20px;">{!obj.Name}</a>  -->
+                            <br/>
+                        </div>
+                        <br/>
+                    </aura:iteration>
+
+
+
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral" label="Close" title="Close"
+                                      onclick="{!c.closefilesModel}" />
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    <aura:if isTrue="{!v.noFiles}">
+
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container slds-p-around_large" style="width:50rem;min-width:40rem;">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Files</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" >
+                    <center>
+                        <p>There are no files related to this vendor!</p>
+
+                    </center>
+
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral" label="Close" title="Close"
+                                      onclick="{!c.closefilesModel}" />
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+
+    <aura:if isTrue="{!v.isAttachDocClick}">
+        <aura:html tag="style">
+            .slds-modal__container {
+            width:40% !important;
+            }
+
+        </aura:html>
+        <div class="slds-m-around_xx-large">
+            <aura:if isTrue="{!v.IsSpinner}">
+                <div aura:id="spinnerId" class="slds-spinner_container">
+                    <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative"
+                         style="z-index: 1;" role="alert">
+                        <span class="slds-assistive-text">Loading</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                        <div class="custom-loading-text">
+                            <b>Processing, Please Wait</b>
+                        </div>
+                    </div>
+                </div>
+            </aura:if>
+            <!-- Modal/Popup Box starts here-->
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <!-- Modal/Popup Box Header Starts here-->
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close"
+                                              onclick="{! c.doCancel }"
+                                              alternativeText="close"
+                                              variant="bare-inverse"
+                                              class="slds-modal__close"/>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Upload File</h2>
+                    </header>
+                    <!--Modal/Popup Box Body Starts here-->
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <div style="border:1px solid lightgray;border-radius:5px;padding:10px;margin-top:10px">
+                            <lightning:layout multipleRows = "true">
+                                <div><lightning:input aura:id="fuploader" onchange="{!c.handleFilesChange}" type="file"
+                                                      variant="label-hidden" name="file" label="" multiple="true"
+                                                      accept="pdf, .png, .jpg, .jpeg, .csv, .DOC, .DOCX, .TXT, .XLS, .XLSX, .ZIP, .PDF, .PNG, .webm"/>
+                                               <!--accept="image/png,image/jpeg,image/jpg"/>-->
+                                    <!-- <div class="slds-text-body_small slds-text-color_error">{!v.fileName} </div>  -->
+
+                                    <aura:iteration items="{!v.selectedfilesFill}" var="sr">
+                                        <lightning:pill class="slds-m-around_xx-small slds-text-body_small slds-text-color_error" label="{!sr.Name}" name="{!sr.Name}" onremove="{! c.clear }">
+                                            <aura:set attribute="media">
+                                                <lightning:icon iconName="standard:file" size="x-small" alternativeText="icon"/>
+                                            </aura:set>
+                                        </lightning:pill>
+                                    </aura:iteration>
+                                </div>
+                            </lightning:layout>
+                        </div>
+
+                    </div>
+                    <!--Modal/Popup Box Footer Starts here-->
+                    <footer class="slds-modal__footer">
+                        <lightning:button variant="neutral"
+                                          label="Cancel"
+                                          title="Cancel"
+                                          onclick="{! c.doCancel }"/>
+                        <lightning:button variant="brand"
+                                          label="Add Files"
+                                          title="Add Files"
+                                          onclick="{!c.addFiles}"/>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+
+        </div>
+
+    </aura:if>
+
+    <aura:if isTrue='{!v.MultipleAwardedClick}'>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="min-width:30rem;">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">RFQ Award Confirmation
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height:50px;">
+                    <center>
+                        Are you sure you want to Award the work to multiple Vendors?
+                    </center>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button label="No" title="No" onclick="{!c.cancelMultipleAwards}" />
+                    <lightning:button variant="brand" label="Yes" title="Yes" onclick="{!c.confirmMultipleAwards}" />
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+
+
+
+
+
+
+
+    <aura:if isTrue="{!v.isNonPortalContactPopUP}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="min-width:30rem; ;max-width: 45%">
+
+                <aura:html tag="style">
+                    .cuf-content {
+                    padding: 0 0rem !important;
+                    }
+                    .slds-p-around--medium {
+                    padding: 0rem !important;
+                    }
+                    .slds-modal__content{
+                    overflow-y:hidden !important;
+                    height:unset !important;
+                    max-height:unset !important;
+                    }
+                </aura:html>
+
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Please Enable Portal for the following Contacts
+                    </h2>
+                </header>
+
+
+                <div class="slds-modal__content " id="modal-content-id-1" style = "margin-top:-9px; margin-bottom : -9px">
+                    <div class="slds-card__body slds-scrollable left-screen" >
+                        <table class="slds-table slds-table--bordered">
+                            <thead>
+                            </thead>
+                            <tbody>
+
+                                <tr>
+
+                                    <th style="font-weight: 700;padding-left:15px">
+                                        S.No
+                                    </th>
+                                    <th style="font-weight: 700;">Name</th>
+                                    <th style="font-weight: 700;">Email</th>
+
+
+
+                                </tr>
+                                <aura:iteration items="{!v.nonPortalUserContactList}" var="row" indexVar="recIndex">
+                                    <tr>
+
+
+                                        <td style = "padding-left:15px">
+                                            {!recIndex+1}
+                                        </td>
+
+                                        <td>
+                                            <ui:outputURL
+                                                          value="{!'/one/one.app?#/sObject/'+ row.Id + '/view'}"
+                                                          target="_blank" label="{!row.Name}" />
+
+                                        </td>
+
+                                        <td>
+                                            {!row.Email}
+                                        </td>
+
+
+                                    </tr>
+                                </aura:iteration>
+
+                            </tbody>
+                        </table>
+
+                    </div>
+
+                </div>
+
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="Neutral" class="slds-button" label="Close" onclick="{!c.closePortalContactScreen}"/>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+
+</aura:component>

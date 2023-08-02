@@ -1,0 +1,148 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes"
+    access="global" Controller="NewQuoteItem">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="recordId" type="string" />
+    <aura:attribute name="fieldSetCount" type="Integer" />
+    <aura:attribute name="listOfRecords" type="List" />
+    <aura:attribute name="listOfRecordsClone" type="List" />
+    <aura:attribute name="fieldSet" type="List" />
+    <aura:attribute name="formulaFields" type="Map" />
+    <aura:attribute name="massUpdateEnable" type="Boolean" default="false" />
+
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+
+    <aura:attribute name="PageNumber" type="Integer" default="1" />
+    <aura:attribute name="pageSize" type="Integer" default="50" />
+    <aura:attribute name="TotalPages" type="Integer" default="0" />
+    <aura:attribute name="TotalRecords" type="Integer" default="0" />
+    <aura:attribute name="RecordStart" type="Integer" default="0" />
+    <aura:attribute name="RecordEnd" type="Integer" default="0" />
+    <aura:attribute name="isNextDisabled" type="Boolean" default="true" />
+
+
+    <aura:attribute name="QuoteRec" type="Quote__c" default="{ 'sobjectType':'Quote__c','buildertek__Markup__c':'0'}"
+        access="global" />
+    <aura:attribute name="QuoteRecCopy" type="Quote__c"
+        default="{ 'sobjectType':'Quote__c','buildertek__Markup__c':'0'}" access="global" />
+    <aura:attribute name="isQuoteRecChange" type="Boolean" default="false" />
+
+    <div class="slds-modal__content">
+        <div class="slds slds-m-top_medium slds-p-horizontal_medium slds-scrollable">
+            <div style="float: right;margin-top: 25px;"
+                class="slds-m-top_medium slds-m-bottom_medium slds-m-right_small">
+
+                <lightning:buttonGroup>
+                    <div class="slds-truncate" title="test1" style="padding: 10px 0px 0px 10px; width:110px;">
+                        Global Markup</div>
+                    <ui:inputNumber aura:id="testId" value="{!v.QuoteRec.buildertek__Markup__c}" class="uiInputCss">
+                    </ui:inputNumber>
+                    <lightning:buttonIcon iconName="utility:save" class="saveInputCss slds-m-left_xx-small"
+                        onclick="{!c.onMarkupChange}" alternativeText="Save" />
+                    <aura:if isTrue="{!v.massUpdateEnable}">
+                        <lightning:button iconName="utility:save" iconPosition="left" onclick="{!c.onClickMassUpdate}"
+                            label="{!v.massUpdateEnable==true?'Save':'Mass Update'}" class="sldsButtonGroup" />
+                        <lightning:button iconName="utility:close" iconPosition="left"
+                            onclick="{!c.onClickMassUpdateCancel}" label="Cancel" class="sldsButtonGroup" />
+                        <aura:set attribute="else">
+                            <lightning:button iconPosition="left" onclick="{!c.onClickAddlines}" label="Add Lines"
+                                class="sldsButtonGroup" />
+                            <lightning:button iconName="utility:groups" iconPosition="left"
+                                onclick="{!c.onClickCreateNewGroup}" label="Add Group" class="sldsButtonGroup" />
+                            <lightning:button iconPosition="left" onclick="{!c.addProductFromGroup}"
+                                label="Add Quote Lines" class="sldsButtonGroup" />
+                            <lightning:button iconName="utility:copy" iconPosition="left"
+                                onclick="{!c.onClickMassDuplicate}" label="Duplicate Lines" class="sldsButtonGroup" />
+                            <lightning:button iconName="utility:edit" iconPosition="left"
+                                onclick="{!c.onClickMassUpdate}"
+                                label="{!v.massUpdateEnable==true?'Save':'Mass Update'}" class="sldsButtonGroup" />
+                            <lightning:button label="Add Product" onclick="{!c.addProduct}" class="sldsButtonGroup" />
+                            <lightning:button label="Import RFQ's" onclick="{!c.addRFQ}" class="sldsButtonGroup" />
+                            <lightning:button label="Delete" onclick="{!c.deleteSelectedQuoteItem}"
+                                class="sldsButtonGroup" />
+                        </aura:set>
+                    </aura:if>
+                </lightning:buttonGroup>
+            </div>
+            <br />
+
+            <table class="{!v.massUpdateEnable ? 'slds-table slds-table--bordered ':'slds-table--bordered'}">
+                <thead>
+                    <!-- <tr style="{!v.massUpdateEnable ? '':'height:35px; !important'}">
+                        <th style="width:4%;">
+                        </th>
+                        <aura:iteration items="{!v.fieldSet}" var="field" indexVar="index">
+                            <th> {!field.label}</th>
+                        </aura:iteration>
+                    </tr> -->
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.listOfRecords}" var="rec">
+                        <tr class="groupHeader">
+                            <td></td>
+                            <td colspan="{!v.fieldSetCount}">
+                                <div class="slds-grid slds-gutters">
+                                    <div class="slds-col slds-size_6-of-12" data-index='{!groupIndex}'
+                                        onclick="{!c.onClickChangeGroupName}">
+                                        {!rec.groupName}
+                                    </div>
+                                    <div class="slds-col slds-size_6-of-12 slds-float_right">
+                                        <lightning:button variant="neutral" label="Add Quote Line" name="{!groupIndex}"
+                                            title="Add Quote Line" class="addBudgetLineStyle"
+                                            onclick="{!c.addProductFromGroup}" />
+                                    </div>
+                                </div>
+                                <div class="slds-grid slds-gutters">
+                                    <div class="slds-col slds-size_1-of-12">
+                                        <br />
+                                    </div>
+                                </div>
+                            </td>
+                            <td colspan="{!v.fieldSetCount}"></td>
+                        </tr>
+                        <tr class="slds-text-title_bold">
+                            <td></td>
+                            <aura:iteration items="{!v.fieldSet}" var="field" indexVar="index">
+                                <td>{!field.label}</td>
+                            </aura:iteration>
+                        </tr>
+                        <aura:iteration items="{!rec.groupedRecords}" var="row" indexVar="index">
+                            <tr>
+                                <td style="padding:5px; margin:5px;line-height:2;">
+                                    <lightning:input type="checkbox" name="{!index}" checked="{!row.isSelected}"
+                                        onclick="{!c.onCheckBoxSelect}" class="customCheckBoxCss" />
+                                </td>
+                                <aura:iteration items="{!v.fieldSet}" var="field">
+                                    <td style="padding:5px; margin:5px;">
+                                        <c:BT_FieldSetQuoteItem record="{!row}" index="{!index}" field="{!field}"
+                                            formulaFields="{!v.formulaFields}"
+                                            isMassUpdateEnable="{!v.massUpdateEnable}"
+                                            childObjectName="buildertek__Quote_Item__c" />
+                                    </td>
+                                </aura:iteration>
+                            </tr>
+                        </aura:iteration>
+                        <tr class="groupFooter">
+                            <td></td>
+                            <td colspan="{!v.fieldSetCount}"></td>
+                            <td colspan="{!v.fieldSetCount}"></td>
+                        </tr>
+                    </aura:iteration>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <aura:if isTrue="{!v.isLoading}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+            </div>
+        </div>
+    </aura:if>
+</aura:component>

@@ -1,0 +1,93 @@
+<aura:component controller="VG_DynamicLayoutController" access="Global">
+    
+    <!-- attributes --> 
+    <aura:attribute name="HeaderCmp" type="Aura.Component[]" required="false"></aura:attribute>
+    <aura:attribute name="Col1" type="Aura.Component[]" required="false"></aura:attribute>
+    <aura:attribute name="Col2" type="Aura.Component[]" required="false"></aura:attribute>
+    <aura:attribute name="Col3" type="Aura.Component[]" required="false"></aura:attribute>
+    <aura:attribute name="Col4" type="Aura.Component[]" required="false"></aura:attribute>
+    
+    <!--<aura:attribute name="layoutItemColumnList" type="List" ></aura:attribute>-->
+    <aura:attribute name="layoutType" type="String"></aura:attribute>
+    <aura:attribute name="siteType" type="String"></aura:attribute>
+    <aura:attribute name="previewMode" type="Boolean"></aura:attribute>
+    <aura:attribute name="siteId" type="String"></aura:attribute>
+    <aura:attribute name="previewSiteType" type="String" default=""></aura:attribute>
+    
+    <!-- handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <!-- Markup -->
+    <div class="container">
+        <lightning:layout multipleRows="true">
+        	<!-- Header Component -->
+            <aura:if isTrue="{!not(empty(v.HeaderCmp))}">
+                <lightning:layoutItem size="12" mediumDeviceSize="12" smallDevicesize="12">
+                    <div>
+                        {!v.HeaderCmp}
+                    </div>
+                </lightning:layoutItem>
+            </aura:if>
+        </lightning:layout>
+        <div class="mainContentArea">
+            <lightning:layout multipleRows="true">
+                <!-- Two Column Layout -->
+                <aura:if isTrue="{!v.layoutType == 'Two Column 1:2 ratio'}">
+                    <lightning:layoutItem  padding="around-x-small" size="12" mediumDeviceSize="4">
+                        <div>
+                            {!v.Col1}
+                        </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem  padding="around-x-small" size="12" mediumDeviceSize="8">
+                        <div>
+                            {!v.Col2}
+                        </div>
+                    </lightning:layoutItem>
+                </aura:if>
+                
+                <!-- Three Column Layout -->
+                <aura:if isTrue="{!v.layoutType == 'Three Column'}">
+                    <lightning:layoutItem  padding="around-x-small" size="12" mediumDeviceSize="4">
+                        <div>
+                            {!v.Col1}
+                        </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem  padding="around-x-small" size="12" mediumDeviceSize="4">
+                        <div>
+                            {!v.Col2}
+                        </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem  padding="around-x-small" size="12" mediumDeviceSize="4">
+                        <div>
+                            {!v.Col3}
+                        </div>
+                    </lightning:layoutItem>
+                </aura:if>
+                
+                <!-- Four Column Layout -->
+                <aura:if isTrue="{!v.layoutType == 'Four Column'}">
+                    <lightning:layoutItem  padding="around-x-small" size="12" mediumDeviceSize="4">
+                        <div>
+                            {!v.Col1}
+                        </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem  padding="around-x-small" size="12" mediumDeviceSize="4">
+                        <div>
+                            {!v.Col2}
+                        </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem  padding="around-x-small" size="12" mediumDeviceSize="4">
+                        <div>
+                            {!v.Col3}
+                        </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem  padding="around-x-small" size="12" mediumDeviceSize="12">
+                        <div>
+                            {!v.Col4}
+                        </div>
+                    </lightning:layoutItem>
+                </aura:if>
+            </lightning:layout>
+        </div>
+    </div>
+</aura:component>

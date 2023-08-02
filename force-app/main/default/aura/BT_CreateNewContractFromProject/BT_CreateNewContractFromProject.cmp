@@ -1,0 +1,22 @@
+<aura:component
+    implements="flexipage:availableForRecordHome,forceCommunity:availableForAllPageTypes,force:hasRecordId,force:lightningQuickAction"
+    controller="CreateNewContractFromProject" access="global">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="emailBody" type="String" />
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+    <aura:html tag="style">
+        .slds-modal__content{
+        height:unset !important;
+        max-height:unset !important;
+        }
+        .slds-modal__container{
+        max-width: 70% !important;
+        min-width: 70% !important;
+        width: 70% !important;
+        }
+    </aura:html>
+    <aura:if isTrue="{!!v.isLoading}">
+        <aura:unescapedHtml value="{!v.emailBody}" />
+    </aura:if>
+</aura:component>

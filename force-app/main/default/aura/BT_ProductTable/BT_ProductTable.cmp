@@ -1,0 +1,144 @@
+<aura:component controller="BT_ProductsAdderController">
+    <aura:html tag="style">
+        .slds-modal__content {
+             overflow: initial;
+            overflow-y: visible;
+        }
+    </aura:html> 
+    <ltng:require styles="{!$Resource.ModalPreviewCSS}"/>
+
+	<aura:attribute name="_items" 
+                    type="List[]"/>
+    <aura:attribute name="headers" 
+                    type="Object[]" 
+                    default="[{label: 'Product', required: false, showIcons: false}, 
+                             {label: 'Line Description', required: false, showIcons: false},
+                             {label: 'Quantity', required: true, showIcons: false}, 
+                             {label: 'Price', required: true, showIcons: false}, 
+                             {label: 'Discount %', required: false, showIcons: false},
+                             {label: 'Group', required: false, showIcons: false}]"
+                    access="private"
+                    />
+    <aura:attribute name="_error" type="String" />
+    <aura:attribute name="_gFiled" type="String" />
+    <aura:attribute name="_gSobject" type="String" />
+    <aura:attribute name="_gFilter" type="String" />
+    
+    <aura:method name="handleError" action="{!c.handleErrors}" >
+		<aura:attribute name="_server_response" type="Object" />
+    </aura:method>
+    
+    <aura:registerEvent name="handleProducts" type="c:BT_ProductEvent"/>
+    
+	<div class="slds-grid">
+        <div class="slds-col subHeader">
+            <div class="slds-container_left pageTitle">
+               New Products
+            </div>
+        </div>
+        <div class="subHeader slds-grid_vertical-align-end">
+            <div class="slds-button-group" role="group"> 
+                <div class="slds-button-group" role="group">
+                    <button class="slds-button slds-button_neutral"
+                            onclick="{!c.cancel}" 
+                            name="cancel">
+                        Cancel
+                    </button>
+                    <button class="slds-button slds-button_brand"
+                            onclick="{!c.save}" 
+                            name="select">
+                        Save
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+    <aura:if isTrue="{!v._error.length > 0}">
+        <div class="slds-notify_alert slds-theme_error">
+            {!v._error}
+        </div>
+    </aura:if> 
+    <table class="slds-table slds-table_bordered slds-table_fixed-layout" role="grid">
+        <thead>
+            <tr class="">
+                <aura:iteration items="{!v.headers}" var="header">
+                	<c:BT_TableHeader label="{!header.label}" 
+                                   showIcons="{!header.showIcons}"
+                                   required="{!header.required}"
+                                   orderBy="{!v.orderBy}"
+                                   disableOrderBy="true" />
+                </aura:iteration>                
+            </tr>
+        </thead>
+        <tbody>
+            <aura:iteration items="{!v._items}" var="item" indexVar="index" >
+                <tr class="slds-hint-parent">
+                    <th scope="row" data-label="Product Name">
+                        <div class=" slds-grid slds-cell-wrap slds-grid_pull-padded" title="{!item.productName}">
+                            <div class="slds-p-horizontal_small slds-size_9-of-12 slds-medium-size_9-of-12 slds-large-size_9-of-12">
+                                <ui:outputText value="{!item.productName}"/>
+                            </div>
+                            <div class="slds-p-horizontal_small 
+                                        slds-size_2-of-12 
+                                        slds-medium-size_2-of-12 
+                                        slds-large-size_2-of-12">
+	                            
+                            </div>
+                            <div class="slds-p-horizontal_small 
+                                        slds-size_1-of-12
+                                        slds-medium-size_1-of-12 
+                                        slds-large-size_1-of-12">
+                            </div>
+                        </div>
+
+                    </th>
+                     <th scope="row" data-label="Line Description">
+                        <div class="slds-cell-wrap" title="Line Description">
+                           <ui:inputText aura:id="lineDescription"                  
+                                          class="{!item.errors.description + ' UIField'}"                                 
+                                          value="{!item.description}" />  
+                        </div>
+                    </th>
+                    <th scope="row" data-label="Quantity">                        
+                        <div class="slds-truncate" title="Quantity">
+                            <ui:inputNumber class="{!item.errors.quantity + ' UIField'}"
+                                            value="{!item.quantity}"
+                                            required="true"/>
+                        </div>
+                    </th>
+                    <th scope="row" data-label="Sales Price">                        
+                        <div class="slds-truncate" 
+                             title="Sales Price">
+                            <ui:inputCurrency class="{!item.errors.salesPrice + ' UIField'}"
+                                              value="{!item.salesPrice}"
+                                              required="true"/>
+                        </div>
+                    </th>
+                    <th scope="row" data-label="Discount %">
+                        <div class="slds-cell-wrap" title="Discount %">
+                           <ui:inputNumber aura:id="Discount"                  
+                                          class="{!item.errors.Discount + ' UIField'}"                                 
+                                          value="{!item.Discount}" />  
+                        </div>
+                    </th>
+                    
+                   
+                    
+                    <th scope="row" data-label="Line Group">
+                        <div class="slds-cell-wrap " title="Group">
+                           <c:BT_LookUp _field="{!v._gFiled}" 
+							                  _sobject="{!v._gSobject}" 
+							                  _value="{!item.groupid}"
+							                  _label=""
+							                  _filter="{!v._gFilter}"
+							                  />
+                        </div> 
+                    </th>
+                </tr>
+            </aura:iteration>
+        </tbody>
+        
+    </table>
+</aura:component>

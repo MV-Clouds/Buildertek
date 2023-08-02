@@ -1,0 +1,141 @@
+<!--
+	@ PURPOSE : 1. DISPLAYS FAILURE MODE RECORDS WHEN FAILURE COMPONENT IS PROVIDED.
+				2. FIRES COMPONENT EVENT WHEN POP-UP MODAL IS CLOSED WITH RECORD SELECTED.
+	@ Name    : FailureModeModalCmp.xml
+-->
+<aura:component controller="IssueManagementCtrl" access="global">
+	
+	<aura:attribute name="recordIndex" type="Integer" default="-1" required="true"/>
+	
+	<aura:attribute name="failureComponent" type="String" default="" required="true"/>
+	
+	<aura:attribute name="listName" type="String" default="" required="true"/>
+    
+    <aura:attribute name="resonforreplace" type="String" default="" required="true"/>
+	
+	<aura:attribute name="listOfAlreadySelectedFailureModes" type="List" default="[]" required="true"/>
+	
+	<aura:attribute name="listOfFailureModeWrappers" type="Object" default="[]"/>
+	
+	<aura:attribute name="searchKeyword" type="String" default=""/>
+	
+	<aura:attribute name="showSpinner" type="Boolean" />
+	
+	<aura:attribute name="areFailureModesSelected" type="Boolean" default="false"/>
+	
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }"/>
+	
+	<aura:registerEvent name="failureModeMultiSelectEvt" type="c:CloseFailureModeModalEvt"/>
+	
+	<!-- START MODAL -->
+    <div style="height: 800px; width:auto;">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+				 
+			<div class="slds-modal__container">
+				
+				<div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+					
+					<!-- START SPINNER -->
+					<aura:if isTrue="{!v.showSpinner}">
+						<lightning:spinner alternativeText="Loading" size="large" />
+					</aura:if>
+					<!-- END SPINNER -->
+			
+					<div class="searchSection">
+						<span onkeypress="{!c.keyCheck}" onkeyup="{!c.keyCheck}">
+							<lightning:input type="search" value="{!v.searchKeyword}"/>
+						</span>
+						<button class="slds-button slds-button_brand fm_selection_btn"
+                                onclick="{!c.doInit}">Search</button>
+					</div>
+					
+					<div class="fm_table">
+						<table class="slds-table slds-table_bordered slds-table_cell-buffer"> 
+							<thead>
+								<tr>
+									<th scope="col">
+										<div class="slds-truncate" title="Action">
+											<div style="display:inline-block;">
+												<ui:inputCheckbox value="{!v.areFailureModesSelected}"
+																  click="{!c.selectAllFailureModes}"/>
+											</div>
+										</div>
+									</th>
+									<th scope="col">
+										<div class="slds-truncate fmTableCol" title="Name">Name</div>
+									</th>
+									<!--<th scope="col">
+										<div class="slds-truncate fmTableCol" title="Failue Component">Failue Component</div>
+									</th>
+									<th scope="col">
+										<div class="slds-truncate fmTableCol" title="In Warranty">In Warranty</div>
+									</th>
+									<th scope="col">
+										<div class="slds-truncate fmTableCol" title="Ownership">Ownership</div>
+									</th>
+									<th scope="col">
+										<div class="slds-truncate fmTableCol" title="Check Entitlement">Check Entitlement</div>
+									</th>
+									<th scope="col">
+										<div class="slds-truncate fmTableCol" title="Applicable To">Applicable To</div>
+									</th>
+									<th scope="col">
+										<div class="slds-truncate fmTableCol" title="Check Trade">Check Trade</div>
+									</th>-->
+								</tr>
+							</thead>
+							<tbody>
+								<aura:iteration items="{!v.listOfFailureModeWrappers}" var="failureModeWrapper" indexVar="index">
+									<tr>
+										<td>
+											<ui:inputCheckbox value="{!failureModeWrapper.isSelected}"/>
+										</td>
+										<td>
+                                           <a id="{!index}" onclick="{!c.handleFmSelect}">
+											<ui:outputText value="{!failureModeWrapper.recordFailureMode.Name}"/>
+                                            </a>
+                                            </td>
+										<!--<td>
+											<ui:outputText value="{!failureModeWrapper.recordFailureMode.Failure_Component__c}"/>
+										</td>
+										<td>
+											<ui:outputText value="{!failureModeWrapper.recordFailureMode.In_Warranty__c}"/>
+										</td>
+										<td>
+											<ui:outputText value="{!failureModeWrapper.recordFailureMode.Ownership__c}"/>
+										</td>
+										<td>
+											<ui:outputText value="{!failureModeWrapper.recordFailureMode.Check_Entitlement__c}"/>
+										</td>
+										<td>
+											<ui:outputText value="{!failureModeWrapper.recordFailureMode.Applicable_To__c}"/>
+										</td>
+										<td>
+											<ui:outputText value="{!failureModeWrapper.recordFailureMode.Check_Trade__c}"/>
+										</td>-->
+									</tr>
+								</aura:iteration>
+							</tbody>
+						</table>
+					</div>
+										
+				</div>
+				
+				<footer class="slds-modal__footer">
+					<lightning:button variant="brand" label="Save" title="Save"
+									  onclick="{! c.save }" />  
+                    <lightning:button variant="brand" label="Cancel" title="Cancel"
+									  onclick="{! c.closeModal }" />   
+                </footer>
+				
+			</div>
+			
+		</section>
+		
+		<div class="slds-backdrop slds-backdrop_open"></div>
+		
+	</div>
+	<!-- END MODAL -->
+	
+</aura:component>

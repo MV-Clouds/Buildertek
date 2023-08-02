@@ -1,0 +1,356 @@
+<apex:page controller="SOVLinesWordDocumentController"  
+           contentType="application/msword#SOVLines.doc" cache="true" >
+    
+    <head>
+        <style>
+            @page Section1{
+            size: landscape;
+           <!-- mso-page-orientation:landscape;-->
+            }
+            
+            
+            body{
+            page:rotated;
+            width: 10in;
+            }
+            div.Section1{
+            page:Section1;
+            }
+            p{
+            line-height:0;
+            }
+            .small{
+            display: block;   
+            
+            }
+            
+            div.a {
+            line-height: 80%;
+            }
+            .pagenumber:before {
+            
+            content: counter(page);
+            
+            }
+            
+            .pagecount:before {
+            
+            content: counter(pages);
+            
+            }
+        </style>   
+    </head>
+    <body>
+        
+        <div class="Section1">
+            <br clear="all" style="page-break-before:always" />
+            <table width="100%" height="100%" cellpadding="0px" cellspacing="0px" >
+                <tr>
+                    <td>
+                        
+                        <table width="100%" height="100%" >
+                            <tr >
+                                <td width="95%" align="center"> 
+                                    <font style="font-size:16px" face="Swis721LtBT-NormalItalic">
+                                        <b>Schedule of Values</b>
+                                    </font>
+                                </td>
+                                <td width="5%" align="right"> 
+                                    <font style="font-size:10px" face="Swis721LtBT-NormalItalic">
+                                        <b>View</b>
+                                    </font>
+                                </td>
+                            </tr>
+                            
+                        </table> 
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <hr/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <table width="100%" height="100%">
+                            <tr >
+                                <td width="40%" >
+                                    <table width="100%" height="100%" align="right">
+                                        <tr>
+                                            
+                                            <td colspan="2" align="left"  style="font-size:10px;font-face:Swis721LtBT-NormalItalic;">
+                                                <apex:outputField value="{!SOV.Vendor__c}" /><br/>
+                                                <apex:outputField value="{!SOV.buildertek__Vendor__r.BillingStreet}" /><br/>
+                                                <apex:outputField value="{!SOV.buildertek__Vendor__r.BillingCity}" /><br/>
+                                                <apex:outputField value="{!SOV.buildertek__Vendor__r.BillingState}" /><br/>
+                                                <apex:outputField value="{!SOV.buildertek__Vendor__r.BillingCountry}" />
+                                                <br/>
+                                            </td>
+                                            <td><br/></td>
+                                        </tr>
+                                        <br/>
+                                        <tr>
+                                            <td style="font-size:10px;font-face:Swis721LtBT-NormalItalic;"><b>Company: </b></td>
+                                            <td align="left"  style="font-size:10px;font-face:Swis721LtBT-NormalItalic;">
+                                                <apex:outputField value="{!MSASettings.Company_Full_Name__c}" /></td>
+                                        </tr>
+                                        <tr >
+                                            <td style="font-size:10px;font-face:Swis721LtBT-NormalItalic;"> </td>
+                                            <td align="left" style="font-size:10px;font-face:Swis721LtBT-NormalItalic;"> 
+                                                <apex:outputField value="{!MSASettings.City__c}" />
+                                            </td>
+                                        </tr>
+                                        <tr >
+                                            <td style="font-size:10px;font-face:Swis721LtBT-NormalItalic;"> </td>
+                                            <td align="left" style="font-size:10px;font-face:Swis721LtBT-NormalItalic;"> 
+                                                <apex:outputField value="{!MSASettings.Phone__c}" />
+                                            </td>
+                                        </tr>
+                                        <tr >
+                                            <td style="font-size:10pxfont-face:Swis721LtBT-NormalItalic;"> </td>
+                                            <td align="left" style="font-size:10px;font-face:Swis721LtBT-NormalItalic;">
+                                                <apex:outputField value="{!MSASettings.MSA_Email__c}" />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-size:10px;font-face:Swis721LtBT-NormalItalic;"></td>
+                                            <td align="left" style="font-size:10px;font-face:Swis721LtBT-NormalItalic;">
+                                                <!--<apex:outputField value="{!MSASettings.Site_URL__c}" />-->
+                                            </td>
+                                        </tr>                           
+                                        <tr>
+                                            <td style="font-size:10px;font-face:Swis721LtBT-NormalItalic;"></td>
+                                            <td align="left" style="font-size:10px;font-face:Swis721LtBT-NormalItalic;"></td>
+                                        </tr>
+                                        
+                                        <tr>
+                                            <td style="font-size:10px;font-face:Swis721LtBT-NormalItalic;"><b>Project #: </b></td>
+                                            <td align="left" style="font-size:10px;font-face:Swis721LtBT-NormalItalic;"><apex:outputField value="{!SOV.buildertek__Project__r.Auto_Number__c}" /></td>
+                                        </tr>
+                                        <tr >
+                                            <td style="font-size:10px;font-face:Swis721LtBT-NormalItalic;"><b>Project:</b> </td>
+                                            <td align="left" style="font-size:10px;font-face:Swis721LtBT-NormalItalic;"><apex:outputField value="{!SOV.buildertek__Project__r.Name}" /></td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td width="30%"  align="right" ></td>
+                                <td width="30%"  align="right" >
+                                    <table width="100%" height="100%" >
+                                        <tr>
+                                            <td style="font-size:10px;font-face:Swis721LtBT-NormalItalic;"><b>SOV Name: </b></td>
+                                            <td align="left"  style="font-size:10px;font-face:Swis721LtBT-NormalItalic;"><apex:outputField value="{!SOV.Name}" /></td>
+                                        </tr>
+                                        <tr >
+                                            <td style="font-size:10px;font-face:Swis721LtBT-NormalItalic;"><b>Vendor:</b> </td>
+                                            <td align="left" style="font-size:10px;font-face:Swis721LtBT-NormalItalic;"> 
+                                                <apex:outputField value="{!SOV.buildertek__Vendor__r.Name}" />
+                                            </td>
+                                        </tr>
+                                        <tr >
+                                            <td style="font-size:10px;font-face:Swis721LtBT-NormalItalic;"><b>Status:</b> </td>
+                                            <td align="left" style="font-size:10px;font-face:Swis721LtBT-NormalItalic;"> 
+                                                <apex:outputField value="{!SOV.Status__c}" />
+                                            </td>
+                                        </tr>
+                                        <tr >
+                                            <td style="font-size:10px;font-face:Swis721LtBT-NormalItalic;"><b>SOV Type:</b> </td>
+                                            <td align="left" style="font-size:10px;font-face:Swis721LtBT-NormalItalic;"> 
+                                                <apex:outputField value="{!SOV.recordtype.name}" />
+                                                
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-size:10px;font-face:Swis721LtBT-NormalItalic;"><b>Submitted Date:</b> </td>
+                                            <td align="left" style="font-size:10px;font-face:Swis721LtBT-NormalItalic;"> 
+                                                <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
+                                                    <apex:param value="{!SOV.Date_Submitted__c}" /> 
+                                                </apex:outputText>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-size:10px;font-face:Swis721LtBT-NormalItalic;"><b>Total Costs:</b> </td>
+                                            <td align="left" style="font-size:10px;font-face:Swis721LtBT-NormalItalic;"> 
+                                                <apex:outputText value="USD {0, number, #,##,###,###,##0.##}" >
+                                                    <!--<apex:param value="{!SOV.Total_Costs__c}" />-->
+                                                    <apex:param value="{!scheduleValueTotal}" />
+                                                </apex:outputText>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-size:10px;font-face:Swis721LtBT-NormalItalic;"> </td>
+                                            <td align="left" style="font-size:10px;font-face:Swis721LtBT-NormalItalic;">  </td>
+                                        </tr>
+                                        
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">
+                                    <hr/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">
+                                    <table width="100%" height="100%" style="border: 1px solid black;border-collapse: collapse;font-face:Swis721LtBT-NormalItalic;" >
+                                        
+                                        <tr style="border: 1px solid black;border-collapse: collapse;font-face:Swis721LtBT-NormalItalic;">
+                                            <td align="center" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px"><b>A</b>
+                                            </td>
+                                            <td align="center" width="20%" style="border: 1px solid black;border-collapse: collapse;font-size:10px"><b>B</b>
+                                            </td>
+                                            <td align="center" width="15%" style="border: 1px solid black;border-collapse: collapse;font-size:10px"><b>C</b>
+                                            </td>
+                                            <td align="center" colspan="2" width="15%" style="border: 1px solid black;border-collapse: collapse;font-size:10px"><b>D</b>
+                                            </td>
+                                            <td align="center" colspan="2" width="15%" style="border: 1px solid black;border-collapse: collapse;font-size:10px"><b>E</b>
+                                            </td>
+                                            <td align="center" colspan="2" width="15%" style="border: 1px solid black;border-collapse: collapse;font-size:10px"><b>F</b>
+                                            </td>
+                                            <td align="center" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px"><b>G</b>
+                                            </td>
+                                            <td align="center" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px"><b>H</b>
+                                            </td>
+                                        </tr>
+                                        <tr style="border: 1px solid black;border-collapse: collapse;">
+                                            <td align="center" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px"><b>Item No.</b>
+                                            </td>
+                                            <td align="center" width="20%" style="border: 1px solid black;border-collapse: collapse;font-size:10px"><b>SOV Line Description</b>
+                                            </td>
+                                            <td align="center" width="15%" style="border: 1px solid black;border-collapse: collapse;font-size:10px"><b>Scheduled Amount (USD)</b>
+                                            </td>
+                                            <td align="center"  colspan="2" width="15%" style="border: 1px solid black;border-collapse: collapse;font-size:10px"><b>Previously Invoiced</b>
+                                                <table width="100%" height="100%" style="border: 0.2px solid black;border-collapse: collapse;">
+                                                    <tr style="border: 0.2px solid black;border-collapse: collapse;">
+                                                        <td align="center" width="50%" style="border: 0.2px solid black;border-collapse: collapse;font-size:10px"><b>Percent</b>
+                                                        </td>
+                                                        <td align="center" width="50%" style="border: 0.2px solid black;border-collapse: collapse;font-size:10px"><b>Amount</b>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                            <td align="center"  colspan="2" width="15%" style="border: 1px solid black;border-collapse: collapse;font-size:10px"><b>Completed To Date</b>
+                                                <table width="100%" height="100%" style="border: 0.2px solid black;border-collapse: collapse;">
+                                                    <tr style="border: 0.2px solid black;border-collapse: collapse;">
+                                                        <td align="center" width="50%" style="border: 0.2px solid black;border-collapse: collapse;font-size:10px"><b>Percent</b>
+                                                        </td>
+                                                        <td align="center" width="50%" style="border: 0.2px solid black;border-collapse: collapse;font-size:10px"><b>Amount</b>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                            <td align="center"  colspan="2" width="15%" style="border: 1px solid black;border-collapse: collapse;font-size:10px"><b>This Claim</b>
+                                                <table width="100%" height="100%" style="border: 0.2px solid black;border-collapse: collapse;">
+                                                    <tr style="border: 0.2px solid black;border-collapse: collapse;">
+                                                        <td align="center" width="50%" style="border: 0.2px solid black;border-collapse: collapse;font-size:10px"><b>Percent</b>
+                                                        </td>
+                                                        <td align="center" width="50%" style="border: 0.2px solid black;border-collapse: collapse;font-size:10px"><b>Amount</b>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td> 
+                                            <td align="center" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px"><b>Less 10%</b>
+                                                <table width="100%" height="100%" style="border: 0.2px solid black;border-collapse: collapse;">
+                                                    <tr style="border: 0.2px solid black;border-collapse: collapse;">
+                                                        <td align="center" width="100%" style="border: 0.2px solid black;border-collapse: collapse;font-size:10px"><b>Holdback</b>
+                                                        </td> 
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                            <td align="center" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px"><b>Please Pay</b>
+                                            </td>
+                                        </tr>
+                                        <apex:repeat value="{!SOVLineList}" var="record"> 
+                                            <tr style="border: 1px solid black;border-collapse: collapse;">
+                                                <td align="center" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">{!record.buildertek__Item__c}
+                                                </td>
+                                                <td align="left" width="20%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">{!record.Description_of_Work__c} 
+                                                </td>
+                                                <td align="right" width="15%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                                    <apex:outputText value="{0, number, #,##,###,###,##0.##}" > 
+                                                        <apex:param value="{!record.Scheduled_Value__c}" />
+                                                    </apex:outputText> 
+                                                </td>
+                                                <td align="right" width="7.5%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                                    
+                                                </td>
+                                                <td align="right" width="7.5%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                                    
+                                                </td>
+                                                <td align="right" width="7.5%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                                </td>
+                                                <td align="right" width="7.5%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                                    
+                                                </td>
+                                                <td align="right" width="7.5%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                                </td>
+                                                <td align="right" width="7.5%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                                    
+                                                </td> 
+                                                <td align="right" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                                    
+                                                </td>
+                                                <td align="right" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                                    
+                                                </td>
+                                            </tr>                                  
+                                            
+                                            
+                                        </apex:repeat>
+                                        <tr style="border: 1px solid black;border-collapse: collapse;">
+                                            <td align="left" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                                
+                                            </td>
+                                            <td align="right" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px;font-face:bold;">
+                                                Total
+                                            </td>
+                                            <td align="right" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                                <apex:outputText value="{0, number, #,##,###,###,##0.##}" >
+                                                    <!--<apex:param value="{!SOV.Total_Costs__c}" />-->
+                                                    <apex:param value="{!scheduleValueTotal}" />
+                                                </apex:outputText>
+                                                
+                                            </td>
+                                            <td align="right" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                                
+                                            </td>
+                                            <td align="right" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                                
+                                            </td>
+                                            <td align="right" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                                
+                                            </td>
+                                            <td align="right" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                                
+                                            </td>
+                                            <td align="right" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                                
+                                                
+                                            </td>
+                                            <td align="right" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                                
+                                                
+                                            </td>
+                                            <td align="right" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                                
+                                                
+                                            </td>
+                                            <td align="right" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                                
+                                            </td>
+                                        </tr>
+                                        
+                                    </table>
+                                </td>
+                                
+                            </tr>
+                            
+                        </table>
+                        
+                    </td>
+                </tr>
+            </table>
+            
+        </div>
+        
+    </body>
+</apex:page>

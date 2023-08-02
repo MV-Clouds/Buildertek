@@ -1,0 +1,36 @@
+<aura:component>
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="account" type="Account" />
+    <aura:attribute name="isOpen" type="boolean" default="true"/>
+    <aura:attribute name="start" type="DateTime" default=""/>
+    <aura:attribute name="end" type="DateTime" default=""/>
+    <aura:attribute name="sAppointmentDetail" type="ServiceAppointment" default=""/>
+    <aura:attribute name="title" type="String" />
+    <aura:attribute name="severity" type="String" />
+    <aura:attribute name="errorMessage" type="String" />
+    <aura:attribute name="showMessage" type="Boolean" />
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}" />
+    <lightning:messages/>
+    <aura:if isTrue="{!v.showMessage}">
+        <ui:message title="{!v.title}" severity="{!v.severity}" closable="true">
+            {!v.errorMessage}
+        </ui:message>
+    </aura:if>
+    <lightning:recordEditForm aura:id="editForm"
+                              objectApiName="ServiceAppointment" 
+                              onsuccess="{!c.handleSuccess}"
+                              recordId = "{!v.recordId}"
+                              >                        
+        <lightning:inputField aura:id="selectedUser" variant="" fieldName="SchedStartTime"/>
+        <lightning:inputField aura:id="SchedEndTime" fieldName="SchedEndTime"/>
+        <ul class="slds-button-group-row slds-align_absolute-center">
+            <li class="slds-button-group-item">
+                <lightning:button variant="brand" class="slds-button uiButton--brand uiButton slds-align_absolute-center" name="save" label="Save" type="Submit"/>
+            </li>
+            <li class="slds-button-group-item">
+                <lightning:button variant="brand" class="slds-button uiButton--brand slds-align_absolute-center"  name="cancel" label="Cancel" onclick="{!c.navigateToDetailPage}"/>
+            </li>
+        </ul>
+        
+    </lightning:recordEditForm>   
+</aura:component>

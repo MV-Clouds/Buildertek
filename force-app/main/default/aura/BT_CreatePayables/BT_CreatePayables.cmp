@@ -1,0 +1,12 @@
+<aura:component implements="force:hasRecordId,force:lightningQuickActionWithoutHeader" controller="PurchaseOrderDAO" access="global">
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+	<lightning:notificationsLibrary aura:id="notifLib"/>
+	<div aura:id="progressbar">
+    	<center>
+	    	<img alt="Cenerating new payble." src="{!$Resource.gearsloading}" style="height:150px !important;"/>
+	    	<br/>
+	    	Creating new payable <br/> Please don't leave this page until payable is created.
+    	</center> 
+    </div>
+    
+</aura:component>

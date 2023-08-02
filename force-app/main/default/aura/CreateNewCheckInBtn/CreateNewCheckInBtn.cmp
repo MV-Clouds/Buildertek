@@ -1,0 +1,191 @@
+<aura:component controller="NewCheckInBtnController"
+    implements="force:hasRecordId,force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable,lightning:actionOverride,flexipage:availableForAllPageTypes,force:hasSObjectName"
+    access="global">
+
+    <aura:registerEvent name="popUpBooleanValue" type="c:CloseCheckInEvent"/>
+
+    <aura:attribute name="recordId" type="String" />
+
+    <aura:attribute name="filetype" type="List" default="['.png', '.jpg', '.jpeg']" />
+    <aura:attribute name="uploadedFileId" type="list" />
+    <aura:attribute name="record" type="Object" />
+    <aura:attribute name="projectRecord" type="Object" />
+    <aura:attribute name="Spinner" type="boolean" default="false" />
+    <aura:attribute name="desableProjectSelection" type="boolean" default="false" />
+    <aura:attribute name="desableSaveBtn" type="boolean" default="false" />
+    <aura:attribute name="orgBaseURL" type="string" />
+    <aura:attribute name="checkInRec" type="Check_In__c" default="{'sobjectType':'Check_In__c'}" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <aura:html tag="style">
+        .slds-modal__content {
+        height: unset !important;
+        max-height: unset !important;
+        }
+        .slds-modal__container{
+        max-width: 60rem !important;
+        width:70% !important;
+
+        }
+        .cuf-content {
+        padding: 0rem !important;
+        }
+        .slds-p-around--medium {
+        padding: 0rem !important;
+        }
+
+        .label.slds-form-element__label.slds-no-flex {
+            font-family: 'Verdana';
+            font-size: 15px;
+            font-weight: 400;
+        }
+
+        .slds-modal__header {
+            background: rgb(255, 255, 255) !important;
+            /* border-radius: 17px 17px 0px 0px; */
+            color: rgb(0, 0, 0) !important;
+            font-family: 'Verdana' !important;
+            border: none !important;
+            font-weight: 400 !important;
+            font-size: 22px !important;
+            /* line-height: 38px; */
+        }
+
+        .slds-input {
+            border: 1px solid #D1D1D1 !important;
+            border-radius: 8px;
+            font-family: 'Verdana' !important;
+            font-size: 14px;
+            color: #6F6F6F;
+            height: 36px;
+        }
+
+        .slds-col.slds-size_1-of-2 {
+            padding: 0px 16px;
+        }
+
+        .slds-form-element__label {
+            font-family: 'Verdana' !important;
+            font-style: normal;
+            font-weight: 400;
+            font-size: 14px;
+        }
+
+        textarea {
+            border: 1px solid #D1D1D1;
+            border-radius: 8px;
+            font-family: 'Verdana' !important;
+            font-size: 14px;
+            color: #6F6F6F;
+        }
+
+        .slds-form-element__icon {
+            display: none;
+        }
+
+        .slds-carousel__image>img {
+            min-width: 110px;
+            width: 110px;
+            height: 100px;
+            padding: 8px;
+        }
+
+        .slds-carousel__content.content-container {
+            height: auto;
+            padding:0px;
+        }
+
+        .slds-textarea{
+            border: 1px solid #D1D1D1 !important;
+            border-radius: 8px;
+            <!-- font-family: 'Verdana' !important;
+            font-size: 14px;
+            color: #6F6F6F;
+            height: 36px; -->
+        }
+
+        .slds-combobox__input{
+            border: 1px solid #D1D1D1 !important;
+            border-radius: 8px;
+        }
+
+    </aura:html>
+
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </aura:if>
+
+    
+    <div class="slds-modal__header md-header" style="font-size:17px;">
+        New Check-In
+    </div>
+    <hr style="margin: 0px !important;"></hr>
+
+    <div class="slds-modal__content slds-p-around--large">
+        <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__Check_In__c">
+
+            <div class="pop-body">
+                <div class="slds-col slds-size_1-of-2">
+                    <!-- <div class="lbl-tx">Check In Name</div> -->
+                    <label for="checkInName" class="lbl-tx" aria-required="true"><span class="cross">*</span> &nbsp;Check In Name</label>
+                    <lightning:inputField aura:id="checkInName" fieldName="Name" value="{!v.checkInRec.Name}" variant="label-hidden"  required="true"/>
+                    
+                    <label for="checkInStatus" class="lbl-tx">Status</label>
+                    <lightning:inputField aura:id="checkInStatus" fieldName="buildertek__Status__c" value="{!v.checkInRec.buildertek__Status__c}" variant="label-hidden" />
+                    
+                    <label for="checkInNotes" class="lbl-tx">Notes</label>
+                    <lightning:inputField aura:id="checkInNotes" fieldName="buildertek__Notes__c" value="{!v.checkInRec.buildertek__Notes__c}" variant="label-hidden" />
+                    
+                    <label for="checkInDaysLost" class="lbl-tx">Days Lost</label>
+                    <lightning:inputField  aura:id="checkInDaysLost" fieldName="buildertek__Days_Lost__c" value="{!v.checkInRec.buildertek__Days_Lost__c}" variant="label-hidden" />
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                    <label for="checkInProject" class="lbl-tx"><span class="cross">*</span> &nbsp;Project</label>
+                    <lightning:inputField aura:id="checkInProject" disabled="{!v.desableProjectSelection}" fieldName="buildertek__Project__c" value="{!v.checkInRec.buildertek__Project__c}" variant="label-hidden" required="true" />
+                    
+                    <label for="checkInReportingLocation" class="lbl-tx">Check-In Location</label>
+                    <lightning:inputField aura:id="checkInReportingLocation" fieldName="buildertek__Reporting_Location__c" value="{!v.checkInRec.buildertek__Reporting_Location__c}" variant="label-hidden" />
+                    
+                    <label for="checkInWeather" class="lbl-tx">Weather</label>
+                    <lightning:inputField aura:id="checkInWeather" fieldName="buildertek__Weather__c" value="{!v.checkInRec.buildertek__Weather__c}" variant="label-hidden" />
+
+                    <label for="checkInDateCreated" class="lbl-tx"><span class="cross">*</span> &nbsp;Date Created</label>
+                    <lightning:inputField aura:id="checkInDateCreated" fieldName="buildertek__Date_Created__c" value="{!v.checkInRec.buildertek__Date_Created__c}" variant="label-hidden" required="true" />
+                </div>
+            </div>
+
+            <div class="file-upld">
+                <lightning:fileUpload label="Upload Files" name="checkInFileUploader" multiple="true"
+                                        accept="{!v.filetype}"
+                                        onuploadfinished="{!c.handleUploadFinished}" />
+            </div>
+
+            <!-- File Preview section -->
+            <aura:if isTrue="{!not(empty(v.uploadedFileId))}">
+                <div class="file-div-tab">
+                    <div class="main-file-cmp">
+                        <aura:iteration items="{!v.uploadedFileId}" var="cd" indexVar="indexNum">
+                            <div class="slds-m-horizontal_x-small">
+                                <!-- <lightning:carouselImage src="{!orgBaseURL + '/sfc/servlet.shepherd/document/download/' + cd}" onclick="{!c.onImageClick}" id="{!cd}"/> -->
+                                <lightning:carouselImage src="{!orgBaseURL + '/sfc/servlet.shepherd/document/download/' + cd}" id="{!cd}"/>
+                            </div>
+                        </aura:iteration>
+                    </div>
+                </div>
+            </aura:if>
+
+        </lightning:recordEditForm>
+    </div>
+
+    <div class="slds-modal__footer">
+        <button class="clc-btn slds-button slds-button--neutral" name="cancelBtn" onclick="{!c.closeModel}">Cancel</button>
+        <button class="sv-new-btn slds-button slds-button--neutral" name="saveAndNewBtn" onclick="{!c.saveRecordData}">Save &amp; New</button>
+        <button class="sv-btn slds-button slds-button--brand" disabled="{!v.desableSaveBtn}" name="saveBtn" onclick="{!c.saveRecordData}">Save</button>
+    </div>
+</aura:component>

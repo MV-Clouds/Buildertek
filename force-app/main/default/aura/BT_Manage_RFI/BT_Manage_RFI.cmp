@@ -1,0 +1,1489 @@
+<aura:component controller = "BT_New_RFI_Controller" 
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global" 
+                >
+     <aura:html tag="style">
+        .slds-modal__container {
+        width:85% !important;      
+		max-width: 85% !important;  
+         height:50rem !important;
+         max-height:50rem !important;
+         
+        }
+         .slds-modal__content {
+         overflow: hidden !important;
+         }
+      .quick-actions-panel{
+          overflow-y: hidden !important;
+         }
+         .runtime_platform_actionsQuickActionWrapper .quick-actions-panel{
+          overflow-y: hidden !important;
+         }
+    </aura:html>
+    
+    <aura:attribute name="selectedfilesFill" type="list"/>
+    <aura:attribute name="selectedfileslist" type="Object"/>
+       
+    <aura:attribute name="rfi_response_Id" type="string"  />
+    <aura:attribute name="errorMSG1" type="Boolean" default="false"/>
+    <aura:attribute name="errorMSG2" type="Boolean" default="false"/>
+    <aura:attribute name="errorMSG3" type="Boolean" default="false"/>
+    <aura:attribute name="errorMSG4" type="Boolean" default="false"/>
+    
+    <aura:attribute name="pdfFileName" type="String" default="Change Order"/>
+    <aura:attribute name="templatefolderName" type="String" />
+    <aura:attribute name="templates" type="List" default="[]"/>
+    <aura:attribute name="fileAttachments" type="List" default="[]"/>
+    <aura:attribute name="selectedTemplate" type="String" default=""/>
+    <aura:attribute name="documentsList" type="List" default="[]"/>
+    
+    <aura:attribute name="templateBody" type="String" default=""/>
+    <aura:attribute name="subject" type="String" default=""/>
+    <aura:attribute name="showTemplate" type="Boolean" default="true"/>
+    <aura:attribute name="responseError" type="Boolean" default="false"/>
+    <aura:attribute name="Isfileuploaded" type="Boolean" default="false" />
+    
+    <aura:attribute name="objectAPI" type="String" />
+    
+    <!-- <aura:attribute name="modalPromise" type="Aura.Action"/> -->
+    <aura:attribute name="fileOptsList" type="Object"/>
+    
+    <aura:method name="refreshData" action="{!c.init}"></aura:method>
+    <aura:attribute name="toEmail" type="String" />
+    <aura:attribute name="emailIds" type="List" />
+      <aura:attribute name="selectedFiles" type="sObject[]" default="[]"/>
+    
+    
+    <aura:attribute name="fieldSetValues" type="List"  />
+    <aura:attribute name="rfiresponsefieldSetValues" type="List"  />
+    <aura:attribute name="userInfo" type="string"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />   
+    <!-- <buildertek:bT_New_RFI_Mass/> -->
+    <aura:attribute name="selectedContacts" type="sObject[]"  />
+    <aura:attribute name="selectedUsers" type="sObject[]"  />
+    <aura:attribute name="accountList" type="RFI__c[]"/>
+    <aura:attribute name="rfifilesList" type="list"/>
+    <aura:attribute name="rfiresponseList" type="RFI_Response__c[]"/>
+    <aura:attribute name="rfiresponsefilesList" type="list"/>
+    <aura:attribute name="rfiresponsecommunity" type="list"/>
+    <aura:attribute name="isrfiresponserow" type="Boolean" default="false" />
+    <aura:attribute name="expandedCount" type="Integer" default="0"/>
+    <aura:attribute name="rfiId" type="string"  />
+    <aura:attribute name="closedrfi" type="string"  />
+    <aura:attribute name="newRFI" type="Boolean" default="false" />
+    <aura:attribute name="newResponse" type="Boolean" default="false" /> 
+    <aura:attribute name="sendEmail" type="Boolean" default="false" /> 
+    
+    <aura:attribute name="rfiresponseId" type="String" access="public" />
+    <aura:attribute name="parentrfiresponseId" type="String" access="public" />
+    <aura:attribute name="ReplyTo" type="String" access="public" />
+    <aura:attribute name="parentresponseId" type="String" access="public" />    
+    <aura:attribute name="isrfi" type="Boolean" default="false" />
+    <aura:attribute name="IsSpinner" type="Boolean" default="false" />
+    <aura:attribute name="expandList" type="List" default="[]"/>
+    <aura:attribute name="expandCount" type="Integer" default="0" />
+    <aura:attribute name="Isnewrfiresponse" type="Boolean" default="false" />
+     <aura:attribute name="Isfiles" type="Boolean" default="false" />
+     <aura:attribute name="Isnofiles" type="Boolean" default="false" />
+    <aura:attribute name="rfisettings" type="Boolean" default="false" />
+      <aura:attribute name="files1" type="List"/>
+    <aura:attribute name="IsRFIclosed" type="Boolean" default="false" />
+    <aura:attribute name="isdisabled" type="Boolean" default="true"/>
+    <aura:attribute name="Isclosed" type="Boolean" default="false" />
+    <aura:attribute name="isrfinolist" type="Boolean" default="false" />
+    <aura:attribute name="newRFIForward" type="Boolean" default="false" />
+    <aura:attribute name="newRFIResponseForward" type="Boolean" default="false" />    
+      <aura:attribute name="private" type="Boolean" default="false" /> 
+    <aura:attribute name="responseval" type="string" default="" />
+     <aura:attribute name="RFIfromSIT" type="Boolean" default="false" />
+     <aura:attribute name="fileName" type="string" default="" />
+     <aura:attribute name="fileslistNew" type="List" default="[]"/>
+    <aura:attribute name="rfqstandardfiles" type="List"/>
+    
+    
+    <aura:attribute name="uploadedFileIds" type="List" />
+    <aura:attribute name="RFQstatus" type="String" default=""/>
+    <!-- <lightning:overlayLibrary aura:id="overlay"/> -->
+    <lightning:navigation aura:id="navService"/>
+ 
+    <aura:if isTrue="{!v.IsSpinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                    <b>Processing, Please Wait</b>
+                </div>
+            </div>
+        </div>
+    </aura:if>
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/>
+    <aura:if isTrue="{!v.isrfinolist}">
+        <div class="slds-modal__content ">
+            <div class="slds slds-scope">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" onclick="{! c.doCancel }" alternativeText="close"
+                                          variant="bare-inverse" class="slds-modal__close" />
+                    
+                                            
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">RFI's</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="height:100%">
+                   <center>
+                    <h2>No RFIs</h2>
+                </center>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral" label="Close" title="Close"
+                                      onclick="{!c.closeRFIModel}" />
+                </footer>
+            </div>
+        </div>
+    </aura:if>
+    <aura:if isTrue="{!v.isrfi}">
+      <div class="slds-modal__content ">
+            <div class="slds slds-scope">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" onclick="{! c.doCancel }" alternativeText="close"
+                                          variant="bare-inverse" class="slds-modal__close" />
+                    
+                                            
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">RFI's</h2>
+                </header>
+             
+            
+        <!-- <lightning:button variant="brand-outline" label="Cancel" title="Cancel" onclick="{! c.close }"/> -->
+       
+        <div class="slds-modal__content " >
+            <div class="slds slds-scope">
+              <div class="slds-scrollable_y" style=" max-height:30rem;">
+                 <!--  <div class="tableFixHead">-->
+                <table class="slds-table  slds-table--bordered':'slds-table--bordered'" >
+                    <thead class = "slds-table--header-fixed slds-has-flexi-truncate slds-table--header-fixed_container slds-truncate slds-page-header ">
+                        <tr style=" position: sticky;
+                                                   top: 0rem;
+                                                   z-index: 4;
+                                                    background: white;border-collapse: collapse; height: 3vh;">
+                            <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; "></th>
+                            
+                            <aura:iteration items="{!v.fieldSetValues}" var="field">
+                                 <aura:if isTrue="{!and(field.name!='OwnerId',field.label!='Question')}">
+                                     <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+                                         <div class="slds-truncate" title="{!field.label}">{!field.label}</div>
+                                     </th>
+                                     
+                                    <aura:set attribute="else">
+                                        <aura:if isTrue="{!field.label =='Question'}">
+                                            <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white;width: 300px;" >
+                                                <label>QUESTION</label>
+                                            </th>
+                                        </aura:if>
+                                           <aura:if isTrue="{!field.name =='OwnerId'}">
+                                                <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+                                                    <label>Owner</label>
+                                                    <!-- <div class="slds-truncate" title="{!field.label}">{!field.label}</div> -->
+                                                </th>
+                                        </aura:if>
+                                    </aura:set>
+                                     
+                                </aura:if>
+                            </aura:iteration> 
+                            <th style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+                                <span>
+                                </span>
+                            </th>
+                            <th style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+                                <span>
+                                </span>
+                            </th>
+                            <th style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+                                <span>
+                                </span>
+                            </th>
+                             <th style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+                                <span>
+                                </span>
+                            </th>
+                        </tr>
+                    </thead> 
+                   <!-- <div class="slds-scrollable" style="height:30rem;">-->
+                    <tbody >  
+                       
+                        <aura:iteration items="{!v.accountList}" var="row" indexVar="index">
+                            <aura:if isTrue="{!row}">
+                                <tr  class="slds-border_top" >
+                                    <td>
+                                       <!-- <aura:if isTrue="{!v.expandCount}">
+                                            <aura:iteration items="{!v.expandList}" var="expandSingleRfq" >
+                                                <aura:if isTrue="{!and(expandSingleRfq,expandSingleRfq == row.Id)}">
+                                                    <span style="display:inline-block;margin-left:1rem;" class="{!v.recordId+' collapseGrpIcon_'+index}"  data-grpindex="{!index}" data-rowid="{!row.Id}" onclick="{!c.expandCollapseGroups}">
+                                                        <lightning:icon
+                                                                        iconName="utility:dash"
+                                                                        size="xx-small"
+                                                                        alternativeText="dash"  style="border: 1px solid #b9b9b9; padding: 0.1rem 0.3rem 0.3rem 0.3rem"/>
+                                                    </span>
+                                                    
+                                                </aura:if>
+                                            </aura:iteration>
+                                            <aura:set attribute="else">
+                                                <span style="display:inline-block;margin-left:1rem;" class="{!v.recordId+' expandGrpIcon_'+index}"  data-grpindex="{!index}" data-rowid="{!row.Id}" onclick="{!c.expandCollapseGroups}">
+                                                    <lightning:icon
+                                                                    iconName="utility:add"
+                                                                    size="xx-small"
+                                                                    alternativeText="add"  style="border: 1px solid #b9b9b9; padding: 0.1rem 0.3rem 0.3rem 0.3rem"/>
+                                                </span>
+                                            </aura:set>
+                                        </aura:if> -->
+                                        
+                                        <aura:if isTrue="{!!row.rfqRowExpanded}">
+                                            <span style="display:inline-block;margin-left:1rem;" class="{!v.recordId+' expandGrpIcon_'+index}"  data-grpindex="{!index}" data-rowid="{!row.Id}" onclick="{!c.expandCollapseGroups}">
+                                                <lightning:icon
+                                                                iconName="utility:add"
+                                                                size="xx-small"
+                                                                alternativeText="add"  style="border: 1px solid #b9b9b9; padding: 0.1rem 0.3rem 0.3rem 0.3rem"/>
+                                            </span>
+                                            <span style="display:none;margin-left:1rem;" class="{!v.recordId+' collapseGrpIcon_'+index}"  data-grpindex="{!index}" data-rowid="{!row.Id}" onclick="{!c.expandCollapseGroups}">
+                                                <lightning:icon
+                                                                iconName="utility:dash"
+                                                                size="xx-small"
+                                                                alternativeText="dash"  style="border: 1px solid #b9b9b9; padding: 0.1rem 0.3rem 0.3rem 0.3rem"/>
+                                            </span> 
+                                        </aura:if>
+                                        <aura:if isTrue="{!row.rfqRowExpanded}">
+                                            <span style="display:none;margin-left:1rem;" class="{!v.recordId+' expandGrpIcon_'+index}"  data-grpindex="{!index}" data-rowid="{!row.Id}" onclick="{!c.expandCollapseGroups}">
+                                                <lightning:icon
+                                                                iconName="utility:add"
+                                                                size="xx-small"
+                                                                alternativeText="add"  style="border: 1px solid #b9b9b9; padding: 0.1rem 0.3rem 0.3rem 0.3rem"/>
+                                            </span>
+                                            <span style="display:inline-block;margin-left:1rem;" class="{!v.recordId+' collapseGrpIcon_'+index}"  data-grpindex="{!index}" data-rowid="{!row.Id}" onclick="{!c.expandCollapseGroups}">
+                                                <lightning:icon
+                                                                iconName="utility:dash"
+                                                                size="xx-small"
+                                                                alternativeText="dash"  style="border: 1px solid #b9b9b9; padding: 0.1rem 0.3rem 0.3rem 0.3rem"/>
+                                            </span> 
+                                        </aura:if>
+                                    </td>
+                                    <aura:iteration items="{!v.fieldSetValues}" var="field"> 
+                                        <aura:if  isTrue="{!field.name =='Name'}">
+                                            <td role="gridcell">
+                                            <span data-rowid="{!row.Id}" onclick="{! c.redirectRecord}" >
+                                                <a href="javascript:void(0)" >
+                                                {!row.Name }</a>
+                                            </span>
+                                            </td>
+                                            <aura:set attribute="else">
+                                                <td role="gridcell">
+                                                    <div class="slds-truncate" style="margin-top:0.3rem;position: relative;overflow: initial;white-space:pre-wrap;" > <!-- scheduleId="{!v.recordId}" -->
+                                                        <c:BT_FieldSetMassUpdate record="{!row}"  index="{!index}" field="{!field}"  
+                                                                                 isMassUpdateEnable="false"
+                                                                                 childObjectName="buildertek__RFI__c"/>
+                                                    </div>
+                                                </td>
+                                            </aura:set>
+                                        </aura:if>
+                                    </aura:iteration>
+                                    <td role="gridcell">
+                                        <!-- <aura:iteration items="{!v.rfifilesList}" var ="filesrec" indexVar="rfifileIndex"> -->
+                                        <aura:iteration items="{!row.rfifileList}" var ="filesrec" indexVar="rfifileIndex">                                            	 
+                                                <aura:if isTrue="{!filesrec.LinkedEntityId == row.Id }">
+                                                    <aura:if isTrue="{!rfifileIndex == 0}">
+                                                        <span data-rowid="{!row.Id}" onclick="{! c.filelist}" 
+                                                              style="display: inline-block;vertical-align: middle;/*border-right: 1px solid #ccc;*/padding: 5px;">
+                                                            <!--<lightning:button variant="bare" iconPosition="left" iconName="utility:attach"
+                                                                          class="iconWithoutBorder" />-->
+                                                            <lightning:icon iconName="utility:attach" variant="bare" size="x-small"
+                                                                            class="iconWithoutBorder pointer" iconPosition="left"
+                                                                            alternativeText="Files" title="Files" />
+                                                        </span>
+                                                    </aura:if>
+                                                </aura:if>
+                                        </aura:iteration>
+                                                                               
+                                    </td>
+                                    <td role="gridcell">
+                                        <aura:if isTrue="{!row.isrefiRes}">
+                                            <!-- <lightning:button variant="bare" iconPosition="left" iconName="utility:reply"
+                                                                      class="iconWithoutBorder" /> -->
+                                            <aura:if isTrue="{!or(v.RFQstatus=='Accepted',v.RFQstatus =='Awarded')}">
+                                                <span data-rowid="{!row.Id}"  class="disableRespond"
+                                                      style="display: inline-block;vertical-align: middle;/*border-right: 1px solid #ccc;*/padding: 5px;">
+                                                    
+                                                    <lightning:icon iconName="utility:reply" variant="bare" size="x-small"
+                                                                    class="iconWithoutBorder pointer" iconPosition="left"
+                                                                    alternativeText="" title="{!'You cannot reply to this RFI'}" disabled="true"/>
+                                                </span>
+                                                <aura:set attribute="else">
+                                                    
+                                                      <aura:if isTrue="{!row.buildertek__Status__c == 'Closed'}">
+                                                          <span data-rowid="{!row.Id}" class="disableRespond"
+                                                          style="display: inline-block;vertical-align: middle;/*border-right: 1px solid #ccc;*/padding: 5px;">
+                                                              <lightning:icon iconName="utility:reply" variant="bare" size="x-small"
+                                                                        class="iconWithoutBorder pointer" iconPosition="left"
+                                                                        alternativeText="Respond" title="{!'You cannot reply to this RFI'}" />
+                                                          </span>
+                                                          <aura:set attribute="else">
+                                                              <span data-rowid="{!row.Id}" onclick="{! c.addRFI }"
+                                                          style="display: inline-block;vertical-align: middle;/*border-right: 1px solid #ccc;*/padding: 5px;">
+                                                              <lightning:icon iconName="utility:reply" variant="bare" size="x-small"
+                                                                        class="iconWithoutBorder pointer" iconPosition="left"
+                                                                        alternativeText="Respond" title="Respond" />
+                                                          </span>
+
+                                                          </aura:set>
+                                                        </aura:if>
+                                                        
+                                                    
+                                                </aura:set>
+
+                                                </aura:if>
+                                            
+                                        </aura:if>
+                                    </td>
+                                     <aura:if isTrue="{!!v.rfisettings}">
+                                      <td role="gridcell">
+                                        <aura:if isTrue="{!row.isrefiRes}">
+                                            <aura:if isTrue="{!!v.Isnewrfiresponse}">  
+                                                
+                                           
+                                                   <!-- <lightning:button variant="bare" iconPosition="left" iconName="utility:reply"
+                                                                      class="iconWithoutBorder" /> -->
+                                                   <aura:if isTrue="{!row.buildertek__Status__c == 'Closed'}">
+                                                       <span data-rowid="{!row.Id}" class="disableRespond"
+                                                                 style="display: inline-block;vertical-align: middle;/*border-right: 1px solid #ccc;*/padding: 5px;">
+                                                               <lightning:icon iconName="utility:forward" variant="bare" size="x-small"
+                                                                               class="iconWithoutBorder pointer" iconPosition="left"
+                                                                               alternativeText="Forward" title="{!'You cannot forward this RFI'}" /> 
+                                                           </span>
+                                                       
+                                                       <aura:set attribute="else">
+                                                           <span data-rowid="{!row.Id}" onclick="{! c.addRFIForward }"
+                                                                 style="display: inline-block;vertical-align: middle;/*border-right: 1px solid #ccc;*/padding: 5px;">
+                                                               <lightning:icon iconName="utility:forward" variant="bare" size="x-small"
+                                                                               class="iconWithoutBorder pointer" iconPosition="left"
+                                                                               alternativeText="Forward" title="Forward" /> 
+                                                           </span>
+                                                       </aura:set>
+                                                    </aura:if>
+                                                     
+                                                
+                                            
+                                                </aura:if>
+                                            
+                                        </aura:if>
+                                    </td>
+                                     </aura:if>   
+                                    <td role="gridcell">
+                                        <!--<div class="slds-truncate">-->
+                                        <!-- <aura:if isTrue="{!v.Isnewrfiresponse}"> -->
+                                            <aura:if isTrue="{!row.buildertek__Status__c == 'Closed'}">
+                                                <span data-rowid="{!row.Id}" class="disableRespond"
+                                                      style="display: inline-block;vertical-align: middle;/*border-right: 1px solid #ccc;*/padding: 5px;">
+                                                 <!--<lightning:button iconName="utility:close" iconPosition="left" variant="bare"
+                                                                   class="iconWithoutBorder" />-->
+                                                 <lightning:icon iconName="utility:close" variant="bare" size="x-small"
+                                                                        class="iconWithoutBorder pointer" iconPosition="left"
+                                                                        alternativeText="RFI is already closed" title="RFI is already closed" />
+                                                                                                     
+                                                </span>
+                                                
+                                                <aura:set attribute="else">
+                                                     <span data-rowid="{!row.Id}" onclick="{! c.cancelRFQ}" >
+                                                            <lightning:icon iconName="utility:close" variant="bare" size="x-small"
+                                                                            class="iconWithoutBorder pointer" iconPosition="left"
+                                                                            alternativeText="Close RFI" title="Close RFI" />
+                                                              </span>
+                                                </aura:set>
+                                            </aura:if>
+                                            
+                                        <!-- </aura:if> -->
+                                       <!-- </div>-->
+                                    </td>
+                                </tr>
+                                <!--  <aura:if isTrue="{!v.isrfiresponserow}"> -->
+                                <!--  <aura:if isTrue="{!row.Id == v.rfiId}"> -->
+                               
+                                <aura:if isTrue="{!v.expandList}">
+                                    <aura:iteration items="{!v.expandList}" var ="expandedItem" >
+                                        <aura:if isTrue="{!expandedItem == row.Id }">
+                                            <aura:iteration items="{!v.rfiresponseList}" var="rfiresrow" indexVar="rfiIndex">
+                                                <aura:if isTrue="{!rfiresrow.rfires}">
+                                                    <aura:iteration items="{!rfiresrow.rfires}" var="rfiresrowvalues" indexVar="index">
+                                                        <aura:if isTrue="{!rfiresrow.rfi == row.Id}">
+                                                           
+                                                            <tr style="position:relative;left:2rem;" class="slds-text-title_caps">
+                                                                <aura:if isTrue="{!index == 0}">                                                                    
+                                                                    <th scope="col" style="border-top-left-radius:5px;font-weight: 900;"></th>
+                                                                    <aura:iteration items="{!v.rfiresponsefieldSetValues}" var="field" indexVar="childHeader">
+                                                                        <th scope="col" style="font-weight: 900;">                                                                            
+                                                                            <aura:if isTrue="{!field.label =='RFI Response Name'}">
+                                                                                <div class="slds-truncate" title="Response Number">Response Number</div>
+                                                                                 <aura:set attribute="else">
+                                                                                      <div class="slds-truncate" title="{!field.label}">{!field.label}</div>
+                                                                                </aura:set>
+                                                                            </aura:if>
+                                                                           <!-- <div class="slds-truncate" title="{!field.label}">{!field.label}</div> -->
+                                                                        </th> 
+                                                                    </aura:iteration> 
+                                                                    <th style="border-top-right-radius:5px;">
+                                                                        <!--<div data-rowid="{!row.Id}" onclick="{! c.addRFIResponseRec }" style="width:10.5rem;">
+                                                                            <lightning:button variant="brand-outline" label="New RFI Response" title="New RFI Response" />
+                                                                        </div>-->
+                                                                    </th>
+                                                                    <th style="border-top-right-radius:5px;">
+                                                                    </th>
+                                                                    <th style="border-top-right-radius:5px;">
+                                                                    </th>
+                                                                    <th style="border-top-right-radius:5px;">
+                                                                    </th>
+                                                                    
+                                                                </aura:if>
+                                                            </tr>
+                                                           <!-- <aura:if isTrue="{!index == 0}">
+                                                                <tr data-rowid="{!row.Id}">
+                                                                    <aura:iteration items="{!v.rfiresponsefieldSetValues}" var="field" indexVar="childHeader">
+                                                                        <th scope="col" style="">
+                                                                            <div class="slds-truncate" title=""></div>
+                                                                        </th>
+                                                                    </aura:iteration> 
+                                                                    <th scope="col" style="">
+                                                                        <div data-rowid="{!row.Id}" onclick="{! c.addRFIResponseRec }">
+                                                                            <lightning:button variant="brand-outline" label="New RFI Response" title="New RFI Response"   />
+                                                                        </div>
+                                                                    </th>
+                                                                </tr>
+                                                            </aura:if> -->
+                                                            <tr style="position:relative;left:2rem;">
+                                                                <td role="gridcell">
+                                                                </td>
+                                                                <aura:iteration items="{!v.rfiresponsefieldSetValues}" var="field">
+                                                                    <aura:if isTrue="{!rfiresrowvalues.Id}">
+                                                                    <aura:if  isTrue="{!field.name =='Name'}">
+                                                                        <td role="gridcell">
+                                                                            <span data-rowid="{!rfiresrowvalues.Id}" onclick="{! c.redirectRecord}" >
+                                                                                <a href="javascript:void(0)" >
+                                                                                    {!rfiresrowvalues.Name }</a>
+                                                                            </span>
+                                                                           <!-- <a href="{!'/one/one.app?#/sObject/'+ rfiresrowvalues.Id + '/view'}" target="_blank">
+																		{!rfiresrowvalues.Name }</a> -->
+                                                                        </td>
+                                                                        <aura:set attribute="else">
+                                                                            <td role="gridcell">
+                                                                                <div class="slds-truncate" style="margin-top:0.3rem;position: relative;overflow: initial;white-space:pre-wrap;" > <!-- scheduleId="{!v.recordId}" -->
+                                                                                        <c:BT_FieldSetMassUpdate record="{!rfiresrowvalues}"  index="{!index}" field="{!field}"  
+                                                                                                                 isMassUpdateEnable="false"
+                                                                                                                 childObjectName="buildertek__RFI_Response__c"/>
+                                                                                    <!-- <aura:if isTrue="{!!row.Id}">
+                                                        <c:BT_FieldSetMassUpdate record="{!row}"  index="{!index}" field="{!field}"  
+                                                                                 isMassUpdateEnable="true"
+                                                                                 childObjectName="buildertek__RFI_Response__c"/>
+                                                    </aura:if> -->
+                                                                                </div>
+                                                                            </td>
+                                                                        </aura:set>
+                                                                    </aura:if>
+                                                                         </aura:if>
+                                                                </aura:iteration>                                                              
+                                                                <td role="gridcell">
+                                                                </td>  
+                                                                <td role="gridcell">
+                                                                </td>
+                                                                <td role="gridcell">
+                                                                </td>
+                                                               
+                                                                <td role="gridcell">
+                                                                        <div class="slds-truncate">
+                                                                            <!-- <aura:iteration items="{!v.rfiresponsefilesList}" var ="filesrec" indexVar="rfiresFileIndex" > -->
+                                                                            <aura:iteration items="{!rfiresrowvalues.rfiresfilesList}" var ="filesrec" indexVar="rfiresFileIndex" > 
+                                                                                <!-- {!filesrec.buildertek__RFI_Response__c}  {!rfiresrowvalues.Id} -->
+                                                                                <aura:if isTrue="{!filesrec.LinkedEntityId == rfiresrowvalues.Id }">
+                                                                                    <aura:if isTrue="{!rfiresFileIndex == 0}">
+                                                                                        <span data-rowid="{!rfiresrowvalues.Id}" onclick="{! c.filelist1}" 
+                                                                                              style="display: inline-block;vertical-align: middle;/*border-right: 1px solid #ccc;*/padding: 5px;">
+                                                                                            <!-- <lightning:button variant="bare" iconPosition="left" iconName="utility:attach"
+                                                                                                          class="iconWithoutBorder" /> -->
+                                                                                            <lightning:icon iconName="utility:attach" variant="bare" size="x-small"
+                                                                                                            class="iconWithoutBorder pointer" iconPosition="left"
+                                                                                                            alternativeText="Files" title="Files" />
+                                                                                        </span>
+                                                                                    </aura:if>
+                                                                                    
+                                                                                </aura:if>
+                                                                            </aura:iteration>
+                                                                           <!-- <span  onclick="{! c.filelist}" data-rowid="{!rfiresrowvalues.Id}" >
+                                                                                  <lightning:icon iconName="utility:attach" alternativeText="New note" title="New note" />
+                                                                            </span> -->
+                                                                        </div>
+                                                                    </td>
+                                                                
+                                                                	<td>                                                                           
+                                                                        <!-- <aura:if isTrue="{!index==(rfiresrow.rfires.length-1)}">  -->
+                                                                        
+                                                                        <aura:if isTrue="{!or(v.RFQstatus=='Accepted',v.RFQstatus =='Awarded')}">
+                                                                            <span data-rowid="{!row.Id}"  class="disableRespond"
+                                                                                  style="display: inline-block;vertical-align: middle;/*border-right: 1px solid #ccc;*/padding: 5px;">
+                                                                                
+                                                                                <lightning:icon iconName="utility:reply" variant="bare" size="x-small"
+                                                                                                class="iconWithoutBorder pointer" iconPosition="left"
+                                                                                                alternativeText="" title="{!'You cannot reply to this Response '}" disabled="true"/>
+                                                                            </span>
+                                                                            <aura:set attribute="else">
+                                                                              <aura:if isTrue="{!row.buildertek__Status__c == 'Closed'}">
+                                                                                <span data-rowid="{!row.Id}"  class="disableRespond"
+                                                                                  style="display: inline-block;vertical-align: middle;/*border-right: 1px solid #ccc;*/padding: 5px;">
+                                                                                
+                                                                                <lightning:icon iconName="utility:reply" variant="bare" size="x-small"
+                                                                                                class="iconWithoutBorder pointer" iconPosition="left"
+                                                                                                alternativeText="" title="{!'You cannot reply to this Response '}" disabled="true"/>
+                                                                            </span>
+                                                                               <aura:set attribute="else">
+                                                                                <span data-rowid="{!rfiresrowvalues.Id}" data-rfirowid="{!row.Id}" onclick="{! c.addResponseRec}" 
+                                                                                      style="display: inline-block;vertical-align: middle;/*border-right: 1px solid #ccc;*/padding: 5px;">                                                                               
+                                                                                    <lightning:icon iconName="utility:reply" variant="bare" size="x-small"
+                                                                                                    class="iconWithoutBorder pointer" iconPosition="left"
+                                                                                                    alternativeText="Respond" title="Respond" />                                                                              
+                                                                                </span>
+                                                                               </aura:set>
+                                                                            </aura:if>
+                                                                            </aura:set>
+                                                                            
+                                                                        </aura:if>                                                                        
+                                                                        <!-- </aura:if>  -->
+                                                                	</td>
+                                                                  <aura:if isTrue="{!!v.rfisettings}">
+                                                                    <td>                                                                           
+                                                                        <aura:if isTrue="{!!v.Isnewrfiresponse}">
+                                                                         <aura:if isTrue="{!row.buildertek__Status__c == 'Closed'}">
+                                                                             <span data-rowid="{!rfiresrowvalues.Id}" data-rfirowid="{!row.Id}" class="disableRespond" 
+                                                                              style="display: inline-block;vertical-align: middle;/*border-right: 1px solid #ccc;*/padding: 5px;">                                                                               
+                                                                           
+                                                                            <lightning:icon iconName="utility:forward" variant="bare" size="x-small"
+                                                                                            class="iconWithoutBorder pointer" iconPosition="left"
+                                                                                            alternativeText="Forward" title="{!'You cannot forward this response.'}" />                                                                              
+                                                                        </span>
+                                                                             
+                                                                             <aura:set attribute="else">
+                                                                                 <span data-rowid="{!rfiresrowvalues.Id}" data-rfirowid="{!row.Id}" onclick="{! c.addResponseForward}" 
+                                                                                       style="display: inline-block;vertical-align: middle;/*border-right: 1px solid #ccc;*/padding: 5px;">                                                                               
+                                                                                     
+                                                                                     <lightning:icon iconName="utility:forward" variant="bare" size="x-small"
+                                                                                                     class="iconWithoutBorder pointer" iconPosition="left"
+                                                                                                     alternativeText="Forward" title="Forward" />                                                                              
+                                                                                 </span>
+                                                                                 
+                                                                             </aura:set>
+                                                                            </aura:if>
+                                                                        
+                                                                        </aura:if>  
+                                                                       
+                                                                    </td>
+                                                                       </aura:if>
+                                                               
+                                                                	<!--<td>                                                                           
+                                                                        <aura:if isTrue="{!index==(rfiresrow.rfires.length-1)}">
+                                                                            <span data-rowid="{!rfiresrowvalues.Id}" onclick="{! c.sendEmail}" 
+                                                                                  style="display: inline-block;vertical-align: middle;/*border-right: 1px solid #ccc;*/padding: 5px;">
+                                                                                <lightning:button variant="bare" iconPosition="left" iconName="utility:reply"
+                                                                          class="iconWithoutBorder" />
+                                                                                <lightning:icon iconName="utility:email" variant="bare" size="x-small"
+                                                                                                class="iconWithoutBorder pointer" iconPosition="left"
+                                                                                                alternativeText="Response" title="Response" />
+                                                                            </span>
+                                                                        </aura:if>
+                                                                	</td>  -->                                                                                                                             
+                                                                <!-- <td role="gridcell">
+                                                                <span onclick="{! c.addRFIResponseRec}" data-rowid="{!row.Id}">
+                                                                    <lightning:buttonIcon iconName="utility:add" alternativeText="adding" />
+                                                                </span> 
+                                                            </td> -->
+                                                            </tr>
+                                                            
+                                                        </aura:if>
+                                                    </aura:iteration>
+                                                    <aura:set attribute="else">
+                                                        <aura:if isTrue="{!rfiresrow.rfi == row.Id}"> 
+                                                            <tr data-rowid="{!row.Id}" style="position:relative;left:2rem;"  class="slds-text-title_caps">
+                                                                <th scope="col" style="border-top-left-radius:5px;font-weight: 900;"></th>
+                                                                    <aura:iteration items="{!v.rfiresponsefieldSetValues}" var="field" indexVar="childHeader">
+                                                                        <th scope="col" style="font-weight: 900;">
+                                                                            <aura:if isTrue="{!field.label =='RFI Response Name'}">
+                                                                                <div class="slds-truncate" title="Response Number">Response Number</div>
+                                                                                 <aura:set attribute="else">
+                                                                                      <div class="slds-truncate" title="{!field.label}">{!field.label}</div>
+                                                                                </aura:set>
+                                                                            </aura:if>
+                                                                        </th>
+                                                                    </aura:iteration>
+                                                                 <aura:if isTrue="{!v.Isnewrfiresponse}">
+                                                                    <th style="border-top-right-radius:5px;">
+                                                                       <!-- <div data-rowid="{!row.Id}" onclick="{! c.addRFIResponseRec }" style="width:10.5rem;">
+                                                                            <lightning:button variant="brand-outline" label="New RFI Response" title="New RFI Response" />
+                                                                        </div> -->
+                                                                    </th>
+                                                                </aura:if>
+                                                              <!--  <aura:iteration items="{!v.rfiresponsefieldSetValues}" var="field" indexVar="childHeader">
+                                                                    <th scope="col" style="">
+                                                                        <div class="slds-truncate" title="{!field.label}">{!field.label}</div>
+                                                                    </th>
+                                                                </aura:iteration> 
+                                                                <th scope="col" style="">
+                                                                    <div data-rowid="{!row.Id}" onclick="{! c.addRFIResponseRec }" style="width:10.5rem;">
+                                                                        <lightning:button variant="brand-outline" label="New RFI Response" title="New RFI Response"   />
+                                                                    </div>
+                                                                </th> -->
+                                                           </tr>
+                                                        </aura:if>
+                                                    </aura:set>  
+                                                </aura:if>
+                                            </aura:iteration>
+                                        </aura:if>
+                                    </aura:iteration>
+                                </aura:if>
+                            </aura:if>
+                            <!--  </aura:if> -->
+                            <!-- </aura:if> -->
+                           
+                        </aura:iteration>
+                        
+                    </tbody>
+                          <!--</div>--> 
+                </table>
+                <!--  </div>-->
+              </div> 
+            </div>
+            
+        </div>
+                
+        <footer class="slds-modal__footer">
+            <lightning:button variant="neutral" label="Close" title="Close"
+                              onclick="{!c.closeRFIModel}" />
+        </footer>
+            </div>
+        </div>
+    </aura:if>
+    <aura:if isTrue="{!v.newRFI}">
+        <aura:html tag="style">
+              .slds-modal__close{
+         	display:none !important;    
+         }
+        </aura:html>
+        <div class="slds-modal__content  "  >
+            <div class="slds slds-scope " >
+                <!-- <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                         aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                    <div class="slds-modal__container Expensemodal">
+                        <div aura:id="poContainer" class="c-container">-->
+                <header class="slds-modal__header">
+                    <!--<lightning:buttonIcon iconName="utility:close" onclick="{! c.doCancel }" alternativeText="close"
+                                          variant="bare-inverse" class="slds-modal__close" />-->
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New RFI Response</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium slds-scrollable" id="modal-content-id-1" >
+                   
+                        <lightning:messages />
+                         <div class="slds-form-element slds-email-composer__combobox" style="padding-top: 20px;padding-bottom: 10px;">
+                    <label class="slds-form-element__label" for="recipients-to">Reply To </label>
+                    <div class="slds-form-element__control" >
+                        <div class="slds-combobox_container slds-has-inline-listbox" style="margin-left:60px;">
+                            <b> {!v.ReplyTo}</b>
+                        </div>
+                    </div>
+                </div>
+                        
+                        <!--<div class="slds-grid slds-gutters">
+                            <div class="slds-col">
+                                <label>Response</label>
+                                <lightning:inputField fieldName="buildertek__Response__c"
+                                                      variant="label-hidden" required="true"/><br />
+                                
+                            </div>
+                           
+                        </div>-->
+                        
+                        <aura:if isTrue="{!!v.rfisettings}">
+                            <aura:if isTrue="{!!v.Isnewrfiresponse}">
+                                <div class="slds-form-element slds-email-composer__combobox" style="padding-top: 10px;padding-bottom: 10px;">
+                                    <label class="slds-form-element__label" for="recipients-to">BT Account</label>
+                                    <div class="slds-form-element__control "  style="margin-left:60px;">
+                                        <div class="slds-combobox_container slds-has-inline-listbox">
+                                            <c:BT_MultiSelectLookup objectAPIName="user"
+                                                                    IconName="standard:user"
+                                                                    lstSelectedRecords="{!v.selectedUsers}"
+                                                                    label=""/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-form-element slds-email-composer__combobox" style="padding-top: 10px;padding-bottom: 10px;">
+                                    <label class="slds-form-element__label" for="recipients-cc">External Contact</label>
+                                    <div class="slds-form-element__control" style="margin-left:60px;">
+                                        <div class="slds-combobox_container slds-has-inline-listbox" >
+                                            <c:BT_MultiSelectLookup objectAPIName="contact"
+                                                                    IconName="standard:contact"
+                                                                    lstSelectedRecords="{!v.selectedContacts}"
+                                                                    label=""/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- <aura:set attribute="else">                                 
+                            <div class="slds-grid slds-gutters">
+                             <div class="slds-col">
+                                    <label>BT Account</label><br/>
+                                    <aura:iteration items="{!v.selectedUsers}" var="sr">
+                                        <lightning:pill class="slds-m-around_xx-small" label="{!sr.Name}" name="{!sr.Id}" onremove="{! c.clear }">
+                                            <aura:set attribute="media">
+                                                <lightning:icon iconName="{!v.IconName}" size="x-small" alternativeText="icon"/>
+                                            </aura:set>
+                                        </lightning:pill>
+                                    </aura:iteration> 
+                                 </div>
+                                <div class="slds-col">
+                                    <label>External Contact</label>   <br/>
+                                    <aura:iteration items="{!v.selectedContacts}" var="sr">
+                                        <lightning:pill class="slds-m-around_xx-small" label="{!sr.Name}" name="{!sr.Id}" onremove="{! c.clear }">
+                                            <aura:set attribute="media">
+                                                <lightning:icon iconName="{!v.IconName}" size="x-small" alternativeText="icon"/>
+                                            </aura:set>
+                                        </lightning:pill>
+                                    </aura:iteration>
+                                    
+                                </div>
+                            </div> 
+                            
+                        </aura:set> -->
+                                
+                            </aura:if>
+                        </aura:if>
+                        
+                        <div class="slds-form-element">
+                    <lightning:inputRichText aura:id="bodyId" placeholder="Response" value="{!v.templateBody}" required="true" onfocus="{!c.closeErrorMSG1}"/>
+                             <aura:if isTrue="{!v.errorMSG1}">
+                            <div style="color:red;">Enter Response</div>
+                            </aura:if>
+                </div>
+                <br/>
+                    <!-- <div Style="padding-bottom:10px;">
+                        <div >
+                            <lightning:button name="Add" variant="brand" label="Add" onclick="{!c.uploadFile}" />
+                        </div>
+                        <c:BT_MultiSelectLookup objectAPIName="buildertek__File__c"
+                                                IconName="standard:file"
+                                                lstSelectedRecords="{!v.selectedFiles}"
+                                                label=""
+                                                placeholder="Attachments"/>
+                    </div> -->
+                    
+                    	<!-- <input aura:id="fuploader" onchange="{!c.handleFilesChange}" type="file" name="file" label="Upload Attachment" multiple="true" style="margin:15px;"/>
+                        <div class="slds-text-body_small" style="margin:15px;">{!v.fileName} </div> -->
+                    
+                         <div style="border:1px solid lightgray;border-radius:5px;padding:10px;margin-top:10px">
+                        <lightning:layout multipleRows = "true">
+                            <lightning:layoutitem >
+                                <div>
+                                    <!-- <lightning:input aura:id="fuploader" onchange="{!c.handleFilesChange}" type="file" variant="label-hidden" name="file" label="" multiple="true" accept="image/png,image/jpeg,image/jpg"/> -->
+                                    <!-- <div class="slds-text-body_small slds-text-color_error">{!v.fileName} </div>  -->                                  
+                                    
+                                    <lightning:fileUpload label="Upload files"
+                                                          multiple="true"
+                                                          accept=".pdf, .png, .jpg, .jpeg, .csv, .DOC, .DOCX, .TXT, .XLS, .XLSX, .ZIP, .PDF, .PNG, .webm"
+                                                          recordId="{!v.recordId}"
+                                                          aura:id="multipleUpload"
+                                                          onuploadfinished="{!c.handleUploadFinished}" />
+                                    
+                                    <!-- <div class="container">
+                                        <input type="file" class="file" aura:id="file" />                                        
+                                        <div aura:id="uploading" class="notUploading">
+                                            <img src="/resource/paura__images/loading-gray.gif" alt="uploading" class="small-spinner" /> Uploading...
+                                        </div>
+                                    </div> -->                                  
+                                    
+                                    <aura:iteration items="{!v.selectedfilesFill}" var="sr">
+                                        <lightning:pill class="slds-m-around_xx-small slds-text-body_small slds-text-color_error" label="{!sr.Name}" name="{!sr.Name}" onremove="{! c.clear }">
+                                            <aura:set attribute="media">
+                                                <lightning:icon iconName="standard:file" size="x-small" alternativeText="icon"/>
+                                            </aura:set>
+                                        </lightning:pill>
+                                    </aura:iteration>
+                                </div>
+                            </lightning:layoutitem>                          
+                        </lightning:layout>
+                    </div>
+                    </div>
+
+                        <footer class="slds-modal__footer" >
+                            
+                                <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{!c.doCancel }" />
+                                <!-- <lightning:button variant="neutral" title="Save &amp; New" label="Save &amp; New"
+                                              onclick="{!c.saveAndNew}" /> -->
+                                <lightning:button variant="brand" type="submit" name="save" label="Respond"  onclick="{!c.sendResponse}"/>
+                            
+                        </footer>
+                    
+                    
+                    <!--<lightning:inputField aura:id="povendor" fieldName="buildertek__Vendor__c" value="{!v.newPO.buildertek__Vendor__c}" required="true" />-->
+                
+                <!--</div>
+                    </div>
+                </section>-->
+                <!--<div class="slds-backdrop slds-backdrop_open"></div>-->
+                
+            </div>
+            
+        </div>
+    </aura:if>
+    <aura:if isTrue="{!v.Isfiles}">
+        
+        <div class="slds-modal__content " >
+            <div class="slds slds-scope" >
+                <header class="slds-modal__header" >
+                   <!-- <lightning:buttonIcon iconName="utility:close" onclick="{! c.doCancel }" alternativeText="close"
+                                          variant="bare-inverse" class="slds-modal__close"  />-->
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Files</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" >
+                    <!-- <aura:iteration items="{!v.files}" var="obj">
+                        <div>
+                          
+                            <a href="" data-Id="{!obj.Id}" onclick="{!c.getSelectedpreviewFile}">
+                                <lightning:icon iconName="utility:attach" size="xx-small" alternativeText="{!obj.Title}" title="{!obj.Title}" /> {!obj.Title}
+                            </a>
+                            <br/>
+                        </div>
+                    </aura:iteration> -->
+                    
+                    <aura:if isTrue="{!(v.files1.length)>0}">
+                        <aura:iteration items="{!v.files1}" var="obj">
+                            <div>
+                                 <a href="{!obj.buildertek__File_Presigned_URL__c}" title="{!obj.buildertek__Amazon_File_Key__c}" target="_blank" style="font-size:20px;">{!obj.buildertek__Amazon_File_Key__c}</a> 
+                                <!-- <a href="{!obj.buildertek__File_Presigned_URL__c}" title="{!obj.Name}" target="_blank" style="font-size:20px;">{!obj.Name}</a>  -->
+                                <br/>
+                            </div>
+                             <br/>
+                    	</aura:iteration>  
+                    </aura:if>
+                    
+                    <aura:iteration items="{!v.rfqstandardfiles}" var="obj1">
+                        <div>
+                            
+                            <a href="{!'/sfc/servlet.shepherd/version/download/'+obj1.Id}" target="_blank" style="font-size:15px;padding-left:0%;">
+                                <aura:if isTrue="{!(!obj1.Title)!=''}">
+                                    {!obj1.Title}
+                                    <br/>
+                                    <aura:set attribute="else">
+                                        {!obj1.Id}
+                                    </aura:set>
+                                </aura:if>
+                                
+                            </a>
+                            <br/>
+                            <!-- <a href="{!obj1.Title}" data-Id="{!obj1.Id}" title="{!obj1.Title}" onclick="{!c.getSelectedpreviewFile}" style="font-size:15px;padding-left:2%;">{!obj1.Title}</a>-->
+                        </div>
+                    </aura:iteration>
+
+                    
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral" label="Close" title="Close"
+                                      onclick="{!c.closeModel}" />
+                </footer>
+            </div>
+        </div>
+    </aura:if>
+     <aura:if isTrue="{!v.Isnofiles}">
+        <div class="slds-modal__content slds-p-around--large">
+            <div class="slds slds-scope">
+                <header class="slds-modal__header">
+                    <!--<lightning:buttonIcon iconName="utility:close" onclick="{! c.doCancel }" alternativeText="close"
+                                          variant="bare-inverse" class="slds-modal__close" />-->
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Files</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="height:100%">
+                   <center>
+                    <h2>No Files</h2>
+                </center>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral" label="Close" title="Close"
+                                      onclick="{!c.closeModel}" />
+                </footer>
+            </div>
+        </div>
+    </aura:if>
+     <aura:if isTrue="{!v.IsRFIclosed}"> 
+         <aura:html tag="style">
+              .slds-modal__close{
+         	display:none !important;    
+         }
+         </aura:html>
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+             aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+            <header class="slds-modal__header">
+                 <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeModel }" alternativeText="close"
+                                      variant="bare-inverse" class="slds-modal__close" /> 
+                <p></p>
+                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Close RFI</h2>
+                <p></p>
+            </header>
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                <center>
+                    <h2>Are you sure you want to close RFI?</h2>
+                </center>
+            </div>
+            <footer class="slds-modal__footer">
+                <lightning:button variant="neutral" label="No" title="No"
+                                  onclick="{!c.closeModel}" />
+                <lightning:button variant="neutral" label="Yes" title="Yes"
+                                  onclick="{!c.updateRFI}" />
+            </footer>
+        </div>
+    </section>
+    </aura:if>
+    <aura:if isTrue="{!v.Isclosed}"> 
+         <aura:html tag="style">
+              .slds-modal__close{
+         	display:none !important;    
+         }
+         </aura:html>
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+             aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+            <header class="slds-modal__header">
+                <p></p>
+                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Close RFI</h2>
+                <p></p>
+            </header>
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                <center>
+                    <h2>RFI is already closed</h2>
+                </center>
+            </div>
+            <footer class="slds-modal__footer">
+                <lightning:button variant="neutral" label="Close" title="Close"
+                                  onclick="{!c.closeModel}" />
+            </footer>
+        </div>
+    </section>
+    </aura:if>
+    
+    <aura:if isTrue="{!v.newResponse}">
+         <aura:html tag="style">
+              .slds-modal__close{
+         	display:none !important;    
+         }
+        </aura:html>
+        <div class="slds-modal__content  "  >
+            <div class="slds slds-scope" >
+                <!-- <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                         aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                    <div class="slds-modal__container Expensemodal">
+                        <div aura:id="poContainer" class="c-container">-->
+                <header class="slds-modal__header">
+                    <!--<lightning:buttonIcon iconName="utility:close" onclick="{! c.doCancel }" alternativeText="close"
+                                          variant="bare-inverse" class="slds-modal__close" />-->
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New Response</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium slds-scrollable" id="modal-content-id-1" >
+                   
+                        <lightning:messages />
+                         <div class="slds-form-element slds-email-composer__combobox" style="padding-top: 20px;padding-bottom: 10px;">
+                    <label class="slds-form-element__label" for="recipients-to">Reply To </label>
+                    <div class="slds-form-element__control" >
+                        <div class="slds-combobox_container slds-has-inline-listbox" style="margin-left:60px;">
+                            <b> {!v.ReplyTo}</b>
+                        </div>
+                    </div>
+                </div>
+                        
+                        <aura:if isTrue="{!!v.rfisettings}">
+                            <aura:if isTrue="{!!v.Isnewrfiresponse}">
+                                <div class="slds-form-element slds-email-composer__combobox" style="padding-top: 10px;padding-bottom: 10px;">
+                                    <label class="slds-form-element__label" for="recipients-to">BT Account</label>
+                                    <div class="slds-form-element__control "  style="margin-left:60px;">
+                                        <div class="slds-combobox_container slds-has-inline-listbox">
+                                            <c:BT_MultiSelectLookup objectAPIName="user"
+                                                                    IconName="standard:user"
+                                                                    lstSelectedRecords="{!v.selectedUsers}"
+                                                                    label=""/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-form-element slds-email-composer__combobox" style="padding-top: 10px;padding-bottom: 10px;">
+                                    <label class="slds-form-element__label" for="recipients-cc">External Contact</label>
+                                    <div class="slds-form-element__control" style="margin-left:60px;">
+                                        <div class="slds-combobox_container slds-has-inline-listbox" >
+                                            <c:BT_MultiSelectLookup objectAPIName="contact"
+                                                                    IconName="standard:contact"
+                                                                    lstSelectedRecords="{!v.selectedContacts}"
+                                                                    label=""/>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                
+                            </aura:if>
+                        </aura:if>
+                        
+                        <div class="slds-form-element">
+                    <lightning:inputRichText aura:id="bodyId" placeholder="Response" value="{!v.templateBody}" required="true" onfocus="{!c.closeErrorMSG2}"/>
+                             <aura:if isTrue="{!v.errorMSG2}">
+                            <div style="color:red;">Enter Response</div>
+                            </aura:if>
+                </div>
+                <br/>
+                    <!-- <div Style="padding-bottom:10px;">
+                        <div >
+                            <lightning:button name="Add" variant="brand" label="Add" onclick="{!c.uploadFile}" />
+                        </div>
+                        <c:BT_MultiSelectLookup objectAPIName="buildertek__File__c"
+                                                IconName="standard:file"
+                                                lstSelectedRecords="{!v.selectedFiles}"
+                                                label=""
+                                                placeholder="Attachments"/>
+                    </div> -->
+                    		
+ <div style="border:1px solid lightgray;border-radius:5px;padding:10px;margin-top:10px">
+                        <lightning:layout multipleRows = "true">
+                            <lightning:layoutitem >
+                                <div>
+                                    <!-- <lightning:input aura:id="fuploader" onchange="{!c.handleFilesChange}" type="file" variant="label-hidden" name="file" label="" multiple="true" accept="image/png,image/jpeg,image/jpg"/> -->
+                                    <!-- <div class="slds-text-body_small slds-text-color_error">{!v.fileName} </div>  -->                                  
+                                    
+                                    <lightning:fileUpload label="Upload files"
+                                                          multiple="true"
+                                                          accept=".pdf, .png, .jpg, .jpeg, .csv, .DOC, .DOCX, .TXT, .XLS, .XLSX, .ZIP, .PDF, .PNG, .webm"
+                                                          recordId="{!v.recordId}"
+                                                          aura:id="multipleUpload"
+                                                          onuploadfinished="{!c.handleUploadFinished}" />
+                                    
+                                    <!-- <div class="container">
+                                        <input type="file" class="file" aura:id="file" />                                        
+                                        <div aura:id="uploading" class="notUploading">
+                                            <img src="/resource/paura__images/loading-gray.gif" alt="uploading" class="small-spinner" /> Uploading...
+                                        </div>
+                                    </div> -->                                  
+                                    
+                                    <aura:iteration items="{!v.selectedfilesFill}" var="sr">
+                                        <lightning:pill class="slds-m-around_xx-small slds-text-body_small slds-text-color_error" label="{!sr.Name}" name="{!sr.Name}" onremove="{! c.clear }">
+                                            <aura:set attribute="media">
+                                                <lightning:icon iconName="standard:file" size="x-small" alternativeText="icon"/>
+                                            </aura:set>
+                                        </lightning:pill>
+                                    </aura:iteration>
+                                </div>
+                            </lightning:layoutitem>                          
+                        </lightning:layout>
+                    </div>
+                    </div>
+                        <footer class="slds-modal__footer" style = "padding-top: 10px">
+                            
+                                <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{!c.doCancel }" />
+                                <!-- <lightning:button variant="neutral" title="Save &amp; New" label="Save &amp; New"
+                                              onclick="{!c.saveAndNew}" /> -->
+                                <lightning:button variant="brand" type="submit" name="save" label="Respond"  onclick="{!c.sendResponse}"/>
+                          
+                        </footer>
+                    
+                    
+                    <!--<lightning:inputField aura:id="povendor" fieldName="buildertek__Vendor__c" value="{!v.newPO.buildertek__Vendor__c}" required="true" />-->
+                
+                <!--</div>
+                    </div>
+                </section>-->
+                <!--<div class="slds-backdrop slds-backdrop_open"></div>-->
+                
+            </div>
+            
+        </div>
+    </aura:if>
+    
+    <aura:if isTrue="{!v.sendEmail}">
+        <aura:html tag="style">
+              .slds-modal__close{
+         	display:none !important;    
+         }
+        </aura:html>
+        <div class="slds-modal__content slds-p-around--large">
+            <div class="slds slds-scope">
+                <!-- <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                         aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                    <div class="slds-modal__container Expensemodal">
+                        <div aura:id="poContainer" class="c-container">-->
+                <header class="slds-modal__header">
+                   <!-- <lightning:buttonIcon iconName="utility:close" onclick="{! c.doCancel }" alternativeText="close"
+                                          variant="bare-inverse" class="slds-modal__close" />-->
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Send Email</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="height:100%">
+                    <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__RFI_Response__c"   
+                                              onsubmit="{!c.handleSubmit}" onsuccess="{!c.onRecordSuccess}">
+                        <lightning:messages />
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-col">
+                               
+                                
+                            </div>
+                        </div>
+                        <lightning:layoutItem size="12" mediumDeviceSize="12" >
+                            <lightning:input aura:id="fuploader" onchange="{!c.handleFilesChange}" type="file" name="file" label="Upload Attachment" multiple="true"  style="margin:10px;"/>
+                             <!-- <div class="slds-text-body_small slds-text-color_error">{!v.fileName} </div>  -->                                  
+                                                
+                            <aura:iteration items="{!v.selectedfilesFill}" var="sr">
+                                <lightning:pill class="slds-m-around_xx-small slds-text-body_small slds-text-color_error" label="{!sr.Name}" name="{!sr.Name}" onremove="{! c.clear }">
+                                    <aura:set attribute="media">
+                                        <lightning:icon iconName="standard:file" size="x-small" alternativeText="icon"/>
+                                    </aura:set>
+                                </lightning:pill>
+                            </aura:iteration>
+                        </lightning:layoutItem>
+                        <footer class="slds-modal__footer" style = "padding-top: 10px">
+                            
+                                <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{!c.doCancel }" />
+                                <!-- <lightning:button variant="neutral" title="Save &amp; New" label="Save &amp; New"
+                                              onclick="{!c.saveAndNew}" /> -->
+                                <lightning:button variant="brand" type="submit" name="save" label="Save"  />
+                            
+                        </footer>
+                    </lightning:recordEditForm>
+                    
+                    <!--<lightning:inputField aura:id="povendor" fieldName="buildertek__Vendor__c" value="{!v.newPO.buildertek__Vendor__c}" required="true" />-->
+                </div>
+                <!--</div>
+                    </div>
+                </section>-->
+                <!--<div class="slds-backdrop slds-backdrop_open"></div>-->
+                
+            </div>
+            
+        </div>
+    </aura:if>
+    
+    
+    
+    
+     <aura:if isTrue="{!v.newRFIForward}">
+         <aura:html tag="style">
+              .slds-modal__close{
+         	display:none !important;    
+         }
+        </aura:html>
+        <div class="slds-modal__content  "  >
+            <div class="slds slds-scope" >
+                <!-- <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                         aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                    <div class="slds-modal__container Expensemodal">
+                        <div aura:id="poContainer" class="c-container">-->
+                <header class="slds-modal__header">
+                    <!--<lightning:buttonIcon iconName="utility:close" onclick="{! c.doCancel }" alternativeText="close"
+                                          variant="bare-inverse" class="slds-modal__close" />-->
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Forward</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium slds-scrollable" id="modal-content-id-1" >
+                   
+                        <lightning:messages />
+                        <!-- <div class="slds-form-element slds-email-composer__combobox" style="padding-top: 20px;padding-bottom: 10px;">
+                    <label class="slds-form-element__label" for="recipients-to">Forward To </label>
+                    <div class="slds-form-element__control" >
+                        <div class="slds-combobox_container slds-has-inline-listbox" style="margin-left:60px;">
+                            <b> {!v.ReplyTo}</b>
+                        </div>
+                    </div>
+                </div>-->
+                        
+                        <aura:if isTrue="{!!v.rfisettings}">
+                            <aura:if isTrue="{!!v.Isnewrfiresponse}">
+                                <div class="slds-form-element slds-email-composer__combobox" style="padding-top: 10px;padding-bottom: 10px;">
+                                    <label class="slds-form-element__label" for="recipients-to">BT Account</label>
+                                    <div class="slds-form-element__control "  style="margin-left:60px;">
+                                        <div class="slds-combobox_container slds-has-inline-listbox">
+                                            <c:BT_MultiSelectLookup objectAPIName="user"
+                                                                    IconName="standard:user"
+                                                                    lstSelectedRecords="{!v.selectedUsers}"
+                                                                    label=""/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-form-element slds-email-composer__combobox" style="padding-top: 10px;padding-bottom: 10px;">
+                                    <label class="slds-form-element__label" for="recipients-cc">External Contact</label>
+                                    <div class="slds-form-element__control" style="margin-left:60px;">
+                                        <div class="slds-combobox_container slds-has-inline-listbox" >
+                                            <c:BT_MultiSelectLookup objectAPIName="contact"
+                                                                    IconName="standard:contact"
+                                                                    lstSelectedRecords="{!v.selectedContacts}"
+                                                                    label=""/>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                
+                            </aura:if>
+                        </aura:if>
+                        
+                        <div class="slds-form-element">
+                    <lightning:inputRichText aura:id="bodyId" placeholder="Response" value="{!v.responseval}" required="true" onfocus="{!c.closeErrorMSG3}"/>
+                             <aura:if isTrue="{!v.errorMSG3}">
+                            <div style="color:red;">Enter Response</div>
+                            </aura:if>
+                </div>
+                    <div class="slds-form-element slds-email-composer__combobox" style="padding-top: 10px;padding-bottom: 10px;">
+                        <label class="slds-form-element__label" for="recipients-cc">Private</label>
+                        <div class="slds-form-element__control" style="margin-left:60px;">
+                            <div class="slds-combobox_container slds-has-inline-listbox" >
+                                <lightning:input type="checkbox" aura:id="boxPack" value="{!v.private}"  onchange="{!c.getPrivateValue}" style="margin-left:10px;"/>
+                            </div>
+                        </div>
+                    </div>
+                <br/>
+                	<!-- <div Style="padding-bottom:10px;">
+                    <div >
+                        <lightning:button name="Add" variant="brand" label="Add" onclick="{!c.uploadFile}" />
+                    </div>
+                    <c:BT_MultiSelectLookup objectAPIName="buildertek__File__c"
+                                            IconName="standard:file"
+                                            lstSelectedRecords="{!v.selectedFiles}"
+                                            label=""
+                                            placeholder="Attachments"/>
+                	</div> -->
+                    
+                            <div style="border:1px solid lightgray;border-radius:5px;padding:10px;margin-top:10px">
+                        <lightning:layout multipleRows = "true">
+                            <lightning:layoutitem >
+                                <div>
+                                    <!-- <lightning:input aura:id="fuploader" onchange="{!c.handleFilesChange}" type="file" variant="label-hidden" name="file" label="" multiple="true" accept="image/png,image/jpeg,image/jpg"/> -->
+                                    <!-- <div class="slds-text-body_small slds-text-color_error">{!v.fileName} </div>  -->                                  
+                                    
+                                    <lightning:fileUpload label="Upload files"
+                                                          multiple="true"
+                                                          accept=".pdf, .png, .jpg, .jpeg, .csv, .DOC, .DOCX, .TXT, .XLS, .XLSX, .ZIP, .PDF, .PNG, .webm"
+                                                          recordId="{!v.recordId}"
+                                                          aura:id="multipleUpload"
+                                                          onuploadfinished="{!c.handleUploadFinished}" />
+                                    
+                                    <!-- <div class="container">
+                                        <input type="file" class="file" aura:id="file" />                                        
+                                        <div aura:id="uploading" class="notUploading">
+                                            <img src="/resource/paura__images/loading-gray.gif" alt="uploading" class="small-spinner" /> Uploading...
+                                        </div>
+                                    </div> -->                                  
+                                    
+                                    <aura:iteration items="{!v.selectedfilesFill}" var="sr">
+                                        <lightning:pill class="slds-m-around_xx-small slds-text-body_small slds-text-color_error" label="{!sr.Name}" name="{!sr.Name}" onremove="{! c.clear }">
+                                            <aura:set attribute="media">
+                                                <lightning:icon iconName="standard:file" size="x-small" alternativeText="icon"/>
+                                            </aura:set>
+                                        </lightning:pill>
+                                    </aura:iteration>
+                                </div>
+                            </lightning:layoutitem>                          
+                        </lightning:layout>
+                    </div>
+                    </div>
+                        <footer class="slds-modal__footer" style = " margin-bottom : -0.1rem;">
+                          
+                                <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{!c.doCancel }" />
+                                <!-- <lightning:button variant="neutral" title="Save &amp; New" label="Save &amp; New"
+                                              onclick="{!c.saveAndNew}" /> -->
+                                <lightning:button variant="brand" type="submit" name="save" label="Forward"  onclick="{!c.sendForward}"/>
+                            
+                        </footer>
+                    
+                    
+                    <!--<lightning:inputField aura:id="povendor" fieldName="buildertek__Vendor__c" value="{!v.newPO.buildertek__Vendor__c}" required="true" />-->
+                
+                <!--</div>
+                    </div>
+                </section>-->
+                <!--<div class="slds-backdrop slds-backdrop_open"></div>-->
+                
+            </div>
+            
+        </div>
+    </aura:if>
+    
+    
+     <aura:if isTrue="{!v.newRFIResponseForward}">
+         <aura:html tag="style">
+              .slds-modal__close{
+         	display:none !important;    
+         }
+        </aura:html>
+        <div class="slds-modal__content  "  >
+            <div class="slds slds-scope" >
+                <!-- <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                         aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                    <div class="slds-modal__container Expensemodal">
+                        <div aura:id="poContainer" class="c-container">-->
+                <header class="slds-modal__header">
+                    <!--<lightning:buttonIcon iconName="utility:close" onclick="{! c.doCancel }" alternativeText="close"
+                                          variant="bare-inverse" class="slds-modal__close" />-->
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Forward</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium slds-scrollable" id="modal-content-id-1" >
+                   
+                        <lightning:messages />
+                         <!--<div class="slds-form-element slds-email-composer__combobox" style="padding-top: 20px;padding-bottom: 10px;">
+                    <label class="slds-form-element__label" for="recipients-to">Forward To </label>
+                    <div class="slds-form-element__control" >
+                        <div class="slds-combobox_container slds-has-inline-listbox" style="margin-left:60px;">
+                             <b> {!v.ReplyTo}</b>
+                        </div>
+                    </div>
+                </div>-->
+                        
+                        <aura:if isTrue="{!!v.rfisettings}">
+                            <aura:if isTrue="{!!v.Isnewrfiresponse}">
+                                <div class="slds-form-element slds-email-composer__combobox" style="padding-top: 10px;padding-bottom: 10px;">
+                                    <label class="slds-form-element__label" for="recipients-to">BT Account</label>
+                                    <div class="slds-form-element__control "  style="margin-left:60px;">
+                                        <div class="slds-combobox_container slds-has-inline-listbox">
+                                            <c:BT_MultiSelectLookup objectAPIName="user"
+                                                                    IconName="standard:user"
+                                                                    lstSelectedRecords="{!v.selectedUsers}"
+                                                                    label=""/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-form-element slds-email-composer__combobox" style="padding-top: 10px;padding-bottom: 10px;">
+                                    <label class="slds-form-element__label" for="recipients-cc">External Contact</label>
+                                    <div class="slds-form-element__control" style="margin-left:60px;">
+                                        <div class="slds-combobox_container slds-has-inline-listbox" >
+                                            <c:BT_MultiSelectLookup objectAPIName="contact"
+                                                                    IconName="standard:contact"
+                                                                    lstSelectedRecords="{!v.selectedContacts}"
+                                                                    label=""/>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                
+                            </aura:if>
+                        </aura:if>
+                        
+                        <div class="slds-form-element">
+                    <lightning:inputRichText aura:id="bodyId" placeholder="Response" value="{!v.responseval}" required="true" onfocus="{!c.closeErrorMSG4}"/>
+                             <aura:if isTrue="{!v.errorMSG4}">
+                            <div style="color:red;">Enter Response</div>
+                            </aura:if>
+                </div>
+                  <div style="border:1px solid lightgray;border-radius:5px;padding:10px;margin-top:10px">
+                      <div class="slds-form-element slds-email-composer__combobox" style="padding-top: 10px;padding-bottom: 10px;">
+                          <label class="slds-form-element__label" for="recipients-cc">Private</label>
+                          <div class="slds-form-element__control" style="margin-left:60px;">
+                              <div class="slds-combobox_container slds-has-inline-listbox" >
+                                  <lightning:input type="checkbox" aura:id="boxPack" value="{!v.private}"  onchange="{!c.getPrivateValue}" style="margin-left:10px;"/>
+                              </div>
+                          </div>
+                      </div>
+                        <lightning:layout multipleRows = "true">
+                            <lightning:layoutitem >
+                                <div>
+                                    <!-- <lightning:input aura:id="fuploader" onchange="{!c.handleFilesChange}" type="file" variant="label-hidden" name="file" label="" multiple="true" accept="image/png,image/jpeg,image/jpg"/> -->
+                                    <!-- <div class="slds-text-body_small slds-text-color_error">{!v.fileName} </div>  -->                                  
+                                    
+                                    <lightning:fileUpload label="Upload files"
+                                                          multiple="true"
+                                                          accept=".pdf, .png, .jpg, .jpeg, .csv, .DOC, .DOCX, .TXT, .XLS, .XLSX, .ZIP, .PDF, .PNG, .webm"
+                                                          recordId="{!v.recordId}"
+                                                          aura:id="multipleUpload"
+                                                          onuploadfinished="{!c.handleUploadFinished}" />
+                                    
+                                    <!-- <div class="container">
+                                        <input type="file" class="file" aura:id="file" />                                        
+                                        <div aura:id="uploading" class="notUploading">
+                                            <img src="/resource/paura__images/loading-gray.gif" alt="uploading" class="small-spinner" /> Uploading...
+                                        </div>
+                                    </div> -->                                  
+                                    
+                                    <aura:iteration items="{!v.selectedfilesFill}" var="sr">
+                                        
+                                        <lightning:pill class="slds-m-around_xx-small slds-text-body_small slds-text-color_error" label="{!sr.Name}" name="{!sr.Name}" onremove="{! c.clear }">
+                                            <aura:set attribute="media">
+                                                <lightning:icon iconName="standard:file" size="x-small" alternativeText="icon"/>
+                                            </aura:set>
+                                        </lightning:pill>
+                                    </aura:iteration>
+                                </div>
+                            </lightning:layoutitem>                          
+                        </lightning:layout>
+                    </div>
+                <br/>
+                    <!-- <div Style="padding-bottom:10px;">
+                        <div >
+                            <lightning:button name="Add" variant="brand" label="Add" onclick="{!c.uploadFile}" />
+                        </div>
+                        <c:BT_MultiSelectLookup objectAPIName="buildertek__File__c"
+                                                IconName="standard:file"
+                                                lstSelectedRecords="{!v.selectedFiles}"
+                                                label=""
+                                                placeholder="Attachments"/>
+                    </div> -->
+                    		
+                    <!--<div style="border:1px solid lightgray;border-radius:5px;padding:10px;margin-top:10px">
+                        <lightning:layout multipleRows = "true">
+                            <lightning:layoutitem size="3">
+                                <div><lightning:input aura:id="fuploader" onchange="{!c.handleFilesChange}" type="file" variant="label-hidden" name="file" label="" multiple="true" accept="image/png,image/jpeg,image/jpg"/>
+                                                                     
+                                                
+                                    <aura:iteration items="{!v.selectedfilesFill}" var="sr">
+                                        <lightning:pill class="slds-m-around_xx-small slds-text-body_small slds-text-color_error" label="{!sr.Name}" name="{!sr.Name}" onremove="{! c.clear }">
+                                            <aura:set attribute="media">
+                                                <lightning:icon iconName="standard:file" size="x-small" alternativeText="icon"/>
+                                            </aura:set>
+                                        </lightning:pill>
+                                    </aura:iteration>
+                                </div>
+                            </lightning:layoutitem>                          
+                        </lightning:layout>
+                    </div>-->
+                      </div>
+                        <footer class="slds-modal__footer" style = "padding-top: 10px">
+                           
+                                <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{!c.doCancel }" />
+                                <!-- <lightning:button variant="neutral" title="Save &amp; New" label="Save &amp; New"
+                                              onclick="{!c.saveAndNew}" /> -->
+                                <lightning:button variant="brand" type="submit" name="save" label="Forward"  onclick="{!c.sendForward}"/>
+                            
+                        </footer>
+                    
+                    
+                    <!--<lightning:inputField aura:id="povendor" fieldName="buildertek__Vendor__c" value="{!v.newPO.buildertek__Vendor__c}" required="true" />-->
+              
+                <!--</div>
+                    </div>
+                </section>-->
+                <!--<div class="slds-backdrop slds-backdrop_open"></div>-->
+                
+            </div>
+            
+        </div>
+    </aura:if>
+    <aura:if isTrue="{!v.responseError}"> 
+         <aura:html tag="style">
+              .slds-modal__close{
+         	display:none !important;    
+         }
+         </aura:html>
+   <!-- <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+             aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+            <header class="slds-modal__header">
+                 <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeModel }" alternativeText="close"
+                                      variant="bare-inverse" class="slds-modal__close" /> 
+                <p></p>
+                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Enter Response</h2>
+                <p>Please enter response!</p>
+            </header>
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                <center>
+                    <h2></h2>
+                </center>
+            </div>
+            <footer class="slds-modal__footer">
+                <lightning:button variant="neutral" label="No" title="No"
+                                  onclick="{!c.closeModel}" />
+                <lightning:button variant="neutral" label="Yes" title="Yes"
+                                  onclick="{!c.updateRFI}" />
+            </footer>
+        </div>
+    </section>-->
+    </aura:if>
+</aura:component>

@@ -1,0 +1,3 @@
+<aura:event type="COMPONENT" description="Event to remove Row" >
+    <aura:attribute name="indexVar" type="Integer" description="Use For Delete Row" />
+</aura:event>

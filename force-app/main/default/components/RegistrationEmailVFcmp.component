@@ -1,0 +1,38 @@
+<apex:component controller="RegistrationEmailController" access="global">
+<apex:attribute name="OrderRecId" description="Order Id" type="String" assignTo="{!RecId}" access="global"/>
+<!-- Dear <b>{!SesRec.Participant_Name__r.Name},</b>
+ <br/><br/>
+ 
+ View Inc. will be conducting a <b>{!SesRec.buildertek__Course_Session_Scheduling__r.buildertek__Course_Name__r.Name}</b> training course for your company, your attendance is required, 
+ please register for this course by following the instructions in this email, if you have any questions regarding this course, 
+ please send email to LVEBootcamp@view.com
+
+<br/><br/>
+You were added to <b>{!SesRec.buildertek__Course_Session_Scheduling__r.buildertek__Course_Name__r.Name}</b> Course.
+
+ <br/><br/>
+ Please find the course details below
+ <br/><br/>
+ <table class="lineItems" width="100%" style="border-collapse: collapse;">
+                    <thead>
+                        <tr style="line-height: 1.8;background-color: lightgray;">
+                            <th width="20%" style="text-align: left;border:  1px solid #7C7979;border-bottom:  1px solid  #7C7979;border-right:  1px solid  #7C7979;">Course Name</th>
+                            <th width="15%" style="text-align: center;border:  1px solid #7C7979;border-bottom:  1px solid  #7C7979;border-left:  1px solid  #7C7979;border-right:  1px solid  #7C7979;">Session Date</th>
+                            <th width="15%" style="text-align: center;border:  1px solid #7C7979;border-bottom:  1px solid  #7C7979;border-left:  1px solid  #7C7979;border-right:  1px solid  #7C7979;">Session Time</th>
+                            <th width="15%" style="text-align: center;border:  1px solid #7C7979;border-bottom:  1px solid  #7C7979;border-left:  1px solid  #7C7979;border-right:  1px solid  #7C7979;">Session Duration</th>
+                            <th width="15%" style="text-align: center;border:  1px solid #7C7979;border-bottom:  1px solid  #7C7979;border-left:  1px solid  #7C7979;border-right:  1px solid  #7C7979;">Session Facilitator</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                      <tr style="line-height: 1.8;">
+                            <td style="text-align: left; color:black; border-top:  1px solid  #7C7979;border-bottom:  1px solid  #7C7979;border-left:  1px solid  #7C7979;border-right:  1px solid  #7C7979;"><apex:outputText value="{!SesRec.buildertek__Course_Session_Scheduling__r.buildertek__Course_Name__r.Name}"/></td>                
+                            <td style="color:black;text-align: center;border-top:  1px solid  #7C7979;border-bottom:  1px solid  #7C7979;border-left:  1px solid  #7C7979;border-right:  1px solid  #7C7979;"><apex:outputField value="{!SesRec.buildertek__Course_Session_Scheduling__r.Session_Date__c}"/></td>
+                            <td style="color:black;text-align: center;border-top:  1px solid  #7C7979;border-bottom:  1px solid  #7C7979;border-left:  1px solid  #7C7979;border-right:  1px solid  #7C7979;"><apex:outputField value="{!SesRec.buildertek__Course_Session_Scheduling__r.Session_Time_NEW__c}"/></td>
+                            <td style="color:black;text-align: center;border-top:  1px solid  #7C7979;border-bottom:  1px solid  #7C7979;border-left:  1px solid  #7C7979;border-right:  1px solid  #7C7979;"><apex:outputField value="{!SesRec.buildertek__Course_Session_Scheduling__r.Session_Duration__c}"/></td>
+                            <td style="color:black;text-align: center;border-top:  1px solid  #7C7979;border-bottom:  1px solid  #7C7979;border-left:  1px solid  #7C7979;border-right:  1px solid  #7C7979;"><apex:outputField value="{!SesRec.buildertek__Course_Session_Scheduling__r.buildertek__Session_Facilitator__r.Name}"/></td>
+                        </tr>
+                    </tbody>
+</table> 
+<br/><br/> -->
+    Click <a href="{!SiteUrl.Site_URL__c}/buildertek__ParticipantResponseVF?Id={!SesRec.ID}">here </a>to submit your response.
+</apex:component>

@@ -1,0 +1,100 @@
+.THIS .Heading {
+    font-size: 1.125em;
+    text-transform: uppercase;
+    font-weight: 700;  
+}
+.THIS .img_icon{
+    height: 45px;
+    width: 45px;
+}
+.THIS .img_fontfirst{
+        width: 90%;
+        font-size: 14px;
+    	font-family:Gotham-Book;
+    	color:rgb(0, 180, 203);
+}
+.THIS .img_fontsecond{
+        width: 90%;
+        font-size: 12px;
+    	font-family:Gotham-Book;
+    	
+}
+
+.THIS .selfServiceBaseSimpleItems .base-items{padding:0;margin-top:0}
+.THIS .selfServiceBaseSimpleItems .base-items{font-weight:300}
+.THIS .selfServiceBaseSimpleItems .base-items-header{font-size:1.125em;text-transform:uppercase;font-weight:700}
+.THIS .selfServiceBaseSimpleItems .base-simple-item{width:100%;display:block;padding:0;border-bottom:1px solid #f4f4f4}
+.THIS .selfServiceBaseSimpleItems .base-simple-item .item-title-link{padding:14px 0;height:auto;line-height:1.2em;font-size:1em}
+.THIS .selfServiceBaseSimpleItems .base-items.item-title-link{border-bottom:0;padding:0}
+.THIS .selfServiceBaseSimpleItems .base-items.item-title-link:focus{box-shadow:0 0 0 1px #2cc185;outline:0;border-radius:5px;margin-right:1px}
+.THIS .loadingText{text-transform:uppercase;font-size:1.1em;color:#696969}
+.THIS .listContent{min-height:0}
+.THIS .empty-list{margin-top:1rem}
+
+.THIS .selfServiceBaseSimpleItems {width:100%;display:inline-block}
+.THIS .selfServiceBaseSimpleItems .item-title{font-size:.875em;margin:0;line-height:21px;word-wrap:break-word;display:block;box-orient:vertical}
+.THIS .selfServiceBaseSimpleItems .item-title-link{color:#333;text-decoration:none;display:block;padding:20px;border-bottom:1px solid #f4f4f4}
+.THIS .selfServiceBaseSimpleItems .item-title-link:hover,
+.THIS .selfServiceBaseSimpleItems .item-title-link:focus,
+.THIS .selfServiceBaseSimpleItems .item-title-link:active{color:#2cc185}
+.THIS .selfServiceBaseSimpleItems .item-title-link:focus{box-shadow:0 0 0 1px #2cc185;outline:0;border-radius:5px}
+@media only screen and (min-width:48em){
+    .THIS{width:100%}
+    .THIS .item-title{font-size:1.125em;line-height:27px}
+    .THIS .item-title-link{padding:0;border-bottom:none}
+}
+@media only screen and (min-width:48em) and (min-aspect-ratio:4/3),
+    only screen and (min-width:64.0625em){
+    .THIS 
+    .item-title{font-size:.875em;line-height:21px;height:auto}
+}
+
+.THIS .topic-trending-articles{padding:0;margin-top:12px}
+.THIS .topic-trending-articles{font-weight:300}
+.THIS .trendingHeader{font-size:1.125em;text-transform:uppercase;font-weight:700}
+.THIS .article-trending-item{width:100%;display:block;padding:0;border-bottom:1px solid #D4D6D8}
+.THIS .article-trending-item .article-title{padding:15px 0;font-size:1em;height:auto;line-height:1.2em}
+.THIS .topic-trending-articles .article-title-link{border-bottom:0;padding:0}
+.THIS .topic-trending-articles .article-title-link:focus{box-shadow:0px 0px 0px 1px #29af1e;outline:0;border-radius:5px;margin-right:1px}
+.THIS .loadingText{text-transform:uppercase;font-size:1.1em;color:#4d4e53}
+.THIS .listContent{min-height:0}
+.THIS{margin-bottom:14px}
+.THIS .trending-articles{margin:0;padding:0;border-top:1px solid #ccc}
+.THIS .view-all-container{text-align:center;border-bottom:1px solid #D4D6D8}
+.THIS .view-all{font-size:.7em;font-weight:700;text-decoration:none;text-transform:uppercase;background:none;padding:18px 0;outline:none;border:none;display:inline-block;width:100%;color:#4d4e53;border-color:#4d4e53}
+.THIS .view-all.uiButton .label{display:inline}
+.THIS .view-all:hover,.THIS .view-all:focus{box-shadow:none;text-shadow:none;border-color:#58bce9;color:#58bce9}
+.THIS .empty-list{margin:0 auto;color:#4d4e53;width:100%;text-align:center;text-decoration:none;font-weight:bold;font-size:.875em;line-height:1.5em}
+.THIS .view-all-container.hide{display:none}
+.THIS .trendingHeader{text-transform:uppercase;font-size:.875em;font-weight:700;padding:18px 30px;color:#000000}
+.THIS li.selfServiceTrendingArticleItem .article-title-link{padding:0px}
+
+
+@media only screen and (min-width:48em){
+	.THIS{margin-bottom:20px}
+	.THIS .trendingHeader{font-size:1.125em;padding:26px 50px}
+	
+}
+@media only screen and (min-width:48em) and (min-aspect-ratio:4/3),only screen and (min-width:64.0625em){
+	.THIS{margin-bottom:0}
+	.THIS .trendingHeader{font-size:1.75em;padding:30px 0}
+	.THIS .trending-articles{padding:30px 30px 30px 0;border-top:1px solid #ccc}
+}
+@media only screen 
+  and (min-device-width: 768px) 
+  and (max-device-width: 1024px) 
+  and (orientation: portrait) 
+  and (-webkit-min-device-pixel-ratio: 2) {
+    
+    .THIS .img_icon{
+    height: 35px;
+    width: 35px;
+}
+    .THIS .img_fontfirst{
+        font-size: 12px;
+        margin-left: 2px;
+    }
+    .THIS .img_fontsecond{
+        font-size: 11px;
+    }
+}

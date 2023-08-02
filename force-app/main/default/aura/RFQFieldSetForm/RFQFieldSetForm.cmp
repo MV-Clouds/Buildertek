@@ -1,0 +1,91 @@
+<aura:component controller="FieldSetFormController" implements="force:hasRecordId,force:lightningQuickActionWithoutHeader,lightning:actionOverride" access="global">
+    <aura:attribute name="fieldSetName" default="buildertek__RFQ_Field_Set" type="String" description="The api name of the field set to use from the given object." />
+    <aura:attribute name="recordTypeId" type="String" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="sObjectName" type="String" default="RFQ__c" />
+    <aura:attribute name="BuildRFQ" type="RFQ__c" access="global"/>
+    <aura:attribute name="fields" type="RFQ__c[]" access="global" />
+    <aura:attribute name="Newfields" type="String[]" access="global" />
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <aura:handler event="force:refreshView" action="{!c.init}" />
+    <aura:attribute name="parentRecordId" type="string" />
+    
+    <aura:attribute name="disabled" type="Boolean" default="false" />
+    <aura:attribute name="saved" type="Boolean" default="false" />
+    <aura:attribute name="showSpinner" type="Boolean" default="true" />
+    <aura:attribute name="Spinner" type="Boolean" default="false" />
+        
+    <aura:if isTrue="{!v.showSpinner}">
+        <lightning:spinner />
+    </aura:if>
+     <lightning:notificationsLibrary aura:id="notifLib"/>
+                                
+        <lightning:workspaceAPI aura:id="workspace"/>
+            
+            <aura:attribute name="isModalOpen" type="boolean" default="true"/> 
+     
+    <div class="slds-m-around_xx-large">
+        <!--Use aura:if tag to display/hide popup based on isModalOpen value-->  
+        <aura:if isTrue="{!v.isModalOpen}">
+             
+            <!-- Modal/Popup Box starts here-->
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <!-- Modal/Popup Box Header Starts here-->
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close"
+                                              onclick="{! c.closeModel }"
+                                              alternativeText="close"
+                                              variant="bare-inverse"
+                                              class="slds-modal__close"/>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New RFQ</h2>
+                    </header>
+                    <!--Modal/Popup Box Body Starts here-->
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <p>
+                           <lightning:recordEditForm
+                                onsuccess="{!c.handleSuccess}"
+                                    objectApiName="buildertek__RFQ__c"
+                                   
+                                     >
+                                        
+                                        <div class="slds-grid slds-wrap">
+                                         <aura:iteration  items="{!v.Newfields}" var="Newvalue">
+                                          
+                                          <div class="slds-col slds-size_6-of-12">
+                                              <aura:if isTrue="{!Newvalue.Type == 'REFERENCE' &amp;&amp; Newvalue.Name == 'buildertek__Project__c'}">
+                                                <lightning:inputField aura:id="projectNameId" fieldName="{!Newvalue.Name}"/> 
+                                                <aura:set attribute="else">
+                                                    <lightning:inputField fieldName="{!Newvalue.Name}" autocomplete="false"/>     
+                                                </aura:set>
+                                              </aura:if>
+                                            
+                                          </div>
+                                          
+                                         </aura:iteration>
+                                         </div>
+                                         
+                                         
+                                     <div class="slds-m-top_medium slds-float_right">
+                                        
+                                         <lightning:button variant="Neutral" onclick="{!c.closeModel}" name="Cancel" label="Cancel" />
+                                         <lightning:button variant="brand" type="submit" name="save" label="Save" />
+                                    </div>
+                                    
+                            </lightning:recordEditForm>
+
+                        </p>
+                        <aura:if isTrue="{!v.Spinner}">
+                            <lightning:spinner />
+                        </aura:if>
+                    </div>
+                    
+                    <!--Modal/Popup Box Footer Starts here-->
+                    
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </aura:if>
+    </div>
+            
+</aura:component>

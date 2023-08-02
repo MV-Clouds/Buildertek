@@ -1,0 +1,29 @@
+<aura:component controller="ManagePOlinesController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" 
+access="global">
+
+<!--Attributes-->
+<aura:attribute type="object" name="objectList"/>  
+<aura:attribute type="String" name="fieldAPIName"/>
+<aura:attribute type="List" name="fieldValues"  />
+<aura:attribute type="String" name="recordIdToRedirect"/>
+<aura:attribute name="parent" type="Aura.Component"/>
+<!--Aura Handlers-->
+<aura:handler name="init" value="{!this}" action="{!c.doInit}" /> 
+
+<div>
+    <aura:if isTrue="{!and(v.fieldValues != null,v.fieldValues.length > 0)}">
+        <aura:iteration items="{!v.fieldValues}" var="fieldValue" indexVar="apiindex">
+            <!-- <h1>{!fieldValue.label}</h1>
+        <h1>{!fieldValue.value}</h1> -->
+            <div class="slds-form_horizontal slds-form slds-grid slds-wrap">
+                <lightning:input class="slds-size_1-of-1" type="number" name="{!fieldValue.label}"
+                    label="{!fieldValue.label}" value="{!fieldValue.value}" formatter="currency" step="0.01" />
+            </div>
+        </aura:iteration>
+        <div class="slds-align_absolute-center slds-p-vertical_medium">
+            <lightning:button variant="brand" label="Save" title="Save" onclick="{!c.handleSave}" />
+            <lightning:button variant="neutral" label="Close" title="Close" onclick="{!c.handleClose}" />
+        </div>
+    </aura:if>
+</div>
+</aura:component>

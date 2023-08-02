@@ -1,0 +1,14 @@
+<apex:page standardStylesheets="false" showHeader="false" sidebar="false">
+     <apex:includeLightning />
+    <div id="lightning" />  
+    <script>
+        $Lightning.use("buildertek:ParticipantUpdatesApp", function() {
+          $Lightning.createComponent("buildertek:participant_Updates",
+ 				{recordId:"{!$CurrentPage.parameters.Id}"},            
+              "lightning",
+              function(cmp) {
+              }
+          );
+        });
+    </script>
+</apex:page>

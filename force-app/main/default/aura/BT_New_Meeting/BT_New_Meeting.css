@@ -1,0 +1,52 @@
+.THIS.c-container {
+    border: 1px solid #d8dde6;
+    margin: 0px 0 0px 0;
+    
+}
+
+.THIS .custom-box {
+    /*text-align: center;
+    border: 1px solid #d8dde6;
+    */
+   
+   
+    background-color: white;
+    padding: 0px 0 0px 0;   
+}
+
+.THIS .nolabel .slds-form-element__label{
+    display: none; 
+    visibility: hidden;
+}
+
+.THIS .positiontop {
+    position:relative;
+    top:7px;
+}
+
+.THIS .txtareaheight {
+    height:100px;
+}
+
+ 
+.THIS .slds-rich-text-editor__textarea .slds-rich-text-area__content{
+    height:100px;
+}
+
+.THIS .custom-loading-text {
+    transform: rotate(-90deg);
+    position: absolute;
+    top: -0.5rem;
+    left: 1rem;
+    white-space: nowrap;
+    font-size: 20px;
+}
+
+.THIS .hide-scroll{
+    overflow: scroll;
+}
+
+.THIS .hide-scroll::-webkit-scrollbar {
+    background: transparent; /* make scrollbar transparent */
+    width: 0px;
+}

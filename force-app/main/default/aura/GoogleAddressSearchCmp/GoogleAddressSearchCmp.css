@@ -1,0 +1,8 @@
+.THIS ul.city_predictions{
+    padding-top: 5px;
+    padding-bottom: 10px;
+}
+
+.THIS ul.city_predictions li {
+    line-height: 20px;
+}

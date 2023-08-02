@@ -1,0 +1,367 @@
+<apex:page title="Add Product" name="Add Product" controller="AddProductController"  showHeader="false" standardStylesheets="false" sidebar="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0">
+    <script>
+        window.onload = onload;
+        function onload{
+            loadData();
+        }
+    </script>
+    
+    <html>    
+        
+        <head>
+            <title>Add Product</title>
+            <apex:stylesheet value="{!URLFOR($Resource.SLDS212, 'assets/styles/salesforce-lightning-design-system-vf.css')}" />
+        </head>
+        <body>
+            <apex:form >
+                <script type='text/javascript'>
+                    function noenter(ev)  {
+                        if (window.event && window.event.keyCode == 13 || ev.which == 13) {
+                            var arrButton = document.getElementsByClassName('btnSave');
+                            validateValues(arrButton[0]);
+                            return false;
+                         } 
+                     }
+                     
+                     function validateValues(element){
+                         var arrValueText = document.getElementsByClassName('clsValue');
+                         var blnValid = true;
+                         
+                         for (var i=0; i<arrValueText.length; i++) {
+                             if(arrValueText[i].value == '' || arrValueText[i].value == '0'){
+                                 alert('Please enter quantity');
+                                 blnValid = false;
+                                 break;
+                             }
+                             else if(arrValueText[i].value != '' && isNaN(arrValueText[i].value)){
+                                 alert('Please enter valid number in quantity');
+                                 arrValueText[i].focus();
+                                 blnValid = false;
+                                 break;
+                             }
+                             else{
+                                 var intVal = arrValueText[i].value;
+                                 if(intVal < 0){
+                                     alert('Please enter valid number in quantity');
+                                 }
+                             }
+                         }
+                         if(blnValid){
+                             element.disabled = true;
+                             doSubmitAF();
+                             return false;
+                         }
+                         return blnValid;
+                     }
+                     
+                     function removeRowJS(index){
+                         if(confirm('Are you sure?')){
+                             removeRow(index);
+                         }
+                         else{
+                             return false;
+                         }
+                     }
+                     function onComplete(){
+                         var arrButton = document.getElementsByClassName('btnSave');
+                         for (var i=0; i<arrButton.length; i++) {
+                             arrButton[i].disabled = false;
+                         }
+                     }
+                     
+                     function loadStockJS(index){
+                         loadStock(index);
+                     }
+                     
+                     function loading(val) {
+                        if (val) {
+                          document.getElementById('contentLoading').style.display = 'block';
+                          document.getElementById('contentLoaded').style.display = 'none';
+                        }
+                        else {
+                          document.getElementById('contentLoading').style.display = 'none';
+                          document.getElementById('contentLoaded').style.display = 'block';
+                        }
+                      }
+                      
+                      function closeError(){
+                          var errorDiv = document.getElementById('errorDiv');
+                          errorDiv.setAttribute("class","invisible");
+                          return false;
+                      }
+                </script>
+                <style>
+                    .visible{
+                        display:;
+                    }
+                    .invisible{
+                        display:none;
+                    }
+                </style>
+                <!-- REQUIRED SLDS WRAPPER -->
+                    <apex:actionFunction name="loadData" action="{!getisRecordAccessible}" />
+                <div class="service360">
+                    <!-- PAGE HEADER -->
+                    <div class="slds-page-header" role="banner">
+                        <!-- LAYOUT GRID -->
+                        <div class="slds-grid">
+                            <!-- GRID COL -->
+                            <div class="slds-col">
+                                <!-- HEADING AREA -->
+                                <div class="slds-media">
+                                    <div class="slds-media__figure">
+                                        <span class="slds-avatar slds-avatar--large">
+                                            <img src="{!URLFOR($Resource.ProductIcon)}" alt="" />
+                                        </span>
+                                    </div>
+                                    <div class="slds-media__body">
+                                        <p class="slds-text-heading--label">Service Request </p>
+                                        <h1 class="slds-text-heading--medium">Add Products</h1>
+                                     </div>
+                                 </div>
+                                 <!-- /HEADING AREA -->
+                            </div>
+                            
+                            <apex:commandButton value="Back" id="btnBack" rendered="{!!blnHasEditAccess}" action="{!cancelAction}"/>
+                            <apex:actionFunction name="addRow" action="{!addRow}" rerender="pb,processing" status="processing">
+                                <apex:param id="indexParam" name="index" value=""/>
+                            </apex:actionFunction>
+                            <apex:actionFunction name="removeRow" action="{!removeRow}" rerender="pb,processing" status="processing">
+                                <apex:param name="index" value=""/>
+                            </apex:actionFunction>
+                            
+                            <apex:actionFunction name="doSubmitAF" action="{!saveAction}" rerender="outP,pb" status="processing" oncomplete="onComplete();">
+                            </apex:actionFunction>
+                            
+                            <!-- ACTION BUTTONS -->
+                            <div class="slds-col slds-no-flex slds-align-middle">
+                                <div class="slds-button-group" role="group">
+                                    <apex:commandButton value="Save" tabindex="1" id="btnSave" styleClass="btnSave slds-button slds-button--neutral" onclick="return validateValues(this);"/>
+                                    <apex:commandButton value="Cancel" id="btnCancel" styleClass="slds-button slds-button--neutral" action="{!cancelAction}"/>
+                                </div>
+                            </div>
+                            <!-- / ACTION BUTTONS -->
+                        </div>
+                        <!-- / LAYOUT GRID -->
+                        
+                        <!-- PAGE HEADER DETAIL ROW -->
+                        <div class="slds-grid slds-page-header__detail-row">
+                            <div class="slds-col--padded slds-size--1-of-4">
+                                <dl>
+                                    <dt>
+                                        <p class="slds-text-heading--label slds-truncate">Service Request</p>
+                                    </dt>
+                                    <dd>
+                                        <p class="slds-text-body--regular slds-truncate">{!objService.Name}</p>
+                                    </dd>
+                                </dl>
+                            </div>
+                            <div class="slds-col--padded slds-size--1-of-4">
+                                <dl>
+                                    <dt>
+                                        <p class="slds-text-heading--label slds-truncate">Request Status</p>
+                                    </dt>
+                                    <dd>{!objService.Request_Status__c}</dd>
+                                </dl>
+                            </div>
+                            <div class="slds-col--padded slds-size--1-of-4">
+                                <dl>
+                                    <dt>
+                                        <p class="slds-text-heading--label slds-truncate">Customer Name</p>
+                                    </dt>
+                                    <dd>{!objService.Customer_Name__r.Name}</dd>
+                                </dl>
+                            </div>
+                            <div class="slds-col--padded slds-size--1-of-4">
+                                <dl>
+                                    <dt>
+                                        <p class="slds-text-heading--label slds-truncate">Preferred Date Of Serive</p>
+                                    </dt>
+                                    <dd>
+                                        <apex:outputText value="{0, date, MMMM d','  yyyy}">
+                                            <apex:param value="{!objService.Preferred_Date_of_Service__c}" /> 
+                                        </apex:outputText>
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                        <!-- / PAGE HEADER DETAIL ROW -->
+                    </div>
+                    <!-- / PAGE HEADER -->
+                    
+                    <apex:actionstatus id="processing">
+                        <apex:facet name="start">
+                            <div class="slds-spinner_container">
+                                <div class="slds-spinner slds-spinner--large" role="alert">
+                                    <span class="slds-assistive-text">Loading</span>
+                                    <div class="slds-spinner__dot-a"></div>
+                                    <div class="slds-spinner__dot-b"></div>
+                                </div>
+                            </div>
+                        </apex:facet>
+                    </apex:actionstatus>
+                   
+                    <apex:outputPanel id="outP">
+                        <div id="errorDiv" style="display:{!IF(blnDisplayMessage == true,';','none;')}">
+                            <div aria-hidden="false" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" role="alertdialog" class="slds-modal slds-modal--prompt slds-fade-in-open">
+                                <div class="slds-modal__container slds-modal--prompt" role="document" id="prompt-message-wrapper" tabindex="0">
+                                    <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                                        <h2 class="slds-text-heading--medium" id="prompt-heading-id">Please review below error(s).</h2>
+                                    </div>
+                                    <div class="slds-modal__content slds-p-around--medium">
+                                        <div>
+                                            <p><apex:pageMessages rendered="{!blnDisplayMessage}" id="pgMessages"></apex:pageMessages></p>
+                                        </div>
+                                    </div>
+                                    <div class="slds-modal__footer slds-theme--default">
+                                        <button class="slds-button slds-button--neutral" onclick="return closeError();">Okay</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-backdrop slds-backdrop--open"></div>
+                        </div>
+                    </apex:outputPanel>
+                    
+                    <!-- PRIMARY CONTENT WRAPPER -->
+                    <apex:outputPanel id="pb">
+                    
+                    <table class="slds-table slds-table--bordered slds-table--cell-buffer" width="100%">
+                        <thead width="100%">
+                            <tr class="slds-text-title--caps">
+                                <th scope="col" style="width:5%;">
+                                    <div class="slds-truncate" title="Add Row">
+                                        <apex:image style="cursor:pointer" url="{!$Resource.addButton}" title="Add Row" width="15px" height="15px" onclick="addRow('{!lstProduct.size}')"/>
+                                    </div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Sr No.">
+                                        <apex:outputLabel value="Sr No." />
+                                    </div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Product Family">
+                                        <apex:outputLabel value="Product Family" />
+                                    </div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Product Name">
+                                        <apex:outputLabel value="Product Name" />
+                                    </div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Product Description">
+                                        <apex:outputLabel value="Product Description" />
+                                    </div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Current Stock">
+                                        <apex:outputLabel value="Current Stock" />
+                                    </div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Cost(Per Unit)">
+                                        <apex:outputLabel value="Cost(Per Unit)" />
+                                    </div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Quantity">
+                                        <apex:outputLabel value="Quantity" />
+                                    </div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Information">
+                                        <apex:outputLabel value="Information" />
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody width="100%">
+                            <apex:repeat id="pbProducts" value="{!lstProduct}" var="sObj">
+                                <tr>
+                                    <td data-label="Delete Row" style="width:5%;">
+                                        <div class="slds-truncate" title="Delete Row">
+                                            <apex:image style="cursor:pointer" url="{!$Resource.deleteIcon}" title="Delete Row" width="13" height="13" rendered="{!sObj.counter != 1}" onclick="return removeRowJS('{!sObj.counter - 1}');"/>
+                                        </div>
+                                    </td>
+                                    <td data-label="Sr No">
+                                        <div class="slds-truncate" title="Sr No">
+                                            <apex:outputLabel value="{!sObj.counter}" />
+                                        </div>
+                                    </td>
+                                    <td data-label="Product Family">
+                                        <div class="slds-truncate" title="Product Family">
+                                            <div class="slds-form-element">
+                                                <div class="slds-form-element__control">
+                                                    <div class="slds-select_container">
+                                                        <apex:selectList multiselect="false" size="1" value="{!sObj.strProductFamily}" styleClass="slds-select">
+                                                            <apex:actionSupport event="onchange" action="{!loadProductsByFamily}" reRender="pb,processing" status="processing"> 
+                                                                <apex:param name="index" value="{!sObj.counter - 1}"/>
+                                                            </apex:actionSupport>
+                                                            <apex:selectOptions value="{!sObj.lstProductFamily}"></apex:selectOptions>
+                                                        </apex:selectList>
+                                                    </div>
+                                                 </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td data-label="Product Name">
+                                        <div class="slds-truncate" title="Product Name">
+                                            <div class="slds-form-element">
+                                                <div class="slds-form-element__control">
+                                                    <div class="slds-select_container">
+                                                        <apex:selectList multiselect="false" size="1" value="{!sObj.strProductId}" styleClass="slds-select">
+                                                            <apex:actionSupport event="onchange" action="{!loadInventoryDetailsByProduct}" reRender="pb,processing" status="processing"> 
+                                                                <apex:param name="index" value="{!sObj.counter - 1}"/>
+                                                            </apex:actionSupport>
+                                                            <apex:selectOptions value="{!sObj.lstProductNames}"></apex:selectOptions>
+                                                        </apex:selectList>
+                                                    </div>
+                                                 </div>
+                                            </div>
+                                        </div>
+                                     </td>
+                                     <td data-label="Product Description">
+                                         <div class="slds-truncate" title="Product Description">
+                                             <apex:outputText value="{!sObj.objProduct.Product_Description__c}" style="width:70px;"></apex:outputText>
+                                         </div>
+                                     </td>
+                                     <td data-label="Current Stock">
+                                         <div class="slds-truncate" title="Current Stock">
+                                             <apex:outputText value="{!sObj.objProduct.Current_Stock__c} {!sObj.objProduct.Unit__c}" style="width:70px;"></apex:outputText>
+                                         </div>
+                                     </td>
+                                     <td data-label="Cost(Per Unit)">
+                                         <div class="slds-truncate" title="Cost(Per Unit)">
+                                             <apex:outputText value="{!sObj.objProduct.Cost_Per_Unit__c}" style="width:70px;"></apex:outputText>
+                                         </div>
+                                     </td>
+                                     <td data-label="Quantity">
+                                        <div class="slds-truncate" title="Quantity">
+                                            <div class="slds-form-element">
+                                                <div class="slds-form-element__control">
+                                                    <apex:inputText value="{!sObj.intQuantity}" styleClass="clsValue slds-input" style="width:70px;"></apex:inputText> {!sObj.objProduct.Unit__c}
+                                                </div>
+                                            </div>
+                                         </div>
+                                     </td> 
+                                     <td data-label="Information">
+                                         <div class="slds-truncate" title="Information">
+                                             <div class="slds-form-element">
+                                                 <div class="slds-form-element__control">
+                                                     <apex:inputTextarea value="{!sObj.strDescription}" styleClass="slds-textarea" style="width:200px;"/>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                     </td>   
+                                </tr>
+                            </apex:repeat>
+                        </tbody>
+                    </table>
+                    </apex:outputPanel>
+                    <!-- / PRIMARY CONTENT WRAPPER -->
+                </div>
+                <!-- REQUIRED SLDS WRAPPER -->
+            </apex:form>
+        </body>
+    </html>    
+</apex:page>

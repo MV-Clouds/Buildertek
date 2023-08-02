@@ -1,0 +1,22 @@
+.THIS .label-hidden>label {
+}
+
+.THIS lightning-icon.some-indicator {
+    /*background-color: #006DCC;*/
+    background-color: #e05d5d;
+    width: 2rem;
+    height: 2rem;
+}
+
+.THIS lightning-icon.some-indicator>lightning-primitive-icon>svg>use {
+    fill: white;
+    background-color: #006DCC;
+    width: 2rem;
+    height: 2rem;
+}
+
+.THIS .slds-form-element__label {
+    margin-top: -11px;
+    /*display : none !important;
+    visibility : hidden !important;*/
+}

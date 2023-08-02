@@ -1,0 +1,96 @@
+<!--**********************************************************************************
+* Copyright © 2017 - 2017, BuilderTek.
+* All rights reserved
+*
+* VisualForce Page: BT_GroupManagement
+* Created by Sagar
+
+* - Mananges all public groups 
+
+* - Modifications:
+* - Sagar - Initial 
+***********************************************************************************-->
+<apex:page controller="BT_GroupManagementController" title="{!$Label.buildertek__Public_Groups}" >
+    <c:BT_JsAndCssIncludeComponent importJquery="true"
+                                  importAppurinUtil="true"
+                                  importJQueryLayout="false"
+                                  importFancyTree="false"
+                                  importJqGrid="false"
+                                  importEasyTooltip="true"
+                                  importAppurinCss="true"
+                                  importCkEditor="false"
+                                  importGnattChart="false"
+                                  importLightningDesign="true"/>
+    <script>
+        var twistyLightningSectionStatus = {};
+        j$(document).ready(function() {
+			easyToolTipForAll();
+			
+		});
+		
+        function easyToolTipForAll() {
+            j$('.apHelpText').easyTooltip({width: '200px', isLightning:true, isFormatted:true});
+            return false;
+        }
+        
+        function openGroupDetail(groupId){
+            var isLightning = '{!JSENCODE($CurrentPage.parameters.isLX)}' == '1';
+            if(isLightning || Appurin.lightning.isLightningExperience()){
+                Appurin.lightning.navigateToURL('/one/one.app?source=aloha#/setup/PublicGroups/home', false);
+            } else{
+                window.open('/setup/own/groupdetail.jsp?id='+groupId+'&setupid=PublicGroups', '_blank');
+            }
+        }
+    </script>
+    
+    <apex:form >
+        <apex:outputPanel styleClass="slds">
+    		<div class="apPageHeader" id="PageHeader">
+    			<div class="apPageHeaderMedia">
+    	          	<div id="pageHeaderMedia" class="apPageHeaderMediaFigure">
+    	          	    <c:BT_LightningSvg parentId="pageHeaderMedia" styleClass="apLightningPageHeaderIcon slds-button__icon" path="/assets/icons/action-sprite/svg/symbols.svg#edit_groups"/>
+    	            </div>
+    	            <div class="apPageHeaderMediaBody">
+    	                <p class="slds-text-title--caps slds-line-height--reset">Manage</p>
+    					<div class="apPageHeaderTitle" title="{!$Label.File_Explorer_Configuration_Subtitle}">{!$Label.buildertek__Public_Groups}</div>
+    	              	<div class="apPageHeaderInfo">
+    	              		<label>{!$Label.Public_Group_Description}</label>
+    	              	</div>
+              		</div>
+    	           <script>
+    	           		Appurin.lightning.createPageHeader('PageHeader');
+    	           </script>
+    	        </div>
+            </div>
+	    </apex:outputPanel>
+	    <apex:outPutPanel styleClass="slds">
+	        <table class="slds-table slds-table--bordered slds-table--cell-buffer">
+            	<tr class="slds-text-heading--label">
+                	<th scope="col">
+                    	<div class="slds-truncate">{!$Label.buildertek__Group}</div>
+                    </th>
+                	<th scope="col">
+                    	<div class="slds-truncate">{!$ObjectType.Group.fields.CreatedById.Label}</div>
+                    </th>
+                    <th scope="col">
+                    	<div class="slds-truncate">{!$ObjectType.Group.fields.CreatedDate.Label}</div>
+                    </th>
+                </tr>
+                <apex:repeat value="{!allGroups}" var="pg">
+                	<tr>
+                        <td>
+                            <apex:outputLink rendered="true" onClick="openGroupDetail('{!pg.Id}'); return false;">{!pg.Name}</apex:outputLink>
+                            <apex:outputLabel rendered="false" value="{!pg.Name}"/>
+                        </td>
+                        <td>
+                            <a target="_blank" href="/{!pg.createdById}"><apex:outputLabel value="{!pg.createdBy.Name}"/></a>
+                        </td>
+                        <td>
+                            <apex:outputField value="{!pg.createdDate}" />
+                        </td>
+                    </tr>
+                </apex:repeat>                       
+        	</table>
+	    </apex:outPutPanel>
+    </apex:form>
+</apex:page>

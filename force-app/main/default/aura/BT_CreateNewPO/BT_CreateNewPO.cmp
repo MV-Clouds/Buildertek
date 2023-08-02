@@ -1,0 +1,148 @@
+<aura:component controller="CreateNewPO"
+    implements="lightning:isUrlAddressable,force:appHostable,force:lightningQuickAction,flexipage:availableForRecordHome,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes"
+    access="global">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="objectAPIName" type="String" />
+    <aura:attribute name="billToAddress" type="String" />
+    <aura:attribute name="vender" type="String" />
+    <aura:attribute name="description" type="String" />
+    <aura:attribute name="requiredDeliverydate" type="Date" />
+    <aura:attribute name="POtype" type="String" />
+    <aura:attribute name="shiptoCity" type="String" />
+    <aura:attribute name="ShipAddress" type="String" />
+    <aura:attribute name="shiptoState" type="String" />
+    <aura:attribute name="shiptoZip" type="String" />
+    <aura:attribute name="shiptoCountry" type="String" />
+    <aura:attribute name="purchaseOrderId" type="String" />
+    <aura:attribute name="contractList" type="list" />
+    <aura:attribute name="value" type="String" />
+    <aura:attribute name="isContract" type="Boolean" default = "false"/>
+    <aura:attribute name="newPo" type="Purchase_Order__c" default="{ 'sobjectType': 'Purchase_Order__c'}"
+        access="global" />
+    <lightning:workspaceAPI aura:id="workspace" />
+    <aura:attribute name="isOpen" type="Boolean" default="true" />
+    <aura:if isTrue="{!v.isOpen}">
+        <div role="dialog" class="slds-modal slds-fade-in-open ">
+            <div class="slds-modal__container" style="width:50% !important;">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" onclick="{! c.handleClose }" alternativeText="close"
+                        variant="bare-inverse" class="slds-modal__close" />
+                    <h1 class="slds-text-heading--medium">New Purchase Order</h1>
+                </header>
+
+                <div class="slds-modal__content slds-p-around--medium main_body_div">
+
+                    <lightning:recordEditForm objectApiName="buildertek__Purchase_Order__c">
+                        <lightning:messages />
+                        <h3 class="slds-section-title--divider">Information</h3>
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-col">
+                                <lightning:inputField fieldName="buildertek__Vendor__c" value="{!v.vender}" onchange ="{!c.getContractRec}" />
+                                <lightning:inputField fieldName="buildertek__Description__c" value="{!v.description}" />
+                            </div>
+                            <div class="slds-col">
+                                <lightning:inputField fieldName="buildertek__Required_Delivery_Date__c"
+                                    value="{!v.requiredDeliverydate}" />
+                                 <lightning:inputField fieldName="buildertek__Type__c" value="{!v.POtype}" />
+                            </div>
+                        </div>
+                        <h3 class="slds-section-title--divider">Ship To Address</h3>
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-col">
+                                <lightning:inputField fieldName="buildertek__ShipToAddress__c"
+                                    value="{!v.ShipAddress}" />
+                                <lightning:inputField fieldName="buildertek__Ship_To_City__c" value="{!v.shiptoCity}" />
+                                <lightning:inputField fieldName="buildertek__Ship_To_State__c"
+                                    value="{!v.shiptoState}" />
+                            </div>
+                            <div class="slds-col">
+                                <lightning:inputField fieldName="buildertek__Ship_To_Zip__c" value="{!v.shiptoZip}" />
+                                <lightning:inputField aura:id="shiptocntryId"
+                                    fieldName="buildertek__Ship_To_Country__c" />
+
+
+                            </div>
+                        </div>
+                    </lightning:recordEditForm>
+                </div>
+
+                <footer class="slds-modal__footer">
+                    <div class="slds-align_absolute-center">
+                        <lightning:button name='Cancel' label='Cancel' onclick='{!c.handleClose}' />
+                        <lightning:button name='SaveandNew' label='Save &amp; New' onclick='{!c.onSaveandNew}' />
+                        <lightning:button variant="brand" name='Save' label='Save' onclick='{!c.onSave}' />
+                    </div>
+                </footer>
+            </div>
+        </div>
+        <div class="slds-backdrop slds-backdrop--open"></div>
+    </aura:if>
+    <aura:if isTrue="{!v.isContract}">
+        <section aura:id="Modal" role="dialog" tabindex="-1" aria-labelledby="Modal" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" onclick="{! c.CloseModel }" alternativeText="close"
+                        variant="bare-inverse" class="slds-modal__close" />
+                    <h1 class="slds-text-heading--medium">Contract List</h1>
+                </header>
+                <!--<lightning:radioGroup name="Contracts"
+                                                      label="Contracts"
+                                                      options="{! v.contractList }"
+                                                      value="{! v.value }"
+                                                      type="radio"/>-->
+                <div class="slds-modal__content slds-p-around_medium slds-scrollable" id="modal-content-id-1">
+                    <aura:if isTrue="{!if(v.contractList.length > 0,true,false)}">
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table slds-scrollable">
+                        <thead>
+                            <tr class="slds-line-height_reset" style="text-align: center">
+                                <th style="white-space: pre-wrap;"></th>
+                                <th style="white-space: pre-wrap;"><b>Name</b></th>
+                                <th style="white-space: pre-wrap;"><b>Start Date</b></th>
+                                <th style="white-space: pre-wrap;"><b>End Date</b></th>
+                                <th style="white-space: pre-wrap;"><b>Contract Amount</b></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:iteration items="{!v.contractList}" var="contractRec" >
+                                <tr class="slds-hint-parent" >
+                                    <td><input id="{!'radio-'+contractRec.Id}" value="{!contractRec.Id}" name="options" type="radio"
+                                               onchange="{!c.optionSelected}"/></td>
+                                    <td>
+                                        <a href="{!'/lightning/r/buildertek__Contract__c/'+contractRec.Id+'/view'}" target="_blank" >{!contractRec.Name}</a>
+                                    </td>
+                                    <td>{!contractRec.buildertek__Contract_Start_Date__c}</td>
+                                    <td>{!contractRec.buildertek__Contract_End_Date__c}</td>
+                                    <td>
+                                        <lightning:formattedNumber value="{!contractRec.buildertek__Revised_Contract_Amount__c}" style="currency" />
+                                    </td>
+                                </tr>
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+                    <aura:set attribute="else">
+                    <div class="slds-box">
+                        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                            <div class="slds-media__body">
+                                <h2 class="slds-card__header-title">
+                                    <span>No records found</span>
+                                </h2>
+                            </div>
+                        </header>
+                    </div>
+                </aura:set>
+                    </aura:if>
+                </div>
+                <footer class="slds-modal__footer">
+                    <!-- <aura:if isTrue="{!if(v.contractList.length > 0,true,false)}">
+                     <lightning:button onclick="{!c.CloseModel}" variant="neutral">Cancel</lightning:button>
+                    </aura:if>
+                    <lightning:button onclick="{!c.SaveModel}" variant="brand">Save</lightning:button> -->
+                    <lightning:button onclick="{!c.SaveModel}" variant="brand">Close</lightning:button>
+                </footer>
+            </div>
+        </section>
+        <div aura:id="ModelBackdrop" class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+     <lightning:notificationsLibrary aura:id="notifLib" />
+</aura:component>

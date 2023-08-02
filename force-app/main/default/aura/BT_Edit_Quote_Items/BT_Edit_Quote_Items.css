@@ -1,0 +1,93 @@
+.THIS .QuoteLine .slds-card__header{
+	padding: 0;
+    margin: 0;
+}
+.THIS .page-right {
+    background: #fff;
+    height:100%;
+}
+
+.THIS .page-left {
+    background: rgb(243, 242, 242);
+    
+}
+
+.THIS .highlight {
+}
+
+.THIS .highlight:hover {
+    background-color: #faffbd;
+}
+.THIS .av-section-handle {
+	padding: .40rem !important;
+}
+.THIS .av-section-handle:hover {
+	cursor: all-scroll;
+}
+
+
+.THIS .av-control-handle {
+    padding: .40rem !important;
+}
+
+.THIS .av-control-handle:hover {
+    cursor: all-scroll;
+}
+
+.THIS .av-dragel .av-section-handle {
+    -webkit-box-shadow: 2px 4px 6px 0 rgba(0,0,0,.1);
+     box-shadow: 2px 4px 6px 0 rgba(0,0,0,.1);
+}
+
+.THIS .av-list {
+    border-top: 1px solid rgb(221, 219, 218);
+}
+
+.THIS .av-list .av-list { padding-left: 30px; }
+
+.THIS .accordion_edit{
+  visibility:hidden;
+}
+
+.THIS .highlight:hover .accordion_edit {
+  visibility:visible;
+  cursor: pointer;
+}
+
+.THIS .questionDetail{
+  padding-left:1.4rem !important
+}
+
+.THIS .slds-is-open>.slds-accordion__summary {
+  /*margin-bottom: 1.75rem;*/
+  /*padding: .5em;*/
+}
+
+.THIS .slds-accordion__section .slds-button:focus { 
+	text-decoration: none !important;
+}
+.THIS .slds-button-group .slds-button+.slds-button {
+    box-shadow: inset 1px 0 0 white;
+}
+.THIS .slds-button__icon {
+    fill: white;
+}
+
+.THIS .slds-button_icon-border{
+    background: grey;
+}
+.THIS .slds-icon-text-default {
+    fill: white;
+}
+
+.THIS .sldsButtonGroup {
+    background-color: grey !important;
+    color: white !important;
+}
+
+.THIS .slds-table--header-fixed_container {
+    position: relative;
+    padding-top: 2rem;
+    background-color: rgb(127, 127, 125) !important;
+    overflow: hidden;
+}

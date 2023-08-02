@@ -1,0 +1,13 @@
+<design:component >
+    <design:attribute name="clientServer" label="Client OR Server" datasource="Client,Server" description="Server Lookup or client lookup"  />
+    <design:attribute name="startsWith" label="StartsWith" description="true for Start With and false for Contains" />
+    <design:attribute name="objectName" label="Object Name" description="Object Name to Search"  />
+    <design:attribute name="searchField" label="Search Field" description="Field to Search"  />
+    <design:attribute name="placeHolderText" label="Placeholder Text" description="Placeholder Text"  />
+    <design:attribute name="viewAllURL" label="View All URL" description="URL on click of View All button"  />
+    <design:attribute name="navigateToObject" label="Navigate to Object" description="Navigate to Object Detail on Selection" />
+    
+       <design:attribute name="RecentSearch" label="Recent search details " description="Recent search details showes below the people search" />
+ 
+	
+</design:component>

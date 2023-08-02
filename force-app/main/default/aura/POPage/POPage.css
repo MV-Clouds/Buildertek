@@ -1,0 +1,64 @@
+.THIS .custom-loading-text {
+    transform: rotate(-90deg);
+    position: absolute;
+    top: -0.5rem;
+    left: 1rem;
+    white-space: nowrap;
+    font-size: 20px;
+}
+.THIS .leftClass{
+    
+    text-align:left;
+}
+
+.THIS .rightClass{
+    
+    text-align:right;
+}
+
+.THIS .iconClr svg{
+	fill:red;
+}
+
+.THIS .my-icon svg{
+	fill:blue;
+}
+
+.THIS .expand-icon{
+	height : 18px;
+    width : 18px;
+}
+
+.THIS .Mainexpand-icon{
+	height : 25px;
+    width : 25px;
+}
+
+.THIS .firstCol{
+    width: 30px;
+}
+
+.THIS tr:hover > td{
+    background: initial !important;
+    box-shadow: initial !important;
+}
+
+.THIS tr:hover > th{
+    box-shadow: initial !important;
+}
+
+.THIS .tHeader{
+    background: linear-gradient(to bottom, #3086d2 0%, #8abada 100%); 
+    color:#fff;
+    line-height: 2;
+}
+
+.THIS .subHeader{
+    font-weight: 900; 
+    background: linear-gradient(to bottom, #3086d2 0%, #8abada 100%); 
+    color:#fff;
+}
+
+.THIS .subData{
+    border-left:  1px solid #fff; 
+}

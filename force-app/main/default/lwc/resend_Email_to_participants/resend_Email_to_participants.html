@@ -1,0 +1,187 @@
+<template >      
+<template if:true={successMessage}>
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open slds-modal_large" >
+        <div class="slds-modal__container" >
+            <!-- Modal/Popup Box LWC header here -->
+            <header class="slds-modal__header slds-box slds-theme_shade slds-theme_alert-texture slds-theme_success" style="width: 650px;height:90px;">
+                <p style="font-size:large;">Email sent successfully!</p>  
+                
+            </header>
+            <!-- Modal/Popup Box LWC body starts here -->
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-6"  style="width: 650px;">
+            </br>
+                <p style="font-size:medium;padding:10px;">{alertMessage}</p>
+            </br>
+        </br>
+            </div>
+            <!-- Modal/Popup Box LWC footer starts here -->
+            <footer class="slds-modal__footer" style="width: 650px;height:90px;">
+                
+            <lightning-button variant="brand" label="Ok" title="Cancel" onclick={closeAlert} class="slds-m-left_x-small"></lightning-button>
+            </footer>
+        </div>
+    </section>
+   
+    </template>
+
+    <template if:true={errorMessage}> 
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open slds-modal_large" >
+            <div class="slds-modal__container" >
+                <!-- Modal/Popup Box LWC header here -->
+                <header class="slds-modal__header slds-box slds-theme_shade slds-theme_alert-texture slds-theme_error" style="width: 650px;height:90px;">
+                    <p style="font-size:large;">Failed to resend email! </p>
+                </header>
+                <!-- Modal/Popup Box LWC body starts here -->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-7" style="width: 650px;" >
+                </br>
+                <p style="font-size:medium;padding:10px;">{alertMessage}</p>
+                </br>
+            </br>
+                </div>
+                <!-- Modal/Popup Box LWC footer starts here -->
+                <footer class="slds-modal__footer" style="width: 650px;height:90px;">
+                    
+                <lightning-button variant="brand" label="Ok" title="Cancel" onclick={closeAlert} class="slds-m-left_x-small"></lightning-button>
+                </footer>
+            </div>
+        </section>
+       
+
+</template>
+<template if:true={isRegistraitonModalOpen}>
+    <!-- Modal/Popup Box LWC starts here -->
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open slds-modal_large"  >
+        <div class="slds-modal__container" >
+            <!-- Modal/Popup Box LWC header here -->
+            <header class="slds-modal__header slds-box slds-theme_shade slds-theme_alert-texture slds-theme_error" style="width: 650px;height:90px;">
+                <p style="font-size:large;">Resend emails!</p>  
+                
+            </header>
+            <!-- Modal/Popup Box LWC body starts here -->
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-3" style="width: 650px;" >
+            </br>
+                <p style="font-size:medium;padding:10px;">Are you sure you want to resend Registration Email to <b>{pname}</b> ?</p>
+            </br>
+            </br>
+
+            </div>
+            <!-- Modal/Popup Box LWC footer starts here -->
+            <footer class="slds-modal__footer" style="width: 650px;height:90px;">
+                <lightning-button variant="brand" label="Yes" title="Cancel" access-key={index} id={index} onclick={sendRegistrationMail} class="slds-m-left_x-small"></lightning-button>
+            <lightning-button variant="brand" label="No" title="Cancel" onclick={closeRegistrationModalformail} class="slds-m-left_x-small"></lightning-button>
+            </footer>
+        </div>
+    </section>
+    
+</template>
+
+<template if:true={isRegistraitonCompletionModalOpen}>
+    <!-- Modal/Popup Box LWC starts here -->
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open slds-modal_large" >
+        <div class="slds-modal__container" >
+            <!-- Modal/Popup Box LWC header here -->
+            <header class="slds-modal__header slds-box slds-theme_shade slds-theme_alert-texture slds-theme_error" style="width: 650px;height:90px;">
+                <p style="font-size:large;">Resend emails!</p>  
+            </header>
+            <!-- Modal/Popup Box LWC body starts here -->
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-5"  style="width: 650px;">
+            </br>
+                <p style="font-size:medium;padding:10px;">Are you sure you want to resend Registration Completion Email to <b>{pname}</b> ?</p>
+            </br>
+        </br>
+            </div>
+            <!-- Modal/Popup Box LWC footer starts here -->
+            <footer class="slds-modal__footer" style="width: 650px;height:90px;">
+                <lightning-button variant="brand" label="Yes" title="Cancel" access-key={index} id={index} onclick={sendRegistrationCompletionMail} class="slds-m-left_x-small"></lightning-button>
+            <lightning-button variant="brand" label="No" title="Cancel" onclick={closeRegistrationCompletionModalformail} class="slds-m-left_x-small"></lightning-button>
+            </footer>
+        </div>
+    </section>
+   
+</template>
+    <template if:true={isCourseCompletionModalOpen}>
+        <!-- Modal/Popup Box LWC starts here -->
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open slds-modal_large" >
+            <div class="slds-modal__container" >
+                <!-- Modal/Popup Box LWC header here -->
+                <header class="slds-modal__header slds-box slds-theme_shade slds-theme_alert-texture slds-theme_error" style="width: 650px;height:90px;">
+                    <p style="font-size:large;">Resend emails!</p>  
+                    
+                </header>
+                <!-- Modal/Popup Box LWC body starts here -->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-4"  style="width: 650px;">
+                </br>
+                    <p style="font-size:medium;padding:10px;">Are you sure you want to resend Course Completion Email to <b>{pname}</b> ?</p>
+                </br>
+            </br>
+                </div>
+                <!-- Modal/Popup Box LWC footer starts here -->
+                <footer class="slds-modal__footer" style="width: 650px;height:90px;">
+                    <lightning-button variant="brand" label="Yes" title="Cancel" access-key={index} id={index} onclick={sendCourseCompletionMail} class="slds-m-left_x-small"></lightning-button>
+                <lightning-button variant="brand" label="No" title="Cancel" onclick={closeCourseCompletionModalformail} class="slds-m-left_x-small"></lightning-button>
+                </footer>
+            </div>
+        </section>
+      
+    </template>
+    <template if:true={isCourseCompletionModalOpen}>
+        <!-- Modal/Popup Box LWC starts here -->
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open slds-modal_large" >
+            <div class="slds-modal__container" >
+                <!-- Modal/Popup Box LWC header here -->
+                <header class="slds-modal__header slds-box slds-theme_shade slds-theme_alert-texture slds-theme_error" style="width: 650px;height:90px;">
+                    <p style="font-size:large;">Resend emails!</p>  
+                    
+                </header>
+                <!-- Modal/Popup Box LWC body starts here -->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-14"  style="width: 650px;">
+                </br>
+                    <p style="font-size:medium;padding:10px;">Are you sure you want to resend Course Completion Email to <b>{pname}</b> ?</p>
+                </br>
+            </br>
+                </div>
+                <!-- Modal/Popup Box LWC footer starts here -->
+                <footer class="slds-modal__footer" style="width: 650px;height:90px;">
+                    <lightning-button variant="brand" label="Yes" title="Cancel" access-key={index} id={index} onclick={sendCourseCompletionMail} class="slds-m-left_x-small"></lightning-button>
+                <lightning-button variant="brand" label="No" title="Cancel" onclick={closeCourseCompletionModalformail} class="slds-m-left_x-small"></lightning-button>
+                </footer>
+            </div>
+        </section>
+       
+    </template>
+    <template if:true={isCourseCompletionValidationModalOpen}>
+        <!-- Modal/Popup Box LWC starts here -->
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open slds-modal_large" >
+            <div class="slds-modal__container" >
+                <!-- Modal/Popup Box LWC header here -->
+                <header class="slds-modal__header slds-box slds-theme_shade slds-theme_alert-texture slds-theme_error" style="width: 650px;height:90px;">
+                    <p style="font-size:large;">Course completion date validation!</p>  
+                    
+                </header>
+                <!-- Modal/Popup Box LWC body starts here -->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-22" style="width: 650px;" >
+                </br>
+                    <p style="font-size:medium;padding:10px;">Completion Date is required to send completion email to <b>{pname}</b></p>
+                </br>
+            </br>
+                </div>
+                <!-- Modal/Popup Box LWC footer starts here -->
+                <footer class="slds-modal__footer" style="width: 650px;height:90px;">
+                    <lightning-button variant="brand" label="Ok" title="Cancel" onclick={closeAlert} class="slds-m-left_x-small"></lightning-button>
+                </footer>
+            </div>
+        </section>
+       
+    </template>
+    <template if:true={isModalOpen} >
+       <!--<h1 style="margin-left:200px;font-size:20px;"><b>Re-Send Emails</b></h1>
+    <hr style="width:75%;margin:5px;">-->
+    <lightning-radio-group name="radioGroup"
+    label="Email Options"
+    options={options}
+    value={value}
+    onchange={handleOptions}
+    type="radio" style="margin-left:200px;line-height: 3;cursor: pointer;"></lightning-radio-group>    
+    </template>
+   
+</template>

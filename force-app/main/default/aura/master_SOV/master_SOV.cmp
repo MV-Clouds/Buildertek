@@ -1,0 +1,114 @@
+<aura:component controller="ImportMasterPackagelines" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global" >
+	
+    <aura:attribute name="isModalOpen" type="boolean" default="false"/>
+        <aura:attribute name="PackageName" type="String"/>
+        <aura:attribute name="Type" type="String"/>
+    <aura:attribute name="selectedValue" type="String"/>
+    
+    <aura:attribute name="Spinner" type="Boolean" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/> 
+    <aura:attribute name="isPopOpen" type="boolean" default="false"/>
+    <aura:attribute name="listPackage" type="Package__c[]"/>
+    <aura:attribute name="packageTakeOffList" type="object" />
+    <aura:attribute name="listOfSelectedIds" type="List" default="[]"/>
+    <aura:attribute name="mycolumns" type="List"/>
+    <aura:attribute name="PickListValuesList" type="List"/>
+    
+    <aura:attribute name="CreatedRecordId" type="String"/>
+    <ltng:require styles="{!$Resource.ModalWidthCSS}"/>
+    
+           <aura:if isTrue="{!v.isModalOpen}">     
+    
+    <aura:html tag="Style">
+        .slds-p-around–medium {
+        padding: 0rem !important;
+        }
+        .slds-modal__content{
+        overflow-y:hidden !important;
+        height:unset !important;
+        max-height:unset !important;
+        }
+        .cuf-content {
+        padding: 0 0rem !important;
+        }
+    </aura:html> 
+    
+    
+    <div class="modal-header slds-modal__header slds-size_1-of-1">
+        <h4 class="title slds-text-heading–medium">Import Master Package</h4>
+    </div>
+    
+    
+    
+    <div class="slds-modal__content slds-p-around–x-large  slds-size_1-of-1 slds-is-relative">
+        <form class="slds-form–stacked">
+            <br/>
+        <lightning:input name="input1" label="Package Name" value="{!v.PackageName}" required="true" aura:id="fieldId"/>
+        <lightning:select name="select1" label="Type" value="{!v.Type}" required="true" aura:id="fieldId">
+            <option value="">--None--</option>
+            <aura:iteration items="{!v.PickListValuesList}" var="item" indexVar="index">
+                <option value="{!item.key}">{!item.label}</option>
+            </aura:iteration>
+            
+            
+        </lightning:select>
+            <br/>
+        </form>
+    </div>
+    
+               <br/>
+               
+    
+    <div class="modal-footer slds-modal__footer slds-size_1-of-1">
+      
+            <lightning:button label="Cancel" title="Cancel" onclick="{! c.closeModel }"/>
+         <lightning:button variant="brand" label="Save and Import Package" title="Save and Import Package" onclick="{! c.handleClick }" />
+            </div>
+            
+    </aura:if>
+    <aura:if isTrue="{!v.isPopOpen}">
+         <aura:if isTrue="{!v.Spinner}">
+            <div aura:id="spinnerId" class="slds-spinner_container">
+               <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                 <span class="slds-assistive-text">Loading</span>
+                 <div class="slds-spinner__dot-a"></div>
+                 <div class="slds-spinner__dot-b"></div>
+                   <div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+               </div>
+            </div>
+ 		</aura:if>
+              <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <div class="slds-modal__header" style="font-size:17px;">
+                    Import Package
+                </div>
+                <div class="slds-modal__content slds-p-around--large">
+                   <div style="min-height: 10rem;
+                                background: white;
+                                height: 25rem;">   
+                        <lightning:datatable data="{! v.listPackage }"
+                                             columns="{! v.mycolumns }"
+                                             keyField="Id"
+                                             selectedRows="{! v.selectedRows }"
+                                             onrowselection="{! c.getSeletedPAIds }"
+                                             /> 
+                    </div>
+                    
+                     <div class="slds-modal__footer">
+                        <button class="slds-button slds-button--neutral" onclick="{!c.closePopup}">Cancel</button>
+                    <button class="slds-button slds-button--brand" onclick="{!c.importTakeoffLinesFromPackage}">Import Package</button>
+                    </div> 
+                 
+                </div>
+                
+            </div>
+            
+        </section>
+    </aura:if>
+    
+    
+       
+  
+</aura:component>

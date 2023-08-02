@@ -1,0 +1,52 @@
+.THIS .content {
+    
+    max-width: 768px;
+    
+    color: #3c3d3e;
+    
+}
+.THIS .missionCaroselBG{
+    padding:0px;
+    background-position: center center;
+    text-align: center;
+    background-size: 100%;
+    border-radius: 0px;
+}
+.THIS .titlestyle{
+    font-size: 40px;
+    font-family: Gotham-Book;
+    text-align: center;
+}
+.THIS .textstyle{
+    font-size: 14px;
+    font-family:Gotham-Medium;
+}
+.THIS .mobileCardBody {
+       height:160px;margin-bottom:0px; font-family: Gotham-Medium;
+    }
+@media screen and (max-width: 767px) {
+    .THIS .mobileCardBody {
+        margin-bottom: 3rem;
+    }
+}
+@media screen and (min-width: 768px) {
+    .THIS .mobileCardBody {
+        margin-bottom: 1rem;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .THIS .titlestyle{
+        font-size: 25px;
+        font-family: Gotham-Book;
+    }
+    .THIS .textstyle{
+        font-size: 13px;
+        font-family:Gotham-Medium;
+    }
+}
+.THIS .slds-theme--default{
+    
+    border: 1px solid #92a0b9;
+    
+}

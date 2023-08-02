@@ -1,0 +1,141 @@
+<aura:component controller="ImportQuotes" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global">
+    <aura:attribute name="masterQuotesList" type="object" />
+    <aura:attribute name="Spinner" type="Boolean" />
+    <aura:attribute name="isSelectAll" type="boolean" default="false"/>
+    <!-- Attribute Declration For Pagination -->
+    
+    <aura:attribute name="PaginationList" type="Object"/>
+    <aura:attribute name="startPage" type="Integer" />
+    <aura:attribute name="endPage" type="Integer"/>
+    <aura:attribute name="totalRecords" type="Integer"/>
+    <aura:attribute name="pageSize" type="Integer" default="10"/>
+    
+    <!-- Attribute Declration For Pagination End-->
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> 
+   
+    <ltng:require styles="{!$Resource.ModalPreview62more}"/>
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                 <div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+                
+            </div>
+        </div>
+    </aura:if>
+    <div class="slds-modal__header" style="font-size:17px;">
+        Select Quote to Import
+    </div>
+    <div class="slds-modal__content slds-p-around--large">
+    	<table class="slds-table slds-table_bordered slds-table_cell-buffer" style="border:1px solid rgb(216, 237, 255); border-radius:5px;">
+    		<thead>
+    			<tr class="slds-text-title_caps">
+    				<th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-left-radius:5px;vertical-align: top;line-height: 2;">
+    					<!--<ui:inputCheckbox aura:id="checkContractors" change="{!c.selectAll}" />	-->
+    					<div class="slds-form-element">
+                            <div class="slds-form-element__control">
+                                <label class="slds-checkbox" style="width:2px;">
+                                    <ui:inputCheckbox value="{!v.isSelectAll}" change="{!c.handleSelectAll}" aura:id="selectAll"/> 
+                                    <span class="slds-checkbox--faux"></span>
+                                    <span class="slds-form-element__label text"></span>
+                                </label>
+                            </div>
+                        </div>
+    				</th>
+    				<th style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+    					Title
+    				</th>
+    				<th style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+    					Project
+    				</th>
+    				<th style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+    					Type
+    				</th>
+    				<th style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+    					Grand Total
+    				</th>
+    			</tr>
+    		</thead>
+    		<tbody>
+    			<aura:iteration items="{!v.PaginationList}" var="rec">
+    				<tr class="slds-hint-parent">
+    				    <aura:if isTrue="{!rec.masterQuoteRecord != null}">
+    				        	<td style="width:50px;">
+        						<!--<ui:inputCheckbox aura:id="checkContractor" value="{rec.quoteCheck}" text="{!rec.quoteRecord.Id}" change="{!c.handleCheck}" />-->
+        						<div class="slds-form-element">
+                                    <div class="slds-form-element__control">
+                                        <label class="slds-checkbox" style="width:2px;">
+                                            <ui:inputCheckbox text="{!rec.masterQuoteRecord.Id}" aura:id="checkQuoteItem" value="" change="{!c.unCheckAll}"/>
+                                            <span class="slds-checkbox--faux"></span>
+                                            <span class="slds-form-element__label text"></span>
+                                        </label>
+                                    </div>
+                                </div>
+        					<!--    <lightning:input aura:id="quoteselection" type="checkbox" value="{!rec.quoteCheck}" text="{!rec.quoteRecord.Id}" onclick="{!c.uncheckAll}" style="cursor: pointer !important;"/>-->
+        					</td> 
+        					<td role="gridcell">
+        						<ui:outputText value="{!rec.masterQuoteRecord.Name}" />  
+        					</td>
+        					<td role="gridcell">
+        						<ui:outputText value="{!rec.masterQuoteRecord.buildertek__Project__r.Name}" />  
+        					</td>
+        					<td role="gridcell">
+        						<ui:outputText value="{!rec.masterQuoteRecord.buildertek__Type__c}" />  
+        					</td>
+        					<td  role="gridcell">
+        					    <ui:outputCurrency value="{!rec.masterQuoteRecord.buildertek__Grand_Total__c}"/>    
+        					</td> 
+        					<aura:set attribute="else">
+    					    	<td style="width:50px;">
+            						<!--<ui:inputCheckbox aura:id="checkContractor" value="{rec.quoteCheck}" text="{!rec.quoteRecord.Id}" change="{!c.handleCheck}" />-->
+            						<div class="slds-form-element">
+                                        <div class="slds-form-element__control">
+                                            <label class="slds-checkbox" style="width:2px;">
+                                                <ui:inputCheckbox text="{!rec.quoteRecord.Id}" aura:id="checkQuoteItem" value="" change="{!c.unCheckAll}"/>
+                                                <span class="slds-checkbox--faux"></span>
+                                                <span class="slds-form-element__label text"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+            					<!--    <lightning:input aura:id="quoteselection" type="checkbox" value="{!rec.quoteCheck}" text="{!rec.quoteRecord.Id}" onclick="{!c.uncheckAll}" style="cursor: pointer !important;"/>-->
+            					</td> 
+            					<td role="gridcell">
+            						<ui:outputText value="{!rec.quoteRecord.Name}" />  
+            					</td>
+            					<td role="gridcell">
+            						<ui:outputText value="{!rec.quoteRecord.buildertek__Project__r.Name}" />  
+            					</td>
+            					<td role="gridcell">
+            						<ui:outputText value="{!rec.quoteRecord.buildertek__Type__c}" />  
+            					</td>
+            					<td  role="gridcell">
+            					    <ui:outputCurrency value="{!rec.quoteRecord.buildertek__Grand_Total__c}"/>    
+            					</td>    
+        					</aura:set>
+    				    </aura:if>
+    				
+    				</tr>
+    			</aura:iteration>
+    		</tbody>
+    	</table>
+    	<br/>
+        <lightning:buttonGroup >
+            <lightning:button label="Previous" disabled="{!v.startPage == 0}"  
+                              onclick="{!c.previous}" variant="brand"
+                              iconName='utility:back'/>
+            &nbsp; &nbsp; &nbsp;
+            <lightning:button label="Next" disabled="{!v.endPage >= v.totalRecords}" 
+                              onclick="{!c.next}" variant="brand"
+                              iconName='utility:forward' iconPosition='right'/>
+        </lightning:buttonGroup>
+    </div>
+    <div class="slds-modal__footer">
+    	<button class="slds-button slds-button--neutral" onclick="{!c.closeModel}" >Cancel</button>
+    	<button class="slds-button slds-button--brand" onclick="{!c.importQuote}">Import Quote Lines</button>
+    </div>
+</aura:component>

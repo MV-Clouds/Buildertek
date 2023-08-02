@@ -1,0 +1,87 @@
+<aura:component  controller = "BT_SubmitRFQ" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global" >
+     <aura:attribute name="showRecordData" type="Boolean" default="false" />
+    <aura:attribute name="fieldname" type="String"  />
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}" access="global" />
+    <aura:attribute name="rfqrecordId" type="String" default="" />
+    <aura:attribute name="isRFQsubmitted" type="Boolean" />
+    <aura:attribute name="RFIsClosed" type="Boolean" />
+     <aura:attribute name="SubmitRFQ" type="Boolean" default="false" />
+    <aura:attribute name="isduedate" type="Boolean" default="false" />
+    <lightning:notificationsLibrary aura:id="notifLib"/>
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/>
+      <aura:if isTrue='{!v.SubmitRFQ}'>
+            <aura:html tag="style">
+            .slds-modal__container {
+            width:60% !important;      
+			max-width: 60% !important;
+            }
+            .slds-modal__content {
+         overflow: hidden !important;
+         }            
+        </aura:html>
+      <div class="slds-modal__content" >
+                <header class="slds-modal__header" >
+                        <lightning:buttonIcon iconName="utility:close"
+                                              onclick="{! c.cancelSubmit }"
+                                              alternativeText="close"
+                                              variant="bare-inverse"
+                                              class="slds-modal__close"/>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Submit Vendor RFQ</h2>
+                    </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="height:100%">
+                     <center>
+                    Are you sure you want to Submit the Vendor RFQ?
+                        </center>
+                  
+                </div>
+                 <footer class="slds-modal__footer">
+                        <lightning:button variant="neutral"
+                                          label="No"
+                                          title="No"
+                                          onclick="{! c.cancelSubmit }"/>
+                        <lightning:button variant="brand"
+                                          label="Yes"
+                                          title="Yes"
+                                          onclick="{!c.getprojectRecord}"/>
+                    </footer>
+           
+        </div> 
+    </aura:if>
+    
+    
+    
+    
+    
+    
+    
+   <!--  <aura:if isTrue='{!v.SubmitRFQ}'>
+       <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+            aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="min-width:40rem;">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Submit Vendor RFQ
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height:50px;">
+                    <center>
+                    Are you sure you want to Submit the Vendor RFQ?
+                        </center>
+                </div>
+                <footer class="slds-modal__footer" style  = "margin-bottom: -2rem;">
+                    <lightning:button label="No" title="No" onclick="{!c.cancelSubmit}" />
+                    <lightning:button variant="brand" label="Yes" title="Yes" onclick="{!c.getprojectRecord}" />
+                </footer>
+            </div>
+        </section>-->
+      <!--  <div class="slds-backdrop slds-backdrop_open"></div>-->
+   <!-- </aura:if>-->
+     
+   <!-- <aura:if isTrue='{!v.isRFQsubmitted}'> 
+	<div aura:id="progressbar">
+    	<center>
+	    	<img alt="Generating new invoice." src="{!$Resource.gearsloading}" style="height:150px !important;"/>
+	    	<br/>
+	     Please don't leave this page until RFQ Vendor is Updated.
+    	</center> 
+        </div></aura:if>-->
+</aura:component>

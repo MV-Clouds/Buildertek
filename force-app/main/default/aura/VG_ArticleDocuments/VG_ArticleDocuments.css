@@ -1,0 +1,19 @@
+.THIS {
+}
+.THIS li{
+    padding-left:20px;
+    font-family:Gotham-Book;
+    font-size:13px;
+    color:#F05F4D;
+}
+.THIS p{
+    padding-left:20px;
+    font-family:Gotham-Book;
+    font-size:13px;
+}
+
+.THIS .title{
+    font-family:Gotham-bold;
+    font-size:17px;
+    font-weight:bold;
+}

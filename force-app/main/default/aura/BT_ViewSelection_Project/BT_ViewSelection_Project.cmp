@@ -1,0 +1,17 @@
+<aura:component controller="BT_ViewSelection_Project" implements="force:appHostable,force:hasRecordId,flexipage:availableForAllPageTypes" access="global">
+	<aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <aura:attribute name="gridColumns" type="List" access="PRIVATE" />
+    <aura:attribute name="gridData" type="Object" access="PRIVATE" />
+    <aura:attribute name="gridExpandedRows" type="List" access="PRIVATE" />
+
+
+    <div>
+        <lightning:treeGrid
+            columns="{! v.gridColumns }"
+            data="{! v.gridData }"
+            keyField="Id"
+            hideCheckboxColumn="true"
+            onrowaction="{!c.handleURLClick}"
+        />
+    </div>
+</aura:component>

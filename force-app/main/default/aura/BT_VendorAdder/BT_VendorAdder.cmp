@@ -1,0 +1,129 @@
+<aura:component controller="BT_Lightning_Utils">
+    
+    <!-- <aura:html tag="style">
+        .slds-modal__content {
+        overflow-y: scroll !important;
+        }
+        
+    </aura:html>  -->
+    <aura:attribute name="onSuccess" type="Object"/>
+    <aura:attribute name="onCancel" type="Object"/>
+    <aura:attribute name="_filter" type="Object"/>
+    <aura:attribute name="parentId" type="String"/>
+    
+    <aura:attribute name="showFilterBar" type="Boolean" default="false"/>
+    <aura:attribute name="orderBy" type="String"/>
+    <aura:attribute name="selectedItemNum" type="Integer" default="0"/>
+    
+    <aura:attribute name="selectedVendor" type="String" default="All" />
+    <aura:attribute name="vendorOptionList" type="List" />
+    
+    <aura:attribute name="searchTradeTypeFilter" type="String" default="" />
+    <aura:attribute name="searchVendorNameFilter" type="String" default="" />
+    <aura:attribute name="searchRatingFilter" type="String" default="" />
+    
+    <aura:handler name="change" value="{!v.searchTradeTypeFilter}" action="{!c.doSearch}" />
+    <aura:handler name="change" value="{!v.searchVendorNameFilter}" action="{!c.doSearch}" />
+    <aura:handler name="change" value="{!v.searchRatingFilter}" action="{!c.doSearch}" />
+    
+    <aura:attribute name="vendorList" type="List" />
+    <aura:attribute name="columns" type="List"/>
+    <aura:attribute name="savecallback" type="object"/>
+    <aura:attribute name="IsDisable" type="Boolean" default="true"/>
+    <aura:attribute name="Spinner" type="Boolean" default="false"/>
+    <aura:attribute name="showMessage" type="Boolean" default="false" />
+    
+    <aura:handler name="change" action="{!c.applyFilter}" value="{!v._filter}" />
+    <aura:handler name="change" action="{!c.updateFilterListStyle}" value="{!v.showFilterBar}" />
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.initialize}"/>
+
+    <div class="modalContent" style="height:28rem;overflow-y:scroll;"> 
+        <div class="firstMdlContent slds-modal__content slds-p-around-large">
+            
+            
+            <div class="slds-modal__content" id="modal-content-id-1">
+                <aura:if isTrue="{!v.Spinner}">
+                    <div aura:id="spinnerId" class="slds-spinner_container">
+                        <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                            <span class="slds-assistive-text">Loading</span>
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                            <div class="custom-loading-text">
+                                <b>Processing, Please Wait</b>
+                            </div>
+                        </div>
+                    </div>
+                </aura:if>
+                
+                <!-- <lightning:select name="Vendor" label="Select Vendor" value="{!v.selectedVendor}" onchange="{!c.handleVendorChange}">
+            <option value="All">All</option>
+            <aura:iteration items="{!v.vendorOptionList}" var="obj">
+                <option value="{!obj.Id}">{!obj.Name}</option>
+            </aura:iteration> 
+        </lightning:select> -->
+                
+                <div class="filterSection">
+                    <lightning:input
+                                     
+                                     style="width: 33%; display: inline-block; padding: 0% 1% 1% 2%;"
+                                     autocomplete="off"
+                                     aura:id="searchVendorName"
+                                     name="enter-search"
+                                     type="search"
+                                     placeholder="Vendor Name"
+                                     value="{!v.searchVendorNameFilter}"
+                                     />
+                    <lightning:input
+                                     
+                                     style="width: 33%; display: inline-block; padding: 0% 1% 1% 2%;"
+                                     autocomplete="off"
+                                     aura:id="searchTradeType"
+                                     name="enter-search"
+                                     type="search"
+                                     placeholder="Trade Type"
+                                     value="{!v.searchTradeTypeFilter}"
+                                     />
+                    <lightning:input
+                                     
+                                     style="width: 33%; display: inline-block; padding: 0% 1% 1% 2%;"
+                                     autocomplete="off"
+                                     aura:id="searchRating"
+                                     name="enter-search"
+                                     type="search"
+                                     placeholder="Rating"
+                                     value="{!v.searchRatingFilter}"
+                                     />
+                </div>
+                <!-- <div class= "slds-hide" aura:id="productFilterBar">
+      <c:BT_ProductSelectionFilter  _sObject="Account"
+               _filter="{!v._filter}" 
+               showFilterBar="{!v.showFilterBar}"/>
+     </div> -->
+                <lightning:layout horizontalAlign="spread" >
+                    <lightning:layoutItem class="subHeader">
+                        
+                    </lightning:layoutItem>
+                    <lightning:layoutItem class="subHeader">
+                        <!-- <a href="javascript:void(0);"
+          onclick="{!c.toggleFilterBar}">
+        <lightning:icon iconName="utility:filterList" aura:id="filterList"/>
+       </a> -->
+                    </lightning:layoutItem>
+                </lightning:layout>  
+                <lightning:datatable aura:id="vendorlist" 
+                                     keyField="id" 
+                                     data="{! v.vendorList }" 
+                                     columns="{! v.columns }" 
+                                     hideCheckboxColumn="false" 
+                                     onrowselection="{! c.getSelectedRows }"/>		
+            </div>
+        </div>
+    </div>
+    <div class="slds-modal__footer">
+        <button class="slds-button slds-button--neutral" onclick="{!c.onCancel}" >Cancel</button>
+        <button class="slds-button slds-button--brand" onclick="{!c.addVendors}" disabled="{!v.IsDisable}">Add Vendors</button>
+    </div>
+    <lightning:notificationsLibrary aura:id="notifLib"/>
+</aura:component>

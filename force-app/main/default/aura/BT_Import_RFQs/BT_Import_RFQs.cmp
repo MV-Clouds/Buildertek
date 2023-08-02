@@ -1,0 +1,163 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader" controller="GetMasterRFQs" access="global" >
+    <aura:attribute name="recordId" type="string" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="rfqRecordList" type="RFQ__c[]" />
+    <aura:attribute name="listOfSelectedRFQIds" type="List" default="[]"/>
+    <aura:attribute name="PageNumber" type="integer" default="1" />
+    <aura:attribute name="pageSize" type="integer" default="10" />
+    <aura:attribute name="TotalPages" type="integer" default="0" />
+    <aura:attribute name="TotalRecords" type="integer" default="0" />
+    <aura:attribute name="RecordStart" type="integer" default="0" />
+    <aura:attribute name="RecordEnd" type="integer" default="0" />
+    
+    <aura:attribute name="searchRfqVendorFilter" type="String" default="" />
+    <aura:attribute name="searchRfqTradeFilter" type="String" default="" />
+    <aura:attribute name="searchRfqDesFilter" type="String" default="" />
+    
+    <aura:handler name="change" value="{!v.searchRfqVendorFilter}" action="{!c.doRfqSearch}" />
+    <aura:handler name="change" value="{!v.searchRfqTradeFilter}" action="{!c.doRfqSearch}" />
+    <aura:handler name="change" value="{!v.searchRfqDesFilter}" action="{!c.doRfqSearch}" />
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/> 
+    <!-- <aura:html tag="style">
+        .slds-modal__container{
+            max-width: 80rem !important;
+            width:80% !important;
+        }
+    </aura:html> -->
+    <div class="slds-modal__header">
+        <h1 class="slds-text-heading_medium slds-hyphenate">Add RFQ To Budget</h1>
+        <div class="searchCointainer">
+            <lightning:input 
+                             style="width: 33%; display: inline-block;padding: 0% 2% 0% 0%;"
+                             autocomplete="off"
+                             aura:id="searchDesRfqItem"
+                             name="enter-search"
+                             type="search"
+                             placeholder="Description"
+                             value="{!v.searchRfqDesFilter}"
+                             /><!--  onkeyup="{!c.doRfqSearch}" width: 33%; display: inline-block; padding: 0% 2% 3% 0% class="slds-p-bottom_small slds-p-right_small"-->
+            <lightning:input
+                             
+                             style="width: 33%; display: inline-block; padding: 0% 2% 0% 0%;"
+                             autocomplete="off"
+                             aura:id="searchRfqVendorItem"
+                             name="enter-search"
+                             type="search"
+                             placeholder="Vendor"
+                             value="{!v.searchRfqVendorFilter}"
+                             />
+            <lightning:input
+                             
+                             style="width: 33%; display: inline-block; padding: 0% 2% 0% 0%;"
+                             autocomplete="off"
+                             aura:id="searchTradeRfqItem"
+                             name="enter-search"
+                             type="search"
+                             placeholder="Trade Type"
+                             value="{!v.searchRfqTradeFilter}"
+                             />
+        </div>
+    </div>
+    <div  class="slds-modal__content slds-p-around--large">
+        <div>
+            <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                <thead>
+                    <tr class="slds-text-heading--label">
+                        <th class="slds-is-sortable" scope="col" width="5px">
+                            <lightning:input type="checkbox" aura:id="headCheckRFQ" checked="false" onchange="{!c.selectAllRfq}"/> 
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Description">
+                                Description
+                            </div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Vendor Name">
+                                Vendor Name
+                            </div>
+                        </th>
+                        <th  scope="col" >
+                            <div class="slds-truncate" title="Trade Type">
+                                Trade Type
+                            </div>
+                        </th>
+                        <th  scope="col" >
+                            <div class="slds-truncate" title="Awarded Date">
+                                Awarded Date
+                            </div>
+                        </th>
+                        <th scope="col" width="5px">
+                            <div class="slds-truncate" title="Awarded Amount">
+                                Awarded Amount
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.rfqRecordList}" var="item" indexVar="index">
+                        <tr>
+                            <td>
+                                <lightning:input type="checkbox" aura:id="checkRFQ" checked="false" name="{!item.Id}" onchange="{!c.selectRfq}"/>
+                            </td>
+                            <td>
+                                <div class="slds-truncate" title="{!item.Name}" >
+                                    {!item.Name}
+                                </div>
+                            </td>
+                            <td>
+                                <aura:if isTrue="{!item.buildertek__Vendor__r != undefined}">
+                                    <div class="slds-truncate" title="{!item.buildertek__Vendor__r.Name}" >
+                                        {!item.buildertek__Vendor__r.Name}
+                                    </div>
+                                    <aura:set attribute="else">
+                                        <div class="slds-truncate" title="">
+                                            
+                                        </div>
+                                    </aura:set>
+                                </aura:if>
+                                
+                            </td>
+                            <td>
+                                <aura:if isTrue="{!item.buildertek__Trade_Type__r != undefined}">
+                                    <div class="slds-truncate" title="{!item.buildertek__Trade_Type__r.Name}" >
+                                        {!item.buildertek__Trade_Type__r.Name}
+                                    </div>
+                                    <aura:set attribute="else">
+                                        <div class="slds-truncate" title="" >
+                                            
+                                        </div>
+                                    </aura:set>
+                                </aura:if>
+                            </td>
+                            <td>
+                                <div class="slds-truncate" title="{!item.buildertek__Awarded_Date__c}" >
+                                    {!item.buildertek__Awarded_Date__c}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate" title="{!item.buildertek__Vendor_Quote__c}" >
+                                    <lightning:formattedNumber
+                                                               value="{!item.buildertek__Vendor_Quote__c}"
+                                                               style="currency" />
+                                    
+                                </div>
+                            </td>
+                        </tr>
+                    </aura:iteration>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- <footer> -->
+    <div class="slds-modal__footer">
+        <lightning:button disabled="{!v.PageNumber == 1}" variant="brand" aura:id="prevPage" label="Prev"
+                          onclick="{!c.handlePrev}" class="next-prev_button"/>
+        <lightning:button disabled="{!v.PageNumber >= v.TotalPages}" aura:id="nextPage" variant="brand"
+                          label="Next" onclick="{!c.handleNext}" class="next-prev_button"/>
+        <lightning:button variant="neutral"  label="Cancel"
+                          onclick="{!c.closeModal}" />
+        <lightning:button aura:id="nextPage" variant="brand"
+                          label="Add To budget" onclick="{!c.addToBudget}" />
+    </div> 
+    <!-- </footer> -->
+</aura:component>

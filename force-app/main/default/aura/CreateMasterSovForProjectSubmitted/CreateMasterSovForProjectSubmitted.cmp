@@ -1,0 +1,1040 @@
+<aura:component controller="CreateMasterSOVForProjectController2" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,lightning:isUrlAddressable,force:hasRecordId,force:lightningQuickActionWithoutHeader,forceCommunity:availableForAllPageTypes,forceCommunity:layout" access="global" >
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <lightning:workspaceAPI aura:id="workspace" />
+    
+    <aura:attribute name="currencycode" type="String"/>
+    
+    <aura:attribute name="autoItemNum" type="String" />
+    
+    <aura:attribute name="OldAutoItemNum" type="String" />
+    
+    <aura:attribute name="projectId" type="String" />
+    <aura:attribute name="recordId" type="String" />
+
+    <aura:attribute name="isconDeletePopUp" type="boolean" default="false" />
+    <aura:attribute name="conindexForDelete" type="integer" default="" />
+    
+    
+    <aura:attribute name="selectedLeftRecordList" type="List" />
+
+
+
+    <aura:attribute name="index" type="integer" default="" />
+    <aura:attribute name="recId" type="string" default="" />
+    <aura:attribute name="IsaddtoSOV" type="Boolean" default="false" />
+    <aura:attribute name="IsConslidatedBtn" type="Boolean" default="false" />
+    <aura:attribute name="iszprev" type="Boolean" default="false" />
+    
+    <aura:attribute name="selectedLeftRecordIds" type="List" />
+    <aura:attribute name="selectedLeftIndexValuesList" type="List" />
+    
+    <aura:attribute name="selectedRightRecordIds" type="List" />
+    <aura:attribute name="selectedRightIndexValuesList" type="List" />
+    
+    <aura:attribute name="newRightSelList" type="List" default="[]" />
+    
+    <aura:attribute name="Spinner" type="Boolean" />
+    <aura:attribute name="showMessage" type="Boolean" default="false" />
+    <aura:attribute name="isManageSOV" type="Boolean" default="false" />
+    <aura:attribute name="isgrouping" type="Boolean" default="false" />
+    <aura:attribute name="grouptext" type="string" />
+    <aura:attribute name="groupingMap" type="Map"/>
+    <aura:attribute name="extgroupvalue" type="string"/>
+    <aura:attribute name="EmailTemplatesList" type="List" default="[]"/>   
+    <aura:attribute name="EmailTemplateSelectedValue" type="String" default=""/> 
+    <aura:attribute name="defaultVendorname" type="String" />
+    <aura:attribute name="ManageSovId" type="String" />
+    <aura:attribute name="ManageSovName" type="String" />
+    <aura:attribute name="ManageSovTotal" type="Decimal" />
+    <aura:attribute name="recordsList" type="List" default="[]" />
+    <aura:attribute name="selectedRecords" type="List" default="[]" />
+    <aura:attribute name="selectedRecordMap" type="Object" />
+    <aura:attribute name="selectedRightRecords" type="List" default="[]" />
+    <aura:attribute name="selectedRightIndexValues" type="List" default="[]" />
+    <aura:attribute name="parentprojectRecordId" type="String" default="" />
+    <aura:attribute name="selectedRightRecordIdsList" type="List" default="[]" />
+    <aura:attribute name="selectedRecordList" type="List" default="[]" />
+    <aura:attribute name="selectedRecordMainList" type="List" default="[]" />
+    
+    
+    
+    <aura:attribute name="isConsolidate" type="Boolean" default="false" />
+    <aura:attribute name="listOfFields" type="Decimal" />
+    <aura:attribute name="isDeletePopUp" type="Boolean" default="false" />
+    <aura:attribute name="isAddNewLine" type="Boolean" default="false" />
+    
+    <aura:attribute name="description" type="String"  />
+    <aura:attribute name="itemNumber" type="String"  />
+    
+    <aura:attribute name="newDescription" type="String"  />
+    <aura:attribute name="newItemNumber" type="String"  />
+    <aura:attribute name="newScheduledValue" type="String"  />
+    
+    <aura:attribute name="ApprovedrecordsList" type="list" default="" />
+    <aura:attribute name="PendingrecordsList" type="list" default="" />
+    <!--pagination for approved List-->
+    <aura:attribute name="PageNumber" type="integer" default="1"/>
+    <aura:attribute name="TotalPages" type="integer" default="0"/>
+    <aura:attribute name="TotalRecords" type="integer" default="0"/>
+    <aura:attribute name="RecordStart" type="integer" default="0"/>
+    <aura:attribute name="RecordEnd" type="integer" default="0"/>
+    <aura:attribute name="pageSize" type="integer" default="75" />
+    <!-- end -->
+    
+    
+    
+    
+   <!--pagination for pending List-->
+    <aura:attribute name="PageNumber1" type="integer" default="1"/>
+    <aura:attribute name="TotalPages1" type="integer" default="0"/>
+    <aura:attribute name="TotalRecords1" type="integer" default="0"/>
+    <aura:attribute name="RecordStart1" type="integer" default="0"/>
+    <aura:attribute name="RecordEnd1" type="integer" default="0"/>
+    <aura:attribute name="pageSize1" type="integer" default="75" />
+    <!-- end -->
+    
+    
+    <aura:attribute name="pageIndex" type="integer" default="1" />
+    <aura:attribute name="mainList" type="List" />
+    <!--search -->
+    <aura:attribute name="searchVendorFilter" type="String" default="" />
+    <aura:attribute name="searchItemFilter" type="String" default="" />
+    <aura:attribute name="searchDescriptionFilter" type="String" default="" />
+    <aura:attribute name="searchSchedledValueFilter" type="Decimal" default="" />
+    <aura:handler name="change" value="{!v.searchVendorFilter}" action="{!c.doSearch}" />
+    <aura:handler name="change" value="{!v.searchItemFilter}" action="{!c.doSearch}" />
+    <aura:handler name="change" value="{!v.searchDescriptionFilter}" action="{!c.doSearch}" />
+    <aura:handler name="change" value="{!v.searchSchedledValueFilter}" action="{!c.doSearch}" />
+    <!-- end -->
+    
+    <aura:attribute name="projectName" type="Decimal" default="" />
+    <!-- Toggle Attributes  -->
+    <aura:attribute name="groupByVendortoggle" type="Boolean" default="false"/>
+    <aura:attribute name="isrejectedSOVs" type="Boolean" default="false" />
+    <aura:attribute name="rejectedRecordList" type="List" default="[]" />
+    <aura:attribute name="rejectSOVPopUp" type="Boolean" default="false" />
+    <aura:attribute name="approveSOVPopUp" type="Boolean" default="false" />
+    <aura:attribute name="rejectSOV1" type="Boolean" default="false" />
+    <aura:attribute name="noRejectedLines" type="Boolean" default="false" />
+    <aura:attribute name="indexForDelete" type="integer" />
+    <aura:attribute name="recIdForDelete" type="String" />
+    
+    <aura:attribute name="indexForEdit" type="integer" />
+    <aura:attribute name="recIdForEdit" type="String" />
+    
+    <aura:attribute name="isEditPopUp" type="Boolean" default="false" />
+    <aura:attribute name="pendingcheckAll" type="Boolean" default="false" />
+    <aura:attribute name="ApprovecheckAll" type="Boolean" default="false" />
+    <aura:attribute name="isRemovePopUp" type="Boolean" default="false" />
+    
+    <aura:attribute name="indexForReject" type="integer" /> 
+     <aura:attribute name="conindexForReject" type="integer" default="" />
+    <aura:attribute name="recIdForReject" type="String" />
+    <aura:attribute name="isRejectClick" type="boolean" default="false" />
+    <aura:attribute name="rejectionreason" type="String" />
+
+    <aura:html tag="style">
+        .left-screen {
+        max-height:1537px !important;
+        }
+        .right-screen {
+        max-height:1580px !important;
+        }
+        
+    </aura:html>
+    
+    <div class="slds-card ">
+        <div class="slds-grid slds-gutters cardCss  slds-p-around_small">
+            <div class="slds-col">
+                <span>
+                    <span style=" color: #6b6d70;">Project</span>
+                    <h2 class="slds-card__header-title">
+                        <span>
+                            
+                            <a href="javascript:void()"  onclick="{!c.NavToProjectRec}">{!v.projectName}</a>
+                            
+                            <!--  <ui:outputURL 
+                                          value="{!'/one/one.app?#/sObject/'+ v.recordId + '/view'}"
+                                          target="_blank" label="{!v.projectName}" />  -->
+                        </span>
+                    </h2>
+                </span>
+            </div>
+            
+                <div class="slds-col">
+                    <span>
+                        <span style=" color: #6b6d70;">SOV</span>
+                        <h2 class="slds-card__header-title">
+                            <span>
+                                
+                                <a href="javascript:void()"  onclick="{!c.gotoSOV}">{!v.ManageSovName}</a>
+                                
+                                <!-- <ui:outputURL 
+                                              value="{!'/one/one.app?#/sObject/'+ v.ManageSovId + '/view'}"
+                                              target="_blank" label="{!v.ManageSovName}" />  -->
+                            </span>
+                        </h2>
+                    </span>
+                </div>
+            
+                <div class="slds-col">
+                    <span>
+                        <span style=" color: #6b6d70;">Total</span>
+                        <h2 class="slds-card__header-title">
+                            <span>
+                               <!-- <lightning:formattedNumber value="{!v.ManageSovTotal}" currencyDisplayAs="code" currencyCode="USD" style="currency"/> -->
+                                
+                                <lightning:formattedNumber value="{!v.ManageSovTotal}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code"/>
+                                
+                            </span>
+                        </h2>
+                    </span>
+                </div>
+            
+            
+            <div class="slds-col">
+            </div>
+            
+            <div class="slds-col">
+            </div>
+                <div class="slds-col" style = "text-align: right">
+                    <lightning:button variant="neutral" label="Cancel" title="Cancel" onclick="{!c.gotoSOV}" />
+                </div>
+            
+        </div>
+    </div>
+    
+    <div class="slds-grid slds-gutters" style = "padding-top: 13px">
+        <div class="slds-col slds-col slds-size_1-of-2">
+            <lightning:card aura:id="lightCard0" class="slds-card_boundary slds-page-header">
+                <div>
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_1-of-9">
+                            <span class="slds-card__header-title" style="white-space: nowrap;margin-top: 7px;">
+                                SOV Lines
+                            </span>
+                        </div>
+                        
+                        <div class="slds-col slds-size_1-of-4">
+                            <span>
+                                <lightning:input 
+                                                 
+                                                 autocomplete="off"
+                                                 label=""
+                                                 aura:id="searchVendorItem"
+                                                 name="enter-search"
+                                                 type="search"
+                                                 placeholder="Item No"
+                                                 variant="label-hidden"
+                                                 value="{!v.searchItemFilter}"
+                                                 />
+                            </span>
+                        </div>
+                        
+                        <div class="slds-col slds-size_1-of-4">
+                            <span>
+                                <lightning:input
+                                                 
+                                                 autocomplete="off"
+                                                 label=""
+                                                 aura:id="searchCategoryItem"
+                                                 name="enter-search"
+                                                 type="search"
+                                                 placeholder="Description"
+                                                 variant="label-hidden"
+                                                 value="{!v.searchDescriptionFilter}"
+                                                 />
+                            </span>
+                        </div>
+                        <div class="slds-col slds-size_1-of-4">
+                            <span>
+                                
+                                <lightning:input
+                                                 autocomplete="off"
+                                                 label=""
+                                                 aura:id="searchBuildPhaseItem"
+                                                 name="enter-search"
+                                                 type="search"
+                                                 placeholder="Vendor"
+                                                 variant="label-hidden"
+                                                 value="{!v.searchVendorFilter}"
+                                                 />
+                            </span>
+                        </div>
+                    </div>
+                    <div style="text-align:center;padding-top: 5px;">
+                        <lightning:buttonGroup>
+                            <span style = "padding-left:5px;">
+                                <lightning:button iconName="utility:back" class="slds-button slds-button_neutral"
+                                                  iconPosition="left" disabled="{!v.PageNumber == 1}" aura:id="prevPage"
+                                                  label="Previous" onclick="{!c.handlePrev}" />                                
+                            </span>
+                          
+                            <span style = "padding-left:5px;">
+                                
+                                <lightning:button iconName="utility:forward" class="slds-button slds-button_neutral"
+                                                  iconPosition="right" disabled="{!v.PageNumber >= v.TotalPages}" aura:id="nextPage"
+                                                  label="Next" onclick="{!c.handleNext}" />
+                            </span>
+                            
+                            <aura:if isTrue="{!v.isrejectedSOVs}">
+                                <span style = "padding-left:5px;">
+                                    <lightning:button variant="neutral" label="Consolidate Lines" title="Consolidate Lines" onclick="{!c.ConsolidateLines}" disabled = "true" />
+                                </span>
+                                <aura:set attribute="else">
+                                    <span style = "padding-left:5px;">
+                                        <lightning:button variant="neutral" label="Consolidate Lines" title="Consolidate Lines" onclick="{!c.ConsolidateLines}" />
+                                    </span>
+                                </aura:set>
+                            </aura:if> 
+                            
+                            <aura:if isTrue="{!v.isrejectedSOVs}">
+                                <span style = "padding-left:5px;">
+                                    <lightning:button variant="neutral" label="+ Add to SOV" title="Add to SOV" onclick="{!c.AddtoMasterSOV}"  disabled = "true"/>
+                                </span>
+                                <aura:set attribute="else">
+                                    <span style = "padding-left:5px;">
+                                        <lightning:button variant="neutral" label="+ Add to SOV" title="Add to SOV" onclick="{!c.AddtoMasterSOV}" />
+                                    </span>
+                                </aura:set>
+                            </aura:if> 
+                            
+                            <aura:if isTrue="{!v.isrejectedSOVs}">
+                                <span style = " padding-left:5px;">
+                                    <lightning:button variant="neutral" label="Approve" title="Accept SOV Line" onclick="{!c.confirmApprove}" />
+                                </span>
+                                <aura:set attribute="else">
+                                    <span style = " padding-left:5px;">
+                                        <lightning:button variant="neutral" label="Delete" title="Delete SOV Line" onclick="{!c.confirmDelete}" />
+                                    </span>
+                                </aura:set>
+                            </aura:if> 
+                          <!--  <span style = " padding-left:8px;">
+                                <div style="width: fit-content;">
+                                    <lightning:input aura:id="vendor"
+                                                     name="Rejected SOVs"
+                                                     label="Rejected SOVs"
+                                                     type="toggle"
+                                                     checked="{!v.groupByVendortoggle}"
+                                                     onclick="{!c.checkToogle}"
+                                                     variant="label-hidden"
+                                                     messageToggleActive="Not Rejected"
+                                                     messageToggleInactive = "Rejected"
+                                                     /> 
+                                </div> 
+                            </span>  -->
+                        </lightning:buttonGroup>
+                    </div>
+                    <div class="slds-card__body slds-scrollable left-screen" >
+                        <table class="slds-table slds-table--bordered">
+                            <thead>
+                            </thead>
+                            <tbody>
+                                <aura:if isTrue="{!v.ApprovedrecordsList.length == 0}">
+                                    <div class="slds-align_absolute-center slds-m-around_xx-large">
+                                        <p class="slds-text-title_bold" style="text-align: center;">
+                                            No SOV Lines Selected.
+                                            
+                                        </p>
+                                    </div>
+                                    <div class="slds-m-around_xx-large slds-align_absolute-center">
+                                    </div>
+                                    <aura:set attribute="else">   
+                                                <tr>
+                                                    <th>
+                                                        <lightning:input type="checkbox" aura:id="headCheckRFQ" value ="{!v.ApprovecheckAll}" checked="{!v.ApprovecheckAll}" onchange="{!c.selectAllRfq}"/>  
+                                                    </th>
+                                                    <!--  <th style="font-weight: 700;">Name</th> -->
+                                                    <th style="font-weight: 700;">Item</th>
+                                                    <th style="font-weight: 700;">Description of Work</th>
+                                                    <th style="font-weight: 700;">Scheduled Value</th>
+                                                    <th style="font-weight: 700;">Vendor</th>
+                                                    <th style="font-weight: 700;">Vendor SOV</th>
+                                                   <!-- <th style="font-weight: 700;">Type</th> -->
+                                                    
+                                                    
+                                                </tr>
+                                                        <aura:iteration items="{!v.ApprovedrecordsList}" var="row" indexVar="index">
+                                                            <tr>
+                                                                <td>
+                                                                    <lightning:input type="checkbox" aura:id="checkRFQ"  name="{!row.sovlines.Id}" value="{!row.checksov}" checked="{!row.checksov}"  title="{!index}" onchange="{!c.selectRfq}"/>
+                                                                    
+                                                                </td>
+                                                             
+                                                                <td>
+                                                                    {!row.Item}
+                                                                </td>
+                                                                
+                                                                <td>
+                                                                    <ui:outputURL
+                                                                                  value="{!'/one/one.app?#/sObject/'+ row.Id + '/view'}"
+                                                                                  target="_blank" label="{!row.DescofWork}" />
+                                                                </td>
+                                                                
+                                                                <td>
+                                                                  <!--  <lightning:formattedNumber value="{!row.ScheduleValue}" currencyDisplayAs="code" currencyCode="USD" style="currency"/> -->
+                                                               
+                                                                    <lightning:formattedNumber value="{!row.ScheduleValue}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code"/>
+                                                                
+                                                                </td>
+                                                             
+                                                                <td>
+                                                                    {!row.VendorName}
+                                                                </td>
+                                                                
+                                                                <td>
+                                                                    <ui:outputURL
+                                                                                  value="{!'/one/one.app?#/sObject/'+ row.VendorSovId + '/view'}"
+                                                                                  target="_blank" label="{!row.VendorSovName}" />
+                                                                </td>
+                                                                
+                                                               <!-- <td>
+                                                                    {!row.Type}
+                                                                </td>
+                                                                <td></td> -->
+                                                            </tr>
+                                                        </aura:iteration>
+                                                    
+                                                    </aura:set>
+                                </aura:if>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="slds-card__footer">
+                        <lightning:button iconName="utility:back" class="slds-button slds-button_neutral"
+                                          iconPosition="left" disabled="{!v.PageNumber == 1}" aura:id="prevPage"
+                                          label="Previous" onclick="{!c.handlePrev}" />
+                        <lightning:button iconName="utility:forward" class="slds-button slds-button_neutral"
+                                          iconPosition="right" disabled="{!v.PageNumber >= v.TotalPages}" aura:id="nextPage"
+                                          label="Next" onclick="{!c.handleNext}" />
+                    </div>
+                </div>
+                
+                <aura:if isTrue="{!v.isSpinner}">
+                    <div aura:id="spinnerId" class="slds-spinner_container">
+                        <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative"
+                             role="alert">
+                            <span class="slds-assistive-text">Loading</span>
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                            <div class="custom-loading-text">
+                                <b>Processing, Please Wait</b>
+                            </div>
+                        </div>
+                    </div>
+                </aura:if>
+            </lightning:card>
+        </div>
+        
+        <div class="slds-col slds-col slds-size_1-of-2">
+            <lightning:card aura:id="lightCard1" class="slds-card_boundary slds-scrollable slds-page-header">
+                <div>
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col" style = "width: 3.5rem">
+                            <span class="slds-card__header-title" style="white-space: nowrap;margin-top: 7px;">
+                                Selected Lines
+                            </span>
+                        </div>
+                       <!--   <div class="slds-col"></div>  -->
+                        <!-- slds-size_1-of-2 -->
+                        <div class="slds-col" style = "text-align:right;">
+                            <span style="margin-right:0.5rem;">
+                                <lightning:button class="slds-button slds-button_neutral" aura:id="massDelete"
+                                                  label="Remove" onclick="{!c.removepopopen}" />
+                            </span>
+                            
+                            <aura:if isTrue="{!!v.isManageSOV}">  
+                               
+                                    <span >
+                                        <lightning:button class="slds-button slds-button_neutral" aura:id="addSSTL"
+                                                          label="Save" onclick="{!c.redirectToManageSov}" />
+                                    </span>
+                                
+                            </aura:if> 
+                 
+                            <span style = "padding-left:5px;">
+                                <lightning:button iconName="utility:back" class="slds-button slds-button_neutral"
+                                          iconPosition="left" disabled="{!v.PageNumber1 == 1}" aura:id="prevPage1"
+                                          label="Previous" onclick="{!c.handlePrev1}" />                                
+                            </span>
+                           
+                            <span style = "padding-left:5px;">
+                                <lightning:button iconName="utility:forward" class="slds-button slds-button_neutral"
+                                          iconPosition="right" disabled="{!v.PageNumber1 >= v.TotalPages1}" aura:id="nextPage1"
+                                          label="Next" onclick="{!c.handleNext1}" />
+                            </span>
+                         
+                            <span style = "padding-left:5px;">
+                                <lightning:button variant="neutral" label="New Line" title="New Line" onclick="{!c.AddNewLine}" />
+                            </span>
+                            
+                        </div>
+                      <!--  
+                        <div class="slds-col"></div>
+                         slds-size_1-of-2 -->
+                        
+                    </div>
+                    
+                    <div class="slds-card__body slds-scrollable right-screen" >
+                        <table class="slds-table slds-table--bordered">
+                            <thead>
+                            </thead>
+                            <tbody>
+                                <aura:if isTrue="{!v.PendingrecordsList.length == 0}">
+                                    <div class="slds-align_absolute-center slds-m-around_xx-large">
+                                        <p class="slds-text-title_bold" style="text-align: center;">
+                                            No SOV Lines Selected.
+                                            
+                                        </p>
+                                    </div>
+                                    <div class="slds-m-around_xx-large slds-align_absolute-center">
+                                    </div>
+                                    <aura:set attribute="else">
+                                        <tr>
+                                            <th>
+                                                <lightning:input type="checkbox" aura:id="headCheckRFQ1" value="{!v.pendingcheckAll}" checked="{!v.pendingcheckAll}" onchange="{!c.selectAllRfq1}"/>                                    
+                                                
+                                            </th> 
+                                            <th>
+                                            </th>
+                                            <!--  <th style="font-weight: 700;">Name</th> -->
+                                            <th style="font-weight: 700;">Item</th>
+                                            <th style="font-weight: 700;">Description of Work</th>
+                                            <th style="font-weight: 700;">Scheduled Value</th>
+                                            <th style="font-weight: 700;">Vendor</th>
+                                             <th style="font-weight: 700;">Vendor SOV</th>
+                                            <th style="font-weight: 700;">Action</th>
+                                          
+                                        </tr> 
+                                        <!-- {!and(v.attribute1, v.attribute3)} -->
+                                        <aura:iteration items="{!v.PendingrecordsList}" var="row" indexVar="indexValue">
+                                            <tr>
+                                                <td>
+                                                    <lightning:input type="checkbox" aura:id="checkRFQ1" checked="{!row.checksov}"  name="{!row.sovlines.Id}" value="{!row.checksov}" title="{!indexValue}" />
+                                                </td>
+                                                
+                                                <td >
+                                                    <aura:if isTrue = "{!row.IsConsolidate}">
+                                                        <lightning:buttonIcon value="{!itemIndex}" onclick="{!c.toggle}" title = "{!indexValue}" iconName="{!row.IsExpand?'utility:chevrondown':'utility:chevronright'}" />
+                                                        
+                                                        <span style="cursor: pointer"  data-index='{!indexValue}'  data-recid='{!row.Id}' data-item='{!row.Item}' data-desc='{!row.DescofWork}' data-schv='{!row.ScheduleValue}' onclick="{!c.editPopUp}"  title = "Edit" class = "iconClr" >
+                                                            <lightning:icon iconName="utility:edit" style = "margin-left:15px;"
+                                                                            size="xx-small" />
+                                                        </span> 
+                                                    </aura:if>
+                                                </td>
+                                                
+
+                                                <td> {!row.Item}</td>
+                                                <td >
+                                                  
+                                                            <aura:if isTrue="{!row.Id}">
+                                                                 <ui:outputURL
+                                                                          value="{!'/one/one.app?#/sObject/'+ row.Id + '/view'}"
+                                                                          target="_blank" label="{!row.DescofWork}" />
+                                                                <aura:set attribute="else">
+                                                                    {!row.DescofWork}
+                                                                </aura:set>
+                                                            </aura:if>
+                                                         
+                                                    
+                                                </td>
+                                                <td >
+                                                    <!-- <lightning:formattedNumber value="{!row.ScheduleValue}" currencyDisplayAs="code" currencyCode="USD" style="currency"/> -->
+                                                    
+                                                    <lightning:formattedNumber value="{!row.ScheduleValue}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code"/>                                                    
+                                                    
+                                                </td>
+                                                <td >{!row.VendorName}</td>
+                                                <td >  
+                                                    <aura:if isTrue="{!row.VendorSovName}">
+                                                        <aura:if isTrue="{!row.Id}">
+                                                            <ui:outputURL
+                                                                          value="{!'/one/one.app?#/sObject/'+ row.VendorSovId + '/view'}"
+                                                                          target="_blank" label="{!row.VendorSovName}" />
+                                                            <aura:set attribute="else">
+                                                                {!row.VendorSovName}
+                                                            </aura:set>
+                                                        </aura:if>
+                                                        <aura:set attribute="else">
+                                                            <aura:if isTrue="{!row.Id}">
+                                                                <ui:outputURL
+                                                                              value="{!'/one/one.app?#/sObject/'+ row.SOVId + '/view'}"
+                                                                              target="_blank" label="{!row.SOVName}" />
+                                                                <aura:set attribute="else">
+                                                                    {!row.SOVName}
+                                                                </aura:set>
+                                                            </aura:if>
+                                                        </aura:set>
+                                                    </aura:if>
+                                              
+                                                </td>
+                                                <td>
+                                                    <span style="cursor: pointer;" data-index='{!indexValue}'  data-recid='{!row.Id}' onclick="{!c.deletePopUp}" class = "iconClr">
+                                                        <lightning:icon iconName="utility:delete"  title = "Delete"
+                                                                        size="xx-small" />
+                                                    </span>
+                                                    <aura:if isTrue = "{!!row.IsConsolidate}">
+                                                    <aura:if isTrue="{!row.Status == 'Customer Rejected'}">
+                                                               
+                                                            <span style="cursor: pointer" data-index="{!indexValue}" >
+                                                                <lightning:icon iconName="utility:warning" class="iconClr12" style = "margin-left:15px;" title="{!row.RejectStatus}" 
+                                                                                size="xx-small" />
+                                                            </span>
+                                                            <aura:set attribute="else">
+                                                                
+                                                                <span style="cursor: pointer;  height: 30px; margin-left: 15px;" data-index="{!indexValue}"   data-recid='{!row.Id}' onclick="{!c.RejectSOVs}">
+                                                                    <lightning:icon iconName="utility:close" class="iconClr" title = "Reject"
+                                                                                    size="xx-small" />
+                                                                </span>
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </aura:if>  
+                                                </td>
+                                            </tr>
+                                            <aura:if isTrue="{!row.IsExpand}">
+                                                <tr style="background:none;" class="backgroundNone">
+                                                    <td class="" colspan="8" style="padding-right:0px">
+                                                        <table style="margin-left: 0.45rem">
+                                                            <tr >
+                                                    <th>
+
+                                                    </th>
+                                                                 <th></th>
+                                                                   <th></th> 
+                                                    
+                                                    <th>
+                                                    </th>
+                                                          <th></th>  
+                                                                 <th></th>  
+                                                                 <th></th> 
+                                                                 <th></th>  
+                                                                 <th></th>  
+                                                    <!--  <th style="font-weight: 700;">Name</th> -->
+                                                    <th style="font-weight: 700;">Item</th>
+                                                                <th style="font-weight: 700;">Description of Work</th>
+                                                                <th style="font-weight: 700;">Scheduled Value</th>
+                                                                <th style="font-weight: 700;">Vendor SOV</th>
+                                                                <th style="font-weight: 700;">Action</th>
+                                                            </tr> 
+                                                            <aura:iteration items="{!row.ConsolidatedLinesInnerlist}" var="rows" indexVar="indexes">
+                                                              <tr>  
+                                                                  <th></th>
+                                                                   <th></th>  
+                                                                 <th></th>  
+                                                                  <th></th>
+                                                                  <th></th>
+                                                                  <th></th>
+                                                                  <th></th>
+                                                                   <th></th>
+                                                                   <th></th> 
+                                                                  
+                                                                <th>{!rows.Item}</th>
+                                                                  <th>
+                                                                      <ui:outputURL
+                                                                                    value="{!'/one/one.app?#/sObject/'+ rows.Id + '/view'}"
+                                                                                    target="_blank" label="{!rows.DescofWork}" />
+                                                                  </th>
+                                                                  <th> 
+                                                                     <!-- <lightning:formattedNumber value="{!rows.ScheduleValue}" currencyDisplayAs="code" currencyCode="USD" style="currency"/> -->
+                                                                      
+                                                                      <lightning:formattedNumber value="{!rows.ScheduleValue}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code"/>
+                                                                      
+                                                                  </th>
+                                                                  
+                                                                  <th>
+                                                                      
+                                                                      
+                                                                      
+                                                                      
+                                                                      
+                                                                      <aura:if isTrue="{!rows.VendorSovName}">
+                                                                          
+                                                                          <ui:outputURL
+                                                                                        value="{!'/one/one.app?#/sObject/'+ rows.VendorSovId + '/view'}"
+                                                                                        target="_blank" label="{!rows.VendorSovName}" />
+                                                                          <aura:set attribute="else">
+                                                                              <ui:outputURL
+                                                                                            value="{!'/one/one.app?#/sObject/'+ rows.SOVId + '/view'}"
+                                                                                            target="_blank" label="{!rows.SOVName}" />
+                                                                          </aura:set>
+                                                                      </aura:if>
+                                                                      
+                                                                      
+                                                                  </th>
+                                                                  
+
+                                                                <th>
+                                                                    
+                                                                        <span style="cursor: pointer;" data-index='{!indexValue}' data-title="{!indexes}" class = "iconClr"  data-recid='{!rows.Id}' onclick="{!c.condeletePopUp}">
+                                                                            <lightning:icon iconName="utility:delete" title = "Delete"
+                                                                                            size="xx-small" />
+                                                                        </span>
+                                                                        <aura:if isTrue="{!rows.Status == 'Customer Rejected'}">
+                                                                            <span style="cursor: pointer" data-index="{!indexValue}" data-title="{!indexes}">
+                                                                                <lightning:icon iconName="utility:warning" class="iconClr12" style = "margin-left:15px;" title="{!rows.RejectStatus}" 
+                                                                                                size="xx-small" />
+                                                                            </span>
+                                                                            <aura:set attribute="else">
+                                                                                
+                                                                                <span style="cursor: pointer;  height: 30px;  margin-left: 15px;" data-index="{!indexValue}" data-title="{!indexes}"  data-recid='{!rows.Id}' onclick="{!c.RejectSOVs}">
+                                                                                    <lightning:icon iconName="utility:close" class="iconClr" title = "Reject"
+                                                                                                    size="xx-small" />
+                                                                                </span>
+                                                                            </aura:set>
+                                                                        </aura:if>
+                                                                    
+                                                                    
+                                                                </th>
+                                                            </tr>
+                                                            </aura:iteration>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </aura:if>
+                                        </aura:iteration>
+                                    </aura:set>
+                                </aura:if>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="slds-card__footer">
+                        <lightning:button iconName="utility:back" class="slds-button slds-button_neutral"
+                                          iconPosition="left" disabled="{!v.PageNumber1 == 1}" aura:id="prevPage1"
+                                          label="Previous" onclick="{!c.handlePrev1}" />                                
+                        
+                        <lightning:button iconName="utility:forward" class="slds-button slds-button_neutral"
+                                          iconPosition="right" disabled="{!v.PageNumber1 >= v.TotalPages1}" aura:id="nextPage1"
+                                          label="Next" onclick="{!c.handleNext1}" />
+                    </div> 
+                </div>
+                
+                <aura:if isTrue="{!v.isSpinner}">
+                    <div aura:id="spinnerId" class="slds-spinner_container">
+                        <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative"
+                             role="alert">
+                            <span class="slds-assistive-text">Loading</span>
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                        </div>
+                    </div>
+                </aura:if>
+            </lightning:card>
+            <div class="slds-p-bottom--small"></div>
+            
+        </div>
+    </div>
+    
+    <aura:if isTrue="{!v.isConsolidate}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="min-width:30rem;">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" onclick="{! c.CloseScreen}"
+                                          alternativeText="close" variant="bare-inverse" class="slds-modal__close" />
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Add New SOV Line</h2>
+                </header>
+                <div class="slds-modal__content " id="modal-content-id-1">
+                    <br />
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col" style="padding: 10px;">
+                            <lightning:input name="ItemNo" type="number" label="Item No" aura:id="itemNumber"  class="slds-p-around_small" value="{!v.autoItemNum}" disabled = "true" />
+                            <lightning:input  name="Description" label="Description Of Work" aura:id="DescWork" value="{!v.description}" class="slds-p-around_small" required="true"/>
+                        </div>
+                        <div class="slds-col" style="padding: 10px;">
+                            <lightning:input  name="ScheduledValue" label="{! 'Scheduled Value ('+ v.currencycode+')'}" value="{!v.listOfFields}" type="number"  class="slds-p-around_small"/>
+                       
+                        </div>
+                    </div>
+                    <div class="modal-footer slds-modal__footer slds-size_1-of-1">
+                        <lightning:button variant="Neutral" class="slds-button" label="Close" onclick="{!c.CloseScreen}"/>
+                        
+                        <lightning:button class="slds-button" label="Add" variant="Neutral" onclick="{!c.addCombinedLine}"/>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if> 
+    
+  
+    <aura:if isTrue="{!v.isDeletePopUp}">]
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="min-width:30rem;">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Remove
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height:50px; text-align: center; font-weight: 700">
+                    Are you sure you want to Remove this SOV Line?
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button label="No" title="No" onclick="{!c.cancelDelete}" />
+                    <lightning:button variant="neutral" label="Yes" title="Yes" onclick="{!c.deleteRow}" />
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if> 
+    
+    <aura:if isTrue="{!v.isconDeletePopUp}">]
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="min-width:30rem;">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Remove
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height:50px; text-align: center; font-weight: 700">
+                    Are you sure you want to Remove this SOV Line?
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button label="No" title="No" onclick="{!c.concancelDelete}" />
+                    <lightning:button variant="neutral" label="Yes" title="Yes" onclick="{!c.condeleteRow}" />
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if> 
+
+
+    <aura:if isTrue="{!v.isRemovePopUp}">]
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="min-width:30rem;">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Remove
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height:50px; text-align: center; font-weight: 700">
+                    Would you like to Remove these SOV lines?
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button label="No" title="No" onclick="{!c.removepopclose}" />
+                    <lightning:button variant="neutral" label="Yes" title="Yes" onclick="{!c.deleteSelectedRightLines}" />
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if> 
+    
+    
+
+    <aura:if isTrue="{!v.isgrouping}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" onclick="{! c.closegrouping }"
+                                          alternativeText="close" variant="bare-inverse" class="slds-modal__close" />
+                    <h2 id="modal-heading-01" class="slds-text-heading_large slds-hyphenate">Update Grouping</h2>
+                </header>
+                <div class="slds-modal__content" id="modal-content-id-1">
+                    <div class="slds-p-around_large">
+                        
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-col slds-size_6-of-12">
+                                <lightning:select name="Existing Grouping" required="false"  label = "Existing Grouping"
+                                                  aura:id="EmailTemplateSelect" value="{!v.EmailTemplateSelectedValue}"
+                                                  onchange="{!c.MessagesEmailTemplateSelected}">
+                                    <option value="">choose one...</option>
+                                    <aura:iteration items="{!v.EmailTemplatesList}" var="EmailTemplate">
+                                        <option value="{!EmailTemplate.value}">{!EmailTemplate.label}</option>	
+                                    </aura:iteration>
+                                </lightning:select>
+                            </div>
+                            <div class="slds-col slds-size_6-of-12">
+                                <label class="slds-form-element__label">Grouping</label>
+                                <ui:inputtext value="{!v.grouptext}" />
+                            </div>
+                            <div class="slds-col slds-size_6-of-12">
+                            </div>
+                        </div>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning:button variant="neutral" label="Cancel" title="Cancel"
+                                          onclick="{! c.closegrouping }" />
+                        <lightning:button variant="brand" label="Save" title="Save"
+                                          onclick="{!c.updategroupingforlines}" />
+                    </footer>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container" style="position:fixed; ">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                    <aura:if isTrue="{!v.showMessage}">
+                        <b>Processing, Please Wait</b> 
+                        <!-- <b>Creating PoItems </b>-->
+                        
+                    </aura:if>
+                </div>
+            </div>
+        </div>
+    </aura:if>
+    
+    <aura:if isTrue="{!v.rejectSOVPopUp}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="min-width:30rem;">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Delete
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height:50px; text-align: center; font-weight: 700">
+                    Are you sure you want to Delete the selected SOV Lines?
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button label="No" title="No" onclick="{!c.cancelReject}" />
+                    <lightning:button variant="neutral" label="Yes" title="Yes" onclick="{!c.RejectSelectedSOVLines}" />
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if> 
+    
+    <aura:if isTrue="{!v.approveSOVPopUp}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="min-width:30rem;">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Approve
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height:50px; text-align: center; font-weight: 700">
+                    Are you sure you want to Approve the selected SOV Lines?
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button label="No" title="No" onclick="{!c.cancelApprove}" />
+                    <lightning:button variant="neutral" label="Yes" title="Yes" onclick="{!c.ApproveSelectedSOVLines}" />
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if> 
+    
+    <aura:if isTrue="{!v.isEditPopUp}">]
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="min-width:30rem;">
+                <aura:html tag="style">
+                    .cuf-content {
+                    padding: 0 0rem !important;
+                    }
+                    .slds-p-around--medium {
+                    padding: 0rem !important;
+                    }       
+                    .slds-modal__content{
+                    overflow-y:hidden !important;
+                    height:unset !important;
+                    max-height:unset !important;
+                    }
+                </aura:html>
+                
+                
+                <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                         aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                    <div class="slds-modal__container" style="min-width:40rem;">
+                        <header class="slds-modal__header">
+                            <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeEditScreen}"
+                                                  alternativeText="close" variant="bare-inverse" class="slds-modal__close" />
+                            <h2 id="modal-heading-01" class="slds-text-heading_large slds-hyphenate">Edit SOV Line</h2>
+                        </header>
+                        <div class="slds-modal__content " id="modal-content-id-1">
+                            <br />
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col" style="padding: 10px;">
+                                    <lightning:input name="ItemNo" type="number" label="Item No" aura:id="itemNumber" value="{!v.itemNumber}" class="slds-p-around_small" disabled = "true" />
+                                    <lightning:input  name="Description" label="Description Of Work" aura:id="DescWork" value="{!v.description}" class="slds-p-around_small" required="true"/>
+                                </div>
+                                <div class="slds-col" style="padding: 10px;">
+                                    <lightning:input  name="ScheduledValue" label="Scheduled Value" value="{!v.listOfFields}" aura:id="schvalue" type="number" formatter="currency" class="slds-p-around_small" disabled = "true"/>
+                                </div>
+                            </div>
+                            <div class="modal-footer slds-modal__footer slds-size_1-of-1">
+                                <lightning:button variant="Neutral" class="slds-button" label="Close" onclick="{!c.closeEditScreen}"/>
+                                
+                                <lightning:button class="slds-button" label="Save" variant="Neutral" onclick="{!c.saveConsolidatedLine}"/>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                
+                
+                
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if> 
+      
+    <aura:if isTrue='{!v.isRejectClick}'>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="min-width:30rem;">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Reject SOV Line
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height:50px">
+                    <div class="slds-p-around_large">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-col slds-size_6-of-12">
+                                <lightning:textarea value="{!v.rejectionreason}" required="true" label = "Reject Reason"/>
+                            </div>
+                            <div class="slds-col slds-size_6-of-12">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button label="No" title="No" onclick="{!c.cancelReject}"/>
+                    <lightning:button variant="neutral" label="Yes" title="Yes" onclick="{!c.confirmRejectReason}" />
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    
+    <aura:if isTrue="{!v.isAddNewLine}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="min-width:30rem;">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" onclick="{!c.CloseAddLinePopUp}"
+                                          alternativeText="close" variant="bare-inverse" class="slds-modal__close" />
+                    <h2 id="modal-heading-01" class="slds-text-heading_large slds-hyphenate">Add New SOV Line</h2>
+                </header>
+                <div class="slds-modal__content " id="modal-content-id-1">
+                    <br />
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col" style="padding: 10px;">
+                            <lightning:input name="ItemNo"  type="number" label="Item No" aura:id="newItemNumber"  class="slds-p-around_small" value="{!v.autoItemNum}" disabled = "true"/>
+                            <lightning:input  name="Description" label="Description Of Work" aura:id="newDescription" value="{!v.newDescription}" class="slds-p-around_small" required="true"/>
+                        </div>
+                        <div class="slds-col" style="padding: 10px;">
+                            <lightning:input  name="ScheduledValue" label="Scheduled Value" value="{!v.newScheduledValue}" type="number" formatter="currency" class="slds-p-around_small"/>
+                            
+                        </div>
+                    </div>
+                    <div class="modal-footer slds-modal__footer slds-size_1-of-1">
+                        <lightning:button variant="Neutral" class="slds-button" label="Close" onclick="{!c.CloseAddLinePopUp}"/>
+                        
+                        <lightning:button class="slds-button" label="Add" variant="Neutral" onclick="{!c.ConfirmAddNewLine}"/>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if> 
+    
+</aura:component>

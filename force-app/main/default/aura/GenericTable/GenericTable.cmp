@@ -1,0 +1,48 @@
+<aura:component access="global" implements="force:lightningQuickActionWithoutHeader,flexipage:availableForAllPageTypes,force:hasRecordId">
+    <aura:attribute type="sObject[]" name="sObjectData"/>
+    <aura:attribute name="isAllSelected" type="Boolean" default="false"/>
+    <aura:attribute name="selectedRecordList" type="list"/>
+
+    <aura:attribute name="showCheckBox" type="Boolean" default="false"/>
+    <aura:attribute name="showSelectAll" type="Boolean" default="false"/>
+    <aura:attribute name="wraaperValue" type="Object[]" default=""/>
+    <aura:registerEvent name="sendRecords" type="c:GetSelectedRecordFromTable"/> 
+
+    <!-- /div -->
+    <div class=" slds slds-modal__content slds-p-around--x-small slds-align_absolute-center slds-size_1-of-1 slds-is-relative">        
+        <table class="slds-table slds-table--bordered slds-table--cell-buffer slds-max-medium-table--stacked-horizontal">
+            <thead>
+                <tr class="slds-text-heading--label">
+                    <aura:if isTrue="{!v.showSelectAll}">
+                        <th data-label="" class="slds-cell-wrap">
+                            <div><ui:inputCheckbox aura:id="selectAllId" value="{!v.isAllSelected}"  label="" text="" change="{!c.selectAllCheckbox}"/></div>
+                        </th>
+                    </aura:if>
+                    <aura:iteration items="{!v.wraaperValue}" var="item">
+                        <th scope="col" class="nobordertop slds-cell-wrap" title="{!item.fieldLabel}" >
+                            <div>{!item.fieldLabel}</div>
+                        </th>
+                    </aura:iteration>             
+                </tr>
+            </thead>
+            <tbody>
+                <aura:iteration items="{!v.sObjectData}" var="failureMode">     
+                    <tr>
+                        <aura:if isTrue="{!v.showCheckBox}">
+                            <td data-label="" title="" class="slds-cell-wrap">
+                                <div><ui:inputCheckbox aura:id="checkbox" label="" text="{!failureMode.Id}" change="{!c.onCheck}"/></div>
+                            </td>     
+                        </aura:if>
+                        <aura:iteration items="{!v.wraaperValue}" var="item">
+                            <td data-label="{!item.fieldLabel}" title="{!item.fieldLabel}">
+                                <div class="slds-cell-wrap">								
+                                    <c:RecordValue record="{!failureMode}" field="{!item}"/>
+                                </div>
+                            </td>
+                        </aura:iteration>  
+                    </tr>
+                </aura:iteration>
+            </tbody>
+        </table> 
+    </div>
+</aura:component>

@@ -1,0 +1,222 @@
+<!--**********************************************************************************
+* Copyright © 2017 - 2017, BuilderTek.
+* All rights reserved
+*
+* VisualForce Page: BT_AdminConfiguration
+* Created by Sagar
+
+* - Admin configuration
+
+* - Modifications:
+* - Sagar - Initial 
+***********************************************************************************-->
+<apex:page id="configPage" controller="BT_AdminConfigurationController" title="BT Administration"  sidebar="false" >
+    <apex:pagemessages rendered="{!isError}"/>
+    <c:BT_JsAndCssIncludeComponent importJquery="true"
+                              importAppurinUtil="true"
+                              importJQueryLayout="false"
+                              importFancyTree="false"
+                              importJqGrid="false"
+                              importEasyTooltip="true"
+                              importAppurinCss="true"
+                              importCkEditor="false"
+                              importGnattChart="false"
+                              importLightningDesign="true"/>
+     <script>
+       
+    	var vfpageTabName;
+        
+        function switchTab(element){
+            var tabPanel = j$("a[id$='"+element.id+"']").parent().parent().parent().parent();
+            var tabContent = tabPanel.find("div[id$='"+element.id.split('__')[0]+"']");
+            var tabPage = tabContent.find("iframe");
+            if(tabPage != null && tabPage.attr('id') != undefined){
+                var iframeId = tabPage.attr('id');
+                document.getElementById(iframeId).style.display = 'block';
+                var tabContentWindow = document.getElementById(iframeId).contentWindow;
+                if(tabContentWindow.document.body.innerHTML != ''){
+                    //j$("#"+iframeId).css({height: tabContentWindow.j$("body").outerHeight()+700});
+                }
+            }
+            tabPanel.find("div.slds-tabs__content").addClass('slds-hide').removeClass('slds-show');
+            tabContent.removeClass('slds-hide').addClass('slds-show');
+            tabPanel.find("li.slds-active").removeClass('slds-active');
+            tabPanel.find("a[id$='"+element.id+"']").parent().addClass('slds-active');
+        }
+        
+        function setTabStatus(activeTab, openedTabs){
+            var openedTabs = openedTabs.split(',');
+            j$("ul[id$='AdminConfigTabHeaders']").find("li").each(function(i){
+                if(openedTabs.indexOf(j$(this).attr('id')) != -1) {
+                    j$(this).css('display', 'flex');
+                    if(activeTab == j$(this).attr('id')){
+                        j$(this).find("a").click();
+                    }
+                } else{
+                    j$(this).css('display', 'none');
+                }
+            });
+        }
+        
+        function setTabContentHeight(activeTab, openedTabs){
+            var tabPage = j$("iframe[id$='"+activeTab+"']");
+            tabPage.css('display', 'none');
+            if(tabPage != null && tabPage.attr('id') != undefined){
+                var iframeId = tabPage.attr('id');
+                document.getElementById(iframeId).onload = function(){
+                    document.getElementById(iframeId).style.display = 'block';
+                    var tabContentWindow = document.getElementById(iframeId).contentWindow;
+                    //j$("#"+iframeId).css({height: tabContentWindow.j$("body").outerHeight()+700});
+                    // j$("#"+iframeId).css({height: tabContentWindow.outerHeight+700});
+                    j$("#"+iframeId).css('height','87vh');
+                }
+            }
+        }
+        
+        function openChildNodeTab(parentNodeId){
+            console.log('parentNodeId::',parentNodeId);
+            afOpenChildNodeTab(parentNodeId);
+        }
+        
+        function openVFPageTab(pageUrl,pageTabName,pageTabId){
+            afOpenVFPageTab(pageUrl,pageTabName,pageTabId);    
+            vfpageTabName = pageTabName;
+            console.log(pageTabId,pageTabName)
+        }
+        
+        function openNewTab(pageUrl){
+            Appurin.lightning.navigateToURL(pageUrl, false);
+        }
+        
+        function addCloseButton(){
+            var openedTabIds = document.getElementById('{!$Component.configPage.configFrm.hdnOpenedTabIds}').value;
+            openedTabIds = openedTabIds.substring(0, openedTabIds.length - 1);
+            openedTabIds = openedTabIds.split(',');
+            for (var i=0; i<openedTabIds.length; i++) {
+                var tabHeader = j$("li[id$='"+openedTabIds[i]+"']");
+                if (openedTabIds[i] != 'Home' && tabHeader != null && tabHeader.children().length == 1) {
+                    var closeTabImage = j$('<img></img>');
+                    closeTabImage.attr("id", openedTabIds[i]);
+                    closeTabImage.attr("src", "{!URLFOR($Resource.SLDS, 'assets/icons/utility/close_60.png')}");
+                    closeTabImage.attr("style", "padding: 14px 0px 10px 0px;");
+                    closeTabImage.attr("class", "slds-tabs_default__link");
+                    closeTabImage.attr("onClick", "closeTab(this)");
+                    closeTabImage.appendTo(tabHeader);
+                }
+            }
+             var tabContentWindow = document.getElementById('iframe'+pageTabId).contentWindow;
+             console.log(tabContentWindow,tabContentWindow.outerHeight)
+             //j$('iframe'+pageTabId).css({height: tabContentWindow.j$("body").outerHeight()});
+        }
+        
+        function closeTab(element){
+            var closedTab = j$(element).parent();
+            var closedTabId = closedTab.attr('id');
+            var newActiveTabId = '';
+            if (closedTab != null) {
+                if (closedTab.next() != null && closedTab.next().attr('id') != null) {
+                    newActiveTabId = closedTab.next().attr('id');
+                } else if (closedTab.prev() != null && closedTab.prev().attr('id') != null) {
+                    newActiveTabId = closedTab.prev().attr('id');
+                }
+            }
+            afCloseTab(closedTabId, newActiveTabId);
+            return false;
+        }
+    </script>
+        
+    <style>
+        .apInfoTab{
+            padding: 10px !important;   
+        }
+        .apPageTab{
+            padding: 10px 0px !important;
+        }
+        .parentNodeDiv{
+            padding: 5px !important;   
+        }
+        .apLightningTileBoardIcon{
+            height: 32px !important; 
+            width: 32px !important;
+            margin-right: 5px;
+        }
+    </style>
+        
+    <apex:actionStatus id="splashStatus" onstart="startSplash();" onstop="endSplash(); " />
+    <div class="slds">
+        <div id="splashDiv" class="apInitiallyDivDisplayNone" style="z-index:9998;">
+            <div class="slds-spinner_container apLightningSpinnerContainer">
+                <div role="status" class="slds-spinner slds-spinner--medium slds-spinner--brand">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <apex:outputPanel rendered="{!isError}">
+        <apex:pagemessages id="pageLoadErrorMessage"/>
+        <script>
+            Appurin.lightning.createLightningPageMessage({'classicPageMessageId' : '{!$Component.pageLoadErrorMessage}'});   
+        </script>
+    </apex:outputPanel>
+    
+    <apex:form id="configFrm" rendered="{!!isError}">
+        <apex:actionFunction name="loadData" action="{!init}" />
+        <apex:inputhidden id="hdnOpenedTabIds" value="{!strOpenedTabIds}"/>
+        
+        <apex:actionfunction Name="afOpenChildNodeTab" action="{!openChildNodeTab}" status="splashStatus" rerender="configFrm" oncomplete="addCloseButton();" >
+            <apex:param name="prmParentNodeId" value="" />
+        </apex:actionfunction>
+        <apex:actionfunction Name="afOpenVFPageTab" action="{!openVFPageTab}" status="splashStatus" rerender="configFrm" oncomplete="addCloseButton();" >
+            <apex:param name="prmPageUrl" value="" />
+            <apex:param name="prmPageTabeName" value="" />
+            <apex:param name="prmPageTabId" value="" />
+        </apex:actionfunction>
+        <apex:actionfunction Name="afCloseTab" action="{!closeTab}" status="splashStatus" rerender="configFrm" oncomplete="addCloseButton();" >
+            <apex:param name="prmCloseTabId" value="" />
+            <apex:param name="prmNextNodeId" value="" />
+        </apex:actionfunction>
+        
+        <apex:outputPanel layout="block" styleClass="slds" style="min-height:400px;">
+            <div class="slds-grid" style="background:#f4f6f9; padding:1rem;">
+                <div id="adminConfigMainPanel" class="slds-panel slds-grid slds-grid--vertical slds-nowrap">
+                    <div class="slds-form--stacked slds-grow slds-scrollable--y">
+                        <apex:outputPanel layout="block" id="initPanel" styleClass="apLightningOneTile" rendered="{!IF(listNodeConfigurations.size == 0 && isNewOrganization == True, TRUE, FALSE)}">
+                            <div style="padding:10px 0px 10px 0px;">{!$Label.buildertek__Initialize_New_Org_Message}</div>
+                            <div>
+                                <apex:commandButton action="{!initializeNewOrg}" styleClass="apLightningOneTileButton slds-button slds-button_brand" status="splashStatus" rerender="configFrm" value="{!$Label.buildertek__Initialize_New_Org_Button}" />
+                            </div>
+                            <script>
+                                j$("div[id$='adminConfigMainPanel']").css('background', '#f4f6f9');
+                            </script>
+                        </apex:outputPanel>
+                        <apex:outputPanel layout="block" id="resetPanel" styleClass="apLightningOneTile" rendered="{!IF(listNodeConfigurations.size == 0 && isNewOrganization == False, TRUE, FALSE)}">
+                            <div style="padding:10px 0px 10px 0px;">{!$Label.buildertek__Initialize_Admin_Configuration_Message}</div>
+                            <div>
+                                <apex:commandButton action="{!reset}" styleClass="apLightningOneTileButton slds-button slds-button_brand" status="splashStatus" rerender="configFrm" value="{!$Label.buildertek__Initialize_Admin_Configuration_Button}"/>
+                            </div>
+                            <script>
+                                j$("div[id$='adminConfigMainPanel']").css('background', '#f4f6f9');
+                            </script>
+                        </apex:outputPanel>
+                        <apex:outputPanel id="dynamicPanel" layout="block" rendered="{!IF(listNodeConfigurations.size > 0 , TRUE, FALSE)}">
+                            <div id="AdminConfigTabPanel" class = "slds-tabs_default">
+                                <apex:dynamicComponent id="dynamicTabPanelHeader" componentValue="{!objDynamicTabHeaders}" />
+                                <apex:dynamicComponent id="dynamicTabPanelContent" componentValue="{!objDynamicTabContents}" />
+                                <script>
+                                    setTabStatus('{!JSENCODE(strSelectedTabId)}', '{!JSENCODE(strOpenedTabIds)}');
+                                    setTabContentHeight('{!JSENCODE(strSelectedTabId)}', '{!JSENCODE(strOpenedTabIds)}');
+                                </script>
+                            </div>
+                        </apex:outputPanel>
+                    </div>
+                </div>
+            </div>
+        </apex:outputPanel>
+    </apex:form>
+    <script>
+        j$("form[id$='configFrm']").parent().css('background', '#f4f6f9');
+    </script>
+</apex:page>

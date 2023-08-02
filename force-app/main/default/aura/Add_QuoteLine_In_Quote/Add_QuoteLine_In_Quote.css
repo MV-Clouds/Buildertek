@@ -1,0 +1,20 @@
+.THIS .custom-loading-text {
+    transform: rotate(-90deg);
+    position: absolute;
+    top: -0.5rem;
+    left: 1rem;
+    white-space: nowrap;
+    font-size: 20px;
+}
+
+.THIS .elseMsg{
+    font-size: 17px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 150px
+}
+.THIS .slds-icon-text-default {
+    fill:rgb(116, 116, 116) !important;
+ }

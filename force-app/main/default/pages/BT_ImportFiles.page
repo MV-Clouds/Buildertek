@@ -1,0 +1,314 @@
+<!--**********************************************************************************
+* Copyright © 2017-2016, BuilderTek.
+* All rights reserved
+*
+* VisualForce Page: BT_ImportFiles
+* Created by Sagar
+
+* - Import files form Amazon Server
+
+* - Modifications:
+* - Sagar - Initial 
+***********************************************************************************-->
+<apex:page controller="BT_ImportFilesController" title="{!$Label.buildertek__Import_Files}" >
+	<c:BT_JsAndCssIncludeComponent importJquery="true"
+                              importAppurinUtil="true"
+                              importJQueryLayout="true"
+                              importFancyTree="true"
+                              importJqGrid="false"
+                              importEasyTooltip="true"
+                              importAppurinCss="true"
+                              importCkEditor="false"
+                              importGnattChart="false"
+                              importLightningDesign="true"/>
+    
+    <script>
+        var twistyLightningSectionStatus = {};
+        j$(document).ready(function() {
+			easyToolTipForAll();
+			
+		});
+		
+        function easyToolTipForAll() {
+            j$('.apHelpText').easyTooltip({width: '200px', isLightning:true, isFormatted:true});
+            return false;
+        }
+        
+        function importFiles(){
+			var selectedTreeNodes = j$("#importFilesTreeDiv").fancytree('getTree').getSelectedNodes();
+			var selectedNodeKeys = {};
+			j$.each(selectedTreeNodes, function(i, item) {
+				if(!item.folder){
+					selectedNodeKeys[item.key] = item.key;
+				}
+			});
+			if(selectedTreeNodes.length != 0){
+				startSplash();
+            	afImportFiles(JSON.stringify(selectedNodeKeys));
+			} else{
+			    Appurin.lightning.showAlertPrompt({'modalPopupId':'lightningInfoPopup', 'messageType':'Error', 'title': 'Error', 'message': '{!JSENCODE($Label.No_File_Selected_For_Import_Warning)}', 'isRedirect' : false});
+			}
+			return false;
+		}
+    </script>
+                              
+    <apex:actionStatus id="splashStatus" onstart="startSplash();" onstop="endSplash(); " />
+	<div class="slds">
+        <div id="splashDiv" class="apInitiallyDivDisplayNone" style="z-index:9998;">
+            <div class="slds-spinner_container apLightningSpinnerContainer">
+                <div role="status" class="slds-spinner slds-spinner--medium slds-spinner--brand">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <apex:outputPanel rendered="{!isNoAmazonCredential}">
+        <apex:pagemessages id="pageLoadErrorMessage"/>
+        <script>
+            Appurin.lightning.createLightningPageMessage({'classicPageMessageId' : '{!$Component.pageLoadErrorMessage}'});   
+        </script>
+    </apex:outputPanel>
+    
+    <apex:form id="form" rendered="{!!isNoAmazonCredential}">
+        <apex:actionFunction name="afImportFiles" action="{!importFiles}" rerender="" onComplete="getFilesNeedsToImport();">
+			<apex:param name="selectedNodeKeys" value=""/>
+		</apex:actionFunction>
+		<apex:actionFunction name="getFilesNeedsToImport" action="{!getFilesNeedsToImport}" rerender="form" onComplete="endSplash();if({!isSuccess}){Appurin.lightning.showAlertPrompt({'modalPopupId':'lightningInfoPopup', 'messageType':'Info', 'title': 'Success', 'message': '{!JSENCODE($Label.buildertek__Imprort_File_Job_Started_Message)}', 'buttonLabel': '{!JSENCODE($Label.buildertek__Ok)}', 'isRedirect' : false});}"/>
+		
+        <apex:outputPanel styleClass="slds" rendered="{!AND(NOT(isJobQueued), treeNodesString != '[]')}">
+    		<div class="apPageHeader" id="PageHeader">
+    			<div class="apPageHeaderMedia">
+    	          	<div id="pageHeaderMedia" class="apPageHeaderMediaFigure">
+    	          	    <c:BT_LightningSvg parentId="pageHeaderMedia" styleClass="apLightningPageHeaderIcon slds-button__icon" path="/assets/icons/utility-sprite/svg/symbols.svg#download"/>
+    	            </div>
+    	            <div class="apPageHeaderMediaBody">
+    					<div class="apPageHeaderTitle" title="Import {!$ObjectType.File__c.labelPlural}">Import {!$ObjectType.File__c.labelPlural}</div>
+    	              	<apex:outputPanel styleClass="apPageHeaderInfo" rendered="{!AND(NOT(isJobQueued), treeNodesString != '[]')}">
+    	              		<label>{!$Label.buildertek__Import_Files_Message}</label>
+    	              	</apex:outputPanel>
+              		</div>
+    	            <div style="float:right;" class="apPageHeaderMediaButtons">
+    	                <apex:outputPanel layout="block" style="display:inline-block; padding-right:10px;" rendered="{!AND(NOT(isJobQueued), treeNodesString != '[]')}">
+    	                    <button id="setDefaultButton" class="slds-button slds-button--icon" title="settings" onClick="Appurin.lightning.showModalPopup({'modalPopupId':'{!$Component.defaultFileValuePopup}'}); return false;">
+    	                        <c:BT_LightningSvg parentId="setDefaultButton" styleClass="slds-button__icon" path="/assets/icons/utility-sprite/svg/symbols.svg#settings"/>
+                                <span class="slds-assistive-text">Settings</span>
+                            </button>
+    	                </apex:outputPanel>
+    	                <apex:commandButton styleClass="slds-button slds-button--brand" value="{!$Label.buildertek__Import_File_Button}" rendered="{!AND(NOT(isJobQueued), treeNodesString != '[]')}" onClick="return importFiles();" status="splashStatus" onComplete="easyToolTipForAll();"/>
+    	            </div>
+    	           <script>
+    	           		Appurin.lightning.createPageHeader('PageHeader');
+    	           </script>
+    	        </div>
+            </div>
+	    </apex:outputPanel>
+	    <apex:outPutPanel layout="block" styleClass="slds" id="fileImportPanel" rendered="{!AND(NOT(isJobQueued), treeNodesString != '[]')}">
+	        <apex:outputPanel layout="block">
+                <apex:pagemessages id="errorMessages"/>
+                <script>
+                    Appurin.lightning.createLightningPageMessage({'classicPageMessageId' : '{!$Component.errorMessages}'});   
+                </script>
+            </apex:outputPanel>
+            <apex:outputPanel id="defaultFileValuePopup" layout="block" style="display:none; z-index:8552;">
+                <div class="apModal" style="z-index:8551;">
+        	        <div class="apModalContainer">
+        	        	<div class="apModalHeader">
+        	        	    <button id="defaultFileValuePopupCloseIcon" class="slds-button slds-modal__close slds-button--icon-inverse" onClick="Appurin.lightning.hideModalPopup({'modalPopupId':'{!$Component.defaultFileValuePopup}'}); return false;" title="Close">
+        	        	        <c:BT_LightningSvg parentId="defaultFileValuePopupCloseIcon" styleClass="slds-button__icon slds-button__icon--large" path="/assets/icons/utility-sprite/svg/symbols.svg#close"/>
+                                <span class="slds-assistive-text">{!$Label.Close}</span>
+                            </button>
+    	        		    <h2 class="apModalHeading" id="defaultFileValuePopupHeader">File</h2>
+    	        	    </div>
+        	        	<div class="apModalContent">
+        					<div class="apNotifyContainer" style="position: relative; text-align:left;">
+								<div class="slds-panel__section"  style="padding-top:0px;padding-bottom:0px;">
+									<h3 class="slds-text-heading--small slds-m-bottom--medium" style="display:none;"></h3>
+									<apex:outPutPanel layout="block" styleClass="slds" id="fielAdministrationPanel">
+                                        <apex:outPutPanel layout="block" styleClass="slds-section slds-is-open" id="settingsSection">
+                                            <h3 class="slds-section__title">
+                                                <apex:outputPanel id="settingsSectionHeader" layout="block" styleclass="slds-button slds-section__title-action">
+                                                    <c:BT_LightningSvg parentId="settingsSectionHeader"  parentType="div" styleClass="slds-section__title-action-icon slds-button__icon slds-button__icon--left" path="/assets/icons/utility-sprite/svg/symbols.svg#switch"/>
+                                                    <label class="avLightningFormElementLabel">{!$Label.buildertek__Sharing} {!$Label.buildertek__Settings}</label>
+                                                </apex:outputPanel>
+                                            </h3>
+                                            <apex:outPutPanel layout="block" styleClass="slds-section__content">
+                                                <apex:outputPanel layout="block" styleClass="slds-form-element">
+                                                    <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                                        <apex:outputLabel title="{!$ObjectType.File__c.fields.Public_On_Amazon__c.inlineHelpText}" value="{!$ObjectType.File__c.fields.Public_On_Amazon__c.label}"></apex:outputLabel>
+                                                    </apex:outputPanel>
+                                                    <c:BT_LightningHelpText rendered="{!$ObjectType.File__c.fields.Public_On_Amazon__c.inlineHelpText != null}" helptext="{!$ObjectType.File__c.fields.Public_On_Amazon__c.inlineHelpText}"/>
+                                                    <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                                        <apex:outputPanel styleClass="slds-checkbox">
+                                                            <apex:inputCheckbox value="{!file.Public_On_Amazon__c}" id="publicOnAmazonField"/>
+                                                            <apex:outputlabel styleClass="slds-checkbox__label" for="publicOnAmazonField">
+                                                                <apex:outputPanel styleClass="slds-checkbox--faux"></apex:outputPanel>
+                                                                <apex:outputPanel styleClass="slds-form-element__label"></apex:outputPanel>
+                                                            </apex:outputlabel>
+                                                        </apex:outputPanel>
+                                                    </apex:outputPanel>
+                                                </apex:outputPanel>
+                                                <apex:outputPanel layout="block" styleClass="slds-form-element">
+                            						<apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                                        <apex:outputLabel title="{!$ObjectType.File__c.fields.Access_Type__c.inlineHelpText}" value="{!$ObjectType.File__c.fields.Access_Type__c.label}"></apex:outputLabel>
+                                                    </apex:outputPanel>
+                                                    <c:BT_LightningHelpText rendered="{!$ObjectType.File__c.fields.Access_Type__c.inlineHelpText != null}" helptext="{!$ObjectType.File__c.fields.Access_Type__c.inlineHelpText}"/>
+                            						<apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                            							<apex:inputField value="{!file.Access_Type__c}" styleClass="slds-select"/>
+                            						</apex:outputPanel>
+                            					</apex:outputPanel>
+                            					<script>
+                                				    Appurin.lightning.createLightningSection('{!$Component.settingsSection}');
+                                				</script>
+                                            </apex:outPutPanel>
+                                        </apex:outputPanel>
+                                        <apex:outPutPanel layout="block" styleClass="slds-section slds-is-open" id="presignedURLSection">
+                                            <h3 class="slds-section__title">
+                                                <apex:outputPanel id="presignedURLSectionHeader" layout="block" styleclass="slds-button slds-section__title-action">
+                                                    <c:BT_LightningSvg parentId="presignedURLSectionHeader"  parentType="div" styleClass="slds-section__title-action-icon slds-button__icon slds-button__icon--left" path="/assets/icons/utility-sprite/svg/symbols.svg#switch"/>
+                                                    <label class="avLightningFormElementLabel">{!$Label.buildertek__Presigned_URL_Settings}</label>
+                                                </apex:outputPanel>
+                                            </h3>
+                                            <apex:outPutPanel layout="block" styleClass="slds-section__content">
+                                                <apex:outputPanel layout="block" styleClass="slds-form-element">
+                                                    <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                                        <apex:outputLabel title="{!$ObjectType.File__c.fields.Allow_to_Download_by_Presigned_URL__c.inlineHelpText}" value="{!$ObjectType.File__c.fields.Allow_to_Download_by_Presigned_URL__c.label}"></apex:outputLabel>
+                                                    </apex:outputPanel>
+                                                    <c:BT_LightningHelpText rendered="{!$ObjectType.File__c.fields.Allow_to_Download_by_Presigned_URL__c.inlineHelpText != null}" helptext="{!$ObjectType.File__c.fields.Allow_to_Download_by_Presigned_URL__c.inlineHelpText}"/>
+                                                    <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                                        <apex:outputPanel styleClass="slds-checkbox">
+                                                            <apex:inputCheckbox value="{!file.Allow_to_Download_by_Presigned_URL__c}" id="allowToDownloadByPreSignedURLField"/>
+                                                            <apex:outputlabel styleClass="slds-checkbox__label" for="allowToDownloadByPreSignedURLField">
+                                                                <apex:outputPanel styleClass="slds-checkbox--faux"></apex:outputPanel>
+                                                                <apex:outputPanel styleClass="slds-form-element__label"></apex:outputPanel>
+                                                            </apex:outputlabel>
+                                                        </apex:outputPanel>
+                                                    </apex:outputPanel>
+                                                </apex:outputPanel>
+                                                <apex:outputPanel layout="block" styleClass="slds-form-element">
+                            						<apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                                        <apex:outputLabel title="{!$ObjectType.File__c.fields.Presigned_URL_Frequency__c.inlineHelpText}" value="{!$ObjectType.File__c.fields.Presigned_URL_Frequency__c.label}"></apex:outputLabel>
+                                                    </apex:outputPanel>
+                                                    <c:BT_LightningHelpText rendered="{!$ObjectType.File__c.fields.Presigned_URL_Frequency__c.inlineHelpText != null}" helptext="{!$ObjectType.File__c.fields.Presigned_URL_Frequency__c.inlineHelpText}"/>
+                            						<apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                            							<apex:inputField value="{!file.Presigned_URL_Frequency__c}" styleClass="slds-select"/>
+                            						</apex:outputPanel>
+                            					</apex:outputPanel>
+                            					<script>
+                                				    Appurin.lightning.createLightningSection('{!$Component.presignedURLSection}');
+                                				</script>
+                        					</apex:outputPanel>
+                                        </apex:outputPanel>
+                                        <apex:outPutPanel layout="block" styleClass="slds-section slds-is-open" id="otherSection">
+                                            <h3 class="slds-section__title">
+                                                <apex:outputPanel id="otherSectionHeader" layout="block" styleclass="slds-button slds-section__title-action">
+                                                    <c:BT_LightningSvg parentId="otherSectionHeader"  parentType="div" styleClass="slds-section__title-action-icon slds-button__icon slds-button__icon--left" path="/assets/icons/utility-sprite/svg/symbols.svg#switch"/>
+                                                    <label class="avLightningFormElementLabel">{!$Label.buildertek__Other} {!$Label.buildertek__Settings}</label>
+                                                </apex:outputPanel>
+                                            </h3>
+                                            <apex:outPutPanel layout="block" styleClass="slds-section__content">
+                                                <apex:outputPanel layout="block" styleClass="slds-form-element">
+                                                    <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                                        <apex:outputLabel title="{!$ObjectType.File__c.fields.Allow_to_Copy_Move__c.inlineHelpText}" value="{!$ObjectType.File__c.fields.Allow_to_Copy_Move__c.label}"></apex:outputLabel>
+                                                    </apex:outputPanel>
+                                                    <c:BT_LightningHelpText rendered="{!$ObjectType.File__c.fields.Allow_to_Copy_Move__c.inlineHelpText != null}" helptext="{!$ObjectType.File__c.fields.Allow_to_Copy_Move__c.inlineHelpText}"/>
+                                                    <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                                        <apex:outputPanel styleClass="slds-checkbox">
+                                                            <apex:inputCheckbox value="{!file.Allow_to_Copy_Move__c}" id="allowToCopyMoveField"/>
+                                                            <apex:outputlabel styleClass="slds-checkbox__label" for="allowToCopyMoveField">
+                                                                <apex:outputPanel styleClass="slds-checkbox--faux"></apex:outputPanel>
+                                                                <apex:outputPanel styleClass="slds-form-element__label"></apex:outputPanel>
+                                                            </apex:outputlabel>
+                                                        </apex:outputPanel>
+                                                    </apex:outputPanel>
+                                                </apex:outputPanel>
+                                                <apex:outputPanel rendered="{!isFileDownloadHistoryActivate}" layout="block" styleClass="slds-form-element">
+                                                    <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                                        <apex:outputLabel title="{!$ObjectType.File__c.fields.Track_Download_History__c.inlineHelpText}" value="{!$ObjectType.File__c.fields.Track_Download_History__c.label}"></apex:outputLabel>
+                                                    </apex:outputPanel>
+                                                    <c:BT_LightningHelpText rendered="{!$ObjectType.File__c.fields.Track_Download_History__c.inlineHelpText != null}" helptext="{!$ObjectType.File__c.fields.Track_Download_History__c.inlineHelpText}"/>
+                                                    <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                                        <apex:outputPanel styleClass="slds-checkbox">
+                                                            <apex:inputCheckbox value="{!file.Track_Download_History__c}" id="trackDownloadField"/>
+                                                            <apex:outputlabel styleClass="slds-checkbox__label" for="trackDownloadField">
+                                                                <apex:outputPanel styleClass="slds-checkbox--faux"></apex:outputPanel>
+                                                                <apex:outputPanel styleClass="slds-form-element__label"></apex:outputPanel>
+                                                            </apex:outputlabel>
+                                                        </apex:outputPanel>
+                                                    </apex:outputPanel>
+                                                </apex:outputPanel>
+                                                <script>
+                                				    Appurin.lightning.createLightningSection('{!$Component.otherSection}');
+                                				</script>
+                                            </apex:outputPanel>
+                                        </apex:outputPanel>
+                                    </apex:outPutPanel>
+								</div>
+							</div>
+    					</div>
+    					<div class="apModalFooter">
+    					    <button type="button" class="slds-button slds-button_neutral" onClick="Appurin.lightning.hideModalPopup({'modalPopupId':'{!$Component.defaultFileValuePopup}'}); return false;">{!$Label.Close}</button>
+    					</div>
+    				</div>
+    			</div>
+				<div class="slds-backdrop slds-backdrop--open" style="z-index: 5881;"></div>
+    			<script>
+    			    Appurin.lightning.createModalPopup({modalPopupId : '{!$Component.defaultFileValuePopup}', isAlertPrompt : false});
+    			</script>
+    		</apex:outputPanel>
+                
+	        <apex:outputPanel layout="block">
+                <c:BT_TreePickerComponent treeType="Files" treeId="importFilesTreeDiv" 
+                 	treeSelectMode="3"
+                    treeConfigName=""
+                    checkableTreeNodes="{!importObjectTypes}"
+                    treeSource="{!treeNodesString}"
+                    treeWidth="550"
+                    treeHeight="330"
+                    showSelectedNodeNamesList="true"
+                    isTreePersist="false"
+                    jsonStringForSelectedNodes=""
+                    isExpandTreeRoots="false">
+           	    </c:BT_TreePickerComponent>
+	        </apex:outputPanel>
+        </apex:outputPanel>
+        <apex:outputPanel styleClass="slds" rendered="{!OR(isJobQueued, treeNodesString == '[]')}">
+            <apex:outputPanel layout="block" rendered="{!AND(NOT(isJobQueued),treeNodesString == '[]')}">
+            	<div id="noFileMessageDiv"/>
+                <script>
+                    Appurin.lightning.createLightningPageMessage({'lightningPageMessageId' : 'noFileMessageDiv', 'severity' : 'success', 'summary' : '{!JSENCODE($Label.buildertek__No_File_For_Import_Message)}'});   
+                </script>
+            </apex:outputPanel>
+            <apex:outputPanel layout="block" rendered="{!isJobQueued}">
+            	<div id="improtJobInprogressMessageDiv"/>
+                <script>
+                    Appurin.lightning.createLightningPageMessage({'lightningPageMessageId' : 'improtJobInprogressMessageDiv', 'severity' : 'info', 'summary' : '{!JSENCODE($Label.buildertek__Import_Files_Job_Queued_Message)}'});   
+                </script>
+            </apex:outputPanel>
+        </apex:outputPanel>
+        
+        <apex:outputPanel layout="block" id="lightningInfoPopup" style="display: none; z-index: 8552;"> 
+	        <div class="apModal" style="z-index: 8551;">
+		        <div class="apModalContainer">
+		        	<div class="apModalHeader">
+		        		<h2 class="apModalHeading" id="lightningInfoPopupHeader">{$Label.Warning}</h2>
+		        	</div>
+		        	<div class="apModalContent">
+						<div class="apNotifyContainer" style="position: relative; text-align:left;">
+							<div>
+								<h2 id="lightningInfoPopupMessage"></h2>
+							</div>
+						</div>
+		        	</div>
+		        	<div class="apModalFooter">
+		        		<button id="lightningInfoPopupOkButton">{!$Label.Ok}</button>
+		        		<button id="lightningInfoPopupCloseButton">{!$Label.Close}</button>
+		        	</div>
+		        </div>
+	        </div>
+	        <div class="slds-backdrop slds-backdrop--open" style="z-index: 5881;"></div>
+        </apex:outputPanel>
+	</apex:form>
+</apex:page>

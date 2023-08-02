@@ -1,0 +1,11 @@
+<aura:component controller="BT_QuestionnaireBuilder" >
+	<aura:attribute name="fileids" type="String" default=""/>
+	<aura:attribute name="files" type="List" default="[]"/>
+	
+	<aura:handler name="change" value="{!v.fileids}" action="{!c.init}"/>
+	<aura:handler name="init" value="{!this}" action="{!c.init}"/>
+	
+	<aura:iteration items="{!v.files}" var="file" indexVar="index">
+		<br/>{!file.Name}<br/>
+	</aura:iteration>
+</aura:component>

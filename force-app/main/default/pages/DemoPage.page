@@ -1,0 +1,7 @@
+<apex:page controller="DemoPageClass" standardStylesheets="false" applyHtmlTag="false"
+    applyBodyTag="false" showHeader="false" cache="false">
+<h1>Congratulations</h1>
+    <apex:form >
+    <apex:commandButton value="Send Email" style="float:left" action="{!sendemailfromapex}" status="status"/>
+    </apex:form>
+</apex:page>

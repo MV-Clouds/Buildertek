@@ -1,0 +1,1059 @@
+<aura:component controller="ManagePOlinesControllerClone" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" 
+                access="global">
+    
+    <aura:attribute name="Spinner" type="Boolean" />
+    <aura:attribute name="islocked" type="boolean" default="false" />
+    <aura:attribute name="message" type="String" default="" />
+    <aura:if isTrue="{!v.islocked}">
+        <div class="" >
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                <p><center style=" font-size: medium ">{!v.message}</center>
+                </p>
+            </div>
+            <br/>
+        </div>
+        
+    </aura:if>
+    <!--pagination-->
+      
+    
+    <aura:attribute name="PageNumber" type="integer" default="1" />
+    <aura:attribute name="pageSize" type="integer" default="10" />
+    <aura:attribute name="TotalPages" type="integer" default="0" />
+    <aura:attribute name="TotalRecords" type="integer" default="0" />
+    <aura:attribute name="RecordStart" type="integer" default="0" />
+    <aura:attribute name="RecordEnd" type="integer" default="0" /> 
+    <!-- end -->
+    
+    <aura:attribute name="selectedRecords" type="List" default="[]" />
+    <aura:attribute name="recordsList" type="List" default="[]" />
+    <aura:attribute name="orgData" type="Object" />
+    <aura:attribute name="data" type="Object" />
+    <aura:attribute name="columns" type="List" />
+    
+    <aura:attribute name="defaultSortDirection" type="String" default="asc" />
+    <aura:attribute name="sortedBy" type="String" default=""/>
+    <aura:attribute name="sortDirection" type="String" default="" />
+    <aura:attribute name="sortingGroupIndex" type="Integer" default="-1" />
+    
+    <aura:attribute name="selectedTableRows" type="List"  />
+    <aura:attribute name="selectedTableRowIds" type="List" />
+    <aura:attribute name="selectedRows" type="List" />
+    <aura:attribute name="dataByGroup" type="Object" />
+    <aura:attribute name="dataGroupByVendor" type="Object" />
+    <aura:attribute name="selectedRecordMap" type="Object" />
+    <aura:attribute name="selectedRowsByGroupMap" type="Object" />
+    <aura:attribute name="vendors" type="List" />
+    <aura:attribute name="selectedRowIndex" type="List" default="[]"/>
+    
+    
+    <!--search -->
+    <aura:attribute name="searchVendorFilter" type="String" default="" />
+    <aura:attribute name="searchCategoryFilter" type="String" default="" />
+    <aura:attribute name="searchTradeTypeFilter" type="String" default="" />
+    <aura:attribute name="searchBuildPhaseFilter" type="String" default="" />
+    <aura:attribute name="searchProductTypeFilter" type="String" default="" />
+    <aura:attribute name="searchPurchaseOrderFilter" type="String" default="" />
+    
+    <aura:handler name="change" value="{!v.searchVendorFilter}" action="{!c.doSearch}" />
+    <aura:handler name="change" value="{!v.searchCategoryFilter}" action="{!c.doSearch}" />
+    <aura:handler name="change" value="{!v.searchTradeTypeFilter}" action="{!c.doSearch}" />
+    <aura:handler name="change" value="{!v.searchBuildPhaseFilter}" action="{!c.doSearch}" />
+    <aura:handler name="change" value="{!v.searchProductTypeFilter}" action="{!c.doSearch}" />
+    <aura:handler name="change" value="{!v.searchPurchaseOrderFilter}" action="{!c.doSearch}" />
+    <!-- end -->
+    
+    <aura:attribute name="groupByPhasetoggle" type="Boolean" default="true"/>
+    <aura:attribute name="groupByVendortoggle" type="Boolean" default="false"/>
+    <aura:attribute name="groupByCategorytoggle" type="Boolean" default="false"/>
+    <aura:attribute name="groupBytoggle" type="Boolean" default="false" />
+    
+   
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> 
+    <aura:attribute name="showMessage" type="Boolean" default="false" />
+    <aura:attribute name="showModal" type="Boolean" default="false" />
+    <aura:attribute name="vendorList" type="Object" />
+    <aura:attribute name="projectName" type="String" default=""/>
+    <aura:attribute name="projectId" type="String" />
+    <aura:attribute name="selectedVendor" type="String" default="" />
+    <aura:attribute name="optionLineId" type="String" default="" />
+    
+    <div style="background: white;">
+        <div class="slds-modal__header" style="font-size:17px;">
+            <a href="{!'/'+v.projectId}">{!v.projectName}</a> - Product Option Lines
+        </div>
+        <div class="searchCointainer" style="background: white;">
+            <lightning:input
+                             
+                             style="width: 16.6%; display: inline-block; padding: 0% 1% 1% 2%;"
+                             autocomplete="off"
+                             aura:id="searchBuildPhaseItem"
+                             name="enter-search"
+                             type="search"
+                             placeholder="Build Phase"
+                             value="{!v.searchBuildPhaseFilter}"
+                             />
+            <lightning:input 
+                             style="width: 16.6%; display: inline-block;padding: 0% 1% 1% 2%;"
+                             autocomplete="off"
+                             aura:id="searchVendorItem"
+                             name="enter-search"
+                             type="search"
+                             placeholder="Vendor"
+                             value="{!v.searchVendorFilter}"
+                             />
+            <lightning:input
+                             
+                             style="width: 16.6%; display: inline-block; padding: 0% 1% 1% 2%;"
+                             autocomplete="off"
+                             aura:id="searchTradeTypeItem"
+                             name="enter-search"
+                             type="search"
+                             placeholder="Trade Type"
+                             value="{!v.searchTradeTypeFilter}"
+                             />
+            <lightning:input
+                             
+                             style="width: 16.6%; display: inline-block; padding: 0% 1% 1% 2%;"
+                             autocomplete="off"
+                             aura:id="searchCategoryItem"
+                             name="enter-search"
+                             type="search"
+                             placeholder="Category"
+                             value="{!v.searchCategoryFilter}"
+                             />
+            
+            <lightning:input
+                             
+                             style="width: 16.6%; display: inline-block; padding: 0% 1% 1% 2%;"
+                             autocomplete="off"
+                             aura:id="searchProductTypeItem"
+                             name="enter-search"
+                             type="search"
+                             placeholder="Product Type"
+                             value="{!v.searchProductTypeFilter}"
+                             />
+            <lightning:input
+                             
+                             style="width: 16.6%; display: inline-block; padding: 0% 1% 1% 2%;"
+                             autocomplete="off"
+                             aura:id="searchPurchaseOrderItem"
+                             name="enter-search"
+                             type="search"
+                             placeholder="Purchase Order"
+                             value="{!v.searchPurchaseOrderFilter}"
+                             />
+        </div>
+        
+        <div class="slds-modal__content slds-p-around--large">
+            <div class="slds-grid slds-gutters">
+                <div class="slds-col">
+                    <div style="display:inline-block;">
+                        <lightning:input 
+                                         aura:id = "phase"
+                                         name="Group By Phase"
+                                         label="Group By Build Phase"
+                                         type="toggle"
+                                         checked="{!v.groupByPhasetoggle}"
+                                         onclick="{!c.checkToogle}"/> 
+                    </div>
+                    
+                    <div style="display:inline-block;margin-left:15px;">
+                        <lightning:input 
+                                         aura:id="vendor"
+                                         name="Group By Vendor"
+                                         label="Group By Vendor"
+                                         type="toggle"
+                                         checked="{!v.groupByVendortoggle}"
+                                         onclick="{!c.checkToogle}"
+                                         /> 
+                    </div>
+                     <div style="display:inline-block;margin-left:15px;">
+                        <lightning:input 
+                                         aura:id="category"
+                                         name="Group By Category"
+                                         label="Group By Category"
+                                         type="toggle"
+                                         checked="{!v.groupByCategorytoggle}"
+                                         onclick="{!c.checkToogle}"
+                                         /> 
+                    </div>
+                    
+                </div>
+                <div class="slds-col">
+                    
+                </div>
+                <div class="slds-col">
+                    <div style="text-align:right;">
+                        <lightning:button label="Create PO" disabled="false" 
+                                          onclick="{!c.newPO}"/>
+                    </div> 
+                </div>
+                
+            </div>
+            
+            <div >
+                <!-- messageToggleActive="Done" messageToggleInactive="Not Done"-->
+            </div>
+            
+            
+            <div style="margin-top: 15px;">
+                <aura:iteration items="{!v.dataByGroup}" var="groupItem" indexVar="groupIndex">
+                    <div class="slds-modal__header slds-p-around_x-small" style="font-size:15px;border-top: 2px solid #dddbda; font-weight:bold;">
+                        {!groupItem.groupName}
+                    </div>
+                    <div id="{!groupItem.groupName+'_'+groupIndex}" class="customDataTable" style="overflow-y:hidden;overflow-x:scroll;"><!-- aura:id = "tableByGroup" aura:id="poTable"-->
+                        <table aria-multiselectable="true" class="slds-table slds-table_bordered slds-table_fixed-layout slds-table_resizable-cols" role="grid">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th scope="col" tabindex="-1" aria-label="Row Number" style="width: 52px;">
+                                        <div class="slds-cell-fixed" style="width: 52px; outline: none;">
+                                            <span class="slds-th__action"><span title="Row Number" class="slds-truncate">
+                                                </span></span>
+                                        </div>
+                                    </th>
+                                    <th class="" scope="col" style="width:3.25rem">
+                                        <span id="column-group-header" class="slds-assistive-text">Choose a row</span>
+                                        <div class="slds-th__action slds-th__action_form">
+                                            <div class="slds-checkbox">
+                                                <input type="checkbox" name="options" class="{!'checkSelectAll_'+groupIndex}" id="{!'checkbox-group_'+groupIndex}" value="checkbox-unique-id-293" tabindex="0" aria-labelledby="check-select-all-label column-group-header" onchange="{!c.selectAll}"/>
+                                                <label class="slds-checkbox__label" for="{!'checkbox-group_'+groupIndex}" id="{!'check-select-all-label-group_'+groupIndex}">
+                                                    <span class="slds-checkbox_faux"></span>
+                                                    <span class="slds-form-element__label slds-assistive-text">Select All</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th scope="col" style="width:2%"></th>
+                                    <th scope="col" style="width:2%"></th>
+                                    
+                                    <th aria-label="Name" aria-sort="none" class="slds-is-resizable slds-is-sortable" scope="col" style="width:200px;" data-sortBy="Name" data-sortGroupIndex="{!groupIndex}" onclick="{!c.handleSort}">
+                                        <a class="slds-th__action slds-text-link_reset" href="#" role="button" tabindex="0" >
+                                            <span class="slds-assistive-text">Sort by: </span>
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate" style="margin-left:15px;">
+                                                <span class="slds-truncate" title="Name">Name</span>
+                                                <aura:if isTrue="{!groupIndex == v.sortingGroupIndex}">
+                                                    <aura:if isTrue="{!and(v.sortDirection == 'asc',v.sortedBy == 'Name')}" >
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowdown" alternativeText="arrowDown" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!and(v.sortDirection == 'desc',v.sortedBy == 'Name')}">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowup" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>                                                          
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!v.sortedBy != 'Name'}">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:if>
+                                                    <aura:set attribute="else">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:set>
+                                                </aura:if>
+                                            </div>
+                                        </a>
+                                        <div class="slds-resizable">
+                                            <input type="range" aria-label="Name column width" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-533" max="1000" min="20" tabindex="0" />
+                                            <span class="slds-resizable__handle" >
+                                                <span class="slds-resizable__divider"></span>
+                                            </span>
+                                        </div>
+                                    </th>
+                                    <th aria-label="Vendor" aria-sort="none" class="slds-is-resizable slds-is-sortable" scope="col" data-sortBy="VendorName" data-sortGroupIndex="{!groupIndex}" onclick="{!c.handleSort}">
+                                        <a class="slds-th__action slds-text-link_reset" href="#" role="button" tabindex="0">
+                                            <span class="slds-assistive-text">Sort by: </span>
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                                <span class="slds-truncate" title="Vendor">Vendor</span>
+                                                <aura:if isTrue="{!groupIndex == v.sortingGroupIndex}">
+                                                    <aura:if isTrue="{!and(v.sortDirection == 'asc',v.sortedBy == 'VendorName')}" >
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowdown" alternativeText="arrowDown" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!and(v.sortDirection == 'desc',v.sortedBy == 'VendorName')}">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowup" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>                                                          
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!v.sortedBy != 'VendorName'}">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:if>
+                                                    <aura:set attribute="else">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:set>
+                                                </aura:if>
+                                            </div>
+                                        </a>
+                                        <div class="slds-resizable">
+                                            <input type="range" aria-label="Name column width" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-533" max="1000" min="20" tabindex="0" />
+                                            <span class="slds-resizable__handle">
+                                                <span class="slds-resizable__divider"></span>
+                                            </span>
+                                        </div>
+                                    </th>
+                                 <!--   <th aria-label="Name" aria-sort="none" class="slds-is-resizable slds-is-sortable" scope="col" data-sortBy="ProductName" data-sortGroupIndex="{!groupIndex}" onclick="{!c.handleSort}">
+                                        <a class="slds-th__action slds-text-link_reset" href="#" role="button" tabindex="0">
+                                            <span class="slds-assistive-text">Sort by: </span>
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                                <span class="slds-truncate" title="Product">Product</span>
+                                                <aura:if isTrue="{!groupIndex == v.sortingGroupIndex}">
+                                                    <aura:if isTrue="{!and(v.sortDirection == 'asc',v.sortedBy == 'ProductName')}" >
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowdown" alternativeText="arrowDown" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!and(v.sortDirection == 'desc',v.sortedBy == 'ProductName')}">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowup" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>                                                          
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!v.sortedBy != 'ProductName'}">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:if>
+                                                    <aura:set attribute="else">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:set>
+                                                </aura:if>
+                                            </div>
+                                        </a>
+                                        <div class="slds-resizable">
+                                            <input type="range" aria-label="Name column width" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-533" max="1000" min="20" tabindex="0" />
+                                            <span class="slds-resizable__handle">
+                                                <span class="slds-resizable__divider"></span>
+                                            </span>
+                                        </div>
+                                    </th>
+                                 -->
+                                    <th aria-label="Vendor" aria-sort="none" class="slds-is-resizable slds-is-sortable" scope="col" data-sortBy="buildertek__Quantity__c" data-sortGroupIndex="{!groupIndex}" onclick="{!c.handleSort}">
+                                        <a class="slds-th__action slds-text-link_reset" href="#" role="button" tabindex="0">
+                                            <span class="slds-assistive-text">Sort by: </span>
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                                <span class="slds-truncate" title="Quantity">Quantity</span>
+                                                <aura:if isTrue="{!groupIndex == v.sortingGroupIndex}">
+                                                    <aura:if isTrue="{!and(v.sortDirection == 'asc',v.sortedBy == 'buildertek__Quantity__c')}" >
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowdown" alternativeText="arrowDown" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!and(v.sortDirection == 'desc',v.sortedBy == 'buildertek__Quantity__c')}">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowup" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>                                                          
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!v.sortedBy != 'buildertek__Quantity__c'}">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:if>
+                                                    <aura:set attribute="else">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:set>
+                                                </aura:if>
+                                            </div>
+                                        </a>
+                                        <div class="slds-resizable">
+                                            <input type="range" aria-label="Name column width" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-533" max="1000" min="20" tabindex="0" />
+                                            <span class="slds-resizable__handle">
+                                                <span class="slds-resizable__divider"></span>
+                                            </span>
+                                        </div>
+                                    </th>
+                                   
+                                    
+                               <!--     <th aria-label="Name" aria-sort="none" class="slds-is-resizable slds-is-sortable" scope="col" data-sortBy="BuildPhase" data-sortGroupIndex="{!groupIndex}" onclick="{!c.handleSort}">
+                                        <a class="slds-th__action slds-text-link_reset" href="#" role="button" tabindex="0">
+                                            <span class="slds-assistive-text">Sort by: </span>
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                                <span class="slds-truncate" title="Build Phase">Build Phase</span>
+                                                <aura:if isTrue="{!groupIndex == v.sortingGroupIndex}">
+                                                    <aura:if isTrue="{!and(v.sortDirection == 'asc',v.sortedBy == 'BuildPhase')}" >
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowdown" alternativeText="arrowDown" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!and(v.sortDirection == 'desc',v.sortedBy == 'BuildPhase')}">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowup" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>                                                          
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!v.sortedBy != 'BuildPhase'}">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:if>
+                                                    <aura:set attribute="else">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:set>
+                                                </aura:if>
+                                            </div>
+                                        </a>
+                                        <div class="slds-resizable">
+                                            <input type="range" aria-label="Name column width" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-533" max="1000" min="20" tabindex="0" />
+                                            <span class="slds-resizable__handle">
+                                                <span class="slds-resizable__divider"></span>
+                                            </span>
+                                        </div>
+                                    </th>
+                                    <th aria-label="Name" aria-sort="none" class="slds-is-resizable slds-is-sortable" scope="col" data-sortBy="Tradetype" data-sortGroupIndex="{!groupIndex}" onclick="{!c.handleSort}">
+                                        <a class="slds-th__action slds-text-link_reset" href="#" role="button" tabindex="0">
+                                            <span class="slds-assistive-text">Sort by: </span>
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                                <span class="slds-truncate" title="Trade Type">Trade Type</span>
+                                                <aura:if isTrue="{!groupIndex == v.sortingGroupIndex}">
+                                                    <aura:if isTrue="{!and(v.sortDirection == 'asc',v.sortedBy == 'Tradetype')}" >
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowdown" alternativeText="arrowDown" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!and(v.sortDirection == 'desc',v.sortedBy == 'Tradetype')}">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowup" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>                                                          
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!v.sortedBy != 'Tradetype'}">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:if>
+                                                    <aura:set attribute="else">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:set>
+                                                </aura:if>
+                                            </div>
+                                        </a>
+                                        <div class="slds-resizable">
+                                            <input type="range" aria-label="Name column width" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-533" max="1000" min="20" tabindex="0" />
+                                            <span class="slds-resizable__handle">
+                                                <span class="slds-resizable__divider"></span>
+                                            </span>
+                                        </div>
+                                    </th>
+                                 -->
+                                    
+                                    <th aria-label="Name" aria-sort="none" class="slds-is-resizable slds-is-sortable" scope="col" data-sortBy="CategoryName" data-sortGroupIndex="{!groupIndex}" onclick="{!c.handleSort}">
+                                        <a class="slds-th__action slds-text-link_reset" href="#" role="button" tabindex="0">
+                                            <span class="slds-assistive-text">Sort by: </span>
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                                <span class="slds-truncate" title="Category">Category</span>
+                                                <aura:if isTrue="{!groupIndex == v.sortingGroupIndex}">
+                                                    <aura:if isTrue="{!and(v.sortDirection == 'asc',v.sortedBy == 'CategoryName')}" >
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowdown" alternativeText="arrowDown" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!and(v.sortDirection == 'desc',v.sortedBy == 'CategoryName')}">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowup" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>                                                          
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!v.sortedBy != 'CategoryName'}">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:if>
+                                                    <aura:set attribute="else">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:set>
+                                                </aura:if>
+                                            </div>
+                                        </a>
+                                        <div class="slds-resizable">
+                                            <input type="range" aria-label="Name column width" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-533" max="1000" min="20" tabindex="0" />
+                                            <span class="slds-resizable__handle">
+                                                <span class="slds-resizable__divider"></span>
+                                            </span>
+                                        </div>
+                                    </th>
+                                    <th aria-label="Name" aria-sort="none" class="slds-is-resizable slds-is-sortable" scope="col" data-sortBy="PurchaseOrder" data-sortGroupIndex="{!groupIndex}" onclick="{!c.handleSort}">
+                                        <a class="slds-th__action slds-text-link_reset" href="#" role="button" tabindex="0">
+                                            <span class="slds-assistive-text">Sort by: </span>
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                                <span class="slds-truncate" title="Purchase order">Purchase order</span>
+                                                <aura:if isTrue="{!groupIndex == v.sortingGroupIndex}">
+                                                    <aura:if isTrue="{!and(v.sortDirection == 'asc',v.sortedBy == 'PurchaseOrder')}" >
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowdown" alternativeText="arrowDown" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!and(v.sortDirection == 'desc',v.sortedBy == 'PurchaseOrder')}">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowup" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>                                                          
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!v.sortedBy != 'PurchaseOrder'}">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:if>
+                                                    <aura:set attribute="else">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:set>
+                                                </aura:if>
+                                            </div>
+                                        </a>
+                                        <div class="slds-resizable">
+                                            <input type="range" aria-label="Name column width" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-533" max="1000" min="20" tabindex="0" />
+                                            <span class="slds-resizable__handle" >
+                                                <span class="slds-resizable__divider"></span>
+                                            </span>
+                                        </div>
+                                    </th>
+                                    <th aria-label="Name" aria-sort="none" class="slds-is-resizable slds-is-sortable" scope="col" data-sortBy="ProductType" data-sortGroupIndex="{!groupIndex}" onclick="{!c.handleSort}">
+                                        <a class="slds-th__action slds-text-link_reset" href="#" role="button" tabindex="0">
+                                            <span class="slds-assistive-text">Sort by: </span>
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                                <span class="slds-truncate" title="Product Type">Product Type</span>
+                                                <aura:if isTrue="{!groupIndex == v.sortingGroupIndex}">
+                                                    <aura:if isTrue="{!and(v.sortDirection == 'asc',v.sortedBy == 'ProductType')}" >
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowdown" alternativeText="arrowDown" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!and(v.sortDirection == 'desc',v.sortedBy == 'ProductType')}">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowup" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>                                                          
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!v.sortedBy != 'ProductType'}">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:if>
+                                                    <aura:set attribute="else">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:set>
+                                                </aura:if>
+                                            </div>
+                                        </a>
+                                        <div class="slds-resizable">
+                                            <input type="range" aria-label="Name column width" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-533" max="1000" min="20" tabindex="0" />
+                                            <span class="slds-resizable__handle">
+                                                <span class="slds-resizable__divider"></span>
+                                            </span>
+                                        </div>
+                                    </th>
+                                    <th aria-label="Name" aria-sort="none" class="slds-is-resizable slds-is-sortable" scope="col" data-sortBy="buildertek__Location_Picklist__c" data-sortGroupIndex="{!groupIndex}" onclick="{!c.handleSort}">
+                                        <a class="slds-th__action slds-text-link_reset" href="#" role="button" tabindex="0">
+                                            <span class="slds-assistive-text">Sort by: </span>
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                                <span class="slds-truncate" title="Location">Location</span>
+                                                <aura:if isTrue="{!groupIndex == v.sortingGroupIndex}">
+                                                    <aura:if isTrue="{!and(v.sortDirection == 'asc',v.sortedBy == 'buildertek__Location_Picklist__c')}" >
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowdown" alternativeText="arrowDown" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!and(v.sortDirection == 'desc',v.sortedBy == 'buildertek__Location_Picklist__c')}">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowup" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>                                                          
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!v.sortedBy != 'buildertek__Location_Picklist__c'}">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:if>
+                                                    <aura:set attribute="else">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:set>
+                                                </aura:if>
+                                            </div>
+                                        </a>
+                                        <div class="slds-resizable">
+                                            <input type="range" aria-label="Name column width" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-533" max="1000" min="20" tabindex="0" />
+                                            <span class="slds-resizable__handle">
+                                                <span class="slds-resizable__divider"></span>
+                                            </span>
+                                        </div>
+                                    </th>
+                                    <th aria-label="Name" aria-sort="none" class="slds-is-resizable slds-is-sortable" scope="col" data-sortBy="buildertek__Standard__c" data-sortGroupIndex="{!groupIndex}" onclick="{!c.handleSort}">
+                                        <a class="slds-th__action slds-text-link_reset" href="#" role="button" tabindex="0">
+                                            <span class="slds-assistive-text">Sort by: </span>
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                                <span class="slds-truncate" title="Standard">Standard</span>
+                                                <aura:if isTrue="{!groupIndex == v.sortingGroupIndex}">
+                                                    <aura:if isTrue="{!and(v.sortDirection == 'asc',v.sortedBy == 'buildertek__Standard__c')}" >
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowdown" alternativeText="arrowDown" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!and(v.sortDirection == 'desc',v.sortedBy == 'buildertek__Standard__c')}">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowup" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>                                                          
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!v.sortedBy != 'buildertek__Standard__c'}">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:if>
+                                                    <aura:set attribute="else">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:set>
+                                                </aura:if>
+                                            </div>
+                                        </a>
+                                        <div class="slds-resizable">
+                                            <input type="range" aria-label="Name column width" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-533" max="1000" min="20" tabindex="0" />
+                                            <span class="slds-resizable__handle">
+                                                <span class="slds-resizable__divider"></span>
+                                            </span>
+                                        </div>
+                                    </th>
+                                 
+                                    
+                                <!--    <th aria-label="Name" aria-sort="none" class="slds-is-resizable slds-is-sortable" scope="col" data-sortBy="buildertek__Upgrade_Price__c" data-sortGroupIndex="{!groupIndex}" onclick="{!c.handleSort}">
+                                        <a class="slds-th__action slds-text-link_reset" href="#" role="button" tabindex="0">
+                                            <span class="slds-assistive-text">Sort by: </span>
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                                <span class="slds-truncate" title="Upgrade Price">Upgrade Price</span>
+                                                <aura:if isTrue="{!groupIndex == v.sortingGroupIndex}">
+                                                    <aura:if isTrue="{!and(v.sortDirection == 'asc',v.sortedBy == 'buildertek__Upgrade_Price__c')}" >
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowdown" alternativeText="arrowDown" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!and(v.sortDirection == 'desc',v.sortedBy == 'buildertek__Upgrade_Price__c')}">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowup" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>                                                          
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!v.sortedBy != 'buildertek__Upgrade_Price__c'}">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:if>
+                                                    <aura:set attribute="else">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:set>
+                                                </aura:if>
+                                            </div>
+                                        </a>
+                                        <div class="slds-resizable">
+                                            <input type="range" aria-label="Name column width" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-533" max="1000" min="20" tabindex="0" />
+                                            <span class="slds-resizable__handle">
+                                                <span class="slds-resizable__divider"></span>
+                                            </span>
+                                        </div>
+                                    </th>
+                                -->
+                                    
+                                    <th aria-label="Vendor" aria-sort="none" class="slds-is-resizable slds-is-sortable" scope="col" data-sortBy="buildertek__BL_UNIT_COST__c" data-sortGroupIndex="{!groupIndex}" onclick="{!c.handleSort}">
+                                        <a class="slds-th__action slds-text-link_reset" href="#" role="button" tabindex="0">
+                                            <span class="slds-assistive-text">Sort by: </span>
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                                <span class="slds-truncate" title="Unit Cost">Unit Cost</span>
+                                                <aura:if isTrue="{!groupIndex == v.sortingGroupIndex}">
+                                                    <aura:if isTrue="{!and(v.sortDirection == 'asc',v.sortedBy == 'buildertek__BL_UNIT_COST__c')}" >
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowdown" alternativeText="arrowDown" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!and(v.sortDirection == 'desc',v.sortedBy == 'buildertek__BL_UNIT_COST__c')}">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowup" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>                                                          
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!v.sortedBy != 'buildertek__BL_UNIT_COST__c'}">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:if>
+                                                    <aura:set attribute="else">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:set>
+                                                </aura:if>
+                                            </div>
+                                        </a>
+                                        <div class="slds-resizable">
+                                            <input type="range" aria-label="Name column width" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-533" max="1000" min="20" tabindex="0" />
+                                            <span class="slds-resizable__handle">
+                                                <span class="slds-resizable__divider"></span>
+                                            </span>
+                                        </div>
+                                    </th>
+                                    <th aria-label="Vendor" aria-sort="none" class="slds-is-resizable slds-is-sortable" scope="col" data-sortBy="buildertek__BL_MARKUP__c" data-sortGroupIndex="{!groupIndex}" onclick="{!c.handleSort}">
+                                        <a class="slds-th__action slds-text-link_reset" href="#" role="button" tabindex="0">
+                                            <span class="slds-assistive-text">Sort by: </span>
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                                <span class="slds-truncate" title="Markup">Markup</span>
+                                                <aura:if isTrue="{!groupIndex == v.sortingGroupIndex}">
+                                                    <aura:if isTrue="{!and(v.sortDirection == 'asc',v.sortedBy == 'buildertek__BL_MARKUP__c')}" >
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowdown" alternativeText="arrowDown" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!and(v.sortDirection == 'desc',v.sortedBy == 'buildertek__BL_MARKUP__c')}">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowup" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>                                                          
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!v.sortedBy != 'buildertek__BL_MARKUP__c'}">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:if>
+                                                    <aura:set attribute="else">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:set>
+                                                </aura:if>
+                                            </div>
+                                        </a>
+                                        <div class="slds-resizable">
+                                            <input type="range" aria-label="Name column width" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-533" max="1000" min="20" tabindex="0" />
+                                            <span class="slds-resizable__handle">
+                                                <span class="slds-resizable__divider"></span>
+                                            </span>
+                                        </div>
+                                    </th>
+                                    <th aria-label="Vendor" aria-sort="none" class="slds-is-resizable slds-is-sortable" scope="col" data-sortBy="buildertek__BL_DISCOUNT__c" data-sortGroupIndex="{!groupIndex}" onclick="{!c.handleSort}">
+                                        <a class="slds-th__action slds-text-link_reset" href="#" role="button" tabindex="0">
+                                            <span class="slds-assistive-text">Sort by: </span>
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                                <span class="slds-truncate" title="Discount">Discount</span>
+                                                <aura:if isTrue="{!groupIndex == v.sortingGroupIndex}">
+                                                    <aura:if isTrue="{!and(v.sortDirection == 'asc',v.sortedBy == 'buildertek__BL_DISCOUNT__c')}" >
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowdown" alternativeText="arrowDown" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!and(v.sortDirection == 'desc',v.sortedBy == 'buildertek__BL_DISCOUNT__c')}">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowup" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>                                                          
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!v.sortedBy != 'buildertek__BL_DISCOUNT__c'}">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:if>
+                                                    <aura:set attribute="else">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:set>
+                                                </aura:if>
+                                            </div>
+                                        </a>
+                                        <div class="slds-resizable">
+                                            <input type="range" aria-label="Name column width" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-533" max="1000" min="20" tabindex="0" />
+                                            <span class="slds-resizable__handle">
+                                                <span class="slds-resizable__divider"></span>
+                                            </span>
+                                        </div>
+                                    </th>
+                                    <th aria-label="Vendor" aria-sort="none" class="slds-is-resizable slds-is-sortable" scope="col" data-sortBy="buildertek__BL_LIST_PRICE__c" data-sortGroupIndex="{!groupIndex}" onclick="{!c.handleSort}">
+                                        <a class="slds-th__action slds-text-link_reset" href="#" role="button" tabindex="0">
+                                            <span class="slds-assistive-text">Sort by: </span>
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                                <span class="slds-truncate" title="List Price">List Price</span>
+                                                <aura:if isTrue="{!groupIndex == v.sortingGroupIndex}">
+                                                    <aura:if isTrue="{!and(v.sortDirection == 'asc',v.sortedBy == 'buildertek__BL_LIST_PRICE__c')}" >
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowdown" alternativeText="arrowDown" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!and(v.sortDirection == 'desc',v.sortedBy == 'buildertek__BL_LIST_PRICE__c')}">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowup" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>                                                          
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!v.sortedBy != 'buildertek__BL_LIST_PRICE__c'}">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:if>
+                                                    <aura:set attribute="else">
+                                                        <span class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown" >
+                                                            <lightning:icon iconName="utility:arrowup" alternativeText="arrowup" size="xx-small" title="xx-small size" />
+                                                        </span>
+                                                    </aura:set>
+                                                </aura:if>
+                                            </div>
+                                        </a>
+                                        <div class="slds-resizable">
+                                            <input type="range" aria-label="Name column width" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-533" max="1000" min="20" tabindex="0" />
+                                            <span class="slds-resizable__handle">
+                                                <span class="slds-resizable__divider"></span>
+                                            </span>
+                                        </div>
+                                    </th>
+                                    
+                                    
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!groupItem.groupData}" var="dataItem" indexVar="dataIndex">
+                                    <tr aria-selected="false" class="slds-hint-parent">
+                                        <td role="gridcell" tabindex="-1">
+                                            <span class="slds-grid slds-grid_align-spread">
+                                                <div class="slds-truncate">
+                                                    {!dataIndex+1}
+                                                </div>
+                                            </span>
+                                        </td>
+                                        <td class="" role="gridcell">
+                                            <aura:if isTrue="{!!dataItem.buildertek__Purchase_Order__c}" >
+                                                <div class="slds-checkbox">
+                                                    <input type="checkbox" name="options" class="{!'selectCheck_'+groupIndex}" id="{!'checkbox-group_'+groupIndex+' rowId_'+dataIndex}" value="{!dataItem.Id}" tabindex="" onchange="{!c.selectRow}" />
+                                                    <label class="slds-checkbox__label" for="{!'checkbox-group_'+groupIndex+' rowId_'+dataIndex}" id="{!'check-button-label-'+dataIndex}">
+                                                        <span class="slds-checkbox_faux"></span>
+                                                        <span class="slds-form-element__label slds-assistive-text">Select item 1</span>
+                                                    </label>
+                                                    <!-- <aura:set attribute="else">
+                                                    <input type="checkbox" name="options" id="{!checkbox-dataIndex}" value="false" disabled="true" aria-labelledby="check-button-label-01 column-group-header" />
+                                                </aura:set> -->
+                                                </div>
+                                            </aura:if>
+                                            
+                                        </td>
+                                        <td>
+                                            <div id="{!dataItem.Id}" onclick="{!c.showVendor}" style="display:inline-block;">
+                                                <lightning:icon iconName="standard:product" alternativeText="product" size="xx-small"
+                                                                title="Show Vendors" />
+                                            </div>
+                                            
+                                        </td>
+                                        <td>
+                                            <div id="{!dataItem.Id}" onclick="{!c.deleteVendor}" style="display:inline-block;">
+                                                <lightning:icon iconName="utility:delete" alternativeText="delete" size="xx-small"
+                                                                title="Delete" />
+                                            </div>
+                                            
+                                        </td>
+                                        <th scope="row">
+                                            <div class="slds-truncate" title="{!dataItem.Name}" style="margin-left:15px;">
+                                                <a href="{!'/'+dataItem.Id}" >{!dataItem.Name}</a>
+                                            </div>
+                                        </th>
+                                        <td role="gridcell">
+                                            <div class="slds-truncate" title="{!dataItem.buildertek__Vendor__r.Name}">{!dataItem.buildertek__Vendor__r.Name}</div>
+                                        </td>
+                                        
+                                     
+                                    <!--    <td role="gridcell">
+                                            <div class="slds-truncate" title="{!dataItem.buildertek__Product__r.Name}">{!dataItem.buildertek__Product__r.Name}</div>
+                                        </td> -->
+                                       
+                                        
+                                        <td role="gridcell">
+                                            <div class="slds-truncate" title="{!dataItem.buildertek__Quantity__c}">{!dataItem.buildertek__Quantity__c}</div>
+                                        </td>
+                                        
+                                      
+                                    <!--    <td role="gridcell">
+                                            <div class="slds-truncate" title="{!dataItem.buildertek__Build_Phase__r.Name}">{!dataItem.buildertek__Build_Phase__r.Name}</div>
+                                        </td>    
+                                        <td role="gridcell">
+                                            <div class="slds-truncate" title="{!dataItem.buildertek__Trade_Type__r.Name}">{!dataItem.buildertek__Trade_Type__r.Name}</div>
+                                        </td> -->
+                                        
+                                     
+                                        <td role="gridcell">
+                                            <div class="slds-truncate" title="{!dataItem.buildertek__Category__r.Name}">{!dataItem.buildertek__Category__r.Name}</div>
+                                        </td>
+                                        <td role="gridcell">
+                                            <div class="slds-truncate" title="{!dataItem.buildertek__Purchase_Order__r.Name}">
+                                                <a href="{!'/'+dataItem.buildertek__Purchase_Order__c}" >
+                                                    {!dataItem.buildertek__Purchase_Order__r.Name}
+                                                </a>
+                                            </div>
+                                        </td>
+                                        <td role="gridcell">
+                                            <div class="slds-truncate" title="{!dataItem.buildertek__Product_Type__r.Name}">{!dataItem.buildertek__Product_Type__r.Name}</div>
+                                        </td>
+                                        
+                                        <td role="gridcell">
+                                            <div class="slds-truncate" title="{!dataItem.buildertek__Location_Picklist__c}">{!dataItem.buildertek__Location_Picklist__c}</div>
+                                        </td>
+                                        <td role="gridcell">
+                                            <div class="slds-truncate" title="{!dataItem.buildertek__Standard__c}">{!dataItem.buildertek__Standard__c}</div>
+                                        </td>
+                                       
+                                        
+                                     <!--   <td role="gridcell">
+                                            <div class="slds-truncate" title="{!dataItem.buildertek__Upgrade_Price__c}">{!dataItem.buildertek__Upgrade_Price__c}</div>
+                                        </td>  -->
+                                        
+                                        <td role="gridcell">
+                                           <!-- <div class="slds-truncate" title="{!dataItem.buildertek__BL_UNIT_COST__c}">{!dataItem.buildertek__BL_UNIT_COST__c}</div> -->
+                                            <lightning:formattedNumber value="{!dataItem.buildertek__BL_UNIT_COST__c}" currencyDisplayAs="code" currencyCode="USD" style="currency"/>
+                                            
+                                        </td>
+                                        
+                                        <td role="gridcell">
+                                            <div class="slds-truncate" title="{!dataItem.buildertek__BL_MARKUP__c}">{!dataItem.buildertek__BL_MARKUP__c}</div>
+                                        </td>
+                                        
+                                        <td role="gridcell">
+                                            <div class="slds-truncate" title="{!dataItem.buildertek__BL_DISCOUNT__c}">{!dataItem.buildertek__BL_DISCOUNT__c}</div>
+                                        </td>
+                                        
+                                        <td role="gridcell">
+                                            <div class="slds-truncate" title="{!dataItem.buildertek__BL_LIST_PRICE__c}">{!dataItem.buildertek__BL_LIST_PRICE__c}</div>
+                                        </td>
+                                        
+                                        
+                                        
+                                        
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                        
+                        <!-- <lightning:datatable 
+                                             
+                                             keyField="id"
+                                             columns="{!v.columns }"
+                                             data="{!groupItem.groupData}"
+                                             hideCheckBoxColumn="true"
+                                             showRowNumberColumn="true"
+                                             onrowselection="{! c.getSelectedRow }"
+                                             onrowaction="{!c.handleRowAction}"
+                                             selectedRows="{! v.selectedRows }"
+                                             defaultSortDirection="{!v.defaultSortDirection}"
+                                             sortedDirection=""
+                                             sortedBy=""
+                                             onsort="{!c.handleSort}" >
+                        </lightning:datatable> -->
+                        
+                    </div>
+                    
+                </aura:iteration>
+            </div>            
+            <div style="margin-top: 15px;display:none;">
+                <lightning:buttonGroup >
+                    <lightning:button disabled="{!v.PageNumber == 1}" variant="brand" aura:id="prevPage" label="Prev"
+                                      onclick="{!c.handlePrev}" class="next-prev_button" iconName='utility:back'/>
+                    &nbsp; &nbsp; &nbsp;
+                    <lightning:button disabled="{!v.PageNumber >= v.TotalPages}" aura:id="nextPage" variant="brand"
+                                      label="Next" onclick="{!c.handleNext}" class="next-prev_button" iconName='utility:forward' iconPosition='right'/>
+                </lightning:buttonGroup>
+            </div>
+            
+            <aura:if isTrue="{!v.Spinner}">
+                <div aura:id="spinnerId" class="slds-spinner_container" style="position:fixed;">
+                    <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                        <span class="slds-assistive-text">Loading</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                        <div class="custom-loading-text">
+                            <aura:if isTrue="{!v.showMessage}">
+                               <!-- <b>Creating PO</b>-->
+                                 <b>Processing, Please Wait</b>
+                            </aura:if>
+                        </div>
+                    </div>
+                </div>
+            </aura:if>
+            
+            <aura:if isTrue="{!v.showModal}">
+                <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header">
+                            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                                <lightning:icon iconName="utility:close" alternativeText="close" size="x-small"
+                                                title="x-small size" />
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+                            <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Select Vendor</h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                            <table class="slds-table slds-table_bordered slds-table_cell-buffer" role="grid">
+                                <thead>
+                                    <tr class="slds-text-heading--label">
+                                        <th scope="col"></th>
+                                        <th aria-label="Vendor Name" aria-sort="none" scope="col">
+                                            <div class="slds-truncate" title="Vendor Name">Vendor Name</div>
+                                        </th>
+                                        <th aria-label="Product Name" aria-sort="none" scope="col">
+                                            <div class="slds-truncate" title="Product Name">Product Name</div>
+                                        </th>
+                                        <th aria-label="Product SKU" aria-sort="none" scope="col">
+                                            <div class="slds-truncate" title="Product SKU">Product SKU</div>
+                                        </th>
+                                        <th aria-label="Product Cost" aria-sort="none" scope="col">
+                                            <div class="slds-truncate" title="Product Cost">Product Cost</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{!v.vendorList}" var="vendorItem" indexVar="vendorIndex" >
+                                        <tr>
+                                            <td>
+                                                <!-- <lightning:input type="radio" name="select" value="{!v.colors[0]}" label="{!v.colors[0]}" onchange="{!c.handleRadioClick}" />-->
+                                                <input type="radio" name="vendors" value="{!vendorItem.productId}" onchange="{!c.selectedVendorItem}"/>
+                                            </td>
+                                            <th>
+                                                <div class="slds-truncate" title="{!vendorItem.vendorName}">
+                                                    {!vendorItem.vendorName}
+                                                </div>
+                                            </th>
+                                            <td>
+                                                <div class="slds-truncate" title="{!vendorItem.productName}">
+                                                    <a href="{!'/'+vendorItem.productId}">{!vendorItem.productName}</a>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="slds-truncate" title="{!vendorItem.productName}">
+                                                    {!vendorItem.productSKU}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="slds-truncate" title="{!vendorItem.productName}">
+                                                    <lightning:formattedNumber value="{!vendorItem.unitCost}" style="currency" currencyCode="USD"/>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                        </div>
+                        <footer class="slds-modal__footer">
+                            <button class="slds-button slds-button_neutral" onclick="{!c.closeVendor}">Cancel</button>
+                            <button class="slds-button slds-button_brand" onclick="{!c.saveVendor}">Save</button>
+                        </footer>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </aura:if>
+        </div>
+        <lightning:notificationsLibrary aura:id="notifLib" />
+        <lightning:overlayLibrary aura:id="overlayLib" />
+    </div>
+    
+</aura:component>

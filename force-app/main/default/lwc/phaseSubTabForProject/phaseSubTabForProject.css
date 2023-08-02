@@ -1,0 +1,40 @@
+.notStarted{
+    Color : #1d1dc8;
+    background : #c0c9e4;
+    font-weight: 700;
+    padding-left: 8px;
+    padding-right: 8px;
+    border-radius: 7px;
+    padding-top:2px;
+    padding-bottom:2px;
+}
+.inProgress{
+    Color:#e97f19;
+    background : #fae4cc;
+    font-weight: 700;
+    padding-left: 8px;
+    padding-right: 8px;
+    border-radius: 7px;
+    padding-top:2px;
+    padding-bottom:2px;
+}
+.completed{
+    color : #63c3b9;
+    background : #d3e9e7;
+    font-weight: 700;
+    padding-left: 8px;
+    padding-right: 8px;
+    border-radius: 7px;
+    padding-top:2px;
+    padding-bottom:2px;
+}
+.pastDue{
+    Color : #da1818;
+    background : #edc1c1;
+    font-weight: 700;
+    padding-left: 8px;
+    padding-right: 8px;
+    border-radius: 7px;
+    padding-top:2px;
+    padding-bottom:2px;
+}

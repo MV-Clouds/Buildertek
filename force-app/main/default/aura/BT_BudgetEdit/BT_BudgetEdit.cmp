@@ -1,0 +1,207 @@
+<aura:component controller="BT_BudgetEditController" implements="lightning:actionOverride,force:hasRecordId,flexipage:availableForRecordHome,force:lightningQuickActionWithoutHeader" access="global">
+    <!--<aura:handler name="init" value="{!this}" action="{!c.doInit}" />-->
+    <aura:attribute name="budget" type="Object" />  
+    <aura:attribute name="record" type="Object" />
+    <aura:attribute name="Type" type="String"/>
+    <aura:attribute name="objectApiName" type="String"/>
+    <aura:attribute name="selectedLookupValue" type="sObject" default="{}"/>
+    <aura:attribute name="recordError" type="String"/>
+    <aura:attribute name="isLookupValue" type="Boolean" />
+    <force:recordData aura:id="recordLoader"
+                      recordId="{!v.recordId}"
+                      fields="buildertek__Is_Budget_Locked__c"
+                      targetRecord="{!v.record}" 
+                      targetFields="{!v.budget}"
+                      targetError="{!v.recordError}"
+                      recordUpdated="{!c.doInit}"
+                      />
+    <section role="dialog" tabindex="-1" aura:id="Modalbox" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-close">
+    	<div class="slds-modal__container" style="width: 100%;height: 100%;"> 
+    		<!-- ###### MODAL BOX HEADER Start ######-->
+    		<div class="slds-modal__header">
+    			Edit {!v.budget.Name}
+    		</div>
+    		<!--###### MODAL BOX BODY Part Start######-->
+    		<div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+    			<div class="slds-form slds-form_stacked" role="list">
+    				<div class="slds-grid slds-gutters_small">
+    					<div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+    						<div class="slds-form-element slds-is-editing">
+    							<label class="slds-form-element__label">Budget#</label>
+    							<div class="slds-form-element__control">
+    								<ui:outputText value="{!v.budget.buildertek__Budget__c}" />
+    							</div>
+    						</div>    
+    					</div>
+    					<div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+    						<div class="slds-form-element slds-is-editing">
+    							<label class="slds-form-element__label">
+    								<abbr class="slds-required" title="required">*</abbr>Project
+    							</label>
+    							<div class="slds-form-element__control">
+    								<aura:if isTrue="{!!v.isLookupValue}">
+    								    <lightning:input type="search" name="search" value="{!v.budget.buildertek__Project__r.Name}" onclick="{!c.clearSelectedValue}"/>
+    								    <aura:set attribute="else">
+    								        <c:BT_LightningLookup objectAPIName="buildertek__Project__c" IconName="standard:product" selectedRecord="{!v.selectedLookupValue}" />
+    								    </aura:set>
+    								</aura:if>
+    							</div>
+    						</div>    
+    					</div>
+    				</div>
+    				<div class="slds-grid slds-gutters_small">
+    					<div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+    						<div class="slds-form-element slds-is-editing">
+    							<label class="slds-form-element__label">Budget Name</label>
+    							<div class="slds-form-element__control">
+    								<ui:inputText class="slds-input" value="{!v.budget.Name}" />
+    							</div>
+    						</div>    
+    					</div>
+    					<div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+    						<div class="slds-form-element slds-is-editing">
+    							<label class="slds-form-element__label">
+    								Is Budget Locked ?
+    							</label>
+    							<div class="slds-form-element__control">
+    								<lightning:input type="checkbox" name="Is Budget Locked" checked="{!v.budget.buildertek__Is_Budget_Locked__c}"/>
+    							</div>
+    						</div>    
+    					</div>
+    				</div>
+    				<div class="slds-grid slds-gutters_small">
+    					<div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+    						<div class="slds-form-element slds-is-editing">
+    							<label class="slds-form-element__label">Original Budget</label>
+    							<div class="slds-form-element__control">
+    								<ui:outputText value="{!v.budget.buildertek__Original_Budget__c}" />
+    							</div>
+    						</div>    
+    					</div>
+    					<div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+    						<div class="slds-form-element slds-is-editing">
+    							<label class="slds-form-element__label">Type</label>
+    							<div class="slds-form-element__control">
+    								<ui:inputSelect aura:id="typeId" class="slds-input" value="{!v.budget.buildertek__Type__c}"/>
+    							</div>
+    						</div>    
+    					</div>
+    				</div>
+    			</div><br/><br/>
+                <div class="slds-page-header">
+                    <h3>Receivables</h3>
+                </div> 
+                <div class="slds-form slds-form_stacked" role="list">
+                    <div class="slds-grid slds-gutters_small">
+    					<div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+    						<div class="slds-form-element slds-is-editing">
+    							<label class="slds-form-element__label">Pending CO</label>
+    							<div class="slds-form-element__control">
+    								<ui:outputText value="{!v.budget.buildertek__Pending_CO__c}" />
+    							</div>
+    						</div>    
+    					</div> 
+    				</div>
+    				<div class="slds-grid slds-gutters_small">
+    					<div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+    						<div class="slds-form-element slds-is-editing">
+    							<label class="slds-form-element__label">Approved CO</label>
+    							<div class="slds-form-element__control">
+    								<ui:outputText value="{!v.budget.buildertek__Approved_CO__c}" />
+    							</div>
+    						</div>    
+    					</div> 
+    				</div>	
+    				<div class="slds-grid slds-gutters_small">
+    					<div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+    						<div class="slds-form-element slds-is-editing">
+    							<label class="slds-form-element__label">Total CO</label>
+    							<div class="slds-form-element__control">
+    								<ui:outputText value="{!v.budget.buildertek__Total_CO__c}" />
+    							</div>
+    						</div>    
+    					</div> 
+    				</div>	
+                </div>
+                <br/><br/>
+                <div class="slds-page-header">
+                    <h3>Payables</h3>
+                </div> 
+                <div class="slds-form slds-form_stacked" role="list">
+                    <div class="slds-grid slds-gutters_small">
+    					<div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+    						<div class="slds-form-element slds-is-editing">
+    							<label class="slds-form-element__label">Committed Costs</label>
+    							<div class="slds-form-element__control">
+    								<ui:outputText value="{!v.budget.buildertek__Committed_Costs__c}" />
+    							</div>
+    						</div>    
+    					</div> 
+    					<div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+    						<div class="slds-form-element slds-is-editing">
+    							<label class="slds-form-element__label">Direct Costs</label>
+    							<div class="slds-form-element__control">
+    								<ui:outputText value="{!v.budget.buildertek__Direct_Costs__c}" />
+    							</div>
+    						</div>    
+    					</div> 
+    				</div>
+    				<div class="slds-grid slds-gutters_small">
+    					<div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+    						<div class="slds-form-element slds-is-editing">
+    							<label class="slds-form-element__label">Pending Cost Changes</label>
+    							<div class="slds-form-element__control">
+    								<ui:outputText value="{!v.budget.buildertek__Pending_Cost_Changes__c}" />
+    							</div>
+    						</div>    
+    					</div>
+    					<div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+    						<div class="slds-form-element slds-is-editing">
+    							<label class="slds-form-element__label">Projected Costs</label>
+    							<div class="slds-form-element__control">
+    								<ui:outputText value="{!v.budget.buildertek__Projected_Costs__c}" />
+    							</div>
+    						</div>    
+    					</div>
+    				</div>	
+                </div>
+                <br/><br/> 
+                <div class="slds-page-header">
+                    <h3>Update Information</h3>
+                </div> 
+                <div class="slds-form slds-form_stacked" role="list">
+                    <div class="slds-grid slds-gutters_small">
+    					<div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+    						<div class="slds-form-element slds-is-editing">
+    							<label class="slds-form-element__label">Created By</label>
+    							<div class="slds-form-element__control">
+    								<ui:outputText value="{!v.budget.CreatedBy.Name}" />
+    							</div>
+    						</div>    
+    					</div> 
+    					<div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+    						<div class="slds-form-element slds-is-editing">
+    							<label class="slds-form-element__label">Last Modified By</label>
+    							<div class="slds-form-element__control">
+    								<ui:outputText value="{!v.budget.LastModifiedBy.Name}" />
+    							</div>
+    						</div>    
+    					</div> 
+    				</div>
+                </div>
+    		</div>
+    		<!--###### MODAL BOX FOOTER Part Start ######-->
+    		<footer class="slds-modal__footer">
+    			<lightning:button variant="neutral" 
+    							  label="Cancel"
+    							  title="Cancel"
+    							  onclick="{!c.closeModel}"/>
+    			<lightning:button variant="brand" 
+    							  label="Save"
+    							  title="Save"
+    							  onclick="{!c.saveBudget}"/>
+    		</footer>
+    	</div>
+    </section>
+    <div class="slds-backdrop" aura:id="Modalbackdrop"></div>
+</aura:component>

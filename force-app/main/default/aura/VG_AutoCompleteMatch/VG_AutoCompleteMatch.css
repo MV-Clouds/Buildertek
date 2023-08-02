@@ -1,0 +1,23 @@
+.THIS .depdisplay{
+    font-family:Gotham-Medium;
+    font-size:12px;
+}
+.THIS .namefield{
+        font-family:Gotham-book;
+        font-size:14px;
+    }
+@media screen and (max-width: 760px) {
+    .THIS .auto_search{
+        padding:0px !important;
+    }
+   .THIS .namefield{
+        color:black;
+        font-family:Gotham-book;
+        font-size:14px;
+    }
+    .THIS .depdisplay{
+        color:black;
+    font-family:Gotham-Medium;
+    font-size:12px;
+}
+}

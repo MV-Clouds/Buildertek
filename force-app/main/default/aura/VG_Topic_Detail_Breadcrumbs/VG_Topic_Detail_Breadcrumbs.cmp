@@ -1,0 +1,19 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,forceCommunity:availableForAllPageTypes" controller="VG_TopicDetail" access="global">
+    <aura:attribute name="TopicTitle" type="String"/>
+    <aura:attribute name="recordId" type="string"/>
+    <aura:attribute name="myMap" type="object[]" />
+    <aura:attribute name="hierarchyList" type="List"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+  
+    <lightning:breadcrumbs  >
+          <lightning:breadcrumb label="HOME"  onclick="{! c.navigateToHome }"/>
+                <lightning:breadcrumb label="TOP ARTICLES"  onclick="{! c.navigateTotoparticles }"/>
+        
+    <!--   <lightning:breadcrumb label="Articles"  href="" onclick="{!c.navigateToHome}" class="Padding"/> -->
+        <aura:iteration var="eachHierarchy" items="{!v.hierarchyList}">
+        	<lightning:breadcrumb label="{!eachHierarchy.Name}"  href="{!'/s/topic/'+eachHierarchy.Id+'/'+eachHierarchy.Name}"/>
+        </aura:iteration>
+           
+    </lightning:breadcrumbs>
+</aura:component>

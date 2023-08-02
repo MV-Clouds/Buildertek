@@ -1,0 +1,935 @@
+<!--
+	@ PURPOSE : 1. DISPLAYS FROM => IssuesCreatedAndUpdate.xml
+       			2. DISPLAYS ISSUES WHICH ARE UPDATED BY PROJECT MANANGERS ONLY.
+  	@ Name    : PMIssuesUpdateCmp.xml
+-->
+<aura:component controller="IssueManagementCtrl" >
+    
+	<lightning:workspaceAPI aura:id="workspace"/>
+	
+	<aura:registerEvent name="refreshPmTableEvt" type="c:RefreshIssuesReportedTable"/>
+	
+	<aura:handler name="refreshIssuesReportedTableEvt" action="{!c.refreshIssuesTable}" 
+                  event="c:RefreshIssuesReportedTable"/>
+				  
+    <aura:handler name="productRecordSelectEvt" action="{!c.handleProductSelectEvt}" 
+                  event="c:CloseProductModalEvt"/>
+	
+	<aura:handler name="assetRecordSelectEvt" action="{!c.handleAssetSelectEvt}" 
+                  event="c:CloseAssetModalEvt"/>
+	
+	<aura:handler name="failureModeMultiSelectEvt" action="{!c.handleFailureModeMultiSelectEvt}" 
+                  event="c:CloseFailureModeModalEvt"/>
+	
+	<aura:handler name="googleAddressSearchModalEvt" action="{!c.handleGoogleAddressSearchModalEvt}" 
+                  event="c:CloseGoogleAddressSearchModalEvt"/><aura:attribute name="recordId" type="String" required="true"/>
+	
+	<aura:handler name="qualityAnalysisModalEvt" action="{!c.handleQualityAnalysisModalEvt}" 
+				  event="c:CloseQualityAnalysisModalEvt"/>
+	
+	<aura:attribute name="listOfPMIssueWrappers" type="Object[]" default="[]" required="true"/>
+    
+    <aura:attribute name="recordWorkOrder" type="Object" default="{}" required="true"/>
+    
+	<aura:attribute name="recordCommonIssue" type="Object" default="{}" required="true"/>
+	
+	<aura:attribute name="listOfIGUReplacements" type="List" default="[]" required="true"/>
+	
+	<aura:attribute name="listOfResponsibleEntities" type="List" default="[]" required="true"/>
+	
+	<aura:attribute name="areAllPMIssuesSelected" type="Boolean" default="false"/>
+	
+    <aura:attribute name="contactOpenDropDown" type="Boolean" default="false"/>
+    
+	<aura:attribute name="assetOpenDropDown" type="Boolean" default="false"/>
+	
+	<aura:attribute name="pmFailureModeDropDown" type="Boolean" default="false"/>
+	
+	<aura:attribute name="currentLiteRowId" type="String" default=""/>
+	
+	<aura:attribute name="currentLiteRowIndex" type="Integer" default="-1"/>
+	
+	<aura:attribute name="currentPmFmRowId" type="String" default=""/>
+	
+	<aura:attribute name="currentPmFmRowIndex" type="Integer" default="-1"/>
+	
+    <aura:attribute name="listOfContactSearchedResults" type="Object[]" default="[]"/>
+    
+	<aura:attribute name="listOfAssetSearchedResults" type="Object[]" default="[]"/>
+	
+    <aura:attribute name="pmProductOpenDropDown" type="Boolean" default="false"/>
+	
+	<aura:attribute name="currentPmProductRowId" type="String" default=""/>
+	
+	<aura:attribute name="currentPmProductRowIndex" type="Integer" default="-1"/>
+	
+	<aura:attribute name="listOfPMProductSearchedResults" type="Object[]" default="[]"/>
+	
+	<aura:attribute name="listOfFailureModeResults" type="Object[]" default="[]"/>
+	
+	<aura:attribute name="showSpinner" type="Boolean" />
+	
+	<aura:attribute name="isShipToContactModalOpened" type="Boolean" default="false"/>
+    
+	<aura:attribute name="isQuoteToContactModalOpened" type="Boolean" default="false"/>
+	
+	<aura:attribute name="isShippingInformationModalOpened" type="Boolean" default="false"/>
+	
+	<aura:attribute name="recordWorkOrderSettings" type="Object" default="{}"/>
+	
+	<aura:attribute name="isConsoleNavigation" type="Boolean" default="false"/>
+    
+    <aura:handler name="PMProvideDetailsIGUEvt" action="{!c.handleFailureModePDEvt}" event="c:CloseFailureModeProvideDetails" />
+
+	
+	<!-- START SPINNER -->
+	<aura:if isTrue="{!v.showSpinner}">
+		<lightning:spinner alternativeText="Loading" size="large" />
+	</aura:if>
+	<!-- END SPINNER -->
+	
+	<div aura:id="showProductLookupModal"/>
+	
+	<div aura:id="showAssetLookupModal"/>
+	
+	<div aura:id="showFailureModeMultiSelectModal"/>
+	
+	<div aura:id="showSubmittedIssuesModal"/>
+	
+	<div aura:id="showAddressSearchModal"/>
+	
+	<div aura:id="showQualityAnalysisModal"/>
+	
+	<aura:if isTrue="{! empty( v.listOfPMIssueWrappers ) }">
+		<div class="slds-align_absolute-center">
+			<div class="space-up-down">
+				<button class="slds-button slds-button_brand"
+						onclick="{!c.cancel}">Return to Work Order</button>
+			</div>
+		</div>
+	</aura:if>
+	
+	<aura:if isTrue="{! not( empty( v.listOfPMIssueWrappers ) ) }">
+	
+		<!-- START PM SECTION HEADER -->
+		<div class="slds-section slds-is-open" aura:id="pmHeaderSectionId">
+			
+			<h3 class="slds-section__title">
+				<button class="slds-button slds-section__title-action">
+					<span onclick="{!c.toggleSection}" data-title="pmHeaderSectionId">
+						<lightning:icon iconName="utility:switch"
+										size="x-small"
+										class="slds-section__title-action-icon slds-button__icon_left"
+										alternativeText="button icon" 
+										/>
+					</span>
+					<span class="slds-truncate" title="Fruits">Header Information</span>
+				</button>
+			</h3>
+			<div class="slds-section__content">
+				<lightning:card>
+							
+					<!-- START PM HEADER SECTION FIRST ROW -->
+					<lightning:layout multipleRows="false">
+					
+						<lightning:layoutItem padding="horizontal-small" size="2">
+							<div class="slds-col slds-form-element">
+								<span class="slds-form-element__label"><b>Customer Site</b></span>
+								<div class="slds-form-element__control">
+									<a id="{!v.recordWorkOrder.Building_Accounts__c}" onclick="{!c.openRecordInNewConsoleTab}">
+										{!v.recordWorkOrder.Building_Accounts__r.Name}
+									</a>
+								</div>
+							</div>
+						</lightning:layoutItem>
+						
+						<lightning:layoutItem padding="horizontal-small" size="2">
+							<div class="slds-col slds-form-element">
+								<span class="slds-form-element__label"><b>Opportunity</b></span>
+								<div class="slds-form-element__control">
+									<a id="{!v.recordWorkOrder.Opportunity__c}" onclick="{!c.openRecordInNewConsoleTab}">
+										{!v.recordWorkOrder.Opportunity__r.Name}
+									</a>
+								</div>
+							</div>
+						</lightning:layoutItem>
+						
+						<lightning:layoutItem padding="horizontal-small" size="2">
+							<div class="slds-col slds-form-element">
+								<span class="slds-form-element__label"><b>Account</b></span>
+								<div class="slds-form-element__control">
+									<a id="{!v.recordWorkOrder.AccountId}" onclick="{!c.openRecordInNewConsoleTab}">
+										{!v.recordWorkOrder.Account.Name}
+									</a>
+								</div>
+							</div>
+						</lightning:layoutItem>
+						
+						<lightning:layoutItem padding="horizontal-small" size="2">
+							<div class="slds-col slds-form-element">
+								<span class="slds-form-element__label"><b>Case</b></span>
+								<div class="slds-form-element__control">
+									<a id="{!v.recordWorkOrder.Case.Id}" onclick="{!c.openRecordInNewConsoleTab}">
+										{!v.recordWorkOrder.Case.CaseNumber}
+									</a>
+								</div>
+							</div>
+						</lightning:layoutItem>
+						
+						<lightning:layoutItem padding="horizontal-small" size="2">
+							<div class="slds-col slds-form-element">
+								<span class="slds-form-element__label"><b>Work Order</b></span>
+								<div class="slds-form-element__control">
+									<a id="{!v.recordWorkOrder.Id}" onclick="{!c.openRecordInNewConsoleTab}">
+										{!v.recordWorkOrder.WorkOrderNumber}
+									</a>
+								</div>
+							</div>
+						</lightning:layoutItem>
+						
+						<lightning:layoutItem padding="horizontal-small" size="1">
+							<div class="slds-col slds-form-element">
+								<span class="slds-form-element__label"><b>Product Replacement</b></span>
+								<div class="slds-form-element__control">
+									<ui:inputcheckbox value="{!v.recordCommonIssue.Product_Replacement__c}"/>
+								</div>
+							</div>
+						</lightning:layoutItem>
+						
+						<lightning:layoutItem padding="horizontal-small" size="1">
+							<div class="slds-col slds-form-element">
+								<span class="slds-form-element__label"><b>Product Return</b></span>
+								<div class="slds-form-element__control">
+									<ui:inputcheckbox value="{!v.recordCommonIssue.Product_Return__c}"/>
+								</div>
+							</div>
+						</lightning:layoutItem>
+						
+					</lightning:layout>
+					<!-- END PM HEADER SECTION FIRST ROW -->
+					
+					<!-- START PM HEADER SECTION SECOND ROW -->
+					<lightning:layout multipleRows="false">
+					
+						<!-- START SHIP TO CONTACT SECTION -->
+						<lightning:layoutItem padding="horizontal-small" size="2">
+							<label class="slds-form-element__label"><b>Quote to Contact</b>
+								<button onclick="{!c.openQuoteToContactModal}"
+										class="slds-button slds-button_icon slds-cell-edit__button slds-m-left_x-small"
+										tabindex="0" title="Edit Ship to Contact">
+									<lightning:icon iconName="utility:edit" size="xx-small"
+													alternativeText="edit"/>
+								</button>
+							</label>
+							<br/>
+							<a id="{!v.recordCommonIssue.Customer_Contact__c}" onclick="{!c.openRecordInNewConsoleTab}">
+								{!v.recordCommonIssue.Customer_Contact__r.Name}
+							</a>
+							<aura:if isTrue="{!not(empty(v.recordCommonIssue.Customer_Contact__r.Phone))}">
+								<br/>{!v.recordCommonIssue.Customer_Contact__r.Phone}
+							</aura:if>
+							<aura:if isTrue="{!not(empty(v.recordCommonIssue.Customer_Contact__r.Email))}">
+								<br/><div class="issue_email">{!v.recordCommonIssue.Customer_Contact__r.Email}</div>
+							</aura:if>
+						</lightning:layoutItem>
+						<!-- END SHIP TO CONTACT SECTION -->
+						
+						<!-- START SHIP TO CONTACT SECTION -->
+						<lightning:layoutItem padding="horizontal-small" size="2">
+							<label class="slds-form-element__label"><b>Ship to Contact</b>
+								<button onclick="{!c.openShipToContactModal}"
+										class="slds-button slds-button_icon slds-cell-edit__button slds-m-left_x-small"
+										tabindex="0" title="Edit Ship to Contact">
+									<lightning:icon iconName="utility:edit" size="xx-small"
+													alternativeText="edit"/>
+								</button>
+							</label>
+							<br/>{!v.recordCommonIssue.Shipping_Contact_Name__c}
+							<aura:if isTrue="{!not(empty(v.recordCommonIssue.Shipping_Contact_Number__c))}">
+								<br/>{!v.recordCommonIssue.Shipping_Contact_Number__c}
+							</aura:if>
+							<aura:if isTrue="{!not(empty(v.recordCommonIssue.Shipping_Contact_Email__c))}">
+								<br/><div class="issue_email">{!v.recordCommonIssue.Shipping_Contact_Email__c}</div>
+							</aura:if>
+						</lightning:layoutItem>
+						<!-- END SHIP TO CONTACT SECTION -->
+						
+						<!-- START SHIP TO CONTACT SECTION -->
+						<lightning:layoutItem padding="horizontal-small" size="2">
+							<label class="slds-form-element__label"><b>Shipping Information</b>
+								<button onclick="{!c.openAddressSearchModalForCommonIssue}"
+										class="slds-button slds-button_icon slds-cell-edit__button slds-m-left_x-small"
+										tabindex="0" title="Edit Ship to Contact">
+									<lightning:icon iconName="utility:edit" size="xx-small"
+													alternativeText="edit"/>
+								</button>
+							</label>
+							<br/>{!v.recordCommonIssue.Shipping_Street_1__c} &nbsp; {!v.recordCommonIssue.Shipping_Street_2__c}
+							<aura:if isTrue="{!not(empty(v.recordCommonIssue.Shipping_City__c))}">
+								<br/>{!v.recordCommonIssue.Shipping_City__c}
+							</aura:if>
+							<aura:if isTrue="{!not(empty(v.recordCommonIssue.Shipping_State_Province__c))}">
+								 &nbsp; {!v.recordCommonIssue.Shipping_State_Province__c}
+							</aura:if>
+							<aura:if isTrue="{!not(empty(v.recordCommonIssue.Shipping_Postal_Code__c))}">
+								<br/>{!v.recordCommonIssue.Shipping_Postal_Code__c}
+							</aura:if>
+							<aura:if isTrue="{!not(empty(v.recordCommonIssue.Shipping_Country__c))}">
+								&nbsp; {!v.recordCommonIssue.Shipping_Country__c}
+							</aura:if>
+						</lightning:layoutItem>
+						<!-- END SHIP TO CONTACT SECTION -->
+						
+						
+						<lightning:layoutItem padding="horizontal-small" size="2">
+							<div class="slds-col slds-form-element">
+								<span class="slds-form-element__label"><b>Requested Delivery Date</b></span>
+								<div class="slds-form-element__control req_del_date">
+									<ui:inputDate value="{!v.recordCommonIssue.Requested_Delivery_Date__c}"
+												  displayDatePicker="true" change="{!c.populateRequestedDeliveryDateOnIssues}"/>
+								</div>
+							</div>
+						</lightning:layoutItem>
+						
+						<lightning:layoutItem padding="horizontal-small" size="2">
+							<div class="slds-col slds-form-element">
+								<span class="slds-form-element__label"><b>Reason For Replacement</b></span>
+								<div class="slds-form-element__control req_del_date">
+									<ui:inputSelect value="{!v.recordCommonIssue.Reason_for_Replacement__c}"
+													change="{!c.populateReplacementsOnIssues}">
+										<ui:inputSelectOption text="" label="Select"/>
+										<aura:iteration items="{!v.listOfIGUReplacements}" var="rfr">
+											<ui:inputSelectOption text="{!rfr}" label="{!rfr}"/>
+										</aura:iteration>
+									</ui:inputSelect>
+								</div>
+							</div>
+						</lightning:layoutItem>
+						<lightning:layoutItem padding="horizontal-small" size="2">
+							<div class="slds-col slds-form-element">
+								<span class="slds-form-element__label"><b>Who Caused The Damage?</b></span>
+								<div class="slds-form-element__control req_del_date">
+									<ui:inputSelect value="{!v.recordCommonIssue.Ownership__c}"
+													change="{!c.populateOwnershipOnIssues}">
+										<ui:inputSelectOption text="" label="Select"/>
+										<aura:iteration items="{!v.listOfResponsibleEntities}" var="re">
+											<ui:inputSelectOption text="{!re}" label="{!re}"/>
+										</aura:iteration>
+									</ui:inputSelect>
+								</div>
+							</div>
+						</lightning:layoutItem>
+						
+						
+					</lightning:layout>
+					<!-- END PM HEADER SECTION SECOND ROW -->
+					
+				</lightning:card>
+			</div>
+		</div>
+		<!-- END PM SECTION HEADER -->
+				
+		<!-- START PM SECTION BODY -->
+		<div class="slds-section slds-is-open" aura:id="pmIssuesSectionId">
+			
+			<!-- START SECTION HEADER -->
+			<h3 class="slds-section__title">
+				<button class="slds-button slds-section__title-action">
+					<span onclick="{!c.toggleSection}" data-title="pmIssuesSectionId">
+						<lightning:icon iconName="utility:switch"
+										size="x-small"
+										class="slds-section__title-action-icon slds-button__icon_left"
+										alternativeText="button icon" 
+										/>
+					</span>
+					<span class="slds-truncate" title="Fruits">PM Issues</span>
+				</button>
+			</h3>
+			<!-- END SECTION HEADER -->
+			
+			<!-- START SECTION BODY-->
+			<div class="slds-section__content">
+					
+				<div class="pm_table">
+				
+					<!-- START PM TABLE -->
+					<table class="slds-table slds-table_bordered slds-table_cell-buffer"> 
+						<thead>
+							<tr>
+								<th scope="col">
+									<div class="slds-truncate" title="Action">
+										<div style="display:inline-block;">
+											<ui:inputCheckbox value="{!v.areAllPMIssuesSelected}"
+															  click="{!c.selectAllPMIssues}"/>
+										</div>
+									</div>
+								</th>
+								<th scope="col">
+									<div class="slds-truncate pmTableCol" title="Name">Name</div>
+								</th>
+								<th scope="col">
+									<div class="slds-truncate pmTableCol" title="Control Panel">Control Panel</div>
+								</th>
+								<th scope="col">
+									<div class="slds-truncate pmTableCol" title="Window ID">Window ID</div>
+								</th>
+								
+								<th scope="col">
+									<div class="slds-truncate pmTableCol" title="IGU ID Provided">IGU ID Provided</div>
+								</th>
+								<th scope="col">
+									<div class="slds-truncate pmTableCol" title="Lite ID / Mock ID">Lite ID / Mock ID</div>
+								</th>
+								<th scope="col">
+									<div class="slds-truncate pmTableCol" title="Mark ID">Mark ID</div>
+								</th>
+								<th scope="col">
+									<div class="slds-truncate pmTableCol" title="Existing Makeup">Existing Makeup</div>
+								</th>
+								<th scope="col">
+									<div class="slds-truncate pmTableCol" title="Order Existing Make-Up?">Order Existing Make-Up?</div>
+								</th>
+								<th scope="col">
+									<div class="slds-truncate pmTableCol" title="New Makeup">New Makeup</div>
+								</th>
+								<th scope="col">
+									<div class="slds-truncate pmTableCol" title="Quantity">Quantity</div>
+								</th>
+								<th scope="col">
+									<div class="slds-truncate pmTableCol" title="Requested Delivery Date">Requested Delivery Date</div>
+								</th>
+								<th scope="col">
+									<div class="slds-truncate pmTableCol" title="Reason For Replacement">Reason For Replacement</div>
+								</th>
+								<th scope="col">
+									<div class="slds-truncate pmTableCol" title="Who Caused The Damage?">Who Caused The Damage?</div>
+								</th>
+								
+								<th scope="col">
+									<div class="slds-truncate pmTableCol" title="Failure Mode">Failure Mode</div>
+								</th>
+								<th scope="col">
+									<div class="slds-truncate pmTableCol" title="Failure Mode Details">Failure Mode Details</div>
+								</th>
+								<th scope="col">
+									<div class="slds-truncate pmTableCol" title="Shape">Shape</div>
+								</th>
+								<th scope="col">
+									<div class="slds-truncate pmTableCol" title="Lite Width">Lite Width</div>
+								</th>
+								<th scope="col">
+									<div class="slds-truncate pmTableCol" title="Lite Height">Lite Height</div>
+								</th>
+								<th scope="col">
+									<div class="slds-truncate pmTableCol" title="H1 / B1 (in.)">H1 / B1 (in.)</div>
+								</th>
+								<th scope="col">
+									<div class="slds-truncate pmTableCol" title="Shipping Address">Shipping Address</div>
+								</th>
+                                <th scope="col">
+									<div class="slds-truncate pmTableCol" title="Spare Parts">Attic Stock </div>
+								</th>
+                                <th scope="col">
+									<div class="slds-truncate pmTableCol" title="">Product Return</div>
+								</th>
+							</tr>
+						</thead>   
+						<tbody>
+							<aura:iteration items="{!v.listOfPMIssueWrappers}" var="pmIssueWrapper" indexVar="index">
+								<aura:if isTrue="{! not( empty( pmIssueWrapper.recordIssue.Name ) ) }">
+									<tr>
+										<td>
+											<ui:inputCheckbox value="{!pmIssueWrapper.isSelected}"/>
+										</td>
+										<td>
+											<a id="{!pmIssueWrapper.recordIssue.Id}" onclick="{!c.openRecordInNewConsoleTab}">
+												{!pmIssueWrapper.recordIssue.Name}
+											</a>
+										</td>
+										<td>
+											<ui:outputText value="{!pmIssueWrapper.recordIssue.Control_Panel__c}"/>
+										</td>
+										<td>
+											<ui:outputText value="{!pmIssueWrapper.recordIssue.Window_ID__c}"/>
+										</td>
+										
+										<aura:if isTrue="{!pmIssueWrapper.isSelected}">
+											<td>
+												<ui:inputSelect value="{!pmIssueWrapper.recordIssue.IGU_ID_Provided__c}">
+													<ui:inputSelectOption text="" label="Select"/>
+													<ui:inputSelectOption text="Lite ID" label="Lite ID"/>
+													<ui:inputSelectOption text="Mock ID" label="Mock ID"/>
+												</ui:inputSelect>
+											</td>
+											<td>
+												<div class="slds-form-element">
+													<div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right">
+														<input id="{!index}" class="slds-input" onkeyup="{!c.openAssetLookupModal}"
+															   value="{!pmIssueWrapper.recordIssue.Lite_ID_Mock_ID__c}"/>
+														<span class="slds-icon_container slds-icon-utility-search slds-input__icon slds-input__icon_right iconheight">
+															<lightning:icon class="slds-icon slds-icon slds-icon_small slds-icon-text-default"
+																			iconName="utility:search" size="x-small"
+																			alternativeText="icon" />
+														</span>
+													</div>
+												</div>
+											</td>
+											<td>
+												<ui:inputText value="{!pmIssueWrapper.recordIssue.Mark_ID__c}"/>
+											</td>
+											<td>
+												<ui:outputText value="{!pmIssueWrapper.recordIssue.Existing_Makeup__r.Name}"/>
+											</td>
+											<td>
+												<ui:inputSelect value="{!pmIssueWrapper.recordIssue.Want_to_Order_Existing_Makeup__c}">
+													<ui:inputSelectOption text="Yes" label="Yes"/>
+													<ui:inputSelectOption text="No" label="No"/>
+												</ui:inputSelect>
+											</td>
+											<td>
+												<aura:if isTrue="{!pmIssueWrapper.recordIssue.Want_to_Order_Existing_Makeup__c == 'No'}">
+													<div class="slds-form-element">
+														<div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right">
+															<input id="{!index}" class="slds-input" onkeyup="{!c.openProductLookupModal}"
+																   value="{!pmIssueWrapper.recordIssue.Product__r.Name}"/>
+															<span class="slds-icon_container slds-icon-utility-search slds-input__icon slds-input__icon_right iconheight">
+																<lightning:icon class="slds-icon slds-icon slds-icon_small slds-icon-text-default"
+																				iconName="utility:search" size="x-small"
+																				alternativeText="icon" />
+															</span>
+														</div>
+													</div>
+												</aura:if>
+											</td>
+											<td>
+												<ui:inputNumber value="{!pmIssueWrapper.recordIssue.Quantity__c}"/>
+											</td>
+											<td>
+												<ui:inputDate value="{!pmIssueWrapper.recordIssue.Requested_Delivery_Date__c}"
+															  displayDatePicker="true"/>
+											</td>
+												<td>
+												<ui:inputSelect value="{!pmIssueWrapper.recordIssue.Reason_for_Replacement__c}">
+													<ui:inputSelectOption text="" label="Select"/>
+													<aura:iteration items="{!v.listOfIGUReplacements}" var="rfr">
+														<ui:inputSelectOption text="{!rfr}" label="{!rfr}"/>
+													</aura:iteration>
+												</ui:inputSelect>
+											</td>
+											<td>
+												<ui:inputSelect value="{!pmIssueWrapper.recordIssue.Ownership__c}">
+													<ui:inputSelectOption text="" label="Select"/>
+													<aura:iteration items="{!v.listOfResponsibleEntities}" var="re">
+														<ui:inputSelectOption text="{!re}" label="{!re}"/>
+													</aura:iteration>
+												</ui:inputSelect>
+											</td>
+											
+											<td>
+												<button id="{!index}" data-title="listOfPMIssueWrappers"
+														class="slds-button slds-button_brand"
+														onclick="{!c.openFailureModeMultiSelectModal}">
+														{!pmIssueWrapper.listOfSelectedFailureModes.length + ' selected' }
+												</button>
+											</td>
+                                            <td>
+                                                    <button id="{!index}" data-title="openScratchModal" class="slds-button slds-button_brand" onclick="{!c.openScratchModal}">
+                                                       
+                                                        <aura:if isTrue="{!pmIssueWrapper.provideFMDetails}">
+                                                            	Provided Details
+                                                            <aura:set attribute="else">
+                                                                Provide Details
+                                                            </aura:set>
+                                                        </aura:if> 
+                                                    </button>
+                                                </td>
+											<!--<td>
+                                                
+												<button id="{!index}" data-title="listOfPMIssueWrappers"
+														class="slds-button slds-button_brand"
+														onclick="{!c.openQualityAnalysisModal}">
+														
+														<aura:if isTrue="{!not(empty(pmIssueWrapper.recordIssue.Lite_Damaged__c))}">
+															Details Provided
+															<aura:set attribute="else">
+																Provide Details
+															</aura:set>
+														</aura:if>
+												</button>
+											</td>-->
+											<td>
+												<ui:inputText value="{!pmIssueWrapper.recordIssue.Shape__c}"/>
+											</td>
+											<td>
+												<ui:outputText value="{!pmIssueWrapper.recordIssue.Base_in__c}"/>
+											</td>
+											<td>
+												<ui:outputText value="{!pmIssueWrapper.recordIssue.Height_in__c}"/>
+											</td>
+											<td>
+												<ui:inputText value="{!pmIssueWrapper.recordIssue.H1_B1_in__c}"/>
+											</td>
+											<td>
+												<div class="slds-form-element">
+													<div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right">
+														<input id="{!index}" class="slds-input" onclick="{!c.openAddressSearchModal}"
+															   value="{!pmIssueWrapper.recordIssue.Shipping_Street_1__c}"/>
+														<span class="slds-icon_container slds-icon-utility-search slds-input__icon slds-input__icon_right iconheight">
+															<lightning:icon class="slds-icon slds-icon slds-icon_small slds-icon-text-default"
+																			iconName="utility:search" size="x-small"
+																			alternativeText="icon" />
+														</span>
+													</div>
+												</div>
+											</td>
+                                            <td>
+												<lightning:input type="checkbox" label="" name="input2" checked="{!pmIssueWrapper.recordIssue.Spare_parts__c}" />
+											</td>
+                                            <td>
+												<lightning:input type="checkbox" label="" name="Product_Return__c" checked="{!pmIssueWrapper.recordIssue.Product_Return__c}" />
+											</td>
+										</aura:if>
+										<aura:if isTrue="{!not(pmIssueWrapper.isSelected)}">
+											<td>
+												<ui:outputText value="{!pmIssueWrapper.recordIssue.IGU_ID_Provided__c}"/>
+											</td>
+											<td>
+												<ui:outputText value="{!pmIssueWrapper.recordIssue.Lite_ID_Mock_ID__c}"/>
+											</td>
+											<td>
+												<ui:outputText value="{!pmIssueWrapper.recordIssue.Mark_ID__c}"/>
+											</td>
+											<td>
+												<ui:outputText value="{!pmIssueWrapper.recordIssue.Existing_Makeup__r.Name}"/>
+											</td>
+											<td>
+												<ui:outputText value="{!pmIssueWrapper.orderExistingMakeUp}"/>
+											</td>
+											<td>
+												<ui:outputText value="{!pmIssueWrapper.recordIssue.Product__r.Name}"/>
+											</td>
+											<td>
+												<ui:outputNumber value="{!pmIssueWrapper.recordIssue.Quantity__c}"/>
+											</td>
+											<td>
+												<ui:outputDate value="{!pmIssueWrapper.recordIssue.Requested_Delivery_Date__c}"/>
+											</td>
+											<td>
+												<ui:outputText value="{!pmIssueWrapper.recordIssue.Reason_for_Replacement__c}"/>
+											</td>
+											<td>
+												<ui:outputText value="{!pmIssueWrapper.recordIssue.Ownership__c}"/>
+											</td>
+											
+											<td>
+												<aura:iteration items="{!pmIssueWrapper.recordIssue.Defect_Root_Causes__r.records}" var="ifm">
+													  {!ifm.Failure_Mode__r.Name}<br/>
+												</aura:iteration>
+											</td>
+											<td>
+												<!--<ui:outputCheckbox value="{!not(empty(pmIssueWrapper.recordIssue.Lite_Damaged__c))}"/>-->
+											</td>
+											<td>
+												<ui:outputText value="{!pmIssueWrapper.recordIssue.Shape__c}"/>
+											</td>
+											<td>
+												<ui:outputText value="{!pmIssueWrapper.recordIssue.Width_in_MM__c}"/>
+											</td>
+											<td>
+												<ui:outputText value="{!pmIssueWrapper.recordIssue.Height_in__c}"/>
+											</td>
+											<td>
+												<ui:outputText value="{!pmIssueWrapper.recordIssue.H1_B1_in__c}"/>
+											</td>
+											<td>
+												<ui:outputText value="{!pmIssueWrapper.recordIssue.Shipping_Street_1__c}"/>
+											</td>
+                                            <td>
+                                               <ui:outputCheckbox value="{!pmIssueWrapper.recordIssue.Spare_parts__c}"/>
+											</td>
+                                            <td>
+                                                   <ui:outputCheckbox value="{!pmIssueWrapper.recordIssue.Product_Return__c}"/>
+											</td>
+										</aura:if>
+									</tr>
+								</aura:if>
+							</aura:iteration>
+						</tbody>
+					</table>
+					<br/>
+						
+					<!-- START SPINNER -->
+					<aura:if isTrue="{!v.showSpinner}">
+						<lightning:spinner alternativeText="Loading" size="large" />
+					</aura:if>
+					<!-- END SPINNER -->
+		
+				</div>
+				<br/>
+				<div class="slds-align_absolute-center ">
+					<button class="slds-button slds-button_brand"
+							onclick="{!c.updatePMIssues}">Save</button>
+					<aura:if isTrue="{!v.recordWorkOrderSettings.Enable_Submit_For_Approval_On_PM_Screen__c}">
+						<button class="slds-button slds-button_brand"
+								onclick="{!c.submitPmIssuesAndContinue}">Submit for Approval &amp; Continue</button>
+						<button class="slds-button slds-button_brand"
+								onclick="{!c.submitPmIssuesAndFinish}">Submit for Approval &amp; Finish</button>
+					</aura:if>
+					<button class="slds-button slds-button_neutral"
+							onclick="{!c.cancel}">Cancel</button>
+				</div>
+				<br/>
+			</div>
+		</div>
+		<!-- END PM SECTION BODY -->
+		
+	</aura:if>
+	
+	<!-- START QUOTE TO CONTACT MODAL -->
+    <aura:if isTrue="{!v.isQuoteToContactModalOpened}">
+        
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            
+            <!-- START MODAL BODY  -->
+            <div class="slds-modal__container">
+                
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close"
+                                          onclick="{!c.closeQuoteToContactModel}"
+                                          alternativeText="close"
+                                          variant="bare-inverse"
+                                          class="slds-modal__close"/>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">
+                        Quote to Contact
+                    </h2>
+                </header>
+                
+                <div class="slds-modal__content slds-p-around_large" style="height:300px" id="modal-content-id-1">
+                    <div class="slds-form-element">
+                        <div class="slds-form-element__control">
+                            <div class="slds-combobox_container">
+                                <div aria-expanded="true" aria-haspopup="listbox" role="combobox"
+                                     class="{! v.contactOpenDropDown ? 'slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open' : 'slds-dropdown-trigger slds-dropdown-trigger_click'}">
+                                    <div class="slds-form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+                                        <input type="text" class="slds-input slds-has-focus" id="{!index}"
+                                               aria-autocomplete="list" aria-controls="listbox-id-11"
+                                               autoComplete="off" onkeyup="{!c.searchQuoteToContacts}" role="textbox"
+                                               value="{!v.recordCommonIssue.Customer_Contact__r.Name}" />
+                                        <aura:if isTrue="{! empty(v.recordCommonIssue.Customer_Contact__r.Name)}">
+                                            <span class="slds-icon_container slds-icon-utility-search slds-input__icon slds-input__icon_right">
+                                                <lightning:icon iconName="utility:search" size="x-small" />
+                                            </span>
+                                            <aura:set attribute="else">
+                                                <button title="Clear the text input" 
+                                                        onclick="{!c.clearQuoteToContactSearchedKeyword}"
+                                                        class="slds-button slds-button_icon slds-input__icon slds-input__icon_right">
+                                                    <lightning:icon iconName="utility:clear" size="x-small" />
+                                                </button>
+                                            </aura:set>
+                                        </aura:if>
+                                    </div>
+                                    <aura:if isTrue="{! not( empty( v.listOfContactSearchedResults ) ) }">
+                                        <div id="listbox-id-11" class="searchResult slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid"
+                                             role="listbox">
+                                            <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                                                <aura:iteration items="{!v.listOfContactSearchedResults}" var="recordContact">
+                                                    <li role="presentation" class="slds-listbox__item" data-id="{!recordContact.Id}"
+                                                        data-value="{!recordContact.Name}" onclick="{!c.handleQuoteToContactOptionClick}">
+                                                        <div id="{!recordContact.Id}"
+                                                             class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small"
+                                                             role="option">
+                                                            <span class="slds-media__figure slds-listbox__option-icon"></span>
+                                                            <span class="slds-media__body">
+                                                                <span class="slds-truncate" title="All Opportunities">
+                                                                    <span>{!recordContact.Name}</span>
+                                                                </span>
+                                                            </span>
+                                                        </div>
+                                                    </li>
+                                                </aura:iteration>
+                                            </ul>
+                                        </div>
+                                    </aura:if>
+                                </div>	
+                            </div>
+                        </div>
+                    </div>
+					<br/>
+					Phone  &nbsp; : &nbsp; <ui:outputText value="{!v.recordCommonIssue.Customer_Contact__r.Phone}"/>
+					<br/>
+					<br/>
+					Email &nbsp; : &nbsp; <ui:outputText value="{!v.recordCommonIssue.Customer_Contact__r.Email}"/>
+                </div>
+                
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral"
+                                      label="Cancel"
+                                      title="Cancel"
+                                      onclick="{!c.closeQuoteToContactModel}"/>
+                    <lightning:button variant="brand"
+                                      label="OK"
+                                      title="OK"
+                                      onclick="{!c.saveQuoteToContactModel}"/>
+                </footer>
+            </div>
+            <!-- END MODAL BODY  -->
+            
+        </section>
+        
+        <div class="slds-backdrop slds-backdrop_open"></div>
+        
+    </aura:if>
+    <!-- END QUOTE TO CONTACT MODAL -->
+	
+	<!-- START SHIP TO CONTACT MODAL -->
+    <aura:if isTrue="{!v.isShipToContactModalOpened}">
+        
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            
+            <!-- START MODAL BODY  -->
+            <div class="slds-modal__container">
+                
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close"
+                                          onclick="{!c.closeShipToContactModel}"
+                                          alternativeText="close"
+                                          variant="bare-inverse"
+                                          class="slds-modal__close"/>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">
+                        Ship to Contact
+                    </h2>
+                </header>
+                
+                <div class="slds-modal__content slds-p-around_large" style="height:300px" id="modal-content-id-1">
+                    <div class="slds-form-element">
+                        <div class="slds-form-element__control">
+                            <div class="slds-combobox_container">
+                                <div aria-expanded="true" aria-haspopup="listbox" role="combobox"
+                                     class="{! v.contactOpenDropDown ? 'slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open' : 'slds-dropdown-trigger slds-dropdown-trigger_click'}">
+                                    <div class="slds-form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+                                        <input type="text" class="slds-input slds-has-focus" id="{!index}"
+                                               aria-autocomplete="list" aria-controls="listbox-id-11"
+                                               autoComplete="off" onkeyup="{!c.searchShipToContacts}" role="textbox"
+                                               value="{!v.recordCommonIssue.Shipping_Contact_Name__c}" />
+                                        <aura:if isTrue="{! empty(v.recordCommonIssue.Shipping_Contact_Name__c)}">
+                                            <span class="slds-icon_container slds-icon-utility-search slds-input__icon slds-input__icon_right">
+                                                <lightning:icon iconName="utility:search" size="x-small" />
+                                            </span>
+                                            <aura:set attribute="else">
+                                                <button title="Clear the text input" 
+                                                        onclick="{!c.clearShipToContactSearchedKeyword}"
+                                                        class="slds-button slds-button_icon slds-input__icon slds-input__icon_right">
+                                                    <lightning:icon iconName="utility:clear" size="x-small" />
+                                                </button>
+                                            </aura:set>
+                                        </aura:if>
+                                    </div>
+                                    <aura:if isTrue="{! not( empty( v.listOfContactSearchedResults ) ) }">
+										<div id="listbox-id-11" class="searchResult slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid"
+											 role="listbox">
+											<ul class="slds-listbox slds-listbox_vertical" role="presentation">
+												<aura:iteration items="{!v.listOfContactSearchedResults}" var="recordContact">
+													<li role="presentation" class="slds-listbox__item" data-id="{!recordContact.Id}"
+														data-value="{!recordContact.Name}" onclick="{!c.handleShipToContactOptionClick}">
+														<div id="{!recordContact.Id}"
+															 class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small"
+															 role="option">
+															<span class="slds-media__figure slds-listbox__option-icon"></span>
+															<span class="slds-media__body">
+																<span class="slds-truncate" title="All Opportunities">
+																	<span>{!recordContact.Name}</span>
+																</span>
+															</span>
+														</div>
+													</li>
+												</aura:iteration>
+											</ul>
+										</div>
+									</aura:if>
+                                </div>	
+                            </div>
+                        </div>
+                    </div>
+					<br/>
+					<lightning:input label="Phone" value="{!v.recordCommonIssue.Shipping_Contact_Number__c}" required="true"/>
+					<br/>
+					<lightning:input label="Email" value="{!v.recordCommonIssue.Shipping_Contact_Email__c}" required="true"/>
+                </div>
+                
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral"
+                                      label="Cancel"
+                                      title="Cancel"
+                                      onclick="{!c.closeShipToContactModel}"/>
+                    <lightning:button variant="brand"
+                                      label="OK"
+                                      title="OK"
+                                      onclick="{!c.saveShipToContactModel}"/>
+                </footer>
+            </div>
+            <!-- END MODAL BODY  -->
+            
+        </section>
+        
+        <div class="slds-backdrop slds-backdrop_open"></div>
+        
+    </aura:if>
+    <!-- END SHIP TO CONTACT MODAL -->
+    
+	<!-- START SHIPPING ADDRESS MODAL -->
+    <aura:if isTrue="{!v.isShippingInformationModalOpened}">
+        
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            
+            <!-- START MODAL BODY  -->
+            <div class="slds-modal__container">
+                
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close"
+                                          onclick="{!c.closeShippingInformationModal}"
+                                          alternativeText="close"
+                                          variant="bare-inverse"
+                                          class="slds-modal__close"/>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">
+                        Shipping Address Information
+                    </h2>
+                </header>
+                
+                <div class="slds-modal__content slds-p-around_large" style="height:300px" id="modal-content-id-1">
+                    <lightning:input label="Shipping Street 1" value="{!v.recordCommonIssue.Shipping_Street_1__c}" required="true"/>
+					<br/>
+					<lightning:input label="Shipping Street 2" value="{!v.recordCommonIssue.Shipping_Street_2__c}"/>
+					<br/>
+					<lightning:input label="Shipping City" value="{!v.recordCommonIssue.Shipping_City__c}" required="true"/>
+					<br/>
+					<lightning:input label="Shipping State/Province" value="{!v.recordCommonIssue.Shipping_State_Province__c}" required="true"/>
+					<br/>
+					<lightning:input label="Shipping Postal Code" value="{!v.recordCommonIssue.Shipping_Postal_Code__c}" required="true"/>
+					<br/>
+					<lightning:input label="Shipping Country" value="{!v.recordCommonIssue.Shipping_Country__c}" required="true"/>
+                </div>
+                
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral"
+                                      label="Cancel"
+                                      title="Cancel"
+                                      onclick="{!c.closeShippingInformationModal}"/>
+                    <lightning:button variant="brand"
+                                      label="OK"
+                                      title="OK"
+                                      onclick="{!c.saveShippingInformationModal}"/>
+                </footer>
+            </div>
+            <!-- END MODAL BODY  -->
+            
+        </section>
+        
+        <div class="slds-backdrop slds-backdrop_open"></div>
+        
+    </aura:if>
+    <!-- END SHIPPING ADDRESS MODAL -->
+	<div aura:id="showFailureModeScratchModal"/>
+</aura:component>

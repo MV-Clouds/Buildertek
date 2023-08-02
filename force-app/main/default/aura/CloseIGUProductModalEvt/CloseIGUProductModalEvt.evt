@@ -1,0 +1,11 @@
+<aura:event type="Component" description="FIRES FROM PRODUCTLOOKUPCMP WHENEVER PRODUDCT MODAL IS CLOSED.">
+	
+	<aura:attribute name="recordIndex" type="Integer" default="-1" required="true"/>
+	
+	<aura:attribute name="listName" type="String" default="" required="true"/>
+	
+	<aura:attribute name="fieldName" type="String" default="" required="true"/>
+	
+    <aura:attribute name="recordProductWrapper" type="Object" default="{}" required="true"/>
+    
+</aura:event>

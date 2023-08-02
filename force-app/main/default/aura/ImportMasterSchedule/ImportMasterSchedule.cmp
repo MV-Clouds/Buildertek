@@ -1,0 +1,136 @@
+<aura:component  controller="ImportMasterSchedules" implements="lightning:isUrlAddressable,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global">
+    <aura:attribute name="masterSchedulesList" type="object" />
+    <aura:attribute name="Spinner" type="Boolean" />
+    <aura:attribute name="BaseURLs" type="string"/>
+     <aura:attribute name="RecordId" type="string" />
+    <aura:attribute name="isNewGantt" type="String" />
+    <!-- Attribute Declration For Pagination -->
+    <aura:attribute name="showMessage" type="Boolean" default="false" />
+    
+    <aura:attribute name="PaginationList" type="Object"/>
+    <aura:attribute name="startPage" type="Integer" />
+    <aura:attribute name="endPage" type="Integer"/>
+    <aura:attribute name="totalRecords" type="Integer"/>
+    <aura:attribute name="pageSize" type="Integer" default="10"/>
+    <aura:attribute name="isError" type="boolean" default="false"/>
+    <aura:attribute name="ErrorMessage" type="string" />
+    <aura:attribute name="isSucess" type="boolean" default="false"/>
+    <aura:attribute name="SucessMessage" type="string"/>
+    <lightning:workspaceAPI aura:id="workspace"/>
+    <lightning:navigation aura:id="navigation"/>
+    <!-- Attribute Declration For Pagination End-->
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> 
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/> 
+    <div class="slds-modal__header" style="font-size:17px;">
+        Import Master Schedule 
+    </div>
+      
+     <aura:if isTrue="{!v.isSucess}">
+        <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_success" role="alert">
+            <span class="slds-assistive-text">Sucess</span>
+            <span class="slds-icon_container slds-icon-utility-ban slds-m-right_x-small">
+                <lightning:icon iconName="utility:ban" size="x-small" />
+            </span>
+            <h2>{!v.SucessMessage}</h2>
+        </div>
+    </aura:if>
+    
+    <aura:if isTrue="{!v.isError}">
+        <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert">
+            <span class="slds-assistive-text">error</span>
+            <span class="slds-icon_container slds-icon-utility-ban slds-m-right_x-small">
+                <lightning:icon iconName="utility:ban" size="x-small" />
+            </span>
+            <h2>{!v.ErrorMessage}</h2>
+        </div>
+    </aura:if>
+    
+    <div class="slds-modal__content slds-p-around--large">
+        <div class="slds slds-scope">
+    		<table class="slds-table slds-table_bordered slds-table_fixed-layout" role="grid">
+    		    <thead>
+    				<tr class="slds-text-title_caps">
+    					<th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-left-radius:5px;vertical-align: top;line-height: 2;width: 30px !important;">
+    				        <ui:inputCheckbox aura:id="checkContractors" change="{!c.selectAll}" />		
+    					</th>
+    					<th  style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+    						Title
+    					</th>
+    					<th  style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+    						Description
+    					</th>
+                        <th  style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+    						Community
+    					</th>
+    					<th  style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+    						Type
+    					</th>
+    				</tr>
+    			</thead>
+    			<tbody>
+    			    <aura:iteration items="{!v.PaginationList}" var="rec">
+    			        <tr class="slds-hint-parent">
+    			            
+    			                <td width="3%">
+        			                <ui:inputCheckbox aura:id="checkContractor" value="{rec.ScheduleCheck}" text="{!rec.masterscheduleRecord.Id}" change="{!c.handleCheck}" />
+        			            <!--    <lightning:input aura:id="quoteselection" type="checkbox" value="{!rec.quoteCheck}" text="{!rec.quoteRecord.Id}" onclick="{!c.uncheckAll}" style="cursor: pointer !important;"/>-->
+        			            </td> 
+        			            <td width="37%" role="gridcell">
+                                    <a href="{!'/'+rec.masterscheduleRecord.Id}" target="_blank">
+                                        <ui:outputText value="{!rec.masterscheduleRecord.Name}" />  
+                                    </a>
+        			                
+        			            </td>
+        			            <td width="20%" role="gridcell">
+        			                <ui:outputText value="{!rec.masterscheduleRecord.buildertek__Description__c}" />  
+        			            </td>
+                            	<td width="20%" role="gridcell">
+        			                <ui:outputText value="{!rec.masterscheduleRecord.buildertek__Community__c}" />  
+        			            </td>
+        			            <td width="20%" role="gridcell">
+        			                <ui:outputText value="{!rec.masterscheduleRecord.buildertek__Type__c}" />  
+        			            </td>
+        		        </tr>
+    			    </aura:iteration>
+    			</tbody>
+    		</table>
+    		<br/>
+            <lightning:buttonGroup >
+                <lightning:button label="Previous" disabled="{!v.startPage == 0}"  
+                                  onclick="{!c.previous}" variant="brand"
+                                  iconName='utility:back'/>
+                &nbsp; &nbsp; &nbsp;
+                <lightning:button label="Next" disabled="{!v.endPage >= v.totalRecords}" 
+                                  onclick="{!c.next}" variant="brand"
+                                  iconName='utility:forward' iconPosition='right'/>
+            </lightning:buttonGroup>
+        </div> 
+        <aura:if isTrue="{!v.Spinner}">
+            <div aura:id="spinnerId" class="slds-spinner_container" style="position:fixed;">
+               <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                 <span class="slds-assistive-text">Loading</span>
+                 <div class="slds-spinner__dot-a"></div>
+                 <div class="slds-spinner__dot-b"></div>
+                   <div class="custom-loading-text">
+                       <aura:if isTrue="{!v.showMessage}">
+                           <!--<b>Importing Schedule Lines... </b>-->
+                           <b>Processing, Please Wait</b>
+                       </aura:if>
+                   </div>
+               </div>
+            </div>
+        </aura:if>
+    </div>
+    <div class="slds-modal__footer">
+    	<button class="slds-button slds-button--neutral" onclick="{!c.closeModel}" >Cancel</button>
+        <aura:if isTrue="{!v.totalRecords > 0}">
+            <button class="slds-button slds-button--brand" onclick="{!c.importSchedule}">Import Master Schedule</button>
+        	<aura:set attribute="else">
+                <button class="slds-button slds-button--brand" onclick="{!c.importSchedule}" disabled = "true">Import Master Schedule</button>
+            </aura:set>
+        </aura:if>
+    	
+    </div>
+     
+</aura:component>

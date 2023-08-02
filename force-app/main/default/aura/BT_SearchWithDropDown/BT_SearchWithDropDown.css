@@ -1,0 +1,64 @@
+.THIS .slds-input-has-icon .slds-input__icon:not(button){
+    pointer-events: all;
+}
+.THIS .CustomSldsDropdown{
+      width: 93% !important;
+        margin-left: 24px;
+    /*left: 23.08rem !important;
+     width: 92% !important;*/
+}
+/*.THIS .customInputText {
+    width: 42.5rem !important;
+}*/
+@media only screen and (max-width: 1920px) and (min-width: 1681px){
+    .THIS .dropDownClass {
+        width: 93% !important;
+        margin-left: 24px;
+    }	    
+    
+}
+@media only screen and (max-width: 1680px) and (min-width: 1661px){
+    .THIS .dropDownClass {
+        width: 87% !important;
+        margin-left: 24px;
+    }	    
+    
+}
+@media only screen and (max-width: 1600px) and (min-width: 1441px){
+    .THIS .dropDownClass {
+        width: 87% !important;
+        margin-left: 24px;
+    }	    
+    
+}
+@media only screen and (max-width: 1440px) and (min-width: 1281px){
+    .THIS .dropDownClass {
+        width: 86% !important;
+        margin-left: 24px;
+    }	    
+    
+}
+@media only screen and (max-width: 1280px) and (min-width: 1180px){
+    .THIS .dropDownClass {
+        width: 84% !important;
+        margin-left: 24px;
+    }	    
+}
+@media only screen and (max-width: 1179px) and (min-width: 1080px){
+    .THIS .dropDownClass {
+        width: 82% !important;
+        margin-left: 24px;
+    }	    
+}
+@media only screen and (max-width: 1079px) and (min-width: 980px){
+    .THIS .dropDownClass {
+        width: 80% !important;
+        margin-left: 24px;
+    }	    
+}
+@media only screen and (max-width: 979px) and (min-width: 720px){
+    .THIS .dropDownClass {
+        width: 78% !important;
+        margin-left: 24px;
+    }	    
+}

@@ -1,0 +1,35 @@
+<aura:component controller="EmailSendController"
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader"
+                access="global">
+    
+    <!--Part 1 [for attribute declare]-->
+    <aura:attribute name="loaded" type="Boolean" default="true" />
+    <aura:attribute name="leadId" type="string" />
+    <aura:attribute name="email" type="string" />
+    <aura:attribute name="subject" type="string" />
+    <aura:attribute name="body" type="string" />
+    <aura:attribute name="mailStatus" type="boolean" default="false" />
+    <aura:attribute name="emailfolderVSTemplateList" type="object[]" default="[]" />
+    <aura:attribute name="emailFolderList" type="object[]" default="[]" />
+    <aura:attribute name="emailTemplateList" type="object[]" default="[]" />
+    <aura:attribute name="emailbody" type="String" default="" />
+    <aura:attribute name="folderId1" type="String" default="" />
+    <aura:attribute name="templateIDs" type="String" default="" />
+     <aura:attribute name="islocked" type="boolean" default="false" />
+    <aura:attribute name="message" type="String" default="" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <aura:if isTrue="{!v.islocked}">
+        <div class="" >
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                <p><center style=" font-size: medium ">{!v.message}</center>
+                </p>
+            </div>
+            <br/>
+        </div>
+        
+    </aura:if>
+    
+    
+</aura:component>

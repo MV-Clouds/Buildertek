@@ -1,0 +1,233 @@
+<aura:component controller="BT_EditExtendedCostController">
+
+    <aura:attribute name="singleList" type="List" default="[]" />
+    <aura:attribute name="rateEditMode" type="boolean" default="false" />
+    <aura:attribute name="showErrorClass" type="boolean" default="false"/>
+    <aura:attribute name="rowNumberNumber" type="string" />
+    <aura:attribute name="showSaveCancelBtn" type="boolean"/>
+    <aura:attribute name="fieldNameToOperate" type="String" />
+    <aura:attribute name="percentageEditMode" type="boolean" default="false" />
+    <aura:attribute name="taxEditMode" type="boolean" default="false" />
+    <aura:attribute name="denominatorEditMode" type="boolean" default="false" />
+    <aura:attribute name="proposalAmount" type="String" />
+    <aura:attribute name="wholeTableData" type="List" default="[]" />
+    <aura:attribute name="billOfMaterialId" type="String" />
+    <aura:attribute name="parent" type="Aura.Component" />
+    <aura:attribute name="installCostAmount" type="String" />
+    <!--Aura Handlers-->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <tr>
+        <td>
+            <div class="slds-truncate">{!v.rowNumberNumber}</div>
+        </td>
+        <aura:iteration start="2" items="{!v.singleList}" var="rowData" indexVar="dataIndex">
+            <aura:if isTrue="{!or(rowData.label == 'Adjusted Price',rowData.label == 'Rate')}">
+
+                <td ondblclick="{!c.inlineEditRate}"
+                    class="{! v.showErrorClass == true ? 'slds-cell-edit slds-has-error' : 'slds-cell-edit'}">
+                    <span class="slds-grid slds-grid_align-spread">
+                        <aura:if isTrue="{!v.rateEditMode == false}">
+                            <aura:if isTrue="{!v.fieldNameToOperate == 'buildertek__Textura_Fee__c'}">
+                                <span class="slds-truncate" title="Rate">
+                                    <ui:outputCurrency aura:id="showRate" value="{!rowData.value}" format="$0#,###.####" />
+                                </span>
+                                <aura:set attribute="else">
+                                    <span class="slds-truncate" title="Rate">
+                                        <ui:outputCurrency aura:id="showRate" value="{!rowData.value}" format="$#,###.00" />
+                                    </span>
+                                </aura:set>
+                            </aura:if>
+                            <button onclick="{!c.inlineEditRate}"
+                                class="slds-button slds-button_icon slds-cell-edit__button slds-m-left_x-small"
+                                tabindex="0" title="Edit Name">
+                                <lightning:icon iconName="utility:edit" size="xx-small" alternativeText="edit" />
+                            </button>
+
+                            <aura:set attribute="else">
+                                <section tabindex="0" class="slds-popover slds-popover_edit" role="dialog"
+                                    style="position: absolute; top: 0px">
+                                    <div class="slds-popover__body">
+                                        <div class="slds-form-element slds-grid slds-wrap">
+                                            <div class="slds-form-element__control slds-grow">
+                                                <div onkeypress="{!c.keyPressEvent}">
+                                                	<aura:if isTrue="{!v.fieldNameToOperate == 'buildertek__Textura_Fee__c'}">
+                                                        <ui:inputCurrency class="slds-input inputFieldWidth"
+                                                            labelClass="slds-form-element__label slds-form-element__label_edit slds-no-flex" aura:id="rateInputId"
+                                                            blur="{!c.closeRateBox}" change="{!c.onRateChange}" label="Rate" value="{!rowData.value}" format="$0#,###.####"
+                                                             />
+                                                        <aura:set attribute="else">
+                                                            <ui:inputCurrency class="slds-input inputFieldWidth"
+                                                                labelClass="slds-form-element__label slds-form-element__label_edit slds-no-flex" aura:id="rateInputId"
+                                                                blur="{!c.closeRateBox}" change="{!c.onRateChange}" label="Rate" value="{!rowData.value}"
+                                                                format="$#,###.00" />
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </div>
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <span id="form-end" tabindex="0"></span>
+                                </section>
+                            </aura:set>
+                        </aura:if>
+                    </span>
+                </td>
+
+                <aura:set attribute="else">
+                    <aura:if isTrue="{!rowData.label == 'Percentage To Apply'}">
+                        <td ondblclick="{!c.inlineEditPercentage}"
+                            class="{! v.showErrorClass == true ? 'slds-cell-edit slds-has-error' : 'slds-cell-edit'}">
+                            <span class="slds-grid slds-grid_align-spread">
+                                <aura:if isTrue="{!v.percentageEditMode == false}">
+                                    <span class="slds-truncate" title="Rate">
+                                        <ui:outputNumber aura:id="showPercentage" value="{!rowData.value}" format="###.00%" />
+                                    </span>
+                                    <button onclick="{!c.inlineEditPercentage}"
+                                        class="slds-button slds-button_icon slds-cell-edit__button slds-m-left_x-small" tabindex="0"
+                                        title="Edit Name">
+                                        <lightning:icon iconName="utility:edit" size="xx-small" alternativeText="edit" />
+                                    </button>
+                        
+                                    <aura:set attribute="else">
+                                        <section tabindex="0" class="slds-popover slds-popover_edit" role="dialog"
+                                            style="position: absolute; top: 0px">
+                                            <div class="slds-popover__body">
+                                                <div class="slds-form-element slds-grid slds-wrap">
+                                                    <div class="slds-form-element__control slds-grow">
+                                                        <ui:inputNumber class="slds-input inputFieldWidth"
+                                                            labelClass="slds-form-element__label slds-form-element__label_edit slds-no-flex"
+                                                            aura:id="percentageInputId" blur="{!c.closePercentageBox}" change="{!c.onRateChange}"
+                                                            label="Percentage" value="{!rowData.value}" format="###.00%" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <span id="form-end-2" tabindex="0"></span>
+                                        </section>
+                                    </aura:set>
+                                </aura:if>
+                            </span>
+                        </td>
+                        <aura:set attribute="else">
+                            <aura:if isTrue="{!rowData.label == 'Tax'}">
+                        <td ondblclick="{!c.inlineEdittax}"
+                            class="{! v.showErrorClass == true ? 'slds-cell-edit slds-has-error' : 'slds-cell-edit'}">
+                            <span class="slds-grid slds-grid_align-spread">
+                                <aura:if isTrue="{!v.taxEditMode == false}">
+                                    <span class="slds-truncate" title="Rate">
+                                        <ui:outputCheckbox aura:id="showTax" value="{!rowData.taxvalue}"  />
+                                    </span>
+                                    <button onclick="{!c.inlineEdittax}"
+                                        class="slds-button slds-button_icon slds-cell-edit__button slds-m-left_x-small" tabindex="0"
+                                        title="Edit Name">
+                                        <lightning:icon iconName="utility:edit" size="xx-small" alternativeText="edit" />
+                                    </button>
+                        
+                                    <aura:set attribute="else">
+                                        <section tabindex="0" class="slds-popover slds-popover_edit" role="dialog"
+                                            style="position: absolute; top: 0px">
+                                            <div class="slds-popover__body">
+                                                <div class="slds-form-element slds-grid slds-wrap">
+                                                    <div class="slds-form-element__control slds-grow">
+                                                        <ui:inputCheckbox class="slds-input inputFieldWidth"
+                                                            labelClass="slds-form-element__label slds-form-element__label_edit slds-no-flex"
+                                                            aura:id="taxId" blur="{!c.closetaxBox}" change="{!c.onRateChange}"
+                                                            label="Tax" value="{!rowData.taxvalue}"  />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <span id="form-end-2" tabindex="0"></span>
+                                        </section>
+                                    </aura:set>
+                                </aura:if>
+                            </span>
+                        </td>
+                        <aura:set attribute="else">
+                            <aura:if isTrue="{!or(rowData.label == 'Extended Cost',rowData.label == 'Value')}">
+                                <td>
+                                    <ui:outputCurrency aura:id="showExtendedCost" value="{!rowData.value}" format="$#,###.00" />
+                                </td>
+                                <aura:set attribute="else">
+                                    <aura:if isTrue="{!rowData.label == 'Denominator Rate'}">
+                                        <td ondblclick="{!c.inlineEditDenominator}"
+                                            class="{! v.showErrorClass == true ? 'slds-cell-edit slds-has-error' : 'slds-cell-edit'}">
+                                            <span class="slds-grid slds-grid_align-spread">
+                                                <aura:if isTrue="{!v.denominatorEditMode == false}">
+                                                    <span class="slds-truncate" title="Denominator Rate">
+                                                        <ui:outputNumber aura:id="showDenomVal" value="{!rowData.value}" format="$#,###.00" />
+                                                    </span>
+                                                    <button onclick="{!c.inlineEditDenominator}"
+                                                        class="slds-button slds-button_icon slds-cell-edit__button slds-m-left_x-small"
+                                                        tabindex="0" title="Edit Name">
+                                                        <lightning:icon iconName="utility:edit" size="xx-small" alternativeText="edit" />
+                                                    </button>
+                        
+                                                    <aura:set attribute="else">
+                                                        <section tabindex="0" class="slds-popover slds-popover_edit" role="dialog"
+                                                            style="position: absolute; top: 0px">
+                                                            <div class="slds-popover__body">
+                                                                <div class="slds-form-element slds-grid slds-wrap">
+                                                                    <div class="slds-form-element__control slds-grow">
+                                                                        <!-- <ui:inputNumber class="slds-input inputFieldWidth"
+                                                                            labelClass="slds-form-element__label slds-form-element__label_edit slds-no-flex"
+                                                                            aura:id="denominatorInputId" blur="{!c.closeDenominatorBox}"
+                                                                            change="{!c.onRateChange}" label="Percentage"
+                                                                            value="{!rowData.value}" format="###.00%" /> -->
+                                                                            <ui:inputCurrency class="slds-input inputFieldWidth"
+                                                                            labelClass="slds-form-element__label slds-form-element__label_edit slds-no-flex"
+                                                                            aura:id="denominatorInputId" blur="{!c.closeDenominatorBox}"
+                                                                            change="{!c.onRateChange}" label="Denominator Rate" value="{!rowData.value}" format="$#,###.00" />
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <span id="form-end-2" tabindex="0"></span>
+                                                        </section>
+                                                    </aura:set>
+                                                </aura:if>
+                                            </span>
+                                        </td>
+                                        <aura:set attribute="else">
+                                            <aura:if isTrue="{!rowData.label == 'Proposal Amount'}">
+                                                <td>
+                                                    <ui:outputCurrency aura:id="showProposalAmount" value="{!rowData.value}" format="$#,###,###.00" />
+                                                </td>
+                                                <aura:set attribute="else">
+                                                    <aura:if isTrue="{!rowData.label == 'Install Cost'}">
+                                                        <td>
+                                                            <ui:outputCurrency aura:id="installCOstId" value="{!rowData.value}" format="$#,###,###.00" />
+                                                        </td>
+                                                        <aura:set attribute="else">
+                                                            <td>
+                                                                <div class="slds-truncate">{!rowData.value}</div>
+                                                            </td>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </aura:set>
+                                            </aura:if>
+                                        </aura:set>
+                                    </aura:if>
+                                </aura:set>
+                            </aura:if>
+                             </aura:set>
+                            </aura:if>
+                        </aura:set>
+                    </aura:if>
+                
+                    <!-- <td>
+                                        <div class="slds-truncate">{!rowData.value}</div>
+                                    </td> -->
+                </aura:set>
+                <!-- <aura:if isTrue="{!rowData.label == 'Extended Cost'}">
+                    <ui:outputCurrency aura:id="showExtendedCost"  value="{!rowData.value}" format="$#,###.00" />
+                    <aura:set attribute="else">
+                        <td>
+                            <div class="slds-truncate">{!rowData.value}</div>
+                        </td>
+                    </aura:set>
+                </aura:if> -->
+                
+            </aura:if>
+        </aura:iteration>
+    </tr>
+</aura:component>

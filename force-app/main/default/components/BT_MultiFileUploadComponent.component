@@ -1,0 +1,14 @@
+<!--**********************************************************************************
+* Copyright � 2017-2017, BuilderTek.
+* All rights reserved
+*
+* VisualForce Component: BT_MultiFileUploadComponent
+* Created by Sagar
+*
+* - This is the component for Multiple File Upload
+*
+* - Modifications:
+* - Sagar: Initial Development
+***********************************************************************************-->
+<apex:component id="fileUploadComponent" controller="BT_MultiFileUploadComponentController" allowDML="true">
+</apex:component>

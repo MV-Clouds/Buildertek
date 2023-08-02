@@ -1,0 +1,8 @@
+<apex:page standardController="Submittal__c" recordSetVar="submittals" extensions="EmailSubmittalProcessController" docType="html-5.0" sidebar="false" standardStylesheets="false" showHeader="false" applyHtmlTag="true">
+     <apex:includeLightning />
+    <div id="lightning" ></div> 
+    <script>
+        $Lightning.use("buildertek:EmailSubmittalProcessApplication", function() {$Lightning.createComponent("buildertek:EmailSubmittalProcess",
+          { RecordId : '{!parentId}' },"lightning",function(cmp) {});});
+    </script>
+</apex:page>

@@ -1,0 +1,24 @@
+<!--**********************************************************************************
+* Copyright © 2017-2016, BuilderTek.
+* All rights reserved
+*
+* VisualForce Page: BT_AccountFileExplorer
+* Created by Sagar
+
+* - File explorer page for account.
+
+* - Modifications:
+* - Sagar - Initial 
+***********************************************************************************-->
+<apex:page standardController="Account" applyHtmlTag="false" showHeader="false" extensions="BT_AccountFileExplorerController">
+	<c:BT_JsAndCssIncludeComponent importJquery="true"
+                              importAppurinUtil="true"
+                              importJQueryLayout="true"
+                              importFancyTree="tru"
+                              importJqGrid="false"
+                              importEasyTooltip="true"
+                              importAppurinCss="true"
+                              importCkEditor="false"
+                              importGnattChart="true"/>
+    <apex:iframe id="iframeForHomePage" src="/apex/BT_Home?mainObjectFieldAPI={!strMainObjectFieldAPI}&mainObjectId={!strMainObjectId}" width="99%" height="400px;" frameborder="false"></apex:iframe>
+</apex:page>

@@ -1,0 +1,76 @@
+<aura:component
+    implements="force:appHostable,force:lightningQuickAction,flexipage:availableForRecordHome,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes"
+    access="global" controller="MassUpdateTakeToDo">
+    <aura:attribute name="sObjectName" type="String" />
+    <aura:attribute name="fieldSetName" type="String" />
+    <aura:attribute name="fieldSetValues" type="List" />
+    <aura:attribute name="arrfieldNames" type="List" />
+    <aura:attribute name="tableRecords" type="List" />
+    <aura:attribute name="parentFieldName" type="String" />
+    <aura:attribute name="parentRecordId" type="String" />
+    <aura:attribute name="fields" type="List" default="[]" />
+    <aura:attribute name="listOfToDoItems" type="To_Do_Items__c[]" />
+    <aura:attribute name="cloneListOfToDoItems" type="To_Do_Items__c[]" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="toDo" type="String" />
+    <aura:attribute name="numberOfItems" type="Integer" />
+    <aura:attribute name="statusList" type="List" />
+    <aura:attribute name="priorityList" type="List" />
+    <aura:attribute name="massUpdateEnable" type="Boolean" default="false" />
+    <aura:attribute name="onSaveEnabled" type="Boolean" default="false" />
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <lightning:card aura:id="lightCard" class="slds-card_boundary slds-page-header" title="To Do Items">
+
+        <aura:set attribute="actions">
+            <lightning:button iconName="utility:save" iconPosition="left" onclick="{!c.onMassUpdate}"
+                label="{!v.massUpdateEnable==true?'Save':'Mass Update'}" class="" />
+            <aura:if isTrue="{!v.massUpdateEnable}">
+                <lightning:button iconName="utility:add" iconPosition="left" onclick="{!c.onAddClick}" label="Add"
+                    class="" />
+                <lightning:button iconName="utility:close" iconPosition="left" onclick="{!c.onMassUpdateCancel}"
+                    label="Cancel" />
+            </aura:if>
+        </aura:set>
+
+        <p class="slds-p-horizontal_medium">
+            {!v.numberOfItems} items •
+            <ui:outputURL value="{!'/one/one.app?#/sObject/'+ v.recordId + '/view'}" target="_blank" label="To Do's" />
+            >
+            <ui:outputURL value="{!'/one/one.app?#/sObject/'+ v.recordId + '/view'}" target="_blank"
+                label="{!v.toDo}" />
+            <!-- {!v.numberOfItems} items • <a href="#" data-id="{!v.recordId}" onclick="{!c.redirectToRecord}"
+                style="text-decoration:none;"> To Do's </a> > <a href="#" data-id="{!v.recordId}"
+                onclick="{!c.redirectToRecord}" style="text-decoration:none;"> {!v.toDo}</a> -->
+        </p>
+
+        <div class="slds slds-m-top_medium slds-p-horizontal_medium">
+            <table class="slds-table slds-table--bordered">
+                <thead>
+                    <tr>
+                        <aura:iteration items="{!v.fieldSetValues}" var="field" indexVar="index">
+                            <th> {!field.label}</th>
+                        </aura:iteration>
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.listOfToDoItems}" var="row">
+                        <tr>
+                            <aura:iteration items="{!v.fieldSetValues}" var="field">
+                                <td>
+                                    <c:BT_ToDoItems record="{!row}" index="{!index}" field="{!field}"
+                                        isMassUpdateEnable='{!v.massUpdateEnable}' />
+                                </td>
+                            </aura:iteration>
+                        </tr>
+                    </aura:iteration>
+                </tbody>
+            </table>
+        </div>
+        <aura:if isTrue="{!v.isLoading}">
+            <lightning:spinner alternativeText="Loading" variant="brand" size="large" />
+        </aura:if>
+    </lightning:card>
+</aura:component>

@@ -1,0 +1,391 @@
+<aura:component controller="ReviewPricingRequestController" implements="force:appHostable,flexipage:availableForAllPageTypes,lightning:isUrlAddressable,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction,forceCommunity:availableForAllPageTypes,forceCommunity:layout" access="global" >
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="currencycode" type="String"/>
+    <lightning:workspaceAPI aura:id="workspace"/>
+    <aura:attribute name="recordId" type="String" />
+    
+    <aura:attribute name='sovLineList' type='List'/>
+    <aura:attribute name="isApproveClick" type="Boolean" />
+    <aura:attribute name="isRejectClick" type="Boolean" />
+    
+    <aura:attribute name="isRejectAllClick" type="Boolean" />
+    
+    <aura:attribute name="RejectSOVid" type="String" />
+    <aura:attribute name="ApprovedSOVid" type="String" />
+    
+    <aura:attribute name="rejectionreason" type="String" />
+    
+    <aura:attribute name="SOVName" type="String" />
+        <aura:attribute name='sovLineListIds' type='List'/>
+    
+      <aura:attribute name="isApproveAllClick" type="Boolean" />
+    
+    <aura:attribute name="isRejectAllLinesClick" type="Boolean" />
+    
+    <aura:attribute name="isClearAllClick" type="Boolean" />
+    
+    
+    <header class="slds-modal__header" style=" text-align:left;height:55px; background: rgb(229 229 229);">
+        
+        
+        <span >
+            <!--<lightning:icon iconName="Custom :custom8" title="custom8" /> -->
+            
+            <lightning:icon iconName="custom:custom8" size="medium"/>
+            
+        </span>
+        
+        <span style="font-weight: 1000; font-size: 18px; padding-left : 8px;">   <a href="javascript:void()"  onclick="{!c.NavToSovRec}">{!v.SOVName}</a> </span>
+        
+        
+        
+    </header>
+    
+    
+        
+    <header class="slds-modal__header" style=" text-align:right;height:75px; background: white; margin-top: 10px;">
+        <div style="padding-top:10px">
+        <span   onclick= "{! c.AcceptAll }" style = "padding-left : 5px; margin-left:1rem;">
+            <lightning:button
+                              label="Accept All"
+                              title="Accept All" 
+                              >
+            </lightning:button>
+        </span>
+        
+     <!--   <span   onclick= "{! c.rejectAll }" style = "padding-left : 5px;">
+            <lightning:button
+                              label="Reject All"
+                              title="Reject All"
+                              >
+            </lightning:button>
+        </span>  -->
+            
+            <span   onclick= "{! c.rejectAllWithRejectReason }" style = "padding-left : 5px;">
+                <lightning:button
+                                  label="Reject All"
+                                  title="Reject All"
+                                  >
+                </lightning:button>
+            </span>
+            
+        
+        <span onclick= "{! c.clearAll }" style = "padding-left : 5px;">
+            <lightning:button
+                              label="Clear All Notes"
+                              title="Clear All Notes"
+                              >
+            </lightning:button>
+        </span>
+        </div>
+        
+    </header>
+    
+    
+    
+    <div>
+        <table class='slds-table slds-table--bordered slds-table--cell-buffer' style = "border-radius : 6px; margin-top: 10px">
+            <thead style = "height:40px; border-radius : 40px;">
+                <tr class='slds-text-title--caps' style = "border-radius : 40px;">
+                    
+                    <th scope='col' style = "width:5%; border-radius: 3px; background-color: rgba(145,145,145,0.2);">
+                        <div class='slds-truncate' title='S.No'>S.No</div>
+                    </th>
+                    <th scope='col' style = "width:22%; background-color: rgba(145,145,145,0.2);">
+                        <div class='slds-truncate' title='SOV Line Number'>Description</div>
+                    </th>
+                   
+                    <th scope='col' style = "width:22%; background-color: rgba(145,145,145,0.2);">
+                        <div class='slds-truncate' title='Description of Work'>Notes</div>
+                    </th>
+                    
+                     <th scope='col' style = "width:8%; background-color: rgba(145,145,145,0.2);">
+                        <div class='slds-truncate' title='Vendor'>Price</div>
+                    </th>
+                    
+                    <th scope='col' style = "width:8%; background-color: rgba(145,145,145,0.2);">
+                        <div class='slds-truncate' title='Scheduled Value'>Status</div>
+                    </th>
+                    
+                    <th style="width:3px; background-color: rgba(145,145,145,0.2);">
+                        
+                    </th>
+                    
+                    
+                    <th style = " width:4px; background-color: rgba(145,145,145,0.2);"></th>
+                    
+                    <th style=" padding-left : 15px ; background-color: rgba(145,145,145,0.2);"> Reject Reason
+                        
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <aura:iteration items="{!v.sovLineList}" var="sov" indexVar="recIndex">
+                    <tr >
+                        
+                        
+                        <td>
+                            {!recIndex+1}
+                        </td>
+                        
+                        
+                        
+                        <td>
+                          
+                            <lightning:input type="text" value="{!sov.buildertek__Description__c}" variant="label-hidden" />
+                            
+                        </td>
+                        
+                       
+                        
+                        <td>
+                            
+                          <!--  <lightning:input type="text" value="{!sov.buildertek__Notes__c}" variant="label-hidden" />  -->   
+
+                            <lightning:textarea type="text" value="{!sov.buildertek__Notes__c}" variant="label-hidden" />
+                        </td>
+                        
+                         <td>
+                            
+                            
+                            <lightning:formattedNumber value="{!sov.buildertek__Price__c}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code"/>
+                            
+                        </td>
+                        
+                        <td>
+                            
+                            {!sov.buildertek__Status__c}  
+                            
+                        </td>
+                        
+                        <td>
+                            
+                            
+                            <aura:if isTrue="{!sov.buildertek__Status__c == 'Accepted'}">
+                                &nbsp;&nbsp;
+                                <span  data-index="{!parentGroupIndex+'_'+subGroupIndex+'_'+recIndex}">
+                                    
+                                     <lightning:button label="Accept" variant="success"  title="Accept"  />
+                                    
+                                </span>
+                                <aura:set attribute="else">
+                                    &nbsp;&nbsp;
+                                    
+                                    <span  data-index="{!sov.Id}">
+                                        
+                                         <lightning:button label="Accept" title="Accept" onclick="{! c.ApproveSOVs }"/>
+                                       
+                                    </span>&nbsp;&nbsp;
+                                </aura:set>
+                            </aura:if>
+                            
+                        </td>
+                        
+                        <td>
+                            <aura:if isTrue="{!sov.buildertek__Status__c == 'Rejected'}">
+                                <span style="cursor: pointer" data-index="{!parentGroupIndex+'_'+subGroupIndex+'_'+recIndex}" title="{!sov.buildertek__Rejection_Reason__c}">
+                                    
+                                     <lightning:button label="Reject" title="Reject" variant="destructive" />
+                                    
+                                   
+                                </span>
+                                <aura:set attribute="else">
+                                    
+                                    <span data-index="{!sov.Id}" >
+                                        
+                                        <lightning:button label="Reject" title="Reject" onclick="{! c.RejectSOVs }"/>
+                                   
+                                    </span>
+                                </aura:set> 
+                            </aura:if>                            
+                            
+                            
+                            
+                        </td>
+                        
+                        
+                        <td style="padding-left:30px" class="slds-cell-wrap ">
+                            
+                            <aura:if isTrue="{!sov.buildertek__Status__c == 'Rejected'}">
+                                {!sov.buildertek__Reject_Reason__c}
+                                
+                            </aura:if>
+                            
+                            
+                            
+                        </td>  
+                        
+                        <!--    <td>
+                            <aura:if isTrue="{!sov.buildertek__Rejection_Reason__c != null}">
+                                <aura:if isTrue="{!sov.buildertek__Status__c != 'Company Submitted'}"> 
+                                    <span  style="cursor: pointer" data-index="{!sov.buildertek__Rejection_Reason__c+'_'+sov.Id}" onclick="{!c. EditRejectSOVs}" >
+                                        <lightning:Icon iconName="utility:edit"   alternativeText="Edit" size="xx-small" id="{!v.rejectionreason}"  title = "Edit" />
+                                        
+                                    </span>
+                                </aura:if>
+                            </aura:if>
+                        </td>  -->
+                        
+                    </tr>
+                    
+                </aura:iteration>
+            </tbody>
+        </table>
+    </div>
+    
+    
+    <footer class="slds-modal__footer"  style = "background : white">
+        <button class="slds-button slds-button--neutral" onclick="{!c.closeModal}">Close</button>
+        <button class="slds-button slds-button--neutral" onclick="{!c.createContinuationSheetLines}">Save</button>
+    </footer>   
+    
+    
+    
+    
+    <aura:if isTrue='{!v.isApproveClick}'>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="min-width:30rem;">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Approve Selected Pricing Request Lines
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height:50px; text-align: center;">
+                    Are you sure you want to Approve the Selected Pricing Request Lines?
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button label="No" title="No" onclick="{!c.cancelSingleApprove}" />
+                    <lightning:button variant="neutral" label="Yes" title="Yes" onclick="{!c.confirmApprove}" />
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    
+    
+    <aura:if isTrue='{!v.isRejectClick}'>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="min-width:30rem;">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Reject Pricing Request Line
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height:50px">
+                    <div class="slds-p-around_large">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-col slds-size_6-of-12">
+                                <lightning:textarea value="{!v.rejectionreason}" required="true" label = "Reject Reason"/>
+                            </div>
+                            <div class="slds-col slds-size_6-of-12">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button label="No" title="No" onclick="{!c.cancelReject}"/>
+                    <lightning:button variant="neutral" label="Yes" title="Yes" onclick="{!c.confirmReject}" />
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    
+    
+    
+        <aura:if isTrue='{!v.isRejectAllLinesClick}'>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="min-width:30rem;">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Reject Pricing Request Lines
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height:50px">
+                    <div class="slds-p-around_large">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-col slds-size_6-of-12">
+                                <lightning:textarea value="{!v.rejectionreason}" required="true" label = "Reject Reason"/>
+                            </div>
+                            <div class="slds-col slds-size_6-of-12">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button label="No" title="No" onclick="{!c.cancelRejectAll}"/>
+                    <lightning:button variant="neutral" label="Yes" title="Yes" onclick="{!c.confirmRejectAllLines}" />
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    
+    
+      <aura:if isTrue='{!v.isApproveAllClick}'>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="min-width:30rem;">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Accept All Pricing Request Lines
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height:50px; text-align: center;">
+                    Are you sure you want to Accept All the Pricing Request Lines?
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button label="No" title="No" onclick="{!c.cancelApprove}" />
+                    <lightning:button variant="neutral" label="Yes" title="Yes" onclick="{!c.confirmApproveAll}" />
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    
+    
+     <aura:if isTrue='{!v.isRejectAllLiClick}'>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="min-width:30rem;">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Reject All Pricing Request Lines
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height:50px; text-align: center;">
+                    Are you sure you want to Reject All the Pricing Request Lines?
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button label="No" title="No" onclick="{!c.cancelRejectAll}" />
+                    <lightning:button variant="neutral" label="Yes" title="Yes" onclick="{!c.confirmRejectAll}" />
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    
+    
+    
+    <aura:if isTrue='{!v.isClearAllClick}'>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="min-width:30rem;">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Clear All Pricing Request Lines
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height:50px; text-align: center;">
+                    Are you sure you want to Clear All the Pricing Request Lines?
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button label="No" title="No" onclick="{!c.cancelclearAll}" />
+                    <lightning:button variant="neutral" label="Yes" title="Yes" onclick="{!c.confirmclearAll}" />
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    
+    
+    
+</aura:component>

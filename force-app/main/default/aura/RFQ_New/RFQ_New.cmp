@@ -1,0 +1,103 @@
+<aura:component implements="force:hasRecordId,force:lightningQuickActionWithoutHeader,lightning:actionOverride" 
+                access="global" controller="NewRecordCustomController">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="rfqName" type="String"/>
+    <aura:attribute name="parentRecordId" type="String" default="" />
+    <aura:attribute name="isLoading" type="Boolean" />
+    <aura:attribute name="listOfFields" type="List" />
+    <lightning:workspaceAPI aura:id="workspace" />
+    <aura:attribute name="status" type="String" default="New" />
+   <aura:attribute name="parentprojectRecordId" type="String" default="" />
+    
+   <ltng:require styles="{!$Resource.ModalWidthCSS}"/>
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+             aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+    <!-- <div role="dialog" class="slds-modal slds-fade-in-open" style="height:90%; margin-top:6%;"> -->
+        <div class="slds-modal__container" style="height:95%;margin-top:5%;margin-bottom:2%;max-width: 85% !important;width:80%;"> 
+            <!--  <div class="slds-modal__container"> -->
+            <header class="slds-modal__header">
+                <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeModel }" alternativeText="close"
+                                      variant="bare-inverse" class="slds-modal__close" />
+                <p></p>
+                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New RFQ</h2>
+                <p></p>
+            </header>
+            <div class="slds-modal__content" id="modal-content-id-1">
+                <br />
+                
+                <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__RFQ__c"
+                                          onsubmit="{!c.handleSubmit}" onsuccess="{!c.onRecordSuccess}">
+                    <div class="slds-scrollable" style="height:55vh;width:100%">
+                        <lightning:layout multipleRows="true">
+                            <aura:iteration items="{!v.listOfFields}" var="field">
+                                <br />
+                                <br />
+                                <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                                    <div>
+                                        <aura:if  isTrue="{!and(and(field.name !='buildertek__Project__c',field.name !='buildertek__Status__c'),field.name !='Name')}" >                                 
+                                           <lightning:inputField fieldName="{!field.name}" value="" />
+                                            <aura:set attribute="else"> 
+                                                <aura:if  isTrue="{!and(field.name =='buildertek__Project__c')}" >                                            
+														<lightning:inputField fieldName="{!field.name}" value="{!v.parentprojectRecordId}" />                                              
+											   </aura:if>
+                                                 <aura:if  isTrue="{!field.name =='Name'}" >                                            
+														<lightning:inputField fieldName="{!field.name}" value = "{!v.rfqName}"  required = "{!field.required}" />                                              
+											   </aura:if>
+                                                <aura:if  isTrue="{!and(field.name =='buildertek__Status__c')}" >                                            
+                                                    <lightning:inputField fieldName="{! field.name }" value = "{!v.status}"/>
+                                                </aura:if>
+                                            </aura:set>
+                                        </aura:if> 
+                                       <!-- <aura:if isTrue="{!and(field.name=='buildertek__Project__c',v.parentRecordId)}">
+                                            <lightning:inputField fieldName="{!field.name}" value="{!v.parentRecordId}" />
+                                            <aura:set attribute="else">
+                                                <lightning:inputField fieldName="{!field.name}" value="" />
+                                            </aura:set>
+                                        </aura:if> -->
+                                    </div>
+                                </lightning:layoutItem>
+                                <br />
+                            </aura:iteration>
+                        </lightning:layout>
+                        <br />
+                       <!-- <br />
+                        <br />
+                        <br /> -->
+                    </div>
+                    <footer aura:id="footer" class="slds-modal__footer" style="position: sticky; bottom:0;z-index:10;">
+                        <div class="slds-align_absolute-center">
+                            <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{! c.closeModel }" />
+                            <lightning:button variant="neutral" title="Save &amp; New" label="Save &amp; New"
+                                              onclick="{!c.saveAndNew}" />
+                            <lightning:button variant="brand" type="submit" name="save" label="Save" />
+                        </div>
+                    </footer>
+                    
+                    
+                    <aura:if isTrue="{!v.isLoading}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </aura:if>
+                    
+                </lightning:recordEditForm>
+            </div>
+       </div> 
+      </section>
+   <!-- </div> -->
+    <!-- <div class="slds-backdrop slds-backdrop_open"></div> -->
+    
+    <aura:if isTrue="{!v.isLoading}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </aura:if>
+</aura:component>

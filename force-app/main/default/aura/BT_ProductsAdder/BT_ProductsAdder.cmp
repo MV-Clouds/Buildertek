@@ -1,0 +1,56 @@
+<aura:component controller="BT_ProductsAdderController">
+    <ltng:require styles="{!$Resource.BT_ResourceUtils + '/resources/css/btmodal.css'}"/>
+    <aura:attribute name="_record" type="Object" />
+    <aura:attribute name="_items" type="Object[]" access="public"/>    
+    <aura:attribute name="_error" type="String" />
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="showProductSelection" type="Boolean" default="true" />
+    <aura:attribute name="saveCallback" type="object"/>
+    <aura:attribute name="cancelCallback" type="object"/>
+    <aura:attribute name="showSpinner" type="Boolean" default="true" />
+     <aura:attribute name="_gFiled" type="String" />
+    <aura:attribute name="_gSobject" type="String" />
+    <aura:attribute name="_gFilter" type="String" />
+    <aura:attribute name="pricebook2Id" type="String" />
+    <aura:attribute name="orderString" type="String" />
+    
+
+    <aura:dependency resource="markup://force:editRecord" type="EVENT" />
+
+    <aura:handler name="init" 
+                  action="{!c.init}" 
+                  value="{!this}" />
+				  
+    <aura:handler name="change" action="{!c.afterLoads}" value="{!v._record}" />
+    <aura:handler name="createProducts" event="c:BT_CreateProductEvent" action="{!c.createProd}"/>    
+    <aura:handler name="handleProducts" event="c:BT_ProductEvent" action="{!c.handleProducts}" />
+    <!--<aura:handler name="ProductAdderEvent" event="c:ProductAdderEvent" action="{!c.parentComponentEvent}"/>-->
+     
+    <aura:If isTrue="false"> 
+        <div class="slds-spinner_container">
+        <div class="slds-spinner slds-spinner--medium" role="alert">
+            <span class="slds-assistive-text">Loading</span>
+            <div class="slds-spinner__dot-a"></div>
+            <div class="slds-spinner__dot-b"></div>
+             <div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+        </div>
+    </div>
+        <!--<lightning:spinner variant="brand" size="large" />-->
+    </aura:If> 
+     
+    <aura:If isTrue="{!v.showProductSelection}">
+       
+        <c:BT_ProductSelection _pricebook2Id="{!v.pricebook2Id}" _recordId="{!v.recordId}"/> 
+        <aura:set attribute="else">  
+            <c:BT_ProductTable aura:id="ProductTable"
+                               _items="{!v._items}"
+                               _gFiled="{!v._gFiled}"
+                               _gSobject="{!v._gSobject}"
+                               _gFilter="{!v._gFilter}" />
+        </aura:set>
+       
+    </aura:If>
+ 
+</aura:component>

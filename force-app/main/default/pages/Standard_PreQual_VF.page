@@ -1,0 +1,14 @@
+<apex:page controller="Standard_PreQual_VF_Controller" showHeader="false" sidebar="false">
+    <apex:includeLightning />
+    <div id="lightning" />
+    <script>
+    
+        $Lightning.use("buildertek:Standard_PreQualFormApp", function() {
+            $Lightning.createComponent("buildertek:Standard_PreQualForm",
+            {isPreview : '{!isPreview}', RecordId : '{!recordId}', documentURL : '{!documentURL}'},                          
+            "lightning",
+             function(cmp) {
+             });
+        });        
+      </script>
+</apex:page>

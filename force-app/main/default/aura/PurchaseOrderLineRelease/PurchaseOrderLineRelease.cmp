@@ -1,0 +1,127 @@
+<aura:component controller="PreviewPurchaseOrderLineController"
+    implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader"
+    access="global">
+
+    <aura:attribute name="record" type="Object" />
+    <aura:attribute name="purchaseOrder" type="Object" />
+    <aura:attribute name="purchaseOrderLines" type="String" />
+    <aura:attribute name="error" type="String" />
+    <aura:attribute name="Header" type="String" />
+    <aura:attribute name="templates" type="List" default="[]" />
+    <aura:attribute name="selectedTemplate" type="String" default="" />
+    <aura:attribute name="templatefolderName" type="String" />
+    <aura:attribute name="isTemplateSelected" type="Boolean" default="false" />
+    <aura:attribute name="Spinner" type="Boolean" default="false" />
+    <aura:attribute name="selectedToContact" type="sObject[]" default="[]" />
+    <aura:attribute name="selectedCcContact" type="sObject[]" default="[]" />
+    <aura:attribute name="rejectReason" type="String" default="" />
+    <aura:attribute name="isRejected" type="Boolean" default="false" />
+    <aura:attribute name="isEmailSend" type="Boolean" default="false" />
+    <aura:attribute name="isClose" type="Boolean" default="false" />
+    <aura:attribute name="isCreateSignature" type="boolean" default="false" />
+    <aura:attribute name="parentId" type="string" />
+    <aura:method name="sendMethod" action="{!c.sendMethodCall}" access="public" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <force:recordData aura:id="forceRecordCmp" recordId="{!v.recordId}"
+        fields="buildertek__Project__r.Name, buildertek__Auto_Number__c, buildertek__PO_Total__c, buildertek__PO_Amount__c, buildertek__Tax__c, buildertek__PO_Total__c"
+        targetRecord="{!v.record}" targetFields="{!v.purchaseOrder}" targetError="{!v.error}" />
+
+    <aura:html tag="style">
+        .slds-modal__content {
+            height: unset !important;
+            max-height: unset !important;
+            overflow: hidden !important;
+        } 
+        .slds-modal__container{
+            max-width: 60rem !important;
+            width:70% !important;
+        }   
+        .container{
+            height: auto !important;
+        }
+        .slds-modal__close{
+            display:block !important;    
+        }
+        .slds-docked-form-footer{
+            bottom: auto;
+        }
+        .slds-p-around--medium{
+            padding: 0;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content{
+            padding: 0;
+        }
+        .modalBodyDiv{
+            text-align: center;
+            font-weight: 600;
+            line-height: 10rem;
+            font-size: 18px;
+        }
+    </aura:html>
+
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                 <div class="custom-loading-text">
+                   <b>Processing, Please Wait</b>
+               </div>
+            </div>
+        </div>
+    </aura:if>
+
+    <div class="slds-modal__content">
+        <div class="slds">
+            <header class="slds-modal__header">
+                <div class="" id="header" style="font-size:20px;">
+                    Send Lien Release
+                </div>
+            </header>
+
+            <div style="max-height: 65vh; overflow:auto;" class="slds-p-around_small">
+                <aura:if isTrue="{!!v.isTemplateSelected}">
+                    <lightning:select name="templates" label="Select Template" aura:id="template"
+                        value="{!v.selectedTemplate}" onchange="{!c.preiewEmailTemplate}">
+                        <option text="None" value="--None--" />
+                        <aura:iteration items="{!v.templates}" var="temp">
+                            <option text="{!temp.Name}" value="{!temp.Id}" />
+                        </aura:iteration>
+                    </lightning:select>
+                </aura:if>
+                <aura:if isTrue="{!v.isTemplateSelected}">
+                    <div class="slds-form-element slds-email-composer__combobox" style="padding-bottom: 10px;">
+                        <label class="slds-form-element__label" for="recipients-to">To</label>
+                        <div class="slds-form-element__control">
+                            <div class="slds-combobox_container slds-has-inline-listbox">
+                                <c:BT_MultiSelectLookup objectAPIName="contact" IconName="standard:contact"
+                                    lstSelectedRecords="{!v.selectedToContact}" label="" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="slds-form-element slds-email-composer__combobox"
+                        style="padding-top: 10px;padding-bottom: 10px;">
+                        <label class="slds-form-element__label" for="recipients-cc">Cc</label>
+                        <div class="slds-form-element__control">
+                            <div class="slds-combobox_container slds-has-inline-listbox">
+                                <c:BT_MultiSelectLookup objectAPIName="contact" IconName="standard:contact"
+                                    lstSelectedRecords="{!v.selectedCcContact}" label="" />
+                            </div>
+                        </div>
+                    </div>
+                    <aura:unescapedHtml value="{!v.purchaseOrderLines}" />
+                    <br />
+                </aura:if>
+            </div>
+
+            <footer role="contentinfo" class="slds-docked-form-footer fixedFooter" style="display:block;text-align:right;padding-right:5px;">
+                <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}"> Cancel </button>
+                <button class="slds-button slds-button--brand" onclick="{!c.sendMethodCall}" style="margin: 0 0.5rem;"> Send Email </button>
+            </footer>
+        </div>
+    </div>
+
+</aura:component>

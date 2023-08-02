@@ -1,0 +1,452 @@
+<aura:component  controller = "VendorSOVsController"
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global" >
+    
+    <aura:html tag="style">
+        .slds-modal__container {
+        <!--min-width: 61vw; -->
+        min-width: 85vw;
+        <!--min-width: 60%;--> 
+        }
+       .quick-actions-panel{
+            max-height: 20px;
+        } 
+        
+      
+        
+    </aura:html>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> 
+    
+    <aura:attribute name="currencycode" type="String"/>
+    
+    <aura:attribute name="recordId" type="String" Default = "{!v.recordId}"/>
+    <aura:attribute name="SOVName" type="String" />
+    <aura:attribute name="sovsList" type="list"/>
+    <aura:attribute name="sovlinesList" type="list"/>
+    <aura:attribute name="masterSOVId" type="string"/>
+    <aura:attribute name="listOfSelectedSOVIds" type="List" default="[]"/>
+    <aura:attribute name="listOfSelectedSOVLineIds" type="List" default="[]"/>
+    <aura:attribute name="showSOVs" type="Boolean" default="true" /> 
+    <aura:attribute name="showSOVLines" type="Boolean" default="false" />
+    <aura:attribute name="showPopup" type="Boolean" default="false" />
+    
+    <aura:attribute name="isNext" type="Boolean" default="false" />
+    
+    <aura:attribute name="ApproveSOV" type="Boolean" default="false" />
+    
+    <aura:attribute name="RejectSOV" type="Boolean" default="false" />
+    <aura:attribute name="up" type="Boolean" default="false" />
+    <aura:attribute name="isActive" type="Boolean" default="false" />
+    
+    <!--  Attributes for table headder draggable  Start-->
+      <aura:attribute name="newWidth" type="string" />
+    <aura:attribute name="currentEle" type="Object" />
+    <aura:attribute name="oldWidth" type="string" /> 
+    <aura:attribute name="quoteGroupName" type="string" />
+    <aura:attribute name="isdeleteRow" type="string" />
+    <aura:attribute name="mouseStart" type="string" />
+    
+    <aura:attribute name="IsSpinner" type="Boolean" default="false" />
+    <aura:if isTrue="{!v.IsSpinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                    <b>Processing, Please Wait</b>
+                </div>
+            </div>
+        </div>
+    </aura:if>
+    <!--  Attributes for table headder draggable  End-->
+    
+    <lightning:workspaceAPI aura:id="workspace" />
+   
+    
+    
+    <aura:if isTrue="{!v.isActive}">
+      <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+        
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close"
+                                          onclick="{! c.close }"
+                                          alternativeText="close"
+                                          variant="bare-inverse"
+                                          class="slds-modal__close"/> 
+                    <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Schedule of Values</h2>
+                    
+                </header>
+                  <div class="slds-scrollable" id="" style = "background-color:white; position : relative;"> 
+                <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                    <thead>
+                        <tr class="slds-text-heading--label" style = "position: sticky; top : 0px; z-index: 999">
+                            <th class="slds-is-sortable" scope="col" width="5px" style=" border-top-left-radius:5px;vertical-align: top;line-height: 2;width: 5%;padding-top: 8px;">
+                                <lightning:input type="checkbox" aura:id="headCheckRFQ" checked="false" onchange="{!c.selectAllRfq}"/> 
+                            </th>
+                            
+                            <th class="slds-is-sortable" scope="col" width="5px" style=" border-top-left-radius:5px;vertical-align: top;line-height: 2;width:width: 5%;padding-top: 8px;">
+                                <div class="slds-truncate" title="SNo">
+                                    
+                                </div>
+                            </th>
+                            
+                          <!--  <th scope="col" style="background-color:rgba(127, 128, 127, 0.1); color:black;vertical-align: top;line-height: 2;width: 30px !important;padding-top: 8px;">
+                                <div class="slds-truncate" title="SNo">
+                                    SNo
+                                </div>
+                            </th> -->
+                            
+                                               <th class="slds-is-resizable slds-text-title--caps" scope="col" >
+                                    <div class="slds-truncate" title="SNo" >S.No</div>
+                                    <div class="slds-resizable" ondblclick="{!c.calculateWidth}">
+                                        <input type="range" min="80" max="1000"  class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-602" tabindex="0" />
+                                        <span class=""  onmousedown="{!c.calculateWidth}" ondrag="{!c.setNewWidth}">
+                                            <span class=""></span>
+                                        </span>
+                                    </div>
+                                </th>
+                            
+                           <!-- <th scope="col" style="background-color:rgba(127, 128, 127, 0.1); color:black;vertical-align: top;line-height: 2;width: 30px !important;padding-top: 8px;">
+                                <div class="slds-truncate" title="SOV Name">
+                                    SOV Name
+                                </div>
+                            </th> -->
+                            
+                                                    <th class="slds-is-resizable slds-text-title--caps" scope="col" >
+                                    <div class="slds-truncate" title="SOV Name" >SOV Name</div>
+                                    <div class="slds-resizable" ondblclick="{!c.calculateWidth}">
+                                        <input type="range" min="80" max="1000"  class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-602" tabindex="0" />
+                                        <span class=""  onmousedown="{!c.calculateWidth}" ondrag="{!c.setNewWidth}">
+                                            <span class=""></span>
+                                        </span>
+                                    </div>
+                                </th>
+                            
+                          <!--  <th  scope="col" style="background-color:rgba(127, 128, 127, 0.1); color:black;vertical-align: top;line-height: 2;width: 30px !important;padding-top: 8px;">
+                                <div class="slds-truncate" title="Project">
+                                    Project
+                                </div>
+                            </th> -->
+                            
+                                            <th class="slds-is-resizable slds-text-title--caps" scope="col" >
+                                    <div class="slds-truncate" title="Project" >Project</div>
+                                    <div class="slds-resizable" ondblclick="{!c.calculateWidth}">
+                                        <input type="range" min="80" max="1000"  class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-602" tabindex="0" />
+                                        <span class=""  onmousedown="{!c.calculateWidth}" ondrag="{!c.setNewWidth}">
+                                            <span class="r"></span>
+                                        </span>
+                                    </div>
+                                </th>
+                            
+                        <!--    <th  scope="col" style="background-color:rgba(127, 128, 127, 0.1); color:black;vertical-align: top;line-height: 2;width: 30px !important;padding-top: 8px;">
+                                <div class="slds-truncate" title="Type">
+                                    Type 
+                                </div>
+                            </th> -->
+                            
+                            
+                               
+                            
+                         <!--   <th  scope="col" style="background-color:rgba(127, 128, 127, 0.1); color:black;vertical-align: top;line-height: 2;width: 30px !important;padding-top: 8px;">
+                                <div class="slds-truncate" title="Type">
+                                    Vendor 
+                                </div>
+                            </th> -->
+                            
+                            <th class="slds-is-resizable slds-text-title--caps" scope="col" >
+                                    <div class="slds-truncate" title="Vendor" >Vendor</div>
+                                    <div class="slds-resizable" ondblclick="{!c.calculateWidth}">
+                                        <input type="range" min="80" max="1000"  class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-602" tabindex="0" />
+                                        <span class=""  onmousedown="{!c.calculateWidth}" ondrag="{!c.setNewWidth}">
+                                            <span class=""></span>
+                                        </span>
+                                    </div>
+                                </th>
+                            
+                        <!--    <th scope="col" style="background-color:rgba(127, 128, 127, 0.1); color:black;vertical-align: top;line-height: 2;width: 30px !important;padding-top: 8px;">
+                                <div class="slds-truncate" title="Date Submitted">
+                                    Date Submitted
+                                </div>
+                            </th> -->
+                            
+                            <th class="slds-is-resizable slds-text-title--caps" scope="col" >
+                                    <div class="slds-truncate" title="Date Submitted" >Date Submitted</div>
+                                    <div class="slds-resizable" ondblclick="{!c.calculateWidth}">
+                                        <input type="range" min="80" max="1000"  class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-602" tabindex="0" />
+                                        <span class=""  onmousedown="{!c.calculateWidth}" ondrag="{!c.setNewWidth}">
+                                            <span class=""></span>
+                                        </span>
+                                    </div>
+                                </th>
+                            
+                          <!--  <th scope="col" width="5px" style="background-color:rgba(127, 128, 127, 0.1); color:black; border-top-right-radius:5px;vertical-align: top;line-height: 2;width: 30px !important;padding-top: 8px;">
+                                <div class="slds-truncate" title="Status">
+                                    Status
+                                </div>
+                            </th>  -->
+                            
+                                   <th class="slds-is-resizable slds-text-title--caps" scope="col" >
+                                    <div class="slds-truncate" title="Status" >Status</div>
+                                    <div class="slds-resizable" ondblclick="{!c.calculateWidth}">
+                                        <input type="range" min="80" max="1000"  class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-602" tabindex="0" />
+                                        <span class=""  onmousedown="{!c.calculateWidth}" ondrag="{!c.setNewWidth}">
+                                            <span class=""></span>
+                                        </span>
+                                    </div>
+                                </th>
+                            
+                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <aura:iteration items="{!v.sovsList}" var="item" indexVar="index">
+                            <tr>
+                                <td>
+                                    <lightning:input type="checkbox" aura:id="checkRFQ"  checked="{!item.isChecked}" name="{!item.RecordId}" onchange="{!c.selectRfq}"/>
+                                </td>
+                                <td>
+                                    <lightning:buttonIcon value="{!itemIndex}" onclick="{!c.toggle}" title = "{!index}" iconName="{!item.expanded?'utility:chevrondown':'utility:chevronright'}" />
+                                </td>
+                                <td>
+                                    <div class="slds-truncate" title="{!item.RowNumber}" >
+                                        {!item.RowNumber}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="slds-truncate" title="{!item.Name}" >
+                                        {!item.Name}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="slds-truncate" title="{!item.Project}" >
+                                        {!item.Project}
+                                    </div>
+                                </td>
+                               
+                                <td>
+                                    <div class="slds-truncate" title="{!item.vendorName}" >
+                                        {!item.vendorName}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="slds-truncate"  >
+                                        <ui:outputDate value="{!item.DateSubmitted}"/>
+                                    </div>
+                                </td>                             
+                                <td>
+                                    <div class="slds-truncate" title="{!item.Status}" >
+                                        {!item.Status}
+                                    </div>
+                                </td>
+                            </tr>
+                            <aura:if isTrue="{!item.expanded}">
+                                
+                                <!-- <aura:iteration items="{!item.sovlinesList}" var="items" indexVar="itemIndex"> -->
+                              
+                               <!-- <div class="slds-scrollable_y" style="height:25rem;width:24rem">-->
+                                
+                              <!-- <div style="height:200px;overflow:auto;width:144%;overflow-x: clip;">-->
+                                
+                                <tr style="background:none;" class="backgroundNone">
+                                    <td>
+                                        
+                                    </td>
+                                    <td>
+                                        
+                                    </td>
+                                     <td>
+                                        
+                                    </td>
+                                    <td class="" colspan="7">
+                                        <div style="max-height:200px;overflow-y:auto;position:relative;"><!-- left:10.5rem; -->
+                                            <table style="">
+                                            <tr class="slds-text-heading--label slds-scrollable" style = "position:relative; border-collapse:collapse;background: #f4f4f4;">
+                                                <!--<th class="slds-is-sortable" scope="col" width="5px" style=" color:white;border: 0;vertical-align: top;line-height: 2;width: 30px !important;padding-top: 8px;">
+                                                            <lightning:input type="checkbox" aura:id="headCheckSOVLines" checked="false"  name ="{!index}" onchange="{!c.selectAllSOVLines}"/> 
+                                                        </th>-->
+                                                <th scope="col"  style = "border: 0;width:17%;padding:9px">
+                                                    <div class="slds-truncate" title="SNo" style = "font-weight: 900;">
+                                                        S.No
+                                                    </div>
+                                                </th>
+                                                <th scope="col" width="5px" style = "border: 0;width:40%;padding:9px" >
+                                                    <div class="slds-truncate" title="Description of work" style = "font-weight: 900;">
+                                                        Description of work
+                                                    </div>
+                                                </th>
+                                                <th  scope="col" style = "border: 0;width:40%;padding:9px" >
+                                                    <div class="slds-truncate" title="Scheduled Value" style = "font-weight: 900;">
+                                                        Scheduled Value
+                                                    </div>
+                                                </th> 
+                                                <!--    <th scope="col" style = "border: 0;">
+                                                            <div class="slds-truncate" title="Application #" style = "font-weight: 900;">
+                                                                Name
+                                                            </div>
+                                                        </th>
+                                                        
+                                                            
+                                                        <th scope="col" style = "border: 0;">
+                                                            <div class="slds-truncate" title="Item" style = "font-weight: 900;">
+                                                                Item
+                                                            </div>
+                                                        </th>  -->
+                                                
+                                            </tr>
+                                            <aura:iteration items="{!item.sovlinesList}" var="item1" indexVar="index">
+                                                <!--<div class="slds-scrollable_y" style="height:20rem; left:10.5rem;">-->
+                                                <tr  class="slds-scrollable" style = " position:relative; ">
+                                                    <!--  <td style = "border: 0;">
+                                                                <lightning:input type="checkbox"  aura:id="checkSOVLine" checked="false" name="{!item1.RecordId}" onchange="{!c.selectSOVLine}"/>
+                                                            </td>-->
+                                                    <td role="gridcell" style = "border: 0;" >
+                                                        <div class="slds-truncate" title="{!item1.RowNumber}" style="width:30px" >
+                                                            {!item1.RowNumber}
+                                                        </div>
+                                                    </td>
+                                                    <td role="gridcell" style = "border: 0;" >
+                                                        <div class="slds-truncate" title="{!item1.Status}" >
+                                                            {!item1.Description}
+                                                        </div>
+                                                    </td>
+                                                    <td role="gridcell" style = "border: 0;" >
+                                                        <div class="slds-truncate" title="{!item1.Type}" >
+                                                            <!-- {!item1.ScheduleValue} -->
+                                                            <!-- <lightning:formattedNumber value="{!item1.ScheduleValue}" style="currency" currencyDisplayAs="code" currencyCode="USD "/> -->
+                                                            
+                                                            <lightning:formattedNumber value="{!item1.ScheduleValue}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code"/>
+                                                            
+                                                          <!--  <lightning:formattedNumber value="{!item1.ScheduleValue}" currencyDisplayAs="code" currencyCode="USD" style="currency"/>  -->
+                                                        </div>
+                                                    </td>
+                                                    
+                                                    
+                                                </tr>
+                                                <!-- </div>-->
+                                            </aura:iteration> 
+                                            </table>
+                                        </div>
+                                   
+                                    </td>
+                                    
+                                </tr>
+                              <!-- </div>-->
+                               <!-- </div>-->
+                            </aura:if>
+                        </aura:iteration> 
+                    </tbody> 
+                </table>  
+                  </div> 
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral"  label="Cancel"
+                                      onclick="{!c.closeModal}" />
+                   <!-- <lightning:button variant="neutral"  label="Reject"
+                                      onclick="{!c.rejectSOV}" /> -->
+                    <lightning:button aura:id="nextPage" variant="neutral"
+                                      label="Import SOV Lines" onclick="{!c.ImportSOVLines}" />   
+                </footer>
+            </div>
+       
+        <aura:if isTrue="{!v.ApproveSOV}">
+            <div class="slds-modal__container" style="min-width:30rem;">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Accept SOVs
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height:50px">
+                    <h3 style ="font-weight: bold;">Are you sure you want to Approve the Selected SOVs?</h3>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="Neutral" class="slds-button" label="No" onclick="{!c.closepopUp}"/>
+                    <lightning:button variant="Neutral" class="slds-button" label="Yes" onclick="{!c.ConfirmApproveSOV}"/>
+                </footer>
+            </div>
+        </aura:if>
+        <aura:if isTrue="{!v.RejectSOV}">
+        	 <div class="slds-modal__container" style="min-width:rem;">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Reject SOVs
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height:50px">
+                    <h3 style ="font-weight: bold;text-align: center;">Are you sure you want to Reject the Selected SOVs?</h3>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="Neutral" class="slds-button" label="No" onclick="{!c.closepopUp}"/>
+                    <lightning:button variant="Neutral" class="slds-button" label="Yes" onclick="{!c.ConfirmRejectSOV}"/>
+                </footer>
+            </div>
+        </aura:if>
+        <aura:if isTrue="{!v.showPopup}">
+        	 <div class="slds-modal__container" >
+                <br/><br/><br/>
+                <!-- Modal/Popup Box Header Starts here-->
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close"
+                                          onclick="{! c.closeModel }"
+                                          alternativeText="close"
+                                          variant="bare-inverse"
+                                          class="slds-modal__close"/>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Create SOV</h2>
+                </header>
+                <!--Modal/Popup Box Body Starts here-->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style = "padding:10px">
+                    <lightning:recordEditForm objectApiName="buildertek__Schedule_of_Values__c"
+                                              aura:id="recordEditForm"      
+                                              onsubmit="{!c.handleSubmit}"
+                                              onsuccess="{!c.handleSuccess}"
+                                              onload="{!c.handleCreateLoad}">
+                        
+                        <lightning:messages />
+                        
+                        <table class="slds-table slds-table--bordered':'slds-table--bordered'" >
+                            <tbody>                              
+                                <tr >                               
+                                    <lightning:inputField fieldName="Name"  value="{!v.SOVName}"
+                                                          required="true" style="padding:10px;"/>
+                                </tr>
+                                <tr >
+                                    <lightning:inputField fieldName="buildertek__Project__c" style="padding:10px;"/>    
+                                </tr>
+                                <tr>
+                                    <lightning:inputField fieldName="buildertek__Status__c"  aura:id= "newSovStatus" style="padding:10px;"/>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        
+                        <br/><br/><br/>
+                        <div class="slds-modal__footer" >
+                            <lightning:button class="slds-m-top_small" 
+                                              variant="neutral"
+                                              label="Cancel"
+                                              title="Cancel"
+                                              onclick="{! c.closeModel }"/>
+                            <lightning:button class="slds-m-top_small" type="submit" label="Save"  />
+                        </div>
+                        
+                    </lightning:recordEditForm>   
+                    
+                    
+                </div>
+                <br/><br/><br/>
+                <!--Modal/Popup Box Footer Starts here-->
+                
+            </div>
+        </aura:if>
+    </section> 
+       
+
+   
+  </aura:if> 
+    
+        
+       
+    
+    
+    
+ 
+    
+</aura:component>

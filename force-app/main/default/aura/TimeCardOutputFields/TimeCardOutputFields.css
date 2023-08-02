@@ -1,0 +1,9 @@
+.THIS.x-accordion-heading .x-accordion-toggle.collapsed {
+     background-color: green !important;
+}
+.THIS.slds-form-element_readonly{
+   padding-left:16rem;
+    padding-right:20rem;
+    
+
+}

@@ -1,0 +1,1 @@
+<aura:event type="APPLICATION" description="Would be fired by Sub Annoncement and handled in Announcement Component" />

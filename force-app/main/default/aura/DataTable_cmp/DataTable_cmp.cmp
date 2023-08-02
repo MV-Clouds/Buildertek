@@ -1,0 +1,138 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:lightningQuickActionWithoutHeader,force:hasRecordId,force:appHostable" access="global"  >
+	<aura:attribute name="selectedCount" type="Integer" default="0"/>
+    <aura:attribute name="columnsInfo" type="Object[]"/>
+    <aura:attribute name="listWrapper" type="Object[]"/>
+	<aura:attribute type="Boolean"		name="isVerticalScroll" default="false" />
+	<aura:attribute name="isCheckbox" type="Boolean" default="false"/>    
+    <aura:attribute name="isAll" type="Boolean" default="false"/>	
+    <aura:attribute name="cardTitle" type="String" /> 
+    
+    <aura:if isTrue="{!v.showSpinner}">
+        <lightning:spinner variant="brand"/>
+    </aura:if>
+    
+    <div class="{!v.isVerticalScroll?'slds-table--header-fixed_container slds-m-top_small':''}" style="{!and((v.isVerticalScroll),(v.listWrapper.length>=5))?'height:450px;':(v.listWrapper.length == 0 ?'height:100px;':'')}">        
+        
+        <div class="{!(v.isVerticalScroll)?'slds-scrollable_y':''}" style="height:100%;">
+            
+            <table class="{!v.isMobile?'slds-table slds-table_bordered slds-max-medium-table_stacked slds-no-row-hover headerColor slds-table_fixed-layout':'slds-table slds-table_bordered slds-max-medium-table_stacked slds-no-row-hover headerColor slds-table_fixed-layout'}">
+                <thead>
+                    <tr >
+                        <aura:if isTrue="{!v.isCheckbox}">
+                            <th class="slds-text-link--reset slds-truncate slds-text-title--caps ccc" scope="col">
+                                <div  title="Product SKU" ><!--recheck onclick="{!c.sortBy}" onmouseover="{!c.showSortingIcon}" onmouseout="{!c.hideSortingIcon}"-->
+                                    <label class="slds-checkbox">
+                                        <ui:inputCheckbox  aura:id="AllList" value="{!v.isAll}" change="{!c.handleAllChange}"/>
+                                        <span class="slds-checkbox--faux"></span>
+                                        <span class="slds-form-element__label text"></span>
+                                    </label>
+                                </div>
+                            </th>
+                        </aura:if>
+                        
+                        <aura:iteration items="{!v.columnsInfo}"  var="field" indexVar="itemIndex">
+                            
+                            
+                            <th class="slds-text-link--reset slds-truncate slds-text-title--caps" scope="col" style="{!field.style}">
+                                
+                                <div  title="{!field.label}" class="WrapText slds-truncate">
+                                    {!field.label}
+                                </div>
+                            </th>	
+                        </aura:iteration>
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:if isTrue="{!v.listWrapper.length==0}">
+                        <tr>
+                            <td colspan="6">
+                                <center> No Records</center>
+                            </td>
+                        </tr>
+                    </aura:if>
+                    <aura:iteration items="{!v.listWrapper}"  var="Lst" indexVar="itemIndex">  
+                        <tr class="{!or(and(Lst.isEdit!=null,Lst.isEdit),v.isAll)?'HighlightedRow':''}"> 
+                            <aura:if isTrue="{!v.isCheckbox}">
+                                
+                                <td data-label="Select" class="slds-size_1-of-1 slds-medium-size_1-of-12 slds-large-size_1-of-12 leftpadding ccc" >
+                                    <label class="slds-checkbox">
+                                        <ui:inputCheckbox text="{!itemIndex}" aura:id="ordersList" value="{!Lst.checked}" change="{!c.handleChange}"/>
+                                        <span class="slds-checkbox--faux"></span>
+                                        <span class="slds-form-element__label text"></span>
+                                    </label>
+                                </td>
+                            </aura:if >
+                            
+                            <td data-label="Product SKU" >                                
+                                <div class="slds-truncate  slds-cell-wrap" >
+                                    {!Lst.oel.SKU__c}
+                                </div>
+                            </td> 
+                            <td data-label="Quantity" >                                
+                                <div class="slds-truncate  slds-cell-wrap" >
+                                    {!Lst.oel.Quantity__c}
+                                </div>
+                            </td> 
+                            <td data-label="Release Name" >                                
+                                <div class="slds-truncate  slds-cell-wrap" >
+                                    {!Lst.oel.Order_Entry_Release__r.Release_Name__c}
+                                </div>
+                            </td> 
+                            
+                            <td data-label="Request Date" >                                
+                                <div class="slds-truncate  slds-cell-wrap" >
+                                    {!Lst.oel.Request_Date__c}
+                                </div>
+                            </td> 
+                            <td data-label="Request Date Change Reason" >                                
+                                <div class="slds-truncate  slds-cell-wrap" >
+                                    {!Lst.oel.Request_Date_Change_Reason__c}
+                                </div>
+                            </td> 
+                            
+                            <td data-label="Schedule Ship Date" >                                
+                                <div class="slds-truncate  slds-cell-wrap" >
+                                    {!Lst.oel.Scheduled_Ship_Date__c}
+                                </div>
+                            </td> 
+                            <td data-label="Schedule Ship Date Change Reason" >                                
+                                <div class="slds-truncate  slds-cell-wrap" >
+                                    {!Lst.oel.Schedule_Ship_Date_Change_Reason__c}
+                                </div>
+                            </td> 
+                            
+                            
+                            <td data-label="Status" >                                
+                                <div class="slds-truncate  slds-cell-wrap" >
+                                    {!Lst.oel.Status__c}
+                                </div>
+                            </td> 
+                            
+                            
+                            <td data-label="Product Description" >                                
+                                <div class="slds-truncate  slds-cell-wrap" >
+                                    {!Lst.oel.Product_Description__c}
+                                </div>
+                            </td> 
+                            <td data-label="Customer Reference Description" >                                
+                                <div class="slds-truncate  slds-cell-wrap" >
+                                    {!Lst.oel.Customer_Reference_Description__c}
+                                </div>
+                            </td> 
+                            
+                            <td data-label="Customer Reference Id" >                                
+                                <div class="slds-truncate  slds-cell-wrap" >
+                                    {!Lst.oel.Reference_ID__c}
+                                </div>
+                            </td> 
+                        </tr>                       
+                        
+                    </aura:iteration>                    
+                </tbody>
+            </table>             
+        </div>
+    </div>
+    
+    <div class="slds-backdrop slds-backdrop--hide" aura:id="backdropii"></div>
+    
+</aura:component>

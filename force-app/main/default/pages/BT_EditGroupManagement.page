@@ -1,0 +1,113 @@
+<!--**********************************************************************************
+* Copyright © 2017 - 2017, BuilderTek.
+* All rights reserved
+*
+* VisualForce Page: BT_EditGroupManagement
+* Created by Sagar
+
+* - Manages group members
+
+* - Modifications:
+* - Sagar - Initial 
+***********************************************************************************-->
+<apex:page controller="BT_GroupManagementController"  title="{!$Label.buildertek__Manage_Group_Members}"  sidebar="false" >
+<c:BT_JsAndCssIncludeComponent importJquery="true"
+                              importAppurinUtil="true"
+                              importJQueryLayout="true"
+                              importFancyTree="true"
+                              importJqGrid="false"
+                              importEasyTooltip="true"
+                              importAppurinCss="true"
+                              importCkEditor="false"
+                              importGnattChart="false"
+							  importLightningDesign="true"/>
+
+	<script>
+        var twistyLightningSectionStatus = {};
+        j$(document).ready(function() {
+			easyToolTipForAll();
+			
+		});
+		
+        function easyToolTipForAll() {
+            j$('.apHelpText').easyTooltip({width: '200px', isLightning:true, isFormatted:true});
+            return false;
+        }
+         window.onload = onload;
+        function onload{
+            loadData();
+        }
+    </script>
+	
+	<apex:actionStatus id="splashStatus" onstart="startSplash();" onstop="endSplash(); " />
+	<div class="slds">
+        <div id="splashDiv" class="apInitiallyDivDisplayNone" style="z-index:9998;">
+            <div class="slds-spinner_container apLightningSpinnerContainer">
+                <div role="status" class="slds-spinner slds-spinner--medium slds-spinner--brand">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+	<apex:outputPanel rendered="{!isError}">
+        <apex:pagemessages id="pageLoadErrorMessage"/>
+        <script>
+            Appurin.lightning.createLightningPageMessage({'classicPageMessageId' : '{!$Component.pageLoadErrorMessage}'});   
+        </script>
+    </apex:outputPanel>
+	<apex:form id="form" rendered="{!!isError}">
+	    <apex:actionFunction name="loadData" action="{!initializeGroupMembers}" />
+		<apex:actionStatus id="splashStatus" onstart="startSplash(); hideUserSelectDropDown();" onstop="endSplash(); hideUserSelectDropDown();"/>
+        <apex:outputPanel styleClass="slds">
+    		<div class="apPageHeader" id="PageHeader">
+    			<div class="apPageHeaderMedia">
+    	          	<div id="pageHeaderMedia" class="apPageHeaderMediaFigure">
+    	          	    <c:BT_LightningSvg parentId="pageHeaderMedia" styleClass="apLightningPageHeaderIcon slds-button__icon" path="/assets/icons/action-sprite/svg/symbols.svg#edit_groups"/>
+    	            </div>
+    	            <div class="apPageHeaderMediaBody">
+    	                <p class="slds-text-title--caps slds-line-height--reset">Group</p>
+    					<div class="apPageHeaderTitle" title="{!$Label.File_Explorer_Configuration_Subtitle}">{!selectedPublicGroup.Name}</div>
+    	              	<div class="apPageHeaderInfo">
+    	              		<label>Add / remove members for {!selectedPublicGroup.Name}</label>
+    	              	</div>
+              		</div>
+					<div style="float:right;" class="apPageHeaderMediaButtons">
+    	                <apex:commandButton styleClass="slds-button slds-button_brand" value="{!$Label.buildertek__Save}" action="{!Save}" status="splashStatus" onComplete="easyToolTipForAll();" reRender="form"/>
+						<apex:commandButton styleClass="slds-button slds-button_neutral" value="{!$Label.buildertek__Cancel}" action="{!Cancel}" onComplete="easyToolTipForAll();" reRender="form" status="splashStatus"/>
+    	            </div>
+    	           <script>
+    	           		Appurin.lightning.createPageHeader('PageHeader');
+    	           </script>
+    	        </div>
+            </div>
+	    </apex:outputPanel>
+	    <apex:outPutPanel layout="block" styleClass="slds">
+			<apex:outputPanel layout="block" styleClass="slds-form-element">
+				<apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+					<apex:outputLabel value="{!$ObjectType.Group.fields.Name.label}"></apex:outputLabel>
+				</apex:outputPanel>
+				<c:BT_LightningHelpText helptext="You will be adding / removing members for this public group."/>
+				<apex:outputPanel layout="block" styleClass="slds-form-element__control">
+					<apex:outputLink value="/{!selectedPublicGroup.Id}">{!selectedPublicGroup.Name}</apex:outputLink>
+				</apex:outputPanel>
+			</apex:outputPanel>
+			<apex:outputPanel layout="block" styleClass="slds-form-element">
+				<c:BT_TreePickerWithSelectComponent treeId="UserForGroupPicker" 
+					treeType="{!TargetObjectType}"
+					treeConfigName="{!targetObjectPickerConfigName}"
+					checkableTreeNodes="{!targetObjectPickerCheckableObjectTypes}"
+					title="User Picker" 
+					treeWidth="450" 
+					treeHeight="350"
+					selectedNodes="{!selectedUserNodes}"
+					searchableObjectTypes="{!searchableObjectTypes}"
+					selectableObjectNamesForHeader="user"
+					treePickerLabel="{!$Label.buildertek__Users}"
+					selectButtonLabel="{!$Label.buildertek__Select_Button}">
+				</c:BT_TreePickerWithSelectComponent>
+			</apex:outputPanel>
+		</apex:outputPanel>
+	</apex:form>
+</apex:page>

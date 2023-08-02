@@ -1,0 +1,47 @@
+<aura:component controller="TimecardGeoLocationController"
+    implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader"
+    access="global">
+    
+    <aura:attribute name="latitude" type="decimal" default="" />
+    <aura:attribute name="longitude" type="decimal" default="" />
+    <aura:attribute name="UserStartTime" type="string" default="Startime" />
+    <aura:attribute name="isstarttime" type="Boolean" default="false" />
+    
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="newTimecard" type="Time_Cards__c" default="{ 'sobjectType': 'Time_Cards__c'}"
+        access="public" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    
+     <aura:if isTrue="{!v.isstarttime}">
+        <div class="" >
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                <p><center style=" font-size: medium ">Start Time cannot be greater than the End Time</center>
+                </p>
+            </div>
+            <br/>
+        </div>
+        
+    </aura:if>
+    <!-- <div class="slds-col modal-header slds-modal__header">
+        <h2 class="title slds-text-heading–medium">Start Time</h2>
+    </div>
+
+    <div class="slds-col modal-body  slds-p-around_medium"
+        style="height: 100%; overflow-y: auto !important;background:white">
+        <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__Time_Cards__c">
+            <lightning:layout>
+                <lightning:layoutItem size="12" mediumDeviceSize="12" padding="around-small">
+                    <lightning:inputField aura:id="starttime" fieldName="buildertek__Start_Time__c"
+                        value="{!v.newTimecard.buildertek__Start_Time__c}" label="Start Time" />
+                </lightning:layoutItem>
+            </lightning:layout>
+        </lightning:recordEditForm>
+    </div>
+
+    <div class="slds-col slds-align_absolute-center" style="margin-top:10px;">
+        <lightning:button class="slds-button slds-button_brand" onclick="{!c.submit}" label="Submit" />
+        <lightning:button class="slds-button slds-button_neutral" onclick="{!c.close}" label="Cancel" />
+    </div> -->
+    <lightning:overlayLibrary aura:id="overlayLib" />
+</aura:component>

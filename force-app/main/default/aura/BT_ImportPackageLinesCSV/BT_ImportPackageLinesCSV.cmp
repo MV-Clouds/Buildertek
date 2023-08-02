@@ -1,0 +1,69 @@
+<aura:component
+                implements="force:appHostable,force:lightningQuickActionWithoutHeader,flexipage:availableForRecordHome,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes"
+                controller="ImportPackageLinesCSV" access="global">
+    <aura:attribute name="isSelect" type="boolean" default="true" />
+    <aura:attribute name="selectedFile" type="string" default="" />
+    <aura:attribute name="recordId" type="string" />
+    <aura:attribute name="errorMessage" type="string" />
+    <aura:attribute name="fileName" type="string" default="Select file" />
+    <aura:attribute name="Spinner" type="boolean" default="false" />
+    <aura:attribute name="isErrorOccured" type="boolean" default="false" />
+    <aura:attribute name="isOpen" type="boolean" default="false" />
+    <aura:attribute name="BaseURLs" type="string" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
+    
+    <div class="slds-modal__header" style="font-size:17px;">
+        Import Package Lines
+    </div>
+    <div class="slds-modal__content slds-p-around--large">
+    <div class="slds-box slds-theme_default slds-box_small">
+        <p>
+            <strong>Note: </strong> This import functionality will import TradeType, Category, ProductType, Location,
+            Quantity and UOM in Package Lines.
+        </p>
+    </div>
+    <br />
+    <div class="container slds-grid slds-gutters">
+        <div class="slds-col">
+            <lightning:input aura:id="file" type="file" name="file" multiple="false" onchange="{!c.handleFilesChange}" variant = "label-hidden" />
+            <div class="slds-text-body_small">{!v.fileName} </div>
+            <aura:if isTrue="{!v.isErrorOccured}">
+                <div class="slds-text-body_small">
+                    
+                    <div class="slds-text-color_error">
+                        {!v.errorMessage}
+                    </div>
+                    
+                </div>
+            </aura:if>
+             </div>
+            <div class="slds-col">
+                 <button class="slds-button slds-button--brand" onclick="{!c.downloadCsv}" style ="margin-left: 700px">Download CSV</button> <br/><br/>
+            </div>
+        </div>
+        <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                 <div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+            </div>
+        </div>
+    </aura:if>
+        <!--<div class="slds-col">
+            
+            <ui:button class="slds-button slds-button_brand" label="Import Package Lines" press="{!c.save}" />
+            
+        </div>-->
+       
+    </div>
+    <div class="slds-modal__footer">
+            <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}">Cancel</button>
+           <ui:button class="slds-button slds-button_brand" label="Import Package Lines" press="{!c.save}" disabled = "{!v.isSelect}"/>
+        </div>
+    
+</aura:component>

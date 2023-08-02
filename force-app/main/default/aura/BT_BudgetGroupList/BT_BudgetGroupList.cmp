@@ -1,0 +1,197 @@
+<aura:component controller="BudgetDAO">
+	<!-- Attributes -->
+    <aura:attribute name="budgetId" type="string" access="public" description="budget id"/>
+    <aura:attribute name="headerFields" type="List" default="" description="Section header fields"/>
+    <aura:attribute name="budgetByGroupId" type="Map" access="public" default="{}" description="Section details by parent id map"/>
+    <aura:attribute name="groups" type="List" description="section detail list"/>
+    <aura:attribute name="initReference" type="Aura.Action" default="{!c.init}" description="Init Reference action used to call from child components"/>
+    <aura:attribute name="groupLoaded" type="Boolean"  default="false" description="This boolean will be true once all section list loaded through aura itration."/>
+    <aura:attribute name="groupListSize" type="Integer"  default="0" description="Section list size"/>
+    <aura:attribute name="save" type="Aura.Action"  description="Save action Reference action"/>
+    <aura:attribute name="columns" type="List"/>
+    <aura:attribute name="selectedRows" type="List"/>
+    <aura:attribute name="dummyData" type="List"/>
+    <aura:registerEvent name="ClearSelectedRecordEvent" type="c:BT_CLearLightningLookupEvent"/>
+    <aura:handler name="RefreshEvent" event="c:BT_RefreshEvent" action="{!c.handleEvent}"/>
+    
+    <aura:attribute name="newBudgetLine" type="Budget_Item__c" default="{ 'sobjectType':'Budget_Item__c',
+                                                                              'buildertek__Quantity__c':1,
+                                                                              'buildertek__Trade_Type__c':null,
+                                                                              'buildertek__Contractor__c':null}" access="global"/>
+    <aura:attribute name="groupFilter" type="string" />
+    <aura:attribute name="costCodeFilter" type="string" />
+    <aura:attribute name="selectedLookUpRecord" type="sObject" default="{}"/>
+    <aura:attribute name="selectedGroupRecord" type="sObject" default="{}"/>
+    <aura:attribute name="selectedTradeType" type="sObject" default="{}"/>
+    <aura:attribute name="selectedContractor" type="sObject" default="{}"/>
+    <aura:attribute name="listOfSearchRecords" type="List" description="Use,for store the list of search records which returns from apex class"/>
+    <aura:attribute name="SearchKeyWord" type="string"/>
+    <aura:handler name="SelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.init}"/>
+    <aura:handler name="oSelectedCheckboxValue" event="c:SelectedCheckboxValue" action="{!c.handleCheckboxEvent}"/>
+    <aura:handler name="oSelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.handleComponentEvent}"/>
+    <aura:attribute name="productId" type="string"/>
+    <aura:attribute name="productName" type="string"/>
+    <aura:attribute name="activeFilter" type="string" default="all"/>
+    <aura:attribute name="rawData" type="Object" />
+    <aura:attribute name="checkboxValue" type="Boolean" default="false"/>
+     <aura:attribute name="Spinner" type="Boolean" default="false"/>
+    <!--<aura:registerEvent name="checkboxSelect" type="c:SelectAllCheckBoxes"/>-->
+    <aura:attribute name="parentAttribute" type="Boolean" default="false"/>
+    <aura:attribute name="clearLookupValue" type="Aura.Action" />
+    <!-- Handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <aura:handler name="change" value="{!v.groupLoaded}" action="{!c.groupLoaded}"/>
+    <aura:method name="refreshData" action="{!c.init}"></aura:method>
+    <aura:attribute name="FinalSelectedList" type="List" />
+    <aura:attribute name="selectedColumns" type="List" />
+    <aura:attribute name="selectedList" type="List" />
+    <!--<aura:handler name="change" value="{!v.selectedColumns}" action="{!c.handleChange}"/>-->
+    
+    <aura:if isTrue="{!v.budgetId!= null}">
+        <div style="padding:10px;margin-top:-5px;">
+            <!-- <lightning:button variant="neutral" iconName="utility:add" iconPosition="left" onclick="{!c.newGroup}" label="Add Group" /> -->
+            <br/>
+            <!-- inline Budget Editing -->
+		        <div aura:id="inlineEditQuote" style="margin-top:25px; margin-bottom:25px;">             
+		            <table class="slds-table slds-table_bordered slds-table_cell-buffer" style="border:1px solid grey; border-radius:5px;">
+		                <thead>
+		                    <tr class="slds-text-title_caps"  >
+		                        <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-left-radius:5px;">
+		                            <div class="slds-truncate" title="Product">Product</div>
+		                        </th>
+		                        <th style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+		                        	 <div class="slds-truncate" title="Quote Line">Budget Line</div>
+		                        </th>
+		                        <th style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+		                        	 <div class="slds-truncate" title="Quote Line">Cost Code Name</div>
+		                        </th>
+		                        <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+		                            <div class="slds-truncate" title="Grouping">Group</div>
+		                        </th>
+		                        <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+		                            <div class="slds-truncate" title="UOM">UOM</div>
+		                        </th>
+                                <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+		                            <div class="slds-truncate" title="TradeType">Trade Type</div>
+		                        </th>
+                                <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+		                            <div class="slds-truncate" title="Contractor">Contractor</div>
+		                        </th>
+		                        <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+		                            <div class="slds-truncate" title="Quantity">Quantity</div>
+		                        </th>
+		                        <th style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+		                        	<div class="slds-truncate" title="Unit Price">Unit Price</div>
+		                        </th>
+		                        <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-right-radius:5px;">
+		                            <div class="slds-truncate" title="Action">Action</div>
+		                        </th>                        
+		                    </tr>
+		                </thead>
+		                <tbody>
+							<tr>
+		                    	<td>
+		                            <c:BT_LightningLookup aura:id="productId" objectAPIName="Product2" IconName="standard:product" selectedRecord="{!v.selectedLookUpRecord}"/>
+		                        </td>
+		                        <td>
+		                        	<force:inputField value="{!v.newBudgetLine.Name}"/>
+		                        </td>
+		                        <td>
+		                        	<c:BT_LookUp aura:id="costCodeId" _field="buildertek__Cost_Code__c" 
+									                  _sobject="buildertek__Budget_Item__c" 
+									                  _target_sobject="buildertek__Cost_Codes__c"
+									                  _value="{!v.newBudgetLine.buildertek__Cost_Code__c}"
+									                  _label=""
+									                  _filter="{!v.costCodeFilter}"
+									                  />
+		                        </td>
+		                        <td>
+		                        	<!--<force:inputField value="{!v.newBudgetLine.buildertek__Group__c}"/>-->
+		                            <c:BT_LookUp aura:id="groupId" _field="buildertek__Budget_Line_Group__c" 
+									                  _sobject="buildertek__Budget_Item__c" 
+									                  _value="{!v.newBudgetLine.buildertek__Budget_Line_Group__c}"
+									                  _label=""
+									                  _filter=""
+									                  />
+									 <!--<c:BT_LightningLookup objectAPIName="buildertek__Budget_Line_Group__c" IconName="" selectedRecord="{!v.selectedGroupRecord}"/>-->                 
+		                        </td>
+		                       
+		                        <td>
+		                            <force:inputField value="{!v.newBudgetLine.buildertek__UOM__c}" />
+		                        </td>
+                                <td>
+                                    <c:customLookup aura:id="tradeTypeId" objectAPIName="buildertek__Trade_Type__c" IconName="custom:custom67" selectedRecord="{!v.selectedTradeType}"/>
+                                   <!-- <force:inputField value="{!v.newBudgetLine.buildertek__Trade_Type__c}" />-->
+		                        </td>
+                                <td>
+                                    <c:customLookup aura:id="accountId" objectAPIName="Account" IconName="standard:account" selectedRecord="{!v.selectedContractor}" />
+		                            <!--<force:inputField aura:id="accountId" value="{!v.newBudgetLine.buildertek__Contractor__c}" />-->
+		                        </td>
+		                        <td>
+		                            <force:inputField value="{!v.newBudgetLine.buildertek__Quantity__c}"/>
+		                        </td>
+		                        <td>
+		                        	<force:inputField value="{!v.newBudgetLine.buildertek__Unit_Price__c}" />
+		                        </td>
+		                        <td >
+		                        	<lightning:buttonIcon iconName="utility:save"  alternativeText="save" onclick="{!c.saveBudgetItemRecord}" />
+		                        </td>
+		                    </tr>
+		                </tbody>
+		            </table>
+		            
+		        </div>
+        </div>
+        <aura:if isTrue="{!and(v.groupListSize == 0, v.groupLoaded)}">
+            <div class="av-list">
+                <div style="margin-top:5rem;">
+                    <c:BT_Illustration name="Setup" title="Add Group to Start Budget"/>
+                    
+                </div>
+            </div>
+            <aura:set attribute="else">
+            	<div class="bttableheader">
+            	<lightning:datatable aura:id="lineTableHead"
+						             columns="{! v.columns }"
+						             data="{!v.dummyData}"
+						             showRowNumberColumn="true"
+						         	 resizeColumnDisabled="true"
+						             keyField="Id"
+						             hideCheckboxColumn="false"
+						             minColumnWidth="108px"
+						             class="bttableheader"
+						             onrowselection="{! c.handleHeaderAction }"
+						            />
+				</div>
+            </aura:set>
+        </aura:if>
+    </aura:if>
+    <aura:if isTrue="{!v.groupListSize > 0}">
+        <ol class="slds-accordion av-list">
+            <aura:iteration items="{!v.groups}" var="group" loaded="{!v.groupLoaded}">
+                <li class="slds-accordion__list-item av-item" data-id="{!group.Id}" Id="{!group.Id}"> 
+                    <c:BT_BudgetGroupAccordion aura:id="groupAccordion" group="{!group}" headerFields="{!v.headerFields}"
+                    						   columns="{!v.columns}"  index="{!_index}" initReference="{!v.initReference}" 
+                    						   selectedRows="{!v.selectedRows}" lines="{!group.buildertek__Budget_Items__r}" budgetId="{!v.budgetId}" 
+                    						   childAttribute="{!v.parentAttribute}" />
+                    						   <!--selectedColumns="{!v.selectedList}"-->
+                </li>
+            </aura:iteration>
+        </ol>
+    </aura:if>
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+           <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+             <span class="slds-assistive-text">Loading</span>
+             <div class="slds-spinner__dot-a"></div>
+             <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+                
+           </div>
+        </div>
+     </aura:if>
+   
+    <lightning:overlayLibrary aura:id="overlayLib"/>
+</aura:component>

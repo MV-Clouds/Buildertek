@@ -1,0 +1,84 @@
+.slds-p-around--medium {
+	padding: 0rem !important;
+}
+.slds-modal__content {
+	height: unset !important;
+	max-height: unset !important;
+	box-shadow: none !important;
+} 
+.slds-modal__container{
+   max-width: 62rem !important;
+   width:62% !important;
+}
+
+@media only screen and (max-width: 1980px) and (min-width: 1780px){
+	.consoleModal{
+		top: -55px !important;
+		height: 48rem !important;
+	}
+	.consoleModalContent{
+		height: 48rem !important;
+		max-height: unset !important;
+		box-shadow: none !important;
+		
+	}    
+}
+
+@media only screen and (max-width: 1779px) and (min-width: 1580px){
+	.consoleModal{
+		top: -55px !important;
+		height: 47rem !important;
+	}
+	.consoleModalContent{
+		height: 47rem !important;
+		max-height: unset !important;
+		box-shadow: none !important;
+		
+	}    
+}
+
+@media only screen and (max-width: 1579px) and (min-width: 1370px){
+	.consoleModal{
+		top: -55px !important;
+		height: 40rem !important;
+	}
+	.consoleModalContent{
+		height: 42rem !important;
+		max-height: unset !important;
+		box-shadow: none !important;
+		
+	}    
+}
+
+@media only screen and (max-width: 1369px) and (min-width: 1280px){
+	.consoleModal{
+		top: -55px !important;
+		height: 39rem !important;
+	}
+	.consoleModalContent{
+		height: 39rem !important;
+		max-height: unset !important;
+		box-shadow: none !important;
+	}    
+}
+
+@media only screen and (max-width: 1279px) and (min-width: 1180px){
+	.consoleModal{
+		top: -55px !important;
+		height: 35rem !important;
+	}
+	.consoleModalContent{
+		height: 35rem !important;
+		max-height: unset !important;
+		box-shadow: none !important;
+	}    
+}
+
+
+.Console {
+	border-bottom-right-radius: .25rem;
+	border-bottom-left-radius: .25rem;
+	padding: .75rem 1rem;
+	background-color: white;
+	text-align: center;
+}

@@ -1,0 +1,85 @@
+<aura:component controller="NewSubConForSOV" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,lightning:actionOverride,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+   
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="projectName" type="String" />
+    <aura:attribute name="SOVVendor" type="String" />
+     <aura:attribute name="SubConRecType" type="Id" default = ""/>
+  
+    <lightning:workspaceAPI aura:id="workspace" />
+    
+    <aura:attribute name="Spinner" type="Boolean" />
+    <aura:attribute name="showMessage" type="Boolean" default="false" />
+    
+    
+    <lightning:notificationsLibrary aura:id="notifLib" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+    
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/> 
+    
+    <div class="slds-m-around--xx-small" style="position:relative">
+        <lightning:recordEditForm aura:id="leadCreateForm" objectApiName="buildertek__Contract__c" onsubmit="{!c.handleOnSubmit}"
+                                  onsuccess="{!c.handleOnSuccess}">
+            <lightning:messages />
+            
+            <!--Custom Styles for Modal Header and Footer--> 
+            <aura:html tag="style">
+                .cuf-content {
+                padding: 0 0rem !important;
+                }
+                .slds-p-around--medium {
+                padding: 0rem !important;
+                }       
+                .slds-modal__content{
+                overflow-y:hidden !important;
+                height:unset !important;
+                max-height:unset !important;
+                }
+            </aura:html>
+            
+            <!--Modal Header-->  
+            
+            <div class="modal-header slds-modal__header slds-size_1-of-1">
+                <h4 class="title slds-text-heading--medium">New Contract</h4>
+            </div>
+            <!--End Modal Header-->  
+                <h3 class="slds-section-title--divider">Information</h3>
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col" style="padding: 10px;">
+                        <lightning:inputField fieldName="Name" required="true"></lightning:inputField> 
+                        <lightning:inputField fieldName="buildertek__Project__c" value = "{!v.projectName}" required="true"></lightning:inputField> 
+                        <lightning:inputField fieldName="buildertek__Vendor__c" aura:id= 'vendor'  value = "{!v.SOVVendor}"></lightning:inputField>
+                    </div>
+                    <div class="slds-col" style="padding: 10px;">
+                        <lightning:inputField fieldName="RecordTypeId" aura:id= 'recType' disabled = 'true'></lightning:inputField>                        
+                        <lightning:inputField fieldName="buildertek__Status__c" aura:id= 'sovstatus1'></lightning:inputField>   
+                    </div>
+                </div>
+                
+            <!--End of Modal Body--> 
+            <!--Modal Footer-->
+            <div class="modal-footer slds-modal__footer slds-size_1-of-1">
+                <lightning:button variant="Neutral" class="slds-button" label="Close" onclick="{!c.CloseScreen}"/> 
+                <lightning:button type="submit" label="Save" variant="Neutral" title="save"/>
+            </div>
+            
+            
+            
+        </lightning:recordEditForm>
+    </div>
+    
+    
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                    <b>Processing, Please Wait</b>
+                </div>
+            </div>
+        </div>
+    </aura:if>
+    
+</aura:component>

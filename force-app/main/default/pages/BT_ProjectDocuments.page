@@ -1,0 +1,46 @@
+<!--**********************************************************************************
+* Copyright © 2017 BuilderTek.
+* All rights reserved
+*
+* VisualForce Page: BT_Home
+* Created by Sagar: 06/05/2017
+*
+* - Showing the list of all documents and also allowed to perform various operation on those documents.
+
+* - Modifications:
+* - Sagar, 06/05/2017 – Initial Development
+***********************************************************************************-->
+<apex:page standardStylesheets="false" sidebar="false" standardController="Project__c" title="{!$Label.buildertek__File_Explorer}" showHeader="{!fileExplorerPageConfugration.isShowHeader}" extensions="BT_HomeController">
+    <c:BT_JsAndCssIncludeComponent importJquery="true"
+                              importAppurinUtil="true"
+                              importJQueryLayout="true"
+                              importFancyTree="true"
+                              importJqGrid="false"
+                              importEasyTooltip="true"
+                              importAppurinCss="true"
+                              importCkEditor="false"
+                              importGnattChart="true"
+                              importLightningDesign="true"/>
+    <div class="slds">
+        <div id="splashDiv" class="apInitiallyDivDisplayNone" style="z-index:9998;">
+            <div class="slds-spinner_container apLightningSpinnerContainer">
+                <div role="status" class="slds-spinner slds-spinner--medium slds-spinner--brand">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+   
+    <apex:form >
+        <c:BT_FileExplorerComponent primaryParentObjectId="{!Project__c.Id}"
+                primaryParentObjectFieldAPI="Project__c"
+                secondaryParentObjectId="{!strOtherObjectId}"
+                secondaryParentObjectFieldAPI="{!strOtherObjectFieldAPI}"
+                folderIdToLoad="{!folderIdToLoad}"
+                explorerConfig="{!strExplorerConfigName}"
+                callerName="{!strCallerName}" >
+        </c:BT_FileExplorerComponent>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,116 @@
+<aura:component controller="BT_UploadFileController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global">
+	
+		
+	
+	<aura:attribute name="onSuccess" type="Object"/>
+	<aura:attribute name="onCancel" type="Object"/>
+    <aura:attribute name="modalPromise" type="Aura.Action"/>
+	
+	<aura:attribute name="selectedBucket" type="String" description="Selected Bucket name"/>
+	<aura:attribute name="filename" type="String" description="Selected file name"/>
+	<aura:attribute name="selectedFolder" type="String"/>
+	<aura:attribute name="parentFolder" type="String"/>
+	<aura:attribute name="mainObjectFieldAPI" type="String"/>
+	<aura:attribute name="mainObjectId" type="String"/>
+	<aura:attribute name="otherObjectFieldAPI" type="String"/>
+	<aura:attribute name="otherObjectId" type="String"/>
+	<aura:attribute name="isOwnerFiles" type="Boolean" />
+    <aura:attribute name="isRecentFiles" type="Boolean" />
+    <aura:attribute name="isRelatedFiles" type="Boolean" />
+    <aura:attribute name="Spinner" type="Boolean" />
+	<aura:attribute name="Searchstring" type="string" />
+	<aura:attribute name="filekey" type="String"/>
+	<aura:attribute name="s3AccessKey" type="String"/>
+	<aura:attribute name="policy" type="String"/>
+	<aura:attribute name="signedPolicy" type="String"/>
+	<aura:attribute name="redirectUrl" type="String"/>
+	<aura:attribute name="acl" type="String" default="public-read"/>
+	<aura:attribute name="filesList" type="List" />
+	<aura:attribute name="files" type="ContentDocument[]"/> 
+	<aura:attribute name="selectedFiles" type="sObject[]" default="[]"/>
+	<aura:handler name="init" value="{! this }" action="{! c.init }"/>
+	<c:BT_Spinner/>
+	
+	<aura:if isTrue="{!v.selectedBucket != null}">
+	    <form class="fileSubmitForm" id="fileSubmitForm" action="{!'https://s3.amazonaws.com/'+v.selectedBucket}" method="post" enctype="multipart/form-data">
+	        <input type="hidden" id="filekey" name="key" value="{!v.filename}"/>
+	        <input type="hidden" id="AWSAccessKeyId" name="AWSAccessKeyId" value="{!v.s3AccessKey}"/>
+	        <input type="hidden" id="policy" name="policy" value="{!v.policy}"/>
+	        <input type="hidden" id="signature" name="signature" value="{!v.signedPolicy}"/>
+	        <input type="hidden" id="acl" name="acl" value="{!v.acl}"/>
+	        <input type="hidden" name="success_action_redirect" id="successActionRedirect" />
+	        <div class="slds-grid slds-p-around--large">
+	            <div class="slds-col slds-size_4-of-12" style="border-right: 1px solid rgb(221, 219, 218);">
+	                <div class="slds-form-element__control" >
+	                    <lightning:fileUpload multiple="true"
+                                                    name="Upload Files"
+                                                    recordId="{!v.mainObjectId}"
+                                                    onuploadfinished="{!c.handleUploadFinished}" />            
+	                </div><br/> 
+	                <div class="slds-form-element__control">
+	                    <table width="100%">
+	                        <tr>
+	                            <td aura:id="ownerFilesId" style="padding: 6px;line-height: 2;">
+	                                <a aura:id="ownerFileId" onclick="{!c.showUserFiles}" style="color: black;">Owned by Me</a>
+	                            </td>
+	                        </tr>
+	                        <tr>
+	                            <td aura:id="recentFilesId" style="padding: 6px;line-height: 2;">
+	                                <a aura:id="recentFileId" onclick="{!c.showRecentFiles}" style="color: black;">Recent</a>
+	                            </td>
+	                        </tr>
+	                        <tr>
+	                            <td aura:id="relatedFilesId" style="padding: 6px;line-height: 2;">
+	                                <a aura:id="relatedFileId" onclick="{!c.showRelatedFiles}" style="color: black;">Related Files</a>
+	                            </td>
+	                        </tr>
+	                    </table>
+	                </div>
+	            </div>
+	            
+	            <div class="slds-col slds-size_8-of-12">
+	                <div class="slds-form-element__control slds-m-left_small">
+                        <input type="text" id="filterInput" class="slds-input slds-m-top_large" placeholder="Search Files..." onkeyup="{!c.SearchFunction}" value="{!v.Searchstring}"/>                 
+	                </div><br/>
+                    <div class="slds-form-element__control">
+                        <div class="slds-scrollable_y" style="height:20rem;">
+                            <aura:if isTrue="{!v.Spinner}">
+                                <div aura:id="spinnerId" class="slds-spinner_container">
+                                   <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                                     <span class="slds-assistive-text">Loading</span>
+                                     <div class="slds-spinner__dot-a"></div>
+                                     <div class="slds-spinner__dot-b"></div>
+                                        <div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+                
+                                   </div>
+                                </div>
+                             </aura:if>
+                            <table id="myTable" width="100%" style="border-top: 1px solid rgb(221, 219, 218);">
+	                            <aura:if isTrue="{!v.filesList != null}" >
+	                                <aura:iteration items="{!v.filesList}" var="obj">
+        	                           <tr style="border-bottom: 1px solid rgb(221, 219, 218);">
+        	                               <td width="3%">
+        	                                  <ui:inputCheckbox aura:id="checkContractor" value="{!obj.IsChecked}" text="{!obj.FileId}" change="{!c.handleCheck}" class="slds-m-left_small"/>        
+        	                               </td>
+        	                               <td class="slds-p-around_small" width="97%" style="text-align: left;border-right: 1px solid rgb(221, 219, 218);Overflow: hidden;text-overflow: ellipsis;max-width: 50px;white-space: nowrap;"> 
+        	                                  {!obj.FileName}
+        	                               </td>
+        	                           </tr>
+                        		    </aura:iteration>    
+	                            </aura:if>
+                    		 </table> 
+                        </div>     
+	                </div>    
+	            </div>
+	        </div>
+	    </form>
+    </aura:if>
+    <div class="slds-hide">
+	    <div aura:id="footer">
+	         <lightning:button name="cancel" variant="neutral" label="Cancel" onclick="{!c.onCancel}"/>
+             <lightning:button class="slds-float_right" name="Send" variant="brand" type="submit" label="Add Files" onclick="{!c.upload}"/>
+	     </div>
+    </div>
+</aura:component>

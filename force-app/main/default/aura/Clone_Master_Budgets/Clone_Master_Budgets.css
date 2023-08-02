@@ -1,0 +1,25 @@
+.THIS .OppForm .slds-grid {
+    margin-bottom: .75rem !important;
+}
+
+.THIS .OppForm button.slds-button.slds-button_brand[name="submit"] { 
+    display: none !important;
+}
+.THIS .OppForm button.slds-button.slds-button_neutral { 
+    display: none !important;
+}
+.THIS .OppForm input[disabled], .THIS .OppForm select[disabled]{
+    border: none !important;
+    background-color: white !important;
+}
+.THIS .OppForm  button[disabled]{
+    display: none !important;
+}
+.THIS .custom-loading-text {
+    transform: rotate(-90deg);
+    position: absolute;
+    top: -0.5rem;
+    left: 1rem;
+    white-space: nowrap;
+    font-size: 20px;
+}

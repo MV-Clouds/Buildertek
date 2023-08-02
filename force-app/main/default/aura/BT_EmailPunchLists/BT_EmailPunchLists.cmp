@@ -1,0 +1,124 @@
+<aura:component controller="EmailPunchListsLightningController" implements="force:appHostable,flexipage:availableForAllPageTypes,force:hasRecordId,force:lightningQuickActionWithoutHeader" access="global">
+      <aura:attribute name="RecordId" type="string" default="NewId"/>
+     <aura:attribute name="isOpen" type="boolean" default="false"/>
+     <aura:attribute name="objInfo" type="Object"   />
+     <aura:attribute name="selecteEmailInfo" type="Object"   />
+     <aura:attribute name="selectedobjInfo" type="list"   />
+     <aura:attribute name="BaseURLs" type="string" />
+     <aura:attribute name="message" description="Message content, can be HTML"
+                   type="String" default=""/>
+    <aura:attribute name="type" type="String" default="info"/>
+    <aura:attribute name="color" type="String" default="white"/>
+     <aura:dependency resource="markup://force:navigateToList" type="EVENT" /> 
+     <aura:attribute name="Spinner" type="boolean" default="false"/>
+     
+     <aura:handler name="init" value="{!this}" action="{!c.init}" />
+     <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                 <div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+            </div>
+        </div>
+    </aura:if>
+     <aura:if isTrue="{!v.isOpen}"> 
+         
+        <!--###### MODAL BOX Start From Here ######--> 
+        <div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open ">
+            <div class="slds-modal__container">
+            <!-- ###### MODAL BOX HEADER Part Start From Here ######-->
+                <div class="slds-modal__header">
+                    <button class="slds-button slds-modal__close slds-button--icon-inverse" title="Close" onclick="{!c.closeModel}">
+                        X
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="header99" class="slds-text-heading--medium">Email Punch Lists</h2>
+                </div>
+                <!--###### MODAL BOX BODY Part Start From Here ######-->
+                <div class="slds-modal__content slds-p-around--medium">
+                    <div aura:id="inlineEditBudget" style="margin-bottom:25px;"> 
+                  
+                    <aura:if isTrue="{! (v.type != 'info')}"> 
+		               <div class="{!'slds-box slds-theme–alert-texture slds-theme–' + v.type}" style = "{!'color:white;font-weight:bold;background-color :'+v.color}">
+                            <lightning:icon iconName="{! 'utility:'+ v.type }" size="medium"
+                                alternativeText="{!v.type}" Class="iconContainer"/>&nbsp;
+                                <span class="slds-text-body–regular">
+                                    <aura:unescapedHtml value="{!v.message}"/>
+                                </span>
+                        </div>
+                        </aura:if>
+                        
+    		            <table class="slds-table slds-table_bordered slds-table_cell-buffer" style="border:1px solid rgb(216, 237, 255); border-radius:5px;">
+    		                <thead>
+    		                    <tr class="slds-text-title_caps"  >
+    		                        <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-left-radius:5px;vertical-align: top;">
+    		                            <div class="slds-truncate" title="Product">Check All</div>
+    		                            <ui:inputCheckbox aura:id="checkContractors"  change="{!c.selectAll}"/>
+    		                        </th>
+    		                        <th style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;">
+    		                        	 <div class="slds-truncate">Punch List #</div>
+    		                        </th>
+    		                        <th style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;">
+    		                        	 <div class="slds-truncate">PL #</div>
+    		                        </th>
+    		                        <th style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;">
+    		                        	 <div class="slds-truncate">Location</div>
+    		                        </th>
+    		                        <th style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;">
+    		                        	 <div class="slds-truncate">Description</div>
+    		                        </th>
+    		                        <th style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;">
+    		                        	 <div class="slds-truncate">Add Email Address</div>
+    		                        </th>
+    		                                          
+    		                    </tr>
+    		                </thead>
+    		                <tbody>
+    		                    
+    		                     <aura:if isTrue="{! (v.objInfo != null)}"> 
+    		                    <aura:iteration items="{!v.objInfo}" var="obj">
+    							<tr>
+    		                    	<td>
+    		                    	    <ui:inputCheckbox aura:id="checkContractor" value="{obj.punchListCheck}}" text="{!obj.buildertekPunchlistRecord.Id}" change="{!c.handleCheck}"/>
+    		                        </td>
+    		                        <td>
+    		                        	<ui:outputtext value="{!obj.buildertekPunchlistRecord.Name}" />
+    		                        </td>
+    		                        <td>
+    		                        	<ui:outputtext value="{!obj.buildertekPunchlistRecord.buildertek__Auto_Number__c}" />
+    		                        </td>
+    		                        <td>
+    		                        	<ui:outputtext value="{!obj.buildertekPunchlistRecord.buildertek__Location__c}" />
+    		                        </td>
+    		                        <td style="white-space: pre-line;">
+    		                        	<ui:outputtext value="{!obj.buildertekPunchlistRecord.buildertek__Description__c}" />
+    		                        </td>
+    		                        <td>
+    		                        	<ui:inputText aura:id="{!obj.buildertekPunchlistRecord.Id}" value="{!obj.selectedEmail}" class="slds-input" />
+    		                        </td>
+    		                    </tr>
+    		                    </aura:iteration>
+    		                     </aura:if> 
+    		                     <aura:if isTrue="{! (v.objInfo == null)}"> 
+    		                          <h1 style="font-size:18px">No PunchLists for this Project</h1>
+    		                     </aura:if> 
+    		                </tbody>
+    		            </table>
+		            </div>
+                </div>
+                <!--###### MODAL BOX FOOTER Part Start From Here ######-->
+                <div class="slds-modal__footer">
+                    <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}" >Cancel</button>
+                    <button class="slds-button slds-button--brand" onclick="{!c.saveModel}">Send Email</button>
+                </div>
+            </div>
+        </div>
+        <div class="slds-backdrop slds-backdrop--open"></div>
+        <!--###### MODAL BOX Part END Here ######-->
+    
+    </aura:if>
+</aura:component>

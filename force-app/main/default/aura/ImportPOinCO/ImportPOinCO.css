@@ -1,0 +1,20 @@
+.THIS .header {
+    font-size: 17px;
+}
+
+.THIS.maindiv {
+    height: auto;
+    overflow-y: auto;
+    max-height: 68vh;
+}
+
+.THIS .dataNotFound {
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-top: 1rem;
+}
+
+.THIS .slds-grid_align-end {
+    justify-content: flex-start !important;
+}

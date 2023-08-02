@@ -1,0 +1,11 @@
+.THIS.mainDiv {
+    height: 40rem;
+    overflow-y: scroll;
+}
+
+@media only screen and (max-width: 1279px) and (min-width: 1180px) {
+    .THIS.mainDiv {
+        height: 24rem;
+        overflow-y: scroll;
+    }
+}

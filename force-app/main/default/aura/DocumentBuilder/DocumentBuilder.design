@@ -1,0 +1,7 @@
+<design:component label="BuilderTek Email">
+    <design:attribute name="objectAPI" label="Object API" default="" description="Name of the caller object" />
+    <design:attribute name="title" label="Button Title" default="" description="Button Title"/>
+    <design:attribute name="foldername" label="Email Template Folder Name" default="" description="Button Title"/>
+    <design:attribute name="pdfFileName" label="PDF File Name" default="" description="PDF File Name"/>
+    <design:attribute name="Style" label="Style" default="" description="Style"/>
+</design:component>

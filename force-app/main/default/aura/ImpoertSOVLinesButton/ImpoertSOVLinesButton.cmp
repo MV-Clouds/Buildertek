@@ -1,0 +1,152 @@
+<aura:component controller="ImportSOVLinesButtonController" implements="force:lightningQuickActionWithoutHeader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,lightning:actionOverride,forceCommunity:availableForAllPageTypes" access="global" >
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="IsBudgetLines" type="Boolean" default = "false"/>
+    <aura:attribute name="isUseMasterSOV" type="Boolean" default = "false"/>
+    <aura:attribute name = "appNumber" default = "1" type = "string" />
+    
+    <aura:attribute name="isshow" type="Boolean" default = "false"/>
+    <aura:attribute name="CustomError" type="Boolean" default = "false"/>
+    <aura:attribute name="isVendorSubmitted" type="Boolean" default = "false"/>
+     <aura:attribute name="columns" type="List" />
+    
+    <aura:attribute name="parentprojectRecordId" type="String" default="" />
+    
+    
+    
+    <aura:attribute name="value" type="string" default=""/>
+    <aura:attribute name="checkBoxValue" type="string" default=""/>
+    <aura:attribute name="options" type="string[]" default="[
+                                                            {'label': 'New Payment Application', 'value': 'option1'},
+                                                            {'label': 'Import Master SOVs', 'value': 'option2'},
+                                                            {'label': 'Import Vendor Payment Apps', 'value': 'option4'}
+                                                            ]"/>
+    
+    <aura:attribute name="applicationValues" type="Object" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="Vendorname" type="String" />
+    <aura:attribute name="communityUserId" type="String" />
+    <aura:attribute name="Spinner" type="boolean" default="false"/>
+    <aura:attribute name="Spinner2" type="boolean" default="false"/>
+    <aura:attribute name="message" type="boolean" default="false"/>
+    <aura:attribute name="Iscommunity" type="Boolean" default = "false"/>
+    <aura:attribute name="isOpen" type="boolean" default="false"/>
+    <aura:attribute name="isnew" type="boolean" default="false"/>
+    <aura:attribute name="isnewpayment" type="boolean" default="false"/>
+    <aura:attribute name="IsActive" type="boolean" default="false"/>
+    <aura:attribute name="PageNumber" type="integer" default="1" />
+    <aura:attribute name="pageSize" type="integer" default="10" />
+    <aura:attribute name="TotalPages" type="integer" default="0" />
+    <aura:attribute name="TotalRecords" type="integer" default="0" />
+    <aura:attribute name="RecordStart" type="integer" default="0" />
+    <aura:attribute name="RecordEnd" type="integer" default="0" />
+    <aura:attribute name="rfqRecordList" type="Schedule_of_Values__c[]" />
+    <aura:attribute name="sovRecordList" type="Schedule_of_Values__c[]" />
+    <aura:attribute name="ImportVendorPaymentAppsList" type="SOV_Payment_Application__c[]" />
+    
+    <aura:attribute name="iscreateNewSOV" type="boolean" default="false"/>
+    <aura:attribute name="isuseSov" type="boolean" default="false"/>
+    <aura:attribute name="iscall" type="boolean" default="false"/>
+    
+    
+    <aura:attribute name="isImportVendor" type="boolean" default="false"/>
+    <aura:attribute name="listOfSelectedRFQIds" type="List" default="[]"/>
+    
+    <aura:attribute name="payrecordId" type="String" />
+    <lightning:workspaceAPI aura:id="workspace" />
+    <lightning:notificationsLibrary aura:id="notifLib" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+    
+    <aura:html tag="style">   
+        .slds-modal__container {
+        margin: 0 auto;
+        width: 100%;
+        max-width: 51rem !important;
+        min-width: 28rem;
+        }
+    </aura:html>
+    
+    <!--  <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                         aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open"> -->
+    
+    <div class="">
+        <aura:html tag="style">
+            .cuf-content {
+            padding: 0 0rem !important;
+            }
+            .slds-p-around--medium {
+            padding: 0rem !important;
+            }       
+            .slds-modal__content{
+            overflow-y:hidden !important;
+            height:unset !important;
+            max-height:unset !important;
+            }
+        </aura:html> 
+        <aura:if isTrue="{!v.CustomError}">
+            
+            <!--Modal Body-->   
+            <div class="slds-modal__content slds-p-around--x-small slds-align_absolute-center slds-size_1-of-1 slds-is-relative">
+                <form class="slds-form--stacked">
+                    <h3 class="title slds-text-heading--medium" style="color:red;font-weight: bold;">This Payment Application  Is Accepted by Company, You cannot make any changes to this Record</h3>
+                </form> 
+            </div>
+            <!--End of Modal Body--> 
+            
+        </aura:if> 
+        
+        <aura:if isTrue="{!v.isVendorSubmitted}">
+            
+            <!--Modal Body-->   
+            <div class="slds-modal__content slds-p-around--x-small slds-align_absolute-center slds-size_1-of-1 slds-is-relative">
+                <form class="slds-form--stacked">
+                    <h3 class="title slds-text-heading--medium" style="color:red;font-weight: bold;">This Payment Application Is Submitted, You cannot make any changes to this Record</h3>
+                </form> 
+            </div>
+            <!--End of Modal Body--> 
+            
+        </aura:if> 
+        
+        <aura:if isTrue="{!v.isshow}">
+            
+            <div aura:id="poContainer" class="c-container" style="width:100% !important;max-width: 51rem !important;min-height:5rem;" ><!-- height:100% height:50rem !important;-->
+                <aura:if isTrue="{!v.Spinner}">
+                    <div aura:id="spinnerId" class="slds-spinner_container">
+                        <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                            <span class="slds-assistive-text">Loading</span>
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                            <div class="custom-loading-text">
+                                <b>Processing, Please Wait</b>
+                            </div>
+                        </div>
+                    </div>
+                </aura:if>
+                <header class="slds-modal__header">
+                    
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Import Approved SOV</h2>
+                </header> 
+                      <div style="min-height: 10rem;
+                                            background: white;
+                                            height: 22rem;">
+                    
+                    <lightning:datatable
+                                         columns="{! v.columns }"
+                                         data="{! v.rfqRecordList }"
+                                         keyField="id"
+                                         selectedRows="{! v.selectedRows }"
+                                         onrowselection="{! c.updateSelectedText }"/>
+                    
+            </div>
+                <div class="slds-modal__footer">
+                    <button class="slds-button slds-button--neutral" onclick="{!c.doCancel}">Cancel</button>
+                    <lightning:button aura:id="nextPage" variant="neutral"
+                                      label="Import" onclick="{!c.importSOVSheetLines}" />
+                </div> 
+            </div>
+        </aura:if>        
+    </div>
+    <!--  </section> -->
+    <!-- <div class="slds-backdrop slds-backdrop_open"></div> -->
+    
+</aura:component>

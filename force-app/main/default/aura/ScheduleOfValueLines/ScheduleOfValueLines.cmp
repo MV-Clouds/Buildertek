@@ -1,0 +1,1053 @@
+<aura:component controller="ViewVendorPaymentApplicationController" implements="force:appHostable,flexipage:availableForAllPageTypes,lightning:isUrlAddressable,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction,forceCommunity:availableForAllPageTypes,forceCommunity:layout" access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="currencycode" type="String"/>
+    <aura:attribute name="continuationSheetLines" type="Schedule_of_Value_Lines__c[]" />
+    <aura:attribute name="deleteContinuationSheetLine" type="List" />
+    <aura:attribute name="selectdeSOVIDS" type="List" />
+    <aura:attribute name="deleteSOVScreen" type="Boolean" default = "false"/>
+    <aura:attribute name="isdeleteClick" type="Boolean" />
+    
+     <aura:attribute name="isStndSOV" type="Boolean" />
+     <aura:attribute name="isImpVndSOV" type="Boolean" />
+    
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="Iscommunity" type="Boolean" default = "false"/>
+    <aura:attribute name="Vendorname" type="String" />
+    <aura:attribute name="communityUserId" type="String" />
+    <aura:attribute name="address" type="String" default= "FromSovSheet"/>
+    <aura:attribute name="isEditable" type="boolean" default = "false"/>
+    <aura:attribute name="isCommUser" type = "Boolean" />
+    <aura:attribute name="IsSubmitted" type="String" />
+    <aura:attribute name="isSubmitForView" type="Boolean" default = "false"/>
+    <aura:attribute name="Spinner" type="Boolean" />
+    <aura:attribute name="showMessage" type="Boolean" default="false" />
+    <lightning:workspaceAPI aura:id="workspace"/>
+    <aura:attribute name="SOVName" type="String" />
+    <aura:attribute name="statusDisable" type="Boolean" default = "false"/>
+    <aura:attribute name="sovTotal" type="integer" />
+    <aura:attribute name="sovTotalstring" type="string" />
+    <aura:attribute name="continuationSheetLinesDup" type="Schedule_of_Value_Lines__c[]" />
+    <aura:attribute name="preval" type="integer" />
+    
+    <aura:attribute name="ISOCode" type="String"/>
+    <aura:attribute name="IsCurrencyEnabled" type="Boolean" default = "false"/>
+    <aura:attribute name="indexValWithError" type="integer" />
+    
+    <aura:attribute name="ApprovedToggle" type="Boolean" default="false"/>
+    <aura:attribute name="RejectedToggle" type="Boolean" default="false"/>
+    <aura:attribute name="PendingToggle" type="Boolean" default="false"/>
+    
+    
+    <aura:attribute name="CompanySubmittedToggle" type="Boolean" default="false"/>
+    <aura:attribute name="VendorSubmittedToggle" type="Boolean" default="false"/>
+    
+    
+    <aura:attribute name="AllToggle" type="Boolean" default="true"/>
+ <aura:attribute name="SOVtotaltext" type="String" />
+    <aura:attribute name="aggvalue" type="Integer" />
+    
+    
+    <aura:attribute name="isscheduleValError" type="Boolean" default = "false"/>
+    
+    
+    <aura:attribute name="isImportVendorSovs" type="Boolean" default = "false"/>
+    
+    
+    
+    
+
+    <aura:attribute name="sovsList" type="list"/>
+    <aura:attribute name="sovlinesList" type="list"/>
+    <aura:attribute name="masterSOVId" type="string"/>
+    <aura:attribute name="listOfSelectedSOVIds" type="List" default="[]"/>
+    <aura:attribute name="listOfSelectedSOVLineIds" type="List" default="[]"/>
+    <aura:attribute name="showSOVs" type="Boolean" default="true" /> 
+    <aura:attribute name="showSOVLines" type="Boolean" default="false" />
+    <aura:attribute name="showPopup" type="Boolean" default="false" />
+    
+    <aura:attribute name="isNext" type="Boolean" default="false" />
+    
+    <aura:attribute name="ApproveSOV" type="Boolean" default="false" />
+    
+    <aura:attribute name="RejectSOV" type="Boolean" default="false" />
+    <aura:attribute name="up" type="Boolean" default="false" />
+    <aura:attribute name="isActive" type="Boolean" default="false" />
+    
+    <!--  Attributes for table headder draggable  Start-->
+      <aura:attribute name="newWidth" type="string" />
+    <aura:attribute name="currentEle" type="Object" />
+    <aura:attribute name="oldWidth" type="string" /> 
+    <aura:attribute name="quoteGroupName" type="string" />
+    <aura:attribute name="isdeleteRow" type="string" />
+    <aura:attribute name="mouseStart" type="string" />
+    
+    
+    
+    
+    
+    
+    
+    <div class="slds-card " style="background: var(--lwc-pageHeaderColorBackground, rgb(243, 242, 242)); padding: 10px">
+        <div class="slds-grid slds-gutters cardCss  slds-p-around_small">
+            <div class="slds-col">
+                <span>
+                    <span style=" color: #6b6d70;">SOV</span>
+                    <h2 class="slds-card__header-title">
+                        <span>
+                            
+                            <a href="javascript:void()"  onclick="{!c.NavToSovRec}">{!v.SOVName}</a>
+                            
+                            <!-- <ui:outputURL 
+                                          value="{!'/one/one.app?#/sObject/'+ v.recordId + '/view'}"
+                                          target="_blank" label="{!v.SOVName}" /> -->
+                        </span>
+                    </h2>
+                </span>
+            </div>
+            
+            
+           <div class="slds-col">
+            <div class="slds-col">
+                <aura:if isTrue="{!v.isCommUser}">
+                     <div class="btn-group" role="group">
+                            <aura:if isTrue="{!v.AllToggle}">
+                                <span onclick="{!c.AllToggle}">
+                                    <button type="button" class="btn-group btn-group-justified bgm" style="width:90px;margin-right: 3px;height:32px" >All</button>
+                                </span>
+                                <aura:set attribute="else">
+                                    <span onclick="{!c.AllToggle}">
+                                        <button type="button" class="btn-group btn-group-justified btm" style="width:90px;margin-right: 3px;height:32px">All</button>
+                                    </span>
+                                </aura:set>
+                            </aura:if>
+                            
+                            
+                            
+                            <aura:if isTrue="{!v.ApprovedToggle}">
+                                <span onclick="{!c.changeApprovedToggle}" style="">
+                                    <button type="button" class="btn-group btn-group-justified bgm" style="margin-right: 3px;height:32px">Approved</button>
+                                </span>
+                                <aura:set attribute="else">
+                                    <span onclick="{!c.changeApprovedToggle}" >
+                                        <button type="button" class="btn-group btn-group-justified btm" style="width:90px;margin-right: 3px;height:32px">Approved</button>
+                                    </span>
+                                </aura:set>
+                            </aura:if>
+                            
+                            
+                            <aura:if isTrue="{!v.RejectedToggle}">
+                                <span onclick="{!c.ChangeRejectedToggle}" >
+                                    <button type="button" class="btn-group btn-group-justified bgm" style="margin-right: 3px;height:32px">Rejected</button>
+                                </span>
+                                <aura:set attribute="else">
+                                    <span onclick="{!c.ChangeRejectedToggle}">
+                                       <button type="button" class="btn-group btn-group-justified btm" style="width:90px;margin-right: 3px;height:32px">Rejected</button>
+                                    </span>
+                                </aura:set>
+                            </aura:if> 
+                            
+                             <aura:if isTrue="{!v.VendorSubmittedToggle}">
+                                <span onclick="{!c.changeVendorSubmittedToggle}" >
+                                    <button type="button" class="btn-group btn-group-justified bgm" style="margin-right: 3px;height:32px;width:148px!important">Vendor Submitted</button>
+                                </span>
+                                <aura:set attribute="else">
+                                    <span onclick="{!c.changeVendorSubmittedToggle}">
+                                       <button type="button" class="btn-group btn-group-justified btm" style="width:90px; margin-right: 3px;height:32px;width:148px!important">Vendor Submitted</button>
+                                    </span>
+                                </aura:set>
+                            </aura:if>
+                            
+                            
+                            
+                            
+                             <aura:if isTrue="{!v.PendingToggle}">
+                                <span onclick="{!c.changePendingToggle}" >
+                                    <button type="button" class="btn-group btn-group-justified bgm" style="margin-right: 3px;height:32px">Pending</button>
+                                </span>
+                                <aura:set attribute="else">
+                                    <span onclick="{!c.changePendingToggle}">
+                                       <button type="button" class="btn-group btn-group-justified btm" style="width:90px; margin-right: 3px;height:32px">Pending</button>
+                                    </span>
+                                </aura:set>
+                            </aura:if> 
+                         
+                         <aura:if isTrue="{!v.CompanySubmittedToggle}">
+                                <span onclick="{!c.changeCompanySubmittedToggle}" >
+                                    <button type="button" class="btn-group btn-group-justified bgm" style="margin-right: 3px;height:32px;width:11rem!important">Company Submitted</button>
+                                </span>
+                                <aura:set attribute="else">
+                                    <span onclick="{!c.changeCompanySubmittedToggle}">
+                                       <button type="button" class="btn-group btn-group-justified btm" style="margin-right: 3px;height:32px;width:11rem!important">Company Submitted</button>
+                                    </span>
+                                </aura:set>
+                            </aura:if> 
+                         
+                         
+                                
+                        </div>
+                    
+                     <div class="slds-col">
+                <div class="slds-m-around--small">
+                    <div class="slds-form-element">
+                        <div class="flex-container" style="margin-left: 13rem;">
+                            <div>
+                                {!v.SOVtotaltext} :&nbsp;
+                            </div>
+                            <div>
+                               <!-- <b><lightning:formattedNumber value="{!v.sovTotal}" currencyDisplayAs="code" currencyCode="USD" style="currency"/></b> -->
+                                
+                             <b>   <lightning:formattedNumber value="{!v.sovTotal}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code"/> </b>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                     
+                </aura:if>
+                
+            </div>
+               </div>
+            
+           
+        
+            
+            <div class="slds-col">
+            </div>
+
+            
+            <!--<aura:if isTrue="{!v.isStndSOV}">
+              
+                    <lightning:button iconPosition="left" onclick="{!c.importVendorSov}" label="Import Vendor SOVs"
+                                      class="sldsButtonGroup" disabled="{!v.statusDisable}"/>
+             
+            </aura:if> -->
+            
+            <aura:if isTrue="{!v.isCommUser}">
+               
+                <aura:set attribute="else">
+                    <lightning:button iconPosition="left" onclick="{!c.importMasterSov}" label="Import Master SOVs"
+                                      class="sldsButtonGroup" disabled="{!v.statusDisable}"/>
+                </aura:set>
+            </aura:if>
+            
+            <aura:if isTrue="{!v.isCommUser}">
+               
+                <aura:set attribute="else">
+                    <lightning:button iconPosition="left" onclick="{!c.importSovFromCsv}" label="Import SOVs From CSV"
+                                      class="sldsButtonGroup" disabled="{!v.statusDisable}"/>
+                </aura:set>
+            </aura:if> 
+            
+            
+        <aura:if isTrue="{!v.isCommUser}">
+                
+                <aura:set attribute="else">
+                    <lightning:button iconPosition="left" onclick="{!c.importCompanyApprovedSov}" label="Import Company Approved SOVs"
+                                      class="sldsButtonGroup" disabled="{!v.statusDisable}"/>
+                </aura:set>
+            </aura:if>
+            
+            
+            <aura:if isTrue="{!v.isCommUser}">
+     
+                <aura:set attribute="else">
+                    <lightning:button iconPosition="left" label="Delete" onclick="{!c.deleteSlctd}"
+                                      class="sldsButtonGroup" disabled="{!v.statusDisable}" />
+                </aura:set>
+            </aura:if> 
+            
+        </div>
+    </div>
+    
+    
+  
+
+    
+    <table aria-multiselectable="true" 
+           class="slds-card slds-table slds-table_bordered slds-table_fixed-layout slds-table_resizable-cols" role="grid"  >
+        <thead style = "height: 40px; ">
+            <tr>
+                <th style = "width: 68px; padding-left: 5px; border-radius: 3px;">
+                    Item.No
+                </th>
+                 <aura:if isTrue="{!v.isCommUser}">
+                    
+                    <aura:set attribute="else">
+                <th style = "width: 68px; padding-left: 5px; border-radius: 3px;">
+                    
+                  <label class="slds-checkbox" width="10px">
+                                                        <ui:inputCheckbox value=""
+                                                            name="" change="{!c.selectAll}"
+                                                            aura:id="cbox" class="cbox" disabled="{!v.statusDisable}" />
+                                                        <span class="slds-checkbox--faux" style="top:-2px;"></span>
+                                                        <span class="slds-form-element__label text"></span>
+                                                    </label>
+                </th>
+                     </aura:set>
+                </aura:if>
+                <aura:if isTrue="{!v.isCommUser}">
+                    <aura:set attribute="else">
+                        <th style = "width: 120px">
+                            SOV Line Number
+                        </th>
+                    </aura:set>
+                </aura:if> 
+          
+                
+                <aura:if isTrue="{!v.isCommUser}">
+                    
+                    <aura:set attribute="else">
+                        
+                        <th style = "width: 180px; padding-left: 12px">
+                            Vendor
+                        </th>
+                    </aura:set>
+                </aura:if>
+                
+                
+                <th style = "width: 390px; padding-left: 10px">
+                    Description of Work 
+                </th>
+                
+                <th style = "width: 180px; padding-left: 10px">
+                    Scheduled Value
+                </th>
+                
+                <aura:if isTrue="{!!v.isCommUser}">
+                    <th style = "padding-left: 10px">
+                        Last Modified Date
+                    </th>
+                </aura:if>
+                <th style = "width: 35px"></th>
+                
+                <th style = "width: 35px"></th>
+                
+                
+                <aura:if isTrue="{!v.isCommUser}">
+                    
+                    <th>Reject Reason</th>
+                </aura:if>
+                
+                <aura:if isTrue="{!!v.isCommUser}">
+                    
+                    
+                    <th></th>
+                </aura:if>
+                
+               
+                
+            </tr>
+        </thead>
+        
+        <tbody>
+            <aura:iteration items="{!v.continuationSheetLines}" var="item"
+                            indexVar="recIndex">
+                <tr >
+                    
+                    <td>
+                        {!item.buildertek__Item__c}
+                    </td>
+                    <aura:if isTrue="{!v.isCommUser}">
+                        <aura:set attribute="else">
+                    <td>
+                     
+                                    <label class="slds-checkbox" style="width:2px;">
+                                   <ui:inputCheckbox text="{!item.Id}"
+                                                                    aura:id="cboxRow" value=""
+                                                                    change="{!c.changeSelectAll}" disabled="{!v.statusDisable}"  />
+                                                                <span class="slds-checkbox--faux"
+                                                                    style="top:-2px;"></span>
+                                                                <span class="slds-form-element__label text"></span>
+                                                            </label>
+                          <!--   </aura:set>
+                        </aura:if>-->
+                                   
+                             
+                           
+                    </td>
+                     </aura:set>
+                        </aura:if>
+                    <aura:if isTrue="{!v.isCommUser}">
+                        <aura:set attribute="else">
+                            <td>
+                                <ui:outputURL
+                                              value="{!'/one/one.app?#/sObject/'+ item.Id + '/view'}"
+                                              target="_blank" label="{!item.Name}" />
+                            </td>
+                        </aura:set>
+                        
+                    </aura:if> 
+                    
+                    
+                    <aura:if isTrue="{!v.isCommUser}">
+                        
+                        <aura:set attribute="else">
+                            
+                            <!-- <td>
+                                        <lightning:input type="text" value="{!item.buildertek__Vendor__r.Name}" variant="label-hidden" required="true" disabled="true"/>
+                                        
+                                    </td> -->
+                            
+                            <td>
+                                {!item.buildertek__Vendor__r.Name}
+                            </td>
+                            
+                        </aura:set>
+                    </aura:if>
+                    
+                    
+                    
+                    <td>
+                        <aura:if isTrue="{!v.isCommUser}">
+                            <aura:if isTrue="{!or(item.buildertek__Status__c == 'Approved', item.buildertek__Schedule_of_Values__r.buildertek__Status__c == 'Company Approved')}">
+                                <lightning:input type="text" value="{!item.buildertek__Description_of_Work__c}" variant="label-hidden" disabled="true"/>
+                                <aura:set attribute="else">
+                                    <aura:if isTrue="{!item.buildertek__Status__c == 'Vendor Submitted'}">
+                                        <lightning:input type="text" value="{!item.buildertek__Description_of_Work__c}" variant="label-hidden" disabled="true"/>
+                                        
+                                        <aura:set attribute="else">
+                                            <lightning:input type="text" value="{!item.buildertek__Description_of_Work__c}" variant="label-hidden" disabled="{!v.IsSubmitted}"/>
+                                            
+                                        </aura:set>
+                                    </aura:if> 
+                                    
+                                </aura:set>
+                            </aura:if> 
+                            <aura:set attribute="else">
+                                <aura:if isTrue="{!or(item.buildertek__Status__c == 'Customer Approved' , item.buildertek__Status__c == 'Approved')}">
+                                    <lightning:input type="text" value="{!item.buildertek__Description_of_Work__c}" variant="label-hidden" disabled="true"/>
+                                    
+                                    <aura:set attribute="else">
+                                        <lightning:input type="text" value="{!item.buildertek__Description_of_Work__c}" variant="label-hidden" required="true" />
+                                        
+                                    </aura:set>
+                                </aura:if> 
+                                
+                            </aura:set>
+                        </aura:if> 
+                    </td>
+                    
+                    <td>
+                        <aura:if isTrue="{!v.isCommUser}">
+                            <aura:if isTrue="{!or(item.buildertek__Status__c == 'Approved', item.buildertek__Schedule_of_Values__r.buildertek__Status__c == 'Company Approved')}">
+                                <div style="display: flex;">
+                                    <div style="padding:5px"><b>{!item.CurrencyIsoCode}</b></div>
+                                    <div data-id="{!recIndex+1}">
+                                        <lightning:input type="string"  value="{!item.buildertek__Vendor_Scheduled_Value__c}" label="{!recIndex}" variant="label-hidden" formatter="currency"  step="0.01" name="{!item.Id}" disabled="true"  onchange="{!c.sovChange}" onkeydown="{!c.inputClick}"/>
+                                    </div>
+                                </div>
+                                <aura:set attribute="else">
+                                    
+                                    <aura:if isTrue="{!item.buildertek__Status__c == 'Vendor Submitted'}">
+                                        <div style="display: flex;">
+                                            <div style="padding:5px"><b>{!item.CurrencyIsoCode}</b></div>
+                                            <div data-id="{!recIndex+1}" >
+                                                <lightning:input type="string"  value="{!item.buildertek__Vendor_Scheduled_Value__c}"  variant="label-hidden" formatter="currency"  step="0.01" name="{!item.Id}" disabled="true"  onchange="{!c.sovChange}" onkeydown="{!c.inputClick}"/>
+                                            </div>
+                                        </div>
+                                        <aura:set attribute="else">
+                                    
+                                            <div style="display: flex;">
+                                                <div style="padding:5px"><b>{!item.CurrencyIsoCode}</b></div>
+                                                <div data-id="{!recIndex+1}" >
+                                                    <lightning:input type="string"  value="{!item.buildertek__Vendor_Scheduled_Value__c}"  variant="label-hidden" formatter="currency"  step="0.01" name="{!item.Id}" disabled="{!v.IsSubmitted}"  onchange="{!c.sovChange}" onkeydown="{!c.inputClick}"/>
+                                                </div>
+                                            </div>
+                                        </aura:set>
+                                    </aura:if>
+                                    
+                                </aura:set>
+                            </aura:if> 
+                            <aura:set attribute="else">
+                                
+                                
+                                
+                                <aura:if isTrue="{!item.buildertek__Status__c == 'Customer Approved'}">
+                                     <div style="display: flex;">
+                                <div style="padding:5px"><b>{!item.CurrencyIsoCode}</b></div>
+                                <div data-id="{!recIndex+1}">
+                                    
+                                <lightning:input type="string"  value="{!item.buildertek__Scheduled_Value__c}" label="{!recIndex}"  variant="label-hidden" formatter="currency"  step="0.01" name="{!item.Id}" disabled="true" onchange="{!c.sovChange}" onkeydown="{!c.inputClick}"/>
+                                </div>
+                                </div>
+
+                                    <aura:set attribute="else">
+                                        <div style="display: flex;">
+                                <div style="padding:5px"><b>{!item.CurrencyIsoCode}</b></div>
+                                <div data-id="{!recIndex+1}">
+                                    
+                                <lightning:input type="string"  value="{!item.buildertek__Scheduled_Value__c}" label="{!recIndex}"  variant="label-hidden" formatter="currency"  step="0.01" name="{!item.Id}" disabled="{!v.statusDisable}" onchange="{!c.sovChange}" onkeydown="{!c.inputClick}"/>
+                                </div>
+                                </div>
+
+                                    </aura:set>
+                                </aura:if> 
+                                
+                                
+                                
+                                
+                                                               
+                                 <aura:if isTrue="{!v.isscheduleValError}" >
+            	                    <span style="color:rgb(194, 57, 52);">Enter a valid value</span>  
+                                 </aura:if>
+                                   
+                            </aura:set>
+                        </aura:if> 
+                    </td>
+                    
+                    <aura:if isTrue="{!!v.isCommUser}"> 
+                        <td>
+                            
+                            <lightning:input type="datetime" name="input4" variant="label-hidden" disabled="true" value= "{!item.LastModifiedDate}" />
+                            
+                            
+                           
+                        </td>
+                    </aura:if>
+                    
+                    
+                    <aura:if isTrue="{!!v.statusDisable}">
+                        <td>
+                            <aura:if isTrue="{!v.isCommUser}">
+                                
+                                <aura:if isTrue="{!or(item.buildertek__Status__c == 'Approved', item.buildertek__Schedule_of_Values__r.buildertek__Status__c == 'Company Approved')}">
+                                    
+                                    <aura:if isTrue="{!item.buildertek__Status__c == 'Approved'}" >
+                                        &nbsp;&nbsp;
+                                        <span style="cursor: pointer" data-index="{!parentGroupIndex+'_'+subGroupIndex+'_'+recIndex}">
+                                            <lightning:icon iconName="utility:check" class="iconClrforapp" title = "Accepted"
+                                                            size="xx-small" />
+                                        </span>
+                                    </aura:if>
+                                    
+                                    
+                                    <aura:if isTrue="{!item.buildertek__Status__c == 'Rejected'}" >
+                                        &nbsp;&nbsp;
+                                        <span style="cursor: pointer" data-index="{!parentGroupIndex+'_'+subGroupIndex+'_'+recIndex}">
+                                            <lightning:icon iconName="utility:warning" class="iconClr" title="Rejected" 
+                                                            size="xx-small" />
+                                        </span>
+                                    </aura:if>
+                                    
+                                    
+                                    <aura:set attribute="else">
+                                        <span style="cursor: pointer" data-index="{!recIndex}" onclick="{!c.addNewRow}">
+                                            <lightning:icon iconName="utility:add"
+                                                            size="xx-small" disabled="{!v.IsSubmitted}"/> 
+                                        </span>                                   
+                                    </aura:set>
+                                </aura:if> 
+                                
+                                <aura:set attribute="else">
+                                    
+                                    
+                                    
+                                    <span style="cursor: pointer" data-index="{!recIndex}" onclick="{!c.addNewRow}">
+                                        <lightning:icon iconName="utility:add"
+                                                        size="xx-small" disabled="{!v.IsSubmitted}"/> 
+                                    </span>                                
+                                </aura:set>
+                            </aura:if> 
+                            
+                        </td>
+                    </aura:if>
+                    
+                    <aura:if isTrue="{!!v.statusDisable}">    
+                        <td>
+                            <aura:if isTrue="{!v.isCommUser}">
+                                <aura:if isTrue="{!or(item.buildertek__Status__c == 'Approved', item.buildertek__Schedule_of_Values__r.buildertek__Status__c == 'Company Approved')}">
+                                    <aura:set attribute="else">
+                                        <span style="cursor: pointer" data-index='{!recIndex}'  onclick="{!c.deleteRow}">
+                                            <lightning:icon iconName="utility:delete"
+                                                            size="xx-small" disabled="{!v.IsSubmitted}" />
+                                        </span>                                     
+                                    </aura:set>
+                                </aura:if> 
+                                <aura:set attribute="else">
+                                    <span style="cursor: pointer" data-index='{!recIndex}' onclick="{!c.deleteRow}">
+                                        <lightning:icon iconName="utility:delete"
+                                                        size="xx-small" disabled="{!v.IsSubmitted}"/>
+                                    </span>                                
+                                </aura:set>
+                            </aura:if> 
+                            
+                        </td>
+                        <aura:set attribute="else">
+                            <td></td><td></td>
+                            <!--<td></td><td></td>-->
+                        </aura:set>
+                    </aura:if>
+                    
+                    <aura:if isTrue="{!v.isCommUser}">
+                        <td class="slds-cell-wrap">
+                            
+                            <aura:if isTrue="{!item.buildertek__Status__c == 'Rejected'}" >
+                               {!item.buildertek__Rejection_Reason__c}
+                            </aura:if>
+                        </td>
+                        <!--<td></td><td></td><td></td>-->
+                    </aura:if>
+                    <aura:if isTrue="{!!v.isCommUser}">                    
+                        
+                       
+                        
+                        <td></td>
+                        
+                    </aura:if>
+                </tr>
+            </aura:iteration>
+            
+            <tr>
+                
+                <aura:if isTrue="{!v.isCommUser}">
+                    <td style = "font-weight: bold;">
+                        {!v.SOVtotaltext}:
+                    </td>
+                    
+                    <td></td>
+                    <td style = "font-weight: bold; padding-left:48px">
+                        <div style="display: flex;">
+                                    <div>
+                                        <!--{!v.ISOCode}&nbsp;-->
+                                    </div>
+                                    <div>
+                                       <!-- <b><lightning:formattedNumber value="{!v.sovTotal}" currencyDisplayAs="code" currencyCode="USD" style="currency"/></b> -->
+                                        
+                                        <b>  <lightning:formattedNumber value="{!v.sovTotal}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code"/> </b>
+                                        
+                                    </div>
+                                </div>
+                        
+                        
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <!--<td></td>
+                    <td>  </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>-->
+                    <aura:set attribute="else">
+                        <td style = "font-weight: bold;">
+                            Total:
+                        </td>
+                        
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td style = "font-weight: bold; padding-left:50px;"> 
+                            <b>
+                               <!-- <lightning:formattedNumber value="{!v.sovTotal}" style="number" maximumFractionDigits ="2"/>-->
+                                <div style="display: flex;">
+                                   
+                                    <div>
+                                        <lightning:formattedNumber value="{!v.sovTotal}" maximumFractionDigits="2" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code"/>
+                                    </div>
+                                </div>
+                                <!--{!v.ISOCode}&nbsp;{!v.sovTotal}-->
+                            </b> 
+                            
+                        </td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </aura:set>
+                </aura:if> 
+                
+            </tr>
+        </tbody>
+    </table>
+    
+    <aura:if isTrue='{!v.isdeleteClick}'>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="min-width:30rem;">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Delete Schedule Of Value Line
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height:50px">
+                    Are you sure you want to delete this Schedule Of Value Line?
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button label="No" title="No" onclick="{!c.cancelline}" />
+                    <lightning:button variant="neutral" label="Yes" title="Yes" onclick="{!c.confirmdelete}" />
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    
+    <aura:if isTrue='{!v.isSubmitForView}'>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="min-width:30rem;">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Submit SOV To Owner
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height:50px">
+                    Are you sure you want to Submit this SOV?
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button label="No" title="No" onclick="{!c.cancelSubmit}" />
+                    <lightning:button variant="neutral" label="Yes" title="Yes" onclick="{!c.confirmSubmit}" />
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    
+    <footer class="slds-modal__footer" >
+        <aura:if isTrue="{!v.Iscommunity}">
+            <button class="slds-button slds-button--neutral" onclick="{!c.closeModal}">Cancel</button>
+        </aura:if>
+        <aura:if isTrue="{!!v.Iscommunity}">
+            <button class="slds-button slds-button--neutral" onclick="{!c.closeCOModal}">Cancel</button>
+        </aura:if>
+        <!--  <lightning:button variant="neutral" 
+                          label="Cancel"
+                          title="Cancel"
+                          onclick="{! c.closeCOModal }"/> -->
+        
+        <aura:if isTrue="{!v.isCommUser}">
+            <lightning:button variant="neutral" 
+                              label="Save"
+                              title="Save"
+                              onclick="{! c.createContinuationSheetLines }" disabled="{!v.IsSubmitted}"/>
+            <aura:set attribute="else">
+                <lightning:button variant="neutral" 
+                                  label="Save"
+                                  title="Save"
+                                  onclick="{! c.createContinuationSheetLines }" disabled="{!v.statusDisable}"/>
+            </aura:set>
+        </aura:if> 
+        
+    </footer>    
+    <!-- disabled="{!v.IsSubmitted}"-->
+    
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative"
+                 role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                    <b>Processing, Please Wait</b>
+                </div>
+            </div>
+        </div>
+    </aura:if>
+    <aura:if isTrue="{!v.deleteSOVScreen}">
+                        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" 
+aria-modal="true" aria-describedby="modal-content-id-1" 
+class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeDeleteConformationScreen }" alternativeText="close"
+                                          variant="bare-inverse" class="slds-modal__close" />
+                    
+                                            
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Delete SOV Lines</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" >
+                   <center>
+                    Would you like to Delete these SOV lines?
+                </center>
+                </div>
+                <footer class="slds-modal__footer">
+                     <lightning:button variant="neutral" label="No" title="Close"
+                                      onclick="{!c.closeDeleteConformationScreen}" />
+                    <lightning:button variant="brand" label="Yes" title="Yes"
+                                      onclick="{!c.callDeleteHelper}" />
+                   
+                </footer>
+            </div>
+        
+                            </section>
+                        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    
+    
+    
+    
+    <aura:if isTrue="{!v.isImpVndSOV}">
+    
+        
+        <aura:html tag="style">
+            .slds-modal__container {
+            <!--min-width: 61vw; -->
+            min-width: 85vw;
+            <!--min-width: 60%;--> 
+            }
+            .quick-actions-panel{
+            max-height: 20px;
+            }
+            
+            
+            
+        </aura:html>
+        
+        
+         <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+        <aura:if isTrue="{!v.up}"> 
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close"
+                                          onclick="{! c.close }"
+                                          alternativeText="close"
+                                          variant="bare-inverse"
+                                          class="slds-modal__close"/> 
+                    <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Import Company Approved SOVs</h2>
+                    
+                </header>
+                <!--   <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1"> -->
+                <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                    <thead>
+                        <tr class="slds-text-heading--label">
+                            <th class="slds-is-sortable" scope="col" width="5px" style=" border-top-left-radius:5px;vertical-align: top;line-height: 2;width: 5%;padding-top: 8px;">
+                                <lightning:input type="checkbox" aura:id="headCheckRFQ" checked="false" onchange="{!c.selectAllRfq}"/> 
+                            </th>
+                            
+                            <th class="slds-is-sortable" scope="col" width="5px" style=" border-top-left-radius:5px;vertical-align: top;line-height: 2;width:width: 5%;padding-top: 8px;">
+                                <div class="slds-truncate" title="SNo">
+                                    
+                                </div>
+                            </th>
+                            
+                       
+                            
+                                               <th class="slds-is-resizable slds-text-title--caps" scope="col" >
+                                    <div class="slds-truncate" title="SNo" >S.No</div>
+                                    <div class="slds-resizable" ondblclick="{!c.calculateWidth}">
+                                        <input type="range" min="80" max="1000"  class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-602" tabindex="0" />
+                                        <span class="slds-resizable__handle"  onmousedown="{!c.calculateWidth}" ondrag="{!c.setNewWidth}">
+                                            <span class="slds-resizable__divider"></span>
+                                        </span>
+                                    </div>
+                                </th>
+                            
+                        
+                                                    <th class="slds-is-resizable slds-text-title--caps" scope="col" >
+                                    <div class="slds-truncate" title="SOV Name" >SOV Name</div>
+                                    <div class="slds-resizable" ondblclick="{!c.calculateWidth}">
+                                        <input type="range" min="80" max="1000"  class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-602" tabindex="0" />
+                                        <span class="slds-resizable__handle"  onmousedown="{!c.calculateWidth}" ondrag="{!c.setNewWidth}">
+                                            <span class="slds-resizable__divider"></span>
+                                        </span>
+                                    </div>
+                                </th>
+                            
+                        
+                                            <th class="slds-is-resizable slds-text-title--caps" scope="col" >
+                                    <div class="slds-truncate" title="Project" >Project</div>
+                                    <div class="slds-resizable" ondblclick="{!c.calculateWidth}">
+                                        <input type="range" min="80" max="1000"  class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-602" tabindex="0" />
+                                        <span class="slds-resizable__handle"  onmousedown="{!c.calculateWidth}" ondrag="{!c.setNewWidth}">
+                                            <span class="slds-resizable__divider"></span>
+                                        </span>
+                                    </div>
+                                </th>
+                            
+                      
+                            
+                                  <th class="slds-is-resizable slds-text-title--caps" scope="col" >
+                                    <div class="slds-truncate" title="Type" >Type</div>
+                                    <div class="slds-resizable" ondblclick="{!c.calculateWidth}">
+                                        <input type="range" min="80" max="1000"  class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-602" tabindex="0" />
+                                        <span class="slds-resizable__handle"  onmousedown="{!c.calculateWidth}" ondrag="{!c.setNewWidth}">
+                                            <span class="slds-resizable__divider"></span>
+                                        </span>
+                                    </div>
+                                </th>
+                            
+                       
+                            
+                            <th class="slds-is-resizable slds-text-title--caps" scope="col" >
+                                    <div class="slds-truncate" title="Vendor" >Vendor</div>
+                                    <div class="slds-resizable" ondblclick="{!c.calculateWidth}">
+                                        <input type="range" min="80" max="1000"  class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-602" tabindex="0" />
+                                        <span class="slds-resizable__handle"  onmousedown="{!c.calculateWidth}" ondrag="{!c.setNewWidth}">
+                                            <span class="slds-resizable__divider"></span>
+                                        </span>
+                                    </div>
+                                </th>
+                            
+              
+                            
+                            <th class="slds-is-resizable slds-text-title--caps" scope="col" >
+                                    <div class="slds-truncate" title="Date Submitted" >Date Submitted</div>
+                                    <div class="slds-resizable" ondblclick="{!c.calculateWidth}">
+                                        <input type="range" min="80" max="1000"  class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-602" tabindex="0" />
+                                        <span class="slds-resizable__handle"  onmousedown="{!c.calculateWidth}" ondrag="{!c.setNewWidth}">
+                                            <span class="slds-resizable__divider"></span>
+                                        </span>
+                                    </div>
+                                </th>
+                            
+              
+                            
+                                   <th class="slds-is-resizable slds-text-title--caps" scope="col" >
+                                    <div class="slds-truncate" title="Status" >Status</div>
+                                    <div class="slds-resizable" ondblclick="{!c.calculateWidth}">
+                                        <input type="range" min="80" max="1000"  class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-602" tabindex="0" />
+                                        <span class="slds-resizable__handle"  onmousedown="{!c.calculateWidth}" ondrag="{!c.setNewWidth}">
+                                            <span class="slds-resizable__divider"></span>
+                                        </span>
+                                    </div>
+                                </th>
+                            
+                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <aura:iteration items="{!v.sovsList}" var="item" indexVar="index">
+                            <tr>
+                                <td>
+                                    <lightning:input type="checkbox" aura:id="checkRFQ"  checked="{!item.isChecked}" name="{!item.RecordId}" onchange="{!c.selectRfq}"/>
+                                </td>
+                                <td>
+                                    <lightning:buttonIcon value="{!itemIndex}" onclick="{!c.toggle}" title = "{!index}" iconName="{!item.expanded?'utility:chevrondown':'utility:chevronright'}" />
+                                </td>
+                                <td>
+                                    <div class="slds-truncate" title="{!item.RowNumber}" >
+                                        {!item.RowNumber}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="slds-truncate" title="{!item.Name}" >
+                                        {!item.Name}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="slds-truncate" title="{!item.Project}" >
+                                        {!item.Project}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="slds-truncate" title="{!item.Type}" >
+                                        {!item.Type}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="slds-truncate" title="{!item.vendorName}" >
+                                        {!item.vendorName}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="slds-truncate"  >
+                                        <ui:outputDate value="{!item.DateSubmitted}"/>
+                                    </div>
+                                </td>                             
+                                <td>
+                                    <div class="slds-truncate" title="{!item.Status}" >
+                                        {!item.Status}
+                                    </div>
+                                </td>
+                            </tr>
+                            <aura:if isTrue="{!item.expanded}">
+                                
+                               
+                                
+                                <tr style="background:none;" class="backgroundNone">
+                                    <td>
+                                        
+                                    </td>
+                                    <td>
+                                        
+                                    </td>
+                                     <td>
+                                        
+                                    </td>
+                                    <td class="" colspan="7">
+                                        <div style="max-height:200px;overflow-y:auto;position:relative;"><!-- left:10.5rem; -->
+                                            <table style="">
+                                            <tr class="slds-text-heading--label slds-scrollable" style = "position:relative; border-collapse:collapse;background: #f4f4f4;">
+                                                <!--<th class="slds-is-sortable" scope="col" width="5px" style=" color:white;border: 0;vertical-align: top;line-height: 2;width: 30px !important;padding-top: 8px;">
+                                                            <lightning:input type="checkbox" aura:id="headCheckSOVLines" checked="false"  name ="{!index}" onchange="{!c.selectAllSOVLines}"/> 
+                                                        </th>-->
+                                                <th scope="col"  style = "border: 0;width:17%;padding:9px">
+                                                    <div class="slds-truncate" title="SNo" style = "font-weight: 900;">
+                                                        S.No
+                                                    </div>
+                                                </th>
+                                                <th scope="col" width="5px" style = "border: 0;width:40%;padding:9px" >
+                                                    <div class="slds-truncate" title="Description of work" style = "font-weight: 900;">
+                                                        Description of work
+                                                    </div>
+                                                </th>
+                                                <th  scope="col" style = "border: 0;width:40%;padding:9px" >
+                                                    <div class="slds-truncate" title="Scheduled Value" style = "font-weight: 900;">
+                                                        Scheduled Value
+                                                    </div>
+                                                </th> 
+                                               
+                                                
+                                            </tr>
+                                            <aura:iteration items="{!item.sovlinesList}" var="item1" indexVar="index">
+                                                <!--<div class="slds-scrollable_y" style="height:20rem; left:10.5rem;">-->
+                                                <tr  class="slds-scrollable" style = " position:relative; ">
+                                                    <!--  <td style = "border: 0;">
+                                                                <lightning:input type="checkbox"  aura:id="checkSOVLine" checked="false" name="{!item1.RecordId}" onchange="{!c.selectSOVLine}"/>
+                                                            </td>-->
+                                                    <td role="gridcell" style = "border: 0;" >
+                                                        <div class="slds-truncate" title="{!item1.RowNumber}" style="width:30px" >
+                                                            {!item1.RowNumber}
+                                                        </div>
+                                                    </td>
+                                                    <td role="gridcell" style = "border: 0;" >
+                                                        <div class="slds-truncate" title="{!item1.Status}" >
+                                                            {!item1.Description}
+                                                        </div>
+                                                    </td>
+                                                    <td role="gridcell" style = "border: 0;" >
+                                                        <div class="slds-truncate" title="{!item1.Type}" >
+                                                            
+                                                          <!--  <lightning:formattedNumber value="{!item1.ScheduleValue}" currencyDisplayAs="code" currencyCode="USD" style="currency"/> -->
+                                                            
+                                                            <lightning:formattedNumber value="{!item1.ScheduleValue}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code"/>
+                                                            
+                                                        </div>
+                                                    </td>
+                                                    
+                                                    
+                                                </tr>
+                                                <!-- </div>-->
+                                            </aura:iteration> 
+                                            </table>
+                                        </div>
+                                   
+                                    </td>
+                                    
+                                </tr>
+                              <!-- </div>-->
+                               <!-- </div>-->
+                            </aura:if>
+                        </aura:iteration> 
+                    </tbody> 
+                </table>  
+                <!--    </div> -->
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral"  label="Cancel"
+                                      onclick="{!c.close}" />
+                    <!-- <lightning:button variant="neutral"  label="Reject"
+                                      onclick="{!c.rejectSOV}" /> -->
+                    <lightning:button aura:id="nextPage" variant="neutral"
+                                      label="Import SOV Lines" onclick="{!c.ImportSOVLines}" />   
+                </footer>
+            </div>
+             </aura:if>
+           
+        </section>
+         <div class="slds-backdrop slds-backdrop_open"></div>
+        
+    </aura:if>
+    
+    
+</aura:component>

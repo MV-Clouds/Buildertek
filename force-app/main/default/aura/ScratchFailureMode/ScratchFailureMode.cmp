@@ -1,0 +1,227 @@
+<aura:component access="global">
+    <aura:attribute name="issueWrapperdata" type="Object" default="{}" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="selectedIssue" type="Issue__c" />
+    <aura:attribute name="NameOfFailureModesSelected" type="List" default="[]" />
+    <aura:attribute name="showNonTint" type="boolean" default="false" />
+    <aura:attribute name="showBreak" type="boolean" default="false" />
+    <aura:attribute name="showScratch" type="boolean" default="false" />
+    <aura:attribute name="nonUniformity" type="boolean" default="false" />
+    <aura:attribute name="updateBlock" type="boolean" default="false" />
+    <aura:attribute name="insertBlock" type="boolean" default="false" />
+    <aura:attribute name="componentName" type="string"  />
+    <aura:attribute name="LogIssueWrapper" type="Object" />
+    <aura:attribute name="recordIndex" type="Integer" />
+    <aura:attribute name="ListName" type="String" default=""/>
+    <aura:attribute name="ValuesProvided" type="boolean" default="false"/>
+    
+    <aura:registerEvent name="FMProvideDetailsEvt" type="c:CloseFailureModeProvideDetails"/>
+    <aura:registerEvent name="FMProvideDetailsCHWEvt" type="c:CloseFailureModeProvideDetails"/>
+	<aura:registerEvent name="FMProvideDetailsIGUEvt" type="c:CloseFailureModeProvideDetails"/>
+	<aura:registerEvent name="PMProvideDetailsIGUEvt" type="c:CloseFailureModeProvideDetails"/>
+
+    
+    <div style="height: 800px; width:auto;">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <aura:if isTrue="{!v.showSpinner}">
+                <lightning:spinner alternativeText="Loading" size="large" />
+            </aura:if>
+            
+            
+            
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" class="slds-modal__close"
+                                          size="large" variant="bare" alternativeText="Close"
+                                          onclick="{! c.closeModal }"/>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">
+                        Failure Mode Details
+                    </h2>
+                    
+                </header>
+                <aura:if isTrue="{!v.updateBlock}">
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+					<div class="slds-grid slds-wrap">
+                   
+                        <aura:if isTrue="{!v.showNonTint}">
+                            <div class="slds-col slds-size_1-of-2">
+                            <lightning:select name="Replaced SWC"
+                                              value="{!v.selectedIssue.Replaced_SWC__c}" label="Replaced SWC?" required="true">
+                                <option text="Select" value="" />
+                                <option text="Yes" value="Yes" />
+                                <option text="No" value="No" />
+                                <option text="Undertermined" value="Undertermined" />
+                            </lightning:select>
+                            </div>
+                            <div class="slds-col slds-size_1-of-2">
+                             <lightning:select name="Replaced WC"
+                                              value="{!v.selectedIssue.Replaced_WC__c}" label="Replaced WC?" required="true">
+                                <option text="Select" value="" />
+                                <option text="Yes" value="Yes" />
+                                <option text="No" value="No" />
+                                <option text="Undertermined" value="Undertermined" />
+                            </lightning:select>
+                            </div>
+                            <div class="slds-col slds-size_1-of-2">
+                             <lightning:select name="Replaced IGU"
+                                              value="{!v.selectedIssue.Replaced_IGU_Cable__c}" label="Replaced IGU Cable?" required="true">
+                                <option text="Select" value="" />
+                                <option text="Yes" value="Yes" />
+                                <option text="No" value="No" />
+                                <option text="Undertermined" value="Undertermined" />
+                            </lightning:select>
+                            </div>
+                        </aura:if>
+                            
+                        <aura:if isTrue="{!v.showBreak}">
+                            <div class="slds-col slds-size_1-of-2">
+                            <lightning:select name="common_Lite_Mockid"
+                                              value="{!v.selectedIssue.Lite_Damaged__c}" label="Lite Damaged?" required="true">
+                                <option text="Select" value="" />
+                                <option text="Inboard" value="Inboard" />
+                                <option text="Outboard" value="Outboard" />
+                                <option text="Both" value="Both" />
+                                <option text="Unknown" value="Unknown" />
+                            </lightning:select>
+                            </div>
+                        </aura:if>
+                        <aura:if isTrue="{!v.showScratch}">
+                           <div class="slds-col slds-size_1-of-2">
+                            <lightning:select name="common_Lite_Mockid"
+                                              value="{!v.selectedIssue.From_approx_10ft_3_m__c}" label="From approx. 10ft (3 m)" required="true">
+                                <option text="Select" value="" />
+                                <option text="Yes" value="Yes" />
+                                <option text="No" value="No" />
+                            </lightning:select>
+                            </div>
+                            <div class="slds-col slds-size_1-of-2">
+                            <lightning:select name="common_Lite_Mockid"
+                                              value="{!v.selectedIssue.Uniform_background_lighting_that_simulat__c}" label="Uniform background lighting that simulat" required="true">
+                                <option text="Select" value="" />
+                                <option text="Yes" value="Yes" />
+                                <option text="No" value="No" />
+                            </lightning:select>
+                            </div>
+                            <div class="slds-col slds-size_1-of-2">
+                            <lightning:select name="common_Lite_Mockid"
+                                              value="{!v.selectedIssue.Vertically_positioned_at_90_deg_viewing__c}" label="Vertically positioned, at 90 deg viewing" required="true">
+                                <option text="Select" value="" />
+                                <option text="Yes" value="Yes" />
+                                <option text="No" value="No" />
+                            </lightning:select>
+                            </div>
+                        </aura:if>
+                        <aura:if isTrue="{!v.nonUniformity}">
+                           <div class="slds-col slds-size_1-of-2">
+                            <lightning:select name="common_Lite_Mockid"
+                                              value="{!v.selectedIssue.Visible_BB_Damage__c}" label="Visible BB Damage?" required="true">
+                                <option text="Select" value="" />
+                                <option text="Yes" value="Yes" />
+                                <option text="No" value="No" />
+                                <option text="Undertermined" value="Undertermined" />
+                            </lightning:select>
+                            </div>
+                        </aura:if>
+                    </div>
+                </div>
+                </aura:if>
+                <aura:if isTrue="{!v.insertBlock}">
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+					<div class="slds-grid slds-wrap">
+                   
+                        <aura:if isTrue="{!v.showNonTint}">
+                            <div class="slds-col slds-size_1-of-2">
+                            <lightning:select name="Replaced SWC"
+                                              value="{!v.LogIssueWrapper.replacedSWC}" label="Replaced SWC?" required="true">
+                                <option text="Select" value="" />
+                                <option text="Yes" value="Yes" />
+                                <option text="No" value="No" />
+                                <option text="Undertermined" value="Undertermined" />
+                            </lightning:select>
+                            </div>
+                            <div class="slds-col slds-size_1-of-2">
+                             <lightning:select name="Replaced WC"
+                                              value="{!v.LogIssueWrapper.replacedWC}" label="Replaced WC?" required="true">
+                                <option text="Select" value="" />
+                                <option text="Yes" value="Yes" />
+                                <option text="No" value="No" />
+                                <option text="Undertermined" value="Undertermined" />
+                            </lightning:select>
+                            </div>
+                            <div class="slds-col slds-size_1-of-2">
+                             <lightning:select name="Replaced IGU"
+                                              value="{!v.LogIssueWrapper.replacedIGU}" label="Replaced IGU Cable?" required="true">
+                                <option text="Select" value="" />
+                                <option text="Yes" value="Yes" />
+                                <option text="No" value="No" />
+                                <option text="Undertermined" value="Undertermined" />
+                            </lightning:select>
+                            </div>
+                        </aura:if>
+                            
+                        <aura:if isTrue="{!v.showBreak}">
+                            <div class="slds-col slds-size_1-of-2">
+                            <lightning:select name="common_Lite_Mockid"
+                                              value="{!v.LogIssueWrapper.liteDamage}" label="Lite Damaged?" required="true">
+                                <option text="Select" value="" />
+                                <option text="Inboard" value="Inboard" />
+                                <option text="Outboard" value="Outboard" />
+                                <option text="Both" value="Both" />
+                                <option text="Unknown" value="Unknown" />
+                            </lightning:select>
+                            </div>
+                        </aura:if>
+                        <aura:if isTrue="{!v.showScratch}">
+                           <div class="slds-col slds-size_1-of-2">
+                            <lightning:select name="common_Lite_Mockid"
+                                              value="{!v.LogIssueWrapper.inspected10ft}" label="From approx. 10ft (3 m)" required="true">
+                                <option text="Select" value="" />
+                                <option text="Yes" value="Yes" />
+                                <option text="No" value="No" />
+                            </lightning:select>
+                            </div>
+                            <div class="slds-col slds-size_1-of-2">
+                            <lightning:select name="common_Lite_Mockid"
+                                              value="{!v.LogIssueWrapper.backGrundLghtIGU}" label="Uniform background lighting that simulat" required="true">
+                                <option text="Select" value="" />
+                                <option text="Yes" value="Yes" />
+                                <option text="No" value="No" />
+                            </lightning:select>
+                            </div>
+                            <div class="slds-col slds-size_1-of-2">
+                            <lightning:select name="common_Lite_Mockid"
+                                              value="{!v.LogIssueWrapper.verticallyPositionedIGU}" label="Vertically positioned, at 90 deg viewing" required="true">
+                                <option text="Select" value="" />
+                                <option text="Yes" value="Yes" />
+                                <option text="No" value="No" />
+                            </lightning:select>
+                            </div>
+                        </aura:if>
+                        <aura:if isTrue="{!v.nonUniformity}">
+                           <div class="slds-col slds-size_1-of-2">
+                            <lightning:select name="common_Lite_Mockid"
+                                              value="{!v.LogIssueWrapper.visibleDbDamage}" label="Visible BB Damage?" required="true">
+                                <option text="Select" value="" />
+                                <option text="Yes" value="Yes" />
+                                <option text="No" value="No" />
+                                <option text="Undertermined" value="Undertermined" />
+                            </lightning:select>
+                            </div>
+                        </aura:if>
+                    </div>
+                </div>
+                </aura:if>
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="brand" label="Save" title="Save"
+                                      onclick="{!c.saveSelection}" /> 
+                <!--    <lightning:button variant="brand" label="Cancel" title="Cancel"
+                                      onclick="{!c.closeModal}" />   -->
+                </footer>
+            </div>
+            
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </div>
+    
+</aura:component>

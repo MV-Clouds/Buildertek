@@ -1,0 +1,21 @@
+<apex:component controller="RejectRFQStatusController" access="global">
+    <apex:attribute type="id" name="relatedTo_id" assignTo="{!relatedToId}" description="RelatedTo" access="global" />
+   
+    <center>
+        <!-- {!relatedTo_id} -->
+        <div id="acceptid" class="validErrormsg" style="color:red;font-size:18px; display: none;">
+            RFQ IS REHECTDE   
+            </div>
+    </center>
+
+    <button value='No Bidding' style='border-radius:10px; background:#6699CC; border:none; color:#fff;font-size: 14px; padding: 11px 50px; border-radius: 32px; text-decoration: none; margin:0px 20px'  onclick="changeStatus()" >Not Bidding</button>
+    <script>
+        function changeStatus() {
+            alert('u click');
+            changeRFQStatus();
+            document.getElementById('acceptid').style.display='block';
+
+        }
+    </script>
+
+</apex:component>

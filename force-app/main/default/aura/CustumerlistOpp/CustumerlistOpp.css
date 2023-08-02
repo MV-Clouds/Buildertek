@@ -1,0 +1,10 @@
+.THIS.customRadioCls .slds-form-element__control .slds-radio{
+    display : inline-block !important;
+}
+.THIS.test  .slds-form-element__legend{
+  font-size:12pt;
+}
+
+.THIS .slds-button__icon {
+    color: #ABB2B9; /* text color */
+}

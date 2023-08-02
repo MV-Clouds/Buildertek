@@ -1,0 +1,12 @@
+<aura:component
+    implements="force:appHostable,force:lightningQuickAction,flexipage:availableForRecordHome,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes"
+    controller="AddProductForSSTL" access="global">
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="fields" type="String[]"
+        default="['Name','buildertek__Product__c','buildertek__Takeoff_Line__c']" />
+
+    <lightning:overlayLibrary aura:id="overlayLib" />
+    <lightning:recordForm recordId="{!v.recordId}" fields="{!v.fields}" mode="edit"
+        objectApiName="buildertek__Select_Sheet__c" columns="2" onsuccess="{!c.handleSuccess}">
+    </lightning:recordForm>
+</aura:component>

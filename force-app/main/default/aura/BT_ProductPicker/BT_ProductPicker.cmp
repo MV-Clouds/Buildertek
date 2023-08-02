@@ -1,0 +1,87 @@
+<aura:component controller="BT_ProductsAdderController">
+	<aura:attribute name="pricebooks" type="List" default="[]" description="Price book list" />
+    <aura:attribute name="productFamilys" type="List" default="[]" description="Product family list" />
+    <aura:attribute name="products" type="List" default="[]" description="Product list" />
+	
+	<aura:attribute name="familyByPriceBookId" type="Object" default="{}"/>
+	<aura:attribute name="productByPriceBookId" type="Object" default="{}"/>
+	<aura:attribute name="totalUnitPrice" type="Double" default="0.00"/>
+	
+	
+	<aura:attribute name="lines" type="List" default="[]"/>
+	
+	<aura:handler name="init" value="{!this}" action="{!c.init}" />
+	
+	<table class="slds-table slds-table_bordered slds-table_cell-buffer">
+        <thead>
+            <tr>
+                <th scope="col" class="slds-cell-wrap" style="width: 10%;">
+                    <div class="slds-truncate" title="Action">Action</div>
+                </th>
+                <th scope="col" class="slds-cell-wrap" style="text-align:center;">
+                    <div class="slds-truncate" title="Pricebook">Pricebook</div>
+                </th>
+                <th scope="col" class="slds-cell-wrap" style="text-align:center;">
+                    <div class="slds-truncate" title="Product Family">Product Family</div>
+                </th>
+                <th scope="col" class="slds-cell-wrap" style="text-align:center;">
+                    <div class="slds-truncate" title="Product">Product</div>
+                </th>
+                <th scope="col" class="slds-cell-wrap" style="text-align:center;">
+                    <div class="slds-truncate" title="Description">Description</div>
+                </th>
+                <th scope="col" class="slds-cell-wrap" style="text-align:center;">
+                    <div class="slds-truncate" title="Unit Price">Quantity</div>
+                </th>
+                 <th scope="col" class="slds-cell-wrap" style="text-align:center;">
+                    <div class="slds-truncate" title="Unit Price">Unit Price</div>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <aura:iteration items="{!v.lines}" var="data" indexVar="index">
+                <tr aura:id="rows">
+                    <td data-label="Action">
+                        <lightning:buttonIcon iconName="utility:delete" variant="bare" alternativeText="delete" name="{!index}" onclick="{!c.deleteRow}" />
+                    </td>
+                    <td style="min-width:150px;">
+                        <lightning:combobox variant="label-hidden" name="{!index}" options="{!data.pricebooks}" value="{!data.pricebook}" onchange="{!c.getProducts}" class="combobox-dropdown"/>
+                    </td>
+                    <td style="min-width:150px;">
+                        <lightning:combobox variant="label-hidden" name="{!index}" options="{!data.productFamilys}" value="{!data.productfamily}" onchange="{!c.getFamilyProducts}" class="combobox-dropdown" />
+                    </td>
+                    <td style="min-width:150px;">
+                        <lightning:combobox variant="label-hidden" name="{!index}" options="{!data.products}" value="{!data.product}" onchange="{!c.getProductDetails}" class="combobox-dropdown"/>
+                    </td>
+                    <td style="min-width:150px;">
+                    	<lightning:textarea aura:id="description"  variant="label-hidden" name="{!index}" value="{!data.description}"/>
+                   	</td>
+                    <td style="min-width:80px;">
+                    	<lightning:input aura:id="quantity" type="number" variant="label-hidden" name="{!index}" value="{!data.quantity}"/>
+                   	</td>
+                    <td style="min-width:80px;">
+                    	<lightning:input aura:id="unitprice" type="currency" variant="label-hidden" name="{!index}" value="{!data.unitprice}" onchange="{!c.updateTotal}"/>
+                   	</td>
+                </tr>
+            </aura:iteration>
+            	 <tr>
+                	<td>
+                		<b>Total:</b>
+                	</td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td>&nbsp;&nbsp;<b><lightning:formattedNumber value="{!v.totalUnitPrice}" style="currency"/></b></td>
+                </tr>
+        </tbody>
+    </table>
+    <div>
+        <div class="slds-float_left">
+            <lightning:button label="Add Line" title="Add Line" variant="Brand" class="slds-m-top_x-small" onclick="{!c.addNewRow}" />
+        </div>
+    </div>
+	
+	
+</aura:component>

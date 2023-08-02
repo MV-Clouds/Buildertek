@@ -1,0 +1,13 @@
+<aura:component implements="force:lightningQuickAction" >
+    <aura:handler event="aura:waiting" action="{!c.waiting}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.doneWaiting}"/>
+    
+    <div class="container">
+        <input type="file" class="file" aura:id="file" />
+        <ui:button class="slds-button slds-button_brand" label="Save" press="{!c.save}"/>
+        
+        <div aura:id="uploading" class="notUploading">
+            <img src="/resource/paura__images/loading-gray.gif" alt="uploading" class="small-spinner" /> Uploading...
+    	</div>
+    </div>
+</aura:component>

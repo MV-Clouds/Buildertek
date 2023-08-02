@@ -1,0 +1,140 @@
+<aura:component implements="force:appHostable,force:lightningQuickAction,flexipage:availableForRecordHome,lightning:isUrlAddressable,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes" controller="ImportMasterPO" access="global">
+    <aura:attribute name="recordId" type="string" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <aura:attribute name="selectedValue" type="string" />
+    <aura:attribute name="purchaseOrders" type="List" />
+    <aura:attribute name="options" type="List" access="PRIVATE"/>
+    <aura:attribute name="POList" type="List"/>
+    <aura:attribute name="isAllSelected" type="Boolean" default="false"/>
+    <aura:attribute name="loading" type="Boolean" default="true"/>
+    <aura:attribute name="isOpen" type="Boolean" default="true"/> 
+    <aura:attribute name="isRecordsExist" type="Boolean" />
+    <aura:registerEvent name="ClearSelectedRecordEvent" type="c:BT_CLearLightningLookupEvent" />
+    <aura:attribute name="searchVendorFilter" type="String" default="" />
+    <aura:handler name="change" value="{!v.searchVendorFilter}" action="{!c.doVendorSearch}"/>
+    
+    <lightning:overlayLibrary aura:id="overlayLib"/>
+    <lightning:notificationsLibrary aura:id="notifLib" />
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/>
+    <aura:if isTrue="{!v.isOpen}">
+        <div class="slds-m-around_xx-large">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close"
+                                              onclick="{! c.closeModel}"
+                                              alternativeText="close"
+                                              variant="bare-inverse"
+                                              class="slds-modal__close"/>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate"> 
+                            Import Master Purchase Order
+                        </h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <lightning:select name="projectPlan" label="Select Project Plan Type" aura:id="projectPlanId" value="{!v.selectedValue}" onchange="{! c.onPlanChange }">
+                            <aura:iteration items="{!v.options}" var="option">
+                                <option text="{!option.label}" value="{!option.id}" selected="{!option.selected}"/>
+                            </aura:iteration>
+                        </lightning:select>
+                        <br/>
+                        <div>
+                            <lightning:input
+                                             autocomplete="off"
+                                             aura:id="searchVendorItem"
+                                             name="enter-search"
+                                             type="search"
+                                             placeholder="Vendor"
+                                             value="{!v.searchVendorFilter}"
+                                             />
+                        </div>
+                        <br/>
+                        
+                        <table class="slds-table slds-table_bordered slds-table_fixed-layout" role="grid">
+                            <thead>
+                                <tr class="slds-text-title_caps"> 
+                                    <th width="10%" scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-left-radius:5px;vertical-align: top;line-height: 2;">
+                                        <ui:inputCheckbox aura:id="checkPOs" value="{!v.isAllSelected}"  name="{!v.isAllSelected}"  change="{!c.selectAll}" />		
+                                    </th>
+                                    <th width="40%" style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                                        Title
+                                    </th>
+                                    <th width="40%" style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                                        Description
+                                    </th>
+                                    <th width="40%" style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                                        Project
+                                    </th>
+                                    <th width="40%" style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                                        Vendor
+                                    </th>
+                                    <th width="40%" style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                                        PO Amount
+                                    </th>
+                                </tr>  
+                            </thead>
+                            <tbody>
+                                <aura:if isTrue="{!v.isRecordsExist}">
+                                    <aura:iteration items="{!v.POList}" var="rec"> 
+                                        <tr class="slds-hint-parent">
+                                            <td style="width:30px;">
+                                                <ui:inputCheckbox aura:id="checkPO" value="{!rec.buildertek__Is_Selected__c}" text="{!rec.Id}" change="{!c.onChangeHandler}" />
+                                            </td> 
+                                            <td role="gridcell">
+                                                <ui:outputText value="{!rec.Name}" />
+                                            </td>
+                                             <td role="gridcell">
+                                                <ui:outputText value="{!rec.Description}" />
+                                            </td>
+                                            <td role="gridcell"> 
+                                                <ui:outputText value="{!rec.buildertek__Project__c}" />   
+                                            </td>
+                                            <td role="gridcell"> 
+                                                <ui:outputText value="{!rec.Vendor}" />   
+                                            </td>
+                                            <td role="gridcell"> 
+                                                <lightning:formattedNumber value="{!rec.POAmount}" style="currency" />
+                                            </td>
+                                        </tr>
+                                    </aura:iteration>
+                                    <aura:set attribute="else">
+                                    	<div style="text-align:center;">No records found.</div>
+                                    </aura:set>
+                                </aura:if>
+                            </tbody>
+                        </table>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning:button variant="neutral"
+                                          label="Cancel"
+                                          title="Cancel"
+                                          onclick="{! c.closeModel }"/>
+                        <lightning:button variant="brand"
+                                          label="Import Master Purchase Order"
+                                          title="Import Master Purchase Order"
+                                          onclick="{!c.importPO}"/>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+        <div class="slds-modal__header" style="font-size:17px;">
+        </div>
+        
+        <div class="slds-modal__content slds-p-around--large">
+            <aura:if isTrue="{!v.loading}">
+                <div aura:id="spinnerId" class="slds-spinner_container">
+                    <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                        <span class="slds-assistive-text">Loading</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                         <div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+                    </div>
+                </div>
+            </aura:if>
+        </div>
+    </aura:if>
+     
+</aura:component>

@@ -1,0 +1,62 @@
+<aura:component controller="VG_SearchService" access="global"
+                implements="forceCommunity:availableForAllPageTypes,force:appHostable,flexipage:availableForAllPageTypes">
+    <aura:attribute access="global" name="navigateToObject" type="boolean" description="true will navigate to object on selection" default="true"/>
+    <aura:attribute access="global" name="placeHolderText" type="String"  description="Placeholder Text" default="Search Articles"/>
+    <aura:attribute access="global" name="viewAllURL" type="String"  description="URL for View All " default="/employee-directory" />
+    
+    <aura:attribute access="global" name="RecentSearch" type="Boolean"  description="Recent search details " default="true"/>
+    
+    <aura:attribute name="lookupVal" type="String" description="matched Id"/>
+    <aura:attribute name="lookupLabel" type="String" description="matched Label"/>
+    
+    <!-- all available records -->
+    <aura:attribute name="allRecords" type="Object[]" access="global"/>
+    
+    <!-- records matching typeahead text -->
+    <aura:attribute name="matchedRecords" type="Object[]" access="global"/>
+    
+    <aura:attribute name="recordChosen" type="Boolean"/>
+    
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}" />
+    <div style="" class="mobileArticledirectory" >
+        <div class="slds-grid slds-p-around--small" style="padding:0px">
+            <div class="slds-panel slds-grid slds-grid--vertical slds-nowrap mobilebgArticle">
+                <div class="slds-panel__section slds-col  topPadding" style="padding-bottom:0px">
+                    <h2 class="slds-truncate slds-text-heading--small slds-p-bottom--small articleHeader"  ><span style="font-weight: 700;">Article Search</span> 
+                        <aura:if isTrue="{!$Browser.formFactor == 'DESKTOP' || $Browser.formFactor == 'TABLET'}">
+                            <span style=" float: right;"> <ui:outputURL  label="View All" class="viewallLink" value="{! $Label.c.VG_Baseurl+'toparticles'}" /></span>
+                        </aura:if>
+                        <aura:if isTrue="{!$Browser.formFactor == 'PHONE'}">
+                            <span style=" float: right;"><ui:outputURL  label="View All" class="viewallLink" value="{! $Label.c.VG_Baseurl+'toparticles211'}" /></span>
+                        </aura:if>
+                    </h2>
+                </div>
+                <div class="slds-panel__section slds-col bottomBorderArticle leftpadding" style="">
+                    <div class="slds-form-element slds-lookup slds-is-open" data-select="single" data-scope="single">
+                        <div class="slds-form-element">
+                            <div class="slds-lookup__control slds-input-has-icon slds-input-has-icon--right">
+                                <c:EC_SvgIcon svgPath="{!$Resource.SLDS90_old + '/assets/icons/utility-sprite/svg/symbols.svg#search'}" class="slds-input__icon" />
+                                <ui:inputText aura:id="searchInput" placeholder="{!v.placeHolderText}" keyup="{!c.doSearch}"  updateOn="keyup" class="slds-lookup__search-input slds-input"/>
+                                
+                            </div>
+                        </div>
+                        <aura:if isTrue="{!v.matchedRecords.length == 0 ? false : true}">
+                            <div class="slds-lookup__menu resultBg"  style="" role="listbox">
+                                <ul class="slds-lookup__list slds-has-dividers--bottom-space" style="max-height: 250px;" role="listbox">
+                                    <aura:iteration var="record" items="{!v.matchedRecords}">
+                                        <c:VG_ArticleResult record="{!record}"/>
+                                    </aura:iteration>
+                                </ul>
+                            </div>
+                        </aura:if>
+                    </div>
+                    <!--/div-->
+                </div>
+                <aura:if isTrue="{!v.RecentSearch}">
+                    <c:VG_trendingArticles/>
+                </aura:if>
+            </div>
+        </div>
+    </div>
+    
+</aura:component>

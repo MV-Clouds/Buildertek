@@ -1,0 +1,12 @@
+<apex:page controller="ExportPaymentApplicationController"  >
+	<script>
+     window.onload = function(){
+            if('{!reportid}'){
+                location.href = '/{!reportid}';
+                window.open('/apex/ExportPaymentApplication?id={!reportid}','_blank');
+                window.close();
+            }
+        }
+     
+    </script>
+</apex:page>

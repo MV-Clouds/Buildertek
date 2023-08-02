@@ -1,0 +1,54 @@
+<apex:page controller="SiteFileBrowser" showHeader="false" >
+
+<head>
+<script type="text/javascript">
+    
+    function getUrlParam( paramName ) {
+            var reParam = new RegExp( '(?:[\?&]|&)' + paramName + '=([^&]+)', 'i' );
+            var match = window.location.search.match( reParam );
+            return ( match && match.length > 1 ) ? match[1] : null;
+        }
+        
+    function SelectFile( fileUrl ) {
+            var funcNum = getUrlParam( 'CKEditorFuncNum' );
+            window.opener.CKEDITOR.tools.callFunction(funcNum, fileUrl);
+            window.close() ;
+        }
+        
+    function selectFolder(id) {
+            document.location.search = '?folder=' + id;
+    }
+</script>
+</head>
+<br />
+<apex:form >
+<b style="padding-right: 20px;">Select A Folder:</b> <apex:selectList styleClass="folderSelector" id="folderSelect" value="{!inFolderId}" size="1" onchange="selectFolder(this.value)"> 
+    <apex:selectOptions value="{!myItems}"/> 
+</apex:selectList>
+</apex:form>
+<br />
+
+<apex:pageBlock >
+    
+    <apex:pageBlockTable value="{!files}" var="image">
+        <apex:column title="Thumbnail">
+            <apex:facet name="header">Thumbnail</apex:facet>   
+            <a href="javascript:SelectFile('{!image.url}');"><img src="{!image.url}" width="200"/></a>
+        </apex:column> 
+        <apex:column title="File Name">
+            <apex:facet name="header">File Name</apex:facet>   
+            <a href="javascript:SelectFile('{!image.url}');">{!image.doc.Name}</a>
+         </apex:column> 
+         <apex:column title="Size">
+            <apex:facet name="header">Size</apex:facet>   
+            {!ROUND((image.doc.BodyLength / 1000), 1)} kb
+         </apex:column> 
+         <apex:column title="Content Type">
+            <apex:facet name="header">Content Type</apex:facet>   
+            {!image.doc.ContentType}
+         </apex:column> 
+    </apex:pageBlockTable> 
+
+</apex:pageBlock>
+
+</apex:page>

@@ -1,0 +1,5 @@
+<aura:component access="global" implements="forceCommunity:availableForAllPageTypes,force:appHostable,flexipage:availableForAllPageTypes" >
+	   <div class="slds-align--center"  onclick="{! c.HrGroup }" style="text-align: center;background-color:rgb(240, 91, 67);height:44px;padding-top: 2.3%;color:white;border-radius:4px;font-size:13px;">
+    <lightning:button  variant="bare"
+                              onclick="{! c.HrGroup }" />VISIT GROUP</div>
+</aura:component>

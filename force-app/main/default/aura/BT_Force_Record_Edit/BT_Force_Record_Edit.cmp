@@ -1,0 +1,47 @@
+<aura:component >
+	<aura:attribute name="action" type="String" access="public" default="NEW"/>
+	<aura:attribute name="title" type="string" access="public"/>
+	<aura:attribute name="objectApi" type="string" access="public"/>
+	<aura:attribute name="parentId" type="string" access="public"/>
+	<aura:attribute name="parentApi" type="string" access="public"/>
+	<aura:attribute name="newRecordName" type="string" access="public"/>
+	<aura:attribute name="newRecordId" type="string" access="public"/>
+	 <aura:attribute name="defaultValue" type="Object" access="public"/>
+	 
+	<aura:attribute name="saveCallBack" type="Aura.Action" access="public"/>
+	<aura:attribute name="editComponent" type="Aura.Component[]" access="public"/>
+	
+	<aura:attribute name="newRecord" type="Object" access="private"/>
+    <aura:attribute name="sampleNewRecord" type="Object" access="public"/>
+    <aura:attribute name="newRecordError" type="String" access="private"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <force:recordData aura:id="newforcerecord"
+        layoutType="FULL"
+        recordId="{!v.newRecordId}"
+        targetRecord="{!v.newRecord}"
+        targetFields="{!v.sampleNewRecord}"
+        targetError="{!v.newRecordError}"
+        />
+        
+    <div id="btforcerecordeditor" style="display:none">
+		<section role="dialog" tabindex="-1" aria-labelledby="products" aria-modal="true" aria-describedby="products-content" class="slds-modal slds-slide-down-cancel slds-modal_medium slds-fade-in-open">
+		    <div class="slds-modal__container" style="margin-top: 50px;max-width:100rem !important;">
+		      <header class="slds-modal__header">
+		        <h2 id="products" class="slds-text-heading_medium slds-hyphenate">{!v.title}</h2>
+		      </header>
+		      <div class="slds-modal__content slds-p-around_medium" id="products-content">
+		        <p>
+		        	{! v.editComponent }
+		        </p>
+		      </div>
+		      <footer class="slds-modal__footer" style="margin-bottom: 50px;">
+		        <button class="slds-button slds-button_brand" onclick="{!c.cancelNewRecord}">Cancel</button>
+		        <button class="slds-button slds-button_brand" onclick="{!c.saveNewRecord}">Save</button>
+		      </footer>
+		    </div>
+		  </section>
+		  <div class="slds-backdrop slds-backdrop_open"></div>
+	</div>
+</aura:component>

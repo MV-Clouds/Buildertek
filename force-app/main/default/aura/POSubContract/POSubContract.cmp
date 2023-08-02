@@ -1,0 +1,40 @@
+<aura:component controller="POSubContractController" implements="force:lightningQuickActionWithoutHeader,force:hasRecordId">
+    
+    <ltng:require styles="{!$Resource.ModalPreviewContent}"/>
+        <aura:attribute name="Spinner" type="Boolean" default="false" />
+
+    <div class="modal-header slds-modal__header slds-size_1-of-1">
+        <h4 class="title slds-text-heading--medium" >Confirmation</h4>
+    </div>
+    
+    <!-- MODAL BODY / INPUT FORM -->    
+    <div class="slds-modal__content slds-p-around--x-small slds-align_absolute-center slds-size_1-of-1 slds-is-relative" aura:id="modalbody" id="modalbody">
+        <form class="slds-form--stacked">
+            <div>Are you sure you want to create sub-contract?</div>
+        </form> 
+        
+    </div>   <!-- End of Modal Content -->  
+    
+    <!-- MODAL FOOTER -->
+    <div class="modal-footer slds-modal__footer slds-size_1-of-1">
+        <div class="forceChangeRecordTypeFooter">
+            <ui:button class="slds-button slds-button_neutral" label="No" press="{! c.onCancel}" /> 
+            <ui:button class="slds-button slds-button--brand"
+                       label="Yes" press="{!c.onConform}"/>
+        </div>
+    </div>
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                 <div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+                
+            </div>
+        </div>
+    </aura:if>
+    
+</aura:component>

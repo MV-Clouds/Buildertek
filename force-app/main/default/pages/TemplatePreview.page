@@ -1,0 +1,3 @@
+<apex:page standardController="pba__Template__c" sidebar="false" showHeader="false"> 
+   <apex:outputText value="{!pba__Template__c.pba__HTML__c}"  escape="false"/>
+</apex:page>

@@ -1,0 +1,14 @@
+<apex:page controller="redirectController">
+    <script>
+           window.onload=function()
+           {
+               CallPackageLine();
+              
+           };
+        </script> 
+        
+        <apex:form >
+             <apex:actionFunction name="CallPackageLine" action="{!redirectToPackageLine}"/> 
+   </apex:form>
+        
+</apex:page>

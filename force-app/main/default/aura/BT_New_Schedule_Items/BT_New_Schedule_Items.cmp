@@ -1,0 +1,182 @@
+<aura:component implements="force:hasRecordId,force:lightningQuickActionWithoutHeader" controller="SCHEDULEITEMSDAO" access="global">
+    <aura:attribute name="recordId" type="string" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <ltng:require styles="{!$Resource.ModalPreviewCSS}" />
+    <aura:attribute name="fields" type="String[]" default="['Name','buildertek__Project__c','buildertek__Type__c','buildertek__Initial_Start_Date__c','buildertek__Description__c']" />
+    <aura:attribute name="currentProject" type="String" />
+    <aura:attribute name="selectedScheduleRecords" type="List" access="public" />
+    <aura:attribute name="projectID" type="String" default="" />
+    <aura:attribute name="newScheduledItems" type="Project_Task__c[]" access="public" />
+    <aura:attribute name="isCreateNewScheduleAttr" type="Boolean" access ="Public" />
+    <aura:attribute name="newScheduledItem" type="Project_Task__c"
+                    default="{ 'sobjectType': 'Project_Task__c','Name': null,
+                             'buildertek__Project__c': null,
+                             'buildertek__Schedule__c': null,
+                             'buildertek__Start__c': null,
+                             'buildertek__Budget_Line__c':null,
+                             'buildertek__Finish__c': null}" />
+    
+    <aura:attribute name="scheduleItemsToInsert" type="List" />
+    <aura:attribute name="scheduleRecordsItems" type="List" default="[]"/>
+    <aura:attribute name="singleselectedScheduleRecord" type="String" default="" />
+    <aura:attribute name="cancelCallback" type="object" access="public" />
+    <aura:attribute name="saveCallback" type="Aura.Action" access="public" />
+    <aura:attribute name="newSchedule" type="Schedule__c" default="{ 'sobjectType': 'Schedule__c' }" access="public" />
+    
+    <aura:attribute name="Spinner" type="Boolean" />
+    <div aura:id="btspinner" class="slds-hide" style="position: relative; height: 80px;">
+        <lightning:spinner alternativeText="Loading" size="medium" variant="brand" />
+    </div>
+    
+    <div aura:id="scheduleItemContainer" class="c-container slds-scrollable">
+        <div aura:id="scheduleItemComp">
+            <h3 class="slds-section__title slds-theme--shade primaryPaletteBorder test-id__section-header-container">
+                <span class="test-id__section-header-title section-header-title slds-p-horizontal--small slds-truncate">
+                    Schedule Details</span>
+               
+            </h3>
+            <!-- recordId -->  
+            <aura:if isTrue="{!!v.isCreateNewScheduleAttr}">
+                <!--  <lightning:recordForm recordId="{!v.singleselectedScheduleRecord}"   
+                                          objectApiName="buildertek__Schedule__c"
+                                          layout-type="full"
+                                          mode="readonly"
+                                          columns="2"        
+                                          fields="{!v.fields}" /> -->
+                <aura:iteration items="{!v.scheduleRecordsItems}" var="item" indexVar="index">
+                   
+                     <lightning:recordForm recordId="{!item}"   
+                                          objectApiName="buildertek__Schedule__c"
+                                          layout-type="full"
+                                          mode="readonly"
+                                          columns="2"        
+                                          fields="{!v.fields}" />
+                    <br/>
+                </aura:iteration>
+               
+            
+                <aura:set attribute="else">
+                    <lightning:layout multipleRows="true">
+                        
+                        <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                            <lightning:input aura:id="description" label="Description" value="{!v.newSchedule.buildertek__Description__c}"/>
+                        </lightning:layoutItem>
+                        
+                        <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                            <lightning:recordEditForm aura:id="scheduleCreateForm" objectApiName="buildertek__Schedule__c" >
+                                <lightning:messages />
+                                
+                                <lightning:inputField fieldName="buildertek__Project__c" value="{!v.projectID}" ></lightning:inputField>
+                                
+                            </lightning:recordEditForm>
+                        </lightning:layoutItem>
+                        
+                        
+                        <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                            <lightning:select aura:id="selectScheduleType" name="select" label="Type" onchange="{! c.onChangScheduleType }">
+                                <option value="None">None</option>
+                                <option value="Standard">Standard</option>
+                                <option value="Master">Master</option>
+                            </lightning:select>
+                        </lightning:layoutItem>
+                        
+                        
+                        
+                        <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                            <lightning:input aura:id="Initial Start Date" type="Date" label="Initial Start Date" value="{!v.newSchedule.buildertek__Initial_Start_Date__c}"/>
+                        </lightning:layoutItem>
+                         
+                        
+                    </lightning:layout>
+                    
+                  
+                    
+                </aura:set>
+            </aura:if>
+            
+            &nbsp; &nbsp; &nbsp; &nbsp;
+            <h3 class="slds-section__title slds-theme--shade primaryPaletteBorder test-id__section-header-container">
+                <span class="test-id__section-header-title section-header-title slds-p-horizontal--small slds-truncate">
+                    Schedule item(s)</span>
+            </h3>  
+            
+            <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                <thead>
+                    <tr class="slds-text-title_caps">
+                        <th scope="col" width="5%">
+                            S.NO
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Task Name">Task Name</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Duration">Duration</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Start Date">Start Date</div>
+                        </th>
+                        <!-- <th scope="col">
+                            <div class="slds-truncate" title="Budget Line Item">Schedule</div>
+                        </th>-->
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.scheduleItemsToInsert}" var="item" indexVar="index">
+                        <tr>
+                            <td class="slds-truncate" style="margin-bottom: 20px;">{!index+1}</td>
+                            <td>
+                                <div class="slds-truncate" title="{!item.Name}" style="margin-bottom: 20px;">
+                                    <lightning:input name="" label=""
+                                                     value="{!item.Name}" />
+                                </div>
+                            </td>
+                            
+                            
+                            <td>
+                                <div class="slds-truncate" title="{!item.buildertek__Duration__c}" style="margin-bottom: 20px;">
+                                    <lightning:input name="" label=""
+                                                     value="{!item.buildertek__Duration__c}" />
+                                </div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate" title="{!item.buildertek__Start__c}" style="margin-bottom: 20px;">
+                                    <lightning:input name="" label="" type="date" 
+                                                     value="{!item.buildertek__Start__c}" />
+                                </div>
+                            </td>
+                            <!-- <td>
+                         <div class="slds-truncate">
+                                <lightning:recordEditForm aura:id="recordViewForm"
+                                                          objectApiName="buildertek__Project_Task__c">
+                                    <lightning:messages />
+                                    <lightning:inputField fieldName="buildertek__Schedule__c"
+                                                          value="{!item.buildertek__Schedule__c}" variant="label-hidden" />
+                                </lightning:recordEditForm>
+                            </div>
+                        </td>-->
+                        </tr>
+                    </aura:iteration>
+                </tbody>
+            </table>
+        </div>
+        
+        <div aura:id="footer" style="display:none">
+            <button class="slds-button slds-button_neutral" onclick="{!c.doCancel}">Cancel</button>
+            <button class="slds-button slds-button_brand" onclick="{!c.doSave}">Save</button>
+        </div>
+        
+        <aura:if isTrue="{!v.Spinner}">
+            <div aura:id="spinnerId" class="slds-spinner_container">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                    <div class="custom-loading-text">
+                        <b>Processing, Please Wait</b>
+                    </div>
+                </div>
+            </div>
+        </aura:if>
+    </div>
+    <lightning:notificationsLibrary aura:id="notifLib" />
+</aura:component>

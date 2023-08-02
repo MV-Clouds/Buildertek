@@ -1,0 +1,13 @@
+<apex:page showHeader="false" sidebar="false">
+    <apex:includeLightning />
+    <div id="lightning" />
+    <script>
+    	$Lightning.use("buildertek:DualListBoxApp", function() {
+            $Lightning.createComponent("buildertek:DualListBox",
+          	{},
+            "lightning",
+             function(cmp) {
+             });
+        });        
+      </script>
+</apex:page>

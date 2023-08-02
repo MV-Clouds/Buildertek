@@ -1,0 +1,5 @@
+<aura:event type="APPLICATION" description="Event to apply filter" access="global">
+    <aura:attribute name="filterConditions" type="String" default=""/>
+    <aura:attribute name="objectName" type="String" default=""/>
+    <aura:attribute name="fieldSetName" type="String" default=""/>
+</aura:event>

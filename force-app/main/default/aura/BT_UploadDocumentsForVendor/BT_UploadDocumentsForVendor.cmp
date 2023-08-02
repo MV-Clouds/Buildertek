@@ -1,0 +1,104 @@
+<aura:component controller ="RFQVendorItemController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global" >
+    <aura:attribute name="recordId" type="Id" />
+     <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="rfqtovendorId" type="Id" />
+    <aura:attribute name="RFQVendorLineList" type="RFQ_To_Vendor__c[]"/>
+    <aura:attribute name="data" type="list"/>
+    <aura:attribute name="columns" type="List"/>
+    <aura:attribute name="UpdatedList" type="RFQ_To_Vendor__c[]"/>
+    <aura:attribute name="submitted" type="boolean"/>
+    <aura:attribute name="iseditable" type="boolean" default="true"/>
+    <aura:attribute name="showPopup" type="Boolean" default="false" />
+    <aura:attribute name="modalPromise" type="Aura.Action"/>
+    <aura:attribute name="selectedFiles" type="sObject[]" default="[]"/>
+    <!-- <lightning:overlayLibrary aura:id="overlay"/> -->
+    <aura:attribute name="files" type="List"/>
+    <aura:attribute name="Isfiles" type="Boolean" default="false" />
+    <aura:attribute name="Isnofiles" type="Boolean" default="false" />
+    <aura:attribute name="rfqfiles" type="List"/>
+    <aura:attribute name="Isrfqfiles" type="Boolean" default="false" />
+    <aura:attribute name="Isnorfqfiles" type="Boolean" default="false" />
+    <aura:attribute name="rfqrecordId" type="String" default="" />
+    <aura:attribute name="objectAPI" type="String" default="buildertek__RFQ_To_Vendor__c"/>
+    <aura:attribute name="isAttachDocClick" type="Boolean" />
+    <aura:attribute name="IsSpinner" type="Boolean" default="false" />
+    <aura:attribute name="selectedfilesFill" type="list"/>
+    <aura:attribute name="selectedfileslist" type="Object"/>
+    
+    <c:BT_Spinner />
+
+    <aura:if isTrue="{!v.isAttachDocClick}">
+        <aura:html tag="style">
+            .slds-modal__container {
+            width:60% !important;      
+			max-width: 60% !important;
+            }
+           .slds-modal__content {
+         overflow: hidden !important;
+         }            
+        </aura:html>
+        
+            <aura:if isTrue="{!v.IsSpinner}">
+                <div aura:id="spinnerId" class="slds-spinner_container">
+                    <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" 
+                         style="z-index: 1;" role="alert">
+                        <span class="slds-assistive-text">Loading</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                        <div class="custom-loading-text">
+                            <b>Processing, Please Wait</b>
+                        </div>
+                    </div>
+                </div>
+            </aura:if>
+            
+            
+        <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/>
+        
+            <div class="slds-modal__content" >
+                <header class="slds-modal__header" >
+                        <lightning:buttonIcon iconName="utility:close"
+                                              onclick="{! c.doCancel }"
+                                              alternativeText="close"
+                                              variant="bare-inverse"
+                                              class="slds-modal__close"/>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Upload File</h2>
+                    </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="height:100%">
+                   <lightning:layout multipleRows = "true">                                        
+                                <div>
+                            <lightning:input aura:id="fuploader" onchange="{!c.handleFilesChange}" type="file" 
+                                                      variant="label-hidden" name="file" label="" multiple="true" 
+                           accept="pdf, .png, .jpg, .jpeg, .csv, .DOC, .DOCX, .TXT, .XLS, .XLSX, .ZIP, .PDF, .PNG, .webm"
+                                                     />
+                                    <!-- <div class="slds-text-body_small slds-text-color_error">{!v.fileName} </div>  -->                                  
+                                    
+                                    <aura:iteration items="{!v.selectedfilesFill}" var="sr">
+                                        <lightning:pill class="slds-m-around_xx-small slds-text-body_small slds-text-color_error" label="{!sr.Name}" name="{!sr.Name}" onremove="{! c.clear }">
+                                            <aura:set attribute="media">
+                                                <lightning:icon iconName="standard:file" size="x-small" alternativeText="icon"/>
+                                            </aura:set>
+                                        </lightning:pill>
+                                    </aura:iteration>
+                                </div>                                        
+                            </lightning:layout>
+                </div>
+                 <footer class="slds-modal__footer">
+                        <lightning:button variant="neutral"
+                                          label="Cancel"
+                                          title="Cancel"
+                                          onclick="{! c.doCancel }"/>
+                        <lightning:button variant="brand"
+                                          label="Add Files"
+                                          title="Add Files"
+                                          onclick="{!c.addFiles}"/>
+                    </footer>
+           
+        </div> 
+    </aura:if>
+    
+    
+    
+    
+    
+</aura:component>

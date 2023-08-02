@@ -1,0 +1,226 @@
+<aura:component
+                implements="force:appHostable,lightning:isUrlAddressable,force:lightningQuickActionWithoutHeader,flexipage:availableForRecordHome,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes"
+                access="global" controller="MassUpdateQuote">
+    <aura:attribute name="fieldSetValues" type="List" />
+    <aura:attribute name="arrfieldNames" type="List" />
+    <aura:attribute name="quoteLineName" type="String" />
+    <aura:attribute name="isModalOpen" type="Boolean" />
+    <aura:attribute name="selectedRecordIndex" type="Integer" />
+    <aura:attribute name="isCancelModalOpen" type="Boolean" />
+    <aura:attribute name="parentRecordId" type="String" />
+    <aura:attribute name="fields" type="List" default="[]" />
+    <aura:attribute name="listOfRecords" type="Quote__c[]" />
+    <aura:attribute name="cloneListOfRecords" type="Quote__c[]" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="numberOfItems" type="Integer" />
+    <aura:attribute name="massUpdateEnable" type="Boolean" default="true" />
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+    <aura:attribute name="quoteLineWrapperList" type="Object" />
+    <aura:attribute name="pricebookOptions" type="List" />
+    <aura:attribute name="GroupingOptions" type="List" />
+    <aura:attribute name="dummy" type="List" />
+
+    <aura:attribute name="PageNumber" type="integer" default="1" />
+    <aura:attribute name="pageSize" type="integer" default="25" />
+    <aura:attribute name="TotalPages" type="integer" default="0" />
+    <aura:attribute name="TotalRecords" type="Integer" default="0" />
+    <aura:attribute name="RecordStart" type="integer" default="0" />
+    <aura:attribute name="RecordEnd" type="integer" default="0" />
+    <aura:attribute name="isNextDisabled" type="Boolean" default="true" />
+    <aura:attribute name="deleteQuoteLines" type="List" />
+
+    <aura:attribute name="hideGlobalMargin" type="Boolean" default="false" />
+    <aura:attribute name="hideGlobalMarkup" type="Boolean" default="false" />
+    <aura:attribute name="removeSingleQuoteLineOption" type="Boolean" default="false" />
+
+    <aura:attribute name="defaultPriceBookId" type="String" />
+
+
+    <aura:method name="reloadMethod" action="{!c.reloadMethod}" access="public" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+    <lightning:workspaceAPI aura:id="workspace" />
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
+   
+    <aura:handler name="datafromChild" event="c:senDatafromChild" action="{!c.handleComponentEvent}"/> 
+    
+    <div class="slds-modal__content slds-scrollable" style="height:100% !important">
+        <lightning:card aura:id="lightCard" class="slds-card_boundary slds-page-header slds-scrollable" title="Quote Lines">
+            <aura:set attribute="actions">
+                <lightning:button iconName="utility:save" iconPosition="left" onclick="{!c.onMassUpdate}" label="Save" />
+                <lightning:button iconName="utility:add" iconPosition="left" onclick="{!c.onAddClick}" label="Add" />
+                <lightning:button iconName="utility:close" iconPosition="left" onclick="{!c.onMassUpdateCancel}" label="Cancel" />
+            </aura:set>
+        </lightning:card>
+
+        <div class="slds-border_top slds-box slds-box_xx-small" >
+            <div class="slds slds-m-top_medium slds-p-horizontal_medium" >
+                <table class="slds-table slds-table--bordered':'slds-table--bordered'">
+                    <thead>
+                        <tr style="height:35px; !important" class="slds-text-title_caps">
+                            <th scope="col" class="table-Header" style="border-top-left-radius:5px;">
+                                <div class="slds-truncate" title="Pricebook">Pricebook</div>
+                            </th>
+                            <th scope="col" class="table-Header">
+                                <div class="slds-truncate" title="Product Family">Product Family</div>
+                            </th>
+                            <th scope="col" class="table-Header">
+                                <div class="slds-truncate" title="Product">Product</div>
+                            </th>
+                            <th class="table-Header">
+                                <div class="slds-truncate" title="Quote Line Description"> Description</div>
+                            </th>
+                            <th scope="col" class="table-Header">
+                                <div class="slds-truncate" title="Grouping">Group</div>
+                            </th> 
+                            <th scope="col" class="table-Header">
+                                <div class="slds-truncate" title="Notes">Notes</div>
+                            </th>
+                            <th scope="col" class="table-Header">
+                                <div class="slds-truncate" title="Quantity">Quantity</div>
+                            </th>
+                            <th scope="col" class="table-Header">
+                                <div class="slds-truncate" title="Unit Cost">Unit Cost</div>
+                            </th>
+                            <aura:if isTrue="{!!v.hideGlobalMargin}">
+                                <th scope="col" class="table-Header">
+                                    <div class="slds-truncate" title="Margin">Margin</div>
+                                </th>
+                            </aura:if>
+                            <aura:if isTrue="{!!v.hideGlobalMarkup}">
+                                <th scope="col" class="table-Header">
+                                    <div class="slds-truncate" title="Markup">Markup</div>
+                                </th>
+                            </aura:if>
+                            <th scope="col" class="table-Header">
+                                <span> </span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <aura:iteration items="{!v.quoteLineWrapperList}" var="quoteLineWrapper" indexVar="index">
+                            <tr class="slds-hint-parent">
+                                <td>
+                                    <lightning:select name="{!index}" value="{!quoteLineWrapper.pricebookEntryId}" class="pricebook-class pointer1" onchange="{!c.getFamily}">
+                                        <aura:iteration items="{!v.pricebookOptions}" var="pricebookOption">
+                                            <option name="{!quoteLineWrapper}" value="{!pricebookOption.value}">{!pricebookOption.label}</option>
+                                        </aura:iteration>
+                                    </lightning:select>
+
+                                </td>
+                                <td>
+                                    <lightning:select name="{!index}" value="{!quoteLineWrapper.productFamily}" class="family-class pointer1" onchange="{!c.getProduct}">
+                                        <aura:iteration items="{!quoteLineWrapper.productFamilyList}" var="productFamilyOption">
+                                            <option name="{!quoteLineWrapper}" value="{!productFamilyOption.value}">{!productFamilyOption.label}</option>
+                                        </aura:iteration>
+                                    </lightning:select>
+                                </td>
+                                <td>
+                                    <lightning:select name="{!index}" value="{!quoteLineWrapper.productId}" class="product-class pointer1" onchange="{!c.gotProduct}">
+                                        <aura:iteration items="{!quoteLineWrapper.productOptionList}" var="productOption">
+                                            <option name="{!quoteLineWrapper}" value="{!productOption.value}">{!productOption.label}</option>
+                                        </aura:iteration>
+                                    </lightning:select>
+                                </td>
+                                <td>
+                                    <lightning:input name="{!index}" value="{!quoteLineWrapper.QuoteLine.Name}" class="description-class" />
+                                </td>
+                                <td>
+                                    <aura:if isTrue="{!quoteLineWrapper.QuoteLine.buildertek__Product__c != ''}">
+                                        <lightning:select name="{!index}" value="{!quoteLineWrapper.QuoteLine.buildertek__Grouping__c}" class="grouping-class pointer1">
+                                            <aura:iteration items="{!quoteLineWrapper.GroupingOptions}" var="groupingOption">
+                                                <option name="{!quoteLineWrapper}" value="{!groupingOption.Id}">{!groupingOption.Name}</option>
+                                            </aura:iteration>
+                                        </lightning:select>
+                                    </aura:if>
+                                    <aura:if isTrue="{!quoteLineWrapper.QuoteLine.buildertek__Product__c == ''}">
+                                        <lightning:select name="{!index}" value="{!quoteLineWrapper.QuoteLine.buildertek__Grouping__c}" class="grouping-class pointer1">
+                                            <aura:iteration items="{!dummy}" var="groupingOption">
+                                                <option name="{!quoteLineWrapper}" value="{!groupingOption.Id}">{!groupingOption.Name}</option>
+                                            </aura:iteration>
+                                        </lightning:select>
+                                    </aura:if>
+                                </td>
+                                <td>
+                                    <lightning:input name="{!index}" value="{!quoteLineWrapper.QuoteLine.buildertek__Notes__c}" class="notes-class" />
+                                </td>
+                                <td>
+                                    <lightning:input name="{!index}" value="{!quoteLineWrapper.QuoteLine.buildertek__Quantity__c}" class="quantity-class" type="number" />
+                                </td>
+                                <td>
+                                    <lightning:input name="{!index}" value="{!quoteLineWrapper.QuoteLine.buildertek__Unit_Cost__c}" class="unit-cost-class" type="number" formatter="currency" step="0.001" />
+                                    <!-- <ui:inputCurrency name="{!index}"  value="{!quoteLineWrapper.QuoteLine.buildertek__Unit_Cost__c}" class="unit-cost-class" aura:id="unitCostId" /> -->
+                                </td>
+                                <aura:if isTrue="{!!v.hideGlobalMargin}">
+                                    <td>
+                                        <lightning:input name="{!index}" value="{!quoteLineWrapper.QuoteLine.buildertek__Margin__c}" class="margin-class" type="number" step="0.01" />
+                                    </td>
+                                </aura:if>
+                                <aura:if isTrue="{!!v.hideGlobalMarkup}">
+                                    <td>
+                                        <lightning:input name="{!index}" value="{!quoteLineWrapper.QuoteLine.buildertek__Markup__c}" class="markup-class" type="number" step="0.01" />
+                                    </td>
+                                </aura:if>
+                                <td>
+                                    <span onclick="{!c.deleteRow}" data-index="{!index}" class="slds-icon_container slds-icon-utility-delete pointer1" title="Delete">
+                                        <lightning:icon iconName="action:close" alternativeText="Delete"
+                                                            class="some-indicator" size="x-small" title="Delete" />
+                                    </span>    
+                                </td>
+                            </tr>
+                        </aura:iteration>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <aura:if isTrue="{!v.isModalOpen}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" onclick="{!c.handleCancel}" alternativeText="close"
+                                          size="medium" variant="bare-inverse" class="slds-modal__close" />
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Delete Confirmation
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <p>Are you sure you want to delete {!v.quoteLineName} ?</p>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral" label="Cancel" title="Cancel" onclick="{! c.handleCancel }" />
+                    <lightning:button variant="brand" label="Delete" title="Delete" onclick="{!c.handleDelete}" />
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    <aura:if isTrue="{!v.isCancelModalOpen}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+            aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" onclick="{!c.closeCancelModal}"
+                        alternativeText="close" size="medium" variant="bare-inverse" class="slds-modal__close" />
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Cancel Changes
+                        Confirmation
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <p>Are you sure you want to Cancel?</p>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral" label="No" title="No" onclick="{! c.closeCancelModal }" />
+                    <lightning:button variant="brand" label="Yes" title="Yes" onclick="{! c.closeScreen }" />
+                    <!-- <ui:outputURL class="slds-button slds-button_brand" value="{!'}" label="Yes" /> -->
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    <lightning:overlayLibrary aura:id="overlayLib" />
+    <aura:if isTrue="{!v.isLoading}">
+        <lightning:spinner alternativeText="Loading" variant="brand" size="large" />
+    </aura:if>
+</aura:component>

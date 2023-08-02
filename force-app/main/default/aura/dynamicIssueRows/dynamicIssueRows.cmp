@@ -1,0 +1,64 @@
+<!--
+	@ PURPOSE : 1. LAUNCHES FROM THE LIGHTNING COMPONENT => dynamicIssueRowsContainer.xml
+				2. DISPLAYS A ROW OF ISSUE RECORD IN EDIT MODE DYNAMICALLY.
+	@ Name    : dynamicIssueRows.xml
+-->
+<aura:component>    
+    
+    <aura:attribute name="IssueInstance" type="Issue__c" default="{}"/>
+    <aura:attribute name="rowIndex" type="String"/>
+	<aura:attribute name="totalIssues" type="Integer"/>
+	<aura:attribute name="listOfRecordTypes" type="Object[]" default="[]"/>
+	
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+	
+	<aura:registerEvent name="DeleteRowEvt" type="c:DeleteRowEvt"/> 
+    <aura:registerEvent name="AddRowEvt" type="c:AddNewRowEvt"/> 
+    
+    <!-- START TABLE ROW --> 
+    <tr>
+        <td width="15%">
+            <ui:inputText class="slds-input" value="{!v.IssueInstance.Comments__c}"/>
+        </td>
+        <td width="15%">
+            <ui:inputText class="slds-input" value="{!v.IssueInstance.Description__c}"/>
+        </td>
+        <td width="15%">
+            <ui:inputText class="slds-input" value="{!v.IssueInstance.Control_Panel__c}"/>
+        </td>
+        <td width="15%">
+            <ui:inputText class="slds-input" value="{!v.IssueInstance.Window_ID__c}"/>
+        </td>
+        
+        <td width="15%">
+            <ui:inputSelect value="{! v.IssueInstance.RecordTypeId }">
+                <ui:inputSelectOption text="" label="Select Record Type"/>
+                <aura:iteration items="{!v.listOfRecordTypes}" var="recordType">
+					<ui:inputSelectOption label="{!recordType.value}" text="{!recordType.id}"/>
+				</aura:iteration>
+            </ui:inputSelect>
+        </td>
+        <td width="15%">
+            <ui:inputDate value="{!v.IssueInstance.Date_Identified__c}" displayDatePicker="true"/>
+        </td>
+        <td>
+            <aura:if isTrue="{!or( and( v.totalIssues == 1, v.rowIndex == 0 ), ( v.rowIndex == ( v.totalIssues - 1 ) ) ) }">
+                <a onclick="{!c.AddNewRow}">
+                    <lightning:icon iconName="utility:add" class="slds-icon slds-icon_small"
+                                    size="small"
+                                    alternativeText="add"/>
+                    <span class="slds-assistive-text">Add Icon</span>
+                </a>
+            </aura:if>
+            <aura:if isTrue="{! v.totalIssues > 1 }">
+                <a onclick="{!c.removeRow}">
+                    <lightning:icon variant="error" iconName="utility:delete"
+                                    class="slds-icon slds-icon_small" size="small" alternativeText="icon"/>
+                    <span class="slds-assistive-text">Delete Icon</span>
+                </a>
+            </aura:if>
+        </td> 
+    </tr>
+	<!-- END TABLE ROW --> 
+   
+</aura:component>

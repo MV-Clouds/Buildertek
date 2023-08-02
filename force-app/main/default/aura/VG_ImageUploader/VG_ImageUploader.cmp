@@ -1,0 +1,38 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global" controller="VG_FileCreationHelper">
+
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="title" type="String" default="hey now" />
+    <aura:attribute name="imgSrc" type="String" />
+    <aura:attribute name="imageData" type="String" />
+    <aura:attribute name="FileList" type="Object" />
+    <aura:attribute name="MaxHeight" type="Integer" />
+    <aura:attribute name="MaxWidth" type="Integer" />
+    <aura:attribute name="prefixURL" type="String" default="/partner/sfc/servlet.shepherd/version/renditionDownload?rendition=ORIGINAL_Png&amp;versionId=" /> 
+    <aura:attribute name="contentVersionId" type="String" />
+    <aura:attribute name="AutoInit" type="Boolean" default="false" />
+    <aura:attribute name="AcceptFileTypes" type="String" default=".jpg,.jpeg,.png,.gif" />
+
+   <!--- <aura:handler event="c:CompanyProfileId" action="{!c.handleCompanyProfileId}" />-->
+    <aura:handler name="change" value="{!v.imageData}" action="{!c.imageDataChanged}" />
+    <aura:handler name="change" value="{!v.recordId}" action="{!c.onInit}" />
+    <aura:handler name="init" value="{!this}" action="{!c.autoInit}" />
+
+
+    <div class="container">
+        <div aura:id="previewDiv" class="slds-hide">
+            <img id="previewImage" aura:id="preview" src="{!v.imgSrc}" onload="{!c.imageLoaded}" class="preview-image" />
+            <a class="slds-m-top_small" style="display:block;" onclick="{!c.editImage}">
+                <lightning:icon iconName="utility:edit" size="xx-small" class="slds-p-right_xx-small" />
+
+            </a>
+        </div>
+
+        <div aura:id="uploadWrapper">
+            <lightning:input type="file" files="{!v.FileList}" aura:id="fileSelector" accept=".jpg,.jpeg,.png" onchange="{!c.imageChanged}" width="500" />
+            <a aura:id="cancelEdit" class="slds-m-top_small slds-hide" style="display:block;" onclick="{!c.cancelEditImage}">
+                <span>Cancel Edit</span>
+            </a>
+        </div>
+        <span title="Change Image">{!v.title}({!v.MaxWidth}x{!v.MaxHeight})</span>
+    </div>
+</aura:component>

@@ -1,0 +1,150 @@
+<apex:page controller="PrintBudgetInformationController" docType="html-5.0" sidebar="false" standardStylesheets="false" showHeader="false" applyHtmlTag="true">
+  <html>
+      <head>
+           <apex:stylesheet value="{!URLFOR($Resource.Print_View_Styles)}" />
+		
+		    <apex:stylesheet value="{!URLFOR($Resource.Print_View_Fonts)}" />
+		    <apex:stylesheet value="{!URLFOR($Resource.Print_View_Font)}" />
+           <style>  
+            @media print{@page {size: landscape}}
+           </style>
+      </head>
+     <body>
+         <center><h3 style="font-family:'Salesforce Sans',Arial,sans-serif;font-size:23px;text-transform:uppercase;">Budget Information</h3></center>
+         <table style="width:100%;" >
+             <tr>
+                 <td style="border-right:5px solid lightgrey;height:40px;background:lightgrey;color:black;font-family:'Salesforce Sans',Arial,sans-serif;font-size:18px;">BUDGET DETAILS</td>
+                 <td style="border-left:5px solid lightgrey;height:40px;background:lightgrey;color:black;font-family:Monospace"></td>
+             </tr>
+             <tr>
+                 <td style="width:50%;height:30px;">
+                    <label style="font-family:'Salesforce Sans',Arial,sans-serif;">Project Name:</label>&nbsp;&nbsp;
+                    <apex:outputField value="{!budget.Project__c}" /> 
+                 </td>
+                 <td style="width:50%;height:30px;">
+                    <label style="font-family:'Salesforce Sans',Arial,sans-serif;">Budget Name:</label>&nbsp;&nbsp;
+                    <apex:outputField value="{!budget.Name}" /> 
+                 </td>
+             </tr>
+             <tr>
+                 <td style="width:50%;height:30px;">
+                    <label style="font-family:'Salesforce Sans',Arial,sans-serif;">Original Budget:</label>&nbsp;&nbsp;
+                    <apex:outputField value="{!budget.Original_Budget__c}" /> 
+                 </td>
+                 <td style="width:50%;height:30px;">
+                    <label style="font-family:'Salesforce Sans',Arial,sans-serif;">Type:</label>&nbsp;&nbsp;
+                    <apex:outputField value="{!budget.Type__c}" /> 
+                 </td>
+             </tr>
+         </table><br/>
+         <table style="width:100%;" >
+             <tr>
+                 <td style="border-right:5px solid lightgrey;height:40px;background:lightgrey;color:black;font-family:'Salesforce Sans',Arial,sans-serif;font-size:18px;">PAYABLES</td>
+                 <td style="border-left:5px solid lightgrey;height:40px;background:lightgrey;color:black"></td>
+             </tr>
+             <tr>
+                 <td style="width:50%;height:30px;">
+                    <label style="font-family:'Salesforce Sans',Arial,sans-serif;">Pending CO:</label>&nbsp;&nbsp;
+                    <apex:outputField value="{!budget.Pending_CO__c}" /> 
+                 </td>
+                 <td style="width:50%;height:30px;">
+                    <label style="font-family:'Salesforce Sans',Arial,sans-serif;">Approved CO:</label>&nbsp;&nbsp;
+                    <apex:outputField value="{!budget.Approved_CO__c}" /> 
+                 </td>
+             </tr>
+             <tr>
+                 <td style="width:50%;height:30px;">
+                    <label style="font-family:'Salesforce Sans',Arial,sans-serif;">Total CO:</label>&nbsp;&nbsp;
+                    <apex:outputField value="{!budget.Total_CO__c}" /> 
+                 </td>
+             </tr>
+         </table><br/>
+         <table style="width:100%;" >
+             <tr>
+                 <td style="border-right:5px solid lightgrey;height:40px;background:lightgrey;color:black;font-family:'Salesforce Sans',Arial,sans-serif;font-size:18px;">RECEIVABLES</td>
+                 <td style="border-left:5px solid lightgrey;height:40px;background:lightgrey;color:black"></td> 
+             </tr>
+             <tr>
+                 <td style="width:50%;height:30px;">
+                    <label style="font-family:'Salesforce Sans',Arial,sans-serif;">Committed Costs:</label>&nbsp;&nbsp;
+                    <apex:outputField value="{!budget.Committed_Costs__c}" /> 
+                 </td>
+                 <td style="width:50%;height:30px;">
+                    <label style="font-family:'Salesforce Sans',Arial,sans-serif;">Direct Costs:</label>&nbsp;&nbsp;
+                    <apex:outputField value="{!budget.Direct_Costs__c}" /> 
+                 </td>
+             </tr>
+             <tr>
+                 <td style="width:50%;height:30px;">
+                    <label style="font-family:'Salesforce Sans',Arial,sans-serif;">Pending Cost Changes:</label>&nbsp;&nbsp;
+                    <apex:outputField value="{!budget.Pending_Cost_Changes__c}" /> 
+                 </td>
+                 <td style="width:50%;height:30px;">
+                    <label style="font-family:'Salesforce Sans',Arial,sans-serif;">Projected Costs:</label>&nbsp;&nbsp;
+                    <apex:outputField value="{!budget.Projected_Costs__c}" /> 
+                 </td>
+             </tr>
+         </table><br/>
+         <table style="width:100%;" >
+             <tr>
+                 <th style="border-right:10px solid lightgrey;height:40px;background:lightgrey;color:black;font-family:'Salesforce Sans',Arial,sans-serif;font-size:18px;">PRODUCT</th>
+                 <th style="border-left:5px solid lightgrey;height:40px;background:lightgrey;color:black;font-family:'Salesforce Sans',Arial,sans-serif;font-size:18px;">QUANTITY</th>
+                 <th style="border-left:5px solid lightgrey;height:40px;background:lightgrey;color:black;font-family:'Salesforce Sans',Arial,sans-serif;font-size:18px;">UNIT PRICE</th>
+                 <th style="border-left:5px solid lightgrey;height:40px;background:lightgrey;color:black;font-family:'Salesforce Sans',Arial,sans-serif;font-size:18px;">ORIGINAL BUDGET</th>
+                 <th style="border-left:5px solid lightgrey;height:40px;background:lightgrey;color:black;font-family:'Salesforce Sans',Arial,sans-serif;font-size:18px;">BUDGETMODS</th>
+                 <th style="border-left:5px solid lightgrey;height:40px;background:lightgrey;color:black;font-family:'Salesforce Sans',Arial,sans-serif;font-size:18px;">BUDGET REVISED</th>
+                 <th style="border-left:5px solid lightgrey;height:40px;background:lightgrey;color:black;font-family:'Salesforce Sans',Arial,sans-serif;font-size:18px;">PROJECTED COSTS</th>
+                 <th style="border-left:5px solid lightgrey;height:40px;background:lightgrey;color:black;font-family:'Salesforce Sans',Arial,sans-serif;font-size:18px;">TOTAL COSTS</th>
+                 <th style="border-left:5px solid lightgrey;height:40px;background:lightgrey;color:black;font-family:'Salesforce Sans',Arial,sans-serif;font-size:18px;">PENDING CO</th>
+                 <th style="border-left:5px solid lightgrey;height:40px;background:lightgrey;color:black;font-family:'Salesforce Sans',Arial,sans-serif;font-size:18px;">APPROVED CO</th>
+                 <th style="border-left:5px solid lightgrey;height:40px;background:lightgrey;color:black;font-family:'Salesforce Sans',Arial,sans-serif;font-size:18px;">TOTAL CO</th>
+                 <th style="border-left:5px solid lightgrey;height:40px;background:lightgrey;color:black;font-family:'Salesforce Sans',Arial,sans-serif;font-size:18px;">PROFIT/LOSS</th>
+             </tr>
+             <apex:repeat value="{!budgetLinesList}" var="lines" >
+                 <tr>
+                     <td>
+                        <apex:outputField value="{!lines.Product_Name__c}" /> 
+                     </td>
+                     <td>
+                        <apex:outputField value="{!lines.Quantity__c}" /> 
+                     </td>
+                     <td>
+                        <apex:outputField value="{!lines.Unit_Price__c}" /> 
+                     </td>
+                     <td>
+                        <apex:outputField value="{!lines.Original_Budget__c}" /> 
+                     </td>
+                     <td>
+                        <apex:outputField value="{!lines.Budget_Modification__c}" /> 
+                     </td>
+                     <td>
+                        <apex:outputField value="{!lines.Revised_Budget__c}" /> 
+                     </td>
+                     <td>
+                        <apex:outputField value="{!lines.Projected_Costs__c}" /> 
+                     </td>
+                     <td>
+                        <apex:outputField value="{!lines.Total_Costs__c}" /> 
+                     </td>
+                     <td>
+                        <apex:outputField value="{!lines.Pending_CO__c}" /> 
+                     </td>
+                     <td>
+                        <apex:outputField value="{!lines.Approved_CO__c}" /> 
+                     </td>
+                     <td>
+                        <apex:outputField value="{!lines.Total_CO__c}" /> 
+                     </td>
+                     <td>
+                        <apex:outputField value="{!lines.Profit_Loss__c}" /> 
+                     </td>
+                 </tr>
+             </apex:repeat>
+         </table>
+         <script>
+              window.print(); 
+         </script>
+    
+     </body>
+  </html>
+</apex:page>

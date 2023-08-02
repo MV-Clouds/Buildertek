@@ -1,0 +1,383 @@
+<aura:component controller = "BT_New_RFI_Controller" 
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global" 
+                >
+    
+    <aura:attribute name="selectedfilesFill" type="list"/>
+    <aura:attribute name="recordId" type="String" access="public" />
+    <aura:attribute name="showpopup" type="Boolean" default="false" />
+    <aura:attribute name="ReplyTo" type="String" access="public" />
+    <aura:attribute name="selectedContacts" type="sObject[]"  />
+    <aura:attribute name="selectedUsers" type="sObject[]"  />
+    <aura:attribute name="onSuccess" type="Object"/>
+    <aura:attribute name="onCancel" type="Object"/>
+    <aura:attribute name="selectedToContact" type="sObject[]" default="[]"/>
+    <aura:attribute name="selectedCcContact" type="sObject[]" default="[]"/>
+    <aura:attribute name="selectedFiles" type="sObject[]" default="[]"/>
+    
+    <aura:attribute name="pdfFileName" type="String" default="Change Order"/>
+    <aura:attribute name="templatefolderName" type="String" />
+    <aura:attribute name="templates" type="List" default="[]"/>
+    <aura:attribute name="fileAttachments" type="List" default="[]"/>
+    <aura:attribute name="selectedTemplate" type="String" default=""/>
+    <aura:attribute name="documentsList" type="List" default="[]"/>
+    
+    <aura:attribute name="templateBody" type="String" default=""/>
+    <aura:attribute name="subject" type="String" default=""/>
+    <aura:attribute name="showTemplate" type="Boolean" default="true"/>
+    <aura:attribute name="fileName" type="string" default="" />
+    <aura:attribute name="objectAPI" type="String" />
+    
+    <!-- <aura:attribute name="modalPromise" type="Aura.Action"/> -->
+    <aura:attribute name="errorMSG" type="Boolean" default="false"/>
+    <aura:attribute name="fileOptsList" type="Object"/>
+    <aura:attribute name="selectedfileslist" type="Object"/>
+    <aura:attribute name="userInfo" type="string"/> 
+    <aura:attribute name="userInfo1" type="string"/> 
+    <aura:method name="refreshData" action="{!c.init}"></aura:method>
+    <aura:attribute name="toEmail" type="String" />
+    <aura:attribute name="emailIds" type="List" />
+    <aura:attribute name="fieldSetValues" type="List"  />
+    <aura:attribute name="rfiresponsefieldSetValues" type="List"  />
+    <aura:attribute name="rfiresponseId" type="String" access="public" />
+    <aura:attribute name="Isnewrfiresponse" type="Boolean" default="false" />
+    
+    <aura:attribute name="Isfileuploaded" type="Boolean" default="false" />
+    
+    
+    
+    <aura:attribute name="rfiList" type="RFI__c[]"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="IsSpinner" type="Boolean" default="false" />
+    <aura:attribute name="openResponseModel" type="Boolean" default="false" />
+    <aura:attribute name="rfiNumber" type="String" />
+    <aura:attribute name="CMPId" type="String" />
+    <aura:attribute name="uploadedFileIds" type="List" />
+    
+    <!-- <lightning:overlayLibrary aura:id="overlay"/> -->
+    <aura:if isTrue="{!v.IsSpinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                    <b>Processing, Please Wait</b>
+                </div>
+            </div>
+        </div>
+    </aura:if>
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/>
+    <div class="slds-scrollable_y" style="max-height:500px; width:100%">
+        <div class="slds-modal__header" style="font-size:17px;postion:fixed;height:40px;">
+            RFI Response Details
+        </div>
+        <div class="slds-modal__content slds-p-around_medium ">
+            <aura:if isTrue="{!v.rfiList.length > 0}"> 
+                <aura:iteration var="rec" items="{!v.rfiList}">
+                    <div class="slds-border_bottom  ">
+                        <div class="slds-media__body ">
+                            <div class="slds-grid slds-grid_align-spread slds-timeline__trigger ">
+                                <div
+                                     class="slds-grid slds-grid_vertical-align-center  slds-truncate_container_75 slds-no-space " >
+                                    <h3 class="slds-truncate" title="Subject">
+                                        <a href="javascript:void(0);" data-id="{!rec.Id}"
+                                           onclick="{!c.openRecordPage}">
+                                            
+                                            <aura:if isTrue="{!v.Isnewrfiresponse}">
+                                <aura:if isTrue="{!(v.userInfo1)==(rec.buildertek__Responderformula__c)}">
+                                    <aura:if isTrue="{!v.rfiNumber}"> 
+                                                <strong style="color:green">{!rec.Name}</strong>
+                                                <!--RFI - {!v.rfiNumber} -->
+                                                <aura:set attribute="else"> 
+                                                    <strong style="color:green">{!rec.Name} </strong>
+                                                </aura:set>                                                                      
+                                            </aura:if> 
+                                    <aura:set attribute="else"> 
+                                        <aura:if isTrue="{!v.rfiNumber}"> 
+                                                <strong style="color:blue">{!rec.Name}</strong>
+                                                <!--RFI - {!v.rfiNumber} -->
+                                                <aura:set attribute="else"> 
+                                                    <strong style="color:blue">{!rec.Name} </strong>
+                                                </aura:set>                                                                      
+                                            </aura:if> 
+                                    </aura:set>
+                                                </aura:if>
+                                                 <aura:set attribute="else"> 
+                                                     <aura:if isTrue="{!(v.userInfo1)==(rec.buildertek__Responderformula__c)}">
+                                    <aura:if isTrue="{!v.rfiNumber}"> 
+                                                <strong style="color:blue">{!rec.Name}</strong>
+                                                <!--RFI - {!v.rfiNumber} -->
+                                                <aura:set attribute="else"> 
+                                                    <strong style="color:blue">{!rec.Name} </strong>
+                                                </aura:set>                                                                      
+                                            </aura:if> 
+                                    <aura:set attribute="else"> 
+                                        <aura:if isTrue="{!v.rfiNumber}"> 
+                                                <strong style="color:green">{!rec.Name}</strong>
+                                                <!--RFI - {!v.rfiNumber} -->
+                                                <aura:set attribute="else"> 
+                                                    <strong style="color:green">{!rec.Name} </strong>
+                                                </aura:set>                                                                      
+                                            </aura:if> 
+                                    </aura:set>
+                                                </aura:if>
+                                                     </aura:set>
+                                            </aura:if>
+                                            
+                                            
+                                            
+                                        </a>                            
+                                    </h3> &nbsp;&nbsp;
+                                    <span data-id="{!rec.Id}" onclick="{!c.handleClick}">                                                                               
+                                        <!-- <lightning:button variant="brand"  label="Respond" title="Respond"  />  -->
+                                        <!-- <img src="{!$Resource.respondicon}" style="width:52px; height:18px;"/> -->
+                                        <img src="{!$Resource.respondicon}" title="Respond"   style="cursor: pointer;"/> 
+                                    </span>
+                                    
+                                </div>
+                                <div class="slds-timeline__actions slds-timeline__actions_inline">
+                                    <p class="slds-timeline__date">
+                                        <aura:if isTrue="{!v.Isnewrfiresponse}">
+                                <aura:if isTrue="{!(v.userInfo1)==(rec.buildertek__Responderformula__c)}">
+                                     <span style="color:green"><lightning:formattedDateTime value="{!rec.CreatedDate}"
+                                                                     hour="2-digit" minute="2-digit" timeZone="{! $Locale.timezone }" />&nbsp;|&nbsp;
+                                        <lightning:formattedDateTime value="{!rec.CreatedDate}" />
+                                        &nbsp;&nbsp;</span>
+                                    
+                                    <aura:set attribute="else"> 
+                                        <span style="color:blue"><lightning:formattedDateTime value="{!rec.CreatedDate}"
+                                                                     hour="2-digit" minute="2-digit" timeZone="{! $Locale.timezone }" />&nbsp;|&nbsp;
+                                        <lightning:formattedDateTime value="{!rec.CreatedDate}" />
+                                        &nbsp;&nbsp;</span>
+                                    </aura:set>
+                                    
+                                            </aura:if>
+                                            <aura:set attribute="else"> 
+                                                <aura:if isTrue="{!(v.userInfo1)==(rec.buildertek__Responderformula__c)}">
+                                     <span style="color:blue"><lightning:formattedDateTime value="{!rec.CreatedDate}"
+                                                                     hour="2-digit" minute="2-digit" timeZone="{! $Locale.timezone }" />&nbsp;|&nbsp;
+                                        <lightning:formattedDateTime value="{!rec.CreatedDate}" />
+                                        &nbsp;&nbsp;</span>
+                                    
+                                    <aura:set attribute="else"> 
+                                        <span style="color:green"><lightning:formattedDateTime value="{!rec.CreatedDate}"
+                                                                     hour="2-digit" minute="2-digit" timeZone="{! $Locale.timezone }" />&nbsp;|&nbsp;
+                                        <lightning:formattedDateTime value="{!rec.CreatedDate}" />
+                                        &nbsp;&nbsp;</span>
+                                    </aura:set>
+                                    
+                                            </aura:if>
+                                            </aura:set>
+                                        </aura:if>
+                                       
+                                        <!-- <lightning:formattedDateTime value="{!rec.buildertek__Date_Sent__c}"
+                                                     hour="2-digit" minute="2-digit" />&nbsp;|&nbsp;
+                        <lightning:formattedDateTime value="{!rec.buildertek__Date_Sent__c}" />
+                        &nbsp;&nbsp;-->
+                                        <!-- <lightning:buttonMenu aura:id="menu" alternativeText="Show menu"
+                                                  onselect="{! c.handleSelect }" menuAlignment="right">
+                                <lightning:menuItem aura:id="menuItems" label="Delete"
+                                                    value="{!rec.Id}" />
+                            </lightning:buttonMenu> -->
+                                    </p> 
+                                </div>
+                                <!-- <div >                        
+                        <span data-id="{!rec.Id}" onclick="{! c.handleClick }"  >                                              
+                            <lightning:button variant="bare" iconPosition="left" iconName="utility:reply"
+                                              class="iconWithoutBorder" />
+                        </span>
+                    </div> -->
+                                
+                            </div>
+                            <p class="slds-m-horizontal_xx-small">
+                                <aura:if isTrue="{!and(rec.IsOpened,rec.IsTracked)}">
+                                    {!rec.lastOpenTime}
+                                </aura:if>
+                                <aura:if isTrue="{!and(rec.IsOpened,not(rec.IsTracked))}">
+                                    Unopened
+                                </aura:if>
+                            </p>
+                            <!--{!v.userInfo1},{!rec.buildertek__Responderformula__c}-->
+                            <p class="slds-m-horizontal_xx-small" >
+                               <!-- <a href="javascript:void(0);" data-id="{!rec.CreatedById}" onclick="{!c.openuserPage}">-->
+                                <aura:if isTrue="{!v.Isnewrfiresponse}">
+                                <aura:if isTrue="{!(v.userInfo1)==(rec.buildertek__Responderformula__c)}">
+                                  <span style="color:green;"><b>  {!rec.buildertek__Responderformula__c} </b>
+                                
+                               <!-- </a>-->:
+                                <!--<a href="{!'/lightning/r/User/'+!rec.CreatedById+'/view'}">{!rec.buildertek__Responder__r.Name}</a> :-->
+                                {!rec.buildertek__Response__c}</span>
+                                    
+                                 <aura:set attribute="else"> 
+                                      <span style="color:blue;"><b> {!rec.buildertek__Responderformula__c}</b>
+                                
+                               <!-- </a>-->:
+                                <!--<a href="{!'/lightning/r/User/'+!rec.CreatedById+'/view'}">{!rec.buildertek__Responder__r.Name}</a> :-->
+                                {!rec.buildertek__Response__c}</span>
+                                                </aura:set> 
+                                </aura:if>
+                                    <aura:set attribute="else"> 
+                                      <aura:if isTrue="{!(v.userInfo1)==(rec.buildertek__Responderformula__c)}">
+                                  <span style="color:blue;"><b>  {!rec.buildertek__Responderformula__c} </b>
+                                
+                               <!-- </a>-->:
+                                <!--<a href="{!'/lightning/r/User/'+!rec.CreatedById+'/view'}">{!rec.buildertek__Responder__r.Name}</a> :-->
+                                {!rec.buildertek__Response__c}</span>
+                                    
+                                 <aura:set attribute="else"> 
+                                      <span style="color:green;"><b> {!rec.buildertek__Responderformula__c}</b>
+                                
+                               <!-- </a>-->:
+                                <!--<a href="{!'/lightning/r/User/'+!rec.CreatedById+'/view'}">{!rec.buildertek__Responder__r.Name}</a> :-->
+                                {!rec.buildertek__Response__c}</span>
+                                                </aura:set> 
+                                </aura:if>
+                                                </aura:set> 
+                                    </aura:if>
+                                <!-- <a href="{!'/lightning/r/User/'+!rec.Id+'/view'}">{!rec.CreatedBy.Name}</a>
+                    <a href="javascript:void(0);" data-id="{!rec.Id}" onclick="{!c.openuserPage}">{!rec.CreatedBy.Name}</a>
+/lightning/r/User/0051K00000A68ujQAB/view-->
+                            </p>
+                            <!--  <div  style="text-align:right;">
+                 
+                    <span data-id="{!rec.Id}" onclick="{! c.handleClick }"  >                                                                      
+                         <lightning:button variant="bare" iconPosition="left" iconName="utility:reply"
+                                                                      class="iconWithoutBorder" />
+                    </span>
+                 <span data-id="{!rec.Id}" onclick="{!c.handleClick}">                                                                               
+                  <lightning:button variant="brand-outline"  label="Respond" title="Respond"  />
+                 </span>  
+                </div> -->
+                            
+                        </div>
+                    </div>
+                    
+                </aura:iteration>
+                <aura:set attribute="else"> 
+                    <strong>No Responses! </strong>
+                </aura:set>
+            </aura:if>
+            
+        </div>
+    </div>
+    
+    <aura:if isTrue="{!v.openResponseModel}">
+        
+        <div class="slds-modal__content slds-p-around--large" >
+            <div class="slds slds-scope" >
+                <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                         aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                    <div class="slds-modal__container Expensemodal">
+                        <header class="slds-modal__header">
+                            <lightning:buttonIcon iconName="utility:close" onclick="{!c.doCancel }" alternativeText="close"
+                                                  variant="bare-inverse" class="slds-modal__close" />
+                            <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New Response</h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" >
+                            <lightning:messages />
+                            <div class="slds-form-element slds-email-composer__combobox" style="padding-top: 20px;padding-bottom: 10px;">
+                                <label class="slds-form-element__label" for="recipients-to">Reply To </label>
+                                <div class="slds-form-element__control" >
+                                    <div class="slds-combobox_container slds-has-inline-listbox" style="margin-left:60px;">
+                                        <b> {!v.ReplyTo}</b>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            
+                            <aura:if isTrue="{!!v.Isnewrfiresponse}">
+                                
+                                <div class="slds-form-element slds-email-composer__combobox" style="padding-top: 10px;padding-bottom: 10px;">
+                                    <label class="slds-form-element__label" for="recipients-to">BT Account</label>
+                                    <div class="slds-form-element__control "  style="margin-left:60px;">
+                                        <div class="slds-combobox_container slds-has-inline-listbox">
+                                            <c:BT_MultiSelectLookup objectAPIName="user"
+                                                                    IconName="standard:user"
+                                                                    lstSelectedRecords="{!v.selectedUsers}"
+                                                                    label=""/>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="slds-form-element slds-email-composer__combobox" style="padding-top: 10px;padding-bottom: 10px;">
+                                    <label class="slds-form-element__label" for="recipients-cc">External Contact</label>
+                                    <div class="slds-form-element__control" style="margin-left:60px;">
+                                        <div class="slds-combobox_container slds-has-inline-listbox" >
+                                            <c:BT_MultiSelectLookup objectAPIName="contact"
+                                                                    IconName="standard:contact"
+                                                                    lstSelectedRecords="{!v.selectedContacts}"
+                                                                    label=""/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </aura:if>
+                            <div class="slds-form-element">
+                                <lightning:inputRichText aura:id="bodyId" placeholder="Response" value="{!v.templateBody}"  onfocus="{!c.closeErrorMSG}"/>
+                                <aura:if isTrue="{!v.errorMSG}">
+                                    <div style="color:red;">Enter Response</div>
+                                </aura:if>
+                            </div>
+                            <br/>
+                            <!-- <div Style="padding-bottom:10px;">
+                                <div >
+                                    <lightning:button name="Add" variant="brand" label="Add" onclick="{!c.uploadFile}" />
+                                </div>
+                                <c:BT_MultiSelectLookup objectAPIName="buildertek__File__c"
+                                                        IconName="standard:file"
+                                                        lstSelectedRecords="{!v.selectedFiles}"
+                                                        label=""
+                                                        placeholder="Attachments"/>
+                            </div> -->
+                                          <div style="border:1px solid lightgray;border-radius:5px;padding:10px;margin-top:10px">
+                        <lightning:layout multipleRows = "true">
+                            <lightning:layoutitem >
+                                <div>
+                                    <!-- <lightning:input aura:id="fuploader" onchange="{!c.handleFilesChange}" type="file" variant="label-hidden" name="file" label="" multiple="true" accept="image/png,image/jpeg,image/jpg"/> -->
+                                    <!-- <div class="slds-text-body_small slds-text-color_error">{!v.fileName} </div>  -->                                  
+                                    
+                                    <lightning:fileUpload label="Upload files"
+                                                          multiple="true"
+                                                          accept=".pdf, .png, .jpg, .jpeg, .csv, .DOC, .DOCX, .TXT, .XLS, .XLSX, .ZIP, .PDF, .PNG, .webm"
+                                                          recordId="{!v.recordId}"
+                                                          aura:id="multipleUpload"
+                                                          onuploadfinished="{!c.handleUploadFinished}" />
+                                    
+                                    <!-- <div class="container">
+                                        <input type="file" class="file" aura:id="file" />                                        
+                                        <div aura:id="uploading" class="notUploading">
+                                            <img src="/resource/paura__images/loading-gray.gif" alt="uploading" class="small-spinner" /> Uploading...
+                                        </div>
+                                    </div> -->                                  
+                                    
+                                    <aura:iteration items="{!v.selectedfilesFill}" var="sr">
+                                        <lightning:pill class="slds-m-around_xx-small slds-text-body_small slds-text-color_error" label="{!sr.Name}" name="{!sr.Name}" onremove="{! c.clear }">
+                                            <aura:set attribute="media">
+                                                <lightning:icon iconName="standard:file" size="x-small" alternativeText="icon"/>
+                                            </aura:set>
+                                        </lightning:pill>
+                                    </aura:iteration>
+                                </div>
+                            </lightning:layoutitem>                          
+                        </lightning:layout>
+                    </div>
+                        </div>
+                        <!--  <c:RFI_RR_Response recordId="{!v.CMPId}"/>-->
+                        
+                        <footer class="slds-modal__footer" style = "padding-top: 10px">
+                            
+                            <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{!c.doCancel }" />
+                            <!-- <lightning:button variant="neutral" title="Save &amp; New" label="Save &amp; New"
+                                              onclick="{!c.saveAndNew}" /> -->
+                            <lightning:button variant="brand" type="submit" name="save" label="Respond"  onclick="{!c.sendResponse}"/>
+                            
+                        </footer>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+                
+            </div>
+            
+        </div>
+    </aura:if>                                                                                      
+    
+</aura:component>

@@ -1,0 +1,12 @@
+<aura:component implements="force:hasRecordId,force:lightningQuickActionWithoutHeader" controller="CreatePurchaseOrderDAO" access="global">
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+	<lightning:notificationsLibrary aura:id="notifLib"/>
+	<div aura:id="progressbar">
+    	<center>
+	    	<img alt="Creating new Purchase Order" src="{!$Resource.gearsloading}" style="height:150px !important;"/>
+	    	<br/>
+	    	Creating new Purchase Order <br/> Please don't leave this page until Purchase Order is created.
+    	</center> 
+    </div>
+    
+</aura:component>

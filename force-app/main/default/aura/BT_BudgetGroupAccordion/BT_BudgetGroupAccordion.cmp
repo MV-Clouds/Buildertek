@@ -1,0 +1,333 @@
+<aura:component controller="BudgetDAO">
+    
+	<aura:attribute name="budgetId" type="String" description="budget record Id" />
+    <aura:attribute name="group" type="object" access="public" description="Group details"/>
+    <aura:attribute name="recordViewForm" type="Aura.Component[]" description="Place holder for section record View Form"/> 
+    <aura:attribute name="lineItems" type="Aura.Component[]" description="Place holder for Group lines"/> 
+	<aura:attribute name="icone" type="String" default="chevrondown" description="This attribute is used to twiste accordion icone"/> 
+	<aura:attribute name="headerFields" type="List" default="" description="Section header fields"/>
+    <aura:attribute name="initReference" type="Aura.Action" description="Init Reference action used to call from child components"/>
+    <aura:attribute name="isOpen" type="boolean" default="false"/>
+	<aura:attribute name="index" type="String" description="Iteration index"/>
+	<aura:handler name="oSelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.handleComponentEvent}"/>
+	<aura:handler name="SelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.handleComponentEvents}"/>
+	<aura:attribute name="lines" type="Object"/> 
+    <aura:attribute name="columns" type="List"/>
+    <aura:attribute name="selectedRows" type="List"/>
+    <aura:attribute name="selectedColumns" type="List"/>
+    <aura:attribute name="loadDataTable" type="boolean" default="false"/>
+    <aura:attribute name="columnsLength" type="Decimal" />
+    <aura:attribute name="btTableColumnsLength" type="Decimal" />
+    <aura:attribute name="firstColumnLength" type="Decimal" />
+    <aura:attribute name="firstColumnWidth" type="Decimal" />
+    <aura:attribute name="buttonWidth" type="String" />
+    <aura:attribute name="checkbox" type="boolean" default="false"/>
+    <aura:attribute name="objInfo" type="Budget_Item__c" default="{sobjectType : 'Budget_Item__c'}" />
+    
+    <aura:attribute name="summaryColumns" type="List"/>
+	<aura:attribute name="options" type="List"/>
+	<aura:handler name="init" value="{!this}" action="{!c.init}" />
+	<aura:method name="refreshData" action="{!c.init}"></aura:method>
+    <aura:method name="twistAccordion" action="{!c.twistAccordion}"/>
+    <aura:method name="fetchPickListVal" action="{!c.fetchPickListVal}"/>
+    
+    <aura:attribute name="BudgetLine" type="Budget_Item__c" default="{ 'sobjectType':'Budget_Item__c',
+                                                                              'buildertek__Quantity__c':1,
+                                                                              'buildertek__Cost_Code__c__c':null
+                                                                              }" access="global"/>
+    <aura:attribute name="costCode" type="string" />
+    <aura:attribute name="groupFilter" type="string" />
+    <aura:registerEvent name="RefreshEvent" type="c:BT_RefreshEvent"/>
+    <aura:attribute name="costCodeFilter" type="string" />
+    <aura:attribute name="selectedLookUpRecord" type="string" />
+    <aura:attribute name="IsDesktop" type="Boolean" />
+    <aura:attribute name="IsMobile" type="Boolean" />
+    <aura:attribute name="fontSize" type="Decimal" />
+    <aura:registerEvent name="oSelectedCheckboxValue" type="c:SelectedCheckboxValue"/>
+    <aura:handler name="checkboxSelect" event="c:SelectAllCheckBoxes" action="{!c.handleCheckboxEvent}" />
+    <aura:attribute name="childAttribute" type="Boolean"/>
+    <aura:handler name="change" value="{!v.childAttribute}" action="{!c.onChildAttributeChange}"/>
+    <aura:handler name="change" value="{!v.selectedColumns}" action="{!c.changeValue}"/>
+    
+    <aura:if isTrue="{!v.IsDesktop}">
+        <aura:html tag="style">
+            .bttableheaderone  {
+           	    max-width: {!v.columnsLength + '%'};
+           	    min-width: {!v.columnsLength + '%'};
+                width: {!v.columnsLength + '%'};
+                cursor: default !important;
+                text-align: -webkit-left !important;
+                justify-content: left !important;
+                word-wrap: break-word;
+            }
+            .bttable {
+                max-width: {!v.columnsLength + '%'};
+           	    min-width: {!v.columnsLength  + '%'};
+                width: {!v.btTableColumnsLength + '%'};
+                cursor: default !important;
+                text-align: -webkit-left !important;
+                justify-content: left !important;
+                word-wrap: break-word; 
+            }
+            
+            .bttableheaderone:nth-child(1) {
+                width: {!v.firstColumnLength + '%'};
+            }   
+            .bttable:nth-child(1) {
+               width: {!v.firstColumnLength + '%'};
+            } 
+            .bttableheaderone:nth-child(0) {
+                width: {!v.firstColumnWidth + '%'};
+                word-wrap: break-word;
+            }
+            
+            .bttable:nth-child(0) {
+                width: {!v.firstColumnWidth + '%'};
+                word-wrap: break-word;
+            } 
+            .slds-accordion__summary-action {
+                position: relative !important;
+                display: inline-flex !important;
+                flex-grow: 1 !important;
+                align-items: right !important;
+                width: {!v.buttonWidth + 'em !important'}; 
+                left: 0;
+                top: auto;
+            }
+            
+        </aura:html>
+    </aura:if>
+    <aura:if isTrue="{!v.IsMobile}">
+        <aura:html tag="style">
+            .bttableheaderone  {
+           	    max-width: {!v.columnsLength + '%'};
+           	    min-width: {!v.columnsLength + '%'};
+                width: {!v.columnsLength + '%'};
+                cursor: default !important;
+                text-align: -webkit-left !important;
+                justify-content: left !important;
+                word-wrap: break-word;
+            }
+            .bttable {
+                max-width: {!v.columnsLength + '%'};
+           	    min-width: {!v.columnsLength  + '%'};
+                width: {!v.btTableColumnsLength + '%'};
+                cursor: default !important;
+                text-align: -webkit-left !important;
+                justify-content: left !important;
+                word-wrap: break-word; 
+                font-size: {!v.fontSize + 'px !important'};
+            }
+            
+            .slds-truncate {
+                font-size: {!v.fontSize + 'px !important'};    
+            }
+            
+            .bttableheaderone:nth-child(1) {
+                width: {!v.firstColumnLength + '%'};
+            }   
+            .bttable:nth-child(1) {
+               width: {!v.firstColumnLength + '%'};
+            } 
+            .bttableheaderone:nth-child(0) {
+                width: {!v.firstColumnWidth + '%'};
+                word-wrap: break-word;
+            }
+            
+            .bttable:nth-child(0) {
+                width: {!v.firstColumnWidth + '%'};
+                word-wrap: break-word;
+            } 
+            .slds-accordion__summary-action {
+                position: relative !important;
+                display: inline-flex !important;
+                flex-grow: 1 !important;
+                align-items: right !important;
+                width: {!v.buttonWidth + 'em !important'}; 
+                left: 0;
+                top: auto;
+            }
+            
+        </aura:html>        
+    </aura:if>
+   
+    <aura:if isTrue="{!v.isOpen}">
+    
+        <!--###### MODAL BOX Start From Here ######--> 
+        <div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open ">
+            <div class="slds-modal__container">
+            <!-- ###### MODAL BOX HEADER Part Start From Here ######-->
+                <div class="slds-modal__header">
+                    <button class="slds-button slds-modal__close slds-button--icon-inverse" title="Close" onclick="{!c.closeModel}">
+                        X
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="header99" class="slds-text-heading--medium">Edit Budget Line</h2>
+                </div>
+                <!--###### MODAL BOX BODY Part Start From Here ######-->
+                <div class="slds-modal__content slds-p-around--medium">
+                    <div aura:id="inlineEditBudget" style="margin-top:25px; margin-bottom:25px;">             
+		           
+    		            <table class="slds-table slds-table_bordered slds-table_cell-buffer" style="border:1px solid rgb(216, 237, 255); border-radius:5px;">
+    		                <thead>
+    		                    <tr class="slds-text-title_caps"  >
+    		                        <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-left-radius:5px;">
+    		                            <div class="slds-truncate" title="Product">Product</div>
+    		                        </th>
+    		                        <th style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+    		                        	 <div class="slds-truncate" title="Quote Line">Budget Line</div>
+    		                        </th>
+    		                        <th style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+    		                        	 <div class="slds-truncate" title="Quote Line">Cost Code</div>
+    		                        </th>
+    		                        <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+    		                            <div class="slds-truncate" title="Grouping">Group</div>
+    		                        </th>
+    		                        
+    		                        <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+    		                            <div class="slds-truncate" title="Grouping">UOM</div>
+    		                        </th>
+    		                        <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+    		                            <div class="slds-truncate" title="Quantity">Quantity</div>
+    		                        </th>
+    		                        <th style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+    		                        	<div class="slds-truncate" title="Unit Price">Unit Price</div>
+    		                        </th>            
+    		                    </tr>
+    		                </thead>
+    		                <tbody>
+    							<tr>
+    		                    	<td>
+    		                            <c:BT_LightningLookup objectAPIName="Product2" IconName="standard:product" SearchKeyWord="{!v.selectedLookUpRecord}"/>
+    		                        </td>
+    		                        <td>
+    		                        	<ui:inputText  value="{!v.BudgetLine.Name}"/>
+    		                        </td>
+    		                        <td>
+    		                        	<c:BT_LookUp _field="buildertek__Cost_Code__c" 
+    									                  _sobject="buildertek__Budget_Item__c" 
+    									                  _target_sobject="buildertek__Cost_Codes__c"
+    									                  _value="{!v.BudgetLine.buildertek__Cost_Code__c}"
+    									                  _text_value = "{!v.costCode}"
+    									                  _label=""
+    									                  _filter="{!v.costCodeFilter}"
+    									                  />
+    		                        </td>
+    		                        <td>
+    		                        	<!--<force:inputField value="{!v.newBudgetLine.buildertek__Group__c}"/>-->
+    		                            <c:BT_LookUp _field="buildertek__Budget_Line_Group__c" 
+    									                  _sobject="buildertek__Budget_Item__c" 
+    									                  _value="{!v.BudgetLine.buildertek__Budget_Line_Group__c}"
+    									                  _text_value = "{!v.BudgetLine.buildertek__Budget_Line_Group__r.Name}"
+    									                  _label=""
+    									                  _filter=""
+    									                  />
+    		                        </td>
+    		                        <td>
+    		                              <ui:inputSelect value="{! v.BudgetLine.buildertek__UOM__c }" >
+                                                <aura:iteration var="option" items="{! v.options }">
+                                                    <option value="{! option.value }" selected="{! (option.value == v.BudgetLine.buildertek__UOM__c) }">{! option.label }</option>
+                                                </aura:iteration>
+                                            </ui:inputSelect>
+    		                            <!--<ui:inputSelect aura:id="UOMId" value="{!v.BudgetLine.buildertek__UOM__c}"/>-->
+    		                        </td>
+    		                        <td>
+    		                            <ui:inputText value="{!v.BudgetLine.buildertek__Quantity__c}"/>
+    		                        </td>
+    		                        <td>
+    		                        	<ui:inputText  value="{!v.BudgetLine.buildertek__Unit_Price__c}" />
+    		                        </td>
+    		                    </tr>
+    		                </tbody>
+    		            </table>
+		            </div>
+                </div>
+                <!--###### MODAL BOX FOOTER Part Start From Here ######-->
+                <div class="slds-modal__footer">
+                    <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}" >Cancel</button>
+                    <button class="slds-button slds-button--brand" onclick="{!c.updateBudgetItemRecord}">Save</button>
+                </div>
+            </div>
+        </div>
+        <div class="slds-backdrop slds-backdrop--open"></div>
+        <!--###### MODAL BOX Part END Here ######-->
+    
+    </aura:if>
+    
+    
+    <div id="{!'accordion'+globalId}" class="av-section-handle slds-accordion__section slds-is-open" >
+        <div class="slds-accordion__summary highlight" style="background:rgba(21, 137, 238, 0.1);">
+            <h3 class="av-nodrag slds-accordion__summary-heading" >
+              
+               <table class="slds-table slds-table_header-fixed slds-table_bordered slds-table_edit slds-table_resizable-cols" style="background: unset;border: 0;">
+                	<tbody class="bttable">
+                		<tr class="slds-line-height_reset">
+                		    	<td  class="bttableheaderone" >
+                				<button aria-expanded="true" class="slds-button slds-accordion__summary-action" onclick="{!c.twistAccordion}">
+				                    <div onclick="{!c.twistAccordion}">
+				                        <lightning:icon iconName="{!'utility:'+v.icone}"  size="xx-small" onclick="{!c.twistAccordion}"/>
+				                    </div>
+				                    <span class="slds-truncate" style="font-size: 1rem;color:#000;" title="{!v.group.Name}"><b style="color:white;white-space: nowrap;font-size: smaller !important;">&nbsp;{!v.group.Name}</b></span>
+				                </button>
+                			</td>
+                			<aura:iteration items="{!v.summaryColumns}" var="column">
+                					<aura:if isTrue="{!and(column.fieldName != 'buildertek__Product_Name__c', column.fieldName != 'buildertek__Quantity__c')}">
+			                			<aura:if isTrue="{!column.type != 'action'}">
+			                			<td class="bttable" style="cursor: default;color:white;text-align: -webkit-left;justify-content: left !important;font-size: smaller !important;word-wrap: break-word !important;word-break: break-all !important;" >
+			                				<aura:if isTrue="{!column.type == 'currency'}">
+			                					<lightning:formattedNumber value="{!column.total}" style="currency" />
+			                				</aura:if>
+                                            
+			                			</td>
+			                			</aura:if>
+		                			</aura:if>
+                                    <!--<aura:if isTrue="{!or(column.fieldName == 'buildertek__Product_Name__c', column.fieldName == 'buildertek__Quantity__c')}">-->
+                                    <!--    <td class="bttableheaderone" style="cursor: default;text-align: -webkit-left;justify-content: left !important;" >-->
+                                            
+                                    <!--    </td>-->
+                                    <!--</aura:if>-->
+                			</aura:iteration>
+                		</tr>
+                	</tbody>
+                </table>
+                
+                <div class="accordion_edit" style="padding:5px;width:20px;"><a href="javascript:void(0);" onclick="{!c.editGroup}"><lightning:icon iconName="utility:edit" size="x-small"/></a></div>
+            </h3>
+            <div class="accordion_edit" style="padding:5px;padding-left:10px;"> <lightning:buttonIcon iconName="utility:move" variant="bare" /></div>
+        </div>
+        <div aria-hidden="false" class="av-nodrag slds-accordion__content" style="cursor: default;">
+            <div style="padding-left:1.4rem;padding-right:10px;margin-top: -10px;">
+                <div aura:id="recordView">{!v.recordViewForm}</div>
+            </div>
+            
+            <div aura:id="GroupItemDetails">
+            	<aura:if isTrue="{!v.lines != null}">
+	       			<lightning:datatable  aura:id="lineTable"
+			            columns="{! v.columns }"
+			            data="{! v.lines }"
+			            showRowNumberColumn="true"
+			            onrowaction="{! c.handleRowAction }"
+			         	onheaderaction="{! c.handleHeaderAction }"
+			         	onrowselection="{!c.UpdateSelectedRows}"
+			         	selectedRows="{!v.selectedColumns}"
+			         	onsave="{!c.onsave}"
+			            keyField="Id"
+			            class="bttable"
+			            minColumnWidth="108px"
+			            />
+			            <aura:set attribute="else">
+			            	<center>No records to display</center>
+			            </aura:set>
+	            </aura:if>
+            </div>
+            
+            
+            <!-- 
+            <div class="av-nodrag" style="padding-left: 1rem !important;padding:10px;">
+                <lightning:button variant="neutral" iconName="utility:add" iconPosition="left" onclick="{!c.openNewGroupComponent}" label="Add Product"/>
+            </div>
+             -->
+        </div>
+    </div>
+    <lightning:overlayLibrary aura:id="overlayLib"/>
+</aura:component>

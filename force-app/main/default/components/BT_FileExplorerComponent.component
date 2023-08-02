@@ -1,0 +1,1324 @@
+<!--**********************************************************************************
+* Copyright © 2017-2017, BuilderTek.
+* All rights reserved
+*
+* VisualForce Component: edFileExplorerComponent
+* Created by Sagar
+*
+* - This is the component for File Explore
+*
+* - Modifications:
+* - Sagar – Initial Development
+***********************************************************************************-->
+<apex:component id="fileExplorerComponent" controller="BT_FileExplorerComponentController" allowDML="true">
+    <apex:attribute name="primaryParentObjectId" description="Id of Primary Parent record for which folder/file will be created." type="String" assignTo="{!primaryParentObjId}" />
+    <apex:attribute name="primaryParentObjectFieldAPI" description="Field API Name for Primary Parent record for which folder/file will be created." type="String" assignTo="{!primaryParentObjFieldAPI}" />
+    <apex:attribute name="secondaryParentObjectId" description="Id of Secondary Parent record for which folder/file will be created." type="String" assignTo="{!otherObjectId}" />
+    <apex:attribute name="secondaryParentObjectFieldAPI" description="Field API Name for Secondary Parent record for which folder/file will be created." type="String" assignTo="{!otherObjectFieldAPI}" />
+    <apex:attribute name="callerName" default="FileUpload" description="Caller name from where the component display." type="String" assignTo="{!callerPage}"/>
+    <apex:attribute name="explorerConfig" description="File explorer configuration to use." type="String" assignTo="{!explorerConfigName}"/>
+    <apex:attribute name="folderIdToLoad" description="Id of folder to expand by defaul on page load." type="String" assignTo="{!folderToExpand}"/>
+
+    {!Initialize}
+    
+    <style>
+        .apLightningImageButtonDisabled{
+            opacity: 0.2;
+        }
+        .apLightningButtonDisabled{
+            pointer-events: none;
+        }
+        .apLayoutContainer{
+            border: 1px solid rgb(216, 221, 230) !important;
+            overflow: inherit !important;
+        }
+        .apLayoutHeader{
+            padding: 8px !important;
+            margin-bottom: 10px !important;
+            text-transform: uppercase !important;
+        }
+        .apLayoutContent{
+            padding: 0px !important;
+        }
+        .apWestPanel{
+            height: 100% !important;
+            border-right: 1px solid rgb(216, 221, 230) !important;
+        }
+        .apNorthPanel{
+            min-height:500px;
+            height: 100% !important;
+            position: relative !important;
+            padding: 0px;
+            overflow: inherit !important;
+        }
+        .apLayoutHeaderIcon{
+            height: 16px !important;
+            width: 16px !important;
+        }
+        .apLayoutResizer{
+            width: 1px !important;
+        }
+        .apBreadcrumbLink{
+            text-transform: uppercase !important;
+        }
+        .apFileExplorerHeaderSection{
+            padding-bottom: 5px !important;
+        }
+        .apSmallButtonIcon{
+            width: 20px !important;
+            height: 20px !important;
+            padding: 2px !important;
+        }
+        .apFileSubDetailItem{
+            font-size: 0.66rem !important;
+        }
+        .apSelectedAction{
+            background: #f7f9fb !important;
+            font-style: italic;
+            font-weight: bold;
+        }
+        .apFileDetailListDiv{
+        	overflow: scroll;
+        	height: 870px;
+        }
+        .apFileDetailRow:hover{
+             background: #f7f9fb;
+        }
+        #layoutContainer{
+            border: 0px;
+            height: 100% !important;
+        }
+        #AmazonFolderFileSystem{
+            height: 100% !important;
+            padding: 0px !important;
+        }
+    </style> 
+    
+    <script>
+    //  alert(document.title)
+       var uploadFileIframe;
+        j$(document).ready(function() {
+            easyToolTipForAll();
+        });
+        
+        j$(document).click(function (e){
+            j$(".slds-is-open").each( function(){
+                if(j$(this).has(e.target).length === 0){
+                    j$(this).removeClass('slds-is-open');
+                }
+            });
+        });
+        
+        function easyToolTipForAll() {
+            j$('.apHelpTextDynamic').easyTooltip({width: '200px', isLightning:true, isFormatted:true});
+            j$('.apHelpText').easyTooltip({width: '200px', isLightning:true, isFormatted:true});
+            return false;
+        }
+        
+        function resizeUploadFileWindow(){
+            var uploadFileIframe = document.getElementById("uploadFileIframe").contentWindow;
+            j$("#uploadFileIframe").css({height: uploadFileIframe.j$("body").outerHeight()+30});
+            
+        }
+        
+        function closeWindowForUploadFile(){
+            var uploadFileIframe = document.getElementById("uploadFileIframe").contentWindow;
+            if(uploadFileIframe.j$("div[id$='fileUploadSuccessSection']").html() != '' && uploadFileIframe.j$("div[id$='fileUploadSuccessSection']").html() != undefined){
+                getFilesAndFolders();
+            }
+            Appurin.lightning.hideModalPopup({'modalPopupId':'{!$Component.uploadFilePopup}'});
+        }
+        
+        function resizeNewFolderWindow(){
+            var newFolderIframe = document.getElementById("newFolderIframe").contentWindow;
+            j$("#newFolderIframe").css({height: newFolderIframe.j$("body").outerHeight()+30});
+            var newFolderIframe = document.getElementById("newFolderIframe").contentWindow;
+            j$("#newFolderIframe").css({height: newFolderIframe.j$("body").outerHeight()+30});
+        }
+        
+        function closeWindowForNewFolder(){
+            Appurin.lightning.hideModalPopup({'modalPopupId':'{!$Component.newFolderPopup}'});
+            Appurin.lightning.hideModalPopup({'modalPopupId':'{!$Component.uploadFilePopup}'});
+            
+        }
+        
+        function refreshAfterNewFolder(){
+            var uploadFileIframe = document.getElementById("newFolderIframe").contentWindow;
+            getFilesAndFolders();
+            Appurin.lightning.hideModalPopup({'modalPopupId':'{!$Component.newFolderPopup}'});
+        }
+        
+        function openWindowForNewFolder(parentFolder, mainObjectFieldAPI, mainObjectId, otherObjectFieldAPI, otherObjectId){
+            //alert('test1');
+            var uploadFileURL = '/apex/BT_MultiFileUpload?clr=1&parentFolderId='+parentFolder;
+            if(mainObjectFieldAPI != null){
+                 uploadFileURL += '&mofa='+mainObjectFieldAPI+'&moi='+mainObjectId;
+            }
+            if(otherObjectFieldAPI != null){
+                 uploadFileURL += '&oofa='+otherObjectFieldAPI+'&ooi='+otherObjectId;
+            }
+            startSplash();
+            j$("div[id$='newFolderPopup']").find("iframe[id$='newFolderIframe']").attr('src', uploadFileURL).css('width', '100%').attr('frameborder', '0'). attr('scrolling', 'no').load(function (){
+               endSplash(); 
+               Appurin.lightning.showModalPopup({'modalPopupId':'{!$Component.newFolderPopup}'});
+               resizeNewFolderWindow();
+            });
+            return false;
+        } 
+    function popupClosed() {
+        console.log('Call');
+    }
+        function openWindowForUploadFile(selectedFolder, parentFolder, mainObjectFieldAPI, mainObjectId, otherObjectFieldAPI, otherObjectId){
+            var uploadFileURL = '/apex/BT_UploadFile?clr=1&sf='+selectedFolder;
+            if(mainObjectFieldAPI != null){
+                 uploadFileURL += '&mofa='+mainObjectFieldAPI+'&moi='+mainObjectId;
+            }
+            if(otherObjectFieldAPI != null){
+                 uploadFileURL += '&oofa='+otherObjectFieldAPI+'&ooi='+otherObjectId;
+            }
+            
+            console.log('selectedFolder--->',selectedFolder);
+            console.log('mainObjectFieldAPI--->',mainObjectFieldAPI);
+            console.log('parentFolder--->',parentFolder);
+            console.log('mainObjectId--->',mainObjectId);
+            console.log('otherObjectFieldAPI--->',otherObjectFieldAPI);
+            console.log('otherObjectId--->',otherObjectId);
+            
+            
+            
+            startSplash();
+            j$("div[id$='uploadFilePopup']").find("iframe[id$='uploadFileIframe']").attr('src', uploadFileURL).css('width', '100%').attr('frameborder', '0'). attr('scrolling', 'no').load(function (){
+                endSplash(); 
+                Appurin.lightning.showModalPopup({'modalPopupId':'{!$Component.uploadFilePopup}'});
+                resizeUploadFileWindow();
+            });
+            debugger;
+            return false;
+        }
+    
+    function receiveMessage(event){
+        if (event.data=="removetheiframe"){
+            Appurin.lightning.hideModalPopup({'modalPopupId':'{!$Component.uploadFilePopup}'});
+        }
+    }
+    window.addEventListener("message", receiveMessage, false);
+        function openWindowForFileEdit(selectedFile){
+           
+            //if(Appurin.lightning.isLightningExperience()){
+               
+                sforce.one.editRecord(selectedFile);
+            // } else{
+                
+            //   var editFileURL = "/"+selectedFile+"/e?retURL=/"+selectedFile;
+            //   window.open(editFileURL);
+            // }
+             return false;
+        }
+        
+        function openWindowForFolderEdit(selectedFolder){
+            
+            // if(Appurin.lightning.isLightningExperience()){
+                sforce.one.editRecord(selectedFolder);
+                
+                // } else{
+                // var editFolderURL = "/"+selectedFolder+"/e?retURL=/"+selectedFolder;
+                // window.open(editFolderURL);
+                //}
+            return false;
+        }
+        
+        function openWindowForFolderDetail(selectedFolder){
+             if(Appurin.lightning.isLightningExperience()){
+                sforce.one.navigateToSObject(selectedFolder);
+            } else{
+                var viewFolderWindowURL = "/"+selectedFolder;
+                window.open(viewFolderWindowURL);
+            }
+            return false;
+        }
+        
+        function openWindowForFileDetail(selectedFile){
+            if(Appurin.lightning.isLightningExperience()){
+                sforce.one.navigateToSObject(selectedFile);
+            } else{
+                var viewFileWindowURL = "/"+selectedFile;
+                window.open(viewFileWindowURL);
+            }
+            return false;
+        }
+        
+        function deleteSelected(){
+            var isFewSelected = false;
+            var isInsufficientAccess = false;
+            j$("input[id$='isSelect']").each( function(){
+                if(!isFewSelected && j$(this).attr('checked') == 'checked'){
+                    if(j$("#lightningMenu"+j$(this).parent().parent().attr('id')).find('a.delete').html() != undefined){
+                        isFewSelected = true;
+                    } else{
+                        isInsufficientAccess = true;
+                    }
+                }
+            });
+            if(isFewSelected){
+                startSplash();
+                deleteSelectedFiles();
+            } else{
+                Appurin.lightning.showAlertPrompt({'modalPopupId':'lightningInfoPopup', 'messageType':'Warning', 'title': 'Warning', 'message': '{!JSENCODE($Label.buildertek__Select_One_Or_More_Records_To_Delete)}', 'buttonLabel': '{!JSENCODE($Label.buildertek__Ok)}', 'isRedirect' : false});
+            }
+            return false;
+        }
+        
+        function selectAll(element){
+            j$("input[id$='isSelect']").each( function(){
+                if(j$(element).attr('checked') == 'checked'){
+                    j$(this).attr('checked', 'checked');
+                } else{
+                    j$(this).removeAttr('checked');
+                }
+            });
+        }
+        
+        function fileSelect(){
+            var allSelected = true;
+            j$("input[id$='isSelect']").each( function(){
+                if(allSelected && j$(this).attr('checked') != 'checked'){
+                    allSelected = false;
+                }
+            });
+            if(allSelected){
+                j$("input[id$='selectAll']").attr('checked', 'checked');
+            } else{
+                j$("input[id$='selectAll']").removeAttr('checked');
+            }
+        }
+        
+        function resetActionLabels(sourceId){
+            j$("#lightningMenu"+sourceId).find('a.copy').parent().removeClass('apSelectedAction').find("span").find("label").text('{!JSENCODE($Label.buildertek__Copy)}');
+            j$("#lightningMenu"+sourceId).find('a.cut').parent().removeClass('apSelectedAction').find("span").find("label").text('{!JSENCODE($Label.buildertek__Cut)}');
+        }
+        
+        function getSourceRecords(){
+            var sourceRecordsString = j$("input[id$='sourceRecordsStringHiddenField']").val();
+            var copyRecords;
+            if(sourceRecordsString == ''){
+                copyRecords = {};
+            } else{
+                copyRecords = JSON.parse(sourceRecordsString);
+            }
+            return copyRecords
+        }
+        
+        function setActionLabels(sourceId){
+            resetActionLabels(sourceId);
+            var copyRecords = getSourceRecords();
+            var source = copyRecords[sourceId];
+            if(source != undefined){
+                if(source.actionType == 'Copy'){
+                    j$("#lightningMenu"+sourceId).find('a.copy').parent().addClass('apSelectedAction').find("span").find("label").text('{!JSENCODE($Label.buildertek__Copied)}');
+                }
+                if(source.actionType == 'Cut'){
+                    j$("#lightningMenu"+sourceId).find('a.cut').parent().addClass('apSelectedAction').find("span").find("label").text('{!JSENCODE($Label.buildertek__Cut)}');
+                }
+            }
+        }
+        
+        function copyingRecord(recordId, name, folderId, objId, recordType, actionType){
+            var copyRecords = getSourceRecords();
+            
+            //See if we need to start a new selection
+            j$.each(copyRecords, function(i, copyRecord){
+                if(copyRecord.folderId != folderId){
+                    //New selection will be started. Paste button will be made hidden as copying is done from same folder.
+                    copyRecords = {};
+                    if(j$("button[id$='pasteButton']") != undefined){
+                        j$("button[id$='pasteButton']").css('display','none');
+                    }
+                    return;
+                }
+            });
+            var copyRecord = {};
+            copyRecord.id = recordId;
+            copyRecord.name = name;
+            copyRecord.recordType = recordType;
+            copyRecord.actionType = actionType;
+            copyRecord.folderId = folderId;
+            copyRecord.objId = objId != 'Home' ? objId : '';
+            copyRecords[copyRecord.id] = copyRecord;
+            debugger;
+            console.log('Copy Record::',copyRecords);
+            j$("input[id$='sourceRecordsStringHiddenField']").val(JSON.stringify(copyRecords));
+        }
+        
+        function cutOrCopySelected(actionType){
+            var isInsufficientAccess = false;
+            var copyRecords = {};
+            var isItemSelected = false;
+            j$("input[id$='isSelect']").each( function(){
+                if(j$(this).attr('checked') == 'checked'){
+                    if(actionType == 'Copy' && j$("#lightningMenu"+j$(this).parent().parent().attr('id')).find('a.copy').html() != undefined || actionType == 'Cut' && j$("#lightningMenu"+j$(this).parent().parent().attr('id')).find('a.cut').html() != undefined){
+                        isItemSelected = true;
+                        var copyRecord = {};
+                        copyRecord.id = j$(this).data('fileId');
+                        copyRecord.name = j$(this).data('fileName');
+                        copyRecord.recordType = j$(this).data('type');
+                        copyRecord.actionType = actionType;
+                        copyRecord.folderId = j$(this).data('selectedFolder');
+                        copyRecord.objId = j$(this).data('mainObjectId');
+                        copyRecords[copyRecord.id] = copyRecord;
+                    } else{
+                        isInsufficientAccess = true;
+                    }
+                }
+            });
+            
+            if(isItemSelected){
+                j$("input[id$='sourceRecordsStringHiddenField']").val(JSON.stringify(copyRecords));
+            }
+            return false;
+        }
+        
+        function sendFile(selectedFile){
+            if(selectedFile != ''){
+                if(Appurin.lightning.isLightningExperience()){
+                    var sendFileWindowURL = "/apex/BT_EmailFilesToUsers?selectedFileIds="+selectedFile;
+                    Appurin.lightning.navigateToURL(sendFileWindowURL, false);
+                } else{
+                    var sendFileWindowURL = "/apex/BT_EmailFilesToUsers?selectedFileIds="+selectedFile+"&callerName=FileExplore";
+                    window.open(sendFileWindowURL);
+                }
+            }
+            return false;
+        }
+        
+        function sendSelected(){
+            var seletedFileIds = '';
+            j$("input[id$='isSelect']").each( function(){
+                if(j$(this).attr('checked') == 'checked' && j$(this).data('type') == 'File'){
+                    seletedFileIds += j$(this).data('fileId')+',';
+                }
+            });
+            if(seletedFileIds != ''){
+                if(Appurin.lightning.isLightningExperience()){
+                    var sendFileWindowURL = "/apex/BT_EmailFilesToUsers?selectedFileIds="+seletedFileIds;
+                    Appurin.lightning.navigateToURL(sendFileWindowURL, false);
+                } else{
+                    var sendFileWindowURL = "/apex/BT_EmailFilesToUsers?selectedFileIds="+seletedFileIds+"&callerName=FileExplore";
+                    window.open(sendFileWindowURL);
+                }
+            }
+            return false;
+        }
+        
+        function checkForPaste(breadCrumbRecordsString){
+            var breadCrumbRecords = JSON.parse(breadCrumbRecordsString);
+            var breadCrumbRecordsById = {};
+            j$.each(breadCrumbRecords, function(i, breadCrumbRecord){
+                breadCrumbRecordsById[breadCrumbRecord.id] = breadCrumbRecord.id;
+            });
+            var copyRecords = getSourceRecords();
+            var doCopy = true;
+            j$.each(copyRecords, function(i, copyRecord){
+                if(copyRecord.recordType == 'Folder' && copyRecord.actionType == 'Cut' && breadCrumbRecordsById[copyRecord.id] != null){
+                    var recursiveCopyAgreeFunction = new Function("Appurin.lightning.hideModalPopup({'modalPopupId' : 'lightningInfoPopup'}); pasteRecords(); return false;");
+    
+                    var confirmPromptOptions =  {   'modalPopupId' : 'lightningInfoPopup', 
+                                                    'title' : 'Confirm', 
+                                                    'message' : '{!JSENCODE($Label.buildertek__Recuresive_Copy_Message)}', 
+                                                    'agreeButtonLabel' : '{!JSENCODE($Label.buildertek__Skip)}', 
+                                                    'discardButtonLabel' : '{!JSENCODE($Label.buildertek__Cancel)}', 
+                                                    'agreeFunction' : recursiveCopyAgreeFunction
+                                                }
+                    Appurin.lightning.showConfirmPrompt(confirmPromptOptions);
+                    doCopy = false;
+                    return false;
+                }
+            });
+            if(doCopy){
+                startSplash();
+                pasteRecords();
+            }
+            return false;
+        }
+        
+        function refreshTheActiveFolderInTree(selectedFolder){
+            var selectedFolder = selectedFolder != '' ? selectedFolder : 'File Explorer - Home';
+            if(j$('#AmazonFolderFileSystem').children().length > 0){
+                if(j$('#activeNodePath').val() != ''){
+                    Appurin.tree.activateTreeNode('AmazonFolderFileSystem', j$('#activeNodePath').val());
+                }
+                var activeNode = j$('#AmazonFolderFileSystem').fancytree('getTree').getNodeByKey(selectedFolder);
+                refreshTreeNode(activeNode);
+            }
+            return false;
+        }
+        
+        function refreshTheSourceFoldersInTree(selectedFolder){
+            var selectedFolder = selectedFolder != '' ? selectedFolder : 'File Explorer - Home';
+            if(j$('#AmazonFolderFileSystem').children().length > 0){
+                var mainObjectFieldAPI = '{!JSENCODE(mainObjectFieldAPI)}';
+                var activeNodeKeyPath = j$('#AmazonFolderFileSystem').fancytree('getTree').getNodeByKey(selectedFolder).getKeyPath();
+                j$('#activeNodePath').val(activeNodeKeyPath);
+                var copyRecords = getSourceRecords();
+                var refreshFolders = {};
+                j$.each(copyRecords, function(i, copyRecord){
+                    if(copyRecord.actionType == 'Cut'){
+                        refreshFolders[copyRecord.folderId] = copyRecord.folderId;
+                    }
+                });
+                j$.map(refreshFolders, function(refreshFolder, index) {
+                    if(refreshFolder != null && refreshFolder != ''){
+                        var refreshNode = j$('#AmazonFolderFileSystem').fancytree('getTree').getNodeByKey(refreshFolder);
+                        refreshTreeNode(refreshNode);
+                    }
+                });
+            }
+            j$("input[id$='sourceRecordsStringHiddenField']").val('');
+        }
+        
+        function refreshTreeNode(node){
+            if(node!=null){
+                node.data.lazy=true;
+                node.resetLazy();
+                node.setExpanded(true);
+            }
+        }
+        
+        function setVisibilityOfPasteButton(folderId){
+            var copyRecords = getSourceRecords();
+            j$.each(copyRecords, function(i, copyRecord){
+                if(copyRecord.folderId == folderId){
+                    if(j$("button[id$='pasteButton']") != undefined){
+                        j$("button[id$='pasteButton']").css('display','none');
+                    }
+                    return;
+                }
+            });
+        }
+        
+        function validateSearchText(e) {
+            var charCode = e.charCode || e.keyCode;
+            if (charCode  == 13) {
+                searchFiles(); 
+                e.preventDefault();
+            }
+        }
+        
+        function sortFiles(sortBy){
+            j$("input[id$='inputHiddenForSortBy']").val(sortBy);
+            sortFilesAndFolders();
+            return false;
+        }
+        
+        var pageNumber = 1;
+        var pageSize = {!fileExplorerPageConfugration.pageSize};
+        
+        /*
+        This method will displays recors as per paging.
+        */
+        function showList(){
+            if(pageNumber > 1 && j$("div.apFileDetailListDiv").find("li.apFileDetailRow").length <= (pageNumber - 1)*pageSize){
+                pageNumber -= 1;
+            }
+            j$("div.apFileDetailListDiv").find("li.apFileDetailRow").each(function (i, item){
+                if(i < (pageNumber*pageSize) && i >= (pageNumber -1 )*pageSize){
+                    j$(this).css('display', 'block');
+                } else{
+                    j$(this).css('display', 'none');
+                }
+            });
+            setButtonVisibility();
+            j$("label[id$='pageNumberLabel']").html('Page '+ (j$("div.apFileDetailListDiv").find("li.apFileDetailRow").length == 0 ? 0 : pageNumber)+ ' of '+Math.ceil((j$("div.apFileDetailListDiv").find("li.apFileDetailRow").length) / pageSize)+ ' in '+ (j$("div.apFileDetailListDiv").find("li.apFileDetailRow").length));
+        }
+        
+        /*
+        This method will open first page.
+        */
+        function showFirstList(){
+            pageNumber = 1;
+            showList();
+        }
+        
+        /*
+        This method will open previous page.
+        */
+        function showPreviousList(){
+            pageNumber -= 1;
+            showList();
+        }
+        
+        /*
+        This method will open next page.
+        */
+        function showNextList(){
+            pageNumber += 1;
+            showList();
+        }
+        
+        /*
+        This method will open last page.
+        */
+        function showLastList(){
+            pageNumber = Math.ceil((j$("div.apFileDetailListDiv").find("li.apFileDetailRow").length) / pageSize);
+            showList();
+        }
+        
+        /*
+        This method will update page size.
+        */
+        function setPageSize(size){
+            pageNumber = 1;
+            pageSize = size;
+            showList();
+            return false;
+        }
+        
+        /*
+        This method will be used to set visibility of next/pre buttons.
+        */
+        function setButtonVisibility(){
+            j$("a[id*='pageSize']").each( function(){
+                if(j$(this).attr('id').indexOf('-'+pageSize+'-') != -1){
+                    j$(this).parent().addClass('apSelectedAction');
+                } else{
+                    j$(this).parent().removeClass('apSelectedAction');
+                }
+            });
+            if(j$("div.apFileDetailListDiv").find("li.apFileDetailRow").length <= pageSize){
+                j$("#fileListPagination").css('display', 'none');
+                return false;
+            } else{
+                j$("#fileListPagination").css('display', '');
+            }
+            if(pageNumber > 1){
+                j$("button[id$='firstButton']").removeClass('apLightningButtonDisabled').find("svg").removeClass('apLightningImageButtonDisabled');
+            } else{
+                j$("button[id$='firstButton']").addClass('apLightningButtonDisabled').find("svg").addClass('apLightningImageButtonDisabled');
+            }
+            
+            if(pageNumber > 1){
+                j$("button[id$='previousButton']").removeClass('apLightningButtonDisabled').find("svg").removeClass('apLightningImageButtonDisabled');
+            } else{
+                j$("button[id$='previousButton']").addClass('apLightningButtonDisabled').find("svg").addClass('apLightningImageButtonDisabled');
+            }
+            
+            if(j$("div.apFileDetailListDiv").find("li.apFileDetailRow").length > (pageNumber*pageSize)){
+                j$("button[id$='nextButton']").removeClass('apLightningButtonDisabled').find("svg").removeClass('apLightningImageButtonDisabled');
+            } else{
+                j$("button[id$='nextButton']").addClass('apLightningButtonDisabled').find("svg").addClass('apLightningImageButtonDisabled');
+            }
+            
+            if(pageNumber < Math.ceil((j$("div.apFileDetailListDiv").find("li.apFileDetailRow").length) / pageSize)){
+                j$("button[id$='lastButton']").removeClass('apLightningButtonDisabled').find("svg").removeClass('apLightningImageButtonDisabled');
+            } else{
+                j$("button[id$='lastButton']").addClass('apLightningButtonDisabled').find("svg").addClass('apLightningImageButtonDisabled');
+            }
+        }
+        
+        /*
+        Open folder when user click on folder name on north panel
+        */
+        function openFolder(folderId){
+            var selectedFolder = folderId != '' ? folderId : 'File Explorer - Home';
+            if(j$('#AmazonFolderFileSystem').children().length > 0){
+                var activeNode = j$('#AmazonFolderFileSystem').fancytree('getTree').getNodeByKey(selectedFolder); 
+                refreshTreeNode(activeNode);
+                expandFolder(folderId);
+            } else{
+                expandFolder(folderId);
+            }
+        }
+        
+        /*
+        Expand folder. Clear the string for search. Also clear the page number for previously selected folder.
+        */
+        function expandFolder(folderId){
+            resetSearchStringAndPageNumber();
+            showFilesForSelectedFolder(folderId);
+        }
+        
+        /*
+        This method will reset the page number and search string every time folder gets expnaded or open from bread crumb
+        */
+        function resetSearchStringAndPageNumber(){
+            pageNumber = 1;
+            j$("input[id$='apSearchInput']").val('');
+        }
+        
+        /*
+        This method will confirm delete from user and process.
+        */
+        function deleteConfirm(objType, objId, amazonKey){
+            var deleteAgreeFunction = new Function("Appurin.lightning.hideModalPopup({'modalPopupId' : 'lightningInfoPopup'});" +
+                                                    (objType == 'File' ? "deleteFile('"+amazonKey+"', '"+objId+"');" : "deleteFolder('"+objId+"');") +
+                                                    "return false;"
+                                                  );
+            var confirmPromptOptions =  {   
+                'modalPopupId' : 'lightningInfoPopup', 
+                'title' : 'Confirm Delete', 
+                'message' : objType == 'File' ? '{!JSENCODE($Label.buildertek__Delete_File_Confirmation)}' : '{!JSENCODE($Label.buildertek__Delete_Folder_Confirmation)}', 
+                'agreeButtonLabel' : '{!JSENCODE($Label.buildertek__Delete)}', 
+                'discardButtonLabel' : '{!JSENCODE($Label.buildertek__Cancel)}', 
+                'agreeFunction' : deleteAgreeFunction
+            }
+            Appurin.lightning.showConfirmPrompt(confirmPromptOptions);
+            return false;
+        }
+        
+        /*
+        This method will confirm mass delete from user and process.
+        */
+        function massDeleteConfirm(){
+            var deleteAgreeFunction = new Function("Appurin.lightning.hideModalPopup({'modalPopupId' : 'lightningInfoPopup'}); deleteSelected(); return false;");
+            var confirmPromptOptions =  {   
+                'modalPopupId' : 'lightningInfoPopup', 
+                'title' : 'Confirm Delete', 
+                'message' : '{!JSENCODE($Label.buildertek__Mass_Delete_Confirmation)}', 
+                'agreeButtonLabel' : '{!JSENCODE($Label.buildertek__Delete)}', 
+                'discardButtonLabel' : '{!JSENCODE($Label.buildertek__Cancel)}', 
+                'agreeFunction' : deleteAgreeFunction
+            }
+            Appurin.lightning.showConfirmPrompt(confirmPromptOptions);
+            return false;
+        }
+        
+        /*
+        This method will filter records.
+        */
+        function filterRecords(element){
+            if(j$(element).hasClass('slds-is-selected')){
+                j$(element).parent().find("input").removeAttr('checked');
+            } else{
+                j$(element).parent().find("input").attr('checked', 'checked');
+            }
+            searchFiles();
+            return false;
+        }
+        
+        /*
+        This method will sort records.
+        */
+        function sortRecords(sortBy){
+            if(j$("input[id$='sortByAPIText']").val() != sortBy){
+                j$("input[id$='sortByAPIText']").val(sortBy);
+                searchFiles();
+            }
+            return false;
+        }
+    </script>
+    
+    <apex:actionStatus id="splashStatus" onstart="startSplash();" onstop="endSplash(); " />
+    
+    <apex:actionFunction name="searchFiles" action="{!searchFiles}" status="splashStatus" rerender="northOutputPanel,dbixoHeader" onComplete="easyToolTipForAll();"/>
+    <apex:actionFunction name="getFilesAndFolders" action="{!getFilesAndFolders}" status="splashStatus" rerender="northOutputPanel,dbixoHeader" onComplete="easyToolTipForAll();refreshTheActiveFolderInTree('{!JSENCODE(selectedFolder)}');endSplash();" />
+    <apex:actionFunction name="sortFilesAndFolders" action="{!getFilesAndFolders}" rerender="northOutputPanel,dbixoHeader" status="splashStatus" onComplete="easyToolTipForAll();"/>
+    <apex:actionFunction name="showFilesForSelectedFolder" rerender="northOutputPanel,dbixoHeader" action="{!getFilesAndFolders}" status="splashStatus" onComplete="easyToolTipForAll();">
+        <apex:param name="selectedFolder" value="" assignTo="{!selectedFolder}" />
+    </apex:actionFunction>
+    <apex:actionFunction name="downloadFile" action="{!download}" status="splashStatus" onComplete="window.open('{!JSENCODE(fileDownloadURL)}', '_self');">
+        <apex:param name="fileIdToDownload" value=""/>
+    </apex:actionFunction> 
+    <apex:actionFunction name="deleteFile" action="{!deleteFile}" rerender="northOutputPanel,dbixoHeader" onComplete="easyToolTipForAll();refreshTheActiveFolderInTree('{!JSENCODE(selectedFolder)}');" status="splashStatus" immediate="true">
+        <apex:param name="fileKeyToDelete" value=""/>
+        <apex:param name="fileIdToDelete" value=""/>
+    </apex:actionFunction>
+    <apex:actionFunction name="deleteFolder" action="{!deleteFolder}" rerender="northOutputPanel,dbixoHeader" onComplete="easyToolTipForAll();refreshTheActiveFolderInTree('{!JSENCODE(selectedFolder)}');" status="splashStatus" immediate="true">
+        <apex:param name="folderIdToDelete" value=""/>
+    </apex:actionFunction>
+    <apex:actionFunction name="deleteSelectedFiles" action="{!deleteSelectedFiles}" rerender="northOutputPanel,dbixoHeader" onComplete="easyToolTipForAll();refreshTheActiveFolderInTree('{!JSENCODE(selectedFolder)}');" status="splashStatus"/>
+    <apex:actionFunction name="openBreadCrumbSelectedRecord" action="{!openBreadCrumbSelectedRecord}" status="splashStatus" onComplete="easyToolTipForAll();refreshTheActiveFolderInTree('{!JSENCODE(selectedFolder)}');" rerender="northOutputPanel,dbixoHeader">
+        <apex:param name="selectedBreadCrumbRecord" value="" assignTo="{!selectedFolder}" />
+    </apex:actionFunction>
+    <apex:actionFunction name="pasteRecords" action="{!pasteRecords}" onComplete="easyToolTipForAll();refreshTheSourceFoldersInTree('{!JSENCODE(selectedFolder)}'); getFilesAndFolders();" reRender=""/>
+    <apex:actionFunction name="previous" action="{!goPrevious}" status="splashStatus" onComplete="easyToolTipForAll();refreshTheActiveFolderInTree('{!JSENCODE(selectedFolder)}');" rerender="northOutputPanel,dbixoHeader"/>
+    <apex:actionFunction name="next" action="{!goNext}" status="splashStatus" onComplete="easyToolTipForAll();refreshTheActiveFolderInTree('{!JSENCODE(selectedFolder)}');" rerender="northOutputPanel,dbixoHeader"/>
+    
+    <apex:outputPanel >
+        <apex:pagemessages id="pageLoadErrorMessage"/>
+        <script>
+            Appurin.lightning.createLightningPageMessage({'classicPageMessageId' : '{!$Component.pageLoadErrorMessage}'});   
+        </script>
+    </apex:outputPanel>
+    <c:BT_TreeComponent rendered="{!AND(fileExplorerPageConfugration.isShowHirarchicalFileUI, !isNoAmazonCredential)}" treeId="AmazonFolderFileSystem"
+            treeType="Files"
+            treeNodeOnClick="expandFolder"
+            twoPaneContainerId="layoutContainer"
+            westPaneId="westPanel"
+            northPaneId="northPanel"
+            isExpandTreeRoots="true"
+            treeWidth="500"
+            isCheckable="false"
+            isTwoPanLayout="true"
+            selectedTreeNodePath="{!folderPathToExpand}"
+            jsonStringForSelectedNodes="[]"
+            queryParameters="{!queryParameters}"
+            treeImageStaticResource="{!fileExplorerPageConfugration.fileExtensionIconStaticResourceName}"
+            treeHomeRecordIds="{!fileExplorerPageConfugration.homeFolders}">
+    </c:BT_TreeComponent>
+    
+    <apex:outputPanel layout="block" styleClass="slds" rendered="{!!isNoAmazonCredential}">
+        <apex:outputPanel id="dbixoHeader">
+             <div class="slds-page-header" style="padding:10px;">
+                  <div class="apFileExplorerHeaderSection slds-grid">
+                    <apex:outputPanel rendered="{!fileExplorerPageConfugration.isShowExtensionIcon}" layout="block" styleClass="slds-media__figure">
+                        <apex:image style="height:25px; width:25px;" value="{!$Resource[fileExplorerPageConfugration.fileExtensionIconStaticResourceName]}/resources/images/fileIcons/folder.png"/>
+                    </apex:outputPanel>
+                      <div class="slds-col slds-align-middle slds-has-flexi-truncate">
+                          <h1 class="slds-page-header__title slds-truncate" title="{!breadCrumbRecords[breadCrumbRecords.size - 1].title}" style="float: left;padding-right:10px;">
+                              <span class="slds-grid slds-has-flexi-truncate slds-grid--vertical-align-center">
+                                  <span class="slds-truncate">{!breadCrumbRecords[breadCrumbRecords.size - 1].title}</span>
+                              </span>
+                          </h1> 
+                          <div class="slds-button-group" style="display:none;">
+                              <apex:panelGroup rendered="{!selectedFolder != ''}">
+                                  <button id="summarySelectedFolderButton" class="slds-button slds-button--icon-border-filled" onClick="return openWindowForFolderDetail('{selectedFolder}');" title="Summary">
+                                      <c:BT_LightningSvg parentId="summarySelectedFolderButton" styleClass="slds-button__icon" path="/assets/icons/utility-sprite/svg/symbols.svg#summarydetail"/>
+                                  </button>
+                              </apex:panelGroup>
+                              <apex:panelGroup rendered="{!AND(selectedFolder != '', blnHasFolderEditPermission)}">
+                                  <button id="editSelectedFolderButton" class="slds-button slds-button--icon-border-filled" onClick="return openWindowForFolderEdit('{!selectedFolder}');" title="{!$Label.buildertek__Edit}">
+                                      <c:BT_LightningSvg parentId="editSelectedFolderButton" styleClass="slds-button__icon" path="/assets/icons/utility-sprite/svg/symbols.svg#edit"/>
+                                  </button>
+                              </apex:panelGroup>
+                              <apex:panelGroup rendered="{!AND(selectedFolder != '', blnHasFolderDeletePermission)}">
+                                  <button id="deleteSelectedFolderButton" class="slds-button slds-button--icon-border-filled" onClick="deleteConfirm('Folder', '{!JSENCODE(selectedFolder)}', ''); return false;" title="{!$Label.buildertek__Delete}">
+                                      <c:BT_LightningSvg parentId="deleteSelectedFolderButton" styleClass="slds-button__icon" path="/assets/icons/utility-sprite/svg/symbols.svg#delete"/>
+                                  </button>
+                              </apex:panelGroup>
+                          </div>
+                      </div>
+                      <apex:outputPanel styleClass="slds-col slds-no-flex slds-grid slds-align-top" layout="block" rendered="{!selectedFolder != ''}">
+                          <div class="slds-button-group">
+                              <apex:panelGroup rendered="{!AND(sourceRecordsString != null, sourceRecordsString != '')}">
+                                  <button id="pasteButton"  title="{!$Label.Paste_Button_Helptext}" class="slds-button slds-button--neutral" onClick="checkForPaste('{!JSENCODE(breadCrumbRecordsString)}'); return false;">
+                                      <c:BT_LightningSvg parentId="pasteButton" styleClass="slds-button__icon slds-button__icon--left" path="/assets/icons/utility-sprite/svg/symbols.svg#paste"/>
+                                      <apex:outputLabel value="{!$Label.buildertek__Paste}"/>
+                                  </button>
+                                  <script>setVisibilityOfPasteButton('{!JSENCODE(selectedFolder)}');</script>
+                              </apex:panelGroup>
+                              
+                              <apex:panelGroup rendered="{!AND(selectedFolder != '', $ObjectType.File__c.Createable)}">
+                                  <button id="uploadButton" class="slds-button slds-button--neutral" onClick="return openWindowForUploadFile('{!JSENCODE(selectedFolder)}', '', '{!JSENCODE(mainObjectFieldAPI)}', '{!JSENCODE(mainObjectId)}', '{!JSENCODE(otherObjectFieldAPI)}', '{!JSENCODE(otherObjectId)}');">
+                                      <c:BT_LightningSvg parentId="uploadButton" styleClass="slds-button__icon slds-button__icon--left" path="/assets/icons/utility-sprite/svg/symbols.svg#upload"/>
+                                      <apex:outputLabel value="{!$Label.buildertek__Upload_File}"/>
+                                  </button>
+                              </apex:panelGroup>
+                              <apex:panelGroup rendered="{!AND(selectedFolder != '', $ObjectType.Folder__c.Createable)}">
+                                  <button id="newFolderButton" class="slds-button slds-button--neutral" onClick="return openWindowForNewFolder('{!JSENCODE(selectedFolder)}', '{!JSENCODE(mainObjectFieldAPI)}', '{!JSENCODE(mainObjectId)}', '{!JSENCODE(otherObjectFieldAPI)}', '{!JSENCODE(otherObjectId)}');">
+                                      <c:BT_LightningSvg parentId="newFolderButton" styleClass="slds-button__icon slds-button__icon--left" path="/assets/icons/utility-sprite/svg/symbols.svg#new"/>
+                                      <apex:outputLabel value="{!$Label.buildertek__New_Folder}"/>
+                                  </button>
+                              </apex:panelGroup>
+                          </div>
+                      </apex:outputPanel> 
+                  </div>
+                  <div class="slds-grid">
+                      <apex:outputPanel rendered="{!fileExplorerPageConfugration.isShowExtensionIcon}" layout="block" styleClass="slds-media__figure" style="width:25px;"/>
+                      <div class="slds-col slds-has-flexi-truncate">
+                          <div class="slds-grid">
+                              <apex:outputPanel styleClass="slds-col" layout="block">
+                                  <p style="display:inline-block;" class="slds-text-body--small">{!fileSystemDetailListForSelectedFolder.size} items • sorted by {!sortByLabel}</p>
+                                <c:BT_LightningHelpText severity="warning" rendered="{!isShowMaxRecordsMsg}" helptext="{!maxRecordsMsg}"/>
+                              </apex:outputPanel>
+                              <apex:outputPanel styleClass="slds-col" layout="block" rendered="{!AND(selectedFolder != '', fileExplorerPageConfugration.isShowSearch)}">
+                                  <div class="slds-form-element slds-lookup">
+                                      <label class="slds-assistive-text" for="searchFiles">{!$Label.buildertek__Search}</label>
+                                      <div class="slds-form-element__control lookup__search-control slds-input-has-icon slds-input-has-icon--left">
+                                          <apex:image value="{!URLFOR($Resource.SLDS, 'assets/icons/utility/search_60.png')}" styleClass="slds-input__icon"/>
+                                          <apex:inputText id="searchFiles" styleClass="slds-input slds-lookup__search-input" onkeydown="validateSearchText(event);" value="{!searchString}" html-placeholder="{!$Label.buildertek__Search}" style="max-width: 450px;"/>
+                                      </div>
+                                  </div>
+                              </apex:outputPanel>
+                              <apex:outputPanel styleClass="slds-col slds-align-middle slds-has-flexi-truncate" layout="block" rendered="{!selectedFolder != ''}">
+                             <div class="slds-grid" style="float:right;">
+                                 <apex:outputPanel styleClass="slds-col" layout="block">
+                                     <apex:outputPanel layout="block" styleClass="slds-button-group">
+                                         <div class="slds-dropdown-trigger slds-dropdown-trigger--click">
+                                             <button id="sortButton" class="slds-button slds-button--icon-border-filled" title="Sort" onClick="Appurin.lightning.showLightningMenu(this); return false;">
+                                                 <c:BT_LightningSvg parentId="sortButton" styleClass="slds-button__icon slds-button__icon--x-small" path="/assets/icons/utility-sprite/svg/symbols.svg#down"/>
+                                                 <c:BT_LightningSvg parentId="sortButton" styleClass="slds-button__icon" path="/assets/icons/utility-sprite/svg/symbols.svg#sort"/>
+                                             </button>
+                                             <apex:outputPanel layout="block" styleClass="slds-dropdown slds-dropdown--right">
+                                                 <apex:inputText style="display:none;" id="sortByAPIText" value="{!sortByAPI}"/>
+                                                 <ul class="slds-dropdown__list" role="menu">
+                                                     <apex:repeat value="{!sortByOptions}" var="sortByOption">
+                                                         <li class="slds-dropdown__item {!IF(sortByOption.value == sortByAPI, 'apSelectedAction', '')}" onClick="Appurin.lightning.hideLightningMenu(this);" role="presentation">
+                                                             <a onClick="sortRecords('{!JSENCODE(sortByOption.value)}');">
+                                                                 <apex:outputLabel value="{!sortByOption.label}"/>
+                                                             </a>
+                                                         </li>
+                                                     </apex:repeat>
+                                                 </ul>
+                                             </apex:outputPanel>
+                                         </div>
+                                         <div class="slds-dropdown-trigger slds-dropdown-trigger--click {!IF(!fileExplorerPageConfugration.isShowMassActions, 'slds-button--last', '')}">
+                                             <button id="filterButton" style="border-left:0px; {!IF(fileExplorerPageConfugration.isShowMassActions, 'border-radius:0px; border-right:0px;', '')}" class="slds-button slds-button--icon-border-filled" title="{!$Label.Filter}" onClick="Appurin.lightning.showLightningMenu(this); return false;">
+                                                 <c:BT_LightningSvg parentId="filterButton" styleClass="slds-button__icon slds-button__icon--x-small" path="/assets/icons/utility-sprite/svg/symbols.svg#down"/>
+                                                 <c:BT_LightningSvg parentId="filterButton" styleClass="slds-button__icon" path="/assets/icons/utility-sprite/svg/symbols.svg#filterList"/>
+                                             </button>
+                                             <apex:outputPanel layout="block" styleClass="slds-dropdown slds-dropdown--right">
+                                                 <ul class="slds-dropdown__list" role="menu">
+                                                     <li class="slds-dropdown__item" onClick="Appurin.lightning.hideLightningMenu(this);" role="presentation">
+                                                         <apex:inputCheckBox style="display:none;" value="{!isShowFiles}"></apex:inputCheckBox>
+                                                         <a onClick="filterRecords(this);" class="{!IF(isShowFiles, 'slds-is-selected', 'slds-not-selected')}" aria-live="assertive">
+                                                             <span id="showFilesAdd" class="slds-text-not-selected">
+                                                                 <c:BT_LightningSvg parentId="showFilesAdd" styleClass="slds-button__icon--stateful slds-button__icon--left" path="/assets/icons/utility-sprite/svg/symbols.svg#add"/>
+                                                                 {!$Label.Show} {!$ObjectType.File__c.labelPlural}
+                                                             </span>
+                                                             <span id="showFilesAdded" class="slds-text-selected">
+                                                                 <c:BT_LightningSvg parentId="showFilesAdded" styleClass="slds-button__icon--stateful slds-button__icon--left" path="/assets/icons/utility-sprite/svg/symbols.svg#check"/>
+                                                                 {!$Label.Showing} {!$ObjectType.File__c.labelPlural}
+                                                             </span>
+                                                             <span id="showFilesRemove" class="slds-text-selected-focus">
+                                                                 <c:BT_LightningSvg parentId="showFilesRemove" styleClass="slds-button__icon--stateful slds-button__icon--left" path="/assets/icons/utility-sprite/svg/symbols.svg#close"/>
+                                                                 {!$Label.buildertek__Remove} {!$ObjectType.File__c.labelPlural}
+                                                             </span>
+                                                         </a>
+                                                     </li>
+                                                     <li class="slds-dropdown__item" onClick="Appurin.lightning.hideLightningMenu(this);" role="presentation">
+                                                         <apex:inputCheckBox style="display:none;" value="{!isShowFolders}"></apex:inputCheckBox>
+                                                         <a onClick="filterRecords(this);" class="{!IF(isShowFolders, 'slds-is-selected', 'slds-not-selected')}" aria-live="assertive">
+                                                             <span id="showFoldersAdd" class="slds-text-not-selected">
+                                                                 <c:BT_LightningSvg parentId="showFoldersAdd" styleClass="slds-button__icon--stateful slds-button__icon--left" path="/assets/icons/utility-sprite/svg/symbols.svg#add"/>
+                                                                 {!$Label.Show} {!$ObjectType.Folder__c.labelPlural}
+                                                             </span>
+                                                             <span id="showFoldersAdded" class="slds-text-selected">
+                                                                 <c:BT_LightningSvg parentId="showFoldersAdded" styleClass="slds-button__icon--stateful slds-button__icon--left" path="/assets/icons/utility-sprite/svg/symbols.svg#check"/>
+                                                                 {!$Label.Showing} {!$ObjectType.Folder__c.labelPlural}
+                                                             </span>
+                                                             <span id="showFoldersRemove" class="slds-text-selected-focus">
+                                                                 <c:BT_LightningSvg parentId="showFoldersRemove" styleClass="slds-button__icon--stateful slds-button__icon--left" path="/assets/icons/utility-sprite/svg/symbols.svg#close"/>
+                                                                 {!$Label.buildertek__Remove} {!$ObjectType.Folder__c.labelPlural}
+                                                             </span>
+                                                         </a>
+                                                     </li>
+                                                     <li class="slds-dropdown__item" onClick="Appurin.lightning.hideLightningMenu(this);" role="presentation">
+                                                         <apex:inputCheckBox style="display:none;" value="{!isShowMyRecords}"></apex:inputCheckBox>
+                                                         <a onClick="filterRecords(this);" class="{!IF(isShowMyRecords, 'slds-is-selected', 'slds-not-selected')}" aria-live="assertive">
+                                                             <span id="showMyRecordsAdd" class="slds-text-not-selected">
+                                                                 <c:BT_LightningSvg parentId="showMyRecordsAdd" styleClass="slds-button__icon--stateful slds-button__icon--left" path="/assets/icons/utility-sprite/svg/symbols.svg#add"/>
+                                                                 {!$Label.Show} {!$label.My} {!$ObjectType.File__c.labelPlural} {!$Label.Only}
+                                                             </span>
+                                                             <span id="showMyRecordsAdded" class="slds-text-selected">
+                                                                 <c:BT_LightningSvg parentId="showMyRecordsAdded" styleClass="slds-button__icon--stateful slds-button__icon--left" path="/assets/icons/utility-sprite/svg/symbols.svg#check"/>
+                                                                 {!$Label.Showing} {!$label.My} {!$ObjectType.File__c.labelPlural}
+                                                             </span>
+                                                             <span id="showMyRecordsRemove" class="slds-text-selected-focus">
+                                                                 <c:BT_LightningSvg parentId="showMyRecordsRemove" styleClass="slds-button__icon--stateful slds-button__icon--left" path="/assets/icons/utility-sprite/svg/symbols.svg#close"/>
+                                                                 {!$Label.buildertek__Show} {!$Label.buildertek__All} {!$ObjectType.File__c.labelPlural}
+                                                             </span>
+                                                         </a>
+                                                     </li>
+                                                 </ul>
+                                             </apex:outputPanel>
+                                         </div>
+                                         <apex:panelGroup rendered="{!fileExplorerPageConfugration.isShowMassActions}">
+                                             <button id="deleteAllSelectedButton" class="slds-button slds-button--icon-border-filled {!IF(fileSystemDetailListForSelectedFolder.size == 0, 'apLightningButtonDisabled', '')}" title="{!$Label.buildertek__Delete}" onClick="return massDeleteConfirm(); return false;">
+                                                 <c:BT_LightningSvg parentId="deleteAllSelectedButton" styleClass="slds-button__icon {!IF(fileSystemDetailListForSelectedFolder.size == 0, 'apLightningImageButtonDisabled', '')}" path="/assets/icons/utility-sprite/svg/symbols.svg#delete"/>
+                                             </button>
+                                         </apex:panelGroup>
+                                         <apex:panelGroup rendered="{!fileExplorerPageConfugration.isShowMassActions}">
+                                             <button id="cutAllSelectedButton" class="slds-button slds-button--icon-border-filled {!IF(fileSystemDetailListForSelectedFolder.size == 0, 'apLightningButtonDisabled', '')}" title="{!$Label.buildertek__Cut}" onClick="return cutOrCopySelected('Cut'); return false;" >
+                                                 <c:BT_LightningSvg parentId="cutAllSelectedButton" styleClass="slds-button__icon {!IF(fileSystemDetailListForSelectedFolder.size == 0, 'apLightningImageButtonDisabled', '')}" path="/assets/icons/utility-sprite/svg/symbols.svg#cut"/>
+                                             </button>
+                                         </apex:panelGroup>
+                                         <apex:panelGroup rendered="{!fileExplorerPageConfugration.isShowMassActions}">
+                                             <button id="copyAllSelectedButton" class="slds-button slds-button--icon-border-filled {!IF(fileSystemDetailListForSelectedFolder.size == 0, 'apLightningButtonDisabled', '')}" title="{!$Label.buildertek__Copy}" onClick="return cutOrCopySelected('Copy'); return false;" >
+                                                 <c:BT_LightningSvg parentId="copyAllSelectedButton" styleClass="slds-button__icon {!IF(fileSystemDetailListForSelectedFolder.size == 0, 'apLightningImageButtonDisabled', '')}" path="/assets/icons/utility-sprite/svg/symbols.svg#copy"/>
+                                             </button>
+                                         </apex:panelGroup>
+                                         <apex:panelGroup rendered="{!fileExplorerPageConfugration.isShowMassActions}">
+                                             <button id="emailAllSelectedButton" class="slds-button slds-button--icon-border-filled {!IF(fileSystemDetailListForSelectedFolder.size == 0, 'apLightningButtonDisabled', '')}" title="{!$Label.buildertek__Send_Email_Link}" onClick="return sendSelected(); return false;">
+                                                 <c:BT_LightningSvg parentId="emailAllSelectedButton" styleClass="slds-button__icon {!IF(fileSystemDetailListForSelectedFolder.size == 0, 'apLightningImageButtonDisabled', '')}" path="/assets/icons/utility-sprite/svg/symbols.svg#email"/>
+                                             </button>
+                                         </apex:panelGroup>
+                                     </apex:outputPanel>
+                                 </apex:outputPanel>
+                                 <apex:outputPanel styleClass="slds-col slds-m-right--xx-small slds-m-left--x-small slds-align-middle" layout="block" rendered="{!fileExplorerPageConfugration.isShowMassActions}">
+                                     <apex:outputPanel styleClass="slds-checkbox">
+                                         <apex:inputCheckBox disabled="{!fileSystemDetailListForSelectedFolder.size == 0}" id="selectAll" value="{!selectAll}" onChange="return selectAll(this);"/>
+                                         <apex:outputlabel styleClass="slds-checkbox__label" for="selectAll">
+                                             <apex:outputPanel styleClass="slds-checkbox--faux"></apex:outputPanel>
+                                             <apex:outputPanel styleClass="slds-form-element__label"></apex:outputPanel>
+                                         </apex:outputlabel>
+                                     </apex:outputPanel>
+                                 </apex:outputPanel>
+                             </div>
+                         </apex:outputPanel>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+        </apex:outputPanel>
+        <div id="layoutContainer" style="display:none;height: 100%;" class="apLayoutContainer">
+            <div id="westPanel" class="apWestPanel ui-layout-west" style="position: absolute; margin: 0px; inset: 0px auto 0px 0px; height: 500px; z-index: 0; width: 36.3%; display: block; visibility: visible;"> 
+                <div id="layoutTreeHeader" style="display:none;" class="header apLayoutHeader slds-page-header">
+                    <div class="slds-grid">
+                        <div class="slds-col slds-has-flexi-truncate">
+                            <apex:outputText value="{!$Label.buildertek__File_Explorer}"/>
+                        </div>
+                        <div class="slds-col slds-no-flex slds-grid slds-align-bottom" style="padding-bottom:18px;">
+                            <button id="layoutRefreshButton" class="apLayoutHeaderIcon slds-button slds-m-left--xx-small slds-button--icon-border" title="Refresh">
+                                <c:BT_LightningSvg parentId="layoutRefreshButton" styleClass="slds-button__icon" path="/assets/icons/utility-sprite/svg/symbols.svg#refresh"/>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div id="AmazonFolderFileSystem" class="content apLayoutContent"></div>   
+            </div>
+               <div id="northPanel" class="apNorthPanel" style="position: absolute; margin: 0px; inset: 0px 0px 0px 495px; height: 500px; width: 63.5%; z-index: 0; display: block; visibility: visible;">                        
+                <input style="display:none;" id="activeNodePath"/>
+                <apex:inputHidden id="sourceRecordsStringHiddenField" value="{!sourceRecordsString}" />
+                <apex:outputPanel id="northOutputPanel" rendered="{! !isNoAmazonCredential}">
+                    <div class="slds-page-header" style="height:50.5px;">
+                        <div class="slds-col slds-align-middle slds-has-flexi-truncate">
+                          <apex:outputPanel styleClass="apBreadCrumbPanel" layout="block" id="documentBreadcrumbs" rendered="{!fileExplorerPageConfugration.isShowBreadcrumb}">
+                            <span class="slds-grid slds-has-flexi-truncate slds-grid--vertical-align-center">
+                                <apex:panelGroup >
+                                    <nav class="slds-m-bottom--xx-small" role="navigation" aria-label="Breadcrumbs">
+                                        <ol class="slds-breadcrumb slds-list--horizontal">
+                                            <apex:variable var="breadCrumbNodeIndex" value="{!0}"/>
+                                            <apex:repeat value="{!breadCrumbRecords}" var="objBreadcurmbDoc">
+                                                <li class="slds-breadcrumb__item">
+                                                    <apex:commandLink rendered="{!objBreadcurmbDoc.title == 'Home'}" styleClass="apBreadcrumbLink" value="{!$Label.buildertek__Home}" onclick="resetSearchStringAndPageNumber();openBreadCrumbSelectedRecord('{!JSENCODE(objBreadcurmbDoc.id)}');return false;" />
+                                                    <apex:commandLink rendered="{!objBreadcurmbDoc.title != 'Home'}" styleClass="apBreadcrumbLink" value="{!objBreadcurmbDoc.title}" onclick="resetSearchStringAndPageNumber();openBreadCrumbSelectedRecord('{!JSENCODE(objBreadcurmbDoc.id)}');return false;" />
+                                                </li>
+                                                <apex:variable var="breadCrumbNodeIndex" value="{!breadCrumbNodeIndex+1}"/>
+                                            </apex:repeat>
+                                        </ol>
+                                      </nav>
+                                  </apex:panelGroup>
+                              </span>
+                            </apex:outputPanel>
+                        </div>
+                    </div>
+                    <apex:outputPanel layout="block" styleClass="apFileDetailListDiv" id="fileDetailList">
+                        <apex:panelGroup rendered="{!AND(fileSystemDetailListForSelectedFolder != null, fileSystemDetailListForSelectedFolder.size > 0)}">
+                            <ul class="slds-has-dividers--bottom-space">  
+                                <apex:repeat value="{!fileSystemDetailListForSelectedFolder}" var="fileSystemDetail" >
+                                          <li id="row_{!fileSystemDetail.obj['Id']}" class="slds-item apFileDetailRow" style="padding: 0.3rem;">
+                                        <div class="slds-tile slds-media">
+                                            <div class="slds-media__figure">
+                                                <apex:outputPanel rendered="{!IF(fileSystemDetail.objectType ='File',false,true)}" layout="block">      
+                                                    <apex:outputPanel rendered="{!fileExplorerPageConfugration.isShowExtensionIcon}" layout="block">
+                                                        <apex:image style="height:25px; width:25px;" value="{!$Resource[fileExplorerPageConfugration.fileExtensionIconStaticResourceName]}/resources/images/fileIcons/{!fileSystemDetail.icon}"/>
+                                                    </apex:outputPanel>
+                                                </apex:outputPanel>
+                                                <apex:outputPanel rendered="{!IF(fileSystemDetail.objectType ='File',true,false)}" layout="block">
+                                                    <apex:image style="height:25px; width:25px;" value="{!$Resource[fileExplorerPageConfugration.fileExtensionIconStaticResourceName]}/resources/images/fileIcons/{!fileSystemDetail.icon}"/>
+                                                </apex:outputPanel> 
+                                            </div> 
+                                            <div class="slds-media__body">
+                                                <h3 class="slds-truncate apHelpText" id="{!IF(fileSystemDetail.objectType ='File','fileLable', 'folderLable')}" title="{!IF(fileExplorerPageConfugration.isShowDescription, HTMLENCODE(fileSystemDetail.obj['Description__c']), '')}">
+                                                    <a href="javascript:void(0);" onClick="if('{!JSENCODE(fileSystemDetail.objectType)}' == 'Folder'){ openFolder('{!JSENCODE(fileSystemDetail.obj.Id)}'); } else{ openWindowForFileDetail('{!JSENCODE(fileSystemDetail.downloadUrl)}');} return false;"><apex:outputText value="{!fileSystemDetail.name}"/> <apex:outputText rendered="{!AND(maxSubItems > 0, fileSystemDetail.objectType =='Folder', selectedFolder != '')}" value="{!' ('+fileSystemDetail.totalSubItems+')'}"/></a>
+                                                </h3>
+                                                <div class="slds-tile__detail slds-text-body--small">
+                                                    <ul class="slds-list--horizontal slds-has-dividers--right">
+                                                        <apex:panelGroup rendered="{!fileExplorerPageConfugration.isShowCreatedDate}">
+                                                            <li class="slds-item apFileSubDetailItem"><apex:outputText style="padding-left:3px;" value="{0,date,MMM dd,yyyy HH:mm:ss}"><apex:param value="{!fileSystemDetail.obj['CreatedDate']}"/></apex:outputText></li>
+                                                        </apex:panelGroup>
+                                                        <apex:panelGroup rendered="{!fileExplorerPageConfugration.isShowCreatedBy}">
+                                                            <li class="slds-item apFileSubDetailItem"><apex:outputLink target="_blank" value="/{!fileSystemDetail.obj['CreatedById']}"><apex:outputLabel value="{!fileSystemDetail.obj['CreatedBy'].Name}"/></apex:outputLink></li>
+                                                        </apex:panelGroup>
+                                                        <apex:panelGroup rendered="{!AND(fileSystemDetail.objectType =='File', fileExplorerPageConfugration.isShowSize)}">
+                                                            <li class="slds-item apFileSubDetailItem"><apex:outputLabel style="display:inline-block;" value="{!fileSystemDetail.totalSize}"/></li>
+                                                        </apex:panelGroup>
+                                                        <apex:panelGroup rendered="{!AND(fileSystemDetail.objectType =='File', fileSystemDetail.obj['File_Downloads__c'] > 0, OR(fileSystemDetail.obj['OwnerId'] == $User.Id, isHasModifyAllermissionForFile))}">
+                                                            <li class="slds-item apFileSubDetailItem"><apex:outputLink target="_blank" value="/apex/BT_FileDownloadHistory?id={!fileSystemDetail.obj['Id']}"><apex:outputText value="{!fileSystemDetail.obj['File_Downloads__c']}"/> <apex:outputText value="{! ' '+$Label.Downloads}"/></apex:outputLink></li>
+                                                        </apex:panelGroup>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            <div class="slds-grid">
+                                                <div styleClass="slds-col" layout="block">
+                                                    <div class="{!IF(OR(fileSystemDetail.objectType =='Folder', AND(fileExplorerPageConfugration.isShowDownload, fileSystemDetail.objectType =='File', fileSystemDetail.isAllowToDownload)), 'slds-button-group', '')}">
+                                                    <apex:panelGroup rendered="{!AND(fileExplorerPageConfugration.isShowDownload, fileSystemDetail.objectType =='File', fileSystemDetail.isAllowToDownload)}">
+                                                        <button id="download{!fileSystemDetail.obj['id']}" class="slds-button slds-button_neutral" onClick="if(({!isTrackDownloadHistory} && {!fileSystemDetail.obj['Track_Download_History__c']}) || ({!!fileSystemDetail.obj['Public_On_Amazon__c']} && {!!fileSystemDetail.obj['Allow_to_Download_by_Presigned_URL__c']})) { downloadFile('{!JSENCODE(fileSystemDetail.obj['Id'])}');} else{window.open('{!JSENCODE(fileSystemDetail.obj['File_Presigned_URL__c'])}', '_self');} return false;">
+                                                            <c:BT_LightningSvg parentId="download{!fileSystemDetail.obj['id']}" styleClass="slds-button__icon slds-button__icon--left" path="/assets/icons/utility-sprite/svg/symbols.svg#download"/>
+                                                            <apex:outputText value="{!$Label.buildertek__Download}"/>
+                                                        </button>
+                                                    </apex:panelGroup>
+                                                    <apex:panelGroup rendered="{!AND(fileSystemDetail.objectType =='Folder', fileSystemDetail.obj['Parent__c'] != null)}">
+                                                        <button id="detail{!fileSystemDetail.obj['id']}" class="slds-button slds-button_neutral" onClick="return openWindowForFolderDetail('{!JSENCODE(fileSystemDetail.obj['Id'])}');">
+                                                            <c:BT_LightningSvg parentId="detail{!fileSystemDetail.obj['id']}" styleClass="slds-button__icon slds-button__icon--left" path="/assets/icons/utility-sprite/svg/symbols.svg#summarydetail"/>
+                                                            <apex:outputText value="Detail"/>
+                                                        </button>
+                                                    </apex:panelGroup>
+                                                    <apex:panelGroup rendered="{!selectedFolder != ''}">
+                                                        <div id="lightningMenu{!JSENCODE(fileSystemDetail.obj['Id'])}" class="slds-dropdown-trigger slds-dropdown-trigger--click slds-button--last">
+                                                            <apex:panelGroup rendered="{!OR(fileSystemDetail.objectType == 'File', fileSystemDetail.isAllowToEdit, fileSystemDetail.isAllowToDelete, fileSystemDetail.isAllowToCut, fileSystemDetail.isAllowToCopy)}">
+                                                                <button id="dropDown{!fileSystemDetail.obj['id']}" class="slds-button slds-button--icon-border-filled" onClick="setActionLabels('{!fileSystemDetail.obj['Id']}'); Appurin.lightning.showLightningMenu(this); return false;" aria-haspopup="true" title="Show More">
+                                                                    <c:BT_LightningSvg parentId="dropDown{!fileSystemDetail.obj['id']}" styleClass="slds-button__icon" path="/assets/icons/utility-sprite/svg/symbols.svg#down"/>
+                                                                    <span class="slds-assistive-text"><apex:outputText value="Show More"/></span>
+                                                                </button>
+                                                                <apex:outputPanel layout="block" styleClass="slds-dropdown slds-dropdown--right">
+                                                                                
+                                                                    <ul class="slds-dropdown__list" role="menu">
+                                                                        <apex:panelGroup rendered="{!fileSystemDetail.isAllowToEdit}">
+                                                                            <li class="slds-dropdown__item" onClick="Appurin.lightning.hideLightningMenu(this);" role="presentation">
+                                                                                <apex:outputLink styleClass="edit" onClick="if('{!fileSystemDetail.objectType}' == 'File'){return openWindowForFileEdit('{!fileSystemDetail.obj['Id']}');} else{return openWindowForFolderEdit('{!fileSystemDetail.obj['Id']}', '{!mainObjectFieldAPI}', '{!mainObjectId}', '{!otherObjectFieldAPI}', '{!otherObjectId}');}">
+                                                                                    <span id="edit{!fileSystemDetail.obj['id']}" class="slds-truncate">
+                                                                                        <c:BT_LightningSvg parentId="edit{!fileSystemDetail.obj['id']}" styleClass="slds-icon slds-icon--xx-small slds-m-right--small" path="/assets/icons/utility-sprite/svg/symbols.svg#edit"/>
+                                                                                        <apex:outputText value="{!$Label.buildertek__Edit}"/>
+                                                                                    </span>
+                                                                                </apex:outputLink>
+                                                                            </li>
+                                                                        </apex:panelGroup>
+                                                                        <apex:panelGroup rendered="{!fileSystemDetail.isAllowToDelete}" >
+                                                                            <li class="slds-dropdown__item" onClick="Appurin.lightning.hideLightningMenu(this);" role="presentation">
+                                                                                <apex:outputLink styleClass="delete" onClick="deleteConfirm('{!JSENCODE(fileSystemDetail.objectType)}', '{!JSENCODE(fileSystemDetail.obj.Id)}', '{!JSENCODE(fileSystemDetail.obj['Amazon_File_Key__c'])}'); return false;">
+                                                                                    <span id="delete{!fileSystemDetail.obj['id']}" class="slds-truncate">
+                                                                                        <c:BT_LightningSvg parentId="delete{!fileSystemDetail.obj['id']}" styleClass="slds-icon slds-icon--xx-small slds-m-right--small" path="/assets/icons/utility-sprite/svg/symbols.svg#delete"/>
+                                                                                        <apex:outputText value="{!$Label.buildertek__Delete}"/>
+                                                                                    </span>
+                                                                                </apex:outputLink>
+                                                                            </li>
+                                                                        </apex:panelGroup>
+                                                                        <apex:panelGroup rendered="{!fileSystemDetail.isAllowToCut}">
+                                                                            <li class="slds-dropdown__item" onClick="Appurin.lightning.hideLightningMenu(this);" role="presentation">
+                                                                                <apex:outputLink styleClass="cut" onClick="copyingRecord('{!JSENCODE(fileSystemDetail.obj.Id)}', '{!JSENCODE(fileSystemDetail.obj['Name'])}', '{!JSENCODE(selectedFolder)}', '{!JSENCODE(mainObjectId)}', '{!JSENCODE(fileSystemDetail.objectType)}', 'Cut'); return false;">
+                                                                                    <span id="cut{!fileSystemDetail.obj['id']}" class="slds-truncate">
+                                                                                        <c:BT_LightningSvg parentId="cut{!fileSystemDetail.obj['id']}" styleClass="slds-icon slds-icon--xx-small slds-m-right--small" path="/assets/icons/utility-sprite/svg/symbols.svg#cut"/>
+                                                                                        <apex:outputLabel value="{!$Label.buildertek__Cut}"/>
+                                                                                    </span>
+                                                                                </apex:outputLink>
+                                                                            </li>
+                                                                        </apex:panelGroup>
+                                                                        <apex:panelGroup rendered="{!fileSystemDetail.isAllowToCopy}" >
+                                                                            <li class="slds-dropdown__item" onClick="Appurin.lightning.hideLightningMenu(this);" role="presentation">
+                                                                                <apex:outputLink styleClass="copy" onClick="copyingRecord('{!JSENCODE(fileSystemDetail.obj.Id)}', '{!JSENCODE(fileSystemDetail.obj['Name'])}', '{!JSENCODE(selectedFolder)}', '{!JSENCODE(mainObjectId)}', '{!JSENCODE(fileSystemDetail.objectType)}', 'Copy'); return false;">
+                                                                                    <span id="copy{!fileSystemDetail.obj['id']}" class="slds-truncate">
+                                                                                        <c:BT_LightningSvg parentId="copy{!fileSystemDetail.obj['id']}" styleClass="slds-icon slds-icon--xx-small slds-m-right--small" path="/assets/icons/utility-sprite/svg/symbols.svg#copy"/>
+                                                                                        <apex:outputLabel value="{!$Label.buildertek__Copy}"/>
+                                                                                    </span>
+                                                                                </apex:outputLink>
+                                                                            </li>
+                                                                        </apex:panelGroup>
+                                                                        <apex:panelGroup rendered="{!fileSystemDetail.objectType == 'File'}" >
+                                                                            <li class="slds-dropdown__item" onClick="Appurin.lightning.hideLightningMenu(this);" role="presentation">
+                                                                                <apex:outputLink styleClass="sendEmail" onClick="return sendFile('{!fileSystemDetail.obj.Id}'); return false;">
+                                                                                    <span id="email{!fileSystemDetail.obj['id']}" class="slds-truncate">
+                                                                                        <c:BT_LightningSvg parentId="email{!fileSystemDetail.obj['id']}" styleClass="slds-icon slds-icon--xx-small slds-m-right--small" path="/assets/icons/utility-sprite/svg/symbols.svg#email"/>
+                                                                                        <apex:outputText value="{!$Label.buildertek__Send_Email_Link}"/>
+                                                                                    </span>
+                                                                                </apex:outputLink>
+                                                                            </li>
+                                                                        </apex:panelGroup>
+                                                                    </ul>
+                                                                </apex:outputPanel>
+                                                            </apex:panelGroup>
+                                                        </div>
+                                                    </apex:panelGroup>
+                                                </div>
+                                                </div>
+                                                <apex:panelGroup rendered="{!AND(fileExplorerPageConfugration.isShowMassActions, selectedFolder != '')}">
+                                                    <div id="{!fileSystemDetail.obj.Id}" class="slds-col slds-m-around--x-small slds-align-middle">
+                                                        <apex:outputPanel styleClass="slds-checkbox">
+                                                            <apex:inputCheckBox id="isSelect" rendered="{!selectedFolder != ''}" onChange="return fileSelect();" value="{!fileSystemDetail.isSelected}"/>
+                                                            <apex:outputlabel styleClass="slds-checkbox__label" for="isSelect">
+                                                                <apex:outputPanel styleClass="slds-checkbox--faux"></apex:outputPanel>
+                                                                <apex:outputPanel styleClass="slds-form-element__label"></apex:outputPanel>
+                                                            </apex:outputlabel>
+                                                        </apex:outputPanel>
+                                                    </div>
+                                                    <script>
+                                                        j$("li[id$='row_{!JSENCODE(fileSystemDetail.obj['Id'])}']").find("input[id$='isSelect']").data('selectedFolder','{!JSENCODE(selectedFolder)}').data('mainObjectId', '{!JSENCODE(mainObjectId)}').data('fileName','{!JSENCODE(fileSystemDetail.obj['Name'])}').data('fileId','{!JSENCODE(fileSystemDetail.obj['Id'])}').data('type', '{!JSENCODE(fileSystemDetail.objectType)}').data('Path','{!JSENCODE(fileSystemDetail.obj['Amazon_File_Key__c'])}');
+                                                    </script>
+                                                </apex:panelGroup>
+                                            </div>
+                                        </div> 
+                                    </li>
+                                </apex:repeat> 
+                            </ul>
+                        </apex:panelGroup>
+                        <apex:outputPanel layout="block" rendered="{!fileSystemDetailListForSelectedFolder.size == 0}" style="padding-top: 20px;">
+                            <center><apex:outputLabel value="{!$Label.buildertek__Folder_Is_Empty}"/></center>
+                        </apex:outputPanel>
+                        <div style="padding: 5px 0px;" id="fileListPagination">
+                            <apex:outputPanel styleClass="slds-grid" layout="block">
+                                <div class="slds-col slds-align-middle slds-has-flexi-truncate">
+                                    <apex:outputPanel layout="block" style="justify-content: center;" styleClass="slds-button-group">
+                                        <button id="firstButton" class="slds-button slds-button--icon-border" title="{!$Label.First_Page}" onClick="showFirstList(); return false;">
+                                            <c:BT_LightningSvg parentId="firstButton" styleClass="slds-button__icon" path="/assets/icons/utility-sprite/svg/symbols.svg#left"/>
+                                        </button>
+                                        <button id="previousButton" class="slds-button slds-button--icon-border" title="{!$Label.Previous}" onClick="showPreviousList(); return false;">
+                                            <c:BT_LightningSvg parentId="previousButton" styleClass="slds-button__icon" path="/assets/icons/utility-sprite/svg/symbols.svg#chevronleft"/>
+                                        </button>
+                                        <div class="slds-dropdown-trigger slds-dropdown-trigger--click">
+                                            <button id="pageSize" class="slds-button slds-button--icon-border-filled slds-button--icon-more" onClick="Appurin.lightning.showLightningMenu(this); return false;" style="width: auto;border-radius: 0;">
+                                                <apex:outputLabel style="padding-left: 5px;" id="pageNumberLabel"></apex:outputLabel>
+                                                <c:BT_LightningSvg parentId="pageSize" styleClass="slds-button__icon" path="/assets/icons/utility-sprite/svg/symbols.svg#down"/>
+                                            </button>
+                                            <apex:outputPanel layout="block" styleClass="slds-dropdown slds-dropdown--right">
+                                                <ul class="slds-dropdown__list" role="menu">
+                                                    <apex:panelGroup rendered="{!AND(fileExplorerPageConfugration.pageSize != 10, fileExplorerPageConfugration.pageSize != 20, fileExplorerPageConfugration.pageSize != 50, fileExplorerPageConfugration.pageSize != 100, fileExplorerPageConfugration.pageSize != 200)}">
+                                                        <li class="slds-dropdown__item" onClick="Appurin.lightning.hideLightningMenu(this);" role="presentation">
+                                                            <a id="pageSize-{!fileExplorerPageConfugration.pageSize}-Link" onClick="return setPageSize(parseInt('{!fileExplorerPageConfugration.pageSize}'));"><apex:outputLabel value="Display {!fileExplorerPageConfugration.pageSize} records per page"/></a>
+                                                        </li>
+                                                    </apex:panelGroup>
+                                                    <li class="slds-dropdown__item" onClick="Appurin.lightning.hideLightningMenu(this);" role="presentation">
+                                                        <a id="pageSize-10-Link" onClick="return setPageSize(10);"><apex:outputLabel value="Display 10 records per page"/></a>
+                                                    </li>
+                                                    <li class="slds-dropdown__item" onClick="Appurin.lightning.hideLightningMenu(this);" role="presentation">
+                                                        <a id="pageSize-20-Link" onClick="return setPageSize(20);"><apex:outputLabel value="Display 20 records per page"/></a> 
+                                                    </li>
+                                                    <li class="slds-dropdown__item" onClick="Appurin.lightning.hideLightningMenu(this);" role="presentation">
+                                                        <a id="pageSize-50-Link" onClick="return setPageSize(50);"><apex:outputLabel value="Display 50 records per page"/></a>
+                                                    </li>
+                                                    <li class="slds-dropdown__item" onClick="Appurin.lightning.hideLightningMenu(this);" role="presentation">
+                                                        <a id="pageSize-100-Link" onClick="return setPageSize(100);"><apex:outputLabel value="Display 100 records per page"/></a>
+                                                    </li>
+                                                    <li class="slds-dropdown__item" onClick="Appurin.lightning.hideLightningMenu(this);" role="presentation">
+                                                        <a id="pageSize-200-Link" onClick="return setPageSize(200);"><apex:outputLabel value="Display 200 records per page"/></a>
+                                                    </li>
+                                                </ul>
+                                            </apex:outputPanel>
+                                        </div> 
+                                        <button id="nextButton" class="slds-button slds-button--icon-border" title="{!$Label.Next}" onClick="showNextList(); return false;">
+                                            <c:BT_LightningSvg parentId="nextButton" styleClass="slds-button__icon" path="/assets/icons/utility-sprite/svg/symbols.svg#chevronright"/>
+                                        </button>
+                                        <button id="lastButton" class="slds-button slds-button--icon-border" title="{!$Label.Last_Page}" onClick="showLastList(); return false;">
+                                            <c:BT_LightningSvg parentId="lastButton" styleClass="slds-button__icon" path="/assets/icons/utility-sprite/svg/symbols.svg#right"/>
+                                        </button>
+                                    </apex:outputPanel>
+                                </div> 
+                                <apex:outputPanel styleClass="slds-col slds-no-flex slds-grid slds-align-top" layout="block">
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                        </div> 
+                        <script>
+                            showList();
+                        </script>
+                    </apex:outputPanel>
+                    <apex:outputPanel id="duplicateFilePopup" rendered="{!duplicateRecordsWhilePaste.size > 0}" layout="block" style="z-index:8552;">
+                        <div class="apModal" style="z-index:8551;">
+                            <div class="apModalContainer">
+                                <div class="apModalHeader">
+                                    <button id="duplicateFileCloseButton"  class="slds-button slds-modal__close slds-button--icon-inverse" onClick="j$('input[id$=\'duplicateFileCancelButton\']').click(); return false;" title="Close">
+                                        <c:BT_LightningSvg parentId="duplicateFileCloseButton" styleClass="slds-button__icon slds-button__icon--large" path="/assets/icons/utility-sprite/svg/symbols.svg#close"/>
+                                    </button>
+                                    <h2 class="apModalHeading" id="duplicateFilePopupHeader">{!$Label.buildertek__Duplicate_Records_Popup_Header}</h2>
+                                </div>
+                                <div class="apModalContent">
+                                    <div class="apNotifyContainer" style="position: relative; text-align:left;">
+                                        <div class="slds-panel__section">
+                                            <apex:outputPanel >
+                                                <apex:pageMessages id="duplicateFileErrorMessage"/>
+                                                <script>
+                                                    Appurin.lightning.createLightningPageMessage({'classicPageMessageId' : '{!$Component.duplicateFileErrorMessage}'});   
+                                                </script>
+                                            </apex:outputPanel>
+                                            <apex:outputPanel layout="block" id="duplicateFilesGrid" rendered="{!AND(duplicateRecordsWhilePaste != null, duplicateRecordsWhilePaste.size > 0)}">
+                                                <table class="slds-table slds-table--bordered slds-no-row-hover slds-table--cell-buffer">
+                                                    <thead>
+                                                        <tr class="slds-text-title--caps">
+                                                            <th scope="col">
+                                                                <div class="slds-truncate">{!$Label.buildertek__Replace_Content_and_Info_Message}</div>
+                                                            </th>
+                                                            <th scope="col">
+                                                                <div class="slds-truncate">{!$Label.buildertek__Name}</div>
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <apex:repeat value="{!duplicateRecordsWhilePaste}" var="duplicateRecord">
+                                                            <tr class="slds-hint-parent">
+                                                                <td>
+                                                                    <apex:inputCheckbox value="{!duplicateRecord.isReplace}" id="isSelectReplace" />
+                                                                </td>
+                                                                <td>
+                                                                    <apex:outputLink target="_blank" value="/{!duplicateRecord.duplicateId}"><apex:outputText value="{!duplicateRecord.name}"/></apex:outputLink>
+                                                                </td>
+                                                            </tr>
+                                                        </apex:repeat>
+                                                    </tbody>
+                                                </table>
+                                            </apex:outputPanel>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="apModalFooter">
+                                    <apex:commandButton value="{!$Label.buildertek__Replace_All_Button}" styleClass="slds-button slds-button_brand" onClick="Appurin.lightning.hideModalPopup({'modalPopupId':'{!$Component.duplicateFilePopup}'});" action="{!replaceAllDuplicates}" status="splashStatus" reRender="northOutputPanel,dbixoHeader" onComplete="easyToolTipForAll(); refreshTheActiveFolderInTree('{!JSENCODE(selectedFolder)}');"/>
+                                    <apex:commandButton value="{!$Label.buildertek__Replace_Button}" styleClass="slds-button slds-button_brand" onClick="Appurin.lightning.hideModalPopup({'modalPopupId':'{!$Component.duplicateFilePopup}'});" action="{!replaceSelectedDuplicates}" status="splashStatus" reRender="northOutputPanel,dbixoHeader" onComplete="easyToolTipForAll(); refreshTheActiveFolderInTree('{!JSENCODE(selectedFolder)}');"/>
+                                    <apex:commandButton id="duplicateFileCancelButton" value="{!$Label.buildertek__Cancel}" styleClass="slds-button slds-button_brand" onClick="Appurin.lightning.hideModalPopup({'modalPopupId':'{!$Component.duplicateFilePopup}'});" action="{!cancelReplaceForDuplicates}"  status="splashStatus" reRender="" onComplete="easyToolTipForAll();"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-backdrop slds-backdrop--open" style="z-index: 5881;"></div>
+                        <script>
+                            Appurin.lightning.createModalPopup({modalPopupId : '{!$Component.duplicateFilePopup}', isAlertPrompt : false});
+                        </script>
+                    </apex:outputPanel>
+                </apex:outputPanel>
+            </div>
+        </div>
+        <script>
+            if({! !fileExplorerPageConfugration.isShowHirarchicalFileUI}){
+                j$("div[id$='layoutContainer']").css('display', 'block');
+                j$("div[id$='westPanel']").css('display', 'none');
+            }
+        </script>
+    </apex:outputPanel>
+    <apex:outputPanel layout="block" id="uploadFilePopup" style="display: none; z-index: 8552;">
+        <div class="apModal" style="z-index: 8551;">
+            <div class="apModalContainer">
+                <div class="apModalHeader slds-modal__header slds-modal__header slds-modal__header--empty">
+                    <button id="uploadFilePopupCloseIcon" class="slds-button slds-modal__close slds-button--icon-inverse" onClick="closeWindowForUploadFile(); return false;" title="{!$Label.Close}tryu">
+                        <c:BT_LightningSvg parentId="uploadFilePopupCloseIcon" styleClass="slds-button__icon slds-button__icon--large" path="/assets/icons/utility-sprite/svg/symbols.svg#close"/>
+                        <span class="slds-assistive-text">{!$Label.Close}</span>
+                    </button>
+                </div>
+                <div class="apModalContent">
+                    <iframe id="uploadFileIframe"/>
+                </div>
+            </div>
+        </div>
+        <div class="slds-backdrop slds-backdrop--open" style="z-index: 5881;"></div>
+        <script>
+            Appurin.lightning.createModalPopup({modalPopupId : '{!$Component.uploadFilePopup}', isAlertPrompt : false});
+        </script>
+    </apex:outputPanel>
+    <apex:outputPanel layout="block" id="newFolderPopup" style="display: none; z-index: 8552;">
+        <div class="apModal" style="z-index: 8551;">
+            <div class="apModalContainer">
+                <div class="apModalHeader slds-modal__header slds-modal__header slds-modal__header--empty">
+                    <button id="newFolderPopupCloseIcon" class="slds-button slds-modal__close slds-button--icon-inverse" onClick="closeWindowForNewFolder(); return false;" title="{!$Label.Close}">
+                        <c:BT_LightningSvg parentId="newFolderPopupCloseIcon" styleClass="slds-button__icon slds-button__icon--large" path="/assets/icons/utility-sprite/svg/symbols.svg#close"/>
+                        <span class="slds-assistive-text">{!$Label.Close}</span>
+                    </button>
+                </div>
+                <div class="apModalContent">
+                    <iframe id="newFolderIframe"/>
+                </div>
+            </div>
+        </div>
+        <div class="slds-backdrop slds-backdrop--open" style="z-index: 5881;"></div>
+        <script>
+            Appurin.lightning.createModalPopup({modalPopupId : '{!$Component.newFolderPopup}', isAlertPrompt : false});
+        </script>
+    </apex:outputPanel>
+    <apex:outputPanel layout="block" id="lightningInfoPopup" style="display: none; z-index: 8552;"> 
+        <div class="apModal" style="z-index: 8551;">
+            <div class="apModalContainer">
+                <div class="apModalHeader">
+                    <button id="lightningInfoPopupCloseIcon" class="slds-button slds-modal__close slds-button--icon-inverse" onClick="Appurin.lightning.hideModalPopup({'modalPopupId':'{!$Component.lightningInfoPopup}'}); return false;" title="{!$Label.Close}">
+                        <c:BT_LightningSvg parentId="lightningInfoPopupCloseIcon" styleClass="slds-button__icon slds-button__icon--large" path="/assets/icons/utility-sprite/svg/symbols.svg#close"/>
+                        <span class="slds-assistive-text">{!$Label.Close}</span>
+                    </button>
+                    <h2 class="apModalHeading" id="lightningInfoPopupHeader">{$Label.Warning}</h2>
+                </div>
+                <div class="apModalContent">
+                    <div class="apNotifyContainer" style="position: relative; text-align:left;">
+                        <div>
+                            <h2 id="lightningInfoPopupMessage"></h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="apModalFooter">
+                    <button id="lightningInfoPopupOkButton">{!$Label.Ok}</button>
+                    <button id="lightningInfoPopupCloseButton">{!$Label.Close}</button>
+                </div>
+            </div>
+        </div>
+        <div class="slds-backdrop slds-backdrop--open" style="z-index: 5881;"></div>
+    </apex:outputPanel>
+</apex:component>

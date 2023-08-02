@@ -1,0 +1,39 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+	 <center>
+<h1 style="padding:10px;"><b>Glazier and Low-Voltage Training Resources</b></h1>
+<div style="height:400px;width:50%;padding:10px;">
+<div style=" width: 300px;border-radius: 20px;box-shadow: 1px 4px 8px 1px rgba(0, 0, 0, 0.2), 1px 6px 20px 1px rgba(0, 0, 0, 0.19);float:left;" >
+    <!--<img src="{!$Setup.buildertek__RFQ_Template_Settings__c.buildertek__Sites_URL__c}/resource/RFQInvitationBanner" width="100%" />-->
+   <img src="{!$Resource.Glazier_Resource}" alt="Norway" style="width:100%;border-radius: 20px 20px 0px 0px;" />
+  <div style="padding:10px;">
+    <p><b>Glazier Resources</b></p>
+  </div>
+    
+     <div style="width:60%;background:#87CEEB;margin:10px;text-align:center;font-color:#FFFFFF;cursor: pointer;" onclick="{! c.handleClick }" >
+         <p style="padding:10px;">LEARN MORE</p>
+  </div>
+</div>
+         <div style=" width: 300px;border-radius: 20px; box-shadow: 1px 4px 8px 1px rgba(0, 0, 0, 0.2), 1px 6px 20px 1px rgba(0, 0, 0, 0.19);float:right;">
+   <img src="{!$Resource.Low_Voltage_Resources}" alt="Norway" style="width:100%;height:225px;border-radius: 20px 20px 0px 0px;" />
+  <div style="padding:10px;">
+    <p><b>Low-Voltage Resources</b></p>
+  </div>
+   
+   <div style="width:60%;background:#87CEEB;margin:10px;text-align:center;font-color:#FFFFFF;cursor: pointer;" onclick="{! c.handleClick1 }" >
+       
+         <p style="padding:10px;">LEARN MORE</p>
+  </div>
+</div>
+    </div>
+    
+    <!--<div class="slds-p-around_medium slds-media_center" style="border: 1px solid black;height:200px;background-color:#D3D3D3;font-size:20px;">
+       
+       <p style="padding:10px;"><lightning:formattedUrl value="{!$Label.c.Glazier_Resources}" tooltip="Glazier Resources" label="Glazier Resources" target="_blank" /></p> 
+        <p><lightning:formattedUrl value="{!$Label.c.Low_Voltage_Resources}" tooltip="Low-Voltage Resources" label="Low-Voltage Resources" target="_blank" /></p>
+           
+    </div>
+         </div>-->
+     </center>
+    
+    
+</aura:component>

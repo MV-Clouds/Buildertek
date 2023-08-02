@@ -1,0 +1,112 @@
+.THIS.mainDiv{
+    position: sticky; 
+    top: 5.6rem; 
+    background: white; 
+    z-index: 1;
+}
+
+.THIS.mainDiv td{
+    overflow: hidden;
+}
+
+.THIS.mainDiv .searchbarList{
+    position: absolute;
+    width: 100%;
+}
+
+.THIS .mainTableBody td{
+    height: 7rem;
+}
+
+.THIS .prodImg .slds-carousel__content {
+    height: auto;
+    padding: initial;
+}
+
+.THIS .prodImg .slds-carousel__stage{
+    width: 7rem;
+}
+
+.THIS .prodImg .slds-text-link_reset{
+    width: 7rem;
+}
+
+.THIS .blankProd{
+    text-align: center;
+    padding: 3rem;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.THIS .optionTitle{
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center;
+    padding-bottom: 10px;
+}
+
+.THIS .btnDiv{
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+}
+
+.THIS .noImageDiv{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.THIS .slds15{
+    width: 15%;
+}
+
+.THIS .priceDiv{
+    width: 24%;
+}
+
+.THIS .priceDiv .slds-form-element{
+    display: flex;
+}
+
+.THIS .priceDiv .slds-form-element__label{
+    line-height: 25px;
+    width: 115px;
+}
+
+.THIS .priceDiv .slds-grow{
+    width: 50%;
+}
+
+.THIS .closeIcon{
+    position: absolute;
+    right: 0;
+    top: -30px;
+}
+
+.THIS .leftBtn{
+    position: absolute;
+    top: 50%;
+    left: -50px;
+}
+
+.THIS .rightBtn{
+    position: absolute;
+    top: 50%;
+    right: -50px;
+    transform: rotate(180deg);
+}
+
+.THIS .searchResult{
+    position: relative;
+}
+
+.THIS .contentDiv{
+    padding-top: 5rem
+}
+
+.THIS .blank-lst{
+    text-align: center;
+    padding: 5px;
+    font-weight: 700;
+}

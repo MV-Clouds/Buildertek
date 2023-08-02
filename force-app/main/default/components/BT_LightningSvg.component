@@ -1,0 +1,32 @@
+<!--**********************************************************************************
+* Copyright © 2011-2016, BuilderTek.
+* All rights reserved
+*
+* VisualForce Component: BT_lightningsvg
+* Created by Sagar: 11/01/2017
+*
+* - Generated svg for lightning.
+*
+* - Modifications:
+* - Sagar, 11/01/2017 – Initial Development
+***********************************************************************************-->
+<apex:component >
+    <apex:attribute name="parentId" type="String" description="Id of DOM in which SVG will be added." />
+    <apex:attribute name="parentType" type="String" description="Type of DOM in which SVG will be added." />
+    <apex:attribute name="styleClass" type="String" description="Class for svg tag" />
+    <apex:attribute name="path" type="String" description="Path for svg tag" />
+    <apex:panelGroup rendered="{!parentId == null}">
+        <svg aria-hidden="true" class="{!styleClass}">
+            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Resource.SLDS, path)}" />
+        </svg>
+    </apex:panelGroup>
+    <apex:panelGroup rendered="{!parentId != null}">
+        <script>
+            var parent = j$("#{!parentId}");
+            if(parent.html() == undefined){
+               parent = j$("{!parentType}[id$='{!parentId}']"); 
+            }
+            parent.prepend("<svg aria-hidden='true' style='fill: currentColor;' class='{!styleClass}'><use xmlns:xlink='http://www.w3.org/1999/xlink' xlink:href='{!URLFOR($Resource.SLDS, path)}'/></svg>");
+        </script>
+    </apex:panelGroup>
+</apex:component>

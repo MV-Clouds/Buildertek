@@ -1,0 +1,162 @@
+<aura:component implements="force:appHostable,force:lightningQuickAction,flexipage:availableForRecordHome,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes"
+                access="global" controller="massUpdateSovController">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+    <aura:attribute name="massUpdateEnable" type="Boolean" default="true" />
+    <aura:attribute name="PageNumber" type="integer" default="1" />
+    <aura:attribute name="pageSize" type="integer" default="25" />
+     <aura:attribute name="numberOfItems" type="Integer" />
+    <aura:attribute name="RecordStart" type="integer" default="0" />
+    <aura:attribute name="RecordEnd" type="integer" default="0" />
+    <aura:attribute name="TotalPages" type="integer" default="0" />
+    <aura:attribute name="TotalRecords" type="Integer" default="0" />
+    <aura:attribute name="isNextDisabled" type="Boolean" default="true" />
+    <aura:attribute name="cloneListOfRecords" type="Schedule_of_Value_Lines__c[]" />
+    <aura:attribute name="listOfRecords" type="Schedule_of_Value_Lines__c[]" />
+    <aura:attribute name="fieldSetValues" type="List" />
+    <aura:attribute name="arrfieldNames" type="List" />
+    <aura:attribute name="recordIdsToDelete" type="List" />
+    <aura:attribute name="isModalOpen" type="Boolean" />
+    <aura:attribute name="currentTab" type="String" />
+    <aura:attribute name="SovName" type="String" />
+    
+    <aura:attribute name="Iscommunity" type="Boolean" default = "false"/>
+    <aura:attribute name="isCommUser" type = "Boolean" />
+    <aura:attribute name="IsSubmitted" type="Boolean"/>
+    
+    <aura:attribute name="Spinner" type="Boolean" />
+    <aura:attribute name="showMessage" type="Boolean" default="false" />
+    
+    <lightning:workspaceAPI aura:id="workspace" />
+    
+    
+    
+    <lightning:card aura:id="lightCard" class="slds-card_boundary slds-page-header cardbody" >
+        <aura:set attribute="title" >
+            <a href="javascript:void(0)" onclick="{!c.BackToSov}" style="margin:0px;padding:0px">{!v.SovName}</a>
+        </aura:set>
+        
+        <lightning:messages />
+        
+        <!--Custom Styles for Modal Header and Footer--> 
+        <aura:html tag="style">
+            .slds-card__header{
+            padding: 0px !important;
+            margin: 0px !important;
+            }
+            .slds-card__body{
+            margin:0px !important;
+            }
+        </aura:html>
+        
+        <div class="slds-grid slds-wrap" style="text-align: end;display: block; position: relative; top: -1.1rem;width: fit-content; float: right;">
+            
+            <lightning:button iconName="utility:save" iconPosition="left" onclick="{!c.onMassUpdate}"
+                              label="{!v.massUpdateEnable==true?'Save':'Mass Update'}" class="" />
+            <aura:if isTrue="{!v.massUpdateEnable}">
+                <lightning:button iconName="utility:add" iconPosition="left" onclick="{!c.onAddClick}"
+                                  label="Add" />
+                <lightning:button iconName="utility:close" iconPosition="left" onclick="{!c.onMassUpdateCancel}"
+                                  label="Cancel" />
+                <lightning:button iconName="utility:delete" iconPosition="left" onclick="{!c.handleMassDelete}"
+                                  label="Delete" />
+            </aura:if>
+            <lightning:button iconName="utility:back" iconPosition="left" disabled="{!v.PageNumber == 1}"
+                              aura:id="prevPage" label="Previous" onclick="{!c.handlePrev}" />
+            <lightning:button iconName="utility:forward" iconPosition="right" disabled="{!v.isNextDisabled}"
+                              aura:id="nextPage" label="Next" onclick="{!c.handleNext}" />
+        </div>
+        
+        
+        
+        <div style="padding-top:10px">
+            <table class="{!v.massUpdateEnable ? 'slds-table slds-table--bordered ':'slds-table--bordered'}" >
+                <thead>
+                    <tr style="{!v.massUpdateEnable ? '':'height:35px; !important'}">
+                        <aura:if isTrue="{!v.massUpdateEnable}">
+                            <th style="width:4%;">
+                            </th>
+                            
+                        </aura:if>
+                        <aura:iteration items="{!v.fieldSetValues}" var="field" indexVar="index">
+                            <th> {!field.label}</th>
+                        </aura:iteration>
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.listOfRecords}" var="row" indexVar="index"> <!-- {!v.listOfRecords} -->
+                        <aura:if isTrue="{!row}">
+                            
+                            <tr style="{!v.massUpdateEnable ? '':'height:35px; !important; line-height: 1; margin-left: 5px'}">
+                                <aura:if isTrue="{!v.massUpdateEnable}">
+                                    <td style="padding:5px; margin:5px;line-height:5;">
+                                        <lightning:input type="checkbox" name="{!index}" checked="{!row.isSelected}"
+                                                         onclick="{!c.onCheckBoxSelect}" class="customCheckBoxCss" />
+                                    </td>
+                                    
+                                </aura:if>
+                                <aura:iteration items="{!v.fieldSetValues}" var="field"> <!-- scheduleId="{!v.recordId}" -->
+                                    <td style="padding:5px; margin:5px;">
+                                        
+                                        <c:BT_FieldSetMassUpdate record="{!row}" index="{!index}" field="{!field}"
+                                                                 isMassUpdateEnable="{!v.massUpdateEnable}"
+                                                                 childObjectName="buildertek__Schedule_of_Value_Lines__c"/>
+                                    </td>
+                                </aura:iteration>
+                            </tr>
+                        </aura:if>
+                    </aura:iteration>
+                </tbody>
+            </table>        
+        </div>    
+        
+        
+        
+        <aura:if isTrue="{!v.isModalOpen}">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                     aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close" onclick="{!c.handleCancel}" alternativeText="close"
+                                              size="medium" variant="bare-inverse" class="slds-modal__close" />
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Delete Confirmation
+                        </h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="text-align:center;">
+                        <p>Are you sure you want to delete SOV Lines?</p>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning:button variant="neutral" label="Cancel" title="Cancel" onclick="{! c.handleCancel }" />
+                        <lightning:button variant="neutral" label="Delete" title="Delete" onclick="{!c.handleDelete}" />
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </aura:if>
+        
+        
+    </lightning:card>
+    
+    <!--  <aura:if isTrue="{!v.isLoading}">
+        <lightning:spinner alternativeText="Loading" variant="brand" size="large" />
+    </aura:if> -->
+    
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container" style="position:fixed; ">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                    <aura:if isTrue="{!v.showMessage}">
+                        <b>Processing, Please Wait</b> 
+                        <!-- <b>Creating PoItems </b>-->
+                        
+                    </aura:if>
+                </div>
+            </div>
+        </div>
+    </aura:if>
+    
+</aura:component>

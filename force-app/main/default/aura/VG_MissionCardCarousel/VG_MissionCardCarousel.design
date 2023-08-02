@@ -1,0 +1,9 @@
+<design:component >
+    <design:attribute name="numOfCards" label="Num Of Cards" description="The num of cards to be displayed"  /> 
+    <design:attribute name="cardType" label="Card Type" datasource="small,big" description="Card width"  /> 
+    <design:attribute name="autoplay" label="Autoplay" datasource="true,false" description="Autoplay"  /> 
+    <design:attribute name="autoplaySpeed" label="Autoplay Speed"  description="Autoplay speed" /> 
+    <design:attribute name="iconFillColor" label="Icon Color"  description="Icon Color" /> 
+    <design:attribute name="componentName" label="Component Name"  datasource="MissonStatement,Announcements"  description="Component Name" /> 
+    
+</design:component>

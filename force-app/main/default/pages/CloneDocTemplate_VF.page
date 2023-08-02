@@ -1,0 +1,56 @@
+<apex:page standardController="Quote_Template__c" extensions="CloneDocTemplate_AC">
+<apex:Form id="formid">
+<apex:sectionHeader title="Doc Template Edit" subtitle="New Doc Template" />
+<apex:pageBlock id="thePageBlock" title="Doc Template Edit">
+<apex:pagemessages />
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Save"  action="{!Save}"/>
+                <apex:commandButton value="Save & New" />
+                <apex:commandButton value="Cancel" action="/{!DocTemplateID}" immediate="true" />
+            </apex:pageBlockButtons>
+            <apex:pageblockSection title="Information" collapsible="false" columns="2">
+            
+            <apex:pageblockSectionitem >
+            <apex:outputLabel value="Template Header"/>
+            <apex:inputField value="{!DocTemplateRec.Template_Header__c}"/>  
+            </apex:pageblockSectionitem>
+            <apex:pageblockSectionitem >
+            <apex:outputLabel value="Owner"/>
+            <apex:outputText value="{!DocTemplateRec.Owner.Name}"/>  
+            </apex:pageblockSectionitem>  
+            
+            <apex:pageblockSectionitem >
+            <apex:outputLabel value="Font Family"/>
+            <apex:inputField value="{!DocTemplateRec.Font_Family__c}"/>  
+            </apex:pageblockSectionitem>
+            <apex:pageblockSectionitem >
+            <apex:outputLabel value="Template Footer"/>
+            <apex:inputField value="{!DocTemplateRec.Template_Footer__c}"/>  
+            </apex:pageblockSectionitem> 
+            
+            <apex:pageblockSectionitem >
+            <apex:outputLabel value="Description"/>
+            <apex:inputField value="{!DocTemplateRec.Description__c}"/>  
+            </apex:pageblockSectionitem>
+            <apex:pageblockSectionitem >
+            <apex:outputLabel value="Template Format"/>
+            <apex:inputField value="{!DocTemplateRec.Template_Format__c}"/>  
+            </apex:pageblockSectionitem>     
+            
+            <apex:pageblockSectionitem >
+            <apex:outputLabel value="Template Body"/>
+            <apex:inputField value="{!DocTemplateRec.Template_Body__c}"/>  
+            </apex:pageblockSectionitem>
+            
+             <apex:pageblockSectionitem >
+             <apex:outputLabel value="Show Page Number"/>
+            <apex:inputField value="{!DocTemplateRec.Show_Page_Number__c}"/>  
+            </apex:pageblockSectionitem>
+                                          
+            
+            </apex:pageblockSection>
+</apex:pageBlock>
+
+
+</apex:Form>
+</apex:page>

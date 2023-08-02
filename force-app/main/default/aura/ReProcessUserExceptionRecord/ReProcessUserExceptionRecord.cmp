@@ -1,0 +1,8 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" 
+                access="global" controller='UpdateEmployeeRecord'>
+	
+	<aura:handler name="init" value="{!this}" action="{!c.doinit}" />
+    <aura:attribute name="recordId" type="String" />
+    
+    <h4>Please wait while updating details. This Modal will be closed automatically.</h4>
+</aura:component>

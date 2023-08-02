@@ -1,0 +1,30 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" controller="DocuSignFolderMappingController" >
+    <aura:attribute name="FolderMapping" type="Docusign_Folder_Mapping__c" default="{ 'sobjectType': 'Docusign_Folder_Mapping__c',
+                                                                                    'Name': '',
+                                                                                    'buildertek__Template_Folder_Name__c': ''
+                                                                                    }"/>
+    
+    <Form>
+        <div style = "background-color: white; padding: 8px;">
+            <ui:inputText aura:id="ObjectName" label="Object Name"
+                          class="slds-input"
+                          labelClass="slds-form-element__label"
+                          value="{!v.FolderMapping.Name}"
+                          required="true"/>
+            <ui:inputText aura:id="FolderName" label="Folder Name"
+                          class="slds-input"
+                          labelClass="slds-form-element__label"
+                          value="{!v.FolderMapping.buildertek__Template_Folder_Name__c}"
+                          required="true"/>
+        </div>
+        
+        <div style = "background-color: white; padding: 8px;">
+            
+            <ui:button label="Save" 
+                       class="slds-button slds-button--neutral"
+                       labelClass="label"
+                       press="{!c.createAccount}"/>
+            
+        </div>
+    </Form>
+</aura:component>

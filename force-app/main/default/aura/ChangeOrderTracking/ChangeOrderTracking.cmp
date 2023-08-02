@@ -1,0 +1,150 @@
+<aura:component controller="ChangeOrderTrackingController" implements="force:appHostable,flexipage:availableForAllPageTypes,lightning:isUrlAddressable,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable,forceCommunity:availableForAllPageTypes,forceCommunity:layout" access="global" >
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="currencycode" type="String"/>
+    <lightning:workspaceAPI aura:id="workspace"/>
+    <aura:attribute name="recordId" type="String" />
+    
+    <aura:attribute name="CoTracName" type="String" />
+    
+    <aura:attribute name='sovLineList' type='List'/>
+    <aura:attribute name="IsSaveDisable" type = "Boolean" default = "false"/>
+    <aura:attribute name="Spinner" type="Boolean" />
+    <aura:attribute name="showMessage" type="Boolean" default="false" />
+    
+    
+    
+    
+    <header class="slds-modal__header" style=" text-align:left;height:60px; background:rgb(240, 240, 240);">
+        
+        <span >
+            <!--<lightning:icon iconName="Custom :custom8" title="custom8" /> -->
+            
+            <lightning:icon iconName="custom:custom8" size="medium"/>
+            
+        </span>
+        
+        <span style = "text-align:left; padding;">
+            
+            <span style="font-weight: 900; padding-left : 8px; font-size:18px">   <a href="javascript:void()"  onclick="{!c.navtoParent}">{!v.CoTracName}</a> </span>
+            <span style="font-weight: 900; padding-left : 200px; font-size:18px;">
+                Change Order Payment Tracking Lines
+            </span>
+            
+        </span>
+        
+    </header>
+    
+    
+    
+    
+    <div style = "padding-top:10px;">
+        <table class='slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal'>
+            <thead ></thead>
+            <tr style="position: sticky;
+                       top: 2.5rem;
+                       z-index: 43;
+                       height:30px
+                       background-color: #f0efef;">
+                
+                <th scope='col' style = "width:5%; border-radius: 3px; background-color: rgba(145,145,145,0.2);">
+                    <div  title='S.No'>S.No</div>
+                </th>
+                <th scope='col' style = "width:18%; background-color: rgba(145,145,145,0.2);">
+                    <div  title='Description'>Description</div>
+                </th>
+                
+                <th scope='col' style = "width:10%; background-color: rgba(145,145,145,0.2);">
+                    <div title='Scheduled Value'>Scheduled Value</div>
+                </th>
+                
+                <th scope='col' style = "width:10%; background-color: rgba(145,145,145,0.2);">
+                    <div  title='Work Completed From Previous App'>Work Completed From Previous App</div>
+                </th>
+                
+                <th scope='col' style = "width:10%; background-color: rgba(145,145,145,0.2);">
+                    <div title='Work Completed This Period'>Work Completed This Period</div>
+                </th>
+                
+                <th scope='col' style = "width:10%; background-color: rgba(145,145,145,0.2);">
+                    <div title='Balance To Finish'>Balance To Finish</div>
+                </th>
+                
+                
+            </tr>
+            
+            <tbody>
+                <aura:iteration items="{!v.sovLineList}" var="sov" indexVar="recIndex">
+                    <tr >
+                        
+                        
+                        <td>
+                            {!recIndex+1}
+                        </td>
+                        
+                        <td>
+                            
+                            <a href="javascript:void()"  onclick="{!c.NavToSovRec}" data-change = "{!sov.Id}">{!sov.buildertek__Description__c}</a>
+                            
+                            
+                        </td> 
+                        
+                        <td>
+                            <lightning:formattedNumber value="{!sov.buildertek__Scheduled_Value__c}" aura:id="buildertek__Scheduled_Value__c" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code"/>
+                        </td>
+                        
+                        <td>
+                            
+                            <lightning:formattedNumber value="{!sov.buildertek__Work_Completed_From_Previous_App__c}" aura:id="buildertek__Work_Completed_From_Previous_App__c" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code"/>
+                            
+                        </td>
+                        
+                        <td>
+                            
+                            <div style="display: flex;">
+                                <div style="padding:5px"><b>{!v.currencycode}</b></div>
+                                <div data-id="{!recIndex+1}" >
+                                    <lightning:input type="number"  value="{!sov.buildertek__Work_Completed_This_Period__c}" title = "{!recIndex}"  variant="label-hidden" onchange="{!c.changeValue}"  aura:id="buildertek__Work_Completed_This_Period__c" step="0.01" name="{!sov.Id}"/>
+                                </div>
+                            </div>
+                            
+                            
+                        </td>
+                        
+                        <td>
+                            <lightning:formattedNumber value="{!sov.buildertek__Balance_To_Finish__c}"  aura:id="buildertek__Balance_To_Finish__c" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code"/>
+                        </td>
+                        
+                        
+                    </tr>
+                    
+                </aura:iteration>
+            </tbody>
+        </table>
+    </div>
+    
+    
+    <footer class="slds-modal__footer"  style = "background : white">
+        <button class="slds-button slds-button--neutral" onclick="{!c.closeModal}">Cancel</button>
+        <button class="slds-button slds-button--neutral" onclick="{!c.UpdateCOPayAppLines}" disabled="{!v.IsSaveDisable}">Save</button>
+    </footer>   
+    
+    
+    
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative"
+                 role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                    <b>Processing, Please Wait</b>
+                </div>
+            </div>
+        </div>
+    </aura:if>
+    
+    
+    
+</aura:component>

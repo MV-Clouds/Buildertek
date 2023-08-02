@@ -1,0 +1,5 @@
+<apex:page controller="ContractPDFController" renderAs="pdf">
+    <apex:form id="frmid">
+        <apex:outputText value="{!templateBody}" escape="false" />
+    </apex:form>
+</apex:page>

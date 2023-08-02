@@ -1,0 +1,329 @@
+<!--**********************************************************************************
+* Copyright © 2017-2017, BuilderTek.
+* All rights reserved
+*
+* VisualForce Component: apTreePickerWithSelectComponent
+* Created by Sagar: 06/08/2017
+*
+* - Rendering the tree as per the tree node configuration with selected tree nodes list and "Select" and "Remove" options.
+*
+* - Modifications:
+* - Sagar, 06/08/2017 – Initial Development
+***********************************************************************************-->
+<apex:component controller="BT_TreePickerWithSelectController">
+	<apex:attribute name="title" type="String"  
+        description="Title to display on picker"/>
+    <apex:attribute name="treeId" type="String"
+        description="HTML element id where the tree needs to be rendered" required="true"/>
+    <apex:attribute name="treeType" type="String" 
+        description="Tree type such as Controls, Assessments, Policies, Assets etc" required="true"/>
+    <apex:attribute name="treeConfigName" type="String"
+        description="Tree Configuration Name. If null or '', assumes treeType + ' Tree'"/>
+    <apex:attribute name="treeSource" type="String"
+        description="JSON string TreeNodes that will be used as tree source."/>      
+    <apex:attribute name="checkableTreeNodes" type="String[]"
+        description="Array of object type strings indicating that nodes of these object types are checkable"/>   
+    <apex:attribute name="treeWidth" type="String" default="550"
+        description="Tree width in pixel"/>
+    <apex:attribute name="treeHeight" type="String" default="350"
+        description="Total layout height in pixel"/> 
+    <apex:attribute name="selectButtonLabel" type="String"  
+        description="Select button label"/>
+    <apex:attribute name="selectedNodes" type="TreePickerNode[]" assignTo="{!selectedNodes1}" required="true"
+        description="Array of tree nodes to hold onto selected list of nodes"/>    
+    <apex:attribute name="treeSelectMode" type="String" default="2" assignTo="{!selectModeForPicker}"
+        description="Set treeSelectMode to 1 if you want single-selection enabled, 2 if you want multi-selection enabled, 3 if you want hierarchical multi-selection enabled." />    
+    <apex:attribute name="selectableObjectNamesForHeader" type="String" default="record"
+        description="Used for header value of selected record table. If more then one objects are allowed to select, prepare string with '/' as seperater."/>
+    <apex:attribute name="searchableObjectTypes" type="string[]" assignTo="{!searchableObject}" required="true"
+   		description="Used for generic search. It is combination of Object API name and record types you want to search. e.g.ObjectAPI:RecordType1~RecordType2" />
+   	<apex:attribute name="treePickerLabel" type="string" required="true"
+   		description="Used to dispaly label for picker" />
+	<apex:attribute name="treePickerLabelHelpText" type="string"
+   		description="Used to dispaly label help text for picker" />
+   	<apex:attribute name="showTable" type="boolean" default="true" 
+    	 description="Used to dispaly table/text for single selected node (select mode 3)." />
+    <apex:attribute name="isTreePersist" type="Boolean" default="false"
+        description="Set to true if you want to persist the state of tree."/>
+    <apex:attribute name="isExpandTreeRoots" type="Boolean" 
+        description="Set to true if root nodes need to pre expanded."/>
+    <apex:attribute name="treeImageStaticResource" type="String" default="BT_ResourceUtils"
+	    description="Name of static resource from where icons serverd."/>     
+   	<apex:attribute name="queryParameters" type="String"
+        description="It will define the query Parameters tofilter out data in tree."/>
+        
+    <style>
+        .apButton{
+            margin-left:10px !important;
+        }
+        .apLightningTreeTabHeader{
+            height: 32px !important;
+            line-height: 32px !important;
+        }
+        .apTreeRecordActionColumn{
+            width: 20px !important;
+            padding: 5px 10px 3px 15px !important;
+        }
+        .apTreeRecordColumn{
+            padding: 5px 10px 3px 15px !important;
+        }
+        .apLightningNotify{
+            padding: 2px 0px 2px 0px;
+        }
+    </style>    
+   	
+   	<script>
+   	    function search(e) {
+            var charCode = e.charCode || e.keyCode;
+            if (charCode  == 13) {
+                searchRecords(); 
+                e.preventDefault();
+            }
+        }
+        
+        function addRecords(treeId, treeSelectMode){
+            var selectedPickerTabHeader = j$("a[id$='"+treeId+"Browse__header']").parent().hasClass("slds-active");
+            if(j$("a[id$='"+treeId+"Browse__header']").parent().hasClass("slds-active")){
+                browseAdd(treeId)
+            } else if(j$("a[id$='"+treeId+"Search__header']").parent().hasClass("slds-active")){
+                searchAdd(treeId, treeSelectMode);
+            }
+            return false;
+        }
+        
+   	    function browseAdd(treeId){
+   	        var pickerId = treeId + 'PickerContent';
+   	        var jsonStringForSelectedNodes =  j$("div[id$='"+treeId+"']").parent().parent().parent().find("input[id$='hiddenFieldForSelectedTreeNodesJsonString']").val();
+        	if(jsonStringForSelectedNodes == '' || jsonStringForSelectedNodes == '[]'){
+        		Appurin.lightning.createLightningPageMessage({'lightningPageMessageId' : '{!treeId}BrowseErrorDiv', 'severity' : 'error', 'summary' : '{!$Label.Select_Atleast_One_Record_Warning}'});   
+        		return false;
+        	} else{
+        	    j$("div[id$='"+pickerId+"']").css('display', 'none');
+	            j$("div[id$='"+treeId+"DisplayPopup']").find("input").removeAttr('checked');
+	           	createTreeNodeList();
+	           	return false;
+        	}
+   	    }
+   	    
+   	    function searchAdd(treeId, treeSelectMode){
+   	        var pickerId = treeId + 'PickerContent';
+   	        var isRecordSelected = false;
+           	if(treeSelectMode != '1'){
+            	j$("div[id$='"+pickerId+"']").find("input[id$='selectCheckBox']").each(function(i){
+            		 if(!isRecordSelected && j$(this).attr('checked') == 'checked'){
+            		 	isRecordSelected = true;
+            		 }
+            	});
+           	}
+           	if(treeSelectMode == '1'){
+            	j$("div[id$='"+pickerId+"']").find("input[id$='hiddenSelectCheckBox']").each(function(i){
+            		 if(!isRecordSelected && j$(this).attr('checked') == 'checked'){
+            		 	isRecordSelected = true;
+            		 }
+            	});
+           	}
+           	if(isRecordSelected){
+           	    j$("div[id$='"+pickerId+"']").css('display', 'none');
+	            j$("div[id$='"+treeId+"DisplayPopup']").find("input").removeAttr('checked');
+           	    j$("div[id$='"+treeId+"DisplaySearchResult']").find("input").removeAttr('checked');
+               	j$("div[id$='"+treeId+"DisplayRecordMsg']").find("input").removeAttr('checked');
+               	createSearchNodeList();
+               	return false;
+           	} else{
+           	    Appurin.lightning.createLightningPageMessage({'lightningPageMessageId' : '{!treeId}SearchErrorDiv', 'severity' : 'error', 'summary' : '{!JSENCODE($Label.Select_Atleast_One_Record_Warning)}'});   
+               	return false;
+           	}
+   	    }
+   	    
+   	    function closePicker(treeId){
+   	        var pickerId = treeId + 'PickerContent';
+   	        var treePersistanceData = j$("input[id$='"+treeId+"_hiddenFieldForTreePersistanceData']").val();
+    		if(j$("#"+treeId).fancytree("getTree").options.treePersist){
+	    		j$("#"+treeId).fancytree("getTree").clearCookies();
+	    		j$("#"+treeId).fancytree("getTree").setPersistData(treePersistanceData);
+    		}
+    		j$("div[id$='"+pickerId+"']").css('display', 'none');
+            j$("div[id$='"+treeId+"DisplayPopup']").find("input").removeAttr('checked');
+            j$("div[id$='"+treeId+"DisplaySearchResult']").find("input").removeAttr('checked');
+           	j$("div[id$='"+treeId+"DisplayRecordMsg']").find("input").removeAttr('checked');
+	        return false;
+   	    }
+   	    
+		
+		function hiddenSelectCheckBoxStatusUpdate(treeId, radio) {
+			j$("div[id$='"+treeId+"Search']").find("input[id$='hiddenSelectCheckBox']").each(function(i){
+				if(j$(this).attr('id') != j$(radio).attr('id') && j$(this).attr('checked') == 'checked'){
+					j$(this).removeAttr('checked');
+				}
+			});
+           	return false;
+		}
+		
+		function selectRadioStatusUpdate(treeId, radio){
+			j$(radio).parent().find("input[type='checkbox']").attr('checked', j$(radio).val() ? 'checked' : '').change();
+			j$("div[id$='"+treeId+"Search']").find("input[id$='SelectRadio']").each(function(i){
+				if(j$(this).attr('id') != j$(radio).attr('id') && j$(this).attr('checked')){
+					j$(this).attr('checked', false);
+				}
+           	});
+			return false;
+		}
+   	</script>
+   	
+   	<apex:actionStatus id="splashStatus" onstart="startSplash();" onstop="endSplash(); "/>
+   	
+   	<apex:outputPanel layout="block" id="pickerPopup" styleClass="slds">
+   		<div id="{!treeId}PickerContent"  style="{!displayPopupStyle}; z-index:8552;"> 
+            <div class="apModal" style="z-index:8551;">
+    	        <div class="apModalContainer">
+    	        	<div class="apModalHeader">
+    	        	    <button id="{!treeId}CloseIcon" class="slds-button slds-modal__close slds-button--icon-inverse" onClick="closePicker('{!JSENCODE(treeId)}'); return false;" title="Close">
+    	        	        <c:BT_LightningSvg parentId="{!treeId}CloseIcon" styleClass="slds-button__icon slds-button__icon--large" path="/assets/icons/utility-sprite/svg/symbols.svg#close"/>
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+    	        		<h2 class="apModalHeading" id="PickerContentHeader">{!title}</h2>
+    	        	</div>
+    	        	<div class="apModalContent">
+    					<div class="apNotifyContainer" style="position: relative; text-align:left;">
+    						<div class="apTabPanel" id="{!treeId}TabPanel">
+                	        	<ul class="apTabPanelNavigation">
+                	                <li class="apTabItem slds-active" title="Browse">
+                	                  <a class="apTabItemLink apLightningTreeTabHeader" onClick="Appurin.lightning.switchTab(this);" id="{!treeId}Browse__header">{!$Label.Browse}</a>
+                	                </li>
+                	                <li class="apTabItem" title="Search">
+                	                  <a class="apTabItemLink apLightningTreeTabHeader" onClick="Appurin.lightning.switchTab(this);" id="{!treeId}Search__header">{!$Label.Search}</a>
+                	                </li>
+                	          	</ul>
+                	          	<div class="apTabContent slds-show" id="{!treeId}Browse">
+                                    <div id="{!treeId}BrowseErrorDiv" class="apLightningNotify"/>
+                                    <div id="{!treeId}DisplayPopup">
+                                        <apex:inputCheckBox value="{!displayPopup}" style="display:none;"/>
+                                    </div>
+                                    <c:BT_TreePickerComponent treeType="{!treeType}" treeId="{!treeId}" 
+                		                treeSelectMode="{!treeSelectMode}"
+                	                    treeConfigName="{!treeConfigName}"
+                	                    treeSource="{!treeSource}"
+                	                    treeWidth="{!treeWidth}"
+                	                    treeHeight="{!treeHeight}"
+                	                    showSelectedNodeNamesList="false"
+                	                    checkableTreeNodes="{!checkableTreeNodes}"
+                	                    jsonStringForSelectedNodes="{!jsonStringForSelectedNodes}"
+                	                    selectableObjectNamesForHeader="{!selectableObjectNamesForHeader}"
+                	                    isTreePersist="{!isTreePersist}"
+                	                    isExpandTreeRoots="{!isExpandTreeRoots}"
+                	                    treeImageStaticResource="{!treeImageStaticResource}"
+                	                    queryParameters="{!queryParameters}">
+                                	</c:BT_TreePickerComponent>
+                                	<script>
+                                		j$("div[id$='{!JSENCODE(treeId)}']").parent().parent().parent().find("input[id$='hiddenFieldForSelectedTreeNodesJsonString']").val('');
+                                	</script>
+                	        	</div>
+                	        	<div class="apTabContent slds-hide" id="{!treeId}Search">
+                	        	    <div class="slds-form-element slds-lookup">
+                                        <label class="slds-assistive-text" for="pickerSearchInputText">{!$Label.Search}</label>
+                                        <div id="{!treeId}SearchIcon" class="slds-form-element__control lookup__search-control slds-input-has-icon slds-input-has-icon--left">
+                                            <c:BT_LightningSvg parentId="{!treeId}SearchIcon" styleClass="slds-input__icon" path="/assets/icons/utility-sprite/svg/symbols.svg#search"/>
+                                            <apex:inputText id="pickerSearchInputText" styleClass="slds-input slds-lookup__search-input" value="{!searchText}" onkeydown="search(event);" />
+                                            <script>j$("div[id$='{!JSENCODE(treeId)}PickerContent']").find("input[id$='pickerSearchInputText']").val("");</script>
+                                        	<apex:actionFunction name="searchRecords" status="splashStatus" action="{!doSearch}" reRender="pickerSearchResult" />
+                                        </div>
+                                    </div>
+                                    <apex:outputPanel layout="block" id="pickerSearchResult">
+                                        <div id="{!treeId}SearchErrorDiv" class="apLightningNotify"/>
+                                        <apex:outputPanel rendered="{!displayRecordMessage}">
+                                            <script> Appurin.lightning.createLightningPageMessage({'lightningPageMessageId' : '{!treeId}SearchErrorDiv', 'severity' : 'error', 'summary' : '{!JSENCODE(displayErrorMessage)}'});</script>
+                                        </apex:outputPanel>
+                                        <div id="{!treeId}DisplayRecordMsg">
+            	                        	<apex:inputcheckBox value="{!displayRecordMessage}" style="display:none;"/>
+            	                        </div>
+            	                        <apex:repeat value="{!sObjectRecList}" var="sObjectType" rendered="{!displaySearchResult}">
+                                       		<apex:outputPanel layout="block">
+                                              	<table class="slds-table slds-table--bordered slds-table--cell-buffer">
+                                                	<tr class="slds-text-heading--label">
+                                            	        <th scope="col"></th>
+                                                    	<th scope="col">
+                                                        	<div class="slds-truncate">{!$Label.Name}</div>
+                                                        </th>
+                                            	        <th scope="col" style="{!IF(contains(UPPER(sObjectType),'TRUE'), '', 'display:none;')}">
+                                            	            <apex:outputPanel rendered="{!contains(UPPER(sObjectType),'TRUE')}">
+                                            	                <div class="slds-truncate">{!$Label.buildertek__Record_Type}</div>
+                                            	            </apex:outputPanel>
+                                            	        </th>
+                                                    </tr>
+                                                    <apex:repeat value="{!sObjectRecList[sObjectType]}" var="sObj">
+                                                    	<tr>
+                                                	        <td style="{!IF(treeSelectMode != '1','','display:none;')}">
+                                                	            <apex:outputPanel rendered="{!treeSelectMode != '1'}">
+                                                	                <apex:inputCheckbox value="{!sObj.isSelected}" id="selectCheckBox"/>
+                                                	            </apex:outputPanel>
+                                            	            </td>
+                                                	        <td  style="{!IF(treeSelectMode == '1', '', 'display:none;')}">
+                                                	            <apex:outputPanel rendered="{!treeSelectMode == '1'}">
+                                                    	            <input type="radio" id="{!sObj.cSObject.Id}SelectRadio" onChange="return selectRadioStatusUpdate('{!JSENCODE(treeId)}',this);" value="{!sObj.isSelected}" />
+                										            <apex:inputCheckbox style="display:none;" value="{!sObj.isSelected}" id="hiddenSelectCheckBox" onChange="return hiddenSelectCheckBoxStatusUpdate('{!JSENCODE(treeId)}', this)"/>
+                                                	            </apex:outputPanel>
+                                                	        </td>
+                                                        	<td>
+                                                                <apex:outputLink value="/{!sObj.cSObject.Id}" target="_blank"><apex:outputLabel value="{!sObj.cSObject['Name']}"/></apex:outputLink>
+                                                            </td>
+                                                            <td style="{!IF(contains(UPPER(sObjectType),'TRUE'), '', 'display:none;')}">
+                                                    	        <apex:outputText rendered="{!contains(UPPER(sObjectType),'TRUE')}" value="{!sObj.cSObject['RecordType.Name']}" />
+                                                    	    </td>
+                                                        </tr>
+                                                    </apex:repeat>                       
+                                            	</table>
+                                              	<br/><br/>
+                                          	</apex:outputPanel>
+                                        </apex:repeat>
+                                        <div id="{!treeId}DisplaySearchResult">
+                                       		<apex:inputcheckBox value="{!displaySearchResult}" style="display:none;"/>
+                                       </div>
+                                    </apex:outputPanel>
+                	        	</div>
+            	        	</div>
+    					</div>
+    	        	</div>
+    	        	<div class="apModalFooter">
+                        <apex:actionFunction name="createSearchNodeList" action="{!processSearched}" status="splashStatus" reRender="pickerSelectedRecords"/>
+   	                    <apex:actionFunction name="createTreeNodeList" action="{!createNodeList}" status="splashStatus" reRender="pickerSelectedRecords"/>
+                        <apex:commandButton onclick="closePicker('{!JSENCODE(treeId)}');" styleClass="apButton slds-button slds-button_neutral" value="{!$Label.buildertek__Cancel}" rerender="addButtonId"/>
+                        <apex:commandButton status="splashStatus" styleClass="slds-button slds-button_brand" value="{!selectButtonLabel}" onclick="return addRecords('{!JSENCODE(treeId)}', '{!JSENCODE(treeSelectMode)}');"/>
+    	        	</div>
+    	        </div>
+            </div>
+            <div class="slds-backdrop slds-backdrop--open" style="z-index: 5881;"></div>
+            <script>
+				Appurin.lightning.createTabPanel('{!treeId}TabPanel');
+           		Appurin.lightning.createModalPopup({modalPopupId : 'PickerContent', isAlertPrompt : false});
+           </script>
+        </div>
+   	</apex:outputPanel>
+   	<apex:outputPanel layout="block" id="pickerSelectedRecords" styleClass="slds">
+   	    <apex:outputPanel layout="block" styleClass="slds-form-element">
+    		<apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+    			<apex:outputLabel title="Type" value="{!treePickerLabel}"></apex:outputLabel>
+    			<c:BT_LightningHelpText rendered="{!treePickerLabelHelpText != null}" helptext="{!treePickerLabelHelpText}"/>
+                <apex:commandButton status="splashStatus" image="{!URLFOR($Resource.SLDS, 'assets/icons/utility/add_60.png')}" styleClass="apLightningImageButton slds-button slds-button--icon" action="{!showPopup}" rerender="pickerPopup"/>
+    		</apex:outputPanel>
+    		<apex:outputPanel layout="block" styleClass="slds-form-element__control">
+    		    <apex:outputLabel value="No records selected." rendered="{!selectedNodes1 == null || selectedNodes1.size == 0}"/>
+                <apex:outputPanel id="selectedObjectsAreaForComponent" rendered="{!selectedNodes1 != null && selectedNodes1.size > 0 && showTable}">
+                    <table class="slds-table slds-table--bordered slds-table--cell-buffer">
+                        <apex:repeat value="{!selectedNodes1}" var="sObj">
+                            <tr>
+                                <td class="apTreeRecordColumn">
+                                    <apex:outputLink value="/{!JSENCODE(sObj['id'])}">{!sObj['name']}</apex:outputLink>
+                                </td>
+                                <td class="apTreeRecordColumn apTreeRecordActionColumn">
+                                    <apex:commandButton styleClass="apLightningButtonIcon" id="removeSelection" image="{!URLFOR($Resource.SLDS, 'assets/icons/utility/close_60.png')}" action="{!removeItems}" status="splashStatus" reRender="pickerSelectedRecords">
+        	                    		<apex:param value="{!sObj.id}" name="removedNodeId" assignTo="{!removedNodeId}" />
+        				            </apex:commandButton>
+                                </td>
+                            </tr>
+                        </apex:repeat>
+                    </table>
+                </apex:outputPanel>
+       	    </apex:outputPanel>
+        </apex:outputPanel>
+    </apex:outputPanel>
+</apex:component>

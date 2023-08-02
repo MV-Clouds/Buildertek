@@ -1,0 +1,237 @@
+<!--**********************************************************************************
+* Copyright © 2011-2017, BuilderTek.
+* All rights reserved
+*
+* VisualForce Component: BT_Treecomponent
+* Created by Sagar: 20/04/2017
+*
+* - Rendering the tree as per the tree node configuration .
+*
+* - Modifications:
+* - Sagar, 20/04/2017 – Initial Development
+***********************************************************************************-->
+<apex:component controller="BT_TreeRemotingModel">
+     <apex:attribute name="treeType" type="String" 
+        description="Tree type such as Controls, Assessments, Policies, Assets etc" required="required"/>
+     <apex:attribute name="treeConfigName" type="String"
+        description="Tree Configuration Name. If null or '', assumes treeType + ' Tree'"/>
+     <apex:attribute name="treeSource" type="String"
+        description="JSON string TreeNodes that will be used as tree source."/>      
+     <apex:attribute name="isExpandTreeRoots" type="Boolean" default="false"
+        description="Set to true if root nodes need to pre expanded." required="required"/>     
+     <apex:attribute name="isCheckable" type="Boolean"
+        description="Are the tree nodes checkable? if yes, set checkableNodes property to limit nodes that are checkable"/>
+     <apex:attribute name="checkableTreeNodes" type="String[]"
+        description="Array of object type strings indicating that nodes of these object types are checkable"/>
+     <apex:attribute name="treeId" type="String" 
+        description="HTML element id where the tree needs to be rendered" required="required"/>
+     <apex:attribute name="westPaneId" type="String"
+        description="HTML element id where the tree panel needs to be rendered" required="required"/>
+     <apex:attribute name="northPaneId" type="String"
+        description="HTML element id where the detail needs to be rendered" required="required"/>
+    <apex:attribute name="twoPaneContainerId" type="String"
+        description="HTML element id for the Two Pane layout container" required="required"/> 
+     <apex:attribute name="treeWidth" type="String"
+        description="Tree width in pixel"/>
+    <apex:attribute name="treeHeight" type="String"
+        description="Total layout height in pixel"/>
+    <apex:attribute name="isTwoPanLayout" type="Boolean" default="true"
+        description="Set to true if you want to prepare the twopane layout with tree"/>
+    <apex:attribute name="treeSelectMode" type="String" default="2"
+        description="Set treeSelectMode to 1 if you want single-selection enabled, 2 if you want multi-selection enabled, 3 if you want hierarchical multi-selection enabled." />       
+    <apex:attribute name="treeNodeOnClick" type="String" 
+        description="onClick callback function to call, a JS function name. This function gets called with object id of the clicked tree node."/>    
+     <apex:attribute name="selectedTreeNodePath" type="String"
+        description="Selected tree node path. Used for explorer pages."/>
+     <apex:attribute name="isTreePersist" type="Boolean" default="false"
+        description="Set to true if you want to persist the state of tree."/>    
+     <apex:attribute name="jsonStringForSelectedNodes" type="String" required="true" default="[]"
+        description="JSON string for selected tree nodes."/>
+     <apex:attribute name="queryParameters" type="String"
+        description="It will define the query Parameters tofilter out data in tree."/>
+     <apex:attribute name="displayFieldNames" type="String"  
+        description="Field API Names which are displaying in selected record table."/>     
+     <apex:attribute name="treeImageStaticResource" type="String" default="BT_ResourceUtils"
+        description="Name of static resource from where icons serverd."/>
+     <apex:attribute name="treeHomeRecordIds" type="String"
+        description="List of home record ids."/>    
+    <style>
+        /*
+        Removed the dotted border for fancy tree container
+        Displaying the horizonatla scroll bar at the bottom of the tree div, not inside the tree div
+        */
+        ul.fancytree-container {
+            border: 0px;
+            overflow: initial;
+        }
+        
+        /*
+        Removed the focus outline for fancy tree container
+        */
+        .fancytree-treefocus{
+            outline: none;
+        }
+        /*
+        Removed the blue background css for selected nodes while focus is on tree div
+        */
+        .fancytree-treefocus span.fancytree-selected span.fancytree-title,
+        .fancytree-treefocus span.fancytree-active span.fancytree-title {
+             background-color: #D4D4D4;
+             color: black;
+        }
+    </style>
+    <script>
+        // Get the tree height and tree width
+        var treeWidth = '{!treeWidth}';
+        if (treeWidth == '') {
+            treeWidth = 350;
+        }
+        
+        if(treeWidth != 'auto'){
+        	treeWidth = parseInt(treeWidth)-10;
+        }
+        
+        var treeHeight = '{!treeHeight}';
+        if (treeHeight == '') {
+            treeHeight = 425;
+        }
+        
+        /*
+        On click of node we need to render the detail of reciord on North pane of the two pane layout.
+        */
+        function onClickTreeNode(node, event) {
+        	// If node is max records info message just return
+        	if(node.data.userData.id == 'maxRecordErrorNodeId'){
+        		return false;
+        	}
+            // Get the fullpath of the clicked node, whoch will be used to acticate the same node when user came back on the explorer page
+            var fullid = node.getKeyPath();
+            // Salesforce record id to display the detail on RHS
+            var id = node.data.userData.key;
+            // Object type for selected node. Used for query the record
+            var objectType = node.data.userData.objectType;
+            
+            // Other node user data params for the clicked node
+            var nodeType = node.data.userData.nodeType;
+            var childObjectType = node.data.userData.childObjectType;
+            var titleFieldName = node.data.userData.titleFieldName;
+            var nodeQuery = node.data.userData.nodeQuery;
+            var showGroupByCharts = node.data.userData.showGroupByCharts;
+            var showNewButton = node.data.userData.showNewButton;
+            var tncId = node.data.userData.tncId;
+            
+            // Get the callback name for fetching the recird detail and render on RHS
+            var funcName = '{!JSENCODE(treeNodeOnClick)}';
+            // IF callback is specified we need to do call back
+            if (funcName != '') {
+                // IF callback is specified we need to do call back
+                if (objectType =='Folder__c' || objectType == 'LandingPage'){
+                    node.setExpanded();
+                    {!JSENCODE(treeNodeOnClick)}(id);
+                } else if(objectType =='File__c'){
+                    window.open(j$(document.createElement('div')).html(node.data.userData.downloadUrl).text(),'_blank');
+                } else{
+                    {!JSENCODE(treeNodeOnClick)}(id, objectType, fullid, nodeType, childObjectType, titleFieldName, nodeQuery, showGroupByCharts, showNewButton, tncId);
+                }
+            }
+        }
+        
+        /*
+        After fetching the tree roots, this method will create tree using jquery plugin called fancytree.
+        Here we will prepare the tree configuration and pass it as parameter. Once tree will be generated we will create 
+        two pane layout if it is required.
+        */
+        function createFancyTree(treeType, renderTo, selectMode, treeRoots){
+            // Covneting String[] into new Array()
+            var chackableNodes = '{!checkableTreeNodes}'.replace('[','').replace(']','').split(', ');
+            // Set the extension for tree state persistence if attribute is true
+            var extensions = {!isTreePersist} ? ["persist"] : [];
+            // Preparing tree config options
+            var config = {
+                extensions: extensions, 
+                renderTo : renderTo,                // Div where the tree will be rendered
+                source : treeRoots,                 // Tree root nodes
+                checkbox : {!isCheckable},          // Does checkbox needs to display
+                checkableNodes : chackableNodes,    // Checkable nodes
+                selectedNodes : '{!JSENCODE(jsonStringForSelectedNodes)}',
+                selectMode : selectMode,            // Selection mode
+                treePersist: {!isTreePersist},
+                imagePath : '{!URLFOR($Resource[treeImageStaticResource])}/resources/images/',
+                displayColumnNames: '{!JSENCODE(displayFieldNames)}',
+                persist: {
+                    expandLazy: true,
+                    store: "auto",
+                    cookieDelimiter:"#~#",
+                    cookiePrefix: renderTo
+                }
+            };
+            
+            // Setting the tree background to white
+            j$('#'+renderTo).css('background-color', 'white');
+            // Creating the fancy tree          
+            var tree = Appurin.tree.createFancyTree(treeType, config);
+            // Creating two pan layout if its is reqiured
+            if ({!isTwoPanLayout}) {
+                var config = {	treeId: '{!JSENCODE(treeId)}',
+								containerId: '{!JSENCODE(twoPaneContainerId)}', 
+								westId: '{!JSENCODE(westPaneId)}', 
+								contentId: '{!JSENCODE(northPaneId)}', 
+								westWidth: treeWidth,
+								resizerClass: 'apLayoutResizer'
+							};
+                var layout = Appurin.layout.createJq2PaneLayout(config);
+                var layoutContainer = j$('#' + '{!JSENCODE(twoPaneContainerId)}').get(0);
+                var layoutHeight = layoutContainer.scrollHeight;
+                var headerHeight = j$('#AppBodyHeader').height();
+                var windowHeight = j$(window).height();
+                var bodyCellHeight = windowHeight - headerHeight - 20;  
+                if (layoutHeight < bodyCellHeight) {
+                    layoutContainer.style.height = bodyCellHeight + "px";
+                }
+                j$('#'+config.containerId).css('display', 'block');
+                layout.resizeAll();
+            } else {
+                j$('#'+renderTo).css('width',treeWidth).css('height', treeHeight);
+            }
+            
+            // Activate the node with specified key path
+            Appurin.tree.App(renderTo, '{!JSENCODE(selectedTreeNodePath)}');
+            //console.log('selectedTreeNodePath::',selectedTreeNodePath);
+            // If attribute for expand roots is true we will expand root nodes 
+            if({!isExpandTreeRoots}){
+                // First get the invisible default root nodes. Visit all nodes inside that default root node
+                // If the child nodes parent is default root node then only we need to expand it.
+                j$('#'+renderTo).fancytree("getRootNode").visit(function(node){
+                    if(node.getParent().isRootNode()){
+                        node.setExpanded(true);
+                    }
+                });
+            }
+            j$(".fancytree-title").easyTooltip({width: '200px', isLightning : true});
+        }
+        
+        j$(document).ready(function(){
+            if('{!JSENCODE(treeSource)}' == ''){
+                //Get the Number of Node Path Levels from Tree Confgiurstion and set it to tree data so later it can be used while preparing the node title
+                buildertek.BT_TreeRemotingModel.getTreeConfiguration('{!JSENCODE(treeType)}', '{!JSENCODE(treeConfigName)}',function handleTreeConfiguration(result, event) {
+			                                                j$('#{!JSENCODE(treeId)}').data('NumberOfNodePathLevels',result.Number_of_Node_Path_Levels__c);
+			                                              });
+                // Callback for fetching all root nodes for the tree using treeType. And once result came, we will set those tree nodes as the roots
+                // of the tree.
+                buildertek.BT_TreeRemotingModel.getTreeRootNodes2('{!JSENCODE(treeType)}', '{!JSENCODE(treeConfigName)}', '', '{!JSENCODE(treeHomeRecordIds)}', null, 'Id,Name', {!isExpandTreeRoots}, '{!JSENCODE(queryParameters)}', '', function handleTreeRoots(result, event) {
+			                                                 if(event.type == 'exception') {
+			                                                     alert(event.message);
+			                                                 } else {
+			                                                    createFancyTree('{!JSENCODE(treeType)}', '{!JSENCODE(treeId)}',{!treeSelectMode}, result);
+			                                                 }
+                });
+            } else{
+                // Prepare list of tree node that can be used source
+                // Parse the JSON string
+                var treeSource = JSON.parse('{!JSENCODE(treeSource)}');
+                createFancyTree('{!JSENCODE(treeType)}', '{!JSENCODE(treeId)}',{!treeSelectMode}, treeSource);
+            }   
+        });
+    </script>
+    <input style="display:none" id="{!treeId}_hiddenFieldForTreePersistanceData"/>
+</apex:component>

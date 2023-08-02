@@ -1,0 +1,1852 @@
+<!--
+	@ PURPOSE : 1. LAUNCHES FROM WORK ORDER DETAIL PAGE
+				2. DISPLAYS SCREENS TO ADD AND UPDATE ISSUES AND ALSO UPDATES PARTS REQUESTED.
+	@ Name    : IssuesCreateAndUpdate.xml
+-->
+<aura:component implements="flexipage:availableForRecordHome,force:lightningQuickActionWithoutHeader,force:hasRecordId" 
+                controller="IssueManagementCtrl" access="global">
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+	<lightning:workspaceAPI aura:id="workspace"/>
+	
+	<aura:handler name="refreshIssuesReportedTableEvt" action="{!c.refreshIssuesTable}" 
+                  event="c:RefreshIssuesReportedTable"/>
+    
+	<aura:handler name="refreshPmTableEvt" action="{!c.refreshIssuesTable}" 
+                  event="c:RefreshIssuesReportedTable"/>
+				  
+	<aura:handler name="productRecordSelectEvt" action="{!c.handleProductSelectEvt}" 
+                  event="c:CloseProductModalEvt"/>
+				  
+    <aura:handler name="assetRecordSelectEvt" action="{!c.handleAssetSelectEvt}" 
+                  event="c:CloseAssetModalEvt"/>
+	
+	<aura:handler name="failureModeMultiSelectEvt" action="{!c.handleFailureModeMultiSelectEvt}" 
+                  event="c:CloseFailureModeModalEvt"/>
+				  
+	<aura:handler name="googleAddressSearchModalEvt" action="{!c.handleGoogleAddressSearchModalEvt}" 
+                  event="c:CloseGoogleAddressSearchModalEvt"/>
+	
+	<aura:attribute name="recordId" type="String"/>
+    
+    <aura:attribute name="showSpinner" type="Boolean" />
+    
+    <aura:attribute name="recordWorkOrder" type="Object" default="{}"/>
+    
+    <aura:attribute name="recordCommonIssue" type="Object" default="{}"/>
+    
+    <aura:attribute name="listOfIssueWrappers" type="Object[]" default="[]"/>
+    
+    <aura:attribute name="listOfIGUIssueWrappers" type="Object[]" default="[]"/>
+    
+    <aura:attribute name="listOfPartRequestedWrappers" type="Object[]" default="[]"/>
+    
+    <aura:attribute name="listOfPMIssueWrappers" type="Object[]" default="[]"/>
+    
+	<aura:attribute name="listOfCHWTradeIssueWrappers" type="Object[]" default="[]"/>
+    
+    <aura:attribute name="listOfIGUTradeIssueWrappers" type="Object[]" default="[]"/>
+	
+    <aura:attribute name="areAllIssuesSelected" type="Boolean" default="false"/>
+    
+    <aura:attribute name="areAllIGUIssuesSelected" type="Boolean" default="false"/>
+    
+    <aura:attribute name="areAllPartsSelected" type="Boolean" default="false"/>
+    
+    <aura:attribute name="listOfContactSearchedResults" type="Object[]" default="[]"/>
+    
+    <aura:attribute name="currentRowIndex" type="Integer" default="-1"/>
+    
+    <aura:attribute name="currentIGURowIndex" type="Integer" default="-1"/>
+    
+    <aura:attribute name="currentTrunkRowIndex" type="Integer" default="-1"/>
+    
+    <aura:attribute name="currentIguLiteRowIndex" type="Integer" default="-1"/>
+    
+	<aura:attribute name="currentTrunkRowId" type="String" default=""/>
+    
+    <aura:attribute name="currentIguLiteRowId" type="String" default=""/>
+    
+    <aura:attribute name="contactOpenDropDown" type="Boolean" default="false"/>
+    
+    <aura:attribute name="trunkDropDown" type="Boolean" default="false"/>
+    
+    <aura:attribute name="listOfRecordTypes" type="Object[]" default="[]"/>
+    
+    <aura:attribute name="listOfFailureComponentValues" type="List" default="[]"/>
+	
+    <aura:attribute name="listOfWorkTypeValues" type="List" default="[]"/>
+    
+    <aura:attribute name="listOfIGUReplacements" type="List" default="[]"/>
+	
+	<aura:attribute name="listOfCSSReplacements" type="List" default="[]"/>
+	
+	<aura:attribute name="listOfResponsibleEntities" type="List" default="[]"/>
+	
+	<aura:attribute name="listOfTradeSupportValues" type="List" default="[]"/>
+	
+    <aura:attribute name="listOfTrunkSearchResults" type="Object[]" default="[]"/>
+    
+    <aura:attribute name="recordTypeNameToListOfFailureComponents" type="Object" default="{}"/>
+    
+	<aura:attribute name="recordTypeNameToListOfWorkTypes" type="Object" default="{}"/>
+	
+	<aura:attribute name="productFamilyToListOfReplacements" type="Object" default="{}"/>
+	
+    <aura:attribute name="isShipToContactModalOpened" type="Boolean" default="false"/>
+    
+	<aura:attribute name="isQuoteToContactModalOpened" type="Boolean" default="false"/>
+	
+	<aura:attribute name="isShippingInformationModalOpened" type="Boolean" default="false"/>
+	
+	<aura:attribute name="areTradeSupportIssuesAvailable" type="Boolean" default="false"/>
+	
+    <aura:attribute name="activeTabId" type="String" default="one"/>
+    
+	<aura:attribute name="recordTypeIdToName" type="Object" default="{}"/>
+	
+	<aura:attribute name="failureComponentToListOfFields" type="Object" default="{}"/>
+	
+	<aura:attribute name="workTypeToListOfFields" type="Object" default="{}"/>
+	
+	<aura:attribute name="recordWorkOrderSettings" type="Object" default="{}"/>
+	
+	<aura:attribute name="isConsoleNavigation" type="Boolean" default="false"/>
+	
+	<!-- START SPINNER -->
+    <aura:if isTrue="{!v.showSpinner}">
+        <lightning:spinner alternativeText="Loading" size="large" />
+    </aura:if>
+    <!-- END SPINNER -->
+    
+    <div aura:id="showBoxModal"/>
+    
+	<div aura:id="showProductLookupModal"/>
+	
+	<div aura:id="showAssetLookupModal"/>
+	
+	<div aura:id="showFailureModeMultiSelectModal"/>
+	
+	<div aura:id="showSubmittedIssuesModal"/>
+	
+	<div aura:id="showAddressSearchModal"/>
+    
+    <lightning:tabset selectedTabId="{!v.activeTabId}">
+        
+		<aura:if isTrue="{!v.recordWorkOrderSettings.Show_Create_Issues_Tab__c}">
+            
+           <!-- START - TAB I -->
+            <lightning:tab label="Create or Update Issues" id="one">
+                
+				<!-- START CREATE ISSUES SECTION -->
+				<div class="slds-section slds-is-open" aura:id="createIssuesSectionId">
+				
+					<h3 class="slds-section__title">
+                        
+						<button class="slds-button slds-section__title-action">
+							<span onclick="{!c.toggleSection}" data-title="createIssuesSectionId">
+								<lightning:icon iconName="utility:switch"
+												size="x-small"
+												class="slds-section__title-action-icon slds-button__icon_left"
+												alternativeText="button icon" 
+												/>
+							</span>
+							<span class="slds-truncate" title="Fruits">Create Issues</span>
+						</button>
+					</h3>
+                    
+					<!--SECTION BODY-->
+					<div class="slds-section__content" >
+						<aura:if isTrue="{! not( empty( v.recordWorkOrder.CaseId ) ) }">
+							<c:dynamicIssueRowsContainer recordWorkOrder = "{!v.recordWorkOrder}"
+														 listOfRecordTypes = "{!v.listOfRecordTypes}"
+														 isConsoleNavigation="{!v.isConsoleNavigation}"/>
+						</aura:if>
+					</div>
+				</div>
+               
+				<!-- END CREATE ISSUES SECTION -->
+				
+				<!-- START CONTROL HW & SW ISSUES SECTION -->
+				<div class="slds-section slds-is-open" aura:id="updateNonIGUIssuesSectionId">
+					
+					<h3 class="slds-section__title">
+						<button class="slds-button slds-section__title-action">
+							<span onclick="{!c.toggleSection}" data-title="updateNonIGUIssuesSectionId">
+								<lightning:icon iconName="utility:switch"
+												size="x-small"
+												class="slds-section__title-action-icon slds-button__icon_left"
+												alternativeText="button icon" 
+												/>
+							</span>
+							<span class="slds-truncate" title="Fruits">Update CSS Issues</span>
+						</button>
+					</h3>
+					
+					<div class="slds-section__content" >
+						<aura:if isTrue="{!not(empty(v.listOfIssueWrappers))}">
+							<div class="css_table" >
+								<table class="slds-table slds-table_bordered slds-table_cell-buffer" > 
+									<thead>
+										<tr>
+											<th scope="col" >
+												<div class="slds-truncate" title="Action" >
+													<div style="display:inline-block;">
+														<ui:inputCheckbox value="{!v.areAllIssuesSelected}"
+																		  click="{!c.selectAllIssues}"/>
+													</div>
+												</div>
+											</th>
+											<th scope="col">
+												<div class="slds-truncate cssTableCol" title="Name">Name</div>
+											</th>
+                                            <th scope="col">
+												<div class="slds-truncate cssTableCol" title="Issue Description">Issue Description</div>
+											</th>
+                                            <th scope="col">
+												<div class="slds-truncate cssTableCol" title="Control Panel">Control Panel</div>
+											</th>
+											<th scope="col">
+												<div class="slds-truncate cssTableCol" title="Window ID">Window ID</div>
+											</th>
+											<th scope="col">
+												<div class="slds-truncate cssTableCol" title="Issue Status">Issue Status</div>
+											</th>
+											<th scope="col">
+												<div class="slds-truncate cssTableCol" title="Notes &amp; Comments">Notes &amp; Comments</div>
+											</th>
+											<th scope="col">
+												<div class="slds-truncate cssTableCol" title="Record Type">Record Type</div>
+											</th>
+                                            <th scope="col">
+												<div class="slds-truncate cssTableCol" title="Work Type">Work Type</div>
+											</th>
+											<th scope="col">
+												<div class="slds-truncate cssTableCol" title="Failure Component">Failure Component</div>
+											</th>
+                                            
+                                            
+											<th scope="col">
+												<div class="slds-truncate cssTableCol" title="Failure Mode">Failure Mode</div>
+											</th>
+                                            <th scope="col">
+												<div class="slds-truncate cssTableCol" title="Trade Support?">Trade Support?</div>
+											</th>
+                                             <th scope="col">
+												<div class="slds-truncate cssTableCol" title="Dev">Dev</div>
+											</th>
+                                             <th scope="col">
+												<div class="slds-truncate cssTableCol" title="WC ID">WC ID</div>
+											</th>
+											<th scope="col">
+												<div class="slds-truncate cssTableCol" title="CAN ID">CAN ID</div>
+											</th>
+                                            <th scope="col">
+												<div class="slds-truncate cssTableCol" title="Create Box Folder?">Create Box Folder?</div>
+											</th>
+											<th scope="col">
+												<div class="slds-truncate cssTableCol" title="Upload Documents Here">Upload Here</div>
+											</th>
+											<th scope="col">
+												<div class="slds-truncate cssTableCol" title="Start Date">Start Date</div>
+											</th>
+											<th scope="col">
+												<div class="slds-truncate cssTableCol" title="End Date">End Date</div>
+											</th>
+                                            <th scope="col">
+												<div class="slds-truncate cssTableCol" title="Spare Parts">Spare Parts</div>
+											</th>
+                                            <th scope="col">
+												<div class="slds-truncate cssTableCol" title="RMA - Return Product">Product Return</div>
+											</th>
+											 <th scope="col">
+												<div class="slds-truncate cssTableCol" title="Reverse Shipment Info">Reverse Shipment Info</div>
+											</th>
+											  <th scope="col">
+												<div class="slds-truncate cssTableCol" title="FA Status">RMA FA Status</div>
+											</th>
+										</tr>
+									</thead>   
+									<tbody>
+										<aura:iteration items="{!v.listOfIssueWrappers}" var="issueWrapper" indexVar="index">
+											<aura:if isTrue="{! not( empty( issueWrapper.recordIssue.Name ) ) }">
+												<tr>
+													<td>
+														<ui:inputCheckbox value="{!issueWrapper.isSelected}"/>
+													</td>
+													<td>
+														<a id="{!issueWrapper.recordIssue.Id}" onclick="{!c.openRecordInNewConsoleTab}">
+															{!issueWrapper.recordIssue.Name}
+														</a>
+													</td>
+													<aura:if isTrue="{!issueWrapper.isSelected}">
+                                                       
+                                                        <td>
+															<ui:inputText value="{!issueWrapper.recordIssue.Description__c}"/>
+														</td>
+                                                         <td>
+															<ui:inputText value="{!issueWrapper.recordIssue.Control_Panel__c}"/>
+														</td>
+														<td>
+															<ui:inputText value="{!issueWrapper.recordIssue.Window_ID__c}"/>
+														</td>
+														<td>
+															<ui:inputSelect value="{!issueWrapper.recordIssue.Issue_Status__c}" change="{!c.statusChanged1}" label="{!index}" labelClass="slds-form-element__label1" >
+																<ui:inputSelectOption text="" label="Select"/>
+																<ui:inputSelectOption text="Open" label="Open"/>
+																<ui:inputSelectOption text="Order Shipped" label="Order Shipped"/>
+                                                                <ui:inputSelectOption text="Replacement Rejected" label="Replacement Rejected"/>
+                                                                <ui:inputSelectOption text="Resolved" label="Resolved"/> 
+                                                                <ui:inputSelectOption text="Canceled" label="Canceled"/> 
+															</ui:inputSelect>
+														</td>
+														<td>
+															<ui:inputText value="{!issueWrapper.recordIssue.Comments__c}"/>
+														</td>
+														<td>
+															<ui:inputSelect value="{!issueWrapper.recordIssue.RecordTypeId}"
+																			multiple="false" labelClass="{!index}"
+																			change="{!c.handleCSSIssueRecordTypeChange}">
+																<aura:iteration items="{!v.listOfRecordTypes}" var="recordType">
+																	<ui:inputSelectOption label="{!recordType.value}" text="{!recordType.id}"/>
+																</aura:iteration>
+															</ui:inputSelect>
+														</td>
+                                                        <td>
+															<ui:inputSelect value="{!issueWrapper.recordIssue.Work_Type__c}">
+																<ui:inputSelectOption text="" label="Select"/>
+																<aura:iteration items="{!issueWrapper.listOfWorkTypeValues}" var="wt">
+																	<ui:inputSelectOption text="{!wt}" label="{!wt}"/>
+																</aura:iteration>
+															</ui:inputSelect>
+														</td>
+													     
+														<td>
+															<ui:inputSelect value="{!issueWrapper.recordIssue.Failure_Component__c}">
+																<ui:inputSelectOption text="" label="Select"/>
+																<aura:iteration items="{!issueWrapper.listOfFailureComponentValues}" var="fc">
+																	<ui:inputSelectOption text="{!fc}" label="{!fc}"/>
+																</aura:iteration>
+															</ui:inputSelect>
+														</td>
+                                                     <!--   <td>
+															<ui:inputSelect value="{!issueWrapper.recordIssue.Reason_for_Replacement__c}">
+																<ui:inputSelectOption text="" label="Select"/>
+																<ui:inputSelectOption text="Customer Objection" label="Customer Objection"/>
+																<ui:inputSelectOption text="Damaged (Functioning)" label="Damaged (Functioning)"/>
+																<ui:inputSelectOption text="Damaged (Non-functioning)" label="Damaged (Non-functioning)"/>
+                                                                <ui:inputSelectOption text="Damaged in Shipment" label="Damaged in Shipment"/>
+                                                                <ui:inputSelectOption text="Excess Shipment" label="Excess Shipment"/>
+                                                                <ui:inputSelectOption text="Missing" label="Missing"/>
+                                                                <ui:inputSelectOption text="Non-compliant Product" label="Non-compliant Product"/>
+                                                                <ui:inputSelectOption text="Revision Change" label="Revision Change"/>
+                                                                <ui:inputSelectOption text="Wrong SKU" label="Wrong SKU"/>
+                                                            </ui:inputSelect>
+														</td> -->
+														<td>
+															<button id="{!index}" data-title="listOfIssueWrappers"
+																	class="slds-button slds-button_brand"
+																	onclick="{!c.openFailureModeMultiSelectModal}">
+																	{!issueWrapper.listOfSelectedFailureModes.length + ' selected' }
+															</button>
+														</td>
+                                                        
+                                                        <td>
+															<ui:inputSelect value="{!issueWrapper.recordIssue.Required_Trade__c}">
+																<ui:inputSelectOption text="" label="Select"/>
+																<aura:iteration items="{!v.listOfTradeSupportValues}" var="ts">
+																	<ui:inputSelectOption label="{!ts}" text="{!ts}"/>
+																</aura:iteration>
+															</ui:inputSelect>
+														</td>
+                                                        <td>
+															<ui:inputText value="{!issueWrapper.recordIssue.Dev__c}"/>
+														</td>
+                                                        <td>
+															<ui:inputText value="{!issueWrapper.recordIssue.WC_ID__c}"/>
+														</td>
+                                                        <td>
+															<ui:inputText value="{!issueWrapper.recordIssue.CAN_ID__c}"/>
+														</td>
+                                                        <td>
+															<aura:if isTrue="{!not(issueWrapper.recordIssue.Create_Box_Folder__c)}">
+																<ui:inputCheckbox value="{!issueWrapper.recordIssue.Create_Box_Folder__c}"/>
+																<aura:set attribute="else">
+																	<ui:outputCheckbox value="{!issueWrapper.recordIssue.Create_Box_Folder__c}"/>
+																</aura:set>
+															</aura:if>
+														</td>
+                                                        <td>
+                                                        </td>
+														<td>
+															<ui:inputDate value="{!issueWrapper.recordIssue.Start_Date__c}"
+																		  displayDatePicker="true"/>
+														</td>
+														<td>
+															<ui:inputDate value="{!issueWrapper.recordIssue.End_Date__c}"
+																		  displayDatePicker="true"/>
+														</td>
+														<td>
+															<ui:inputCheckbox value="{!issueWrapper.recordIssue.Spare_Parts__c}"/>
+														</td>
+                                                        <td>
+                                                                <lightning:input type="checkbox" label="" name="rma" checked="{!issueWrapper.recordIssue.Product_Return__c}" />
+														</td>
+														 <td>
+															<ui:inputText value="{!issueWrapper.recordIssue.Reverse_Shipment_Info__c}"/>
+														</td>
+														 <td>
+															<ui:inputSelect value="{!issueWrapper.recordIssue.RMA_FA_Status__c}">
+																<ui:inputSelectOption text="" label="Select"/>
+																<ui:inputSelectOption text="Pending Return" label="Pending Return"/>
+																<ui:inputSelectOption text="Returned" label="Returned"/>
+																<ui:inputSelectOption text="Received" label="Received"/>
+																<ui:inputSelectOption text="FA In Progress" label="FA In Progress"/>
+																<ui:inputSelectOption text="FA Complete" label="FA Complete"/>
+																<ui:inputSelectOption text="FA Complete" label="FA Complete"/>
+                                                            </ui:inputSelect>
+														</td>
+													</aura:if>
+													<aura:if isTrue="{!not(issueWrapper.isSelected)}">
+                                                        <td>
+                                                            <pre><ui:outputText value="{!issueWrapper.recordIssue.Description__c}"/></pre>
+														</td>
+                                                        <td>
+															<ui:outputText value="{!issueWrapper.recordIssue.Control_Panel__c}"/>
+														</td>
+														<td>
+															<ui:outputText value="{!issueWrapper.recordIssue.Window_ID__c}"/>
+														</td>
+														<td>
+															<ui:outputText value="{!issueWrapper.recordIssue.Issue_Status__c}"/>
+														</td>
+														<td>
+                                                            <pre><ui:outputText value="{!issueWrapper.recordIssue.Comments__c}"/></pre>
+														</td>
+														<td>
+															<ui:outputText value="{!issueWrapper.recordIssue.RecordType.Name}"/>
+														</td>
+                                                        <td>
+															<ui:outputText value="{!issueWrapper.recordIssue.Work_Type__c}"/>
+														</td>
+														
+														<td>
+															<ui:outputText value="{!issueWrapper.recordIssue.Failure_Component__c}"/>
+														</td>
+                                                        
+														<td>
+															<aura:iteration items="{!issueWrapper.recordIssue.Defect_Root_Causes__r.records}" var="ifm">
+																  {!ifm.Failure_Mode__r.Name}<br/>
+															</aura:iteration>
+														</td>
+                                                        <td>
+															<ui:outputText value="{!issueWrapper.recordIssue.Required_Trade__c}"/>
+														</td>
+                                                        <td>
+															<ui:outputText value="{!issueWrapper.recordIssue.Dev__c}"/>
+														</td>
+                                                        <td>
+															<ui:outputText value="{!issueWrapper.recordIssue.WC_ID__c}"/>
+														</td>
+                                                        <td>
+															<ui:outputText value="{!issueWrapper.recordIssue.CAN_ID__c}"/>
+														</td>
+                                                        <td>
+															<ui:outputCheckbox value="{!issueWrapper.recordIssue.Create_Box_Folder__c}"/>
+														</td>
+                                                        <td>
+															<aura:if isTrue="{!not(empty(issueWrapper.recordIssue.BOX_Folder_Id__c))}">
+																<a id="{!index}" onclick="{!c.openBoxModalFromCSS}">
+																	Box&nbsp;-&nbsp;{!issueWrapper.recordIssue.Name}
+																</a>
+															</aura:if>
+														</td>
+														<td>
+															<ui:outputDate value="{!issueWrapper.recordIssue.Start_Date__c}"/>
+														</td>
+														<td>
+															<ui:outputDate value="{!issueWrapper.recordIssue.End_Date__c}"/>
+														</td>
+                                                        <td>
+															<ui:outputCheckbox value="{!issueWrapper.recordIssue.Spare_Parts__c}"/>
+														</td>
+														<td>
+															<ui:outputCheckbox value="{!issueWrapper.recordIssue.Product_Return__c}"/>
+														</td>
+														 <td>
+															<ui:outputText value="{!issueWrapper.recordIssue.Reverse_Shipment_Info__c}"/>
+														</td>
+														 <td>
+															<ui:outputText value="{!issueWrapper.recordIssue.RMA_FA_Status__c}"/>
+														</td>
+													</aura:if>
+												</tr>
+											</aura:if>
+										</aura:iteration>
+									</tbody>
+								</table>
+								
+								<!-- START SPINNER -->
+								<aura:if isTrue="{!v.showSpinner}">
+									<lightning:spinner alternativeText="Loading" size="large" />
+								</aura:if>
+								<!-- END SPINNER -->
+	
+							</div>
+							<br/>
+							<div class="slds-align_absolute-center ">
+								<button class="slds-button slds-button_brand"
+										onclick="{!c.saveIssues}">Update CSS Issues</button>
+								<button class="slds-button slds-button_neutral"
+										onclick="{!c.cancel}">Cancel</button>
+							</div>
+							<br/>
+						</aura:if>
+					</div>
+				</div>
+				<!-- END CONTROL HW & SW ISSUES SECTION -->
+				
+				<!-- START IGU ISSUES SECTION -->
+				<div class="slds-section slds-is-open" aura:id="updateIGUIssuesSectionId">
+					
+					<h3 class="slds-section__title">
+						<button class="slds-button slds-section__title-action">
+							<span onclick="{!c.toggleSection}" data-title="updateIGUIssuesSectionId">
+								<lightning:icon iconName="utility:switch"
+												size="x-small"
+												class="slds-section__title-action-icon slds-button__icon_left"
+												alternativeText="button icon" 
+												/>
+							</span>
+							<span class="slds-truncate" title="Fruits">Update IGU Issues</span>
+						</button>
+					</h3>
+					
+					<div class="slds-section__content">
+						<aura:if isTrue="{!not(empty(v.listOfIGUIssueWrappers))}">
+							<div class="igu_table">
+								
+								<!-- START IGU TABLE -->
+								<table class="slds-table slds-table_bordered slds-table_cell-buffer" id="igu_table"> 
+									<thead>
+										<tr>
+											<th scope="col">
+												<div class="slds-truncate" title="Action">
+													<div style="display:inline-block;">
+														<ui:inputCheckbox value="{!v.areAllIGUIssuesSelected}"
+																		  click="{!c.selectAllIGUIssues}"/>
+													</div>
+												</div>
+											</th>
+											<th scope="col">
+												<div class="slds-truncate iguTableCol" title="Name">Name</div>
+											</th>
+                                            <th scope="col">
+												<div class="slds-truncate iguTableCol" title="Issue Description">Issue Description</div>
+											</th>
+                                            <th scope="col">
+												<div class="slds-truncate iguTableCol" title="Control Panel">Control Panel</div>
+											</th>
+											<th scope="col">
+												<div class="slds-truncate iguTableCol" title="Window ID">Window ID</div>
+											</th>
+											<th scope="col">
+												<div class="slds-truncate iguTableCol" title="Issue Status">Issue Status</div>
+											</th>
+											<th scope="col">
+												<div class="slds-truncate iguTableCol" title="Notes &amp; Comments">Notes &amp; Comments</div>
+											</th>
+											<th scope="col">
+												<div class="slds-truncate iguTableCol" title="Record Type">Record Type</div>
+											</th>
+                                            
+											<th scope="col">
+												<div class="slds-truncate iguTableCol" title="Work Type">Work Type</div>
+											</th>
+                                            <th scope="col">
+												<div class="slds-truncate iguTableCol" title="Failure Component">Failure Component</div>
+											</th>
+                                        	<th scope="col">
+												<div class="slds-truncate iguTableCol" title="Failure Mode">Failure Mode</div>
+											</th>
+                                            <th scope="col">
+												<div class="slds-truncate iguTableCol" title="Trade Support?">Trade Support?</div>
+											</th>
+                                            <th scope="col">
+												<div class="slds-truncate iguTableCol" title="Dev">Dev</div>
+											</th>
+											<th scope="col">
+												<div class="slds-truncate iguTableCol" title="WC ID">WC ID</div>
+											</th>
+											<th scope="col">
+												<div class="slds-truncate iguTableCol" title="WC ID">CAN ID</div>
+											</th>
+                                            <th scope="col">
+												<div class="slds-truncate iguTableCol" title="IGU ID Provided">IGU ID Provided</div>
+											</th>
+											<th scope="col">
+												<div class="slds-truncate iguTableCol" title="Lite ID / Mock ID">Lite ID / Mock ID</div>
+											</th>
+                                            <th scope="col">
+												<div class="slds-truncate iguTableCol" title="Tint">Tint</div>
+											</th>
+                                            <th scope="col">
+												<div class="slds-truncate iguTableCol" title="Logo Location">Logo Location</div>
+											</th>
+                                            <th scope="col">
+												<div class="slds-truncate iguTableCol" title="X From Logo (in)">X From Logo (in)</div>
+											</th>
+											<th scope="col">
+												<div class="slds-truncate iguTableCol" title="Y From Logo (in)">Y From Logo (in)</div>
+											</th>
+                                            <th scope="col">
+												<div class="slds-truncate iguTableCol" title="Length (in MM)">Length (in MM)</div>
+											</th>
+											<th scope="col">
+												<div class="slds-truncate iguTableCol" title="Width (in MM )">Width (in MM )</div>
+											</th>
+                                            <th scope="col">
+												<div class="slds-truncate iguTableCol" title="H1">H1</div>
+											</th>
+											<th scope="col">
+												<div class="slds-truncate iguTableCol" title="W1">W1</div>
+											</th>
+											<th scope="col">
+												<div class="slds-truncate iguTableCol" title="H1 / B1 (in.)">H1 / B1 (in.)</div>
+											</th>
+                                            
+											<th scope="col">
+												<div class="slds-truncate iguTableCol" title="Halo Type">Halo Type</div>
+											</th>
+                                            <th scope="col">
+												<div class="slds-truncate iguTableCol" title="Intensity">Intensity</div>
+											</th>
+                                            <th scope="col">
+												<div class="slds-truncate iguTableCol" title="Surface Mitigated From">Surface Mitigated From</div>
+											</th>
+                                            <th scope="col">
+												<div class="slds-truncate iguTableCol" title="Mitigation Successful">Mitigation Successful</div>
+											</th>
+                                            <th scope="col">
+												<div class="slds-truncate iguTableCol" title="Replacement Needed">Replacement Needed</div>
+											</th>
+                                            <th scope="col">
+												<div class="slds-truncate" title="Create Box Folder?">Create Box Folder?</div>
+											</th>
+											<th scope="col">
+												<div class="slds-truncate" title="Upload Documents Here">Upload Here</div>
+											</th>
+											<th scope="col">
+												<div class="slds-truncate iguTableCol" title="Start Date">Start Date</div>
+											</th>
+											<th scope="col">
+												<div class="slds-truncate iguTableCol" title="End Date">End Date</div>
+											</th>
+											
+											<th scope="col">
+												<div class="slds-truncate iguTableCol" title="Zone Name">Zone Name</div>
+											</th>
+                                            <th scope="col">
+												<div class="slds-truncate iguTableCol" title="Product Return">Product Return</div>
+											</th>
+                                            <th scope="col">
+												<div class="slds-truncate iguTableCol" title="Shipment info">RMA Status</div>
+											</th>
+                                            <th scope="col">
+												<div class="slds-truncate iguTableCol" title="Reverse Shipment Info">Reverse Shipment Info</div>
+											</th>
+											
+										</tr>
+									</thead>   
+									<tbody>
+										<aura:iteration items="{!v.listOfIGUIssueWrappers}" var="iguIssueWrapper" indexVar="index">
+											<aura:if isTrue="{! not( empty( iguIssueWrapper.recordIssue.Name ) ) }">
+												<tr>
+													<td>
+														<ui:inputCheckbox value="{!iguIssueWrapper.isSelected}"/>
+													</td>
+													<td>
+														<a id="{!iguIssueWrapper.recordIssue.Id}" onclick="{!c.openRecordInNewConsoleTab}">
+															{!iguIssueWrapper.recordIssue.Name}
+														</a>
+													</td>
+													<aura:if isTrue="{!iguIssueWrapper.isSelected}">
+                                                        <td>
+															<ui:inputText value="{!iguIssueWrapper.recordIssue.Description__c}"/>
+														</td>
+                                                        <td>
+															<ui:inputText value="{!iguIssueWrapper.recordIssue.Control_Panel__c}"/>
+														</td>
+														<td>
+															<ui:inputText value="{!iguIssueWrapper.recordIssue.Window_ID__c}"/>
+														</td>
+														<td>
+															<ui:inputSelect value="{!iguIssueWrapper.recordIssue.Issue_Status__c}" change="{!c.statusChanged}" label="{!index}" labelClass="slds-form-element__label1" >
+																<ui:inputSelectOption text="" label="Select"/>
+																<ui:inputSelectOption text="Open" label="Open"/>
+																<ui:inputSelectOption text="Order Shipped" label="Order Shipped"/>
+                                                                <ui:inputSelectOption text="Replacement Rejected" label="Replacement Rejected"/>
+                                                                <ui:inputSelectOption text="Resolved" label="Resolved"/> 
+                                                                <ui:inputSelectOption text="Canceled" label="Canceled"/> 
+															</ui:inputSelect>
+														</td>
+														<td>
+															<ui:inputText value="{!iguIssueWrapper.recordIssue.Comments__c}"/>
+														</td>
+														<td>
+															<ui:inputSelect value="{!iguIssueWrapper.recordIssue.RecordTypeId}"
+																			multiple="false" labelClass="{!index}"
+																			change="{!c.handleIGUIssueRecordTypeChange}">>
+																<aura:iteration items="{!v.listOfRecordTypes}" var="recordType">
+																	<ui:inputSelectOption label="{!recordType.value}" text="{!recordType.id}"/>
+																</aura:iteration>
+															</ui:inputSelect>
+														</td>
+                                                        
+														<td>
+															<ui:inputSelect value="{!iguIssueWrapper.recordIssue.Work_Type__c}">
+																<ui:inputSelectOption text="" label="Select"/>
+																<aura:iteration items="{!iguIssueWrapper.listOfWorkTypeValues}" var="wt">
+																	<ui:inputSelectOption text="{!wt}" label="{!wt}"/>
+																</aura:iteration>
+															</ui:inputSelect>
+														</td>
+                                                        
+                                                        <td>
+															<ui:inputSelect value="{!iguIssueWrapper.recordIssue.Failure_Component__c}">
+																<ui:inputSelectOption text="" label="Select"/>
+																<aura:iteration items="{!iguIssueWrapper.listOfFailureComponentValues}" var="fc">
+																	<ui:inputSelectOption text="{!fc}" label="{!fc}"/>
+																</aura:iteration>
+															</ui:inputSelect>
+														</td>
+                                                   
+														<td>
+															<button id="{!index}" data-title="listOfIGUIssueWrappers"
+																	class="slds-button slds-button_brand"
+																	onclick="{!c.openFailureModeMultiSelectModal}">
+																	{!iguIssueWrapper.listOfSelectedFailureModes.length + ' selected' }
+															</button>
+														</td>
+                                                        <td>
+															<ui:inputSelect value="{!iguIssueWrapper.recordIssue.Required_Trade__c}">
+																<ui:inputSelectOption text="" label="Select"/>
+																<aura:iteration items="{!v.listOfTradeSupportValues}" var="ts">
+																	<ui:inputSelectOption label="{!ts}" text="{!ts}"/>
+																</aura:iteration>
+															</ui:inputSelect>
+														</td>
+                                                        <td>
+															<ui:inputText value="{!iguIssueWrapper.recordIssue.Dev__c}"/>
+														</td>
+                                                        <td>
+															<ui:inputText value="{!iguIssueWrapper.recordIssue.WC_ID__c}"/>
+														</td>
+                                                        <td>
+															<ui:inputText value="{!iguIssueWrapper.recordIssue.CAN_ID__c}"/>
+														</td>
+                                                        <td>
+															<ui:inputSelect value="{!iguIssueWrapper.recordIssue.IGU_ID_Provided__c}">
+																<ui:inputSelectOption text="" label="Select"/>
+																<ui:inputSelectOption text="Lite ID" label="Lite ID"/>
+																<ui:inputSelectOption text="Mock ID" label="Mock ID"/>
+															</ui:inputSelect>
+														</td>
+														<td>
+															<div class="slds-form-element">
+															    <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right">
+																    <input class="slds-input" id="{!index}" onkeyup="{!c.openAssetLookupModal}"
+																		  value="{!iguIssueWrapper.recordIssue.Lite_ID_Mock_ID__c}"/>
+																	<span class="slds-icon_container slds-icon-utility-search slds-input__icon slds-input__icon_right iconheight">
+																		<lightning:icon class="slds-icon slds-icon slds-icon_small slds-icon-text-default"
+																						iconName="utility:search" size="x-small"
+																						alternativeText="icon" />
+																	</span>
+																</div>
+															</div>
+														</td>
+                                                        <td>
+															<ui:inputSelect value="{!iguIssueWrapper.recordIssue.Tint__c}">
+																<ui:inputSelectOption text="" label="Select"/>
+																<ui:inputSelectOption text="T1" label="T1"/>
+																<ui:inputSelectOption text="T2" label="T2"/>
+																<ui:inputSelectOption text="T3" label="T3"/>
+																<ui:inputSelectOption text="T4" label="T4"/>
+															</ui:inputSelect>
+														</td>
+                                                        <td>
+															<ui:inputSelect value="{!iguIssueWrapper.recordIssue.Logo_Location__c}">
+																<ui:inputSelectOption text="" label="Select"/>
+																<ui:inputSelectOption text="Upper Left" label="Upper Left"/>
+																<ui:inputSelectOption text="Upper Right" label="Upper Right"/>
+																<ui:inputSelectOption text="Bottom Left" label="Bottom Left"/>
+																<ui:inputSelectOption text="Bottom Right" label="Bottom Right"/>
+															</ui:inputSelect>
+														</td>
+                                                        <td>
+															<ui:inputText value="{!iguIssueWrapper.recordIssue.X_From_Logo_in__c}"/>
+														</td>
+														<td>
+															<ui:inputText value="{!iguIssueWrapper.recordIssue.Y_From_Logo_in__c}"/>
+														</td>
+                                                        <td>
+															<ui:inputNumber value="{!iguIssueWrapper.recordIssue.Height_in__c}"/>
+														</td>
+														<td>
+															<ui:inputNumber value="{!iguIssueWrapper.recordIssue.Base_in__c}"/>
+														</td>
+                                                        <td>
+															<ui:inputNumber value="{!iguIssueWrapper.recordIssue.H1__c}"/>
+														</td>
+														<td>
+															<ui:inputNumber value="{!iguIssueWrapper.recordIssue.W1__c}"/>
+														</td>
+														<td>
+															<ui:inputText value="{!iguIssueWrapper.recordIssue.H1_B1_in__c}"/>
+														</td>
+                                                        <td>
+															<ui:inputSelect value="{!iguIssueWrapper.recordIssue.Halo_Type__c}">
+																<ui:inputSelectOption text="" label="Select"/>
+																<ui:inputSelectOption text="Halo" label="Halo"/>
+																<ui:inputSelectOption text="Edge Halo - Glazier support required" label="Edge Halo - Glazier support required"/>
+																<ui:inputSelectOption text="Edge Halo - RMA required" label="Edge Halo - RMA required"/>
+															</ui:inputSelect>
+														</td>
+                                                        <td>
+															<ui:inputSelect value="{!iguIssueWrapper.recordIssue.Intensity__c}">
+																<ui:inputSelectOption text="" label="Select"/>
+																<ui:inputSelectOption text="1 - Not Objectionable" label="1 - Not Objectionable"/>
+																<ui:inputSelectOption text="2 - Moderate, Take Action" label="2 - Moderate, Take Action"/>
+																<ui:inputSelectOption text="3 - Strong, Take Action" label="3 - Strong, Take Action"/>
+															</ui:inputSelect>
+														</td>
+                                                        <td>
+															<ui:inputSelect value="{!iguIssueWrapper.recordIssue.Surface_Mitigated_From__c}">
+																<ui:inputSelectOption text="" label="Select"/>
+																<ui:inputSelectOption text="Surface 1" label="Surface 1"/>
+																<ui:inputSelectOption text="Surface 4" label="Surface 4"/>
+																<ui:inputSelectOption text="Surface 6" label="Surface 6"/>
+															</ui:inputSelect>
+														</td>
+                                                        <td>
+															<ui:inputSelect value="{!iguIssueWrapper.recordIssue.Mitigation_Successful__c}">
+																<ui:inputSelectOption text="" label="Select"/>
+																<ui:inputSelectOption text="Yes" label="Yes"/>
+																<ui:inputSelectOption text="No - No more attempts" label="No - No more attempts"/>
+																<ui:inputSelectOption text="No - Future attempts needed" label="No - Future attempts needed"/>
+															</ui:inputSelect>
+														</td>
+                                                        <td>
+															<ui:inputSelect value="{!iguIssueWrapper.recordIssue.Replacement_Needed__c}">
+																<ui:inputSelectOption text="" label="Select"/>
+																<ui:inputSelectOption text="Yes" label="Yes"/>
+																<ui:inputSelectOption text="No" label="No"/>
+															</ui:inputSelect>
+														</td>
+                                                        <td>
+															<aura:if isTrue="{!not(iguIssueWrapper.recordIssue.Create_Box_Folder__c)}">
+																<ui:inputCheckbox value="{!iguIssueWrapper.recordIssue.Create_Box_Folder__c}"/>
+																<aura:set attribute="else">
+																	<ui:outputCheckbox value="{!iguIssueWrapper.recordIssue.Create_Box_Folder__c}"/>
+																</aura:set>
+															</aura:if>
+														</td>
+														<td>
+															<aura:if isTrue="{!not(empty(iguIssueWrapper.recordIssue.BOX_Folder_Id__c))}">
+																<a id="{!index}" onclick="{!c.openBoxModalFromIGU}">
+																	Box&nbsp;-&nbsp;{!iguIssueWrapper.recordIssue.Name}
+																</a>
+															</aura:if>
+														</td>
+														<td>
+															<ui:inputDate value="{!iguIssueWrapper.recordIssue.Start_Date__c}"
+																		  displayDatePicker="true"/>
+														</td>
+														<td>
+															<ui:inputDate value="{!iguIssueWrapper.recordIssue.End_Date__c}"
+																		  displayDatePicker="true"/>
+														</td>
+														
+														
+														
+														
+														<td>
+															<ui:inputText value="{!iguIssueWrapper.recordIssue.Zone_Name__c}"/>
+														</td>
+                                                        
+                                                        <td>
+															<ui:inputCheckbox value="{!iguIssueWrapper.recordIssue.Product_Return__c}"/>
+														</td>
+                                                        
+                                                        <td>
+															<ui:inputSelect value="{!iguIssueWrapper.recordIssue.RMA_FA_Status__c}">
+																<ui:inputSelectOption text="" label="Select"/>
+																<ui:inputSelectOption text="Pending Return" label="Pending Return"/>
+																<ui:inputSelectOption text="Returned" label="Returned"/>
+																<ui:inputSelectOption text="Received" label="Received"/>
+																<ui:inputSelectOption text="FA In Progress" label="FA In Progress"/>
+																<ui:inputSelectOption text="FA Complete" label="FA Complete"/>
+																<ui:inputSelectOption text="FA Complete" label="FA Complete"/>
+                                                            </ui:inputSelect>
+														</td>
+                                                        
+                                                        <td>
+															<ui:inputText value="{!iguIssueWrapper.recordIssue.Reverse_Shipment_Info__c}"/>
+														</td>
+														
+													</aura:if>
+													<aura:if isTrue="{!not(iguIssueWrapper.isSelected)}">
+                                                        <td>
+                                                            <pre>	<ui:outputTextArea value="{!iguIssueWrapper.recordIssue.Description__c}"/></pre>
+														</td>
+                                                        <td>
+															<ui:outputText value="{!iguIssueWrapper.recordIssue.Control_Panel__c}"/>
+														</td>
+														<td>
+															<ui:outputText value="{!iguIssueWrapper.recordIssue.Window_ID__c}"/>
+														</td>
+														<td>
+															<ui:outputText value="{!iguIssueWrapper.recordIssue.Issue_Status__c}"/>
+														</td>
+														<td>
+                                                            <pre><ui:outputTextArea value="{!iguIssueWrapper.recordIssue.Comments__c}"/></pre>
+														</td>
+														<td>
+															<ui:outputText value="{!iguIssueWrapper.recordIssue.RecordType.Name}"/>
+														</td>
+                                                        <td>
+															<ui:outputText value="{!iguIssueWrapper.recordIssue.Work_Type__c}"/>
+														</td>
+                                                        
+														<td>
+															<ui:outputText value="{!iguIssueWrapper.recordIssue.Failure_Component__c}"/>
+														</td>
+                                                     	<td>
+															<aura:iteration items="{!iguIssueWrapper.recordIssue.Defect_Root_Causes__r.records}" var="ifm">
+																  {!ifm.Failure_Mode__r.Name}<br/>
+															</aura:iteration>
+														</td>
+                                                        <td>
+															<ui:outputText value="{!iguIssueWrapper.recordIssue.Required_Trade__c}"/>
+														</td>
+                                                        <td>
+															<ui:outputText value="{!iguIssueWrapper.recordIssue.Dev__c}"/>
+														</td>
+                                                        <td>
+															<ui:outputText value="{!iguIssueWrapper.recordIssue.WC_ID__c}"/>
+														</td>
+                                                        <td>
+															<ui:outputText value="{!iguIssueWrapper.recordIssue.CAN_ID__c}"/>
+														</td>
+                                                        <td>
+															<ui:outputText value="{!iguIssueWrapper.recordIssue.IGU_ID_Provided__c}"/>
+														</td>
+														<td>
+															<ui:outputText value="{!iguIssueWrapper.recordIssue.Lite_ID_Mock_ID__c}"/>
+														</td>
+                                                        <td>
+															<ui:outputText value="{!iguIssueWrapper.recordIssue.Tint__c}"/>
+														</td>
+                                                        <td>
+															<ui:outputText value="{!iguIssueWrapper.recordIssue.Logo_Location__c}"/>
+														</td>
+                                                        <td>
+															<ui:outputText value="{!iguIssueWrapper.recordIssue.X_From_Logo_in__c}"/>
+														</td>
+														<td>
+															<ui:outputText value="{!iguIssueWrapper.recordIssue.Y_From_Logo_in__c}"/>
+														</td>
+                                                        <td>
+															<ui:outputNumber value="{!iguIssueWrapper.recordIssue.Height_in__c}"/>
+														</td>
+														<td>
+															<ui:outputNumber value="{!iguIssueWrapper.recordIssue.Base_in__c}"/>
+														</td>
+                                                        <td>
+															<ui:outputNumber value="{!iguIssueWrapper.recordIssue.H1__c}"/>
+														</td>
+														<td>
+															<ui:outputNumber value="{!iguIssueWrapper.recordIssue.W1__c}"/>
+														</td>
+														<td>
+															<ui:outputText value="{!iguIssueWrapper.recordIssue.H1_B1_in__c}"/>
+														</td>
+                                                        <td>
+															<ui:outputText value="{!iguIssueWrapper.recordIssue.Halo_Type__c}"/>
+														</td>
+                                                        <td>
+															<ui:outputText value="{!iguIssueWrapper.recordIssue.Intensity__c}"/>
+														</td>
+                                                        <td>
+															<ui:outputText value="{!iguIssueWrapper.recordIssue.Surface_Mitigated_From__c}"/>
+														</td>
+                                                        <td>
+															<ui:outputText value="{!iguIssueWrapper.recordIssue.Mitigation_Successful__c}"/>
+														</td>
+                                                        <td>
+															<ui:outputText value="{!iguIssueWrapper.recordIssue.Replacement_Needed__c}"/>
+														</td>
+                                                        <td>
+															<ui:outputCheckbox value="{!iguIssueWrapper.recordIssue.Create_Box_Folder__c}"/>
+														</td>
+														<td>
+															<aura:if isTrue="{!not(empty(iguIssueWrapper.recordIssue.BOX_Folder_Id__c))}">
+																<a id="{!index}" onclick="{!c.openBoxModalFromIGU}">
+																	Box&nbsp;-&nbsp;{!iguIssueWrapper.recordIssue.Name}
+																</a>
+															</aura:if>
+														</td>
+														<td>
+															<ui:outputDate value="{!iguIssueWrapper.recordIssue.Start_Date__c}"/>
+														</td>
+														<td>
+															<ui:outputDate value="{!iguIssueWrapper.recordIssue.End_Date__c}"/>
+														</td>
+														
+														
+														
+														
+														
+														<td>
+															<ui:outputText value="{!iguIssueWrapper.recordIssue.Zone_Name__c}"/>
+														</td>
+                                                        <td>
+															<ui:outputCheckbox value="{!iguIssueWrapper.recordIssue.Product_Return__c}"/>
+														</td>
+                                                        <td>
+															<ui:outputText value="{!iguIssueWrapper.recordIssue.RMA_FA_Status__c}"/>
+														
+														</td>
+                                                        <td>
+															<ui:outputText value="{!iguIssueWrapper.recordIssue.Reverse_Shipment_Info__c}"/>
+														</td>
+														
+													</aura:if>
+												</tr>
+											</aura:if>
+										</aura:iteration>
+									</tbody>
+								</table>
+								<br/>
+								
+								<!-- START SPINNER -->
+								<aura:if isTrue="{!v.showSpinner}">
+									<lightning:spinner alternativeText="Loading" size="large" />
+								</aura:if>
+								<!-- END SPINNER -->
+	
+							</div>
+							<br/>
+							<div class="slds-align_absolute-center ">
+								<button class="slds-button slds-button_brand"
+										onclick="{!c.saveIGUIssues}">Update IGU Issues</button>
+								<button class="slds-button slds-button_neutral"
+										onclick="{!c.cancel}">Cancel</button>
+							</div>
+							<br/>
+						</aura:if>
+					</div>
+				</div>
+				<!-- END IGU ISSUES SECTION -->
+				
+			</lightning:tab>
+			<!-- END - TAB I -->
+			
+		</aura:if>
+		
+		<aura:if isTrue="{!v.recordWorkOrderSettings.Show_Control_Replacements_Tab__c}">
+			
+			<aura:if isTrue="{! not( empty( v.listOfPartRequestedWrappers ) ) }">
+			
+				<!-- START - TAB II -->
+				<lightning:tab label="Controls Replacement" id="two">
+					
+					<!-- START PARTS REQUEST SECTION HEADER -->
+					<div class="slds-section slds-is-open" aura:id="HeaderInformationSectionId">
+						
+						<h3 class="slds-section__title">
+							<button class="slds-button slds-section__title-action">
+								<span onclick="{!c.toggleSection}" data-title="HeaderInformationSectionId">
+									<lightning:icon iconName="utility:switch"
+													size="x-small"
+													class="slds-section__title-action-icon slds-button__icon_left"
+													alternativeText="button icon" 
+													/>
+								</span>
+								<span class="slds-truncate" title="Fruits">Header Information</span>
+							</button>
+						</h3>
+						<div class="slds-section__content">
+							<lightning:card>
+								
+								<!-- START PARTS HEADER SECTION FIRST ROW -->
+								<lightning:layout multipleRows="false">
+								
+									<lightning:layoutItem padding="horizontal-small" size="2">
+										<div class="slds-col slds-form-element">
+											<span class="slds-form-element__label"><b>Customer Site</b></span>
+											<div class="slds-form-element__control">
+												<a id="{!v.recordWorkOrder.Building_Accounts__c}" onclick="{!c.openRecordInNewConsoleTab}">
+													{!v.recordWorkOrder.Building_Accounts__r.Name}
+												</a>
+											</div>
+										</div>
+									</lightning:layoutItem>
+									
+									<lightning:layoutItem padding="horizontal-small" size="2">
+										<div class="slds-col slds-form-element">
+											<span class="slds-form-element__label"><b>Opportunity</b></span>
+											<div class="slds-form-element__control">
+												<a id="{!v.recordWorkOrder.Opportunity__c}" onclick="{!c.openRecordInNewConsoleTab}">
+													{!v.recordWorkOrder.Opportunity__r.Name}
+												</a>
+											</div>
+										</div>
+									</lightning:layoutItem>
+									
+									<lightning:layoutItem padding="horizontal-small" size="2">
+										<div class="slds-col slds-form-element">
+											<span class="slds-form-element__label"><b>Account</b></span>
+											<div class="slds-form-element__control">
+												<a id="{!v.recordWorkOrder.AccountId}" onclick="{!c.openRecordInNewConsoleTab}">
+													{!v.recordWorkOrder.Account.Name}
+												</a>
+											</div>
+										</div>
+									</lightning:layoutItem>
+									
+									<lightning:layoutItem padding="horizontal-small" size="2">
+										<div class="slds-col slds-form-element">
+											<span class="slds-form-element__label"><b>Case</b></span>
+											<div class="slds-form-element__control">
+												<a id="{!v.recordWorkOrder.Case.Id}" onclick="{!c.openRecordInNewConsoleTab}">
+													{!v.recordWorkOrder.Case.CaseNumber}
+												</a>
+											</div>
+										</div>
+									</lightning:layoutItem>
+									
+									<lightning:layoutItem padding="horizontal-small" size="2">
+										<div class="slds-col slds-form-element">
+											<span class="slds-form-element__label"><b>Work Order</b></span>
+											<div class="slds-form-element__control">
+												<a id="{!v.recordWorkOrder.Id}" onclick="{!c.openRecordInNewConsoleTab}">
+													{!v.recordWorkOrder.WorkOrderNumber}
+												</a>
+											</div>
+										</div>
+									</lightning:layoutItem>
+									
+									<lightning:layoutItem padding="horizontal-small" size="1">
+										<div class="slds-col slds-form-element">
+											<span class="slds-form-element__label"><b>Product Replacement</b></span>
+											<div class="slds-form-element__control">
+												<ui:inputcheckbox value="{!v.recordCommonIssue.Product_Replacement__c}"/>
+											</div>
+										</div>
+									</lightning:layoutItem>
+									
+									<lightning:layoutItem padding="horizontal-small" size="1">
+										<div class="slds-col slds-form-element">
+											<span class="slds-form-element__label"><b>Product Return</b></span>
+											<div class="slds-form-element__control">
+												<ui:inputcheckbox value="{!v.recordCommonIssue.Product_Return__c}"/>
+											</div>
+										</div>
+									</lightning:layoutItem>
+									
+								</lightning:layout>
+								<!-- END PARTS HEADER SECTION FIRST ROW -->
+								
+								<!-- START PARTS HEADER SECTION SECOND ROW -->
+								<lightning:layout multipleRows="false">
+								
+									<!-- START SHIP TO CONTACT SECTION -->
+									<lightning:layoutItem padding="horizontal-small" size="2">
+										<label class="slds-form-element__label"><b>Quote to Contact</b>
+											<button onclick="{!c.openQuoteToContactModal}"
+													class="slds-button slds-button_icon slds-cell-edit__button slds-m-left_x-small"
+													tabindex="0" title="Edit Ship to Contact">
+												<lightning:icon iconName="utility:edit" size="xx-small"
+																alternativeText="edit"/>
+											</button>
+										</label>
+										<br/>
+										<a id="{!v.recordCommonIssue.Customer_Contact__c}" onclick="{!c.openRecordInNewConsoleTab}">
+											{!v.recordCommonIssue.Customer_Contact__r.Name}
+										</a>
+										<aura:if isTrue="{!not(empty(v.recordCommonIssue.Customer_Contact__r.Phone))}">
+											<br/>{!v.recordCommonIssue.Customer_Contact__r.Phone}
+										</aura:if>
+										<aura:if isTrue="{!not(empty(v.recordCommonIssue.Customer_Contact__r.Email))}">
+                                            <br/><div class="issue_email">{!v.recordCommonIssue.Customer_Contact__r.Email}</div>
+										</aura:if>
+									</lightning:layoutItem>
+									<!-- END SHIP TO CONTACT SECTION -->
+									
+									<!-- START SHIP TO CONTACT SECTION -->
+									<lightning:layoutItem padding="horizontal-small" size="2">
+										<label class="slds-form-element__label"><b>Ship to Contact</b>
+											<button onclick="{!c.openShipToContactModal}"
+													class="slds-button slds-button_icon slds-cell-edit__button slds-m-left_x-small"
+													tabindex="0" title="Edit Ship to Contact">
+												<lightning:icon iconName="utility:edit" size="xx-small"
+																alternativeText="edit"/>
+											</button>
+										</label>
+										<br/>{!v.recordCommonIssue.Shipping_Contact_Name__c}
+										<aura:if isTrue="{!not(empty(v.recordCommonIssue.Shipping_Contact_Number__c))}">
+											<br/>{!v.recordCommonIssue.Shipping_Contact_Number__c}
+										</aura:if>
+										<aura:if isTrue="{!not(empty(v.recordCommonIssue.Shipping_Contact_Email__c))}">
+                                            <br/><div class="issue_email">{!v.recordCommonIssue.Shipping_Contact_Email__c}</div>
+										</aura:if>
+									</lightning:layoutItem>
+									<!-- END SHIP TO CONTACT SECTION -->
+									
+									<!-- START SHIP TO CONTACT SECTION -->
+									<lightning:layoutItem padding="horizontal-small" size="2">
+										<label class="slds-form-element__label"><b>Shipping Information</b>
+											<button onclick="{!c.openAddressSearchModalForCommonIssue}"
+													class="slds-button slds-button_icon slds-cell-edit__button slds-m-left_x-small"
+													tabindex="0" title="Edit Ship to Contact">
+												<lightning:icon iconName="utility:edit" size="xx-small"
+																alternativeText="edit"/>
+											</button>
+										</label>
+										<br/>{!v.recordCommonIssue.Shipping_Street_1__c} &nbsp; {!v.recordCommonIssue.Shipping_Street_2__c}
+										<aura:if isTrue="{!not(empty(v.recordCommonIssue.Shipping_City__c))}">
+											<br/>{!v.recordCommonIssue.Shipping_City__c}
+										</aura:if>
+										<aura:if isTrue="{!not(empty(v.recordCommonIssue.Shipping_State_Province__c))}">
+											&nbsp; {!v.recordCommonIssue.Shipping_State_Province__c}
+										</aura:if>
+										<aura:if isTrue="{!not(empty(v.recordCommonIssue.Shipping_Postal_Code__c))}">
+											<br/>{!v.recordCommonIssue.Shipping_Postal_Code__c}
+										</aura:if>
+										<aura:if isTrue="{!not(empty(v.recordCommonIssue.Shipping_Country__c))}">
+											&nbsp; {!v.recordCommonIssue.Shipping_Country__c}
+										</aura:if>
+									</lightning:layoutItem>
+									<!-- END SHIP TO CONTACT SECTION -->
+									
+									<lightning:layoutItem padding="horizontal-small" size="2">
+										<div class="slds-col slds-form-element">
+											<span class="slds-form-element__label"><b>Requested Delivery Date</b></span>
+											<div class="slds-form-element__control req_del_date">
+												<ui:inputDate value="{!v.recordCommonIssue.Requested_Delivery_Date__c}"
+															  displayDatePicker="true" change="{!c.populateRequestedDeliveryDateOnIssues}"/>
+											</div>
+										</div>
+									</lightning:layoutItem>
+									
+									<lightning:layoutItem padding="horizontal-small" size="2">
+										<div class="slds-col slds-form-element">
+											<span class="slds-form-element__label"><b>Reason For Replacement</b></span>
+											<div class="slds-form-element__control req_del_date">
+												<ui:inputSelect value="{!v.recordCommonIssue.Reason_for_Replacement__c}"
+																change="{!c.populateReplacementsOnIssues}">
+													<ui:inputSelectOption text="" label="Select"/>
+													<aura:iteration items="{!v.listOfCSSReplacements}" var="rfr">
+														<ui:inputSelectOption text="{!rfr}" label="{!rfr}"/>
+													</aura:iteration>
+												</ui:inputSelect>
+											</div>
+										</div>
+									</lightning:layoutItem>
+                                    <lightning:layoutItem padding="horizontal-small" size="2">
+										<div class="slds-col slds-form-element">
+											<span class="slds-form-element__label"><b>Who Caused The Damage?</b></span>
+											<div class="slds-form-element__control req_del_date">
+												<ui:inputSelect value="{!v.recordCommonIssue.Ownership__c}"
+																change="{!c.populateOwnershipOnIssues}">
+													<ui:inputSelectOption text="" label="Select"/>
+													<aura:iteration items="{!v.listOfResponsibleEntities}" var="re">
+														<ui:inputSelectOption text="{!re}" label="{!re}"/>
+													</aura:iteration>
+												</ui:inputSelect>
+											</div>
+										</div>
+									</lightning:layoutItem>
+									
+								</lightning:layout>
+								<!-- END PARTS HEADER SECTION SECOND ROW -->
+								
+							</lightning:card>
+						</div>
+					</div>
+					<!-- END PARTS REQUEST SECTION HEADER -->
+					
+					<!-- STARTS PARTS REQUEST TABLE -->
+					<div class="slds-section slds-is-open" aura:id="partsRequestTableSectionId">
+						
+						<!--SECTION HEADER-->
+						<h3 class="slds-section__title">
+							<button class="slds-button slds-section__title-action">
+								<span onclick="{!c.toggleSection}" data-title="partsRequestTableSectionId">
+									<lightning:icon iconName="utility:switch"
+													size="x-small"
+													class="slds-section__title-action-icon slds-button__icon_left"
+													alternativeText="button icon" 
+													/>
+								</span>
+								<span class="slds-truncate" title="Fruits">Parts Request</span>
+							</button>
+						</h3>
+						
+						<!--SECTION BODY-->
+						<div class="slds-section__content">
+							
+							<div class="parts_table">
+								<table class="slds-table slds-table_bordered slds-table_cell-buffer">
+									<thead>
+										<tr>
+											<th scope="col">
+												<div class="slds-truncate" title="Action">
+													<div style="display:inline-block;">
+														<ui:inputCheckbox value="{!v.areAllPartsSelected}"
+																		  click="{!c.selectAllParts}"/>
+													</div>
+												</div>
+											</th>
+											<th scope="col">
+												<div class="slds-truncate partTableCol" title="Name">Name</div>
+											</th> 
+                                            <th scope="col">
+												<div class="slds-truncate partTableCol" title="Control Panel">Control Panel</div>
+											</th>
+											<th scope="col">
+												<div class="slds-truncate partTableCol" title="Window Id">Window Id</div>
+											</th>
+                                            <th scope="col">
+												<div class="slds-truncate partTableCol" title="Record Type">Record Type</div>
+											</th>
+											<th scope="col">
+												<div class="slds-truncate partTableCol" title="Product">Product</div>
+											</th>
+											<th scope="col">
+												<div class="slds-truncate partTableCol" title="Quantity">Quantity</div>
+											</th>
+                                            <th scope="col">
+												<div class="slds-truncate partTableCol" title="Reason For Replacement">Reason For Replacement</div>
+											</th>
+											<th scope="col">
+												<div class="slds-truncate partTableCol" title="Who Caused The Damage?">Who Caused The Damage?</div>
+											</th>
+											<th scope="col">
+												<div class="slds-truncate partTableCol" title="Failure Component">Failure Component</div>
+											</th>
+											<th scope="col">
+												<div class="slds-truncate partTableCol" title="Failure Mode">Failure Mode</div>
+											</th>
+											<th scope="col">
+												<div class="slds-truncate partTableCol" title="Warranty Determination">Warranty Determination</div>
+											</th>
+											<th scope="col">
+												<div class="slds-truncate partTableCol" title="List Price">List Price</div>
+											</th>
+											<th scope="col">
+												<div class="slds-truncate partTableCol" title="Requested Delivery Date">Requested Delivery Date</div>
+											</th>
+											<th scope="col">
+												<div class="slds-truncate partTableCol" title="Consumed Trunk?">Consumed Trunk?</div>
+											</th>
+											<th scope="col">
+												<div class="slds-truncate partTableCol" title="Trunk">Trunk</div>
+											</th>
+											<th scope="col">
+												<div class="slds-truncate partTableCol" title="Consumables">Consumables</div>
+											</th>
+											<th scope="col">
+												<div class="slds-truncate partTableCol" title="Spare Parts">Spare Parts</div>
+											</th>
+                                            
+											<th scope="col">
+												<div class="slds-truncate partTableCol" title="Shipping Address">Shipping Address</div>
+											</th>
+                                            <th scope="col">
+												<div class="slds-truncate partTableCol" title="RMA - Return Product">Product Return</div>
+											</th>
+											
+										</tr>
+									</thead>
+									<tbody>
+										<aura:iteration items="{!v.listOfPartRequestedWrappers}" var="partRequestedWrapper" indexVar="index">
+											<tr>
+												<td>
+													<ui:inputCheckbox value="{!partRequestedWrapper.isSelected}"/>
+												</td>
+												<td>
+													<a id="{!partRequestedWrapper.recordIssue.Id}" onclick="{!c.openRecordInNewConsoleTab}">
+															{!partRequestedWrapper.recordIssue.Name}
+														</a>
+												</td>
+												<aura:if isTrue="{!partRequestedWrapper.isSelected}">
+                                                    <td>
+														<ui:inputText value="{!partRequestedWrapper.recordIssue.Control_Panel__c}"/>
+													</td>
+													<td>
+														<ui:inputText value="{!partRequestedWrapper.recordIssue.Window_ID__c}"/>
+													</td>
+                                                    <td>
+														<ui:outputText value="{!partRequestedWrapper.recordIssue.RecordType.Name}"/>
+													</td>
+													<td>
+														<div class="slds-form-element">
+														    <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right">
+															    <input id="{!index}" class="slds-input" onkeyup="{!c.openProductLookupModal}"
+																	  value="{!partRequestedWrapper.recordIssue.Product__r.Name}"/>
+																<span class="slds-icon_container slds-icon-utility-search slds-input__icon slds-input__icon_right iconheight">
+																	<lightning:icon class="slds-icon slds-icon slds-icon_small slds-icon-text-default"
+																					iconName="utility:search" size="x-small"
+																					alternativeText="icon" />
+																</span>
+															</div>
+														</div>
+													</td>
+													<td>
+														<ui:inputNumber value="{!partRequestedWrapper.recordIssue.Quantity__c}"/>
+													</td>
+                                                    <td>
+														<ui:inputSelect value="{!partRequestedWrapper.recordIssue.Reason_for_Replacement__c}">
+															<ui:inputSelectOption text="" label="Select"/>
+															<aura:iteration items="{!v.listOfCSSReplacements}" var="rfr">
+																<ui:inputSelectOption text="{!rfr}" label="{!rfr}"/>
+															</aura:iteration>
+														</ui:inputSelect>
+													</td>
+													<td>
+														<ui:inputSelect value="{!partRequestedWrapper.recordIssue.Ownership__c}">
+															<ui:inputSelectOption text="" label="Select"/>
+															<aura:iteration items="{!v.listOfResponsibleEntities}" var="re">
+																<ui:inputSelectOption text="{!re}" label="{!re}"/>
+															</aura:iteration>
+														</ui:inputSelect>
+													</td>
+													<td>
+														<ui:inputSelect value="{!partRequestedWrapper.recordIssue.Failure_Component__c}">
+															<aura:iteration items="{!partRequestedWrapper.listOfFailureComponentValues}" var="fc">
+																<ui:inputSelectOption text="{!fc}" label="{!fc}"/>
+															</aura:iteration>
+														</ui:inputSelect>
+													</td>
+													<td>
+														<button id="{!index}" data-title="listOfPartRequestedWrappers"
+																class="slds-button slds-button_brand"
+																onclick="{!c.openFailureModeMultiSelectModal}">
+																{!partRequestedWrapper.listOfSelectedFailureModes.length + ' selected' }
+														</button>
+													</td>
+													<td>
+													<ui:outputText value="{!partRequestedWrapper.recordIssue.Warranty_Type__c}"/>
+												</td>
+													<td>
+													<ui:outputText value="{!partRequestedWrapper.listPrice}"/>
+												</td>
+													<td>
+														<ui:inputDate value="{!partRequestedWrapper.recordIssue.Requested_Delivery_Date__c}"
+																	  displayDatePicker="true"/>
+													</td>
+													<td>
+														<ui:inputCheckbox value="{!partRequestedWrapper.recordIssue.Consumed_From_Trunk__c}"/>
+													</td>
+													<td>
+														<aura:if isTrue="{!partRequestedWrapper.recordIssue.Consumed_From_Trunk__c}">
+															<div class="slds-form-element">
+																<div class="slds-form-element__control">
+																	<div class="slds-container">
+																		<div aria-expanded="true" aria-haspopup="listbox" role="combobox"
+																			 class="{! v.trunkDropDown ? 'slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open' : 'slds-dropdown-trigger 	slds-dropdown-trigger_click'}">
+																			<div class="slds-form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+																				<input type="text" class="slds-input slds-has-focus" id="{!index}"
+																					   aria-autocomplete="list" aria-controls="listbox-id-11"
+																					   autoComplete="off" onkeyup="{!c.searchTrunks}" role="textbox"
+																					   data-row="{!partRequestedWrapper.recordIssue.Id}"
+																					   value="{!partRequestedWrapper.recordTrunk.Name}" />
+																				<aura:if isTrue="{! empty(partRequestedWrapper.recordTrunk.Name)}">
+																					<span class="slds-icon_container slds-icon-utility-search slds-input__icon slds-input__icon_right">
+																						<lightning:icon iconName="utility:search" size="x-small" />
+																					</span>
+																					<aura:set attribute="else">
+																						<button title="Clear the text input" id="{!index}" 
+																								onclick="{!c.clearTrunkSearchedKeyword}"
+																								class="slds-button slds-button_icon slds-input__icon slds-input__icon_right">
+																							<lightning:icon iconName="utility:clear" size="x-small" />
+																						</button>
+																					</aura:set>
+																				</aura:if>
+																			</div>
+																			<aura:if isTrue="{!v.currentTrunkRowId == partRequestedWrapper.recordIssue.Id}">
+																				<div id="listbox-id-11" class="fit_content slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid"
+																					 role="listbox">
+																					<ul class="slds-listbox slds-listbox_vertical" role="presentation">
+																						<aura:iteration items="{!v.listOfTrunkSearchResults}" var="recordTrunk">
+																							<li role="presentation" class="slds-listbox__item" data-id="{!recordTrunk.Id}"
+																								data-value="{!recordTrunk.Name}" onclick="{!c.handleTrunkOptionClick}">
+																								<div id="{!recordTrunk.Id}"
+																									 class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small"
+																									 role="option">
+																									<span class="slds-media__figure slds-listbox__option-icon"></span>
+																									<span class="slds-media__body">
+																										<span class="slds-truncate" title="All Opportunities">
+																											<span>{!recordTrunk.Name}</span>
+																										</span>
+																									</span>
+																								</div>
+																							</li>
+																						</aura:iteration>
+																					</ul>
+																				</div>
+																			</aura:if>
+																		</div>	
+																	</div>
+																</div>
+															</div>
+														</aura:if>
+													</td>
+													<td>
+														<ui:inputCheckbox value="{!partRequestedWrapper.recordIssue.Consumables__c}"/>
+													</td>
+													<td>
+														<ui:inputCheckbox value="{!partRequestedWrapper.recordIssue.Spare_Parts__c}"/>
+													</td>
+													<td>
+														<div class="slds-form-element">
+														    <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right">
+															    <input id="{!index}" class="slds-input" onclick="{!c.openAddressSearchModal}"
+																	  value="{!partRequestedWrapper.recordIssue.Shipping_Street_1__c}"/>
+																<span class="slds-icon_container slds-icon-utility-search slds-input__icon slds-input__icon_right iconheight">
+																	<lightning:icon class="slds-icon slds-icon slds-icon_small slds-icon-text-default"
+																					iconName="utility:search" size="x-small"
+																					alternativeText="icon" />
+																</span>
+															</div>
+														</div>
+													</td>
+                                                    <td>
+                                                    		<lightning:input type="checkbox" label="" name="Product_Return__c" checked="{!partRequestedWrapper.recordIssue.Product_Return__c}" />
+										
+                                                    </td>
+												</aura:if>
+												<aura:if isTrue="{!not(partRequestedWrapper.isSelected)}">
+                                                    <td>
+														<ui:outputText value="{!partRequestedWrapper.recordIssue.Control_Panel__c}"/>
+													</td>
+													<td>
+														<ui:outputText value="{!partRequestedWrapper.recordIssue.Window_ID__c}"/>
+													</td>
+                                                    <td>
+														<ui:outputText value="{!partRequestedWrapper.recordIssue.RecordType.Name}"/>
+													</td>
+													<td>
+														<ui:outputText value="{!partRequestedWrapper.recordIssue.Product__r.Name}"/>
+													</td>
+													<td>
+														<ui:outputNumber value="{!partRequestedWrapper.recordIssue.Quantity__c}"/>
+													</td>
+                                                    <td>
+														<ui:outputText value="{!partRequestedWrapper.recordIssue.Reason_for_Replacement__c}"/>
+													</td>
+													<td>
+														<ui:outputText value="{!partRequestedWrapper.recordIssue.Ownership__c}"/>
+													</td>
+													<td>
+														<ui:outputText value="{!partRequestedWrapper.recordIssue.Failure_Component__c}"/>
+													</td>
+													<td>
+														<aura:iteration items="{!partRequestedWrapper.recordIssue.Defect_Root_Causes__r.records}" var="ifm">
+															  {!ifm.Failure_Mode__r.Name}<br/>
+														</aura:iteration>
+													</td>
+													<td>
+													<ui:outputText value="{!partRequestedWrapper.recordIssue.Warranty_Type__c}"/>
+												</td>
+													<td>
+													<ui:outputText value="{!partRequestedWrapper.listPrice}"/>
+												</td>
+													<td>
+														<ui:outputDate value="{!partRequestedWrapper.recordIssue.Requested_Delivery_Date__c}"/>
+													</td>
+													<td>
+														<ui:outputCheckbox value="{!partRequestedWrapper.recordIssue.Consumed_From_Trunk__c}"/>
+													</td>
+													<td>
+														<aura:if isTrue="{!partRequestedWrapper.recordIssue.Consumed_From_Trunk__c}">
+															<ui:outputText value="{!partRequestedWrapper.recordTrunk.Name}"/>
+														</aura:if>
+													</td>
+													<td>
+														<ui:outputCheckbox value="{!partRequestedWrapper.recordIssue.Consumables__c}"/>
+													</td>
+													<td>
+														<ui:outputCheckbox value="{!partRequestedWrapper.recordIssue.Spare_Parts__c}"/>
+													</td>
+													<td>
+														<ui:outputText value="{!partRequestedWrapper.recordIssue.Shipping_Street_1__c}"/>
+													</td>
+                                                    <td>
+                                                         	<ui:outputCheckbox value="{!partRequestedWrapper.recordIssue.Product_Return__c}"/>
+													
+											</td>
+												</aura:if>
+												
+												
+											</tr>
+										</aura:iteration>
+									</tbody>
+								</table>
+								<br/>
+								
+								<!-- START SPINNER -->
+								<aura:if isTrue="{!v.showSpinner}">
+									<lightning:spinner alternativeText="Loading" size="large" />
+								</aura:if>
+								<!-- END SPINNER -->
+								
+							</div>
+							<br/> 
+							<div class="slds-align_absolute-center ">
+								<button class="slds-button slds-button_brand"
+										onclick="{!c.requestParts}">Save</button>
+								<button class="slds-button slds-button_brand"
+										onclick="{!c.submitPartsAndContinue}">Submit for Approval &amp; Continue</button>
+								<button class="slds-button slds-button_brand"
+										onclick="{!c.submitPartsAndFinish}">Submit for Approval &amp; Finish</button>
+								<button class="slds-button slds-button_neutral"
+										onclick="{!c.cancel}">Cancel</button>
+							</div>
+							<br/>
+						</div>
+					</div>
+					<!-- END PARTS REQUEST TABLE -->
+					
+				</lightning:tab>
+				<!-- END - TAB II -->
+				
+			</aura:if>
+			
+        </aura:if>
+		
+		
+        <!-- START - TAB III -->
+		<aura:if isTrue="{!v.recordWorkOrderSettings.Show_PM_Pending_Tab__c}">
+			<lightning:tab label="Issues Pending PM" id="three">
+				<c:PMIssuesUpdateCmp listOfPMIssueWrappers="{!v.listOfPMIssueWrappers}"
+									 recordWorkOrder="{!v.recordWorkOrder}" listOfResponsibleEntities="{!v.listOfResponsibleEntities}"
+									 recordId="{!v.recordId}" recordCommonIssue="{!v.recordCommonIssue}"
+									 listOfIGUReplacements="{!v.listOfIGUReplacements}"
+									 recordWorkOrderSettings="{!v.recordWorkOrderSettings}"
+									 isConsoleNavigation="{!v.isConsoleNavigation}"/>
+			</lightning:tab>
+		</aura:if>
+        <!-- END - TAB III -->
+        
+		<!-- START - TAB IV -->
+		<aura:if isTrue="{!v.recordWorkOrderSettings.Show_PM_Pending_Tab__c}">
+			<lightning:tab label="Pending Trade Support" id="four">
+				<c:TradeSupportCmp listOfCHWTradeIssueWrappers="{!v.listOfCHWTradeIssueWrappers}"
+								   listOfIGUTradeIssueWrappers="{!v.listOfIGUTradeIssueWrappers}"
+								   recordWorkOrder="{!v.recordWorkOrder}"
+								   recordWorkOrderSettings="{!v.recordWorkOrderSettings}"
+								   isConsoleNavigation="{!v.isConsoleNavigation}"/>
+			</lightning:tab>
+		</aura:if>
+        <!-- END - TAB IV -->
+		
+    </lightning:tabset>
+	
+	<!-- START QUOTE TO CONTACT MODAL -->
+    <aura:if isTrue="{!v.isQuoteToContactModalOpened}">
+        
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            
+            <!-- START MODAL BODY  -->
+            <div class="slds-modal__container">
+                
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close"
+                                          onclick="{!c.closeQuoteToContactModal}"
+                                          alternativeText="close"
+                                          variant="bare-inverse"
+                                          class="slds-modal__close"/>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">
+                        Quote to Contact
+                    </h2>
+                </header>
+                
+                <div class="slds-modal__content slds-p-around_large" style="height:300px" id="modal-content-id-1">
+                    <div class="slds-form-element">
+                        <div class="slds-form-element__control">
+                            <div class="slds-combobox_container">
+                                <div aria-expanded="true" aria-haspopup="listbox" role="combobox"
+                                     class="{! v.contactOpenDropDown ? 'slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open' : 'slds-dropdown-trigger slds-dropdown-trigger_click'}">
+                                    <div class="slds-form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+                                        <input type="text" class="slds-input slds-has-focus" id="{!index}"
+                                               aria-autocomplete="list" aria-controls="listbox-id-11"
+                                               autoComplete="off" onkeyup="{!c.searchQuoteToContacts}" role="textbox"
+                                               value="{!v.recordCommonIssue.Customer_Contact__r.Name}" />
+                                        <aura:if isTrue="{! empty(v.recordCommonIssue.Customer_Contact__r.Name)}">
+                                            <span class="slds-icon_container slds-icon-utility-search slds-input__icon slds-input__icon_right">
+                                                <lightning:icon iconName="utility:search" size="x-small" />
+                                            </span>
+                                            <aura:set attribute="else">
+                                                <button title="Clear the text input" 
+                                                        onclick="{!c.clearQuoteToContactSearchedKeyword}"
+                                                        class="slds-button slds-button_icon slds-input__icon slds-input__icon_right">
+                                                    <lightning:icon iconName="utility:clear" size="x-small" />
+                                                </button>
+                                            </aura:set>
+                                        </aura:if>
+                                    </div>
+									<aura:if isTrue="{! not( empty( v.listOfContactSearchedResults ) ) }">
+										<div id="listbox-id-11" class="searchResult slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid"
+											 role="listbox">
+											<ul class="slds-listbox slds-listbox_vertical" role="presentation">
+												<aura:iteration items="{!v.listOfContactSearchedResults}" var="recordContact">
+													<li role="presentation" class="slds-listbox__item" data-id="{!recordContact.Id}"
+														data-value="{!recordContact.Name}" onclick="{!c.handleQuoteToContactOptionClick}">
+														<div id="{!recordContact.Id}"
+															 class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small"
+															 role="option">
+															<span class="slds-media__figure slds-listbox__option-icon"></span>
+															<span class="slds-media__body">
+																<span class="slds-truncate" title="All Opportunities">
+																	<span>{!recordContact.Name}</span>
+																</span>
+															</span>
+														</div>
+													</li>
+												</aura:iteration>
+											</ul>
+										</div>
+									</aura:if>
+                                </div>	
+                            </div>
+                        </div>
+                    </div>
+					<br/>
+					Phone  &nbsp; : &nbsp; <ui:outputText value="{!v.recordCommonIssue.Customer_Contact__r.Phone}"/>
+					<br/>
+					<br/>
+					Email &nbsp; : &nbsp; <ui:outputText value="{!v.recordCommonIssue.Customer_Contact__r.Email}"/>
+                </div>
+                
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral"
+                                      label="Cancel"
+                                      title="Cancel"
+                                      onclick="{!c.closeQuoteToContactModal}"/>
+                    <lightning:button variant="brand"
+                                      label="OK"
+                                      title="OK"
+                                      onclick="{!c.saveQuoteToContactModal}"/>
+                </footer>
+            </div>
+            <!-- END MODAL BODY  -->
+            
+        </section>
+        
+        <div class="slds-backdrop slds-backdrop_open"></div>
+        
+    </aura:if>
+    <!-- END QUOTE TO CONTACT MODAL -->
+	
+	<!-- START SHIP TO CONTACT MODAL -->
+    <aura:if isTrue="{!v.isShipToContactModalOpened}">
+        
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            
+            <!-- START MODAL BODY  -->
+            <div class="slds-modal__container">
+                
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close"
+                                          onclick="{!c.closeShipToContactModal}"
+                                          alternativeText="close"
+                                          variant="bare-inverse"
+                                          class="slds-modal__close"/>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">
+                        Ship to Contact
+                    </h2>
+                </header>
+                
+                <div class="slds-modal__content slds-p-around_large" style="height:300px" id="modal-content-id-1">
+                    <div class="slds-form-element">
+                        <div class="slds-form-element__control">
+                            <div class="slds-combobox_container">
+                                <div aria-expanded="true" aria-haspopup="listbox" role="combobox"
+                                     class="{! v.contactOpenDropDown ? 'slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open' : 'slds-dropdown-trigger slds-dropdown-trigger_click'}">
+                                    <div class="slds-form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+                                        <input type="text" class="slds-input slds-has-focus" id="{!index}"
+                                               aria-autocomplete="list" aria-controls="listbox-id-11"
+                                               autoComplete="off" onkeyup="{!c.searchShipToContacts}" role="textbox"
+                                               value="{!v.recordCommonIssue.Shipping_Contact_Name__c}" />
+                                        <aura:if isTrue="{! empty(v.recordCommonIssue.Shipping_Contact_Name__c)}">
+                                            <span class="slds-icon_container slds-icon-utility-search slds-input__icon slds-input__icon_right">
+                                                <lightning:icon iconName="utility:search" size="x-small" />
+                                            </span>
+                                            <aura:set attribute="else">
+                                                <button title="Clear the text input" 
+                                                        onclick="{!c.clearShipToContactSearchedKeyword}"
+                                                        class="slds-button slds-button_icon slds-input__icon slds-input__icon_right">
+                                                    <lightning:icon iconName="utility:clear" size="x-small" />
+                                                </button>
+                                            </aura:set>
+                                        </aura:if>
+                                    </div>
+									<aura:if isTrue="{! not( empty( v.listOfContactSearchedResults ) ) }">
+										<div id="listbox-id-11" class="searchResult slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid"
+											 role="listbox">
+											<ul class="slds-listbox slds-listbox_vertical" role="presentation">
+												<aura:iteration items="{!v.listOfContactSearchedResults}" var="recordContact">
+													<li role="presentation" class="slds-listbox__item" data-id="{!recordContact.Id}"
+														data-value="{!recordContact.Name}" onclick="{!c.handleShipToContactOptionClick}">
+														<div id="{!recordContact.Id}"
+															 class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small"
+															 role="option">
+															<span class="slds-media__figure slds-listbox__option-icon"></span>
+															<span class="slds-media__body">
+																<span class="slds-truncate" title="All Opportunities">
+																	<span>{!recordContact.Name}</span>
+																</span>
+															</span>
+														</div>
+													</li>
+												</aura:iteration>
+											</ul>
+										</div>
+									</aura:if>
+                                </div>	
+                            </div>
+                        </div>
+                    </div>
+					<br/>
+					<lightning:input label="Phone" value="{!v.recordCommonIssue.Shipping_Contact_Number__c}" required="true"/>
+					<br/>
+					<lightning:input label="Email" value="{!v.recordCommonIssue.Shipping_Contact_Email__c}" required="true"/>
+                </div>
+                
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral"
+                                      label="Cancel"
+                                      title="Cancel"
+                                      onclick="{!c.closeShipToContactModal}"/>
+                    <lightning:button variant="brand"
+                                      label="OK"
+                                      title="OK"
+                                      onclick="{!c.saveShipToContactModal}"/>
+                </footer>
+            </div>
+            <!-- END MODAL BODY  -->
+            
+        </section>
+        
+        <div class="slds-backdrop slds-backdrop_open"></div>
+        
+    </aura:if>
+    <!-- END SHIP TO CONTACT MODAL -->
+	
+</aura:component>

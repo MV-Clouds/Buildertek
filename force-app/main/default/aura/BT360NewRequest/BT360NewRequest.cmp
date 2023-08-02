@@ -1,0 +1,60 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+	<aura:attribute name="serviceRequest" type="Service_Request__c" default="{'sobjectType':'Service_Request__c'}" />
+    <div role="dialog" tabindex="-1"  aria-labelledby="header43" class="slds-modal slds-fade-in-open ">
+	  <div class="slds-modal__container">
+	    <div class="slds-modal__header">
+	      <button class="slds-button slds-modal__close slds-button--icon-inverse" title="Close">
+	        <span class="slds-assistive-text">Close</span>
+	      </button>
+	      <h2 id="header43" class="slds-text-heading--medium">Create New: Work Order</h2>
+	    </div>
+	    <div class="slds-modal__content slds-p-around--medium">
+	    	<fieldset class="slds-form--compound">
+			  <legend class="slds-form-element__label slds-text-title--caps">Work Order Details</legend>
+			  <div class="slds-form-element__group">
+			    <div class="slds-form-element__row">
+			      <div class="slds-form-element slds-size--1-of-2">
+			        <label class="slds-form-element__label" >Subject</label>
+			        <force:inputField value="{!v.serviceRequest.Subject__c}"></force:inputField>
+			      </div>
+			      <div class="slds-form-element slds-size--1-of-2">
+			        <label class="slds-form-element__label" >Status</label>
+			        <force:inputField aura:id="workOrderStatus" value="{!v.serviceRequest.Request_Status__c}"></force:inputField>
+			      </div>
+		      </div>
+		      <div class="slds-form-element__row">
+			      <div class="slds-form-element slds-size--1-of-1">
+			        <label class="slds-form-element__label" >Date of Service</label>
+			        <force:inputField aura:id="workOrderDate" value="{!v.serviceRequest.Preferred_Date_of_Service__c}"></force:inputField>
+			      </div>
+		      </div>
+		      <div class="slds-form-element__row">
+			      <div class="slds-form-element slds-size--1-of-2">
+			        <label class="slds-form-element__label" >Customer</label>
+			        <force:inputField aura:id="contactLookup" value="{!v.serviceRequest.Customer_Name__c}"></force:inputField>
+			      </div>
+			  </div>
+			  <div class="slds-form-element__row">
+			      <div class="slds-form-element slds-size--1-of-1">
+			        <label class="slds-form-element__label" >Work Order Description</label>
+			        <force:inputField aura:id="workOrderDescription" value="{!v.serviceRequest.Description__c}"></force:inputField>
+			      </div>
+			    </div>
+			  </div>
+			</fieldset>
+			<fieldset class="slds-form--compound">
+			  <legend class="slds-form-element__label slds-text-title--caps">Products</legend>
+			  <div class="slds-form-element__group">
+			   
+			  </div>
+			</fieldset>
+	    </div>
+	    <div class="slds-modal__footer">
+	      <button class="slds-button slds-button--brand" onclick="{!c.cancelRecordWorkOrder}" >Cancel</button>
+	      <button class="slds-button slds-button--brand">Save</button>
+	    </div>
+	  </div>
+	</div>
+	<div class="slds-backdrop slds-backdrop--open"></div>
+</aura:component>

@@ -1,0 +1,122 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,lightning:isUrlAddressable,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader,forceCommunity:availableForAllPageTypes,forceCommunity:layout" 
+                controller="ImportSOVsorNewOverrideButton" access="global" >
+    <aura:attribute name="recordId" type="string" access="public" default=""/>
+    <aura:attribute name="ClonerecordId" type="string" access="public"/>
+    <lightning:workspaceAPI aura:id="workspace" />
+    
+    <aura:attribute name="paymentAppId" type="string" access="public"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="cancelCallback" type="object" access="public" />
+    <aura:attribute name="Iscommunity" type="Boolean" default = "false"/>
+    
+    <aura:attribute name="rfqRecordList" type="Schedule_of_Values__c[]" />
+    <aura:attribute name="listOfSelectedRFQIds" type="List" default="[]"/>
+    <aura:attribute name="PageNumber" type="integer" default="1" />
+    <aura:attribute name="pageSize" type="integer" default="10" />
+    <aura:attribute name="TotalPages" type="integer" default="0" />
+    <aura:attribute name="TotalRecords" type="integer" default="0" />
+    <aura:attribute name="RecordStart" type="integer" default="0" />
+    <aura:attribute name="RecordEnd" type="integer" default="0" />
+    <aura:attribute name="Spinner" type="boolean" default="false"/>
+    <aura:attribute name="IsActive" type="Boolean" default = "false"/>
+    
+
+    
+    <aura:attribute name="address" type="string" default=""/>
+    <aura:attribute name="IsSubmitted" type="Boolean"/>  
+    
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/> 
+    <aura:attribute name="IsCompanyApproved" type="Boolean" />
+    <aura:attribute name="mycolumns" type="List"/>
+    <aura:attribute name="IsImportMasterSOV" type="Boolean" default = "false"/>
+    <aura:if isTrue="{!v.Iscommunity}">
+        
+        <aura:html tag="style">
+            .cuf-content {
+            padding: 0 0rem !important;
+            }
+            .slds-p-around--medium {
+            padding: 0rem !important;
+            }       
+            .slds-modal__content{
+            overflow-y:hidden !important;
+            height:unset !important;
+            max-height:unset !important;
+            }
+        </aura:html>
+        
+        <aura:if isTrue="{!v.IsSubmitted}">
+            <!--Modal Body-->   
+            <div class="slds-modal__content slds-p-around--x-small slds-align_absolute-center slds-size_1-of-1 slds-is-relative">
+                <form class="slds-form--stacked">
+                    <h3 class="title slds-text-heading--medium" style="color:red;font-weight: bold;">This SOV Is Under Review</h3>
+                </form> 
+            </div>
+            <!--End of Modal Body--> 
+        </aura:if> 
+        
+        <aura:if isTrue="{!v.IsCompanyApproved}">
+            
+            <!--Modal Body-->   
+            <div class="slds-modal__content slds-p-around--x-small slds-align_absolute-center slds-size_1-of-1 slds-is-relative">
+                <form class="slds-form--stacked">
+                    <h3 class="title slds-text-heading--medium" style="color:red;font-weight: bold;">This SOV has been Approved, You Cannot Import additional Lines into an Approved SOV.</h3>
+                </form> 
+            </div>
+            <!--End of Modal Body--> 
+            
+        </aura:if>
+        
+    </aura:if> 
+    
+    
+    <aura:if isTrue="{!v.IsActive}">
+        <header class="slds-modal__header">
+            
+            <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Import Vendor SOVs</h2>
+        </header>
+        <div  class="slds-modal__content slds-p-around--large">
+            <div style="min-height: 10rem;
+                        background: white;
+                        height: 25rem;">   
+                <lightning:datatable data="{! v.rfqRecordList }"
+                                     columns="{! v.mycolumns }"
+                                     keyField="Id"
+                                     selectedRows="{! v.selectedRows }"
+                                     onrowselection="{! c.getSelectedName }"
+                                     /> 
+            </div>
+        </div>
+        <div class="slds-modal__footer">
+            <!-- <lightning:button disabled="{!v.PageNumber == 1}" variant="brand" aura:id="prevPage" label="Prev"
+                          onclick="{!c.handlePrev}" class="next-prev_button"/>
+        <lightning:button disabled="{!v.PageNumber >= v.TotalPages}" aura:id="nextPage" variant="brand"
+                          label="Next" onclick="{!c.handleNext}" class="next-prev_button"/> -->
+            <aura:if isTrue="{!v.Iscommunity}">
+                <button class="slds-button slds-button--neutral" onclick="{!c.closeModal}">Cancel</button>
+            </aura:if>
+            <aura:if isTrue="{!!v.Iscommunity}">
+                <button class="slds-button slds-button--neutral" onclick="{!c.close}">Cancel</button>
+            </aura:if>
+            <lightning:button aura:id="nextPage" variant="neutral"
+                              label="Import" onclick="{!c.importSheetLines}" />
+        </div> 
+        
+        
+        <aura:if isTrue="{!v.Spinner}">
+            <div aura:id="spinnerId" class="slds-spinner_container">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                    <div class="custom-loading-text">
+                        <b>Processing, Please Wait</b>
+                    </div>
+                </div>
+            </div>
+        </aura:if>
+    </aura:if> 
+    
+    
+    
+</aura:component>

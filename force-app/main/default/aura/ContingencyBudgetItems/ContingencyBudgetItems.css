@@ -1,0 +1,7 @@
+.THIS .slds-form-element__label {
+    display: none;
+}
+.THIS.label.uiLabel{
+    font-weight: bold;
+    
+}

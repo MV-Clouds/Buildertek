@@ -1,0 +1,177 @@
+window.Sfdc = window.Sfdc || {};
+Sfdc.xdomain = Sfdc.xdomain || {};
+Sfdc.xdomain.Listener = function() {
+    function a(b, a) {
+        var c = {};
+        c.pathToTargetProxy = b.pathToOriginProxy;
+        c.name = b.args.event ? b.name : b.name + "_" + b.txnId;
+        "undefined" !== typeof a && (c.targetParentFrame = a);
+        c.calleeName = b.originFrame;
+        c.txn_id = b.txnId;
+        return function(a) {
+            Sfdc.xdomain.Util.usePostMessage(b) ? (c.args = Sfdc.xdomain.Parser.stringify(a),
+            Sfdc.xdomain.PostMessage.doPostMessage(b, c)) : (c.args = a,
+            b.sourceParentWindowName ? Sfdc.support.servicedesk.PopoutWindowManager.sendMessage(b.sourceParentWindowName, "ProcessApiCallback", {
+                postMessageData: "",
+                iframeProxyData: c
+            }) : Sfdc.xdomain.Caller.call(c))
+        }
+    }
+    return {
+        accept: function(b) {
+            var e;
+            e = "sfdc-console" === b.targetFrame ? Sfdc.crossdomain.CrossDomainApiRegistry.getFunction(b.name) : Sfdc.xdomain.CrossDomainApiRegistry.getFunction(b.name);
+            var c = {}, d;
+            "undefined" !== typeof Sfdc.xdomain.EmbeddedVFPages && "undefined" !== typeof Sfdc.xdomain.EmbeddedVFPages[b.originFrame] ? (c.frameId = Sfdc.xdomain.EmbeddedVFPages[b.originFrame],
+            d = c.frameId) : c.frameId = b.originFrame;
+            c.pathToOriginProxy = b.pathToOriginProxy;
+            "undefined" !== typeof e && e.func.call(e.scope, b.args, c, a(b, d))
+        }
+    }
+}();
+Sfdc.xdomain.Caller = function() {
+    function a(b) {
+        window.addEventListener ? this.removeEventListener("load", arguments.callee, !1) : window.attachEvent && this.detachEvent("onload", arguments.callee);
+        var a = b.srcElement ? b.srcElement : b.target;
+        setTimeout(function() {
+            a.parentNode.removeChild(a)
+        }, 10)
+    }
+    return {
+        call: function(b) {
+            var e = b.calleeName + "_proxyFrame_" + b.txn_id
+              , c = {};
+            "undefined" !== typeof b.name && (c.xdomain_name = b.name);
+            "undefined" !== typeof b.calleeName && (c.xdomain_targetFrame = b.calleeName);
+            "undefined" !== typeof b.txn_id && (c.xdomain_txnId = b.txn_id);
+            "undefined" !== typeof b.pathToOriginProxy && (c.xdomain_pathToOriginProxy = b.pathToOriginProxy);
+            "undefined" !== typeof b.targetParentFrame && (c.xdomain_targetParentFrame = b.targetParentFrame);
+            c.xdomain_originFrame = window.name;
+            c = Sfdc.xdomain.Parser.stringify(c);
+            "undefined" !== typeof b.args && (c += "&" + Sfdc.xdomain.Parser.stringify(b.args));
+            b = b.pathToTargetProxy;
+            var d = document.createElement("iframe");
+            d.id = e;
+            d.name = e;
+            d.src = b + "#" + c;
+            d.width = 10;
+            d.height = 10;
+            d.frameborder = 0;
+            d.style.position = "absolute";
+            d.style.left = "-150px";
+            d.style.top = "0px";
+            window.addEventListener ? d.addEventListener("load", a, !1) : window.attachEvent && d.attachEvent("onload", a);
+            document.body.appendChild(d)
+        }
+    }
+}();
+Sfdc.xdomain.CrossDomainApiRegistry = function() {
+    var a = {};
+    return {
+        registerFunction: function(b, e, c) {
+            a[b] = {
+                func: e,
+                scope: c
+            }
+        },
+        getFunction: function(b) {
+            return a[b]
+        },
+        removeFunction: function(b) {
+            delete a[b]
+        }
+    }
+}();
+Sfdc.xdomain.Parser = function() {
+    return {
+        parse: function(a) {
+            var b = {};
+            a = a.split("&");
+            for (var e = 0; e < a.length; e++) {
+                var c = a[e].split("="), d = c[1].split(":"), f;
+                if ("a" === d[0]) {
+                    var h = d[1].split(";");
+                    f = [];
+                    for (var g = 0; g < h.length; g++)
+                        f[g] = decodeURIComponent(h[g])
+                } else
+                    f = decodeURIComponent(d[1]);
+                "b" === d[0] && (f = "true" === f);
+                b[decodeURIComponent(c[0])] = f
+            }
+            return b
+        },
+        stringify: function(a) {
+            var b = "", e = "", c;
+            for (c in a)
+                if (a.hasOwnProperty(c)) {
+                    var d;
+                    if ("[object Array]" === Object.prototype.toString.apply(a[c])) {
+                        b = b + encodeURIComponent(c) + "=a:";
+                        d = a[c];
+                        for (var f = "", h = "", g = 0; g < d.length; g++)
+                            h += f + encodeURIComponent(d[g]),
+                            f = ";";
+                        e += b + h
+                    } else
+                        d = "boolean" === typeof a[c] ? "b" : "s",
+                        e += b + encodeURIComponent(c) + "=" + d + ":" + encodeURIComponent(a[c]);
+                    b = "&"
+                }
+            return e
+        }
+    }
+}();
+Sfdc.xdomain.Query = function(a) {
+    a = Sfdc.xdomain.Parser.parse(a);
+    "undefined" !== typeof a.xdomain_targetFrame && (this.targetFrame = a.xdomain_targetFrame,
+    delete a.xdomain_targetFrame);
+    "undefined" !== typeof a.xdomain_originFrame && (this.originFrame = a.xdomain_originFrame,
+    delete a.xdomain_originFrame);
+    "undefined" !== typeof a.xdomain_name && (this.name = a.xdomain_name,
+    delete a.xdomain_name);
+    "undefined" !== typeof a.xdomain_txnId && (this.txnId = a.xdomain_txnId,
+    delete a.xdomain_txnId);
+    "undefined" !== typeof a.xdomain_pathToOriginProxy && (this.pathToOriginProxy = a.xdomain_pathToOriginProxy,
+    delete a.xdomain_pathToOriginProxy);
+    "undefined" !== typeof a.xdomain_targetParentFrame && (this.targetParentFrame = a.xdomain_targetParentFrame,
+    delete a.xdomain_targetParentFrame);
+    this.args = a
+}
+;
+Sfdc.xdomain.Util = function() {
+    return {
+        isInServiceDesk: function() {
+            return Sfdc && Sfdc.support && Sfdc.support.servicedesk
+        },
+        isPostMessage: function() {
+            return !!window.postMessage
+        },
+        usePostMessage: function(a) {
+            return Sfdc.xdomain.Util.isInServiceDesk() && Sfdc.xdomain.Util.isPostMessage() && ("private_api" === a.args.version || 25 < parseInt(a.args.version, 10)) && a.args.nonce && !!a.xdomainOrigin
+        }
+    }
+}();
+Sfdc.xdomain.PostMessage = function() {
+    function a(a) {
+        if (Sfdc.xdomain.Util.isInServiceDesk() && Sfdc.support.servicedesk.checkWhiteList(a.origin) && (!a.data || 0 === a.data.indexOf(b))) {
+            var c = a.data.replace(b, "")
+              , c = new Sfdc.xdomain.Query(c);
+            c.xdomainOrigin = a.source;
+            c.sourceParentWindowName = a.sourceParentWindowName || "";
+            c.args.nonce && c.args.nonce === Sfdc.support.servicedesk.API_NONCE && Sfdc.xdomain.Listener.accept(c)
+        }
+    }
+    var b = "integrationApi/";
+    Sfdc.xdomain.Util.isInServiceDesk() && Sfdc.xdomain.Util.isPostMessage() && (window.attachEvent ? window.attachEvent("onmessage", a) : window.addEventListener("message", a, !1));
+    return {
+        processPostMessage: a,
+        doPostMessage: function(a, c) {
+            var d = b + Sfdc.xdomain.Parser.stringify(c);
+            a.sourceParentWindowName ? Sfdc.support.servicedesk.PopoutWindowManager.sendMessage(a.sourceParentWindowName, "ProcessApiCallback", {
+                postMessageData: d,
+                iframeProxyData: null
+            }) : a.xdomainOrigin.postMessage(d, c.pathToTargetProxy)
+        }
+    }
+}();

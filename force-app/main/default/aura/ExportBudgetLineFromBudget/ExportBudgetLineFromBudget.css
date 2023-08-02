@@ -1,0 +1,6 @@
+.THIS.popupHeader {
+    text-align: center;
+    border-bottom: 1px solid lightgray;
+    position: relative;
+    padding: 1rem 0;
+}

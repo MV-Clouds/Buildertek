@@ -1,0 +1,8 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction,force:appHostable" access="global"> 
+	<lightning:workspaceAPI aura:id="workspace" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+    <aura:attribute name="recordId" type="String" />
+    <span style="display:none;"></span>
+   <!-- <aura:registerEvent name="appEvent" type="c:GanttAndTableEvent"/> -->S
+</aura:component>

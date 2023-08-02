@@ -1,0 +1,39 @@
+<apex:page controller="ConfirmationpageAsPDFController" renderAs="pdf">
+    <apex:form id="frmid">
+        <div class="slds-scope" style="width:80%;margin: 0 auto;padding: 50px;">
+            <div>
+                <div class="slds-box">
+                    <div class="slds-col slds-size_12-of-12">
+                        <apex:outputText value="{!strBody}" escape="false" />
+                        <br/>
+                        <div class="slds-grid--pull-padded slds-p-horizontal--small">
+                            <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1">
+                                <div class="slds-form slds-form_horizontal">
+                                    <div class="">
+                                        <div class="slds-form-element__control">
+                                            <label class="slds-form-element__label" style="font-weight:bold;color: #444444;"> SIGNATURE123</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1">
+                                <div class="">
+                                    <div class="slds-form-element__control">
+                                        <img src="{!imgId}" width="600" height="200" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="font-weight: 800;">
+                            Date Signed:
+                        </div>
+                        <div>
+                            {!acceptedDate}
+                        </div>
+                    </div>
+                </div>
+                <br/>
+            </div>
+        </div>
+    </apex:form>
+</apex:page>

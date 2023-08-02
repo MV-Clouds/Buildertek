@@ -1,0 +1,86 @@
+<aura:component >
+    <aura:attribute name="saveCallback" type="object" access="public"/>
+    <aura:attribute name="cancelCallback" type="object" access="public"/>
+    <aura:attribute name="_items" 
+                    type="Budget_Item__c[]" default="{ 'sobjectType': 'Budget_Item__c' }"/>
+    <aura:attribute name="headers" 
+                    type="Object[]" 
+                    default="[{label: 'Product', required: true, showIcons: false, style:'width:60%'}, 
+                             {label: 'Quantity', required: true, showIcons: false, style:'width:20%'}, 
+                             {label: 'Unit Price', required: true, showIcons: false, style:'width:20%'}]"
+                    access="private"
+                    />
+    <aura:attribute name="_error" type="String" />
+    <aura:attribute name="newBi" type="Budget_Item__c" default="{ 'sobjectType': 'Budget_Item__c' }"/>
+    
+    <aura:method name="handleError" action="{!c.handleErrors}" >
+        <aura:attribute name="_server_response" type="Object" />
+    </aura:method>
+    
+    <aura:registerEvent name="budgetItemEvent" type="c:BT_Budget_Item_Component_Event"/>
+
+    <button class="slds-button slds-button_brand" style="float:right;" onclick="{!c.save}">Save</button><br/>
+    <h2 id="budgetgroup" >Select Group</h2>
+    <force:inputField aura:id="budgetGroup"  value="{!v.newBi.buildertek__Budget_Line_Group__c}"  required="true"/>
+    <aura:if isTrue="{!v._error.length > 0}">
+        <div class="slds-notify_alert slds-theme_error">
+            {!v._error}
+        </div>
+    </aura:if>
+    <table class="slds-table slds-table_bordered slds-table_fixed-layout" role="grid">
+        <thead>
+            <tr class="">
+                <aura:iteration items="{!v.headers}" var="header">
+                    <c:BT_TableHeader label="{!header.label}" 
+                                          showIcons="{!header.showIcons}"
+                                          required="{!header.required}"
+                                          orderBy="{!v.orderBy}"
+                                          disableOrderBy="true" 
+                                          style="{!v.style}"/>
+                </aura:iteration>                
+            </tr>
+        </thead>
+        <tbody>
+            <aura:iteration items="{!v._items}" var="item" indexVar="index" >
+                <tr class="slds-hint-parent">
+                    <th scope="row" data-label="Product Name" style="width:70%">
+                        <div class=" slds-grid slds-cell-wrap slds-grid_pull-padded" title="Product">
+                            <div class="slds-p-horizontal_small slds-size_9-of-12 slds-medium-size_9-of-12 slds-large-size_9-of-12">
+                                <ui:outputText value="{!item.Name}"/>
+                            </div>
+                            <div class="slds-p-horizontal_small 
+                                        slds-size_2-of-12 
+                                        slds-medium-size_2-of-12 
+                                        slds-large-size_2-of-12">
+                                <!--<aura:if isTrue="{!item.errors.message.length > 0}">
+                                	<lightning:helptext content="{!item.errors.message}"/>
+                                </aura:if> -->
+                            </div>
+                            <div class="slds-p-horizontal_small 
+                                        slds-size_1-of-12
+                                        slds-medium-size_1-of-12 
+                                        slds-large-size_1-of-12">
+                            </div>
+                        </div>
+                    </th>
+                    <th scope="row" data-label="Quantity">                        
+                        <div class="slds-truncate" title="Quantity">
+                            <ui:inputNumber class="{!item.errors.buildertek__quantity__c + ' UIField'}"
+                                            value="{!item.buildertek__quantity__c}"
+                                            required="true"/>
+                        </div>
+                    </th>
+                    <th scope="row" data-label="Unit Price">                        
+                        <div class="slds-truncate" 
+                             title="Unit Price">
+                            <ui:inputCurrency class="{!item.errors.buildertek__unit_price__c + ' UIField'}"
+                                              value="{!item.buildertek__unit_price__c}"
+                                              required="true"/>
+                        </div>
+                    </th>
+                </tr>
+            </aura:iteration>
+        </tbody>
+    </table>
+    
+</aura:component>

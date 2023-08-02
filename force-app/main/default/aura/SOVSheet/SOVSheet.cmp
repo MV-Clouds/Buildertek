@@ -1,0 +1,116 @@
+<aura:component controller="SOVSheetController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,lightning:actionOverride,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="Iscommunity" type="Boolean" default = "false"/>
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="Vendorname" type="String" />
+    <aura:attribute name="communityUserId" type="String" />
+    <aura:attribute name="isEditable" type="boolean" default = "false"/>
+    <aura:attribute name="continuationSheetLines" type="Schedule_of_Value_Lines__c[]" />
+    <aura:attribute name="deleteContinuationSheetLine" type="List" />
+    <aura:attribute name="isdeleteClick" type="Boolean" />
+    
+    
+    <div class="slds-page-header slds-page-header_record-home">
+        <div class="slds-page-header__row">
+            <div class="slds-page-header__col-title">
+                <div class="slds-media">
+                    <div class="slds-media__figure">
+                        <span class="slds-icon_container">
+                        </span>
+                    </div>
+                    <div class="slds-media__body slds-align_absolute-center">
+                        <div class="slds-page-header__name">
+                            <div class="slds-page-header__name-title">
+                                <h1>
+                                    <span class="slds-text-heading_small">
+                                        Schedule Of Value Lines
+                                    </span>	
+                                </h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <tr>
+        <lightning:layout >
+            <lightning:layoutItem  padding="around-small" size="1"  >
+                
+                S.No
+                
+            </lightning:layoutItem >
+            <lightning:layoutItem  padding="around-small" size="4" >
+                
+                Description of Work
+                
+            </lightning:layoutItem >
+            <lightning:layoutItem  padding="around-small" size="4">
+                
+                Scheduled Value
+                
+            </lightning:layoutItem >
+            <lightning:layoutItem  padding="around-small" size="4">
+                
+                Item
+                
+            </lightning:layoutItem >
+        </lightning:layout>
+        
+        
+        
+        <td></td><td></td>
+    </tr>
+    <aura:iteration items="{!v.continuationSheetLines}" var="item"
+                    indexVar="recIndex">
+        <tr >
+            
+            <lightning:layout>
+                <lightning:layoutItem  padding="around-small" size="1">
+                    {!recIndex+1}
+                    
+                </lightning:layoutItem >
+                <lightning:layoutItem  padding="around-small" size="4">
+                    
+                    <lightning:input type="text" value="{!item.buildertek__Description_of_Work__c}" variant="label-hidden" disabled="{!v.isEditable}"/>
+                    
+                </lightning:layoutItem >
+                <lightning:layoutItem  padding="around-small" size="4">
+                    
+                    <lightning:input type="text" value="{!item.buildertek__Scheduled_Value__c}" variant="label-hidden" disabled="{!v.isEditable}"/>
+                    
+                </lightning:layoutItem >
+                <lightning:layoutItem  padding="around-small" size="4">
+                    
+                    <lightning:input type="text" value="{!item.buildertek__Item__c}" variant="label-hidden" disabled="{!v.isEditable}" />
+                    
+                </lightning:layoutItem >
+                
+                <lightning:layoutItem  padding="around-small" size="1">
+                    
+                    <span style="cursor: pointer" data-index="{!recIndex}" onclick="{!c.addNewRow}" disabled="{!v.isEditable}">
+                        <lightning:icon iconName="utility:add"
+                                        size="xx-small" /> 
+                    </span>           
+                </lightning:layoutItem >
+                
+                <lightning:layoutItem  padding="around-small" size="1">
+                    
+                    <span style="cursor: pointer" data-index='{!recIndex}' onclick="{!c.deleteRow}" disabled="{!v.isEditable}">
+                        <lightning:icon iconName="utility:delete"
+                                        size="xx-small" />
+                    </span>            
+                </lightning:layoutItem >
+            </lightning:layout>
+            
+            
+            
+            
+            <td></td><td></td>
+        </tr>
+        
+    </aura:iteration>
+    
+</aura:component>

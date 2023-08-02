@@ -1,0 +1,132 @@
+<aura:component implements="force:hasRecordId,force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable,lightning:actionOverride,force:hasSObjectName" access="global" controller="NewPRLineDetails">
+
+	<aura:attribute name="Spinner" type="Boolean" default="false"/>
+	<aura:attribute name="PRLineDetails" type="Pricing_Request_Line_Details__c" default="{ 'sobjectType': 'Pricing_Request_Line_Details__c'}" />
+	<aura:attribute name="productList" type="List" />
+	<aura:attribute name="displayProduct" type="Boolean" default="false" />
+    <aura:attribute name="searchProductValue" type="String" default="" />
+	<aura:attribute name="OptionList" type="List" />
+	<aura:attribute name="isSaveNew" type="boolean" default="false"/>
+    <aura:attribute name="saveAndNew" type="Boolean" default="false" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+
+    <aura:attribute name="recordId" type="Id"/>
+
+	<lightning:workspaceAPI aura:id="workspace" />
+
+	<aura:html tag="style">
+		.slds-col{
+			padding: 0 10px;
+		}
+		.slds-modal__container{
+			width: 60%;
+			max-width: 55rem;
+		}
+	</aura:html>
+
+
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open" onclick="{!c.closeSearchOption}">
+
+
+		<aura:if isTrue="{!v.Spinner}">
+			<div aura:id="spinnerId" class="slds-spinner_container">
+				<div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+					<span class="slds-assistive-text">Loading</span>
+					<div class="slds-spinner__dot-a"></div>
+					<div class="slds-spinner__dot-b"></div>
+				</div>
+			</div>
+		</aura:if> 
+
+		
+        <div class="slds-modal__container">
+			<header class="slds-modal__header">
+				<h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate"> New Pricing Request Line Detail </h2>
+			</header>
+
+			<div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+
+				<lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__Pricing_Request_Line_Details__c" density="comfy">
+					<div style="background-color: white;">
+						<div class="headingDiv"> Information </div>
+						<div class="slds-grid">
+							<div class="slds-col slds-size_1-of-2">
+								<lightning:inputField class="pad" fieldName="buildertek__Price_Book__c" value="{!v.PRLineDetails.buildertek__Price_Book__c}"  />
+								<!-- <lightning:inputField fieldName="buildertek__Product__c" value="{!v.PRLineDetails.buildertek__Product__c}" /> -->
+								<label> Product </label>
+								<lightning:input autocomplete="off" type="search" placeholder="Search Products..." variant="label-hidden" value="{!v.searchProductValue}" onclick="{!c.searchProduct}" onkeyup="{!c.searchProduct}" />
+								<aura:if isTrue="{!v.displayProduct}" >
+									<div id="listbox-id-11" class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid searchResult" role="listbox" style="position: relative;">
+										<ul class="slds-listbox slds-listbox_vertical" role="presentation">
+											<aura:iteration items="{!v.productList}" var="result">
+												<li role="presentation" class="slds-listbox__item" data-value="{!result.Id}" onclick="{!c.clickHandler}">
+													<div class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small" role="option">
+														<span class="slds-media__body">
+															<lightning:icon iconName="standard:product" class="slds-icon slds-icon_small" size="small" alternativeText="icon"/>
+															<span class="slds-truncate" style="padding-left: 5px;" >
+																<span>{!result.Name}</span>
+															</span>
+														</span>
+													</div>
+												</li>
+											</aura:iteration>
+											<aura:if isTrue="{!empty(v.productList)}">
+												<span>
+													<p class="blank-lst">
+														There Are No Product With This PriceBook
+													</p>
+												</span>
+											</aura:if>
+										</ul>
+									</div>
+								</aura:if>
+								<lightning:inputField class="pad" fieldName="buildertek__Description__c" value="{!v.PRLineDetails.buildertek__Description__c}" />
+								<lightning:inputField class="pad" fieldName="buildertek__Quantity__c" value="{!v.PRLineDetails.buildertek__Quantity__c}" />
+								<lightning:inputField class="pad" fieldName="buildertek__Cost__c" value="{!v.PRLineDetails.buildertek__Cost__c}" />
+								<lightning:inputField class="pad" fieldName="buildertek__Multiplier__c" value="{!v.PRLineDetails.buildertek__Multiplier__c}" />
+								<lightning:inputField class="pad" fieldName="buildertek__Markup__c" value="{!v.PRLineDetails.buildertek__Markup__c}" />
+							</div>
+
+							<div class="slds-col slds-size_1-of-2">
+								<lightning:inputField class="pad" fieldName="buildertek__Pricing_Request_Line__c" value="{!v.PRLineDetails.buildertek__Pricing_Request_Line__c}" onchange="{!c.changeOptions}" />
+								<lightning:inputField class="pad" fieldName="buildertek__Option__c" value="{!v.PRLineDetails.buildertek__Option__c}" />
+								<!-- <lightning:select name="buildertek__Option__c" label="Option" value="{!v.PRLineDetails.buildertek__Option__c}">
+									<option value="" disabled="true">None</option>
+									<aura:iteration items="{!v.OptionList}" var="option">
+										<option value="{!option.value}">{!option.label}</option>
+									</aura:iteration>
+								</lightning:select> -->
+
+							</div>
+						</div>
+
+						<div class="headingDiv"> Related Items </div>
+						<div class="slds-grid">
+							<div class="slds-col slds-size_1-of-2">
+								<lightning:inputField class="pad" fieldName="buildertek__RFQ__c" value="{!v.PRLineDetails.buildertek__RFQ__c}" />
+								<lightning:inputField class="pad" fieldName="buildertek__RFQ_Lines__c" value="{!v.PRLineDetails.buildertek__RFQ_Lines__c}" />
+								<lightning:inputField class="pad" fieldName="buildertek__Purchase_Order__c" value="{!v.PRLineDetails.buildertek__Purchase_Order__c}" />
+								<lightning:inputField class="pad" fieldName="buildertek__Purchase_Order_Line__c" value="{!v.PRLineDetails.buildertek__Purchase_Order_Line__c}" />
+							</div>
+							<div class="slds-col slds-size_1-of-2">
+								<lightning:inputField class="pad" fieldName="buildertek__Vendor__c" value="{!v.PRLineDetails.buildertek__Vendor__c}" />
+								<lightning:inputField class="pad" fieldName="buildertek__Vendor_RFQ__c" value="{!v.PRLineDetails.buildertek__Vendor_RFQ__c}" />
+							</div>
+						</div>
+
+					</div>
+				</lightning:recordEditForm>
+			</div>
+
+			<footer class="slds-modal__footer">
+				<lightning:button label="Cancel" title="Cancel" onclick="{!c.closePopup}" class="myBtn"/>
+				<lightning:button name='SaveandNew' label='Save &amp; New' onclick='{!c.saveAndNew}' />
+				<lightning:button variant="brand" label="Save" title="Save" onclick="{!c.createRecord}"/>
+			</footer>
+		</div>
+	</section>
+	<div class="slds-backdrop slds-backdrop_open"></div>
+
+</aura:component>

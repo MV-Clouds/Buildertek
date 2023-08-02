@@ -1,0 +1,9 @@
+<design:component>
+    <design:attribute name="MaxHeight" label="Height" default="128" />
+    <design:attribute name="MaxWidth" label="Width" default="128" />
+    <design:attribute name="title" label="Title" default="Company Logo" />
+    <design:attribute name="AutoInit" label="Auto Initialize" default="false" />
+    <design:attribute name="prefixURL" default="/partner/sfc/servlet.shepherd/version/renditionDownload?rendition=ORIGINAL_Png&amp;versionId=" />
+    <design:attribute name="AcceptFileTypes" default=".jpg,.jpeg,.png,.gif" />
+
+</design:component>

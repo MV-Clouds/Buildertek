@@ -1,0 +1,13 @@
+<apex:page >
+    <apex:includeLightning />
+    <div id="lightning" />
+    <script>
+        $Lightning.use("buildertek:BOXSettingsApp", function() {
+            $Lightning.createComponent("buildertek:BOXSettings",
+            {},
+            "lightning",
+             function(cmp) {
+             });
+        });        
+      </script>
+</apex:page>

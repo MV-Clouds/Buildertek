@@ -1,0 +1,707 @@
+<apex:page controller="SOVLinesWordDocumentController"  
+           contentType="text/xml#SOV.xls" cache="true">
+              <apex:outputText value="{!xlsHeader}"/>
+          <Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+              xmlns:o="urn:schemas-microsoft-com:office:office"
+              xmlns:x="urn:schemas-microsoft-com:office:excel"
+              xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+              xmlns:html="http://www.w3.org/TR/REC-html40">
+              
+                <Styles>
+            <Style ss:ID="s1">
+                <Alignment ss:WrapText="1"/>
+                <Borders />
+                <Font ss:Bold="1"/>
+                <Interior/>
+                <NumberFormat/>
+                <Protection/>
+            </Style>
+            
+            <Style ss:ID="s2">
+                <Alignment ss:WrapText="1" ss:Vertical="JustifyDistributed" />
+                <Borders/>
+                <Font ss:Size="11"/>
+                <Interior/>
+                <NumberFormat/>
+                <Protection/>
+            </Style>
+            <Style ss:ID="s3">
+                <Alignment/>
+                <Borders/>
+                <Font ss:Bold="1" ss:Size="10"/>
+            </Style>
+            <Style ss:ID="s4">
+                <Alignment ss:Horizontal = "Center" ss:Vertical="Center" ss:WrapText="1"/>
+                <Borders/>
+                <Font ss:Bold="1"/>
+                <Interior/>
+                <NumberFormat/>
+                <Protection/>
+            </Style>
+            <Style ss:ID="s5">
+                <Alignment ss:Horizontal = "Center" />
+                <Borders/>
+                <Font/>
+                <Interior/>
+                <NumberFormat/>
+                <Protection/>
+            </Style>
+            <Style ss:ID="s6">
+                <Alignment ss:Horizontal = "Center" ss:Vertical="Center" ss:WrapText="1"/>
+                <Borders/>
+                <Font ss:Bold="1"/>
+                <Interior  ss:Color = "#c8ccc9" ss:Pattern="Solid"/>
+                <NumberFormat/>
+                <Protection/>
+            </Style>
+             
+             <Style ss:ID="ss1">
+
+                <Font ss:Size="7"/>
+                <Interior/>
+                <NumberFormat/>
+                <Protection/>
+            </Style>
+            <Style ss:ID="ss2">
+                <Font ss:Bold="1" ss:Size="8"/>
+               
+            </Style>
+            <Style ss:ID="ss3">
+                <Font  ss:Size="8" ss:Face="Arial"/>
+               
+            </Style>
+            <Style ss:ID="ss4">
+                <Font ss:Size="8"/>
+               
+            </Style>
+            <Style ss:ID="ss5">
+                <Font  ss:Size="8" ss:Face="Arial"/>
+               
+            </Style>
+             <Style ss:ID="ss6">
+                <Font  ss:Size="8" ss:Bold="1" ss:Face="Arial"/>
+               
+            </Style>
+             <Style ss:ID="ss7">
+                <Font  ss:Size="8" ss:Bold="1" ss:Face="Arial"/>
+               
+            </Style>
+          <Style ss:ID="ss22">
+                <Font  ss:Size="8" ss:Face="Arial"/>
+               
+            </Style>
+            <Style ss:ID="ss8">
+                <Font  ss:Size="8"  ss:Face="Arial"/>
+               <Alignment ss:Horizontal = "Center" ss:Vertical="Center"/>
+            </Style>
+            <Style ss:ID="textcenter">
+                <Font  ss:Size="8"  ss:Face="Arial"/>
+               <Alignment ss:Horizontal = "Center" ss:Vertical="Center"/>
+            </Style>
+            <Style ss:ID="textright">
+                <Font  ss:Size="8"  ss:Face="Arial"/>
+               <Alignment ss:Horizontal = "Right" />
+            </Style>
+            <Style ss:ID="textleft">
+                <Font  ss:Size="8"  ss:Face="Arial"/>
+               <Alignment ss:Horizontal = "Left" ss:Vertical="Center"/>
+            </Style>
+            <Style ss:ID="bottomBorder">    
+            <Alignment ss:Horizontal="Right" ss:Vertical="Bottom"/>            
+                <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    
+                </Borders>
+            </Style>
+            
+            <Style ss:ID="s88">
+                <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+                <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:FontName="Arial" x:Family="Swiss" ss:Size="8" ss:Bold="1"/>
+                <Interior/>
+                <NumberFormat ss:Format="Standard"/>
+            </Style>
+             <Style ss:ID="s94">
+                <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+                <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:FontName="Arial" x:Family="Swiss" ss:Size="8"/>
+                <Interior/>
+                <NumberFormat ss:Format="Standard"/>
+            </Style>
+             <Style ss:ID="s96">
+                <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="2"/>
+                </Borders>
+                <Font ss:FontName="Arial" x:Family="Swiss" ss:Size="14"/>
+                <Interior/>
+                <Protection/>
+            </Style>
+          <Style ss:ID="s98">
+                <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+                <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:FontName="Arial" x:Family="Swiss" ss:Size="8" ss:Bold="1"/>
+                <Interior/>
+                <Protection/>
+            </Style>
+            <Style ss:ID="s100">
+                <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+                <Borders>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:FontName="Arial" x:Family="Swiss" ss:Size="8" ss:Bold="1"/>
+                <Interior/>
+                <Protection/>
+            </Style>
+             
+            <Style ss:ID="s101">
+                <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+                <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:FontName="Arial" x:Family="Swiss" ss:Size="8"/>
+                <Interior/>
+                <Protection/>
+            </Style>
+            
+            <Style ss:ID="s1011">
+                <Alignment ss:Horizontal="Right" ss:Vertical="Bottom"/>
+                <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:FontName="Arial" x:Family="Swiss" ss:Size="8"/>
+                <Interior/>
+                <Protection/>
+            </Style>
+            
+            <Style ss:ID="s1012">
+                <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
+                <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:FontName="Arial" x:Family="Swiss" ss:Size="8"/>
+                <Interior/>
+                <Protection/>
+            </Style>
+            
+             <Style ss:ID="s143" >
+                <Alignment ss:Horizontal="Right" ss:Vertical="Bottom"/>
+                <Borders>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:FontName="Arial" x:Family="Swiss" ss:Size="8"/>
+                <Interior/>
+                <NumberFormat ss:Format="#,##0"/>
+                <Protection/>
+            </Style>
+            
+            
+             <Style ss:ID="s14311" >
+                <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
+                <Borders>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:FontName="Arial" x:Family="Swiss" ss:Size="8"/>
+                <Interior/>
+                <NumberFormat ss:Format="#,##0"/>
+                <Protection/>
+            </Style>
+            
+            <Style ss:ID="s1432">
+                <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
+            <!--    <Borders>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders> -->
+                <Font ss:FontName="Arial" x:Family="Swiss" ss:Size="8"/>
+                <Interior/>
+                <NumberFormat ss:Format="#,##0"/>
+                <Protection/>
+            </Style>
+             <Style ss:ID="s1400">
+               <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+                <Borders>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:FontName="Arial" x:Family="Swiss" ss:Size="8"/>
+                <Interior/>
+                <NumberFormat ss:Format="#,##0"/>
+                <Protection/>
+            </Style>
+              <Style ss:ID="s1433" ss:Name="Currency">
+                <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
+                <Borders>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:FontName="Arial" x:Family="Swiss" ss:Size="8"/>              
+                <Protection/>
+            </Style>
+            
+            
+                                                                               
+            <Style ss:ID="s156">
+                <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
+                <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:FontName="Arial" x:Family="Swiss" ss:Size="8"/>
+                <NumberFormat ss:Format="#,##0"/>
+                <Interior/>
+            </Style>
+            <Style ss:ID="s157">
+                <Alignment ss:Horizontal="Right" ss:Vertical="Bottom"/>
+                <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:FontName="Arial" x:Family="Swiss" ss:Size="8"/>
+                <NumberFormat ss:Format="#,##0"/>
+                <Interior/>
+            </Style>
+             <Style ss:ID="s161">
+                <Alignment ss:Horizontal = "Right" ss:Vertical="Center"/>
+                <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:FontName="Arial" x:Family="Swiss" ss:Size="8"/>
+                <NumberFormat ss:Format="#,##0"/>
+                <Interior/>
+                <Protection/>
+            </Style>
+             <Style ss:ID="b1">
+                <Alignment ss:WrapText="1"/>
+                <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:Bold="1"/>
+                <Interior/>
+                <NumberFormat/>
+                <Protection/>
+            </Style>
+            <Style ss:ID="b11">
+                <Alignment ss:WrapText="1"/>
+                <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    
+                    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:Bold="1"/>
+                <Interior/>
+                <NumberFormat/>
+                <Protection/>
+            </Style>
+             <Style ss:ID="b2">
+                 <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:Size="7"/>
+                <Interior/>
+                <NumberFormat/>
+                <Protection/>
+            </Style>
+            
+            <Style ss:ID="bR">
+                 <Borders>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                
+            </Style>
+            <Style ss:ID="bL">
+                 <Borders>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                
+            </Style>
+            <Style ss:ID="bT">
+                 <Borders>
+                    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                
+            </Style>
+            <Style ss:ID="bB">
+                 <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                
+            </Style>
+            <Style ss:ID="b100">
+             <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
+                 <Borders>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:Size="7"/>
+                
+            </Style>
+            <Style ss:ID="b101">
+             <Alignment ss:Horizontal="Right" ss:Vertical="Bottom"/>
+                 <Borders>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                     <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:Size="7"/>
+                
+            </Style>
+            
+            
+            <Style ss:ID="groupVal">
+             <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+                 <Borders>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                     
+                     <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+                     <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                 <Font ss:Bold="1" ss:Size="10"/>
+            </Style>
+            <Style ss:ID="groupVal1">
+             <Alignment ss:Horizontal="Right" ss:Vertical="Bottom"/>
+                 <Borders>
+                    
+                     <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+                     <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                 <Font ss:Bold="1" ss:Size="10"/>
+            </Style>
+            
+            <Style ss:ID="groupVal2">
+             <Alignment ss:Horizontal="Right" ss:Vertical="Bottom"/>
+                 <Borders>
+                   
+                     <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                     <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+                     <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                 <Font ss:Bold="1" ss:Size="10"/>
+            </Style>
+            
+        </Styles>
+    <Worksheet ss:Name="SOV">
+            <Table x:FullColumns="1" x:FullRows="1" ss:Border="1px">
+                <Column ss:Width="120"/>
+                <Column ss:Width="200"/> 
+                <Column ss:Width="80"/>
+                <Column ss:Width="90"/>
+                <Column ss:Width="100"/>
+                <Column ss:Width="100"/>
+                <Column ss:Width="100"/>
+                <Column ss:Width="100"/>
+                <Column ss:Width="80"/>
+                  <Column ss:Width="80"/>
+                    <Column ss:Width="80"/>
+                <Row ss:Height="15">
+                    <Cell ss:StyleID="s96" ss:MergeAcross="2"><Data ss:Type="String" >Schedule of Values</Data></Cell>
+                    <Cell ss:StyleID="s96"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s96"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s96"><Data ss:Type="String" >View</Data></Cell>
+                    <Cell ss:StyleID="s96"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s96"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s96"><Data ss:Type="String" ></Data></Cell>
+                     <Cell ss:StyleID="s96"><Data ss:Type="String" ></Data></Cell>
+                      <Cell ss:StyleID="s96"><Data ss:Type="String" ></Data></Cell>
+                       <Cell ss:StyleID="s96"><Data ss:Type="String" ></Data></Cell>
+                        <Cell ss:StyleID="s96"><Data ss:Type="String" ></Data></Cell>
+                </Row>  
+                <Row ss:Height="15">
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                </Row>           
+               <Row ss:Height="15">
+                    <Cell ss:StyleID="ss4" ss:MergeAcross="2"><Data ss:Type="String" >{!SOV.Vendor__r.Name}</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="ss7"><Data ss:Type="String" >SOV Name: </Data></Cell>
+                    <Cell ss:StyleID="s1432"><Data ss:Type="String" >{!SOV.Name}</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                </Row>
+               <Row ss:Height="15">
+                    <Cell ss:StyleID="ss4" ss:MergeAcross="2"><Data ss:Type="String" >{!SOV.buildertek__Vendor__r.BillingStreet}</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="ss7"><Data ss:Type="String" >Vendor:</Data></Cell>
+                    <Cell ss:StyleID="s1432"><Data ss:Type="String" >{!SOV.buildertek__Vendor__r.Name}</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                </Row>
+                 <Row ss:Height="15">
+                    <Cell ss:StyleID="ss4" ss:MergeAcross="2"><Data ss:Type="String" >{!SOV.buildertek__Vendor__r.BillingCity}</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="ss7"><Data ss:Type="String" >Status:</Data></Cell>
+                    <Cell ss:StyleID="s1432"><Data ss:Type="String" >{!SOV.Status__c}</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                </Row>
+                <Row ss:Height="15">
+                    <Cell ss:StyleID="ss4" ss:MergeAcross="2"><Data ss:Type="String" >{!SOV.buildertek__Vendor__r.BillingState}</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="ss7"><Data ss:Type="String" >SOV Type:</Data></Cell>
+                    <Cell ss:StyleID="s1432"><Data ss:Type="String" >{!SOV.recordtype.name}</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                </Row>
+                  <Row ss:Height="15">
+                    <Cell ss:StyleID="ss4" ss:MergeAcross="2"><Data ss:Type="String" >{!SOV.buildertek__Vendor__r.BillingCountry}</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="ss7"><Data ss:Type="String" >Submitted Date:</Data></Cell>
+                    <Cell ss:StyleID="s1432"><Data ss:Type="String" ><apex:outputText value="{0,date,MM'/'dd'/'yyyy}"><apex:param value="{!SOV.Date_Submitted__c}" /></apex:outputText></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                </Row>
+                   <Row ss:Height="15">
+                    <Cell ss:StyleID="ss7"><Data ss:Type="String" >Company: </Data></Cell>
+                    <Cell ss:StyleID="s1432"><Data ss:Type="String" >{!MSASettings.Company_Full_Name__c}</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                      <Cell><Data ss:Type="String" ></Data></Cell>
+                       <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="ss7"><Data ss:Type="String" >Total Costs:</Data></Cell>
+                    <Cell ss:StyleID="s1432"><Data ss:Type="String" ><apex:outputText value="USD {0, number, #,##,###,###,##0.##}" ><apex:param value="{!scheduleValueTotal}" /></apex:outputText></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                   
+                          <Cell><Data ss:Type="String" ></Data></Cell>
+                             <Cell><Data ss:Type="String" ></Data></Cell>
+                </Row>
+                  <Row ss:Height="15">
+                    <Cell ss:StyleID="ss4"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s1432"><Data ss:Type="String" >{!MSASettings.City__c}</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="ss7"><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" > 
+              
+                    </Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                </Row>
+                  <Row ss:Height="15">
+                    <Cell ss:StyleID="ss4"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s1432"><Data ss:Type="String" >{!MSASettings.Phone__c}</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="ss7"><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" > 
+              
+                    </Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                </Row>
+                  <Row ss:Height="15">
+                    <Cell ss:StyleID="ss4"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s1432"><Data ss:Type="String" >{!MSASettings.MSA_Email__c}</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="ss7"><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" > 
+              
+                    </Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                </Row>
+                  <Row ss:Height="15">
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                </Row> 
+                  <Row ss:Height="15">
+                    <Cell ss:StyleID="ss7"><Data ss:Type="String" >Project #</Data></Cell>
+                    <Cell ss:StyleID="s1432"><Data ss:Type="String" >{!SOV.buildertek__Project__r.Auto_Number__c}</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                      <Cell><Data ss:Type="String" ></Data></Cell>
+                       <Cell><Data ss:Type="String" ></Data></Cell>
+                       <Cell><Data ss:Type="String" ></Data></Cell>
+                   <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                   
+                          <Cell><Data ss:Type="String" ></Data></Cell>
+                             <Cell><Data ss:Type="String" ></Data></Cell>
+                </Row>    
+                  <Row ss:Height="15">
+                    <Cell ss:StyleID="ss7"><Data ss:Type="String" >Project :</Data></Cell>
+                    <Cell ss:StyleID="s1432"><Data ss:Type="String" >{!SOV.buildertek__Project__r.Name}</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                      <Cell><Data ss:Type="String" ></Data></Cell>
+                       <Cell><Data ss:Type="String" ></Data></Cell>
+                       <Cell><Data ss:Type="String" ></Data></Cell>
+                   <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                   
+                          <Cell><Data ss:Type="String" ></Data></Cell>
+                             <Cell><Data ss:Type="String" ></Data></Cell>
+                </Row>    
+               <!-- <apex:repeat value="{!wrapList}" var="record"> -->
+             
+                <Row ss:Height="15">
+                    <Cell ss:StyleID="groupVal" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="groupVal1"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="groupVal1"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="groupVal1"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="groupVal1"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="groupVal1"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="groupVal1"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="groupVal1"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="groupVal1"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="groupVal2"><Data ss:Type="String" ></Data></Cell>
+                      <Cell ss:StyleID="groupVal1"><Data ss:Type="String" ></Data></Cell>
+                       
+                </Row>
+                <Row ss:Height="15">
+                    <Cell ss:StyleID="s98" ><Data ss:Type="String" >A</Data></Cell>
+                    <Cell ss:StyleID="s98" ><Data ss:Type="String" >B</Data></Cell>
+                    <Cell ss:StyleID="s98" ><Data ss:Type="String" >C</Data></Cell>
+                    <Cell ss:StyleID="s98" ><Data ss:Type="String" >D</Data></Cell>
+                    <Cell ss:StyleID="s98" ><Data ss:Type="String" >E</Data></Cell>
+                    <Cell ss:StyleID="s98" ><Data ss:Type="String" >F</Data></Cell>
+                    <Cell ss:StyleID="s98" ><Data ss:Type="String" >G</Data></Cell>
+                    <Cell ss:StyleID="s98" ><Data ss:Type="String" >H</Data></Cell>
+                    <Cell ss:StyleID="s98" ><Data ss:Type="String" >I</Data></Cell>
+                    <Cell ss:StyleID="s98" ><Data ss:Type="String" >J</Data></Cell>
+                      <Cell ss:StyleID="s98" ><Data ss:Type="String" >K</Data></Cell>
+                     
+                </Row>
+                <Row ss:Height="15">
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" >Item No</Data></Cell>
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" >SOV Line Description</Data></Cell>
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" >Scheduled Amount (USD)</Data></Cell>
+                    <Cell ss:StyleID="s88" ss:MergeAcross="1"><Data ss:Type="String" >Previously Invoiced</Data></Cell>
+                    <Cell  ss:StyleID="s88" ss:MergeAcross="1"><Data ss:Type="String" >Completed To Date</Data></Cell>
+                    <Cell  ss:StyleID="s88" ss:MergeAcross="1"><Data ss:Type="String" >This Claim</Data></Cell>
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" >Less 10%</Data></Cell>
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" >Please Pay</Data></Cell>
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" ></Data></Cell>
+                      <Cell ss:StyleID="s100"><Data ss:Type="String" ></Data></Cell>
+                       
+                </Row>
+
+              
+                <Row ss:Height="15">
+                    <Cell ss:StyleID="s98"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s98"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s98"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s98"><Data ss:Type="String" >Percent</Data></Cell>
+                    <Cell ss:StyleID="s98"><Data ss:Type="String" >Amount</Data></Cell>
+                    <Cell ss:StyleID="s98"><Data ss:Type="String" >Percent</Data></Cell>
+                    <Cell ss:StyleID="s98"><Data ss:Type="String" >Amount</Data></Cell>
+                    <Cell ss:StyleID="s98"><Data ss:Type="String" >Percent</Data></Cell>
+                    <Cell ss:StyleID="s98"><Data ss:Type="String" >Amount</Data></Cell>
+                    <Cell ss:StyleID="s98"><Data ss:Type="String" >Holdback</Data></Cell>
+                    <Cell ss:StyleID="s98"><Data ss:Type="String" ></Data></Cell>
+                      
+                </Row>
+           
+           
+              
+                
+                <!--    Repitation    -->
+                   <apex:repeat value="{!SOVLineList}" var="record"> 
+               
+                    <Row ss:Height="15">
+                        <Cell ss:StyleID="s1400"><Data ss:Type="Number" >{!record.buildertek__Item__c}</Data></Cell>
+                        <Cell ss:StyleID="s1432"><Data ss:Type="String" >{!record.Description_of_Work__c}  </Data></Cell>
+                        <Cell ss:StyleID="s143"><Data ss:Type="String" >
+                            <apex:outputText value=" {0, number, #,##,###,###,##0.##}" >
+                             <apex:param value="{!record.Scheduled_Value__c}" />
+                            </apex:outputText></Data></Cell>
+                        <Cell ss:StyleID="s143"><Data ss:Type="String" >
+                       
+                           </Data></Cell>
+                        <Cell ss:StyleID="s143"><Data ss:Type="String" >
+                       
+                            </Data></Cell>
+                        <Cell ss:StyleID="s143"><Data ss:Type="String" > 
+                          </Data></Cell>
+                        <Cell ss:StyleID="s143"><Data ss:Type="String" >
+                       
+                          </Data></Cell>
+                        <Cell ss:StyleID="s143"><Data ss:Type="String" ></Data></Cell>
+                        <Cell ss:StyleID="s143"><Data ss:Type="String" >
+                           </Data></Cell>
+                        <Cell ss:StyleID="s143"><Data ss:Type="String" >
+                          </Data></Cell>
+                             <Cell ss:StyleID="s143"><Data ss:Type="String" >
+                          </Data></Cell>
+                           
+                    </Row>
+                   
+                </apex:repeat>
+                
+                 <Row ss:Height="15">
+                    <Cell ss:StyleID="s157"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s157"><Data ss:Type="String" >Total</Data></Cell>
+                   <Cell ss:StyleID="s157"><Data ss:Type="String" >
+                            <apex:outputText value="{0, number, #,##,###,###,##0.##}" >
+                          <!--   <apex:param value="{!SOV.Total_Costs__c}" /> -->
+                                 <apex:param value="{!scheduleValueTotal}" />
+                            </apex:outputText></Data></Cell>
+                    <Cell ss:StyleID="s157"><Data ss:Type="String" ></Data></Cell>
+                    
+                    <Cell ss:StyleID="s157"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s157"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s157"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s157"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s157"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s157"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s157"><Data ss:Type="String" ></Data></Cell>
+                
+                </Row>
+         <!--   </apex:repeat>  -->
+            </Table>
+        </Worksheet>
+    </Workbook>
+</apex:page>

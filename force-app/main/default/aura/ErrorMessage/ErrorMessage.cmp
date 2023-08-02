@@ -1,0 +1,22 @@
+<aura:component >
+    <aura:handler event="c:ErrorMessageEvnt" action="{!c.doInt}"/>
+    <aura:attribute name="errMsg" type="String" default=""/>
+    <aura:attribute name="iserrMsg" type="Boolean" default="false"/>
+    
+    <aura:if isTrue="{!v.iserrMsg}" >  
+        <div class="slds-notify_container">
+            <div class="slds-notify slds-notify--alert slds-theme--error slds-theme--alert-texture" role="alert">
+                <button class="slds-button slds-notify__close slds-button--icon-inverse" title="Close" onclick="{!c.close}">
+                    <lightning:icon iconName="utility:close" size="x-small" class="iconFill"  />
+                    <span class="slds-assistive-text">Close</span>
+                </button>
+                <span class="slds-assistive-text">Error</span>
+                <h2>
+                    <lightning:icon iconName="utility:ban" size="x-small"  class="iconFill"/>
+                    
+                    <aura:unescapedHtml value="{!v.errMsg}"></aura:unescapedHtml>
+                </h2>
+            </div>
+        </div>
+    </aura:if>      
+</aura:component>

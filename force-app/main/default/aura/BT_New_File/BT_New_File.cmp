@@ -1,0 +1,12 @@
+<aura:component implements="force:appHostable,flexipage:availableForRecordHome,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global" >
+    
+	<aura:attribute name="objectAPI" type="String" access="global" default="buildertek__RFQ__c"/>
+	<aura:attribute name="recordId" type="String" access="global"/>
+	<aura:attribute name="selectedFiles" type="sObject[]" default="[]"/>
+	<aura:attribute name="modalPromise" type="Aura.Action"/>
+    <lightning:overlayLibrary aura:id="overlay"/>
+	<c:BT_Spinner/>
+	<lightning:button name="Add" class="slds-float_right" label="New Document" onclick="{!c.uploadFile}"/>
+    <br/>
+    <br/>
+</aura:component>

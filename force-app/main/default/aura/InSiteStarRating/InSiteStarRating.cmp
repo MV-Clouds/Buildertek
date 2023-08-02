@@ -1,0 +1,16 @@
+<aura:component>
+	<aura:attribute name="rating" type="Double"/>
+	<aura:attribute name="stars" type="String[]"/>
+	<aura:attribute name="isModalView" type="Boolean"/>
+
+	<aura:handler name="init" value="{!this}" action="{!c.init}"/>
+	<aura:handler name="change" value="{!v.rating}" action="{!c.init}"/>
+
+	<div aura:id="starColContainer" class="slds-grid">
+		<aura:iteration items="{!v.stars}" var="star">
+			<div class="slds-col">
+				<img style="display: block; margin: 0 auto;" src="{!star}" alt=""/>
+			</div>
+		</aura:iteration>
+	</div>
+</aura:component>

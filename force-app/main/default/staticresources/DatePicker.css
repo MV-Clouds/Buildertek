@@ -1,0 +1,433 @@
+body .slds-datepicker {
+    padding: 0;
+    font-size: .75rem
+}
+
+body .slds-datepicker th, body .slds-datepicker td {
+    text-align: center
+}
+
+body .slds-datepicker th {
+    padding: .5rem;
+    font-weight: 400;
+    color: rgb(84, 105, 141)
+}
+
+body .slds-datepicker td {
+    padding: .25rem;
+    text-align: center;
+    font-size: .75rem
+}
+
+body .slds-datepicker td>.slds-day {
+    width: 2rem;
+    height: 1.5rem;
+    display: block;
+    position: relative;
+    min-width: 1.5rem;
+    line-height: 1.5rem;
+    border-radius: 50%;
+    margin: auto
+}
+
+body .slds-datepicker td:hover:not(.slds-disabled-text)>.slds-day, body .slds-datepicker td:focus:not(.slds-disabled-text)>.slds-day,body .slds-datepicker td.slds-is-today>.slds-day {
+    background: rgb(222, 184, 135);
+    cursor: pointer
+}
+
+body .slds-datepicker td.slds-is-selected:not(.slds-disabled-text)>.slds-day {
+    background: rgb(0, 95, 178);
+    color: rgb(255, 255, 255)
+}
+
+body .slds-datepicker td.slds-is-selected-multi>.slds-day {
+    overflow: visible
+}
+
+body .slds-datepicker td.slds-is-selected-multi+.slds-is-selected-multi>.slds-day:before {
+    content: '';
+    position: absolute;
+    background: rgb(0, 95, 178);
+    top: 0;
+    left: -50%;
+    height: 80%;
+    width: 2rem;
+    -webkit-transform: translateX(-0.5rem);
+    -ms-transform: translateX(-0.5rem);
+    transform: translateX(-0.5rem);
+    z-index: -1
+}
+
+body .slds-datepicker .slds-has-multi-row-selection .slds-is-selected-multi:first-child>.slds-day:before,body .slds-datepicker .slds-has-multi-row-selection .slds-is-selected-multi:last-child>.slds-day:after {
+    content: '';
+    position: absolute;
+    background: rgb(0, 95, 178);
+    top: 0;
+    left: -50%;
+    height: 80%;
+    width: 2rem;
+    -webkit-transform: translateX(-0.5rem);
+    -ms-transform: translateX(-0.5rem);
+    transform: translateX(-0.5rem);
+    z-index: -1
+}
+
+body .slds-datepicker .slds-has-multi-row-selection .slds-is-selected-multi:first-child>.slds-day:before {
+    left: 0;
+    -webkit-transform: translateX(-0.25rem);
+    -ms-transform: translateX(-0.25rem);
+    transform: translateX(-0.25rem)
+}
+
+body .slds-datepicker .slds-has-multi-row-selection .slds-is-selected-multi:last-child>.slds-day:after {
+    left: auto;
+    right: 0;
+    -webkit-transform: translateX(0.25rem);
+    -ms-transform: translateX(0.25rem);
+    transform: translateX(0.25rem)
+}
+
+body .slds-datepicker__filter {
+    padding: .25rem
+}
+
+body .slds-datepicker__filter--month {
+    padding: 0 .25rem 0 0
+}
+
+body .slds-disabled-text {
+    color: rgb(216, 221, 230)
+}
+
+body .slds-datepicker--time {
+    max-width: 12rem;
+    max-height: 15.5rem;
+    overflow: hidden;
+    overflow-y: auto
+}
+
+body .slds-datepicker--time__list>li {
+    white-space: nowrap;
+    padding: .5rem;
+    padding-left: 2rem;
+    padding-right: 2rem
+}
+
+body .slds-datepicker--time__list>li:hover,body .slds-datepicker--time__list>li:focus {
+    background: rgb(244, 246, 249);
+    text-decoration: none;
+    cursor: pointer
+}
+
+
+ body .uiDatePicker--default {
+    background: rgb(255, 255, 255);
+    box-shadow: 0 2px 3px 0 rgba(0,0,0,.16);
+    border: 1px solid rgb(216, 221, 230);
+    border-radius: .25rem !important;
+    padding: .5rem 0;
+    z-index: 9999;
+    float: left;
+    position: absolute;
+    min-width: 240px;
+    max-width: 400px;
+    -webkit-transform: translateX(-50%);
+    -ms-transform: translateX(-50%);
+    transform: translateX(-50%)
+}
+
+body .uiDatePicker--default {
+    margin-top: .25rem;
+    padding: 0;
+    font-size: .75rem;
+    display: none;
+    font-weight: 400
+}
+
+body .uiDatePicker--default a {
+    text-decoration: none
+}
+
+body .uiDatePicker--default .dateBar .prevMonth:before {
+    font-family: "forceIconFont";
+    /*content: "\e81f";*/
+    color: #54698d;
+    speak: none
+}
+
+body .uiDatePicker--default .dateBar .nextMonth:after {
+    font-family: "forceIconFont";
+    /*content: "\e836";*/
+    color: #54698d;
+    speak: none
+}
+
+body .uiDatePicker--default .dateBar .prevLinks {
+    float: left;
+    text-align: left;
+    margin-left: .75rem
+}
+
+body .uiDatePicker--default .dateBar .nextLinks {
+    float: right;
+    text-align: right;
+    margin-right: .75rem;
+    -webkit-box-ordinal-group: 4;
+    -webkit-order: 3;
+    -ms-flex-order: 3;
+    order: 3
+}
+
+body .uiDatePicker--default .dateBar {
+    display: -webkit-flex;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    position: relative;
+    padding: .25rem;
+    background-color: initial;
+}
+
+body .uiDatePicker--default .datepicker__filter--month {
+    width: 20%;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: justify;
+    -webkit-justify-content: space-between;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    padding: 0 .25rem 0 0
+}
+
+body .uiDatePicker--default .datepicker__filter--month .monthYear {
+    line-height: 13px;
+    font-size: .75rem;
+    text-transform: uppercase
+}
+
+body .uiDatePicker--default .datepicker__filter--year {
+    width: 30%
+}
+
+body .uiDatePicker--default.select, body .uiDatePicker--default .select, body .uiDatePicker--default .dateBar select {
+    font-family: 'Salesforce Sans',Arial,sans-serif;
+    background-color: rgb(255, 255, 255);
+    color: rgb(22, 50, 92);
+    border: 1px solid rgb(216, 221, 230);
+    border-radius: .25rem;
+    font-weight: 300;
+    font-size: 1rem;
+    width: 100%;
+    -webkit-transition: border .1s linear,background-color .1s linear;
+    transition: border .1s linear,background-color .1s linear;
+    height: 1.375rem;
+    background-image: unset;
+}
+
+body .uiDatePicker--default.select:focus, body .uiDatePicker--default .select:focus, body .uiDatePicker--default.select:active, body .uiDatePicker--default .select:active {
+    border-color: rgb(21, 137, 238);
+    background-color: rgb(255, 255, 255);
+    box-shadow: 0 0 3px #0070d2
+}
+
+body .uiDatePicker--default.select, body .uiDatePicker--default .select, body .uiDatePicker--default .dateBar select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    padding: 0 30px 0 14px;
+    background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4PSIwcHgiIHk9IjBweCIgdmlld0JveD0iMCAwIDI3LjYgMjEiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDI3LjYgMjEiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KICA8Zz4NCiAgICA8ZGVmcz4NCiAgICAgIDxwYXRoIGlkPSJTVkdJRF8xXyIgZD0iTTUuNiA1aDE2LjRjMC40IDAgMC44IDAuNiAwLjQgMWwtOCA5LjhjLTAuMyAwLjMtMC45IDAuMy0xLjIgMGwtOC05LjhDNC44IDUuNiA1LjEgNSA1LjYgNXoiLz4NCiAgICA8L2RlZnM+DQogICAgPGNsaXBQYXRoIGlkPSJTVkdJRF8yXyI+DQogICAgICA8dXNlIHhsaW5rOmhyZWY9IiNTVkdJRF8xXyIgb3ZlcmZsb3c9InZpc2libGUiLz4NCiAgICA8L2NsaXBQYXRoPg0KICAgIDxyZWN0IHg9IjAiIHk9IjAiIGNsaXAtcGF0aD0idXJsKCNTVkdJRF8yXykiIGZpbGw9IiM1NTY5OEQiIHdpZHRoPSIyNy42IiBoZWlnaHQ9IjIxIi8+DQogIDwvZz4NCjwvc3ZnPg0K);
+    background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4PSIwcHgiIHk9IjBweCIgdmlld0JveD0iMCAwIDI3LjYgMjEiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDI3LjYgMjEiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KICA8Zz4NCiAgICA8ZGVmcz4NCiAgICAgIDxwYXRoIGlkPSJTVkdJRF8xXyIgZD0iTTUuNiA1aDE2LjRjMC40IDAgMC44IDAuNiAwLjQgMWwtOCA5LjhjLTAuMyAwLjMtMC45IDAuMy0xLjIgMGwtOC05LjhDNC44IDUuNiA1LjEgNSA1LjYgNXoiLz4NCiAgICA8L2RlZnM+DQogICAgPGNsaXBQYXRoIGlkPSJTVkdJRF8yXyI+DQogICAgICA8dXNlIHhsaW5rOmhyZWY9IiNTVkdJRF8xXyIgb3ZlcmZsb3c9InZpc2libGUiLz4NCiAgICA8L2NsaXBQYXRoPg0KICAgIDxyZWN0IHg9IjAiIHk9IjAiIGNsaXAtcGF0aD0idXJsKCNTVkdJRF8yXykiIGZpbGw9IiM1NTY5OEQiIHdpZHRoPSIyNy42IiBoZWlnaHQ9IjIxIi8+DQogIDwvZz4NCjwvc3ZnPg0K),rgb(255, 255, 255);
+    background-repeat: no-repeat;
+    background-position: 95% 50%;
+    background-size: .8125rem .8125rem,100% 100%
+}
+
+body .uiDatePicker--default.select::-ms-expand, body .body uiDatePicker--default .select::-ms-expand {
+    display: none
+}
+
+body .uiDatePicker--default .picklist__label {
+    font-size: .75rem;
+    font-weight: 400
+}
+
+body .uiDatePicker--inline {
+    margin-top: 0;
+    position: relative;
+    -webkit-transform: none;
+    -ms-transform: none;
+    transform: none
+}
+
+body .uiDatePicker--default a:hover, body .uiDatePicker--default a:focus {
+    text-decoration: none
+}
+
+body .uiDatePicker--default.select:focus, body .uiDatePicker--default .select:focus, body .uiDatePicker--default.select:active, body .uiDatePicker--default.select:active {
+    border-color: rgb(21, 137, 238);
+    background-color: rgb(255, 255, 255);
+    box-shadow: 0 0 3px #0070d2;
+    outline: none
+}
+
+body .uiDatePickerGrid--default thead {
+    background-color: initial;
+    border-bottom: none;
+}
+
+ body .uiDatePickerGrid--default th {
+    padding: .5rem;
+    font-weight: 400;
+    color: rgb(84, 105, 141);
+    text-align: center;
+    text-transform: lowercase
+}
+
+ body .uiDatePickerGrid--default th:first-letter {
+    text-transform: uppercase
+}
+
+body .uiDatePickerGrid--default .calGrid .calRow td {
+    border: unset;
+}
+
+body .uiDatePickerGrid--default .calGrid th {
+    color: unset;
+    font-size: unset;
+    font-family: unset;
+    padding: unset;
+    text-align: unset;
+}
+
+ body .uiDatePickerGrid--default td {
+    padding: .25rem;
+    text-align: center
+}
+
+body a.uiDayInMonthCell--default.todayDate {
+    background-color: unset;
+    box-shadow: unset;
+    color: unset;
+    text-shadow: unset;
+}
+
+body .uiDatePickerGrid--default td:not(.is-selected)>a:hover:not(.prevMonth):not(.nextMonth), body .uiDatePickerGrid--default td:not(.is-selected)>a.todayDate {
+    background: rgb(244, 246, 249)
+}
+
+body .uiDatePickerGrid--default td.is-selected>a:focus {
+    background: rgb(0, 95, 178);
+    color: rgb(255, 255, 255);
+    outline: none;
+    box-shadow: 0 0 3px #0070d2
+}
+
+body .uiDatePickerGrid--default td.disabled-text>a:focus {
+    outline: none;
+    box-shadow: 0 0 3px #0070d2
+}
+
+body .uiDatePickerGrid--default td.is-selected>a {
+    background: rgb(0, 95, 178);
+    color: rgb(255, 255, 255)
+}
+
+body .uiDatePickerGrid--default td.is-selected-multi>a {
+    overflow: visible
+}
+
+body .uiDatePickerGrid--default td.is-selected-multi+.is-selected-multi>a:before {
+    content: '';
+    position: absolute;
+    background: rgb(0, 95, 178);
+    top: 0;
+    left: -50%;
+    height: 80%;
+    width: 2.5rem;
+    -webkit-transform: translateX(-0.5rem);
+    -ms-transform: translateX(-0.5rem);
+    transform: translateX(-0.5rem);
+    z-index: -1
+}
+
+body .uiDatePickerGrid--default td:not(.is-selected)>a:focus:not(.prevMonth):not(.nextMonth) {
+    box-shadow: 0 0 3px #0070d2;
+    outline: none;
+}
+
+body .uiDatePickerGrid--default .has-multi-row-selection .is-selected-multi:first-child>a:not(.start-date):before, body .uiDatePickerGrid--default .has-multi-row-selection .is-selected-multi:last-child>a:not(.end-date):after {
+    content: '';
+    position: absolute;
+    background: rgb(0, 95, 178);
+    top: 0;
+    left: -50%;
+    height: 80%;
+    width: 2.5rem;
+    -webkit-transform: translateX(-0.5rem);
+    -ms-transform: translateX(-0.5rem);
+    transform: translateX(-0.5rem);
+    z-index: -1
+}
+
+body .uiDatePickerGrid--default .has-multi-row-selection .is-selected-multi:first-child>a:not(.start-date):before {
+    left: 0;
+    -webkit-transform: translateX(-0.25rem);
+    -ms-transform: translateX(-0.25rem);
+    transform: translateX(-0.25rem)
+}
+
+body .uiDatePickerGrid--default .has-multi-row-selection .is-selected-multi:last-child>a:not(.end-date):after {
+    left: auto;
+    right: 0;
+    -webkit-transform: translateX(t(spacingXxSmall));
+    -ms-transform: translateX(t(spacingXxSmall));
+    transform: translateX(t(spacingXxSmall))
+}
+
+body .uiDatePickerGrid--default td.disabled-text>a {
+    color: rgb(216, 221, 230)
+}
+
+body a.uiDayInMonthCell--default {
+    width: 2rem;
+    height: 1.5rem;
+    display: block;
+    position: relative;
+    min-width: 1.5rem;
+    line-height: 1.5rem;
+    border-radius: 50%;
+    font-family: unset;
+    font-size: unset;
+}
+
+body .uiDayInMonthCell--default, body .uiDayInMonthCell--default:link, body .uiDayInMonthCell--default:visited, body .uiDayInMonthCell--default:hover, .uiDayInMonthCell--default:active {
+    color: rgb(84, 105, 141);
+}
+
+body a.uiDayInMonthCell--default.desktop:hover, body a.uiDayInMonthCell--default.desktop:focus, body a.uiDayInMonthCell--default.desktop:active {
+    text-shadow: unset;
+    box-shadow: unset;
+    outline: unset;
+    background-color: unset;
+}
+
+body .uiDatePicker--default .navLink:hover {
+    background-color: unset;
+    border-color: unset;
+    box-shadow: unset;
+    outline: unset;
+}
+
+body .uiDatePicker--default .dateBar .navLink {
+    border: unset;
+}
+
+body .uiDatePicker--default select.picklist__label {
+    font-size: .75rem;
+    font-weight: 400;
+}

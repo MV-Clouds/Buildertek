@@ -1,0 +1,23 @@
+.THIS.cuf-content {
+    padding: 0 0rem !important;
+}
+.THIS.slds-p-around--medium {
+    padding: 0rem !important;
+}
+.THIS.slds-modal__content {
+    height: unset !important;
+    max-height: unset !important;
+} 
+.THIS.slds-modal__container{
+    max-width: 50rem !important;
+    width:46% !important; 
+    
+}
+.THIS .custom-loading-text {
+    transform: rotate(-90deg);
+    position: absolute;
+    top: -0.5rem;
+    left: 1rem;
+    white-space: nowrap;
+    font-size: 20px;
+}

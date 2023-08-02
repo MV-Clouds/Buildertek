@@ -1,0 +1,83 @@
+<aura:component implements="force:hasRecordId,force:lightningQuickActionWithoutHeader" controller="CloneMasterBudgetController">
+    <aura:attribute name="saved" type="Boolean" default="false" />
+    <aura:attribute name="showSpinner" type="Boolean" default="true" />
+    <aura:attribute name="Spinner" type="Boolean" default="false" />
+    <aura:attribute name="clonedRecordId" type="Id" />
+    <aura:attribute name="Options" type="List" />
+    <aura:attribute name="timezone" type="String" />
+    <aura:attribute name="newMasterBudget" type="Master_Budget__c" default="{ 'sobjectType': 'Master_Budget__c' }" access="public" />
+    <aura:attribute name="newMasterBudgetLines" type="Master_Budget_Line__c[]" />
+    <lightning:notificationsLibrary aura:id="notifLib" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
+    <div class="slds-modal__header">
+        <h4 class="title slds-text-heading--medium">
+            <aura:if isTrue="{!!v.saved}">
+                <ui:outputText value="Edit Budget" />
+            </aura:if>
+        </h4>
+    </div>
+    <div class="scrollable">
+        <div class="slds-modal__content slds-p-around--large">
+            <aura:if isTrue="{!v.Spinner}">
+                <div aura:id="spinnerId" class="slds-spinner_container">
+                    <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                        <span class="slds-assistive-text">Loading</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                        <div class="custom-loading-text">
+                            <b>Processing, Please Wait</b>
+                        </div>
+
+                    </div>
+                </div>
+            </aura:if>
+            <lightning:spinner aura:id="spinner" variant="brand" class="slds-hide" />
+            <lightning:layout multipleRows="true">
+                <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                    <label>Master Budget Name</label>
+                    <lightning:input type="text" aura:id="masterBudgetName" value="{!v.newMasterBudget.Name}" autocomplete="off" variant="label-hidden" />
+                </lightning:layoutItem>
+                <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                    <label>Is Budget Locked ?</label>
+                    <lightning:input type="checkbox" value="{!v.newMasterBudget.buildertek__Is_Budget_Locked__c}" variant="label-hidden" />
+                </lightning:layoutItem>
+                <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                    <label>Budget #</label><br/>
+                    <ui:outputText value="{!v.newMasterBudget.buildertek__Budget__c}" />
+                </lightning:layoutItem>
+                <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                    <label>Type</label>
+                    <ui:inputSelect value="{! v.newMasterBudget.buildertek__Type__c }" class="pricebook-class">
+                        <aura:iteration var="option" items="{! v.Options }">
+                            <option value="{! option.value }" selected="{!option.value == v.newMasterBudget.buildertek__Type__c}">{! option.key }</option>
+                        </aura:iteration>
+                    </ui:inputSelect>
+                </lightning:layoutItem>
+                <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                    <label>Total Budget Price</label><br/>
+                    <ui:outputCurrency value="{!v.newMasterBudget.buildertek__Total_Budget_Price__c}" />
+                </lightning:layoutItem>
+                <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                    <label>Owner</label><br/>
+                    <ui:outputText value="{!v.newMasterBudget.Owner.Name}" />
+                </lightning:layoutItem>
+                <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                    <label>Created By</label><br/>
+                    <ui:outputText value="{!v.newMasterBudget.CreatedBy.Name}" />,
+                    <lightning:formattedDateTime value="{!v.newMasterBudget.CreatedDate}" timeZone="{!v.timezone}" year="numeric" month="2-digit" day="numeric" hour="numeric" minute="numeric" />
+                </lightning:layoutItem>
+                <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                    <label>Last Modified By</label><br/>
+                    <ui:outputText value="{!v.newMasterBudget.LastModifiedBy.Name}" />,
+                    <lightning:formattedDateTime value="{!v.newMasterBudget.LastModifiedDate}" timeZone="{!v.timezone}" year="numeric" month="2-digit" day="numeric" hour="numeric" minute="numeric" />
+                </lightning:layoutItem>
+            </lightning:layout>
+        </div>
+    </div>
+    <div class="slds-modal__footer">
+        <button class="slds-button slds-button--neutral" onclick="{!c.closeModal}">Cancel</button>
+        <button class="slds-button slds-button--neutral" onclick="{!c.doSaveAndNew}">Save and New</button>
+        <button class="slds-button slds-button--brand" onclick="{!c.save}">Save</button>
+    </div>
+</aura:component>

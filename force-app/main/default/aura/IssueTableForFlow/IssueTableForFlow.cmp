@@ -1,0 +1,12 @@
+<aura:component implements="lightning:availableForFlowActions,lightning:availableForFlowScreens" access="global" >
+    <aura:attribute type="Issue__c[]" name="issueList"/>
+    <aura:attribute name="wraaperValue" type="Object[]" default=""/>
+    <aura:attribute name="wraaperValueStr" type="String" default=""/>
+    <aura:attribute name="displayList" type="String" default=""/>
+    
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}" />
+    <aura:if isTrue="{!v.displayList}">
+        <c:GenericTable sObjectData="{!v.issueList}" 
+                        wraaperValue="{!v.wraaperValue}"></c:GenericTable>
+                        </aura:if>
+        </aura:component>

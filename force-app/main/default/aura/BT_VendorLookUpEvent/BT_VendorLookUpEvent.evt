@@ -1,0 +1,6 @@
+<aura:event type="COMPONENT" description="On record selection">
+    <aura:attribute name="childObjectName" type="String" />
+    <aura:attribute name="fieldName" type="String" />
+    <aura:attribute name="selectedRecordId" type="String" />
+    <aura:attribute name="POList" type="List" />
+</aura:event>

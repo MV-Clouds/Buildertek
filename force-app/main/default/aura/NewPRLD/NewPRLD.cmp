@@ -1,0 +1,137 @@
+<!--
+  @description       : 
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 07-19-2023
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<aura:component implements="force:appHostable,flexipage:availableForRecordHome,force:lightningQuickActionWithoutHeader,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes"
+                controller="NewPRLDController" access='global' >
+     
+   <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+      <aura:attribute name="parentRecordId" type="String" default="" />
+    <!--<aura:attribute name="parentpurchaseRecordId" type="String" default="" /> -->
+     <aura:attribute name="Spinner" type="Boolean" />
+    <aura:attribute name="listOfFields" type="List" />
+    <!-- <aura:attribute name="NameOfVendor" type="String"/>
+    <aura:attribute name="NameOfVendorReview" type="String"/>
+    <aura:attribute name="NameOfProject" type="String"/> -->
+    <aura:attribute name="saveAndNew" type="Boolean" default="false" />
+    <aura:attribute name="recordId" type="Id"/>
+
+
+    
+
+
+
+    <!-- <aura:attribute name="sobjecttype" type="String" default="{!v.sObjectName}"/> -->
+    <lightning:workspaceAPI aura:id="workspace" />
+
+
+	
+
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </aura:if> 
+
+
+    <aura:html tag="style">
+        .quick-actions-panel {
+            overflow: hidden !important;
+        }
+        .slds-modal__content{
+            overflow: hidden !important;
+           
+        }
+        <!-- .slds-docked-form-footer{
+            bottom: auto !important;
+            Display: block !important;
+            width: 67.8%;
+            margin-left: 16.5%;
+        } -->
+        <!-- lightning-timepicker{
+            width: 100% !important;
+        }
+        lightning-datepicker{
+            width: 100% !important;
+        }
+        .slds-medium-size_6-of-12 .classbyrk{
+            width: 100% !important;
+        } -->
+        .lafPageHost {
+            display: flex;
+            justify-content: center;
+        }
+        <!-- .slds-brand-band {
+            width: 70% !important;
+        } -->
+       
+       
+    </aura:html>
+
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/>
+
+
+
+    <div style="display: flex;justify-content: center;">
+        <div class="slds rkclass1">
+            <header class="slds-modal__header">
+                <lightning:buttonIcon iconName="utility:close" alternativeText="close12"  variant="bare-inverse" class="slds-modal__close" />
+                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New Pricing Request Line Detail</h2>
+            </header>
+            <div class="slds-modal__content" id="modal-content-id-1" style="height:100%">
+                <div>
+                    <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__Pricing_Request_Line_Details__c"  onsubmit="{!c.handleSubmit}" density="Comfy">
+                        <lightning:messages />
+                        <div class="rkclass">
+                             <lightning:layout multipleRows="true">
+                                <aura:iteration items="{!v.listOfFields}" var="field">
+                                    <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                                        <div style="">
+                                            <aura:if  isTrue="{!and(field.name != 'buildertek__Pricing_Request_Line__c')}" >                                 
+                                                <lightning:inputField fieldName="{!field.name}" required="{!field.Required}" aura:id="inputFields"   />  
+                                                
+                                                    
+                                                    <aura:set attribute="else"> 
+                                                        <aura:if  isTrue="{!and(field.name =='buildertek__Pricing_Request_Line__c')}" >                                            
+                                                            <lightning:inputField fieldName="{! field.name }" aura:id="purchaseorder"  value = "{!v.parentRecordId}"/>
+                                                        </aura:if>
+                                                        <!-- <aura:if  isTrue="{!and(field.name =='buildertek__Effective_Date__c')}" >   
+                                                            <div class="classbyrk">                                         
+                                                                <lightning:inputField fieldName="{!field.name}" required="{!field.Required}" aura:id="inputFields"   />
+                                                            </div>
+                                                        </aura:if> -->
+                                                </aura:set>
+                                            </aura:if>
+                            
+                                        </div>
+                                    </lightning:layoutItem>
+                                    <br />
+                                </aura:iteration>
+                                
+                            </lightning:layout>
+                        </div>
+                        <div>    
+                            <div class="modal-footer slds-modal__footer slds-size_1-of-1" style="height:55px;">
+                                <div style="float:right !important;">
+                                    <lightning:button label="Cancel" title="Cancel" onclick="{!c.closeModel}" class="myBtn"/>
+                                    <lightning:button variant="neutral" type="submit" title="Save &amp; New" label="Save &amp; New" onclick="{!c.handlesaveNnew}" />
+                                    <lightning:button variant="brand" label="Save" title="Save"  type="submit" class="myBtn2"/>
+                                </div>
+                            </div>    
+                        </div>
+                    </lightning:recordEditForm>
+                </div>
+            </div>
+            
+        </div>
+
+    </div>
+
+</aura:component>

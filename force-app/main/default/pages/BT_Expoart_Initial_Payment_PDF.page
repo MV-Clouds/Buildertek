@@ -1,0 +1,17 @@
+<apex:page controller="PaymentApplicationController" 
+           >
+<script>
+     window.onload = function(){
+            if('{!reportid}'){
+                 location.href = '/{!reportid}';
+                
+                window.open('/apex/BT_Initial_Payment_App_PDF_Page?id={!reportid}','');
+                 window.open('','_parent','');
+                window.close();
+            //  $A.get("e.force:closeQuickAction").fire();
+            }
+        }
+    </script>
+    
+   <!--<apex:outputLink onclick=" window.open('/apex/BT_Initial_Payment_App_PDF_Page?id={!reportid}','_blank')"  />-->
+</apex:page>

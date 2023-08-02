@@ -1,0 +1,24 @@
+<aura:component controller="BT_ProductsAdderController">
+	<aura:attribute name="_opportunity" type="Opportunity" required="required" />
+	<aura:attribute name="_pricebooklist" type="List" />
+	<aura:registerEvent name="firePricebookCheckEvent" type="c:BT_PricebookCheckEvent"/>
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <div class="slds-modal__header">      
+        <h2 id="header43" class="slds-text-heading--medium">Choose Pricebook</h2>
+    </div>
+     
+    <div class="slds-p-around--medium">
+        
+       <!--  <c:BT_LookUp _field="Pricebook2Id" 
+                  _sobject="Opportunity" 
+                  _value="{!v._opportunity.Pricebook2Id}"
+                  _label="Price Book"
+                  _filter=" IsActive = true "
+                  _placeholder="Search Pricebook"
+                  /> -->
+       <ui:inputSelect label="" class="dynamic" aura:id="InputSelectDynamic" value="{!v._opportunity.Pricebook2Id}" change="{!c.saveOpportunity}" required="true"/>
+    </div>
+        
+    
+   
+</aura:component>

@@ -1,0 +1,91 @@
+<aura:component  implements="force:appHostable,flexipage:availableForRecordHome,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global" controller="RFQToVendorswithTotal_AC">
+     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+      <aura:handler event="c:AppEvent" action="{!c.handlegetVendorrecords}"/>
+     <aura:attribute name="RFQVendorsList" type="list" />
+    
+         <div class="slds-scope slds-scrollable_x " style="background-color:white;"> 
+                     <div class="slds-page-header" style="padding: 0 0 0 0;"> 
+                        <div class="slds-page-header__row">
+                          <div class="slds-page-header__col-title">
+                            <div class="slds-media">
+                                <div class="slds-media__body">
+                                    <div class="demo-only demo-only--sizing slds-grid slds-wrap">
+                                      <div class="slds-size_1-of-1"> 
+                                        <div class="slds-box_x-small slds-text-align_center slds-m-around_x-small">
+                                            <h1>
+                                            <span class="slds-page-header__title slds-truncate" title="Vendors With Their Total">Vendor Quotes</span>
+                                            </h1>
+                                        </div>
+                                      </div>
+                                     </div>
+                                </div>
+                             </div>
+                          </div>
+                        </div>
+                     </div>
+                     
+                     
+                     <table id="myTable" class="slds-table slds-table_bordered slds-table_cell-buffer " >
+                           <thead>
+                               <tr class="slds-text-heading--label">
+                                <th  scope="col" > 
+                                   <!--<span class="slds-truncate" title="Name">Name</span>-->
+                                   <div class="slds-truncate" title="Name">Name</div>
+                                </th>
+                                
+                                <th  scope="col" >
+                                   <div class="slds-truncate" title="Status">Stars</div>                                   
+                                </th>
+                                   
+                                <th  scope="col" >
+                                    <div class="slds-truncate" title="Status">Status</div> 
+                                </th>
+                                                                      
+                                <th  scope="col" >
+                                    <div class="slds-truncate" title="Email">Email</div> 
+                                  
+                                </th>
+                                
+                                 <th scope="col" > 
+                                   <div class="slds-truncate" title="Total">Total</div>
+                                </th>
+                             </tr>
+                        </thead>
+                        <tbody>
+                            <aura:iteration items="{!v.RFQVendorsList}" var="rfqvendr">
+                                <tr class=" ">
+                                    <td>
+                                        <div class="slds-truncate" title="{!rfqvendr.Name}">
+                                            
+                                        <a href="{!'/'+rfqvendr.Id}" target="_blank">{!rfqvendr.Name}</a>
+                                            
+                                        </div>
+                                    </td>
+                                    
+                                    <td>
+                                        <div class="slds-truncate" title="{!rfqvendr.buildertek__Status__c}">5</div>  
+                                    </td>
+                                    
+                                    <td>
+                                        <div class="slds-truncate" title="{!rfqvendr.buildertek__Status__c}">{!rfqvendr.buildertek__Status__c}</div>  
+                                    </td>
+                                    
+                                    <td>
+                                        <div class="slds-truncate" title="{!rfqvendr.buildertek__Contact__r.Email}">{!rfqvendr.buildertek__Contact__r.Email}</div>  
+                                    </td>
+                                    
+                                    <td> 
+                                        <div class="slds-truncate" title="{!rfqvendr.buildertek__Quote_Amount__c}">
+                                           
+                                           <lightning:formattedNumber value="{!rfqvendr.buildertek__Quote_Amount__c}" style="currency" currencyCode="USD" />
+                                           
+                                        </div>  
+                                    </td>
+                                </tr>
+                            </aura:iteration>
+                        </tbody>
+                        
+                </table>
+               
+            </div>
+</aura:component>

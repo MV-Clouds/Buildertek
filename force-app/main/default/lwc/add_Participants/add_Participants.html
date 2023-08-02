@@ -1,0 +1,558 @@
+<template>
+
+    <lightning-card style="width:50%;">
+        <template if:true={contactModel}>
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open" >
+                <div class="slds-modal__container" >
+                    <!-- Modal/Popup Box LWC header here -->
+                    <header class="slds-modal__header slds-box slds-theme_shade slds-theme_alert-texture slds-theme_success">
+                        <p style="font-size:large;">Contact created!</p>  
+                        
+                    </header>
+                    <!-- Modal/Popup Box LWC body starts here -->
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-10"  >
+                        <p style="font-size:medium;padding:10px;">{alertMessage}</p>
+                    </div>
+                    <!-- Modal/Popup Box LWC footer starts here -->
+                    <footer class="slds-modal__footer">
+                       
+                    <lightning-button variant="brand" label="Ok" title="Cancel" onclick={closeAlert} class="slds-m-left_x-small"></lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+        <template if:true={contactFailModel}>
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open" >
+                <div class="slds-modal__container" >
+                    <!-- Modal/Popup Box LWC header here -->
+                    <header class="slds-modal__header slds-box slds-theme_shade slds-theme_alert-texture slds-theme_error">
+                        <p style="font-size:large;">Failed to create participants!</p>  
+                        
+                    </header>
+                    <!-- Modal/Popup Box LWC body starts here -->
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-11"  >
+                        <p style="font-size:medium;padding:10px;">{alertMessage}</p>
+                    </div>
+                    <!-- Modal/Popup Box LWC footer starts here -->
+                    <footer class="slds-modal__footer">
+                       
+                    <lightning-button variant="brand" label="Ok" title="Cancel" onclick={closeAlert} class="slds-m-left_x-small"></lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+
+        <template if:true={successMessage}>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open" >
+            <div class="slds-modal__container" >
+                <!-- Modal/Popup Box LWC header here -->
+                <header class="slds-modal__header slds-box slds-theme_shade slds-theme_alert-texture slds-theme_success">
+                    <p style="font-size:large;">Participants created!</p>  
+                    
+                </header>
+                <!-- Modal/Popup Box LWC body starts here -->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-6"  >
+                    <p style="font-size:medium;padding:10px;">{alertMessage}</p>
+                </div>
+                <!-- Modal/Popup Box LWC footer starts here -->
+                <footer class="slds-modal__footer">
+                   
+                <lightning-button variant="brand" label="Ok" title="Cancel" onclick={gotoCourseSessionPage} class="slds-m-left_x-small"></lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+    <template if:true={errorMessage}>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open" >
+            <div class="slds-modal__container" >
+                <!-- Modal/Popup Box LWC header here -->
+                <header class="slds-modal__header slds-box slds-theme_shade slds-theme_alert-texture slds-theme_error">
+                    <p style="font-size:large;"> {msgheading} </p>
+                    
+                </header>
+                <!-- Modal/Popup Box LWC body starts here -->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-7"  >
+                    <p style="font-size:medium;padding:10px;">{alertMessage}</p>
+                </div>
+                <!-- Modal/Popup Box LWC footer starts here -->
+                <footer class="slds-modal__footer">
+                   
+                <lightning-button variant="brand" label="Ok" title="Cancel" onclick={closeAlert} class="slds-m-left_x-small"></lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+    <template if:true={addRowModel}>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open" >
+            <div class="slds-modal__container" >
+                <!-- Modal/Popup Box LWC header here -->
+                <header class="slds-modal__header slds-box slds-theme_shade slds-theme_alert-texture slds-theme_error">
+                    <p style="font-size:large;">Add Row</p>
+                    
+                </header>
+                <!-- Modal/Popup Box LWC body starts here -->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-9"  >
+                    <p style="font-size:medium;padding:10px;">{alertMessage}</p>
+                </div>
+                <!-- Modal/Popup Box LWC footer starts here -->
+                <footer class="slds-modal__footer">
+                   
+                <lightning-button variant="brand" label="Ok" title="Cancel" onclick={closeAlert} class="slds-m-left_x-small"></lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+    <template if:true={isopenCompanyModal} >
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open"  >
+            <div class="slds-modal__container" >
+                <!-- Modal/Popup Box LWC header here -->
+                <header class="slds-modal__header" style="width:800px;">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeAlert}>
+                        <lightning-icon icon-name="utility:close"
+                            alternative-text="close"
+                            variant="inverse"
+                            size="small" ></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="modal-heading-02" class="slds-text-heading_medium slds-hyphenate">Add participants from company</h2>
+                    
+                </header>
+                <!-- Modal/Popup Box LWC body starts here -->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-12"  style="width:800px;">
+                    <c-search-company-l-w-c
+                            obj-name="Account"
+                            icon-name="standard:account"                                              
+                            placeholder="Search for company" 
+                            fields={accountfields}
+                            display-fields={accountdisplayFields}
+                            access-key={index} 
+                            onlookup={handleAccountLookup} >        
+                </c-search-company-l-w-c>
+            </br>
+                <div style="margin:10px;height:300px;">
+                    <h2>Related participants of <b>{accName}</b></h2>
+                </br>
+                <table class="slds-table slds-table_bordered slds-table_cell-buffer" >
+                    <thead>
+                        <tr class="slds-text-title_caps">
+                            <th scope="col" >
+                                <div class="slds-truncate" title="">Actions</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="S.No">S.NO</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="Account Name">First Name</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="Account Industry">Last Name</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="Account Phone">Phone</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="Account Email">Email</div>
+                            </th>                            
+                        </tr>
+                    </thead>
+                    
+                    <tbody>
+                        <template for:each={contactRecList} for:item="contact" for:index="indexVar">
+                            
+                            <tr key={keyIndex}>
+                                <td >
+                                   
+                                        <lightning-input type="checkbox" access-key={indexVar} value={indexVar} id={indexVar} onchange={handleSelect} style="cursor:pointer;"></lightning-input>
+                                    
+                                </td>
+                                <td class="slds-size_5-of-10"><c-number-l-w-c index={indexVar}></c-number-l-w-c></td>
+                                <td>
+                                    <lightning-input name='confirstName' access-key={indexVar} id={indexVar} type='text'   value={contact.FirstName} read-only="true" >
+                                    </lightning-input>
+                                </td>
+                                <td class="slds-size_5-of-10">
+                                    <lightning-input name='conlastName' access-key={indexVar} id={indexVar} type='text'   value={contact.LastName} read-only="true">
+                                    </lightning-input>
+                                </td>
+                                <td class="slds-size_5-of-10" >
+                                    <lightning-input name='conPhone' access-key={indexVar} type='Phone' id={indexVar}   value={contact.Phone} read-only="true"></lightning-input>
+                                </td>
+                                <td class="slds-size_5-of-10" >
+                                    <lightning-input name='conEmail' access-key={indexVar} type='Email' id={indexVar}   value={contact.Email} read-only="true" ></lightning-input>
+                                </td>
+                                
+                            </tr>
+        
+                        </template>
+                    </tbody>
+                </table> 
+                </div>
+               
+                </div>
+                <!-- Modal/Popup Box LWC footer starts here -->
+                <footer class="slds-modal__footer" style="width:800px;">
+                       
+                <lightning-button variant="brand" label="Add Participants" title="Cancel" onclick={handleparticipantsSave} class="slds-m-left_x-small"></lightning-button>
+                <lightning-button variant="brand" label="Cancel" title="Cancel" onclick={closeAlert} class="slds-m-left_x-small"></lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+    <template if:true={participantsFailMSG}>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open" >
+            <div class="slds-modal__container" >
+                <!-- Modal/Popup Box LWC header here -->
+                <header class="slds-modal__header slds-box slds-theme_shade slds-theme_alert-texture slds-theme_error">
+                    <p style="font-size:large;">Duplicate participant!</p>  
+                    
+                </header>
+                <!-- Modal/Popup Box LWC body starts here -->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-13"  >
+                    <p style="font-size:medium;padding:10px;">{alertMessage}</p>
+                </div>
+                <!-- Modal/Popup Box LWC footer starts here -->
+                <footer class="slds-modal__footer">
+                   
+                <lightning-button variant="brand" label="Ok" title="Cancel" onclick={closeparticipantsModel} class="slds-m-left_x-small"></lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+    <template if:true={addparticipantsErrorMSG}>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open" >
+            <div class="slds-modal__container" >
+                <!-- Modal/Popup Box LWC header here -->
+                <header class="slds-modal__header slds-box slds-theme_shade slds-theme_alert-texture slds-theme_error">
+                    <p style="font-size:large;">Select participants</p>
+                    
+                </header>
+                <!-- Modal/Popup Box LWC body starts here -->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-18"  >
+                    <p style="font-size:medium;padding:10px;">{alertMessage}</p>
+                </div>
+                <!-- Modal/Popup Box LWC footer starts here -->
+                <footer class="slds-modal__footer">
+                   
+                <lightning-button variant="brand" label="Ok" title="Cancel" onclick={addparticipantsErrorMSGclose} class="slds-m-left_x-small"></lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+        <h3 slot="title">
+            <lightning-icon icon-name="standard:timesheet" alternative-text="Event" size="small"></lightning-icon>
+            &nbsp;Add Participants  
+        </h3>
+    
+      
+    <div style="width: 90%; float:right">
+        
+    </div>
+   <!-- <table>
+        <tr>            
+            <td>   
+                <lightning-button label="Add Row" variant="brand" onclick={addSetConditionsRow}></lightning-button> 
+            </td>
+        </tr>
+    </table> -->
+    <div class="slds-float--left slds-m-bottom_x-small">
+        <div>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <!-- <lightning-button label="Create Contact" variant="brand" onclick={navigateToCreateContact}></lightning-button>&nbsp;&nbsp; -->
+
+            
+
+                <!--Use template if:true to display/hide popup based on isModalOpen value--> 
+            <template if:true={isModalOpen}>
+            <!-- Modal/Popup Box LWC starts here -->
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <!-- Modal/Popup Box LWC header here -->
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeModal}>
+                            <lightning-icon icon-name="utility:close"
+                                alternative-text="close"
+                                variant="inverse"
+                                size="small" ></lightning-icon>
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New Contact</h2>
+                    </header>
+                    <!-- Modal/Popup Box LWC body starts here -->
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <!-- <lightning-record-form
+                        object-api-name={objectApiName}
+                        fields={fields}
+                        onsuccess={handleSuccess}>
+                        oncancel={closeModal}
+                        </lightning-record-form> -->
+
+                            <lightning-record-form  object-api-name='Contact' fields={fieldSetNames}
+                            columns="2" mode="edit" onsubmit={handleSubmit} 
+                            onsuccess={handleSuccess}
+                            oncancel={closeModal}  class="full forcePageBlock forceRecordLayout">
+                            </lightning-record-form>
+                    </div>
+                    <!-- Modal/Popup Box LWC footer starts here -->
+                    <footer class="slds-modal__footer">
+                        <!-- <button class="slds-button slds-button_neutral" onclick={closeModal} title="Cancel">Cancel</button>
+                        <button class="slds-button slds-button_brand" onclick={submitDetails} title="OK">OK</button> -->
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+            </template>
+        </div>
+    </div>
+
+    <div class="slds-float--right slds-m-bottom_x-small" >
+        <div >
+            <lightning-button  label="Add Row" variant="brand"  onclick={addRow} >
+            </lightning-button> &nbsp;&nbsp;&nbsp;
+            <lightning-button variant="brand"
+            label="Add Participants from Company"
+            onclick={openCompanyModal}
+            class="slds-m-left_x-small">
+            </lightning-button>&nbsp;&nbsp;&nbsp;
+            <lightning-button variant="brand"
+            label="Create Contact"
+            onclick={openCreateContactModal}
+            class="slds-m-left_x-small">
+            </lightning-button>&nbsp;&nbsp;&nbsp;
+            <lightning-button  label="Save" variant="brand" onclick={handleSave} >
+            </lightning-button> &nbsp;&nbsp;&nbsp;
+            <lightning-button label="Cancel" variant="brand" onclick={navigateToCourseSessionPage}></lightning-button>&nbsp;&nbsp;
+        </div>          
+      <!-- <div  style=" position: absolute;top:43px;right: 18px;">  <c-create-new-contact></c-create-new-contact></div>-->
+            
+    </div>
+    <table class="slds-table slds-table_cell-buffer slds-table_bordered"
+    style="max-height: 300px;overflow-x:auto;overflow-y:auto;" >
+        <thead>
+            <tr >
+                <th colspan="7"><a href={url}>{coursrsessionName}</a>  </th>
+            </tr>
+            <tr class="slds-line-height_reset">
+                <th class="" scope="col">
+                    <div class="slds-truncate">No</div>
+                </th>
+                <th>
+                    <label class="slds-form-element__label">
+                        <abbr title="required" class="slds-required"></abbr>
+                        <label class="slds-form-element__label " style="margin-right: 0.5rem;">Participant Name</label>
+                    </label> 
+                </th>
+                <th>
+                    <label class="slds-form-element__label">
+                        <abbr title="required" class="slds-required"></abbr>
+                        <label class="slds-form-element__label" style="margin-right: 0.2rem;">Participant Company</label>
+                    </label> 
+                </th>
+                <th>
+                    <label class="slds-form-element__label">
+                        <abbr title="required" class="slds-required"></abbr>
+                        <label class="slds-form-element__label" style="margin-right: 0.5rem;">Participant Attended</label>
+                    </label> 
+                </th>
+               <!-- <th>
+                    <label class="slds-form-element__label">
+                        <abbr title="required" class="slds-required"></abbr>
+                        <label class="slds-form-element__label" style="margin-right: 0.5rem;">Is Participant Attend</label>
+                    </label> 
+                </th>-->
+                <th>
+                    <label class="slds-form-element__label">
+                        <abbr title="required" class="slds-required"></abbr>
+                        <label class="slds-form-element__label" style="margin-right: 0.5rem;">Participant Score</label>
+                    </label> 
+                </th>
+                <!--<th>
+                    <label class="slds-form-element__label">
+                        <abbr title="required" class="slds-required"></abbr>
+                        <label class="slds-form-element__label" style="margin-right: 0.5rem;">Training Expiration Date</label>
+                    </label> 
+                </th>-->
+                <th>
+                    <label class="slds-form-element__label">
+                        <abbr title="required" class="slds-required"></abbr>
+                        <label class="slds-form-element__label" style="margin-right: 0.5rem;">Course Completed</label>
+                    </label> 
+                </th>
+                <th>
+                    <label class="slds-form-element__label" >
+                        <abbr title="required" class="slds-required"></abbr>
+                        <label class="slds-form-element__label" style="margin-right: 0.5rem;">Notes</label>
+                    </label> 
+                </th>
+                <th>
+                    <label class="slds-form-element__label">
+                        <abbr title="required" class="slds-required"></abbr>
+                        <label class="slds-form-element__label" style="margin-right: 0.5rem;">Action </label>
+                    </label> 
+                </th>
+
+            </tr> 
+        </thead>
+        
+        <tbody style="max-height: 300px;overflow: scroll;">
+
+            <template for:each={ParticipantsWrapper} for:item = "rec" for:index="index" >
+                <tr key={rowIndex} class="slds-hint-parent">
+
+                    <td class="slds-size_5-of-10"> 
+                        <div>
+                            <label>{rec.RowNumber} </label>
+                        </div>  
+                    </td>
+
+                    <td class="slds-size_5-of-10">  
+                        <div style="position: relative;">
+                            <!-- <lightning-input name="ParticipantName" type="text" 
+                            access-key={index} id={index}
+                            value={rec.ParticipantName} onchange={ConditionChangeHandler} 
+                            ></lightning-input> -->
+                            <template if:true={rec.showContactLookup}>
+                                <c-search-component
+                                obj-name="Contact"
+                                icon-name="standard:contact"                            
+                                placeholder="Search" 
+                                fields={contactfields}
+                                display-fields={contactdisplayFields}
+                                access-key={index} 
+                                onlookup={handleContactLookup} >
+                                </c-search-component>
+                            </template>
+                            <template if:false={rec.showContactLookup}>       
+                                
+                                <div class="slds-grid">                                   
+                                   
+                                    <div class="slds-col">
+                                        <lightning-input name="ParticipantName" type="text" 
+                                        access-key={index} id={index} style="width:100px;"
+                                        value={rec.ContactSelectedValue} read-only="true"
+                                        ></lightning-input> 
+                                    </div>
+                                        <div class="slds-col">
+                                            <lightning-button-icon icon-name="action:close"  access-key={index} id={index} 
+                                        alternative-text="Delete"  title="Delete"
+                                        onclick={handleClose} >
+                                        </lightning-button-icon>
+                                    </div>                                    
+                                </div>
+                            </template>
+                        </div>                                                                        
+                    </td>
+                    <td class="slds-size_5-of-10">  
+                        <div >
+                            <lightning-input name="ParticipantCompany" type="text" 
+                            access-key={index} id={index}
+                            value={rec.ParticipantCompany} readonly 
+                            ></lightning-input> 
+
+                            <!-- <c-search-component
+                            obj-name="Contact"
+                            icon-name="standard:contact"                            
+                            placeholder="Search" 
+                            fields={fields}
+                            display-fields={displayFields}
+                            onlookup={handleLookup} >
+                            </c-search-component> -->
+                            
+                         <!--   <c-search-component
+                            obj-name="Account"
+                            icon-name="standard:contact"                            
+                            placeholder="Search" 
+                            fields={accountfields}
+                            display-fields={accountdisplayFields}
+                            access-key={index} 
+                            onlookup={handleAccountLookup} >
+                            </c-search-component>-->
+                            
+                        </div>                                                                        
+                    </td>
+                    <td class="slds-size_5-of-10">  
+                        <div>                       
+                            <lightning-combobox 
+                            name="ParticipantAttended" 
+                            access-key={index} id={index}
+                            options={YesNoOptions}
+                            onchange={addParticipantChangeHandler}
+                            value={rec.ParticipantAttended}
+                            style="width:100px">
+                            </lightning-combobox> 
+                        </div>                                                                        
+                    </td>
+                  <!--  <td class="slds-size_5-of-10">  
+                        <div>
+                            <lightning-input name="IsParticipantAttend" type="text" 
+                            access-key={index} id={index} style="text-align:center;"
+                            value={rec.IsParticipantAttend} onchange={addParticipantChangeHandler} readonly
+                            ></lightning-input>
+                        </div>                                                                        
+                    </td>-->
+                    <td class="slds-size_5-of-10">  
+                        <div>
+                            <lightning-input name="ParticipantScore" type="text" 
+                            access-key={index} id={index}
+                            value={rec.ParticipantScore} onchange={addParticipantChangeHandler} 
+                            ></lightning-input>
+                        </div>                                                                        
+                    </td>
+                  <!--  <td class="slds-size_5-of-20" >  
+                        <div>
+                            <lightning-input name="TrainingExpirationDate" type="date" 
+                            access-key={index} id={index}
+                            value={rec.TrainingExpirationDate} onchange={addParticipantChangeHandler} 
+                            style="width:120px"></lightning-input>
+                        </div>                                                                        
+                    </td>-->
+                    <td class="slds-size_5-of-10">  
+                        <div>                          
+                            <lightning-combobox 
+                            name="CourseCompleted" 
+                            access-key={index} id={index}
+                            options={YesNoOptions}
+                            onchange={addParticipantChangeHandler}
+                            value={rec.CourseCompleted}
+                            style="width:100px">
+                            </lightning-combobox>
+                        </div>                                                                        
+                    </td>
+                    <td class="slds-size_5-of-10">  
+                        <div>
+                            <lightning-input name="Notes" type="text" 
+                            access-key={index} id={index} 
+                            value={rec.Notes} onchange={addParticipantChangeHandler} 
+                            style="width:200px"
+                            ></lightning-input>
+                        </div>                                                                        
+                    </td>
+                    
+                    <td class="slds-size_5-of-10" >
+                        <div>
+                            <lightning-button icon-name="action:delete" size="large" variant="base" access-key={index} id={index} 
+                            alternative-text="Delete Row"  title="Delete Row"
+                            onclick={deleteRow} style="cursor: pointer;padding:6px;border:none;" >
+                                </lightning-button>  
+                        </div>
+                      
+                    </td>
+                </tr>                                       
+
+            </template>                                        
+        </tbody> 
+
+    </table>
+    <br/>
+</lightning-card>
+   
+</template>

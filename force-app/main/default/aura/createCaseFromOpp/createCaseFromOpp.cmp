@@ -1,0 +1,122 @@
+<aura:component controller="createCaseFromOppCtlr" implements="force:lightningQuickActionWithoutHeader,flexipage:availableForAllPageTypes,force:hasRecordId,force:appHostable" access="global">
+
+    <aura:attribute name="recordId" type="string" default=""/>
+    <aura:attribute name="caseId" type="string" default=""/>
+    <aura:attribute name="opportunityObj" type="Opportunity" default=""/>
+    <aura:attribute name="customerSiteId" type="string" default=""/>
+    <aura:attribute name="customerSiteSrchStr" type="string" default=""/>
+    <aura:attribute name="contactId" type="string" default=""/>
+    <aura:attribute name="acctId" type="string" default=""/>
+    <aura:attribute name="contactSrchStr" type="string" default=""/>
+    <aura:attribute name="subject" type="string" default=""/>
+    <aura:attribute name="description" type="string" default=""/>
+    <aura:attribute name="caseTypeOpts" type="List" default="[
+    {'label': 'Physical Damage', 'value': 'Physical Damage'},
+    {'label': 'System Behavior Issue', 'value': 'System Behavior Issue'}
+    ]"/>
+    <aura:attribute name="caseStatusOpts" type="List" default="[
+    {'label': 'New', 'value': 'New'},
+    {'label': 'Work In Progress', 'value': 'Work In Progress'},
+    {'label': 'Customer Pending', 'value': 'Customer Pending'},
+    {'label': 'Resolved', 'value': 'Resolved'},
+    {'label': 'Closed', 'value': 'Closed'}
+    ]"/>
+    <aura:attribute name="caseType" type="string" default=""/>
+    <aura:attribute name="caseStatus" type="string" default=""/>
+    <aura:attribute name="issueStartDate" type="string" default=""/>
+    <aura:attribute name="contactOpts" type="List" default=""/>
+    <aura:attribute name="custSiteOpts" type="List" default=""/>
+    <aura:attribute name="acctOpts" type="List" default=""/>
+    <aura:attribute name="submitErrorMessage" type="String" default=""/>
+    <aura:attribute name="spinner" type="boolean" default="FALSE"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler event="aura:waiting" action="{!c.showSpinner}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>
+    <aura:handler name="inputLookFieldSelEvent" event="c:inputLookFieldEvt" action="{!c.handleLookFieldSelEvt}"/>
+   
+        <div class="slds-align_absolute-center">        
+                <lightning:button variant="brand" label="Save &amp; Log Issues" onclick="{! c.handleSave }" class="slds-m-around_small"/>
+                <lightning:button variant="neutral" label="Cancel" onclick="{! c.handleCancel }" class="slds-m-around_small"/> 
+        </div>
+        <aura:if isTrue="{!v.spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading...</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </aura:if>
+     <div class="slds-align_absolute-center">
+                <ui:message severity="info" closable="true" aura:id="successMsg_submit" class="slds-hide">
+                    Issues have been submitted successfully. 
+                </ui:message>
+                <ui:message severity="error" closable="true" aura:id="errorMsg_submit" class="slds-hide">
+                    {!v.submitErrorMessage} 
+                </ui:message>  
+            </div>
+        <h2 class="slds-section-title--divider">Case Information</h2>
+        <lightning:layout multipleRows="true" >
+            <lightning:layoutItem padding="around-large" size="6" smallDeviceSize="12" mediumDeviceSize="6">
+                <label class="slds-form-element__label">Opportunity</label><br/>
+                <a href="{!'/one/one.app?#/Opportunity/'+ v.opportunityObj.Id + '/view'}" target="_blank">{!v.opportunityObj.Name}</a>
+            </lightning:layoutItem>
+            <lightning:layoutItem padding="around-large" size="6" smallDeviceSize="12" mediumDeviceSize="6">
+                <lightning:select aura:id="createIssueForm" required="true" name="selectAcct" label="Customer" value="{!v.acctId}" onchange="{!c.getContacts}">
+                    <aura:iteration items="{!v.acctOpts}" var="option">
+                        <option text="{!option.label}" value="{!option.value}"/>
+                    </aura:iteration>
+                </lightning:select>
+            </lightning:layoutItem>
+            <lightning:layoutItem padding="around-large" size="6" smallDeviceSize="12" mediumDeviceSize="6">
+                <lightning:select aura:id="createIssueForm" required="true" name="selectCustSite" label="Customer Site" value="{!v.customerSiteId}">
+                    <aura:iteration items="{!v.custSiteOpts}" var="option">
+                        <option text="{!option.label}" value="{!option.value}"/>
+                    </aura:iteration>
+                </lightning:select>
+            </lightning:layoutItem>
+            <lightning:layoutItem padding="around-large" size="6" smallDeviceSize="12" mediumDeviceSize="6">
+                <lightning:select aura:id="createIssueForm" required="true" name="selectContact" label="Contact" value="{!v.contactId}">
+                    <aura:iteration items="{!v.contactOpts}" var="option">
+                        <option text="{!option.label}" value="{!option.value}"/>
+                    </aura:iteration>
+                </lightning:select>
+            </lightning:layoutItem>
+            
+            <lightning:layoutItem padding="around-large" size="6" smallDeviceSize="12" mediumDeviceSize="6">
+                <lightning:input label="Subject" name="caseSubject" aura:id="createIssueForm" value="{!v.subject}" required="true"/>
+            </lightning:layoutItem>
+            <lightning:layoutItem padding="around-large" size="6" smallDeviceSize="12" mediumDeviceSize="6">
+                <lightning:input label="Description" name="caseDescription" aura:id="createIssueForm" value="{!v.description}" required="true"/>
+            </lightning:layoutItem>
+            <lightning:layoutItem padding="around-large" size="6" smallDeviceSize="12" mediumDeviceSize="6">
+                    <lightning:radioGroup name="issueSelRadioGrp"
+                    label="Type"
+                    options="{! v.caseTypeOpts }"
+                    value="{! v.caseType }"
+                    type="radio" aura:id="createIssueForm" required="true"/>
+            </lightning:layoutItem>
+            <!--
+            <lightning:layoutItem padding="around-large" size="6" smallDeviceSize="12" mediumDeviceSize="6">
+                    <lightning:radioGroup name="statusSelRadioGrp"
+                    label="Status"
+                    options="{! v.caseStatusOpts }"
+                    value="{! v.caseStatus }"
+                    type="radio" aura:id="createIssueForm" required="true"/>
+            </lightning:layoutItem>
+            -->
+            <lightning:layoutItem padding="around-large" size="6" smallDeviceSize="12" mediumDeviceSize="6">
+                <lightning:input type="date" name="Issue Start Date" label="Issue Start Date" value="{!v.issueStartDate}" aura:id="createIssueForm" required="true"/>
+            </lightning:layoutItem>
+        </lightning:layout>
+        <div class="slds-align_absolute-center">      
+            <lightning:button variant="brand" label="Save &amp; Log Issues" onclick="{! c.handleSave }" class="slds-m-around_small"/>
+            <lightning:button variant="neutral" label="Cancel" onclick="{! c.handleCancel }" class="slds-m-around_small"/>  
+        </div>
+    <!--
+    <div class="slds-align_absolute-center">
+        <lightning:button variant="brand" label="Save" name="save" title="Save" onclick="{! c.handleSave }" class="slds-m-around_small"/>
+        <lightning:button variant="Neutral" label="Cancel" title="Cancel" onclick="{! c.handleCancel }" class="slds-m-around_small"/>
+    </div>
+    -->
+</aura:component>

@@ -1,0 +1,1029 @@
+<apex:page title="Task Manager" Controller="BT_Task_Manager_Controller" showHeader="false">
+    
+    
+    <c:BT_JsAndCssIncludeComponent importJquery="true" 
+                                   importAppurinUtil="true" 
+                                   importGnattChart="true" 
+                                   importLightningDesign="true"
+                                   importAppurinCss="true"
+                                   importCkEditor="true"/>
+    <style>
+        @media only screen and (max-width: 1900px) and (min-width: 1800px){
+        #gantt_here {
+        height: 655px !important;
+        }    
+        }
+        @media only screen and (max-width: 2500px) and (min-width: 1900px){
+        #gantt_here {
+        height: 725px !important;
+        }    
+        }
+        @media only screen and (max-width: 2500px) and (min-width: 2000px){
+        #gantt_here {
+        height: 800px !important;
+        }    
+        }
+        @media only screen and (max-width: 1779px) and (min-width: 1580px){
+        #gantt_here {
+        height: 550px !important;
+        }    
+        }
+        @media only screen and (max-width: 1579px) and (min-width: 1370px){
+        #gantt_here {
+        height: 460px !important;
+        }   
+        }
+        
+        @media only screen and (max-width: 1366px) and (min-width: 1280px){
+        #gantt_here {
+        height: 390px !important;
+        }      
+        }
+        @media only screen and (max-width: 1279px) and (min-width: 1180px){
+        #gantt_here {
+        height: 330px !important;
+        }     
+        }
+        
+        @media only screen and (max-width: 1179px) and (min-width: 1080px){
+        #gantt_here {
+        height: 330px !important;
+        }     
+        }
+        
+        div[aria-level="1"]  .gantt_folder_open{
+        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAApNJREFUOE99U1tIVFEUXfvcO83DmXEkfGSQhQiGECX0ESRRBv4FEpg/2TT1UQx9BEEEYlBQ9Bv+leWj0egr66s+pK8gekAPxdEcBpFxUknn4b06M/fsODOOjhbtr8tZZ6299tnrEkpqMB4vo4RoFpBdAFpBqCGFM36BMQaNB5cz2udgU1W6SMvjqgbCS3ttlLvD4HYwKog2oTzODICwwsyjVo57LjTVzqrz/K0N8hsGDoJZ7CQXmygRIkgGT9k0buuor50lZVtP4iEDfgJE6Uil35o0sMtKwtSrlYpk5me2nBakofBCiyBrVNn+vbSEVCLxl4bPsY5WbQiRmBfhWj8qa/Yo8wlo3E5D4dhjAXFJjRx61Icf3yZAQtsUqXCYuN3yFfuFhq6xI3D4qnHlxnXY7TZAiEEKTcUjBBxQjOdPBjA9MwdN0/MCDb4VXGv+CKcJdH85hnnThXKPHecuBuDxOGF37Jqj4am4AcC5U8DnKcP9zkbU/HyA7k+HMZ7cDWaG12NHhz+gHhNeryvzTwG3XeLeyShSdUH0v3qPmYU0CASWclNgY8YshSbnoySortRBvS+FYMN39E42I2q4C7tWWdghIIGYctDHzAG1+5G+foTDUei6gE4SGam2uhUoNYKv3IXOwOWCIDBMw9OLJ5itlxU2zZeIxZBYXi6CyMpCZ5vYknG4yuCurMbsymrSAp+lF+ML7pzN6gXovLFqCsNYL8T2P8UglcaRDHC1EOXx2D5dp7cgNKSShjDNzAZ9+/+QP1QplDKynsm23Tp9SEWgUKGJSB00510GzqymzXLlpFAlbwAkifB6bS3To8jbUQBqnKydjsLK+dMp85Sxlq0Cs1JYZOCdBflUkvhw83hjqtj4D4qvKnMcT3o5AAAAAElFTkSuQmCC') !important;
+        }
+        
+        div[aria-level="1"]  .gantt_folder_closed{
+        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAApNJREFUOE99U1tIVFEUXfvcO83DmXEkfGSQhQiGECX0ESRRBv4FEpg/2TT1UQx9BEEEYlBQ9Bv+leWj0egr66s+pK8gekAPxdEcBpFxUknn4b06M/fsODOOjhbtr8tZZ6299tnrEkpqMB4vo4RoFpBdAFpBqCGFM36BMQaNB5cz2udgU1W6SMvjqgbCS3ttlLvD4HYwKog2oTzODICwwsyjVo57LjTVzqrz/K0N8hsGDoJZ7CQXmygRIkgGT9k0buuor50lZVtP4iEDfgJE6Uil35o0sMtKwtSrlYpk5me2nBakofBCiyBrVNn+vbSEVCLxl4bPsY5WbQiRmBfhWj8qa/Yo8wlo3E5D4dhjAXFJjRx61Icf3yZAQtsUqXCYuN3yFfuFhq6xI3D4qnHlxnXY7TZAiEEKTcUjBBxQjOdPBjA9MwdN0/MCDb4VXGv+CKcJdH85hnnThXKPHecuBuDxOGF37Jqj4am4AcC5U8DnKcP9zkbU/HyA7k+HMZ7cDWaG12NHhz+gHhNeryvzTwG3XeLeyShSdUH0v3qPmYU0CASWclNgY8YshSbnoySortRBvS+FYMN39E42I2q4C7tWWdghIIGYctDHzAG1+5G+foTDUei6gE4SGam2uhUoNYKv3IXOwOWCIDBMw9OLJ5itlxU2zZeIxZBYXi6CyMpCZ5vYknG4yuCurMbsymrSAp+lF+ML7pzN6gXovLFqCsNYL8T2P8UglcaRDHC1EOXx2D5dp7cgNKSShjDNzAZ9+/+QP1QplDKynsm23Tp9SEWgUKGJSB00510GzqymzXLlpFAlbwAkifB6bS3To8jbUQBqnKydjsLK+dMp85Sxlq0Cs1JYZOCdBflUkvhw83hjqtj4D4qvKnMcT3o5AAAAAElFTkSuQmCC') !important;
+        }
+        
+        div[aria-label="Milestone Complete"] .gantt_file{
+        background-image:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAABHNCSVQICAgIfAhkiAAAAN9JREFUKFN1kU1qwkAUgL+XlmigtCJ0owgFL1DorrdwU8VDZFHqVVyIuLebQs9QYpc9RRcliDZETKGMZGJq8pLObuZ937w/QR3DSwuSV3B84eFDx6X4kME/ASR9aPyC3GvpTzjB8Q18eXBh4HqvJStU4TxvVZL/4XpJDMu05jv4dHWDp/uVgXYMbk8Mz7dg3iFsQFTjOEBnB85EGE+PPVhpBWGzLKVwN4KzJ2E0S38rTMlKAYReJll4e4TneWq1h1xaN+HyG84fheGiWGdJyEZspTfA13CpJL1xYbCpm9oBOoxUywMj+SoAAAAASUVORK5CYII=') !important;
+        }
+        
+        .weekend{
+        background: #f4f7f4;
+        }
+        .updColor{
+        background-color:#f4f7f4!important      
+        }
+        
+         .gantt_side_content.gantt_link_crossing{
+            top:0px !important;
+        }
+        /*
+        //dadd
+        .gantt_side_content.gantt_right{
+        visibility : hidden !important;
+        } 
+        .gantt_task_content:hover ~ .gantt_side_content.gantt_right{
+        visibility : visible !important;
+        }
+        */
+        .actionButton:hover{
+            border:1px solid !important;
+            border-radius: 5px;
+            cursor:pointer!important;
+        }
+        .gantt_grid_head_cell, .gantt_scale_cell {
+        line-height: normal;
+        padding-top: 10px!important;
+        display: table-cell;
+        vertical-align: middle;
+        }
+    </style>
+    <div class="slds-scope">
+        
+        <div class="slds">
+            <div id="splashDiv" class="apInitiallyDivDisplayNone" style="z-index:9998;">
+                <div class="slds-spinner_container apLightningSpinnerContainer">
+                    <div role="status" class="slds-spinner slds-spinner--medium slds-spinner--brand">
+                        <span class="slds-assistive-text">Loading</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        
+        <div class="slds-page-header">
+            <div class="slds-grid">
+                
+                <div class="slds-col slds-has-flexi-truncate">
+                    <apex:outputPanel rendered="{!IF(project.id != null, true, false)}">
+                        <div class="slds-media slds-no-space slds-grow">                        
+                            <div class="slds-media__figure">
+                                <span id="taskicone" class="slds-icon_container" >
+                                    <c:BT_LightningSvg parentId="taskicone" styleClass="slds-icon" path="/assets/icons/utility-sprite/svg/symbols.svg#task"/>
+                                </span>
+                            </div>
+                            
+                            <div class="slds-media__body">
+                                <nav>
+                                    <ol class="slds-breadcrumb slds-line-height_reset">
+                                        <li class="slds-breadcrumb__item">
+                                            <span>Gantt Chart</span>
+                                        </li>
+                                    </ol>
+                                </nav>
+                                <h1 class="slds-page-header__title slds-m-right_small slds-align-middle slds-truncate" title="{!project.Name}"><a href="/{!project.id}" >{!project.Name}</a></h1>
+                            </div>
+                        </div>
+                    </apex:outputPanel>
+                </div>
+                
+                <div class="slds-col slds-no-flex slds-grid slds-align-top">
+                    <!-- 
+<div class="slds-button-group" role="group" aria-label="Gantt Scale">
+
+<button type="button" class="slds-button slds-button--neutral "
+onclick="setGanttScaleConfig(1);">Daily</button>
+<button type="button" class="slds-button slds-button--neutral "
+onclick="setGanttScaleConfig(2);">Weekly</button>
+<button type="button" class="slds-button slds-button--neutral "
+onclick="setGanttScaleConfig(3);">Monthly</button>
+
+</div>
+-->
+                    <div class="slds-button-group" role="group">
+                        <button class="slds-button slds-button_neutral" onclick="window.open('/apex/ImportMasterSchedulePage?recordId={!JSENCODE(recordId)}', '_self')">Import Master Schedule</button>
+                        
+                        <button class="slds-button slds-button_neutral" onclick="window.open('/apex/ImportScheduleLines?recordId={!JSENCODE(recordId)}', '_self')">Import Schedule Lines</button>
+                        <button class="slds-button slds-button_neutral" onclick="saveGanttData();">Save</button> 
+                        <button class="slds-button slds-button_neutral" onclick="window.open('/apex/BT_PrintScheduleInformation?recordId={!JSENCODE(recordId)}', '_self')">Print</button>
+                        <!--<button class="slds-button slds-button_neutral" onclick="window.open('/apex/EditSchedule?recordId={!JSENCODE(recordId)}', '_self')">Edit</button>-->
+                        <button class="slds-button slds-button_neutral" onclick="window.open('/apex/DeleteSchedule?recordId={!JSENCODE(recordId)}&projectId={!JSENCODE(projectId)}', '_self')">Delete</button>
+                        <!--  
+<div id="lightningMenuViewMoreGanttAction" class="slds-dropdown-trigger slds-dropdown-trigger--click slds-button--last">
+<apex:panelGroup>
+<button id="dropDownGanttAction" class="slds-button slds-button--icon-border-filled" onClick="Appurin.lightning.showLightningMenu(this); return false;" aria-haspopup="true" title="Show More">
+<c:BT_LightningSvg parentId="dropDownGanttAction" styleClass="slds-button__icon" path="/assets/icons/utility-sprite/svg/symbols.svg#down"/>
+<span class="slds-assistive-text"><apex:outputText value="Show More"/></span>
+</button>
+
+<apex:outputPanel layout="block" styleClass="slds-dropdown slds-dropdown--right">
+<ul class="slds-dropdown__list" role="menu">
+<apex:panelGroup>
+<li class="slds-dropdown__item" onClick="Appurin.lightning.hideLightningMenu(this);exportToPDF();" role="presentation">
+<apex:outputLink>
+<span id="exportToPDF" class="slds-truncate">
+<c:BT_LightningSvg parentId="exportToPDF" styleClass="slds-icon slds-icon--xx-small slds-m-right--small" path="/assets/icons/utility-sprite/svg/symbols.svg#download"/>
+<apex:outputText value="Export To PDF"/>
+</span>
+</apex:outputLink>
+</li>
+</apex:panelGroup>
+<apex:panelGroup>
+<li class="slds-dropdown__item" onClick="Appurin.lightning.hideLightningMenu(this);" role="presentation">
+<apex:outputLink styleClass="delete">
+<span id="exportToPNG" class="slds-truncate">
+<c:BT_LightningSvg parentId="exportToPNG" styleClass="slds-icon slds-icon--xx-small slds-m-right--small" path="/assets/icons/utility-sprite/svg/symbols.svg#download"/>
+<apex:outputText value="Export To PNG"/>
+</span>
+</apex:outputLink>
+</li>
+</apex:panelGroup>
+</ul>
+</apex:outputPanel>
+
+</apex:panelGroup>
+</div>
+-->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div id="gantt_here" style='width:100%; height: 390px; padding: 0px;'></div>
+        </div>
+        
+        <!-- NEW TASK POP UP -->
+        <div id="newTaskModal">
+            <apex:form >
+                <apex:pageblock id="pb">
+                    <script>
+                    j$("div[id$='pb']").css('border', '0px').css('padding-top', '5px');
+                    </script>
+                    <div class="slds-modal">
+                        <div class="slds-modal__container" style="width:800px;">
+                            <div class="slds-modal__header">
+                                <h2 class="slds-text-heading_medium slds-hyphenate" id="newtaskmodalTitle">
+                                    <apex:outputlabel value="{!if(newTask.Id != null,'Edit','New Task')}"/></h2>
+                            </div>
+                            <div class="slds-modal__content slds-p-around_medium">
+                                <p>
+                                    <apex:actionStatus id="splashStatus" onstart="startSplash();" onstop="endSplash();" />
+                                    <apex:actionfunction name="acfInitNewTask" action="{!initNewTask}" status="splashStatus" oncomplete="openModal('newTaskModal');" rerender="pb">
+                                        <apex:param name="parentId" value=""/>
+                                        <apex:param name="taskIdToEdit" value=""/>
+                                    </apex:actionfunction>
+                                    <c:BT_AddEditRecordComponent defaultSobject="{!newTask}" recordId="{!newTask.Id}" objectAPIName="Project_Task__c" fieldsetName="New_Task_Fields" headerStyle="none" saveCallBack="saveCallBack" whereConditionForAutoLookup="Schedule__c='{!scheduleId}'" />
+                                </p>
+                            </div>
+                            <div class="slds-modal__footer">
+                                <button id="saveNewTaskbtn" class="slds-button slds-button_brand" onclick="saveRecord();return false;">Save</button>
+                                <button id="saveAndNewTaskbtn" class="slds-button slds-button_brand" onclick="saveAndNewRecord();return false;">Save &amp; New</button>
+                                <button id="deleteTaskbtn" class="slds-button slds-button_brand" onclick="deleteBTTask('{!newTask.Id}');return false;" style="display:{!if(newTask.Id != null,'','none')}">Delete</button>
+                                <button id="cancelNewTaskBtn" class="slds-button slds-button_neutral" onclick="closeModal('newTaskModal');return false;">Cancel</button>
+                            </div>
+                            <apex:actionFunction action="{!redirect}" name="redirectToRelated"> 
+                            </apex:actionFunction> 
+                        </div>
+                    </div>
+                    <div class="slds-backdrop"></div>
+                </apex:pageblock>
+            </apex:form>
+        </div>
+        <apex:outputPanel layout="block" id="lightningInfoPopup" style="display: none; z-index: 8552;"> 
+            <div class="apModal" style="z-index: 8551;">
+                <div class="apModalContainer">
+                    <div class="apModalHeader">
+                        <button id="lightningInfoPopupCloseIcon" class="slds-button slds-modal__close slds-button--icon-inverse" onClick="Appurin.lightning.hideModalPopup({'modalPopupId':'{!$Component.lightningInfoPopup}'}); return false;" title="{!$Label.Close}">
+                            <c:BT_LightningSvg parentId="lightningInfoPopupCloseIcon" styleClass="slds-button__icon slds-button__icon--large" path="/assets/icons/utility-sprite/svg/symbols.svg#close"/>
+                            <span class="slds-assistive-text">{!$Label.Close}</span>
+                        </button>
+                        <h2 class="apModalHeading" id="lightningInfoPopupHeader">{$Label.Warning}</h2>
+                    </div>
+                    <div class="apModalContent">
+                        <div class="apNotifyContainer" style="position: relative; text-align:left;">
+                            <div>
+                                <h2 id="lightningInfoPopupMessage"></h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="apModalFooter">
+                        <button id="lightningInfoPopupOkButton">{!$Label.Ok}</button>
+                        <button id="lightningInfoPopupCloseButton">{!$Label.Close}</button>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-backdrop slds-backdrop--open" style="z-index: 5881;"></div>
+        </apex:outputPanel>
+        gantt.plugins({ 
+        marker: true 
+        });
+    </div>
+    <script type="text/javascript">
+    var isSaveAndNew = false;
+    function saveAndNewRecord(){ 
+        isSaveAndNew=true;
+        saveRecord();
+    }
+    function redirect(){
+        if(isSaveAndNew){ 
+            acfInitNewTask();
+            isSaveAndNew=false;
+            
+        }else{
+            // redirectToRelated(); 
+        }
+    }
+    startSplash();
+    j$(document).ready(function() {
+        endSplash();
+        gantt.parse(data);
+        //var x = JSON.parse(data);
+        //debugger;
+        /*for(var i=2 ; i< x.data.length; i++){
+            var recId  = x.data[i].id;
+            var task = gantt.getTask(recId);
+            task.end_date=null;  
+            gantt.updateTask(task.id);
+        }*/
+        gantt.render();
+    });
+    
+    j$(document).click(function (e){
+        j$(".slds-is-open").each( function(){
+            if(j$(this).has(e.target).length === 0){
+                j$(this).removeClass('slds-is-open');
+            }
+        });
+    });
+    var dateToStr = gantt.date.date_to_str(gantt.config.task_date);
+    
+    var id = gantt.addMarker({ 
+        start_date: new Date(), 
+        css: "today", 
+        text:"Today",
+        title:dateToStr(new Date())
+    });
+    setInterval(function(){
+        var today = gantt.getMarker(id);
+        today.start_date = new Date();
+        today.title = date_to_str(today.start_date);
+        gantt.updateMarker(id);
+    }, 1000*60);
+    
+    gantt.config.order_branch = true;
+    var _PageActions = {
+        insertBTTask : '{!$RemoteAction.BT_Task_Manager_Controller.insertBTTask}',
+        insertNewTaskLinks : '{!$RemoteAction.BT_Task_Manager_Controller.insertNewTaskLinks}',
+        getNewTaskFieldsetInfo : '{!$RemoteAction.BT_Task_Manager_Controller.getNewTaskFieldsetInfo}',
+        changeTaskSchedulingMode : '{!$RemoteAction.BT_Task_Manager_Controller.changeTaskSchedulingMode}',
+        getAllProjectJSON : '{!$RemoteAction.BT_Task_Manager_Controller.getAllProjectJSON}',
+        saveGanttData : '{!$RemoteAction.BT_Task_Manager_Controller.saveGanttData}',
+        deleteTaskLinkById : '{!$RemoteAction.BT_Task_Manager_Controller.deleteTaskLinkById}',
+        deleteTaskById : '{!$RemoteAction.BT_Task_Manager_Controller.deleteTaskById}'
+    }
+    
+    debugger;
+    var data = '{!JSENCODE(ganttJSON)}';
+    gantt.attachEvent("onTaskCreated", function(task){
+        task.type = gantt.config.types.milestone;
+        return true;
+    });
+    var obj = JSON.parse(data); 
+    for(var i = 0 ;i<obj.data.length;i++){
+        if(obj.data.start_date!=undefined){
+            console.log('obj.data.start_date',obj.data.start_date);
+			
+        }
+    }
+    /*for(var i=0;i<obj.data.length;i++){
+        if(obj.data[i].type=="milestone"){
+            console.log(obj.data[i].id);
+            //var x = document.getElementsByClassName("gantt_row")[0].getAttribute("task_id"); 
+            //console.log('idByClass',x);
+        }
+    }*/
+    //alert('jsonItem --------> '+data);
+    console.log('---->',data);
+    
+    /*
+        // this configuration is for hour scale
+        
+        gantt.config.work_time = true;
+        gantt.config.wide_form = 1;
+        gantt.setWorkTime({hours : [8, 12, 13, 17]});//global working hours. 8:00-12:00, 13:00-17:00
+    
+        gantt.config.scale_unit = "day";
+        gantt.config.date_scale = "%l, %F %d";
+        gantt.config.min_column_width = 35;
+        gantt.config.duration_unit = "hour";
+        gantt.config.scale_height = 20*3;
+        gantt.config.date_grid = "%m/%d/%y";
+        
+        var weekScaleTemplate = function(date){
+            var dateToStr = gantt.date.date_to_str("%d %M");
+            var weekNum = gantt.date.date_to_str("(week %W)");
+            var endDate = gantt.date.add(gantt.date.add(date, 1, "week"), -1, "day");
+            return dateToStr(date) + " - " + dateToStr(endDate) + " " + weekNum(date);
+        };
+    
+        gantt.config.subscales = [
+            {unit:"week", step:1, template:weekScaleTemplate},
+            {unit:"hour", step:1, date:"%G"}
+    
+        ];
+        */
+    
+    
+    // This configuration is for day scale
+    
+    gantt.config.work_time = true;
+    
+    gantt.config.wide_form = 1;
+    gantt.setWorkTime({day: 0, hours : [8, 9]});
+    gantt.setWorkTime({day: 6, hours : [8, 9]});
+    gantt.setWorkTime({hours : [8, 9]});//global working hours. 8:00-12:00, 13:00-17:00
+    gantt.config.duration_unit = "hour";
+    gantt.config.scale_unit = "month";
+    gantt.config.row_height = 24;
+    gantt.config.date_scale = "%F";
+    gantt.config.scale_height = 50;
+    gantt.config.date_grid = "%m/%d/%y"; 
+    
+    /*gantt.config.subscales = [
+            {unit: "day", step: 1, date: "%j, %F"},
+            {unit:"hour", step:1, date:"%D"}
+        ];*/
+    
+    
+    gantt.config.subscales = [
+        {unit:"hour", step:1, date:"%j, %D"}
+    ];
+    /*    
+        gantt.config.subscales = [
+            //{unit:"week", step:1, date:"%W"},
+            {unit:"day", step:1, date:"%j, %F" }
+        ];*/
+    
+    
+    gantt.templates.task_cell_class = function(task, date){
+        var css = [];
+        
+        if(date.getHours() == 7){
+            css.push("day_start");
+        }
+        if(date.getHours() == 16){
+            css.push("day_end");
+        }
+        if(!gantt.isWorkTime(date, 'day')){
+            css.push("week_end");
+        }else if(!gantt.isWorkTime(date, 'hour')){
+            css.push("no_work_hour");
+        }
+        return css.join(" ");
+    };
+    
+    gantt.config.columns = [ 
+        {name:"text", label:"Task name", tree:true, width:240 },
+        {name:"start_date", label:"Start Date", align: "center", width: 80, template:gantt.templates.grid_date_format},
+        {name:"end_date", label:"End Date", align: "center", width: 80},
+        {name:"duration", label:"Days", align: "center" , width: 50},
+        {name:"progress1", label:"Completion%", align: "center" , width: 80}, 
+        {name:"resource",label:"Internal<br> Resource",align: "center" , width: 105}, 
+        {name:"contractorResource",label:"Contractor <br> Resource",align: "center" , width: 115}, 
+        {name: "buttons",label: 'Action',width: 65,template: function (task) {
+            return ( 
+                '<div class="gantt_cell">'+
+                '<span class="actionButton" style="color:#3db9d3 !important;font-size:1rem!important;padding:0 5px;" data-action="add">&#10010;</span>' +
+                '<span class="actionButton" style="color:red !important;font-size:1rem!important;padding:0 5px;" data-action="delete">&#10006;</span>'+
+                '</div>'
+                );
+        }}
+    ];
+    
+    gantt.attachEvent("onTaskClick", function(id, e){
+        var button = e.target.closest("[data-action]")
+        if(button){
+            var action = button.getAttribute("data-action");
+            switch (action) {
+                case "add":
+                    gantt.createTask(null, id);
+                    break;
+                case "delete":
+                    gantt.confirm({
+                        title: gantt.locale.labels.confirm_deleting_title,
+                        text: gantt.locale.labels.confirm_deleting_task,
+                        callback: function (res) {
+                            if (res)
+                                deleteBTTask(id);
+                                //gantt.deleteTask(id);
+                        }
+                    });
+                    break;
+            }
+            return false;
+
+        }
+        return true;
+    });
+    gantt.locale.labels.confirm_deleting_task='Are you sure you want to delete the task?';
+    gantt.templates.grid_date_format = function(date){
+        return gantt.date.date_to_str(gantt.config.date_grid)(date);
+    };
+    gantt.templates.task_cell_class = function(task,date){
+        if(date.getDay()==0||date.getDay()==6){
+            return "updColor";
+        }
+    };
+    // reordering tasks within the whole gantt
+    gantt.config.order_branch = true;
+    gantt.config.order_branch_free = true;
+    
+    // auto schedule gantt task
+    gantt.config.auto_scheduling = true;
+    gantt.config.auto_scheduling_strict = true;
+    
+    gantt.config.start_date = new Date(2019, 1, 1);
+    //gantt.config.end_date = new Date(2021, 1, 1);
+    //gantt.config.work_time = true;
+    gantt.config.duration_unit = "hour";
+    gantt.config.work_time = true; 
+    gantt.config.skip_off_time = true; 
+    gantt.init("gantt_here");
+    //gantt.message({text:"Some text", expire:-1});
+    //gantt.message({text:"Some text", type:"error", expire:-1});
+    
+    //gantt.parse(data);
+    //dadd 
+    gantt.templates.rightside_text =function(start,end,task){
+       return "<b> Completion : </b>"+  (task.progress * 100).toFixed(0) +'%';
+    }; 
+    hideNotWorkingTime();
+    
+    var modal;
+    var editLinkId;
+    
+    gantt.attachEvent("onBeforeAutoSchedule", function(){
+        gantt.message("Recalculating project schedule...");
+        return true;
+    });
+    
+    
+    gantt.attachEvent("onAfterTaskAutoSchedule", function(task, new_date, constraint, predecessor){
+        /*
+            gantt.message({
+                text: "<b>"+task.text+"</b> has been rescheduled to " + gantt.templates.task_date(new_date) + " due to <b>"+predecessor.text+"</b> constraint",
+                expire:4000
+            });
+            */
+        });
+    
+    gantt.attachEvent("onLinkDblClick", function(id,e){
+        editLinkId = id;
+        var link = gantt.getLink(id);
+        var linkTitle = '';
+        /*
+            switch(link.type){
+                case gantt.config.links.finish_to_start:
+                    linkTitle = "FS";
+                    break;
+                case gantt.config.links.finish_to_finish:
+                    linkTitle = "FF";
+                    break;
+                case gantt.config.links.start_to_start:
+                    linkTitle = "SS";
+                    break;
+                case gantt.config.links.start_to_finish:
+                    linkTitle = "SF";
+                    break;
+            }
+            */
+            
+            linkTitle += " " + gantt.getTask(link.source).text + " -> " + gantt.getTask(link.target).text;
+            
+            modal = gantt.modalbox({
+                title: linkTitle,
+                text: "<div>" +
+                "<label>Lag <input type='number' class='lag-input slds-input' /></label>" +
+                "</div>",
+                buttons: [
+                    {label:"Save", css:"link-save-btn", value:"save"},
+                    {label:"Cancel", css:"link-cancel-btn", value:"cancel"},
+                    {label:"Delete", css:"link-delete-btn", value:"delete"}
+                ],
+                width: "500px",
+                type: "popup-css-class-here",
+                callback: function(result){
+                    switch(result){
+                        case "save":
+                            saveLink();
+                            break;
+                        case "cancel":
+                            cancelEditLink();
+                            break;
+                            
+                        case "delete":
+                            deleteLink();
+                            break;
+                    }
+                }
+            });
+            
+            modal.querySelector(".lag-input").value = link.lag || 0;
+            
+            //any custom logic here
+            return false;
+        });
+    
+    
+    // EVENTS
+    //gantt.config.details_on_create = true;
+    gantt.attachEvent("onBeforeLightbox", function(id) {
+        var ganttNewTask = gantt.getTask(id);
+        if(ganttNewTask.$new){ 
+            startSplash();
+            
+            /*
+                j$('#cancelNewTaskBtn').unbind('click');
+                j$('#cancelNewTaskBtn').click(function() {
+                    closeNewTaskModal(id);          
+                });
+                
+                j$('#saveNewTaskbtn').unbind('click');
+                j$('#saveNewTaskbtn').click(function() {
+                    closeNewTaskModal(id);          
+                });
+                */
+                
+                console.log(ganttNewTask);
+                acfInitNewTask(ganttNewTask.$rendered_parent,'');
+                gantt.deleteTask(id);
+                
+                return false;
+            } else {
+                acfInitNewTask('',id);
+                return false;
+            }
+        });
+    gantt.attachEvent("onTaskDrag", function(id, mode, task, original){
+        var modes = gantt.config.drag_mode;
+        var ganttData = gantt.serialize("json");
+        if(mode == modes.move || mode == modes.resize){
+            console.log('Id::',id);
+            console.log('Task::',task);
+            gantt.getTask(id).start_date=task.start_date;
+            gantt.getTask(id).end_date=task.end_date;
+            gantt.updateTask(id);
+        }
+        
+    });
+    gantt.attachEvent("onTemplatesReady", function () {
+        var toggle = document.createElement("i");
+        toggle.className = "fa fa-expand gantt-fullscreen";
+        gantt.toggleIcon = toggle;
+        gantt.$container.appendChild(toggle);
+        toggle.onclick = function () {
+            if (!gantt.getState().fullscreen) {
+                gantt.expand();
+            }
+            else {
+                gantt.collapse();
+            }
+        };
+    });
+    gantt.attachEvent("onExpand", function () {
+        var icon = gantt.toggleIcon;
+        if (icon) {
+            icon.className = icon.className.replace("fa-expand", "fa-compress");
+        }
+        
+    });
+    gantt.attachEvent("onCollapse", function () {
+        var icon = gantt.toggleIcon;
+        if (icon) {
+            icon.className = icon.className.replace("fa-compress", "fa-expand");
+        }
+    });
+    
+    function endPopup(){
+        modal = null;
+        editLinkId = null;
+    }
+    function cancelEditLink(){
+        endPopup()
+    }
+    
+    function deleteLink(){
+        gantt.deleteLink(editLinkId);
+        endPopup()
+    }
+    
+    function saveLink(){
+        startSplash();
+        var link = gantt.getLink(editLinkId);
+        
+        var lagValue = modal.querySelector(".lag-input").value;
+        if(!isNaN(parseInt(lagValue, 10))){
+            link.lag = parseInt(lagValue, 10);
+        }
+        
+        gantt.updateLink(link.id);
+        if(gantt.autoSchedule){
+            gantt.autoSchedule(link.source);
+        }
+        endPopup();
+    }
+    
+    function openModal(eleId) {
+        j$("#" + eleId + ' .slds-modal').addClass('slds-fade-in-open');
+        j$("#" + eleId + ' .slds-backdrop').addClass('slds-backdrop_open');
+    }
+    
+    function closeModal(eleId) {
+        j$("#" + eleId + ' .slds-modal').removeClass('slds-fade-in-open');
+        j$("#" + eleId + ' .slds-backdrop').removeClass('slds-backdrop_open');
+        return false;
+    }
+    
+    function closeNewTaskModal(taskId){
+        //console.log('taskId--->'+taskId);
+        var newTask = gantt.getTask(taskId);
+        console.log('newTask::',newTask);
+        
+        if(newTask !== undefined){
+            gantt.deleteTask(taskId);
+        }
+        closeModal('newTaskModal');
+        
+        return false;
+    }
+    
+    function showAll(){
+        gantt.ignore_time = null;
+        gantt.render();
+    }
+    function hideWeekEnds(){
+        gantt.ignore_time = function(date){
+            return !gantt.isWorkTime(date, "day");
+        };
+        gantt.render();
+    }
+    
+    function hideNotWorkingTime(){
+        gantt.ignore_time = function(date){
+            return !gantt.isWorkTime(date);
+        };
+        gantt.render();
+    }
+    
+    function fullscreen(){
+        var toggle = document.createElement("i");
+        toggle.className = "fa fa-expand gantt-fullscreen";
+        gantt.toggleIcon = toggle;
+        gantt.$container.appendChild(toggle);
+        toggle.onclick = function() {
+            if (!gantt.getState().fullscreen) {
+                gantt.expand();
+            }
+            else {
+                gantt.collapse();
+            }
+        };
+    }
+    
+    
+    function deleteBTTask(taskId){
+        startSplash();
+        try {
+            Visualforce.remoting.Manager.invokeAction(_PageActions.deleteTaskById, taskId, '{!JSENCODE(project.id)}', '{!JSENCODE(scheduleId)}',
+                                                      function(result, event) {
+                                                          if (event.status) {
+                                                              //AUTO_SCHEDULED_TASKS = [];
+                                                              Appurin.lightning.showAlertPrompt({'modalPopupId':'lightningInfoPopup', 'messageType':'Info', 'title': 'Success', 'message': 'Task deleted successfully.', 'buttonLabel': '{!JSENCODE($Label.buildertek__ok)}', 'isRedirect' : false});
+                                                              closeModal('newTaskModal');
+                                                              gantt.clearAll();
+                                                              gantt.parse(result);
+                                                              endSplash();
+                                                              
+                                                          } else {
+                                                              console.log(result);
+                                                              endSplash();
+                                                          }
+                                                      }, {
+                                                          escape : false,
+                                                          buffer : false,
+                                                          timeout : 120000
+                                                      });
+        } catch (e) {
+            console.log(e);
+            endSplash();
+            closeModal('newTaskModal');
+        }
+        
+        return false;
+    }
+    
+    function saveCallBack(newTaskjson){
+        setTimeout(function(){ 
+            startSplash();
+        }, 10); 
+        try {
+            Visualforce.remoting.Manager.invokeAction(_PageActions.insertBTTask,newTaskjson, '{!JSENCODE(scheduleId)}',
+                                                      function(result, event) {
+                                                          if (event.status) {
+                                                              //AUTO_SCHEDULED_TASKS = []; 
+                                                              closeModal('newTaskModal');
+                                                              gantt.clearAll();
+                                                              gantt.parse(result);
+                                                              
+                                                              
+                                                              //Appurin.lightning.showAlertPrompt({'modalPopupId':'lightningInfoPopup', 'messageType':'Info', 'title': 'Success', 'message': 'Changes saved successfully.', 'buttonLabel': '{!JSENCODE($Label.buildertek__ok)}', 'isRedirect' : false});
+                                                              //endSplash();
+                                                              redirect();
+                                                          } else {
+                                                              console.log(result);
+                                                              //endSplash();
+                                                          }
+                                                      }, {
+                                                          escape : false,
+                                                          buffer : false,
+                                                          timeout : 120000
+                                                      });
+        } catch (e) {
+            console.log(e);
+            endSplash();
+            closeModal('newTaskModal');
+        }
+        setTimeout(function(){ 
+            endSplash(); 
+        }, 2000);
+        return false;
+    }
+    
+    function saveGanttData(){
+        try {
+            startSplash();
+            var ganttData = gantt.serialize("json");
+            Visualforce.remoting.Manager.invokeAction(_PageActions.saveGanttData,JSON.stringify(processGanttTaskBeforeSave(ganttData.data)),JSON.stringify(ganttData.links),
+                                                      function(result, event) {
+                                                          if (result != null && result.length > 0 && (result[0].errorMessage != undefined && result[0].errorMessage != '')) {
+                                                              //alert(result[0].errorMessage);
+                                                              endSplash();
+                                                          } else if (event.status) {
+                                                              //AUTO_SCHEDULED_TASKS = [];
+                                                              Appurin.lightning.showAlertPrompt({'modalPopupId':'lightningInfoPopup', 'messageType':'Info', 'title': 'Success', 'message': 'Changes saved successfully.', 'buttonLabel': '{!JSENCODE($Label.buildertek__ok)}', 'isRedirect' : false});
+                                                              endSplash();
+                                                          } else {
+                                                              console.log(result);
+                                                              endSplash();
+                                                          }
+                                                      }, {
+                                                          escape : true,
+                                                          buffer : false,
+                                                          timeout : 120000
+                                                      });
+        } catch (e) {
+            console.log(e);
+            endSplash();
+        }
+    }
+    
+    function processGanttTaskBeforeSave(taskList) {
+        var allTasks = [];
+        for(var i =0; i<taskList.length;i++){
+            var task = gantt.getTask(taskList[i].id);
+            if(task.type === 'project'){
+                continue;
+            }
+            console.log('Text::',task.text);
+            console.log('Start Date::',task.start_date);
+            var startDate = new Date(task.start_date);
+            var endDate = new Date(task.end_date);
+            
+            /*
+                if (endDate < startDate) {
+                    endDate = startDate;
+                }
+        
+                if (startDate < endDate) {
+                    endDate = new Date(endDate.getTime() - (24 * 60 * 60 * 1000));
+                }
+                */
+                
+                startDate = moment(startDate).format('YYYY-MM-DD');
+                endDate = moment(endDate).format('YYYY-MM-DD');
+                
+                console.log('Start Date::',startDate);
+                console.log(endDate);
+                
+                var is_milestone = false;
+                if (task.type == 'milestone') {
+                    is_milestone = true;
+                }
+                
+                var percent  = null;
+                if(task.progress){
+                    
+                    //percent = parseInt(task.progress.toFixed(2) * 100);
+                }
+                var jsonItem = {
+                    id : task.id,
+                    text: task.text,
+                    start_date : startDate,
+                    end_date : endDate,
+                    duration : task.duration,
+                    progress : task.progress,
+                    type: task.type,
+                    open: task.open,
+                    parent: task.parent
+                    //is_milestone : is_milestone,
+                    //task_duration : task.duration_scale == 'Day' ? (is_milestone == true ? task.task_duration : task.duration) : 0,
+                    //include_weekends : task.include_weekends,
+                    //duration_scale : task.duration_scale,
+                    //percent_complete : percent,
+                    //lag_days : task.lag_days
+                };
+                
+                allTasks.push(jsonItem);
+                
+            }
+            
+            console.log(allTasks);
+            return allTasks;
+            
+        }
+    
+    
+    
+    function setGanttScaleConfig(value) {
+        setScaleConfig(value);
+        gantt.render();
+    }
+    var GANTT_VIEWS = {
+        "DAYS" : 1,
+        "WEEKS" : 2,
+        "MONTHS" : 3,
+        "YEARS" : 4
+    };
+    var GANTT_VIEW_SCALE = GANTT_VIEWS["MONTHS"];
+    
+    function setScaleConfig(value) {
+        GANTT_VIEW_SCALE = value;
+        switch (value) {
+            case GANTT_VIEWS["DAYS"]: {
+                
+                gantt.config.duration_unit = "hour";
+                gantt.config.scale_unit = "month";
+                gantt.config.row_height = 24;
+                gantt.config.date_scale = "%F, %Y";
+                gantt.config.scale_height = 50;
+                gantt.config.date_grid = "%m/%d/%y";
+                
+                gantt.config.subscales = [
+                    {unit:"hour", step:1, date: "%j, %D"}
+                ];
+                /*
+                    if (!IS_CLICKED_FROM_NAV) {
+                        IS_ZOOM_CLICKED = false;
+                        var date = new Date();
+                        var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+                        gantt.config.start_date = firstDay;
+                        gantt.config.end_date = moment(gantt.config.start_date).add(1,
+                                'months');
+                    } else {
+                        resetOriginalGanttScale();
+                    }
+                    */
+                    break;
+                }
+                case GANTT_VIEWS["WEEKS"]: {
+                    gantt.config.scale_unit = "month";
+                    gantt.config.step = 1;
+                    gantt.config.date_scale = "%F, %Y";
+                    gantt.config.min_column_width = 50;
+                    gantt.config.scale_height = 50;
+                    var weekScaleTemplate = function(date){
+                        var dateToStr = gantt.date.date_to_str("%d %M");
+                        var endDate = gantt.date.add(gantt.date.add(date, 1, "week"), -1, "day");
+                        return dateToStr(date) + " - " + dateToStr(endDate);
+                    };
+                    
+                    gantt.config.subscales = [
+                        {unit:"week", step:1, template:weekScaleTemplate}
+                    ];
+                    
+                    /*gantt.config.scale_unit = "week";
+                    gantt.config.step = 1;
+                    gantt.config.date_scale = "Week #%W";
+                    gantt.config.subscales = [];
+                    gantt.config.scale_height = 27;
+                    gantt.templates.date_scale = null;
+                    */
+                    /*
+                    if (!IS_CLICKED_FROM_NAV) {
+                        IS_ZOOM_CLICKED = false;
+                        var date = new Date();
+                        var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+                        gantt.config.start_date = firstDay;
+                        gantt.config.end_date = moment(gantt.config.start_date).add(1,
+                                'months');
+                    } else {
+                        resetOriginalGanttScale();
+                    }
+                    */
+                    break;
+                }
+                case GANTT_VIEWS["MONTHS"]: {
+                    gantt.config.scale_unit = "year";
+                    gantt.config.step = 1;
+                    gantt.config.date_scale = "%Y";
+                    gantt.config.min_column_width = 50;
+                    
+                    gantt.config.scale_height = 50;
+                    gantt.templates.date_scale = null;
+                    gantt.config.subscales = [ {
+                        unit : "month",
+                        step : 1,
+                        date : "%M"
+                    } ];
+                    
+                    break;
+                }
+                    
+            }
+        }
+    
+    
+    
+    
+    function expandAll() {
+        gantt.expand();
+    }
+    
+    function collapseAll() {
+        gantt.collapse();
+    }
+    
+    function exportToPDF() {
+        gantt.exportToPDF();
+    }
+    
+    function exportToPNG(){
+        gantt.exportToPNG();
+    }
+    
+    function exportToMSP(){
+        gantt.exportToMSProject();
+    }
+    
+    
+    </script>
+</apex:page>

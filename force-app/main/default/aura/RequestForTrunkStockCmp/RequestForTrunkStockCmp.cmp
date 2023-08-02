@@ -1,0 +1,145 @@
+<aura:component implements="force:hasRecordId,force:lightningQuickActionWithoutHeader,flexipage:availableForAllPageTypes,lightning:isUrlAddressable" 
+                controller="TrunkStockRequestController" access="global">
+    
+    <!-- ,force:lightningQuickAction
+    <aura:attribute name="radioSelect" type="List" default="[
+                                                            {'label': 'Onboarding trunk stock setup', 'value': 'NewFSE'},
+                                                            {'label': 'Pre-Emptive trunk stock', 'value': 'PreEmp'}
+                                                            ]"/> -->
+    
+    <aura:attribute name="radioSelect" type="List" default="[
+                                                            {'label': 'Onboarding trunk stock setup', 'value': 'NewFSE'}
+                                                            
+                                                            ]"/>
+    <aura:attribute name="radioSelect1" type="List" default="[
+                                                             
+                                                             {'label': 'Pre-Emptive trunk stock', 'value': 'PreEmp'}
+                                                             ]"/>
+    
+    <aura:attribute name="options1" type="List" default="[
+                                                         {'label': 'New FSE', 'value': 'NewFSE'}
+                                                         ]"/>
+    
+    <aura:attribute name="options2" type="List" default="[
+                                                         {'label': 'Pre-Emptive', 'value': 'PreEmp'}
+                                                         ]"/>
+    
+    <aura:attribute name="NewSelfOther" type="List" default="[
+                                                             {'label': 'Self', 'value': 'NewSelf'},
+                                                             {'label': 'Other', 'value': 'NewOther'}
+                                                             ]"/>
+    
+    <aura:attribute name="PreSelfOther" type="List" default="[
+                                                             {'label': 'Self', 'value': 'PreSelf'},
+                                                             {'label': 'Other', 'value': 'PreOther'}
+                                                             ]"/>
+    
+    <aura:attribute name="value" type="String" default=""/>
+    <aura:attribute name="value1" type="String" default=""/>
+    <aura:attribute name="radioSelectedNewFSE" type="String" default="" />
+    <aura:attribute name="radioSelectedPreEmp" type="String" default="" />
+    <aura:attribute name="getProducts" type="object" default="[]"/>
+    <aura:attribute name="getServiceRes" type="ServiceResource" default=""/>
+    
+    
+    <aura:attribute name="nextSelf" type="Boolean" default="" />
+    <aura:attribute name="nextPre" type="Boolean" default="false" />
+    
+    <aura:attribute name="selfNew" type="Boolean" default=""/>
+    <aura:attribute name="othNew" type="Boolean" default="" />
+    
+    <aura:attribute name="selfPre" type="Boolean" default="" />
+    <aura:attribute name="othPre" type="Boolean" default="" />
+    
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }"/>
+    
+    <div dir="ltr">
+        <br/>
+        <br/>
+        <lightning:radioGroup name="issueSelRadioGrp" options="{! v.radioSelect }" label=""
+                              value="{! v.value }" type="radio"
+                              onchange="{!c.handleissueTypeChangeHandler}" aura:id="focusFooter" class="slds-align_absolute-center slds-p-top_medium"/>
+        <div class="slds-p-left_xx-large">
+            <h3><b>This is the initial trunk stock setup for new FSE</b></h3>
+        </div>
+        
+    </div>	
+    
+    <div dir="ltr">
+        
+        <lightning:radioGroup name="issueSelRadioGrp" options="{! v.radioSelect1 }" label=""
+                              value="{! v.value }" type="radio"
+                              onchange="{!c.handleissueTypeChangeHandler}" aura:id="focusFooter" class="slds-align_absolute-center slds-p-top_medium"/>
+        <div class="slds-p-left_xx-large">
+            <h3><b>This is the pre-emptive ordering of parts expected to be used during Service appointment.</b></h3>
+        </div>   
+    </div>
+    
+    <!-- class="customRadioCls slds-align_absolute-center slds-p-top_medium"
+    <div class="slds-align_absolute-center slds-p-top_medium">
+       
+        
+        <div class="slds-align_absolute-center slds-p-top_medium">
+            <lightning:input type="checkbox" label="New FSE" name="input1" aura:id="newFse" value="NewFSE" onchange="{!c.onRadioChangeNewFSE}"/>
+            <lightning:input type="checkbox" label="Pre-Emptive" name="input2" aura:id="preFse" value="PreEmp"  onchange="{!c.onRadioChangePreEmp}"/>
+        </div> 
+       
+    </div> 
+ -->
+    
+    
+    
+    <!-- NEW FSE Start --> 
+    
+    <aura:if isTrue="{!v.radioSelectedNewFSE == 'NewFSE'}">
+        <br/>
+        <br/>
+        <br/>
+        <!--
+            <p> This is the initial trunk stock setup for new FSE  </p>
+            <p> This is the pre-emptive ordering of parts expected to be used during Service appointment.</p>
+            
+            <div class="slds-align_absolute-center slds-p-top_medium">
+                <lightning:radioGroup name="radioGroupRequired"
+                                      options="{! v.NewSelfOther }"
+                                      value="{! v.value1 }"
+                                      type="radio"
+                                      required="false"
+                                      onchange="{!c.newFSERadio}"/>
+            </div> -->
+        
+        <div class="slds-align_absolute-center">
+            <lightning:button variant="neutral" label="Cancel" title="Cancel" onclick="{!c.handleCancel }" />
+            <lightning:button variant="brand" label="Next" title="Next" value="{!v.selfNew}" onclick="{!c.handleClickNewFSE }" />
+        </div>
+        
+    </aura:if>
+  <!-- New FSE Ends -->
+
+    <!-- Pre-Emptive Starts -->
+    
+    <aura:if isTrue="{!v.radioSelectedPreEmp == 'PreEmp'}">
+        <br/>
+        <!--
+            <p> This is the initial trunk stock setup for new FSE  </p>
+            <p> This is the pre-emptive ordering of parts expected to be used during Service appointment.</p>
+            
+            <div class="slds-align_absolute-center slds-p-top_medium">
+                <lightning:radioGroup name="radioGroupRequired"
+                                      options="{! v.PreSelfOther }"
+                                      value="{! v.value1 }"
+                                      type="radio"
+                                      required="false"
+                                      onchange="{!c.preFSERadio}"/>
+            </div> -->
+        <br/>
+        <br/>
+        <div class="slds-align_absolute-center">
+            <lightning:button variant="neutral" label="Cancel" title="Cancel" onclick="{!c.handleCancel }" />
+            <lightning:button variant="brand" label="Next" title="Next" onclick="{!c.handleClickPreEmp }" /> 
+        </div> 
+    </aura:if>
+    
+    
+    <!-- Pre-Emptive Ends -->
+</aura:component>

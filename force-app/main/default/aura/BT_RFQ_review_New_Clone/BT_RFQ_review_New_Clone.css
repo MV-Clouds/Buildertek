@@ -1,0 +1,443 @@
+.THIS .redColor svg{
+    fill: white;
+}
+.THIS .bluecolor svg{
+    fill: #1b5297!important;;
+}
+
+.THIS .a:hover {
+    text-decoration: none;
+}
+
+.THIS .a:focus {
+    outline: none;
+    outline-offset: 0;
+    text-decoration: none;
+}
+
+.THIS .tdPadding {
+    padding: 8px;
+}
+
+.THIS .iconWithoutBorder svg {
+    fill: #337ab7 !important;
+    color: #337ab7 !important;
+}
+.THIS .fileiconcolor svg {
+    fill: #505050 !important;
+    color: #505050 !important;
+}
+
+
+.THIS .iconWithoutBorder:hover svg {
+    fill: #1b5297 !important;
+    color: #1b5297 !important;
+}
+
+.THIS .expandIcon {
+    margin: 5px;
+    border-radius: 50%;
+    width: 1rem;
+    height: 1rem;
+}
+
+.THIS .expandIcon svg {
+    fill: #337ab7 !important;
+    color: #337ab7 !important;
+    border-radius: 50%;
+    width: 1rem;
+    height: 1rem;
+    padding: 3px;
+}
+
+.THIS .expandIcon:hover svg {
+    fill: #1b5297 !important;
+    color: #1b5297 !important;
+    border-radius: 50%;
+    width: 1rem;
+    height: 1rem;
+    padding: 3px;
+}
+
+.THIS .collapseIcon {
+    margin: 5px;
+    border-radius: 50%;
+    width: 1rem;
+    height: 1rem;
+
+}
+
+.THIS .collapseIcon svg {
+    fill: #337ab7 !important;
+    color: #337ab7 !important;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    padding: 3px;
+}
+
+.THIS .collapseIcon:hover svg {
+    fill: #1b5297 !important;
+
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    padding: 3px;
+}
+
+.THIS .nameview {
+
+    padding-bottom: 15px !important;
+    padding-right: 10px;
+}
+
+.THIS .linkIcon svg {
+    fill: #1b5297 !important;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding-bottom: 15px;
+    padding-right: 10px;
+}
+
+.THIS .unlinkedIcon svg {
+    fill: #1b5297 !important;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding-bottom: 15px;
+    padding-right: 10px;
+
+}
+
+.THIS .awardedlinkIcon svg {
+    fill: white !important;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding-bottom: 15px;
+    padding-right: 10px;
+}
+
+.THIS .awardedunlinkedIcon svg {
+    fill: white !important;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding-bottom: 15px;
+    padding-right: 10px;
+}
+
+.THIS .awardIcon {
+    margin: 5px;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding-bottom: 15px;
+    padding-right: 10px;
+}
+.THIS .deleteIcon {
+    margin: 5px;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding-bottom: 15px;
+    padding-right: 10px;
+}
+.THIS .deleteIcon svg {
+    fill: #337ab7 !important;
+    color: #337ab7 !important;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding-bottom: 15px;
+    padding-right: 10px;
+}
+
+.THIS .deleteIcon:hover svg {
+    fill: #1b5297 !important;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding-bottom: 15px;
+    padding-right: 10px;
+}
+
+.THIS .awardIcon svg {
+    fill: #337ab7 !important;
+    color: #337ab7 !important;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding-bottom: 15px;
+    padding-right: 10px;
+}
+
+.THIS .awardIcon:hover svg {
+    fill: #1b5297 !important;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding-bottom: 15px;
+    padding-right: 10px;
+}
+
+
+.THIS .multipleAwardedIcon {
+    width: 7rem;
+    height: 1rem;
+}
+
+
+
+.THIS .multipleAwardedIcon svg {
+    fill: #337ab7 !important;
+    color: #337ab7 !important;
+    width: 1.2rem;
+    height: 1.5rem;
+}
+
+.THIS .multipleAwardedIcon:hover svg {
+    fill: #1b5297 !important;
+}
+
+.THIS .awardedIcon {
+    border-radius: 50%;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding-bottom: 15px;
+    padding-right: 10px;
+}
+
+.THIS .awardedIcon svg {
+    color: white !important;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding-bottom: 15px;
+    padding-right: 10px;
+}
+
+.THIS .awardedIcon:hover svg {
+    fill: white !important;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding-bottom: 15px;
+    padding-right: 10px;
+}
+
+.THIS .viewIcon {
+    margin: 5px;
+    margin-left: 20px;
+    border-radius: 50%;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding-bottom: 15px;
+    padding-right: 10px;
+}
+
+.THIS .viewIcon svg {
+    fill: #337ab7 !important;
+    color: #337ab7 !important;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    padding-bottom: 15px;
+    padding-right: 10px;
+}
+
+.THIS .viewIcon:hover svg {
+    fill: #1b5297 !important;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    padding-bottom: 15px;
+    padding-right: 10px;
+}
+
+.THIS .awardedViewIcon {
+    margin: 5px;
+    margin-left: 20px;
+    border-radius: 50%;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding-bottom: 15px;
+    padding-right: 10px;
+}
+
+.THIS .awardedViewIcon svg {
+    fill: white !important;
+    color: white !important;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    padding-bottom: 15px;
+    padding-right: 10px;
+}
+
+.THIS .awardedViewIcon:hover svg {
+    fill: white !important;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    padding-bottom: 15px;
+    padding-right: 10px;
+}
+
+.THIS .act-more {
+    height: 14px;
+    width: 14px;
+    border: 1px solid #777;
+    text-align: center;
+    border-radius: 50%;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 5px;
+    font-size: 7px;
+    margin-left: 44px;
+}
+
+.THIS .act-more i {
+    top: 2px;
+}
+
+.THIS .table>tbody>tr>td,
+.THIS .table>tbody>tr>th,
+.THIS .table>tfoot>tr>td,
+.THIS .table>tfoot>tr>th,
+.THIS .table>thead>tr>td,
+.THIS .table>thead>tr>th {
+    line-height: 1.5;
+    vertical-align: middle;
+    border-bottom: 1px solid #efefef;
+}
+
+/*.top-title-edit-box-active .table{display: table !important;}*/
+.THIS .box .left-box h3 {
+    position: relative;
+}
+
+.THIS .box .left-box h3:after {
+    content: "";
+    position: absolute;
+    left: 0;
+    background: #efefef;
+    width: 1px;
+    height: 38px;
+    top: -11px;
+}
+
+.THIS .page-right {
+    background: #fff;
+    height: 100%;
+}
+
+.THIS .page-left {
+    background: rgb(243, 242, 242);
+
+}
+
+.THIS .selectedVendor {
+    background: #fff;
+}
+
+.THIS .slds-grid_align-end {
+    justify-content: unset !important;
+}
+
+.THIS .success {
+    color: rgb(255, 255, 255);
+    background-color: rgb(4, 132, 75);
+}
+
+.THIS .slds-button-group .slds-button+.slds-button {
+    box-shadow: inset 1px 0px 0px white;
+}
+
+.THIS .Awarded {
+    background-color: rgb(4, 132, 75) !important;
+    color: white !important;
+}
+
+.THIS .Accepted {
+    background-color: rgb(4, 132, 75) !important;
+    color: white !important;
+}
+
+.THIS .slds-icon-action-approval {
+    background-color: rgb(4, 132, 75) !important;
+}
+
+.THIS .slds-resizable__divider {
+    background: transparent !important;
+}
+
+.THIS .slds-resizable__handle {
+    background: transparent !important;
+}
+
+.THIS .slds-float_left {
+    float: right !important;
+    margin-left: 5px !important;
+}
+
+.THIS .NonAwardedBox {
+    padding: 10px 15px;
+    height: 40px;
+    background: #efefef;
+    border: 1px solid #efefef;
+    width: 100%;
+}
+
+.THIS .Awardedbox {
+    padding: 10px 15px;
+    height: 40px;
+    background: #04844b;
+    border: 1px solid #ededed;
+    width: 100%;
+    opacity: 1;
+    color: white;
+}
+
+.THIS .checkAllStyle {
+    margin-top: 5px;
+    margin-right: 20px;
+    min-width: 1rem;
+}
+.THIS.hideDiv {
+    display: none;
+}
+
+.THIS .slds-modal__container{
+    height: 95%;
+}
+
+.THIS .my-icon {
+       
+       --sds-c-icon-color-foreground-default: gray;
+}
+.THIS .my-icon1 {
+       
+     --sds-c-icon-color-foreground-default: white;
+}
+
+@media (min-width: 48em) {
+    .THIS .slds-modal__container {
+        margin: 0 auto;
+        width: 90%;
+        max-width: 90%;
+    }
+}
+
+.THIS .iconWithoutBorder svg {
+    width: 1rem;
+    fill: #337ab7 !important;
+    color: #337ab7 !important;
+}
+
+.THIS .iconWithoutBorder1 svg {
+    width: 2.5rem;
+    fill: white !important;
+    color: #1b5297 !important;
+}
+.THIS .custom-loading-text {
+    transform: rotate(-90deg);
+    position: absolute;
+    top: -0.5rem;
+    left: 1rem;
+    white-space: nowrap;
+    font-size: 20px;
+}
+.THIS .noSelectedVendor{
+    font-size: 1.2rem;
+    font-weight: bold;
+}

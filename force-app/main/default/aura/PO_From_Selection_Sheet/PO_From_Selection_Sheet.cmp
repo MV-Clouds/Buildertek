@@ -1,0 +1,154 @@
+<aura:component controller="PO_From_Selection_Sheet" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="Spinner" type="Boolean" default="false" />
+    <aura:attribute name="CheckChild" type="Boolean" default="false" />
+
+    <aura:attribute name="data" type="Object" />
+    <aura:attribute name="columns" type="List" />
+    <aura:attribute name="selectedRowsCount" type="Integer" default="0" />
+    <aura:attribute name="maxRowSelection" type="Integer" default="5" />
+    <aura:attribute name="selectedRowList" type="object" default="" />
+    <aura:attribute name="optionWrapper" type="object[]" default="" />
+    <aura:attribute name="noData" type="Boolean" default="false" />
+    <aura:attribute name="projectId" type="String" default="" />
+    <ltng:require styles="{!$Resource.ModalPreviewCSS}" />
+    <aura:attribute name="selected" type="List" default="[]" />
+    <aura:attribute name="listOfSelectedRFQIds" type="List" default="[]" />
+    <aura:attribute name="OptList" type="object" />
+
+
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </aura:if>
+
+    <aura:html tag="style">
+        .container{ 
+            height: auto !important; 
+        } 
+        .slds-modal__content { 
+            overflow: hidden !important; 
+        } 
+        .slds-modal__close{ 
+            display:block !important; 
+        } 
+        .slds-docked-form-footer{ 
+            bottom: auto; 
+        } 
+        .slds-p-around--medium{ 
+            padding: 0; 
+        } 
+        .modalBodyDiv{ 
+            text-align: center;
+            font-weight: 600; 
+            line-height: 10rem; 
+            font-size: 18px; 
+        }
+        .slds-modal__container {
+            width: 95% !important;
+            max-width: 100rem !important;
+        }
+    </aura:html>
+
+    <div class="slds-modal__content">
+        <div class="slds">
+            <!-- ==== Start Header ==== -->
+            <header class="slds-modal__header">
+                <div class="" id="header" style="font-size:20px;">
+                    Create Purchase Orders
+                </div>
+            </header>
+            <!-- ==== End Header ==== -->
+
+            <!-- ==== Start Main Body ===== -->
+            <div>
+                <div style="margin: 15px 5px;">
+                    <!-- ========== Display option list in to data table =========== -->
+
+                    <div class="slds-modal__content slds-p-around_xx-small">
+                        <div class="slds slds-scope">
+                            <table class="slds-table slds-table_bordered slds-table_fixed-layout " role="grid">
+                                <thead>
+
+                                    <tr class="slds-text-heading--label slds-scrollable" style="line-height:20px">
+                                        <th class="subHeader" style="width: 40px;"> </th>
+                                        <th class="subHeader subData"> Sheet </th>
+                                        <th class="subHeader subData"> Category </th>
+                                        <th class="subHeader subData"> Type </th>
+                                        <th class="subHeader subData"> Option Name </th>
+                                        <th class="subHeader subData"> Product </th>
+                                        <th class="subHeader subData"> Quantity </th>
+                                        <th class="subHeader subData"> Sales Price </th>
+                                    </tr>
+
+                                    <aura:iteration items="{!v.optionWrapper}" var="optionWp">
+                                        <tr>
+                                            <th scope="col" class="tableData">
+                                                <lightning:input type="checkbox" aura:id="checkContractors" onchange="{!c.selectCheck}" checked="{!optionWp.selected}" />
+                                            </th>
+                                            <td class="vendorData" colspan="7">
+                                                {!optionWp.VendorData.Name}
+                                            </td>
+                                            
+                                        </tr>
+                                        <aura:iteration items="{!optionWp.optionDataList}" var="option">
+                                            <tr>
+                                                <td class="tableData">
+                                                    <lightning:input type="checkbox" aura:id="checkContractor" variant="label-hidden" checked="{!option.selected}" />
+                                                </td>
+
+                                                <td class="tableData" role="gridcell" title="{!optionWp.SheetData.Name}">
+                                                    <ui:outputURL value="{!'/one/one.app?#/sObject/'+ optionWp.SheetData.Id + '/view'}" target="_blank" label="{!optionWp.SheetData.Name}" />
+                                                </td>
+                                                
+                                                <td class="tableData" role="gridcell" title="{!option.option.buildertek__Section__r.Name}">
+                                                    <ui:outputURL value="{!'/one/one.app?#/sObject/'+ option.option.buildertek__Section__r.Id + '/view'}" target="_blank" label="{!option.option.buildertek__Section__r.Name}" />
+                                                </td>
+                                                
+                                                <td class="tableData" role="gridcell" title="{!option.option.buildertek__Question_Group__r.Name}">
+                                                    <ui:outputURL value="{!'/one/one.app?#/sObject/'+ option.option.buildertek__Question_Group__r.Id + '/view'}" target="_blank" label="{!option.option.buildertek__Question_Group__r.Name}" />
+                                                </td>
+
+                                                <td class="tableData" role="gridcell" title="{!option.option.Name}">
+                                                    <ui:outputURL value="{!'/one/one.app?#/sObject/'+ option.option.Id + '/view'}" target="_blank" label="{!option.option.Name}" />
+                                                </td>
+
+                                                <td class="tableData" role="gridcell" title="{!option.option.buildertek__Product__r.Name}">
+                                                    <ui:outputURL value="{!'/one/one.app?#/sObject/'+ option.option.buildertek__Product__r.Id + '/view'}" target="_blank" label="{!option.option.buildertek__Product__r.Name}" />
+                                                </td>
+
+                                                <td class="tableData"> {!option.option.buildertek__Quantity__c} </td>
+                                                <td class="tableData"> {!option.option.buildertek__Cost__c} </td>
+
+                                            </tr>
+                                        </aura:iteration>
+                                    </aura:iteration>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+
+                    <aura:if isTrue="{!v.noData}">
+                        <div class="modalBodyDiv">
+                            No Data Found
+                        </div>
+                    </aura:if>
+
+                </div>
+            </div>
+            <!-- ==== End Main Body ===== -->
+
+            <!-- =========Start Footer====== -->
+            <footer role="contentinfo" class="slds-docked-form-footer fixedFooter" style="display:block;text-align:right;padding-right:5px;">
+                <button class="slds-button slds-button--neutral" onclick="{!c.closeModal}"> Cancel </button>
+                <button class="slds-button slds-button--brand" onclick="{!c.createPOrecord}" style="margin: 0 0.5rem;"> Yes </button>
+            </footer>
+            <!-- =========End Footer====== -->
+        </div>
+    </div>
+</aura:component>

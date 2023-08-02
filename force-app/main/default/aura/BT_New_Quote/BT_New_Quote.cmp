@@ -1,0 +1,5 @@
+<aura:component controller="QuoteController" implements="force:hasRecordId,force:lightningQuickActionwithoutHeader" access="global" >
+    <ltng:require styles="{!$Resource.ModalPreviewDisplayNone}"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler event="aura:doneRendering" action="{!c.doneRendering}"/>
+</aura:component>

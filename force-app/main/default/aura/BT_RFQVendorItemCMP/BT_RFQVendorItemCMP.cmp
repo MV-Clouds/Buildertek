@@ -1,0 +1,402 @@
+<aura:component controller ="RFQVendorItemController" implements="flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global" >
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="rfqtovendorId" type="Id" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="RFQVendorLineList" type="RFQ_Vendor_Item__c[]"/>
+    <aura:attribute name="data" type="list"/>
+    <aura:attribute name="columns" type="List"/>
+    <aura:attribute name="UpdatedList" type="RFQ_Vendor_Item__c[]"/>
+    <aura:attribute name="submitted" type="boolean"/>
+    <aura:attribute name="iseditable" type="boolean" default="true"/>
+    <aura:attribute name="isdisabledelete" type="boolean" default="false"/>
+    <aura:attribute name="isdelete" type="boolean" default="false"/>
+    <aura:attribute name="isdeleterecoedid" type="String" />
+    <aura:attribute name="showPopup" type="Boolean" default="false" />
+    <aura:attribute name="modalPromise" type="Aura.Action"/>
+    <aura:attribute name="selectedFiles" type="sObject[]" default="[]"/>
+    <lightning:overlayLibrary aura:id="overlay"/>
+    <aura:attribute name="files" type="List"/>
+    <aura:attribute name="Isfiles" type="Boolean" default="false" />
+    <aura:attribute name="Isrejected" type="Boolean" default="false" />
+    <aura:attribute name="Isnofiles" type="Boolean" default="false" />
+    <aura:attribute name="rfqfiles" type="List"/>
+    <aura:attribute name="Isrfqfiles" type="Boolean" default="false" />
+    <aura:attribute name="Isnorfqfiles" type="Boolean" default="false" />
+    <aura:attribute name="rfqrecordId" type="String" default="" />
+     <aura:attribute name="rfqunitprice" type="Integer" />
+    <aura:attribute name="currencycode" type="String"/>
+     <aura:attribute name="currencycodeforamount" type="String"/>
+    <aura:attribute name="multicurrency" type="Boolean"/>
+    <aura:attribute name="totalamount" type="Decimal" />
+    <aura:attribute name="rfqstatus" type="String"/>
+    <aura:html tag="style">
+       .slds-modal__container .cls{
+        width:90% !important;      
+		max-width: 90% !important;    
+        }
+        .slds-modal__content {
+        //overflow: hidden !important;
+         }
+    </aura:html>
+
+ <div> 
+    <lightning:card iconName="standard:work_capacity_usage" title="RFQ lines">
+        
+        <div style="text-align: right;position:relative;top:-30px;left:-20px;">
+        <aura:if isTrue="{!!v.submitted}">
+                <lightning:button 
+                class="rightcls"
+                label="New"
+                title="New"
+                onclick="{! c.openModel }" />
+
+               <!-- <lightning:button 
+                class="rightcls"
+                label="Upload Documents"
+                title="Upload Documents"
+                onclick="{!c.uploadFile}" /> -->
+        </aura:if>
+           <!-- <aura:if isTrue="{!v.files.length>0}">
+                <lightning:button 
+                                  class="rightcls"
+                                  label="View Documents"
+                                  title="View Documents"
+                                  onclick="{!c.viewDocuments}" />
+            </aura:if>
+            <aura:if isTrue="{!v.rfqfiles.length>0}">
+                <lightning:button 
+                                  class="rightcls"
+                                  label="Related Documents"
+                                  title="Related Documents"
+                                  onclick="{!c.viewrfqDocuments}" />
+            </aura:if> -->
+        </div>
+        <div>        
+            <aura:if isTrue="{!not(empty(!v.RFQVendorLineList))}">
+                <div>
+               <lightning:datatable aura:id="itemsTable"   data="{!v.RFQVendorLineList }" 
+                            columns="{!v.columns }" 
+                            keyField="Id"                         
+                            hideCheckboxColumn="true"
+                            onsave="{! c.onSave }"
+                            onrowaction="{!c.viewRecord}"
+                                     style="width:655px;"
+                            />
+                <aura:if isTrue="{!v.Isrejected}">
+                    <div style="text-align : right;font-weight: bold;padding-right: 120px;">
+                        Total:&nbsp;&nbsp;&nbsp; 
+                        <span>
+                            <lightning:formattedNumber value="{!v.totalamount}" style="currency"
+                                                       currencyCode="{!v.currencycodeforamount}" currencyDisplayAs="code"/>
+                        </span>
+                       <br/>
+                    </div>
+                     <aura:set attribute="else">
+                         <div style="text-align : right;font-weight: bold;">
+                             Total:
+                             <span style="padding-inline: 10px"  >
+                                 <lightning:formattedNumber value="{!v.totalamount}" style="currency"
+                                                            currencyCode="{!v.currencycodeforamount}" currencyDisplayAs="code"/>
+                             </span>
+                            <br/>
+                         </div>
+                 </aura:set>
+                </aura:if>
+                            <!-- draftValues= "{!v.UpdatedList}" onrowaction="{!c.viewRecord}" -->
+                <aura:set attribute="else">
+                    <div Style="text-align : center"> " There are no related RFQ Vendor Line " </div>
+                </aura:set>
+              </div>
+            </aura:if>
+        </div>
+
+    </lightning:card>
+
+
+    <!-- <div class="slds-m-around_xx-large"> -->
+    <!--Use aura:if tag to display/hide popup based on isModalOpen value-->  
+    <aura:if isTrue="{!v.showPopup}">
+            
+        <!-- Modal/Popup Box starts here-->
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="padding:3%;">
+                <br/><br/><br/>
+                <!-- Modal/Popup Box Header Starts here-->
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close"
+                                            onclick="{! c.closeModel }"
+                                            alternativeText="close"
+                                            variant="bare-inverse"
+                                            class="slds-modal__close"/>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">RFQ Line</h2>
+                    </header>
+                    <!--Modal/Popup Box Body Starts here-->
+                 <lightning:recordEditForm objectApiName="buildertek__RFQ_Vendor_Item__c"
+                        aura:id="recordEditForm"      
+                        onsubmit="{!c.handleSubmit}"
+                        onsuccess="{!c.handleSuccess}"
+                        >
+                        <lightning:messages />
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+
+                      <!--  <lightning:recordEditForm objectApiName="buildertek__RFQ_Vendor_Item__c"
+                        aura:id="recordEditForm"      
+                        onsubmit="{!c.handleSubmit}"
+                        onsuccess="{!c.handleSuccess}"
+                        >
+                        <lightning:messages />-->
+
+                        <table class="slds-table slds-table--bordered':'slds-table--bordered'" >
+                        <tbody>                              
+                            <tr >                               
+                                <lightning:inputField fieldName="Name" 
+                                                required="true" />
+                            </tr>
+                            <tr >
+                                <lightning:inputField fieldName="buildertek__Description__c" />    
+                            </tr>
+                            <tr>
+                               <!-- <lightning:inputField fieldName="buildertek__Quantity__c" /> -->
+                                <lightning:inputField fieldName="buildertek__Vendor_Quantity__c"/>
+                            </tr>
+                            <tr>
+                                <!--<label> unit price-->
+                                <!--<lightning:inputField fieldName="buildertek__Unit_Price__c" />-->
+                                <lightning:inputField fieldName="buildertek__Vendor_Unit_Price__c" />
+                              <!-- <lightning:input fieldName="buildertek__Unit_Price__c"  type="number" label="Unit Price"  value ="{!v.rfqunitprice}" style= "margin-left:0.2rem; margin-right:0.2rem;"/>-->
+                            </tr>
+                            <tr>
+                                <lightning:inputField fieldName="buildertek__Vendor_Estimated_Work_Days__c" />
+                                <!--<lightning:inputField fieldName="buildertek__Vendor_Note__c" label="Unit Price"/>-->
+                            </tr>
+                            <tr>
+                                <lightning:inputField fieldName="buildertek__Note__c" />
+                                <!--<lightning:inputField fieldName="buildertek__Vendor_Note__c" label="Unit Price"/>-->
+                            </tr>
+                            
+                           
+                            
+                            </tbody>
+                        </table>
+                       
+                </div>
+                        <div class="slds-modal__footer" >
+                            <lightning:button class="" 
+                                            variant="neutral"
+                                            label="Cancel"
+                                            title="Cancel"
+                                            onclick="{! c.closeModel }"/>
+                            <lightning:button class="" type="submit" label="Save" />
+                        </div>
+                        
+                     </lightning:recordEditForm> 
+
+
+                
+                <br/><br/><br/>
+                <!--Modal/Popup Box Footer Starts here-->
+                <!-- <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral"
+                                        label="Cancel"
+                                        title="Cancel"
+                                        onclick="{! c.closeModel }"/>
+                    <lightning:button variant="brand"
+                                        label="OK"
+                                        title="OK"
+                                        onclick="{!c.submitDetails}"/>
+                </footer> -->
+            </div>
+            <br/><br/><br/>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+
+    <aura:if isTrue="{!v.Isfiles}">
+            <!-- Modal/Popup Box starts here-->
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container" style="padding:3%;">
+                    <br/><br/><br/>
+                    <!-- Modal/Popup Box Header Starts here-->
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close"
+                                                onclick="{! c.closefilesModel }"
+                                                alternativeText="close"
+                                                variant="bare-inverse"
+                                                class="slds-modal__close"/>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Files</h2>
+                        </header>
+                        <!--Modal/Popup Box Body Starts here-->
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">      
+                                
+                            <aura:iteration items="{!v.files}" var="obj">
+                                <div>
+                                     <a href="{!obj.buildertek__File_Presigned_URL__c}" title="{!obj.buildertek__Amazon_File_Key__c}" target="_blank" style="font-size:20px;">{!obj.buildertek__Amazon_File_Key__c}</a> 
+                                    <!-- <a href="{!obj.buildertek__File_Presigned_URL__c}" title="{!obj.Name}" target="_blank" style="font-size:20px;">{!obj.Name}</a>  -->
+                                    <br/>
+                                </div>
+                                 <br/>                                
+                            </aura:iteration>                              
+                            <br/><br/>
+                        </div>
+
+                        <footer class="slds-modal__footer">
+                            <lightning:button variant="neutral" label="Close" title="Close"
+                                              onclick="{!c.closefilesModel}" />
+                        </footer>
+
+
+                    <br/><br/><br/>
+                    <!--Modal/Popup Box Footer Starts here-->
+                    <!-- <footer class="slds-modal__footer">
+                        <lightning:button variant="neutral"
+                                            label="Cancel"
+                                            title="Cancel"
+                                            onclick="{! c.closeModel }"/>
+                        <lightning:button variant="brand"
+                                            label="OK"
+                                            title="OK"
+                                            onclick="{!c.submitDetails}"/>
+                    </footer> -->
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>              
+    </aura:if>
+     <aura:if isTrue="{!v.Isnofiles}">
+
+        <!-- Modal/Popup Box starts here-->
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container" style="padding:3%;">
+            <br/><br/><br/>
+            <!-- Modal/Popup Box Header Starts here-->
+            <header class="slds-modal__header">
+                <lightning:buttonIcon iconName="utility:close"
+                                        onclick="{! c.closenofilesModel }"
+                                        alternativeText="close"
+                                        variant="bare-inverse"
+                                        class="slds-modal__close"/>
+                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Files</h2>
+                </header>
+                <!--Modal/Popup Box Body Starts here-->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">      
+
+                    <h2>No Files</h2>
+
+                </div>
+
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral" label="Close" title="Close"
+                                        onclick="{!c.closenofilesModel}" />
+                </footer>
+
+                
+            <br/><br/><br/>
+            <!--Modal/Popup Box Footer Starts here-->
+            <!-- <footer class="slds-modal__footer">
+                <lightning:button variant="neutral"
+                                    label="Cancel"
+                                    title="Cancel"
+                                    onclick="{! c.closeModel }"/>
+                <lightning:button variant="brand"
+                                    label="OK"
+                                    title="OK"
+                                    onclick="{!c.submitDetails}"/>
+            </footer> -->
+        </div>
+        <br/><br/><br/>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div> 
+    </aura:if>
+     <aura:if isTrue='{!v.isdelete}'>
+           <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container" style="padding:3%;">
+            <br/><br/><br/>
+            <!-- Modal/Popup Box Header Starts here-->
+            <header class="slds-modal__header">
+                <lightning:buttonIcon iconName="utility:close"
+                                        onclick="{! c.canceldeletescreen }"
+                                        alternativeText="close"
+                                        variant="bare-inverse"
+                                        class="slds-modal__close"/>
+                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Delete RFQ line</h2>
+                </header>
+                <!--Modal/Popup Box Body Starts here-->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">      
+                    <center>
+                        Are you sure you want to Delete the RFQ Line?
+                    </center>
+                </div>
+
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral"
+                                          label="No"
+                                          title="No"
+                                          onclick="{! c.canceldeletescreen }"/>
+                        <lightning:button variant="brand"
+                                          label="Yes"
+                                          title="Yes"
+                                          onclick="{!c.deleteline}"/>
+                </footer>
+
+                
+            <br/><br/><br/>
+        </div>
+        <br/><br/><br/>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div> 
+    </aura:if>
+ <aura:if isTrue="{!v.Isrfqfiles}">
+            <!-- Modal/Popup Box starts here-->
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container" >
+                    <br/><br/><br/>
+                    <!-- Modal/Popup Box Header Starts here-->
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close"
+                                                onclick="{! c.closefilesModel }"
+                                                alternativeText="close"
+                                                variant="bare-inverse"
+                                                class="slds-modal__close"/>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">RFQ Files</h2>
+                        </header>
+                        <!--Modal/Popup Box Body Starts here-->
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">      
+    
+                            <aura:iteration items="{!v.rfqfiles}" var="obj">
+                                <div>
+                                     <a href="{!obj.buildertek__File_Presigned_URL__c}" title="{!obj.Name}" target="_blank" style="font-size:20px;">{!obj.Name}</a> 
+                                    <!-- <a href="{!obj.buildertek__File_Presigned_URL__c}" title="{!obj.Name}" target="_blank" style="font-size:20px;">{!obj.Name}</a>  -->
+                                    <br/>
+                                </div>
+                                 <br/>                                
+                            </aura:iteration>                              
+                            <br/><br/>
+                        </div>
+
+                        <footer class="slds-modal__footer">
+                            <lightning:button variant="neutral" label="Close" title="Close"
+                                              onclick="{!c.closefilesModel}" />
+                        </footer>
+
+
+                    <br/><br/><br/>
+                    <!--Modal/Popup Box Footer Starts here-->
+                    <!-- <footer class="slds-modal__footer">
+                        <lightning:button variant="neutral"
+                                            label="Cancel"
+                                            title="Cancel"
+                                            onclick="{! c.closeModel }"/>
+                        <lightning:button variant="brand"
+                                            label="OK"
+                                            title="OK"
+                                            onclick="{!c.submitDetails}"/>
+                    </footer> -->
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>              
+    </aura:if>
+    
+
+
+</div> 
+
+</aura:component>

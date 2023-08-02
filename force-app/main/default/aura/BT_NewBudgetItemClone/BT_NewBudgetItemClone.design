@@ -1,0 +1,3 @@
+<design:component label="Budget Clone">
+	<design:attribute name="pendingLabel" label="Pending PO" />
+</design:component>

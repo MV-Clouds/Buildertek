@@ -1,0 +1,4 @@
+<aura:event type="COMPONENT">
+    <aura:attribute name="message" type="Object"/>
+    <aura:attribute name="isdelete" type="Boolean" />
+</aura:event>

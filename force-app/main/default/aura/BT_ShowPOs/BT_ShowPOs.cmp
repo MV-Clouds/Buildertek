@@ -1,0 +1,223 @@
+<aura:component controller="PurchaseOrderController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" 
+                access="global">
+    <aura:attribute name="masterBudgetsList" type="object" />
+    <aura:attribute name="Spinner" type="Boolean" />
+    <aura:attribute name="showMessage" type="Boolean" default="false" />
+    
+    <!-- Attribute Declration For Pagination -->
+    
+    <aura:attribute name="PaginationList" type="Object"/>
+    <aura:attribute name="startPage" type="Integer" />
+    <aura:attribute name="endPage" type="Integer"/>
+    <!-- <aura:attribute name="totalRecords" type="Integer"/> -->
+    <!-- <aura:attribute name="pageSize" type="Integer" default="10"/>-->
+    
+    <!-- Attribute Declration For Pagination End-->
+    
+    <!--pagination-->
+    	
+    <aura:attribute name="PageNumber" type="integer" default="1" />
+    <aura:attribute name="pageSize" type="integer" default="10" />
+    <aura:attribute name="TotalPages" type="integer" default="0" />
+    <aura:attribute name="TotalRecords" type="integer" default="0" />
+    <aura:attribute name="RecordStart" type="integer" default="0" />
+    <aura:attribute name="RecordEnd" type="integer" default="0" /> 
+    <!-- end -->
+    
+    
+    <aura:attribute name="searchRfqVendorFilter" type="String" default="" />
+    <aura:attribute name="searchRfqStatusFilter" type="String" default="" />
+    <aura:attribute name="searchRfqDesFilter" type="String" default="" />
+    <aura:attribute name="projectName" type="String" default="" />
+    
+    <aura:handler name="change" value="{!v.searchRfqVendorFilter}" action="{!c.doRfqSearch}" />
+    <aura:handler name="change" value="{!v.searchRfqStatusFilter}" action="{!c.doRfqSearch}" />
+    <aura:handler name="change" value="{!v.searchRfqDesFilter}" action="{!c.doRfqSearch}" />
+    <aura:attribute name="POtoal" type="String" default="" />
+    <aura:attribute name="PaidAmount" type="String" default="" />
+    <aura:attribute name="POBalance" type="String" default="" />
+    
+    <aura:attribute name="orgData" type="Object" />
+    <aura:attribute name="data" type="Object" />
+    <aura:attribute name="columns" type="List" />
+    <aura:attribute name="sortDirection" type="String" default="asc" />
+    <aura:attribute name="defaultSortDirection" type="String" default="asc" />
+    <aura:attribute name="sortedBy" type="String" />
+    
+    <aura:attribute name="selectedTableRows" type="List"  />
+    <aura:attribute name="selectedTableRowIds" type="List" />
+    <aura:attribute name="selectedRows" type="List" />
+    <aura:attribute name="dataByGroup" type="Object" />
+    <aura:attribute name="selectedRowsByGroupMap" type="Object" />
+    <aura:attribute name="groupBytoggle" type="Boolean" default="false" />
+    
+    <aura:handler name="change" value="{!v.groupBytoggle}" action="{!c.doGroupByVendor}" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> 
+    
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/>
+    <div style="background: white;">
+        <div class="slds-modal__header" style="font-size:17px;">
+            {!v.projectName} - Purchase Orders
+        </div>
+        <div class="searchCointainer" style="background: white;">
+            <lightning:input 
+                             style="width: 33%; display: inline-block;padding: 0% 2% 1% 2%;"
+                             autocomplete="off"
+                             aura:id="searchDesRfqItem"
+                             name="enter-search"
+                             type="search"
+                             placeholder="Description"
+                             value="{!v.searchRfqDesFilter}"
+                             /><!--  onkeyup="{!c.doRfqSearch}" width: 33%; display: inline-block; padding: 0% 2% 3% 0% class="slds-p-bottom_small slds-p-right_small"-->
+            <lightning:input
+                             
+                             style="width: 33%; display: inline-block; padding: 0% 2% 1% 2%;"
+                             autocomplete="off"
+                             aura:id="searchRfqVendorItem"
+                             name="enter-search"
+                             type="search"
+                             placeholder="Vendor"
+                             value="{!v.searchRfqVendorFilter}"
+                             />
+            <lightning:input
+                             
+                             style="width: 33%; display: inline-block; padding: 0% 2% 1% 2%;"
+                             autocomplete="off"
+                             aura:id="searchTradeRfqItem"
+                             name="enter-search"
+                             type="search"
+                             placeholder="Status"
+                             value="{!v.searchRfqStatusFilter}"
+                             />
+        </div>
+        <div class=""  style="width: 90%;margin: 0 auto;border: 2px solid #1b5297;">
+            <div class="slds-modal__header" style="font-size: 17px; color: #e7edf4;background: #1b5297;padding: 1%;border-radius:0px;">Totals</div>
+            <lightning:layout horizontalAlign="space">
+                <lightning:layoutItem padding="around-small">
+                    <div class="custom-box">
+                        <!-- <span>PO Grand Total</span> -->
+                        <div>
+                            <lightning:input class="lable-style" type="number" label="PO Grand Total" value="{!v.POtoal}" formatter="currency" disabled="true" /><!-- style="display:inline-block;"-->
+                        </div>
+                        
+                        <!-- <lightning:formattedNumber value="{!v.POtoal}" style="currency" /> -->
+                    </div>
+                </lightning:layoutItem>
+                <lightning:layoutItem padding="around-small">
+                    <div class="custom-box">
+                        <!-- <span>Paid Total Amount</span> -->
+                        <div>
+                            <lightning:input class="lable-style" type="number" label="Paid Total Amount" value="{!v.PaidAmount}" formatter="currency" disabled="true" /><!-- style="display:inline-block;"-->
+                        </div>
+                        <!-- <lightning:formattedNumber value="{!v.PaidAmount}" style="currency" />-->
+                    </div>
+                </lightning:layoutItem>
+                <lightning:layoutItem padding="around-small">
+                    <div class="custom-box">
+                        <!-- <span>PO Total Balance</span> -->
+                        <div>
+                            <lightning:input class="lable-style" type="number" value="{!v.POBalance}" label="PO Total Balance" formatter="currency" disabled="true" /><!-- style="display:inline-block;"-->
+                        </div>
+                        <!-- <lightning:formattedNumber value="{!v.POBalance}" style="currency" />-->
+                        
+                    </div>
+                </lightning:layoutItem>
+            </lightning:layout>
+            <!-- PO Grand Total
+         <lightning:formattedNumber value="{!v.POtoal}" style="currency" />&nbsp; &nbsp;&nbsp;&nbsp;
+        Paid Total Amount
+        <lightning:formattedNumber value="{!v.PaidAmount}" style="currency" />&nbsp; &nbsp;&nbsp;&nbsp;
+        PO Total Balance
+        <lightning:formattedNumber value="{!v.POBalance}" style="currency" />&nbsp; &nbsp;&nbsp;&nbsp;-->
+            
+        </div>
+        <div class="slds-modal__content slds-p-around--large">
+            <div style="width: fit-content;">
+                <lightning:input name="Group By Vendor"
+                                 label="Group By Vendor"
+                                 type="toggle"
+                                 checked="{!v.groupBytoggle}"
+                                 /> 
+                <!-- messageToggleActive="Done" messageToggleInactive="Not Done"-->
+            </div>
+            <div style="text-align:right;">
+                <lightning:button label="Send Email" disabled="" 
+                                  onclick="{!c.sendMail}"/>
+            </div> 
+            <aura:if isTrue="{!v.groupBytoggle}">
+                <div style="margin-top: 15px;">
+                    <aura:iteration items="{!v.dataByGroup}" var="groupItem" indexVar="groupIndex">
+                        <div class="slds-modal__header slds-p-around_x-small" style="font-size:15px;border-top: 2px solid #dddbda; font-weight:bold;">
+                            {!groupItem.groupName}
+                        </div>
+                        <div id="{!groupItem.groupName+'_'+groupIndex}" class="customDataTable" style="margin-top: 15px;"><!-- aura:id = "tableByGroup" aura:id="poTable"-->
+                            <lightning:datatable 
+                                                 
+                                                 keyField="id"
+                                                 columns="{!v.columns }"
+                                                 data="{!groupItem.groupData}"
+                                                 hideCheckBoxColumn="true"
+                                                 showRowNumberColumn="true"
+                                                 onrowselection="{! c.getSelectedRow }"
+                                                 selectedRows="{! v.selectedRows }"
+                                                 defaultSortDirection="{!v.defaultSortDirection}"
+                                                 sortedDirection=""
+                                                 sortedBy=""
+                                                 onsort="{!c.handleSort}" >
+                            </lightning:datatable>
+                            
+                        </div>
+                        
+                    </aura:iteration>
+                </div>
+                <aura:set attribute="else">
+                    <div style="margin-top: 15px;border-top: 2px solid #dddbda;">
+                        <lightning:datatable
+                                             
+                                             keyField="id"
+                                             columns="{!v.columns }"
+                                             data="{!v.data}"
+                                             hideCheckBoxColumn="true"
+                                             showRowNumberColumn="true"
+                                             onrowselection="{! c.getSelectedRow }"
+                                             selectedRows="{! v.selectedRows }"
+                                             defaultSortDirection="{!v.defaultSortDirection}"
+                                             sortedDirection="{!v.sortDirection}"
+                                             sortedBy="{!v.sortedBy}"
+                                             onsort="{!c.handleSort}">
+                        </lightning:datatable>
+                    </div>
+                </aura:set>
+            </aura:if>
+            
+            <div style="margin-top: 15px;display:none;">
+                <lightning:buttonGroup >
+                    <lightning:button label="Previous" disabled="{!v.startPage == 0}"  
+                                      onclick="{!c.previous}" variant="brand"
+                                      iconName='utility:back'/>
+                    &nbsp; &nbsp; &nbsp;
+                    <lightning:button label="Next" disabled="{!v.endPage >= v.totalRecords}" 
+                                      onclick="{!c.next}" variant="brand"
+                                      iconName='utility:forward' iconPosition='right'/>
+                </lightning:buttonGroup>
+            </div>
+            
+            <aura:if isTrue="{!v.Spinner}">
+                <div aura:id="spinnerId" class="slds-spinner_container" style="position:fixed;">
+                    <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                        <span class="slds-assistive-text">Loading</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                        <div class="custom-loading-text">
+                            <aura:if isTrue="{!v.showMessage}">
+                               <!-- <b>Sending email</b>-->
+                                 <b>Processing, Please Wait</b>
+                            </aura:if>
+                        </div>
+                    </div>
+                </div>
+            </aura:if>
+        </div>
+    </div>
+</aura:component>

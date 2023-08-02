@@ -1,0 +1,139 @@
+<aura:component controller="SubmittalDAO" implements="force:hasRecordId,force:lightningQuickActionWithoutHeader,lightning:actionOverride" access="global">
+    <aura:attribute name="selectedCostCode" type="sObject"/>
+    <aura:attribute name="defaultStatus" type="String" default="Draft"/>
+    <aura:attribute name="currentUserName" type="String"/>
+    <aura:attribute name="currentUserId" type="String"/>
+    <aura:attribute name="parentRecordId" type="String"/>
+    <aura:attribute name="projectId" type="String"/>
+    <aura:attribute name="Spinner" type="boolean" default="false"/>
+    <aura:attribute name="isOpen" type="boolean" default="false"/>
+    <aura:attribute name="newSubmittal" type="Submittal__c" default="{ 'sobjectType': 'Submittal__c'}" access="public"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    
+    <!-- 'parentId' Aura Attribute for store the Id for Parent Record where we are attach our file -->  
+    <aura:attribute name="submittalRecordId" type="Id" default="" />
+    <!-- 'showLoadingSpinner' attribute for show/hide the uploading image and msg in aura:if-->
+    <aura:attribute name="showLoadingSpinner" type="boolean" default="false" />
+    <!-- 'fileName' attribute for display the selected file name -->  
+    <aura:attribute name="fileName" type="String" default="No File Selected.." />
+     <aura:attribute name="multiple" type="Boolean" default="true"/>      
+    <aura:attribute name="isSaveAndNew" type="Boolean" default="false" />
+    <aura:attribute name="fileCount" type="Integer" default="0" />
+    
+    
+    <aura:attribute name="uploadedFileIds" type="List" default="[]" />
+    
+    <ltng:require styles="{!$Resource.ModalPreview62moreMedia}"/>
+    <lightning:notificationsLibrary aura:id="notifLib"/>
+    <lightning:workspaceAPI aura:id="workspace"/>
+    <!-- <div class="slds-m-around_small">-->
+    <!--<aura:if isTrue="{!v.IsConsole}" >-->
+    <aura:if isTrue="{!v.isOpen}"> 
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" >
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeModel }" alternativeText="close"
+                                          variant="bare-inverse" class="slds-modal__close" />
+                    <p></p>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New Submittal</h2>
+                    <p></p>
+                </header>
+                <div class="slds-modal__content" id="modal-content-id-1">
+                    <!--<h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New Submittal</h2>-->
+                    <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__Submittal__c">
+                        <lightning:layout multipleRows="true" >
+                            <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                                <lightning:input aura:id="submittalId" type="text" value="{!v.newSubmittal.buildertek__Title__c}" label="Title" autocomplete="off"/>
+                            </lightning:layoutItem>
+                            <!--<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+          <label style="color: rgb(62, 62, 60)">Submitted Date</label><br/>
+          <ui:outputDate aura:id="oDate" value="" />
+         </lightning:layoutItem>-->
+                            <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                                <lightning:inputField aura:id="vendor" fieldName="buildertek__Responsible_Vendor__c" value="{!v.newSubmittal.buildertek__Responsible_Vendor__c}" label="Responsible Vendor" />
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                                <lightning:inputField aura:id="description" fieldName="buildertek__Description__c" value="{!v.newSubmittal.buildertek__Description__c}" label="Description" />
+                            </lightning:layoutItem>
+                            <!--<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+          <label style="color: rgb(62, 62, 60)">Submitted By</label><br/>
+          <ui:outputText value="{!v.currentUserName}"/>
+         </lightning:layoutItem>-->
+                            <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                                <lightning:inputField aura:id="contact" fieldName="buildertek__Responsible_Contact__c" value="{!v.newSubmittal.buildertek__Responsible_Contact__c}" label="Responsible Contact" />
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                                <lightning:input type="date" aura:id="dueDate" value="{!v.newSubmittal.buildertek__Due_Date__c}" label="Due Date" autocomplete="off" style="margin-left: 5px"/>
+                            </lightning:layoutItem>
+                            
+                             <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                                <lightning:input aura:id="fileId" onchange="{!c.handleFilesChange}" type="file" name="file" label="Upload Attachment" multiple="true"/>
+                                <div class="slds-text-body_small slds-text-color_error">{!v.fileName} </div>
+                            </lightning:layoutItem>
+                            
+                           <!-- <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                                <lightning:fileUpload label="Upload Attachment" multiple="{!v.multiple}"   
+                                                      recordId="" 
+                                                      onuploadfinished="{!c.handleUploadFinished}"/>  
+                            </lightning:layoutItem> -->
+                            <br/>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <!--<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+          <lightning:inputField aura:id="vendor" fieldName="buildertek__Responsible_Vendor__c" value="{!v.newSubmittal.buildertek__Responsible_Vendor__c}" label="Responsible Vendor" />
+         </lightning:layoutItem>-->
+                            <!--<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+          <lightning:inputField aura:id="contact" fieldName="buildertek__Responsible_Contact__c" value="{!v.newSubmittal.buildertek__Responsible_Contact__c}" label="Responsible Contact" />
+         </lightning:layoutItem>-->
+                        </lightning:layout>
+                        <!--  <footer aura:id="footer" class="slds-modal__footer">
+                                    <lightning:button variant="neutral" 
+                                                      label="Cancel"
+                                                      title="Cancel"
+                                                      onclick="{! c.closeModel }"/>
+                                    <lightning:button variant="neutral" 
+                                                      label="Save &amp; New"
+                                                      title="Save &amp; New"
+                                                      onclick="{!c.saveAndNew}"/>                  
+                                    <lightning:button variant="brand" 
+                                                      label="Save"
+                                                      title="Save"
+                                                      onclick="{!c.save}"/>
+                                </footer> -->
+                        
+                        <div class="slds-col modal-footer slds-modal__footer slds-buttoncustom">
+                        <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{! c.closeModel }" />
+                        <lightning:button variant="neutral" title="Save &amp; New" label="Save &amp; New"
+                            onclick="{!c.saveAndNew}" />
+                            
+                        <lightning:button variant="brand"  name="save" label="Save"  onclick="{!c.save}" /> <!-- type="submit" -->
+                    </div>
+                        
+                        
+                    </lightning:recordEditForm>
+                </div>
+                <aura:if isTrue="{!v.Spinner}">
+                    <div aura:id="spinnerId" class="slds-spinner_container">
+                        <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                            <span class="slds-assistive-text">Loading</span>
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                            <div class="custom-loading-text">
+                                <b>Processing, Please Wait</b>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </aura:if>
+            </div>
+        </section>
+    </aura:if>    
+    <!--</aura:if>-->
+    <!--</div>-->
+</aura:component>

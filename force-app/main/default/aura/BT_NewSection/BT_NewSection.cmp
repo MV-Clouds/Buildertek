@@ -1,0 +1,73 @@
+<aura:component controller="BT_QuestionnaireBuilder" access="public">
+    <aura:attribute name="namespace" type="String" default="buildertek__" description="namespace prefix" />
+    <aura:attribute name="recordTypeName" type="String" description="Authority document record Type developer name" />
+    <aura:attribute name="adId" type="Id" description="Authority document id" />
+    <aura:attribute name="section" type="object" description="section detail list" />
+    <aura:attribute name="sectionObjectFields" type="object" description="section addition fields" />
+    <aura:attribute name="fields" type="List" description="section fields of fields" />
+    <aura:attribute name="isNewCitation" type="Boolean" default="true" />
+    <aura:attribute name="onSuccess" type="Aura.Action"
+        description="parent component method Reference action used to call from child components on record Save" />
+    <aura:attribute name="onDelete" type="Aura.Action"
+        description="parent component method Reference action used to call from child components on record delete" />
+    <aura:attribute name="modalPromise" type="Aura.Action"
+        description="Reference action used to call from child components" />
+    <aura:attribute name="isSaveAndNew" type="Boolean" default="false" />
+    <aura:attribute name="reloadCmp" type="Boolean" default="false" />
+
+    <aura:registerEvent name="refreshEvent" type="c:refreshComponent" />
+    <aura:handler name="init" value="{! this }" action="{! c.init }" />
+    <aura:handler event="force:refreshView" action="{!c.init}" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+
+    <div aura:id="newsection" class="slds-is-relative">
+
+        <!-- Spinner -->
+        <c:BT_Spinner />
+        <aura:if isTrue="{!!v.reloadCmp}">
+            <lightning:recordEditForm aura:id="citationRecordForm" recordId="{!v.section.Id}"
+                objectApiName="buildertek__Section__c" onsubmit="{!c.submitSectionRecord}" onsuccess="{!c.onSuccess}">
+                <lightning:messages />
+
+                <lightning:tabSet>
+                    <!-- Fields -->
+                    <lightning:tab label="Details" Id="setup">
+                        <div class="slds-grid slds-wrap slds-scrollable">
+                            <aura:iteration items="{!v.fields}" var="field" indexVar="index">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <div class="slds-box_x-small slds-m-around_x-small">
+                                        <lightning:inputField aura:id="field" fieldName="{!field}" autocomplete="off" />
+                                    </div>
+                                </div>
+                            </aura:iteration>
+                            <lightning:inputField fieldName="buildertek__Selection__c" class="slds-hide"
+                                value="{!v.adId}" />
+                        </div>
+                    </lightning:tab>
+
+                </lightning:tabSet>
+
+                <div class="slds-hide">
+                    <div aura:id="footer">
+
+                        <lightning:button name="cancel" class="slds-float" variant="neutral" label="Cancel"
+                            onclick="{!c.close}" />
+                        <aura:if isTrue="{!!v.isNewCitation}">
+                            <lightning:button name="delete" class="slds-float" variant="brand" label="Delete"
+                                onclick="{!c.deleteSectionModal}" />
+                        </aura:if>
+                        <lightning:button class="slds-float_right" name="save" variant="brand" type="submit"
+                            label="Save" onclick="{!c.save}" />
+                        <lightning:button class="slds-float_right" name="saveandnew" variant="brand" type="submit"
+                            label="Save &amp; New" onclick="{!c.saveAndNew}" />
+                    </div>
+                    <button class="slds-hide" id="saveSectionbutton" name="save" type="submit" />
+                    <button class="slds-hide" id="saveAndNewSectionbutton" name="saveAndNew" type="submit" />
+                </div>
+
+            </lightning:recordEditForm>
+        </aura:if>
+    </div>
+
+
+</aura:component>

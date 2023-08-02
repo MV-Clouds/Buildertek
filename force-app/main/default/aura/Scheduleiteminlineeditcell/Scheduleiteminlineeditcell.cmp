@@ -1,0 +1,58 @@
+<aura:component access="global">
+    <aura:attribute name="record" type="sObject" description="record which is being displayed"/>
+    <aura:attribute name="field" type="Object" description="field object which is being rendered"/>
+    <aura:attribute name="cellValue" type="Object"/>
+    <aura:attribute name="cellLabel" type="String"/>
+    <aura:attribute name="isTextField" type="boolean" default="false"/>
+    <aura:attribute name="isReferenceField" type="boolean" default="false"/>
+    <aura:attribute name="isDateField" type="boolean" default="false"/>
+    <aura:attribute name="isDateTimeField" type="boolean" default="false"/>
+    <aura:attribute name="isCurrencyField" type="boolean" default="false"/>
+    <aura:attribute name="isBooleanField" type="boolean" default="false"/>
+    
+<aura:attribute name="isEditMode" type="boolean" default="false"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:if isTrue="{!v.isTextField}">
+       
+    	
+         <aura:if isTrue="{!v.isEditMode}">
+             <ui:inputText aura:id="inputId" value="{!v.cellValue}" change="{!c.updateQuoteData}" blur="{!c.onblur}"/>
+             <aura:set attribute="else" >
+                 <ui:outputText value="{!v.cellValue}"/>
+        <button class="slds-button slds-button_icon slds-cell-edit__button slds-m-left_x-small" tabindex="-1" title="">
+            <span style="display:none;" data-id="{!v.cellValue}" data-label="Name"  onclick="{!c.inlineEdit}">
+                <lightning:icon iconName="utility:edit" size="xx-small" alternativeText="edit"/>
+            </span>
+            <span class="slds-assistive-text">Edit</span>
+        </button>
+                 </aura:set>
+        </aura:if>
+    </aura:if>
+    <aura:if isTrue="{!v.isDateField}">
+         <aura:if isTrue="{!v.isEditMode}">
+             <ui:inputDate aura:id="dateid" value="{!v.cellValue}" change="{!c.updateQuoteData}" blur="{!c.onblur}"/>
+             <aura:set attribute="else" >
+                 <ui:outputDate value="{!v.cellValue}" format="MM/DD/YYYY"/>
+        <button class="slds-button slds-button_icon slds-cell-edit__button slds-m-left_x-small" tabindex="-1" title="">
+            <span style="display:none;" data-id="{!v.cellValue}" data-label="Name"  onclick="{!c.inlineEdit}">
+                <lightning:icon iconName="utility:edit" size="xx-small" alternativeText="edit"/>
+            </span>
+            <span class="slds-assistive-text">Edit</span>
+        </button>
+                 </aura:set>
+        </aura:if>
+    	
+    </aura:if>
+    <aura:if isTrue="{!v.isDateTimeField}">
+    	<ui:outputDateTime value="{!v.cellValue}"/>
+    </aura:if>
+    <aura:if isTrue="{!v.isCurrencyField}">
+    	<ui:outputCurrency value="{!v.cellValue}"/>
+    </aura:if>
+    <aura:if isTrue="{!v.isReferenceField}">
+    	<ui:outputURL value="{!'/one/one.app?#/sObject/'+ v.cellValue + '/view'}" target="_blank" label="{!v.cellLabel}"/>
+    </aura:if>
+     <aura:if isTrue="{!v.isBooleanField}">
+         <ui:outputCheckbox value="{!v.cellValue}"/>
+    </aura:if>
+</aura:component>

@@ -1,0 +1,48 @@
+<aura:component controller="RecordTypeSelector" implements="force:lightningQuickActionWithoutHeader,force:hasRecordId" access="global" >
+    <aura:attribute name="lstOfRecordType" type="String[]" />
+    <aura:attribute name="mapOfRecordType" type="Map" />
+    <aura:attribute name="customeSiteDetail" type="Case" />
+    <aura:attribute name="recordId" type="Id" />
+
+    <!-- Fetch all available record types after component construction but before rendering -->
+    
+    <aura:handler name="init" value="{!this}" action="{!c.fetchListOfRecordTypes}"/>    
+    <lightning:layout multipleRows="true" horizontalAlign="center">
+        <lightning:layoutItem flexibility="auto" padding="around-small"
+                              size="12"
+                              largeDeviceSize="12"
+                              mediumDeviceSize="12"
+                              smallDeviceSize="12">
+            <lightning:formattedText value="Select Case Record Type" />
+        </lightning:layoutItem>
+        
+        <lightning:layoutItem flexibility="auto" padding="around-small"
+                              size="12"
+                              largeDeviceSize="12"
+                              mediumDeviceSize="12"
+                              smallDeviceSize="12">
+            
+            <!-- select to hold all available record type names list -->
+            <lightning:select aura:id="recordTypePickList" name="selectRecordType" label="Select a Record Type">
+                <aura:iteration items="{!v.lstOfRecordType}" var="item">
+                    <option value="{!item}" text="{!item}"/>
+                </aura:iteration>
+            </lightning:select>
+        </lightning:layoutItem>
+        
+        <lightning:layoutItem flexibility="auto" padding="around-small"
+                              size="3"
+                              largeDeviceSize="3"
+                              mediumDeviceSize="3"
+                              smallDeviceSize="6">
+            <lightning:button variant="brand" label="Next" onclick="{!c.createRecord}"/>
+        </lightning:layoutItem>
+        <lightning:layoutItem flexibility="auto" padding="around-small"
+                              size="3"
+                              largeDeviceSize="3"
+                              mediumDeviceSize="3"
+                              smallDeviceSize="6">
+            <lightning:button variant="neutral" label="Cancel" onclick="{!c.closeModal}" />
+        </lightning:layoutItem>
+    </lightning:layout>
+</aura:component>

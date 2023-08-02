@@ -1,0 +1,45 @@
+<apex:page controller="BT_ChangeOrderonOverage" sidebar="false" lightningStylesheets="true">
+    <apex:slds />
+    <apex:form >
+        <apex:pageBlock mode="maindetail">
+            <apex:pageMessages />
+            <apex:pageblocksection >
+                <apex:inputcheckbox value="{!isCreateChangeOrderonOverage}" label="Create Change Order on Overage">
+                </apex:inputcheckbox>
+                <apex:inputtext value="{!emailsubject}" label="Email Subject"/>
+
+
+            
+            <!-- 
+                <apex:selectRadio layout="pageDirection" label="Are you using products?">
+                    <Label>Yes</Label><input type="radio" name="radioButton" value="{!CheckRecordTypeVisibilityYes}" checked="{!CheckRecordTypeVisibilityYes}"/>
+                    <Label>No</Label><input type="radio" name="radioButton" value="{!CheckRecordTypeVisibilityNo}" checked="{!CheckRecordTypeVisibilityNo}"/>
+                    
+                </apex:selectRadio> -->
+
+                <apex:selectRadio value="{!radiovalue}" layout="pageDirection" label="Are you using products?">
+                    <apex:selectOptions value="{!Options}"/>
+                </apex:selectRadio>
+                
+
+                <apex:selectList label="Custom New Button" value="{!createCO}" multiselect="false" size="1">
+                    <apex:selectOption itemValue="Without CO Lines" itemLabel="Standard Button"/>
+                    <apex:selectOption itemValue="With CO Lines" itemLabel="Custom Button"/>
+                </apex:selectList>
+
+
+                <!-- <apex:selectRadio id="radioSelect" value="{!isExempt}" layout="pageDirection" >
+                   
+                    <apex:selectOptions value="{!Options}"/>
+                </apex:selectRadio> -->
+              
+                <center>
+                <apex:commandButton value="Save" id="onCreateChangeOrderonOverage" styleClass="slds-button slds-button_brand" action="{!onCreateChangeOrderonOverage}"></apex:commandButton>
+                </center>
+
+                
+
+            </apex:pageblocksection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,19 @@
+<apex:page sidebar="false" showHeader="false">
+    <apex:includeLightning />
+    <!--Lightning Container-->
+    <div style="width:100%;height:100px;" id="LightningContainer"/>
+     
+    <script type="text/javascript">
+    //get account Id from URL
+    var recordId = "{!$CurrentPage.parameters.id}";
+     
+    //Create Lightning Component
+    $Lightning.use("buildertek:ParticipantResponseCMPApp", function() {
+        $Lightning.createComponent("buildertek:ParticipantResponseCMP", 
+                                   { "recordId" : recordId }, //Pass Parameter
+                                   "LightningContainer", function(component) {
+                                       console.log('Component created');
+                                   });
+    });
+    </script>
+</apex:page>

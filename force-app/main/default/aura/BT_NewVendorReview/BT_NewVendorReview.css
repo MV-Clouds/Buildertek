@@ -1,0 +1,42 @@
+/*.THIS.slds-modal__container{
+	width: 100% !important;
+	max-width: 100% !important;
+}
+.THIS.modal-dialog{
+	height: 600px !important;
+	max-height: 600px !important;
+}*/
+/*.THIS.slds-modal__container{ 
+     height : auto; width: 100%; max-width: 70vh; 
+   } 
+
+.modal-dialog {
+ 
+          width: 360px;
+ 
+          height:600px !important;
+ 
+        }
+ .THIS.modal-body{ 
+     height : 40vh !important; 
+     max-height: 40vh !important; 
+   } */
+
+/* .THIS .slds-modal__container{
+    height: 95%;
+}
+.THIS .slds-modal__container{
+    margin: 115px auto;
+    width: 85%;
+    max-width: 75rem;
+    min-width: 70rem;
+    max-height: 40rem;
+}
+.THIS .custom-loading-text {
+    transform: rotate(-90deg);
+    position: absolute;
+    top: -0.5rem;
+    left: 1rem;
+    white-space: nowrap;
+    font-size: 20px;
+} */

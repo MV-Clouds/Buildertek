@@ -1,0 +1,6 @@
+<aura:component controller="RFQ_Override_AC" implements="force:hasRecordId,force:lightningQuickActionWithoutHeader,lightning:actionOverride" access="global" >
+	 
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+   <!-- <aura:handler event="aura:doneRendering" action="{!c.doneRendering}"/> -->
+    <aura:attribute name="parentRecordId" type="string" />
+</aura:component>

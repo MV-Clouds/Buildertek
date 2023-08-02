@@ -1,0 +1,20 @@
+<aura:component >
+    <aura:attribute name="record" type="sObject" description="record which is being displayed"/>
+    <aura:attribute name="field" type="Object" description="field object which is being rendered"/>
+    <aura:attribute name="cellLabel" type="String"/>
+    <aura:attribute name="cellValue" type="String"/>
+    
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}" />
+    
+    <aura:if isTrue="{!v.field.displayURL}">
+        <aura:If isTrue="{!!$Browser.isPhone}">
+            <ui:outputURL value="{!'/one/one.app?#/sObject/'+ v.cellValue + '/view'}" target="_blank" label="{!v.cellLabel}"/>
+            <aura:set attribute="else">
+                <ui:outputURL value="{!'/one/one.app?#/sObject/'+ v.cellValue + '/view'}" target="_self" label="{!v.cellLabel}"/>
+            </aura:set>
+        </aura:If>
+        <aura:set attribute="else">
+            {!v.cellLabel}
+        </aura:set>
+    </aura:if>
+</aura:component>

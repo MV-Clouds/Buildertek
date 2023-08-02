@@ -1,0 +1,73 @@
+<template>
+    <div class="slds-m-around_xx-large">
+        <!-- <template if:true={isOpen}> -->
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <template if:true={Spinner}>
+                        <div class="slds-spinner_container" style="position:fixed;">
+                            <div class="slds-spinner--brand slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                                <span class="slds-assistive-text">Loading</span>
+                                <div class="slds-spinner__dot-a"></div>
+                                <div class="slds-spinner__dot-b"></div>
+                                <div class="custom-loading-text">
+                                    <template if:true={showMessage}>
+                                        <b>Processing, Please Wait</b>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                    
+                    <header class="slds-modal__header">
+                        <lightning-button-icon icon-name="utility:close" onclick={hideModalBox1} alternative-text="close"
+                            variant="bare-inverse" size="small" class="slds-modal__close"></lightning-button-icon>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Import Schedules</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <div class="slds-grid">
+                            <div class="slds-size_12-of-12">
+                                <div class="slds-box slds-theme_default slds-box_small">
+                                    <p>
+                                        <strong>Note: </strong> This import functionality will import Name, Dependency,
+                                        StartDate, Duration, % Complete, Phase, Notes and Lag fields in Schedule Lines .
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="slds-grid">
+                            <div class="slds-size_8-of-12">
+                                <lightning-input type="file" name="file" accept={acceptedFormats} onchange={handleFileChange}></lightning-input>
+                                <div if:false={showError} class="slds-text-body_small">{fileName}</div>
+                            </div>
+                            <button class="slds-button download" onclick={downloadCsv}>Download CSV</button>
+                        </div>
+                        <div class="slds-grid">
+                            <div class="slds-size_10-of-12">
+                                <template if:true={showError}>
+                                    <h1 style="color:red;">Please upload a file to import</h1>
+                                </template>
+                            </div>
+                        </div>
+                        <template if:true={isErrorOccured}>
+                            <div class="slds-grid">
+                                <div class="slds-size_10-of-12">
+                                    <div class="slds-text-color_error">
+                                        {errorMessage}
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <button class="slds-button cancel" onclick={hideModalBox1}>Cancel</button>
+                        <button class="slds-button import" onclick={CreateRecord}>Import</button>
+                    </footer>
+
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        <!-- </template> -->
+    </div>
+</template>

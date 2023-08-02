@@ -1,0 +1,14 @@
+<!--**********************************************************************************
+* Copyright © 2017, BuilderTek.
+* All rights reserved
+*
+* VisualForce Page: BT_IncludeJavaScript
+* Created by Sagar: 07/06/2014
+
+* - All JS are included in this page
+
+* - Modifications:
+* - Sagar - Initial 
+***********************************************************************************-->
+<apex:page >
+</apex:page>

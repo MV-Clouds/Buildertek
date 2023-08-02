@@ -1,0 +1,196 @@
+.THIS {
+}
+
+.THIS .bttable .slds-grid_align-end{
+  justify-content: unset !important;
+}
+
+.THIS .bttable .slds-table_header-fixed_container{
+  padding-top: 0rem !important;
+}
+
+.THIS .bttable .slds-table thead{
+	visibility: hidden !important;
+}
+
+.THIS .bttable .slds-table_bordered{
+	border-bottom: 0px solid rgb(221, 219, 218) !important;
+}
+
+.THIS .slds-scrollable_x { overflow: visible; }
+.THIS .slds-scrollable_y { overflow: visible; }
+
+.THIS .slds-truncate {
+    max-width: 108px !important;
+    width: 82px !important;
+    text-align: left !important;
+}
+.THIS .accordion_edit {
+    background-color: grey !important;
+    visibility: inherit !important;
+}  
+.THIS .slds-accordion__summary {
+    background-color: grey !important;
+}
+.THIS .slds-line-height_reset {
+    background-color: grey !important;
+}
+.THIS .slds-line-height_reset:hover td{
+    background-color: grey !important;
+}
+.THIS .slds-line-height_reset:hover .bttableheader {
+    z-index: 1000 !important;
+}
+@media only screen and (max-width: 1079px) and (min-width: 720px){
+  .THIS .bttableheaderone  {
+   	    max-width: 120px !important;
+        width: 79px !important;
+        cursor: default !important;
+        text-align: -webkit-left !important;
+        justify-content: left !important;
+        font-size: 9px !important;
+  }
+  .THIS .bttable {
+        cursor: default !important;
+        text-align: -webkit-left !important;
+        justify-content: left !important;
+        font-size: 9px !important;
+    }    
+}    
+@media only screen and (max-width: 1179px) and (min-width: 1080px){
+  .THIS .bttableheaderone  {
+   	    max-width: 120px !important;
+        width: 82px !important;
+        cursor: default !important;
+        text-align: -webkit-left !important;
+        justify-content: left !important;
+        font-size: 9px !important;
+  }
+  .THIS .bttable {
+        cursor: default !important;
+        text-align: -webkit-left !important;
+        justify-content: left !important;
+        font-size: 9px !important;
+    }  
+}
+@media only screen and (max-width: 1279px) and (min-width: 1180px){
+  .THIS .bttableheaderone  {
+   	    max-width: 120px !important;
+        width: 87px !important;
+        cursor: default !important;
+        text-align: -webkit-left !important;
+        justify-content: left !important;
+        font-size: 10px !important;
+  }
+    .THIS .bttable {
+        cursor: default !important;
+        text-align: -webkit-left !important;
+        justify-content: left !important;
+        font-size: 10px !important;
+    } 
+    .THIS .slds-truncate {
+        max-width: 108px !important;
+        width: 102px !important;
+        text-align: left !important;
+    } 
+}
+@media only screen and (max-width: 1369px) and (min-width: 1280px){
+  .THIS .bttableheaderone  {
+   	    max-width: 120px !important;
+        width: 92px !important;
+        cursor: default !important;
+        text-align: -webkit-left !important;
+        justify-content: left !important;
+        font-size: 11px !important;
+  }
+  .THIS .bttable {
+        cursor: default !important;
+        text-align: -webkit-left !important;
+        justify-content: left !important;
+        font-size: 11px !important;
+    }  
+}
+@media only screen and (max-width: 1579px) and (min-width: 1370px){
+  .THIS .bttableheaderone  {
+   	    max-width: 120px !important;
+        width: 97px !important;
+        cursor: default !important;
+        text-align: -webkit-left !important;
+        justify-content: left !important;
+        font-size: 11px !important;
+  }
+  
+  .THIS .bttable {
+        cursor: default !important;
+        text-align: -webkit-left !important;
+        justify-content: left !important;
+        font-size: 11px !important;
+    }
+   
+   .THIS .slds-truncate {
+        max-width: 108px !important;
+        width: 52px !important;
+        text-align: left !important;
+    } 
+}
+@media only screen and (max-width: 1779px) and (min-width: 1580px){
+    .THIS .bttableheaderone  {
+   	    max-width: 120px !important;
+        width: 100px !important;
+        cursor: default !important;
+        text-align: -webkit-left !important;
+        justify-content: left !important;
+        font-size: 11px !important;
+    }
+    .THIS .bttable {
+        cursor: default !important;
+        text-align: -webkit-left !important;
+        justify-content: left !important;
+        font-size: 11px !important;
+    }
+}
+@media only screen and (max-width: 1980px) and (min-width: 1780px){
+    .THIS .bttableheaderone  {
+   	    max-width: 120px !important;
+        width: 103px !important;
+        cursor: default !important;
+        text-align: -webkit-left !important;
+        justify-content: left !important;
+        font-size: 11px !important;
+    }
+    .THIS .bttable {
+        cursor: default !important;
+        text-align: -webkit-left !important;
+        justify-content: left !important;
+        font-size: 11px !important;
+    }
+}
+
+.THIS .slds-modal__container {
+    margin: 0 auto;
+    width: 90%;
+    max-width: 80rem;
+    min-width: 20rem;
+}
+
+.THIS .slds-dropdown-trigger_click.slds-is-open .slds-dropdown{
+    display : block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    top: -119% !important;
+    height:66px !important;
+    position:absolute !important;
+    right: 20px !important;
+}
+.THIS .buildertekBT_BudgetGroupAccordion .bttable .slds-table_bordered {
+    border-bottom: 0 solid rgb(221, 219, 218)!important;
+    height: 90px !important;
+}
+
+.THIS .slds-dropdown__item>a {
+	padding: 0.3rem .75rem !important ;
+}
+
+.THIS .slds-hint-parent{
+    height: 70px !important;
+}

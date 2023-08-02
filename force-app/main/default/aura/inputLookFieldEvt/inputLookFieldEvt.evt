@@ -1,0 +1,4 @@
+<aura:event type="COMPONENT">
+    <aura:attribute name="selectedRecId" type="String"/>
+    <aura:attribute name="reqType" type="String"/>
+</aura:event>

@@ -1,0 +1,62 @@
+<apex:component controller="QuotelineGroupingController" access="global">
+    <apex:attribute type="id" name="relatedTo_id" assignTo="{!relatedToId}" description="RelatedTo" access="global" />
+
+    <!-- <div class="wrapper-box" style="margin: 0 auto;background: #fcfcfc;">  -->
+
+    <table style="width: 100%;text-align: left;border-spacing: 0;">
+        <thead style="background: #ddd;">
+            <tr>
+                <th style="font-size: 15px;border-bottom: 1px solid #ccc; border-right: 1px solid #ccc;padding: 5px 15px;">Product Description</th>
+                <th style="font-size: 15px;border-bottom: 1px solid #ccc; border-right: 1px solid #ccc;padding: 5px 15px;text-align: right">Total List Price</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            <apex:repeat value="{!wrapperlst}" var="quoteItem">
+                <tr style="line-height: 1.6;">
+                    <td style="font-size: 14px;padding: 5px 15px;color:black;text-align: left;border-bottom:  1px solid  #ccc;border-right:  1px solid  #ccc;">
+                        <apex:outputText value="{!quoteItem.groupName}" />
+                    </td>
+                    <td style="font-size: 14px;padding: 5px 15px;color:black;text-align: right;border-bottom:  1px solid  #ccc;border-right:  1px solid  #ccc;">
+                        <apex:outputText value="{0, number, $###,###,###,##0.00}">
+                            <apex:param value="{!quoteItem.listTotal}" />
+                        </apex:outputText>
+                    </td>
+                </tr>
+            </apex:repeat>
+
+
+
+            <!-- <tr>
+                <td colspan="1" style="font-size: 15px;padding: 5px 15px;font-weight: bold;text-align: right;color:black;border-bottom:  1px solid  #ccc;border-right:1px solid #ccc;">Subtotal: </td>
+                <td style="font-size: 14px;padding: 5px 15px;text-align: right;color:black;border-bottom:1px solid #ccc;border-right: 1px solid  #ccc;">
+                    <apex:outputField value="{!quotesList[0].Total__c}" />
+                </td>
+            </tr>
+
+            <tr>
+                <td colspan="1" style="font-size: 15px;padding: 5px 15px;font-weight: bold;text-align: right;color:black;border-bottom:  1px solid  #ccc;border-right:  1px solid  #ccc;">Tax %: </td>
+                <td style="font-size: 14px;padding: 5px 15px;text-align: right;color:black;border-bottom:  1px solid  #ccc;border-right:  1px solid  #ccc;">
+                    <apex:outputField value="{!quotesList[0].Tax__c}" />
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1" style="font-size: 15px;padding: 5px 15px;font-weight: bold;text-align: right;color:black;border-bottom:  1px solid  #ccc;border-right:1px solid #ccc;">Discount %: </td>
+                <td style="font-size: 14px;padding: 5px 15px;text-align: right;color:black;border-bottom:1px solid #ccc;border-right: 1px solid  #ccc;">
+                    <apex:outputField value="{!quotesList[0].buildertek__Discount__c}" />
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1" style="font-size: 15px;padding: 5px 15px;font-weight: bold;text-align: right;color:black;border-bottom:  1px solid  #ccc;border-right:  1px solid  #ccc;">Quote Total: </td>
+                <td style="font-size: 14px;padding: 5px 15px;text-align: right;background: #7fb601;color: #fff;font-weight: bold;border-bottom:  1px solid  #ccc;border-right:  1px solid  #ccc;">
+                    <apex:outputField value="{!quotesList[0].Grand_Total__c}" />
+                </td>
+            </tr> -->
+
+
+        </tbody>
+
+    </table>
+    <!-- </div> -->
+
+</apex:component>

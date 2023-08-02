@@ -1,0 +1,8 @@
+<aura:component access="global" implements="lightning:availableForFlowScreens">
+    <aura:attribute name="object" type="String" access="global"></aura:attribute>
+    <aura:attribute name="lookupField" type="String" access="global"></aura:attribute>
+    <aura:attribute name="selectedRecordId" type="String" access="global"></aura:attribute>
+    <lightning:recordEditForm objectApiName="{!v.object}">
+        <lightning:inputField variant="label-stacked" fieldName="{!v.lookupField}" onchange="{!c.handleOnChange}"/>
+    </lightning:recordEditForm>
+</aura:component>

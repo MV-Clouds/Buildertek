@@ -1,0 +1,63 @@
+<template>
+    <div class="slds-modal__content slds-p-around_xx-small">
+        <div class="slds slds-scope">
+            <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                <thead>
+                    <tr class="slds-text-title_caps"
+                        style="background-color:LightGray !important;font-weight: bold !important">
+                        <th style="width:60px; border-right: 1px solid grey;border-left: 1px solid #e5e5e5;">
+                            S.No
+                        </th>
+                        <th style = "border-right: 1px solid grey; width:420px;">
+                            Phase Name
+                        </th>
+                        <th style = "border-right: 1px solid grey; width:300px;">
+                            # Tasks
+                        </th>
+                        <th style = "border-right: 1px solid grey; width:300px;">
+                            Phase Completion %
+                        </th>
+                        <th style = "border-right: 1px solid grey; width:300px;">
+                            Status
+                        </th>
+                        <th style = "border-right: 1px solid grey; width:300px;">
+                            Start Date
+                        </th>
+                        <th style = "border-right: 1px solid #e5e5e5; width:300px;">
+                            Finish Date
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="slds-scrollable">
+                    <template for:each={phaseInnerList} for:item="rec" for:index="index">
+                            <tr key={rec.Id}>
+                            <td style = "border-left: 1px solid #e5e5e5;">
+                                {rec.SNO}
+                            </td>
+                            <td style = "width:420px;" title = {rec.PhaseName}>
+                                <a href={ScheduleUrl} target="_blank">{rec.PhaseName}</a>
+                            </td>
+                            <td>
+                                {rec.TaskCount}
+                              </td>
+                             <td>
+                                <lightning-formatted-number value= {rec.CompletionPercent} maximum-fraction-digits="2"></lightning-formatted-number>{rec.PercentSymbol}
+                            </td>
+                            <td style = "padding-top: 6px; padding-bottom: 6px">
+                                <span class = {rec.StyleClass}>
+                                    {rec.Status}
+                                </span>
+                            </td>
+                            <td>
+                                {rec.StartDate}
+                            </td>
+                            <td style = "border-right: 1px solid #e5e5e5;">
+                                {rec.DueDate}
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</template>

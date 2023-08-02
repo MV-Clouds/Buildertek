@@ -1,0 +1,33 @@
+.THIS .headingDiv{
+    background: rgb(243, 243, 243);
+    color: #000;
+    font-size: 1rem;
+    padding: 5px 10px;
+}
+
+.THIS .budgetInput .slds-input{
+    padding-left: 2rem;
+    border:1px solid var(--slds-g-color-border-base-4, var(--lwc-colorBorderInput,rgb(201, 201, 201))) !important;
+
+}
+
+.THIS .budgetInput .slds-input__icon_left{
+    display: none;
+}
+.THIS .budgetLineInput .slds-input{
+    padding-left: 2rem;
+}
+
+.THIS .budgetLineInput .slds-input__icon_left{
+    display: none;
+}
+
+.THIS .searchIcon{
+    padding-left: 5px; 
+    padding-top: 3px;
+}
+
+.THIS .searchIcon .slds-icon-text-default{
+    width: 1rem;
+    height: 1rem;
+}

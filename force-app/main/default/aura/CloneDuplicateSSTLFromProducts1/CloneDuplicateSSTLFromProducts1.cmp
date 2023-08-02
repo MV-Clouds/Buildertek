@@ -1,0 +1,1335 @@
+<aura:component
+                implements="force:appHostable,force:lightningQuickAction,flexipage:availableForRecordHome,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes"
+                controller="CloneAddProductForSSTL1" access="global">
+    
+    <aura:attribute name="productIds" type="List" default="[]" />
+    <aura:attribute name="productsList" type="List" default="[]" />
+    <aura:attribute name="takeOffLinesList" type="List" default="[]" />
+    <aura:attribute name="filteredTakeOffLines" type="List" default="[]" />
+    <aura:attribute name="selectionSheetTakeOffLinesToDelete" type="String" default="" />
+    <aura:attribute name="projectSelectionTakeOffRec" type="Object" />
+    <aura:attribute name="productsToAdd" type="List" default="[]" />
+    <aura:attribute name="selectionSheetTakeOffLines" type="List" default="[]" />
+    <aura:attribute name="takeOffLinesToDelete" type="List" default="[]" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="productId" type="String" default="" />
+    <aura:attribute name="isDeleteModal" type="Boolean" default="false" />
+    <aura:attribute name="isEditModeOpen" type="Boolean" default="false" />
+    <aura:attribute name="deleteConfirmationBody" type="String" default="" />
+    <aura:attribute name="SSTLId" type="String" default="" />
+    <aura:attribute name="isSpinner" type="Boolean" default="true" />
+    <aura:attribute name="isProductSelected" type="Boolean" default="false" />
+    <aura:attribute name="isMoreProductSelected" type="Boolean" default="false" />
+    <aura:attribute name="divHeight" type="Integer" />
+    <aura:attribute name="NewProduct" type="List" default="[]" />
+    
+    <aura:attribute name="isReplaceAll" type="Boolean" default="false" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+    <!-- Pagination -->
+    <!-- Product Pagination -->
+    <aura:attribute name="productPageNumber" type="Integer" default="1" />
+    <aura:attribute name="productPageSize" type="Integer" default="10" />
+    <aura:attribute name="productTotalPages" type="Integer" default="0" />
+    <aura:attribute name="productTotalRecords" type="Integer" default="0" />
+    <aura:attribute name="productRecordStart" type="Integer" default="0" />
+    <aura:attribute name="productRecordEnd" type="Integer" default="0" />
+    <aura:attribute name="productIsNextDisabled" type="Boolean" default="true" />
+    
+    <!-- TakeOff Lines Pagination -->
+    <aura:attribute name="pageNumber" type="Integer" default="1" />
+    <aura:attribute name="pageSize" type="Integer" default="20" />
+    <aura:attribute name="totalPages" type="Integer" default="0" />
+    <aura:attribute name="totalRecords" type="Integer" default="0" />
+    <aura:attribute name="recordStart" type="Integer" default="0" />
+    <aura:attribute name="recordEnd" type="Integer" default="0" />
+    <aura:attribute name="isNextDisabled" type="Boolean" default="true" />
+    
+    <!-- SSTL Pagination -->
+    <aura:attribute name="SSTLPageNumber" type="Integer" default="1" />
+    <aura:attribute name="SSTLPageSize" type="Integer" default="10" />
+    <aura:attribute name="SSTLTotalPages" type="Integer" default="0" />
+    <aura:attribute name="SSTLTotalRecords" type="Integer" default="0" />
+    <aura:attribute name="SSTLRecordStart" type="Integer" default="0" />
+    <aura:attribute name="SSTLRecordEnd" type="Integer" default="0" />
+    <aura:attribute name="SSTLIsNextDisabled" type="Boolean" default="true" />
+    <aura:attribute name="sstlines"  type="Integer"  />
+    
+    <!-- Takeoff -->
+    <aura:attribute name="fieldNameApiMap" type="Map"  />	
+    <aura:attribute name="fieldNameApiList" type="List"  />
+    <aura:attribute name="takeofflineslength"  type="Integer"  />
+    
+    <!-- Product -->
+    <aura:attribute name="fieldProductNameApiMap" type="Map"  />	
+    <aura:attribute name="fieldProductNameApiList" type="List"  />	
+    <aura:attribute name="productslength"  type="Integer"  />
+    
+    <!-- BOM Line -->
+    <aura:attribute name="fieldBOMLineNameApiMap" type="Map"  />	
+    <aura:attribute name="fieldBOMLineNameApiList" type="List"  />	
+    
+    <aura:attribute name="filterOptionsFromsettings" type="list" />	
+    
+    <!-- dynamic fields -->	
+    <aura:attribute name="TakeOffFieldsSettings" type="List" default="[]" />	
+    <aura:attribute name="takeOffLinesListTmp" type="List" default="[]" />     
+    <aura:attribute name="selectedFields" type="String" />    
+    
+    <aura:attribute name="takeofflineLength" type="Integer" />	
+    <aura:attribute name="productselectedFieldsLength" type="Integer" />	
+    <aura:attribute name="bomLineselectedFieldsLength" type="Integer" />	
+    
+    <!-- price book -->
+    <aura:attribute name="pricebookName" type="string" />
+    <aura:attribute name="pricebookoptions" type="List" />
+    <!-- price book end -->
+    
+    <!-- dynamic product filed -->
+    <aura:attribute name="productFieldsSettings" type="List" default="[]" />	
+    <aura:attribute name="productListTmp" type="List" default="[]" />     
+    <aura:attribute name="productselectedFields" type="String" />  
+    
+    <!-- dynamic product filed -->
+    <aura:attribute name="bomLineFieldsSettings" type="List" default="[]" />	
+    <aura:attribute name="bomLineListTmp" type="List" default="[]" />     
+    <aura:attribute name="bomLineselectedFields" type="String" />  
+    
+    
+    <!-- new buttons -->
+    <aura:attribute name="isNewTakeoffLine" type="Boolean" default="false" />
+    <aura:attribute name="parentRecordId" type="String" />
+    <aura:attribute name="TakeOffRecordId" type="String" />
+    <aura:attribute name="selectedprojecttakeoff" type="sObject" />
+    <aura:attribute name="selectedTradeType" type="sObject" />
+    <aura:attribute name="isImportPackage" type="Boolean" default="false" />
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
+    <aura:attribute name="packageTakeOffList" type="object" />
+    <aura:attribute name="paginationList" type="Object" />
+    <aura:attribute name="startPage" type="Integer" />
+    <aura:attribute name="endPage" type="Integer" />
+    <aura:attribute name="newprojecttakeoffline" type="Project_Takeoff_Lines__c"
+                    default="{ 'sobjectType': 'Project_Takeoff_Lines__c'}" access="global" />
+    <aura:handler name="oSelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.handleComponentEvent}" />
+    <aura:handler name="SelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.handleComponentEvents}" />
+    <ltng:require styles="{!$Resource.ModalPreview62moreMedia}" />
+    <lightning:notificationsLibrary aura:id="notifLib" />
+    
+    
+    <!-- all delete -->
+    <aura:attribute name="selectedProdIds" type="List" default="[]" />
+    <aura:attribute name="isDeletePopUp" type="Boolean" default="false" />
+    <aura:attribute name="selectedIndexValues" type="List" default="[]" />
+    
+    
+    <lightning:workspaceAPI aura:id="workspace" />
+    
+    <div class="slds-card">
+        <div class="slds-grid slds-gutters cardCss">
+            <div class="slds-col slds-size_1-of-8" >
+                <span>
+                    <span style=" color: #6b6d70;">Project</span>
+                    <h2 class="slds-card__header-title">
+                        <span>
+                            <ui:outputURL
+                                          value="{!'/one/one.app?#/sObject/'+ v.projectSelectionTakeOffRec.buildertek__Project__r.Id + '/view'}"
+                                          target="_blank" label="{!v.projectSelectionTakeOffRec.buildertek__Project__r.Name}" />
+                        </span>
+                    </h2>
+                </span>
+            </div>
+            <div class="slds-col slds-size_1-of-8" >
+                <span>
+                    <span style=" color: #6b6d70;">BOM</span>
+                    <h2 class="slds-card__header-title">
+                        <span onclick="{!c.redirect}" style="color:#0176d3;cursor:pointer;"><!-- #0176d3 -->
+                            <!--  <ui:outputURL
+                                          value="{!'/one/one.app?#/sObject/'+ v.projectSelectionTakeOffRec.Id + '/view'}"
+                                          target="_blank" label="{!v.projectSelectionTakeOffRec.Name}" /> -->
+                            {!v.projectSelectionTakeOffRec.Name}
+                        </span>
+                        
+                    </h2>
+                </span>
+            </div>
+            <div class="slds-col slds-size_1-of-8">
+                <span>
+                    <span style=" color: #6b6d70;">Takeoff Lines</span>
+                    <h2 class="slds-card__header-title">
+                        <span style="color:#0176d3;"><!-- #0176d3 -->
+                            {!v.takeofflineslength}
+                        </span>
+                    </h2>
+                </span>
+            </div>
+            <div class="slds-col slds-size_1-of-8" >
+                <span>
+                    <span style=" color: #6b6d70;">Products</span>
+                    <h2 class="slds-card__header-title">
+                        <span style="color:#0176d3;"><!-- #0176d3 -->
+                            {!v.productslength}
+                        </span>
+                    </h2>
+                </span>
+            </div>
+            <div class="slds-col slds-size_1-of-8" >
+                <span>
+                    <span style=" color: #6b6d70;">Selected Products</span>
+                    <h2 class="slds-card__header-title">
+                        <span style="color:#0176d3;"><!-- #0176d3 -->
+                            {!v.sstlines}
+                        </span>
+                    </h2>
+                </span>
+            </div>
+            <div class="slds-col slds-size_1-of-8" ></div>
+            <div class="slds-col slds-size_1-of-8" >
+                <div >
+                    <span  >
+                        <lightning:button class="slds-button slds-button_neutral fullWidth" aura:id="newTakeOfLine"
+                                          label="Import Packages" onclick="{!c.ImportPackages}" />
+                    </span>
+                </div>           
+                
+            </div>
+            <div  class="slds-col slds-size_1-of-8">
+                <span  >
+                    <lightning:button class="slds-button slds-button_neutral fullWidth" aura:id="newTakeOfLine"
+                                      label="New Takeoff Line" onclick="{!c.CreateNewTakeOfLine}" />
+                </span>
+            </div>
+            <!-- <div class="slds-col">
+                <span>
+                    <span style=" color: #6b6d70;">Plan Type</span>
+                    <h2 class="slds-card__header-title">
+                        <span>
+                            {!v.projectSelectionTakeOffRec.buildertek__Project__r.buildertek__Plan_Type__c}
+                        </span>
+                    </h2>
+                </span>
+            </div>
+            <div class="slds-col">
+                <span>
+                    <span style=" color: #6b6d70;">Collections</span>
+                    <h2 class="slds-card__header-title">
+                        <span>
+                            {!v.projectSelectionTakeOffRec.buildertek__Project__r.buildertek__Project_Tiers__c}
+                        </span>
+                    </h2>
+                </span>
+            </div> -->
+            <div class="slds-col">
+            </div>
+            <div class="slds-col">
+            </div>
+        </div>
+    </div>
+    <div class="slds-p-bottom--small"></div>
+    <div class="slds-grid slds-gutters">
+        <div class="slds-col slds-col slds-size_1-of-2">
+            <lightning:card aura:id="lightCard0" class="slds-card_boundary slds-page-header">
+                <div>
+                    <div class="slds-grid slds-gutters" >	<!-- style="overflow-x:scroll;" -->
+                        <div class="slds-col slds-size_1-of-6">	
+                            <span class="slds-card__header-title" style="white-space: nowrap;margin-top: 7px;">	
+                                TakeOff Lines	
+                            </span>	
+                        </div>	
+                        <!--   <aura:iteration items="{!v.fieldNameApiList}" var="apiName" indexVar="apiindex">	
+                         
+                           <aura:if isTrue="{!apiName.Type == 'DATETIME'}">
+                               <div class="slds-col slds-size_1-of-6">	
+                                   <span id="{!'takeoff_search_'+apiName.Name}">	
+                                       
+                                       <lightning:input class="{!'search_'+apiName.Name}" name="{!apiName.Key}" placeholder="{!apiName.Key}" label="" aura:id="{!apiName.Name}"	
+                                                        type="datetime" variant="label-hidden" onchange="{!c.onInputChange}" value="{!apiName.Value}"/>	
+                                   </span>	
+                               </div>
+                               <aura:set attribute="else">
+                                   <aura:if isTrue="{!apiName.Type == 'DATE'}">
+                                       <div class="slds-col slds-size_1-of-6">	
+                                           <span id="{!'takeoff_search_'+apiName.Name}">	
+                                               
+                                               <lightning:input class="{!'search_'+apiName.Name}" name="{!apiName.Key}" placeholder="{!apiName.Key}" label="" aura:id="{!apiName.Name}"	
+                                                                type="date" variant="label-hidden" onchange="{!c.onInputChange}" value="{!apiName.Value}"/>	
+                                           </span>	
+                                       </div>
+                                       <aura:set attribute="else">
+                                           <div class="slds-col slds-size_1-of-6">	
+                                               <span id="{!'takeoff_search_'+apiName.Name}">	
+                                                   
+                                                   <lightning:input class="{!'search_'+apiName.Name}" name="{!apiName.Key}" placeholder="{!apiName.Key}" label="" aura:id="{!apiName.Name}"	
+                                                                    type="search" variant="label-hidden" onchange="{!c.onInputChange}" value="{!apiName.Value}"/>	
+                                               </span>	
+                                           </div>
+                                       </aura:set>
+                                   </aura:if>
+                                   
+                               </aura:set>
+                           </aura:if> 
+                       </aura:iteration> -->
+                        
+                        <!--  <div class="slds-col slds-size_1-of-6">	
+                            <span>	
+                                <lightning:input name="buildPhase" placeholder="Build Phase" label="" aura:id="buildPhase"	
+                                                 type="search" variant="label-hidden" onchange="{!c.onInputChange}" />	
+                            </span>	
+                        </div>	
+                        <div class="slds-col slds-size_1-of-6">	
+                            <span>	
+                                <lightning:input name="tradeType" placeholder="Trade Type" label="" aura:id="tradeType"	
+                                                 type="search" variant="label-hidden" onchange="{!c.onInputChange}" />	
+                            </span>	
+                        </div>	
+                        <div class="slds-col slds-size_1-of-6">	
+                            <span>	
+                                <lightning:input name="category" placeholder="Category" label="" aura:id="category"	
+                                                 type="search" variant="label-hidden" onchange="{!c.onInputChange}" />	
+                            </span>	
+                        </div>	
+                        <div class="slds-col slds-size_1-of-6">	
+                            <span>	
+                                <lightning:input name="productType" placeholder="Product Type" label=""	
+                                                 aura:id="productType" type="search" onchange="{!c.onInputChange}"	
+                                                 variant="label-hidden" />	
+                            </span>	
+                        </div>	
+                        <div class="slds-col slds-size_1-of-6">	
+                            <span>	
+                                <lightning:input name="locationSearch" placeholder="Location" label=""	
+                                                 aura:id="locationSearch" type="search" onchange="{!c.onInputChange}"	
+                                                 variant="label-hidden" />	
+                            </span>	
+                        </div> -->	
+                    </div>
+                    
+                    <div class="takeoffFilter">
+                        <aura:iteration items="{!v.fieldNameApiList}" var="apiName" indexVar="apiindex">	
+                            
+                            <aura:if isTrue="{!apiName.Type == 'DATETIME'}">
+                                <div class="" style="display:inline-block;padding: 0.5rem 0.2rem;width:13rem;position: relative;top: 1.4rem;">	
+                                    <span id="{!'takeoff_search_'+apiName.Name}">	
+                                        
+                                        <lightning:input class="{!'search_'+apiName.Name}" name="{!apiName.Key}" placeholder="{!apiName.Key}" label="" aura:id="{!apiName.Name}"	
+                                                         type="datetime" variant="label-hidden" onchange="{!c.onInputChange}" value="{!apiName.Value}"/>	
+                                    </span>	
+                                </div>
+                                <aura:set attribute="else">
+                                    <aura:if isTrue="{!apiName.Type == 'DATE'}">
+                                        <div class="" style="display:inline-block;padding: 0.5rem 0.2rem;width:11rem;">	
+                                            <span id="{!'takeoff_search_'+apiName.Name}">	
+                                                
+                                                <lightning:input class="{!'search_'+apiName.Name}" name="{!apiName.Key}" placeholder="{!apiName.Key}" label="" aura:id="{!apiName.Name}"	
+                                                                 type="date" variant="label-hidden" onchange="{!c.onInputChange}" value="{!apiName.Value}"/>	
+                                            </span>	
+                                        </div>
+                                        <aura:set attribute="else">
+                                            <div class="" style="display:inline-block;padding: 0.5rem 0.2rem;width:10rem;">	
+                                                <span id="{!'takeoff_search_'+apiName.Name}">	
+                                                    
+                                                    <lightning:input class="{!'search_'+apiName.Name}" name="{!apiName.Key}" placeholder="{!apiName.Key}" label="" aura:id="{!apiName.Name}"	
+                                                                     type="search" variant="label-hidden" onchange="{!c.onInputChange}" value="{!apiName.Value}"/>	
+                                                </span>	
+                                            </div>
+                                        </aura:set>
+                                    </aura:if>
+                                    
+                                </aura:set>
+                            </aura:if> 
+                        </aura:iteration>
+                        
+                    </div>
+                    
+                    
+                    <!-- <div style="text-align:center;padding-top: 5px;">
+                        <lightning:button iconName="utility:back" class="slds-button slds-button_neutral"
+                                          iconPosition="left" disabled="{!v.pageNumber == 1}" aura:id="prevPage" label="Previous"
+                                          onclick="{!c.handlePrev}" />
+                        <lightning:button iconName="utility:forward" class="slds-button slds-button_neutral"
+                                          iconPosition="right" disabled="{!v.isNextDisabled}" aura:id="nextPage" label="Next"
+                                          onclick="{!c.handleNext}" />
+                    </div>-->
+                    <div class="slds-card__body slds-scrollable">
+                        <table class="slds-table slds-table--bordered">
+                            <thead>
+                            </thead>
+                            <tbody>
+                                <aura:if isTrue="{!v.takeOffLinesList.length == 0}">
+                                    <div class="slds-align_absolute-center slds-m-around_xx-large">
+                                        <p class="slds-text-title_bold" style="text-align: center;">
+                                            No TakeOff Lines found.
+                                        </p>
+                                    </div>
+                                    <div class="slds-m-around_xx-large slds-align_absolute-center">
+                                    </div>
+                                    <aura:set attribute="else">
+                                        <aura:iteration items="{!v.takeOffLinesList}" var="rec" indexVar="groupIndex">
+                                            <tr class="groupHeader">
+                                                <td>
+                                                </td>
+                                                <td>
+                                                    <div class="slds-grid slds-gutters">
+                                                        <div class="slds-col slds-size_6-of-12"
+                                                             data-index='{!groupIndex}'>
+                                                            {!rec.groupName}
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td colspan="{!v.takeofflineLength}">
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th style="line-height: 2;width: 10px;padding-left: 10px;">
+                                                    <lightning:input type="checkbox" name="{!groupIndex}"
+                                                                     checked="{!rec.isSelected}" class="customCheckBoxCss" />
+                                                </th>
+                                                
+                                                <aura:iteration items="{!v.TakeOffFieldsSettings}" var="rec" indexVar="groupIndex">
+                                                    <th>{!rec.label}</th>
+                                                </aura:iteration>
+                                                <!--  <th>Name</th>
+                                                <th>Category</th>
+                                                <th>Product Type</th>
+                                                <th>Location</th>
+                                                <th>Quantity</th>
+                                                <th>Build Phase</th> -->
+                                                <th> </th>  
+                                            </tr>
+                                            <aura:iteration items="{!rec.groupedRecordsTmp}" var="recordData" indexVar="index">
+                                                <tr>
+                                                   <!-- <td style="padding:5px; margin:5px;line-height:2;">-->
+                                                     <!--<td style="line-height:2;width:10px;padding-left:10px">-->
+                                                    <!--<td style="line-height:2;width:10px;padding-left:10px">-->
+                                                    <td style="line-height:2;width:10px;padding-left:10px">
+                                                        <lightning:input type="checkbox" name="{!groupIndex+'-'+index}"
+                                                                         checked="{!recordData.isSelected}" class="customCheckBoxCss"
+                                                                         onchange="{!c.onTakeOffCheckBoxChange}" />
+                                                    </td>
+                                                    
+                                                    <aura:iteration items="{!recordData}" var="columnValue">
+                                                        <aura:if isTrue="{!(columnValue.Key == 'Name')}">
+                                                            
+                                                            <td style="padding:0px">                                                
+                                                                <a onclick="{!c.viewRecord}" data-name="{!columnValue.Id}" >
+                                                                    {!columnValue.Value}
+                                                                </a>                                    
+                                                            </td>                                            
+                                                            <aura:set attribute="else">
+                                                                <td style="padding:0px">                                               
+                                                                    {!columnValue.Value} 
+                                                                </td>
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </aura:iteration>
+                                                    <td>
+                                                    </td>  
+                                                </tr>
+                                            </aura:iteration>
+                                            
+                                            <!--  <aura:iteration items="{!rec.groupedRecords}" var="row" indexVar="index">
+                                                <tr>
+                                                    <td style="padding:5px; margin:5px;line-height:2;">
+                                                        <lightning:input type="checkbox" name="{!groupIndex+'-'+index}"
+                                                                         checked="{!row.isSelected}" class="customCheckBoxCss"
+                                                                         onchange="{!c.onTakeOffCheckBoxChange}" />
+                                                    </td>
+                                                    
+                                                    <td>
+                                                        <ui:outputURL
+                                                                      value="{!'/one/one.app?#/sObject/'+ row.Id + '/view'}"
+                                                                      target="_blank" label="{!row.Name}" />
+                                                    </td>
+                                                    <td>
+                                                        {!row.buildertek__Categories__r.Name}
+                                                    </td>
+                                                    <td>
+                                                        {!row.buildertek__Product_Type__r.Name}
+                                                    </td>
+                                                    <td>
+                                                        {!row.buildertek__Location__c}
+                                                    </td>
+                                                    <td>
+                                                        {!row.buildertek__Quantity__c}
+                                                    </td>
+                                                    <td>
+                                                     {!row.buildertek__Build_Phase__r.Name}
+                                                    </td>   
+                                                    <td>
+                                                    </td>  
+                                                    
+                                                    
+                                                </tr>
+                                            </aura:iteration> -->
+                                        </aura:iteration>
+                                    </aura:set>
+                                </aura:if>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="slds-card__footer">
+                        <lightning:button iconName="utility:back" class="slds-button slds-button_neutral"
+                                          iconPosition="left" disabled="{!v.pageNumber == 1}" aura:id="prevPage" label="Previous"
+                                          onclick="{!c.handlePrev}" />
+                        <lightning:button iconName="utility:forward" class="slds-button slds-button_neutral"
+                                          iconPosition="right" disabled="{!v.isNextDisabled}" aura:id="nextPage" label="Next"
+                                          onclick="{!c.handleNext}" />
+                    </div>
+                </div>
+                <aura:if isTrue="{!v.isSpinner}">
+                    <div aura:id="spinnerId" class="slds-spinner_container">
+                        <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative"
+                             role="alert">
+                            <span class="slds-assistive-text">Loading</span>
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                            <div class="custom-loading-text">
+                                <b>Processing, Please Wait</b>
+                            </div>
+                        </div>
+                    </div>
+                </aura:if>
+            </lightning:card>
+        </div>
+        <div class="slds-col slds-col slds-size_1-of-2">
+            <lightning:card aura:id="lightCard1" class="slds-card_boundary slds-scrollable slds-page-header">
+                <div>
+                    <div class="slds-grid slds-gutters" > <!-- style="overflow-x:scroll;" -->
+                        <div class="slds-col slds-size_1-of-6">
+                            <span class="slds-card__header-title" style="white-space: nowrap;margin-top: 7px;">
+                                Products
+                            </span>
+                        </div>
+                        
+                        <!-- <aura:iteration items="{!v.fieldProductNameApiList}" var="apiName" indexVar="apiindex">	
+                            <div class="slds-col slds-size_1-of-6">	
+                                <span id="{!'product_search_'+apiName.Name}">	
+                                    
+                                    <lightning:input class="{!'search_'+apiName.Name}" name="{!apiName.Key}" placeholder="{!apiName.Key}" label="" aura:id="{!apiName.Name}"	
+                                                     type="search" variant="label-hidden" onchange="{!c.onProductInputChange}" value="{!apiName.Value}"/>	
+                                </span>	
+                            </div>	
+                        </aura:iteration> -->
+                        
+                        
+                        <!--     <div class="slds-col slds-size_1-of-6">
+                            <span>
+                                <lightning:input name="tradeType" placeholder="Trade Type" label=""
+                                                 aura:id="packageLinesTradeType" type="search" variant="label-hidden"
+                                                 onchange="{!c.onProductInputChange}" />
+                            </span>
+                        </div>
+                        <div class="slds-col slds-size_1-of-6">
+                            <span>
+                                <lightning:input name="category" placeholder="Category" label=""
+                                                 aura:id="packageLinesCategory" type="search" variant="label-hidden"
+                                                 onchange="{!c.onProductInputChange}" />
+                            </span>
+                        </div>
+                        <div class="slds-col slds-size_1-of-6">
+                            <span>
+                                <lightning:input name="productType" placeholder="Product Type" label=""
+                                                 aura:id="packageLinesProductType" type="search" onchange="{!c.onProductInputChange}"
+                                                 variant="label-hidden" />
+                            </span>
+                        </div>
+                        <div class="slds-col slds-size_1-of-6">
+                            <span>
+                                <lightning:input name="collection" placeholder="Collection" label=""
+                                                 aura:id="collection" type="search" variant="label-hidden"
+                                                 onchange="{!c.onProductInputChange}" />
+                            </span>
+                        </div> -->
+                        <div class="slds-col slds-size_1-of-6"></div>
+                        <div class="slds-col slds-size_1-of-6"></div>
+                        <div class="slds-col slds-size_1-of-6"></div>
+                        <div class="slds-col slds-size_1-of-6">
+                            <span>
+                                <ui:inputSelect value="{!v.pricebookName }" change="{!c.onProductInputChange}"
+                                                class="pricebook-class" >
+                                    <aura:iteration var="option" items="{! v.pricebookoptions }">
+                                        <option value="{! option.value }"
+                                                selected="{!option.value == v.pricebookName}">{! option.key }
+                                        </option>
+                                    </aura:iteration>
+                                </ui:inputSelect>
+                            </span>
+                        </div>
+                        
+                        <div class="slds-col slds-size_1-of-6">
+                            <span>
+                                <lightning:button class="slds-button slds-button_neutral fullWidth" aura:id="addSSTL"
+                                                  label="Add Products" onclick="{!c.addSSTL}" /> <!-- Add To SSTL -->
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        
+                        <aura:iteration items="{!v.fieldProductNameApiList}" var="apiName" indexVar="apiindex">	
+                            <aura:if isTrue="{!apiName.Type == 'DATETIME'}">
+                                <div class="" style="display:inline-block;padding: 0.5rem 0.2rem;width:13rem;position: relative;top: 1.4rem;">	
+                                    <span id="{!'product_search_'+apiName.Name}">
+                                        <lightning:input class="{!'search_'+apiName.Name}" name="{!apiName.Key}" placeholder="{!apiName.Key}" label="" aura:id="{!apiName.Name}"	
+                                                         type="datetime" variant="label-hidden" onchange="{!c.onProductInputChange}" value="{!apiName.Value}"/>	
+                                    </span>	
+                                </div>
+                                <aura:set attribute="else">
+                                    <aura:if isTrue="{!apiName.Type == 'DATE'}">
+                                        <div class="" style="display:inline-block;padding: 0.5rem 0.2rem;width:11rem;">	
+                                            <span id="{!'product_search_'+apiName.Name}">	
+                                                
+                                                <lightning:input class="{!'search_'+apiName.Name}" name="{!apiName.Key}" placeholder="{!apiName.Key}" label="" aura:id="{!apiName.Name}"	
+                                                                 type="date" variant="label-hidden" onchange="{!c.onProductInputChange}" value="{!apiName.Value}"/>	
+                                            </span>	
+                                        </div>
+                                        <aura:set attribute="else">
+                                            <div class="" style="display:inline-block;padding: 0.5rem 0.2rem;width:10rem;">	
+                                                <span id="{!'product_search_'+apiName.Name}">	
+                                                    
+                                                    <lightning:input class="{!'search_'+apiName.Name}" name="{!apiName.Key}" placeholder="{!apiName.Key}" label="" aura:id="{!apiName.Name}"	
+                                                                     type="search" variant="label-hidden" onchange="{!c.onProductInputChange}" value="{!apiName.Value}"/>	
+                                                </span>	
+                                            </div>
+                                        </aura:set>
+                                    </aura:if>
+                                    
+                                </aura:set>
+                            </aura:if>
+                            
+                        </aura:iteration>
+                        
+                    </div>
+                    
+                    <!-- <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_1-of-4"></div>
+                        <div class="slds-col slds-size_1-of-4"></div>
+                        <div class="slds-col slds-size_1-of-4"></div>
+                        <div class="slds-col slds-size_1-of-4">
+                            <lightning:button class="slds-button slds-button_neutral fullWidth" aura:id="addSSTL"
+                                label="Add To SSTL" onclick="{!c.addSSTL}" />
+                        </div>
+                    </div> -->
+                    
+                </div>
+                <div class="slds-card__body slds-scrollable">
+                    <table class="slds-table slds-table--bordered">
+                        <thead> </thead>
+                        <tbody>
+                            <aura:if isTrue="{!v.productsList.length != 0}">
+                                <aura:iteration items="{!v.productsList}" var="rec" indexVar="groupIndex">
+                                    <tr class="groupHeader">
+                                        <td>
+                                        </td>
+                                        <td colspan="2">
+                                            {!rec.groupName}
+                                        </td>
+                                        <td colspan="{!v.productselectedFieldsLength}"></td>
+                                        
+                                    </tr>
+                                    <tr> 
+                                        <th style="width:10px;padding-left: 10px;">
+                                            <lightning:input type="checkbox" name="{!groupIndex}" onchange="{!c.onProductGroupSelect}"
+                                                             checked="{!rec.isSelected}" class="customCheckBoxCss" />
+                                        </th>
+                                        <th></th>
+                                        <aura:iteration items="{!v.productFieldsSettings}" var="rec" indexVar="groupIndex">
+                                            <th>{!rec.label}</th>
+                                        </aura:iteration>
+                                        
+                                        <!--<th>Name</th>
+                                        <th>Category</th>
+                                        <th>Product Type</th>
+                                        <th>Vendor</th>
+                                        <th>Product SKU</th>
+                                         <th>Series</th>-->
+                                    </tr>
+                                    <aura:iteration items="{!rec.groupedRecordsTmp}" var="row" indexVar="index">
+                                        <tr>
+                                            
+                                            
+                                            <td style="width:20px;padding-left:10px;line-height:2;">
+                                                <lightning:input type="checkbox" name="{!index}"
+                                                                 checked="{!row.isSelected}" />
+                                            </td>
+                                            <td style="padding:0px">
+                                                <lightning:icon iconName="action:preview" class="iconStyle"
+                                                                alternativeText="{!groupIndex+'-'+index}" title="View"
+                                                                onclick="{!c.onClickOpenProductImageModal}" />
+                                            </td>
+                                            
+                                            <aura:iteration items="{!row}" var="columnValue" indexVar = "checkBoxIndex">
+                                                
+                                              
+                                                <aura:if isTrue="{!(columnValue.Key == 'Name')}">
+                                                    
+                                                    <td>                                                
+                                                        <a onclick="{!c.viewRecord}" data-name="{!columnValue.Id}" >
+                                                            {!columnValue.Value}
+                                                        </a>                                    
+                                                    </td>                                            
+                                                    <aura:set attribute="else">
+                                                        <td>                                               
+                                                            {!columnValue.Value} 
+                                                        </td>
+                                                    </aura:set>
+                                                </aura:if>
+                                            </aura:iteration>
+                                        </tr>
+                                    </aura:iteration>
+                                    
+                                </aura:iteration>
+                                <aura:set attribute="else">
+                                    <div class="slds-align_absolute-center slds-m-around_xx-large">
+                                        <p class="slds-text-title_bold" style="text-align: center;">
+                                            No Products match found!
+                                        </p>
+                                    </div>
+                                    <div class="slds-m-around_xx-large slds-align_absolute-center">
+                                    </div>
+                                </aura:set>
+                            </aura:if>
+                            
+                        </tbody>
+                    </table>
+                </div>
+                <div class="slds-card__footer">
+                    <lightning:button iconName="utility:back" class="slds-button slds-button_neutral"
+                                      iconPosition="left" disabled="{!v.productPageNumber == 1}" aura:id="productPrevPage"
+                                      label="Previous" onclick="{!c.handleProductPrev}" />
+                    <lightning:button iconName="utility:forward" class="slds-button slds-button_neutral"
+                                      iconPosition="right" disabled="{!v.productIsNextDisabled}" aura:id="productNextPage"
+                                      label="Next" onclick="{!c.handleProductNext}" />
+                </div>
+                <aura:if isTrue="{!v.isSpinner}">
+                    <div aura:id="spinnerId" class="slds-spinner_container">
+                        <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative"
+                             role="alert">
+                            <span class="slds-assistive-text">Loading</span>
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                        </div>
+                    </div>
+                </aura:if>
+            </lightning:card>
+            <div class="slds-p-bottom--small"></div>
+            <lightning:card aura:id="lightCard3" class="slds-card_boundary slds-scrollable slds-page-header">
+                <div>
+                    <div class="slds-grid slds-gutters"> <!-- style="overflow-x:scroll;" -->
+                        <div class="slds-col slds-size_1-of-6">
+                            <span class="slds-card__header-title" style="white-space: nowrap;margin-top: 7px;">
+                                Selected Products
+                            </span>
+                        </div>
+                        <div class="slds-col slds-size_1-of-6"></div>
+                        <div class="slds-col slds-size_1-of-6"></div>
+                        <div class="slds-col slds-size_1-of-6"></div>
+                        
+                        
+                        
+                        <div class="slds-col slds-size_1-of-6">
+                            <span style="margin-right:0.5rem;">
+                                <lightning:button class="slds-button slds-button_neutral" aura:id="massDelete"
+                                                  label="Delete" onclick="{!c.deleteSelectedRightLines}" />
+                            </span> 
+                        </div>
+                        <div class="slds-col slds-size_1-of-6"  style="width: 12rem;position: absolute;right: 0;">
+                            <lightning:button label="Manage Product Lines" disabled="false" 
+                                              onclick="{!c.manageProductLines}"/>
+                        </div>
+                        
+                        <!-- <aura:iteration items="{!v.fieldBOMLineNameApiList}" var="apiName" indexVar="apiindex">	
+                           <div class="slds-col slds-size_1-of-6">	
+                               <span id="{!'BOMLine_search_'+apiName.Name}">	
+                                   
+                                   <lightning:input class="{!'search_'+apiName.Name}" name="{!apiName.Key}" placeholder="{!apiName.Key}" label="" aura:id="{!apiName.Name}"	
+                                                    type="search" variant="label-hidden" onchange="{!c.onInputChange}" value="{!apiName.Value}"/>	
+                               </span>	
+                           </div>	
+                       </aura:iteration> -->
+                        
+                        <!-- <div class="slds-col slds-size_1-of-5">
+                            <span>
+                                <lightning:input name="tradeType" placeholder="Trade Type" label=""
+                                                 aura:id="tradeTypeSSTL" type="search" variant="label-hidden"
+                                                 onchange="{!c.onInputChange}" />
+                            </span>
+                        </div>
+                        <div class="slds-col slds-size_1-of-5">
+                            <span>
+                                <lightning:input name="category" placeholder="Category" label="" aura:id="categorySSTL"
+                                                 type="search" variant="label-hidden" onchange="{!c.onInputChange}" />
+                            </span>
+                        </div>
+                        <div class="slds-col slds-size_1-of-5">
+                            <span>
+                                <lightning:input name="productType" placeholder="Product Type" label=""
+                                                 aura:id="productTypeSSTL" type="search" onchange="{!c.onInputChange}"
+                                                 variant="label-hidden" />
+                            </span>
+                        </div> -->
+                    </div>
+                    
+                    <div>
+                        <aura:iteration items="{!v.fieldBOMLineNameApiList}" var="apiName" indexVar="apiindex">	
+                            <aura:if isTrue="{!apiName.Type == 'DATETIME'}">
+                                <div class="" style="display:inline-block;padding: 0.5rem 0.2rem;width:13rem;position: relative;top: 1.4rem;">	
+                                    <span id="{!'BOMLine_search_'+apiName.Name}">	
+                                        
+                                        <lightning:input class="{!'search_'+apiName.Name}" name="{!apiName.Key}" placeholder="{!apiName.Key}" label="" aura:id="{!apiName.Name}"	
+                                                         type="datetime" variant="label-hidden" onchange="{!c.onInputChange}" value="{!apiName.Value}"/>	
+                                    </span>
+                                </div>
+                                <aura:set attribute="else">
+                                    <aura:if isTrue="{!apiName.Type == 'DATE'}">
+                                        <div class="" style="display:inline-block;padding: 0.5rem 0.2rem;width:11rem;">	
+                                            <span id="{!'BOMLine_search_'+apiName.Name}">	
+                                                
+                                                <lightning:input class="{!'search_'+apiName.Name}" name="{!apiName.Key}" placeholder="{!apiName.Key}" label="" aura:id="{!apiName.Name}"	
+                                                                 type="date" variant="label-hidden" onchange="{!c.onInputChange}" value="{!apiName.Value}"/>	
+                                            </span>
+                                        </div>
+                                        <aura:set attribute="else">
+                                            <div class="" style="display:inline-block;padding: 0.5rem 0.2rem;width:10rem;">	
+                                                <span id="{!'BOMLine_search_'+apiName.Name}">	
+                                                    
+                                                    <lightning:input class="{!'search_'+apiName.Name}" name="{!apiName.Key}" placeholder="{!apiName.Key}" label="" aura:id="{!apiName.Name}"	
+                                                                     type="search" variant="label-hidden" onchange="{!c.onInputChange}" value="{!apiName.Value}"/>	
+                                                </span>
+                                            </div>
+                                        </aura:set>
+                                    </aura:if>
+                                    
+                                </aura:set>
+                            </aura:if>
+                            
+                        </aura:iteration>
+                        
+                    </div>
+                    
+                    <!--  <div style="text-align:center;padding-top: 5px;">
+                        <lightning:button iconName="utility:back" class="slds-button slds-button_neutral"
+                                          iconPosition="left" disabled="{!v.SSTLPageNumber == 1}" aura:id="prevPage" label="Previous"
+                                          onclick="{!c.handleSSTLPrev}" />
+                        <lightning:button iconName="utility:forward" class="slds-button slds-button_neutral"
+                                          iconPosition="right" disabled="{!v.SSTLIsNextDisabled}" aura:id="nextPage" label="Next"
+                                          onclick="{!c.handleSSTLNext}" />
+                        <lightning:button label="Manage Product Lines" disabled="false" 
+                                          onclick="{!c.manageProductLines}"/>
+                    </div> -->
+                    
+                </div>
+                <div class="slds-card__body slds-scrollable">
+                    <table class="slds-table slds-table--bordered">
+                        <thead>
+                        </thead>
+                        <tbody>
+                            <aura:if isTrue="{!v.selectionSheetTakeOffLines.length == 0}">
+                                <div class="slds-align_absolute-center slds-m-around_xx-large">
+                                    <p class="slds-text-title_bold" style="text-align: center;">
+                                        No Selection Sheet TakeOff Lines found.
+                                    </p>
+                                </div>
+                                <div class="slds-m-around_xx-large slds-align_absolute-center">
+                                </div>
+                                <aura:set attribute="else">
+                                    <aura:iteration items="{!v.selectionSheetTakeOffLines}" var="rec"
+                                                    indexVar="groupIndex">
+                                        <tr class="groupHeader">
+                                            <td>
+                                            </td>
+                                            <td>
+                                                <div class="slds-grid slds-gutters">
+                                                    <div class="slds-col slds-size_6-of-12" data-index='{!groupIndex}'>
+                                                        {!rec.groupName}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <!-- <td colspan="9"> -->
+                                            
+                                            <!--<lightning:button
+                                                                  class="slds-button slds-button_neutral slds-float_right fontSize"
+                                                                  iconPosition="right" aura:id="assignProduct" label="Assign Product"
+                                                                  title="{!groupIndex}" onclick="{!c.assignProduct}" />-->
+                                            <!-- </td> -->
+                                            <!-- <td colspan="4">
+                                                </td> -->
+                                            <td colspan="{!v.bomLineselectedFieldsLength}">
+                                            </td>
+                                            
+                                        </tr>
+                                        <tr>
+                                            
+                                            <th>
+                                                <lightning:input type="checkbox" name="{!groupIndex}"
+                                                                  class="customCheckBoxCss" checked="{!rec.isSelected}" aura:id="headCheckRFQ"  onchange="{!c.selectAllRfq}" />
+                                            </th>
+                                            <th></th>
+                                            <th></th>
+                                            <aura:iteration items="{!v.bomLineFieldsSettings}" var="rec" indexVar="groupIndex">
+                                                <th>{!rec.label}</th>
+                                                <!--<aura:if isTrue="{!groupIndex == 0}">
+                                                   <span style=" margin-left:-2rem;">
+                                                    <th>{!rec.label}{!groupIndex}</th>
+                                                   </span>
+                                                     <aura:set attribute="else">
+                                                          <th>{!rec.label}{!groupIndex}</th>
+                                                   </aura:set>
+                                                </aura:if>-->
+                                            </aura:iteration>
+                                            <!--   <th>Name</th>
+                                            <th>Product</th>
+                                            <th>Category</th>
+                                            <th>Product Type</th>
+                                            <th>Vendor</th>
+                                            <th>Quantity</th>
+                                            <th>TakeOff Lines</th>
+                                            <th>Location</th>
+                                            <th>Build Phase</th>
+            <th></th>
+                                            <th></th> -->
+                                            
+                                            <!-- <th></th> -->
+                                        </tr>
+                                        
+                                        <aura:iteration items="{!rec.groupedRecordsTmp}" var="row" indexVar="index">
+                                            <tr>
+                                                <aura:iteration items="{!row}" var="checkBoxVar" indexVar ="checkBoxIndex">
+                                                    <aura:if isTrue="{!checkBoxIndex == 0}">
+                                                    	<!--<td style="padding:5px; margin:5px;line-height:2;">-->
+                                                        <td style="line-height:2;width
+                                                                   20px;padding-left:10px">
+                                                        <lightning:input type="checkbox" 
+                                                                         class="customCheckBoxCss" checked="{!checkBoxVar.isSelected}"  name="{!groupIndex+'-'+index}"  aura:id="checkRFQ"  onchange="{!c.selectRfq}" />
+                                                    </td>
+                                                    </aura:if>
+                                                    
+                                                </aura:iteration>
+                                                <td style="padding:0px">
+                                                    <lightning:icon iconName="action:delete" class="iconStyle"
+                                                                    alternativeText="{!groupIndex+'-'+index}" title="Delete"
+                                                                    onclick="{!c.onClickOpenDeleteModal}" style="margin-left:0rem;" />
+                                                </td>
+                                                <td style="padding:0px">
+                                                    <lightning:icon iconName="action:edit" class="iconStyle"
+                                                                    alternativeText="{!groupIndex+'-'+index}" title="Edit"
+                                                                    onclick="{!c.onClickOpenEditModal}" style=" margin-left:-70px;"/>
+                                                </td>
+                                                <aura:iteration items="{!row}" var="columnValue">
+                                                    <!--<aura:if isTrue="{!groupIndex == 0}">
+                                                            <span style=" margin-left:-2rem;">
+                                                                <aura:if isTrue="{!(columnValue.Key == 'Name')}">
+                                                                    <td>                                                
+                                                                        <a onclick="{!c.viewRecord}" data-name="{!columnValue.Id}" >
+                                                                            {!columnValue.Value}
+                                                                        </a>                                    
+                                                                    </td>                                            
+                                                                    <aura:set attribute="else">
+                                                                        <td>                                               
+                                                                            {!columnValue.Value} 
+                                                                        </td>
+                                                                    </aura:set>
+                                                                </aura:if>
+                                                            </span>
+                                                            <aura:set attribute="else">
+                                                                <aura:if isTrue="{!(columnValue.Key == 'Name')}">
+                                                                    <td>                                                
+                                                                        <a onclick="{!c.viewRecord}" data-name="{!columnValue.Id}" >
+                                                                            {!columnValue.Value}
+                                                                        </a>                                    
+                                                                    </td>                                            
+                                                                    <aura:set attribute="else">
+                                                                        <td>                                               
+                                                                            {!columnValue.Value} 
+                                                                        </td>
+                                                                    </aura:set>
+                                                                </aura:if>
+                                                            </aura:set>
+                                                        </aura:if>-->
+                                                    <aura:if isTrue="{!(columnValue.Key == 'Name')}">
+                                                        <td>                                                
+                                                            <a onclick="{!c.viewRecord}" data-name="{!columnValue.Id}" >
+                                                                {!columnValue.Value}
+                                                            </a>                                    
+                                                        </td>                                            
+                                                        <aura:set attribute="else">
+                                                            <td>                                               
+                                                                {!columnValue.Value} 
+                                                            </td>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </aura:iteration>
+                                                
+                                            </tr>
+                                        </aura:iteration>
+                                        
+                                        
+                                        <!-- <aura:iteration items="{!rec.groupedRecords}" var="row" indexVar="index">
+                                            <tr>
+                                                <td style="padding:5px; margin:5px;line-height:2;">
+                                                    <lightning:input type="checkbox" name="{!groupIndex+'-'+index}"
+                                                                     checked="{!row.isSelected}" class="customCheckBoxCss" />
+                                                </td>
+                                                <td>
+                                                    <ui:outputURL value="{!'/one/one.app?#/sObject/'+ row.Id + '/view'}"
+                                                                  target="_blank" label="{!row.Name}" />
+                                                </td>
+                                                <td>
+                                                    <ui:outputURL
+                                                                  value="{!'/one/one.app?#/sObject/'+ row.buildertek__Product__c + '/view'}"
+                                                                  target="_blank" label="{!row.buildertek__Product__r.Name}" />
+                                                </td>
+                                                <td>
+                                                    {!row.buildertek__Category__r.Name}
+                                                </td>
+                                                <td>
+                                                    {!row.buildertek__Product_Type__r.Name}
+                                                </td>
+                                                <td>
+                                                    {!row.buildertek__Vendor__r.Name}
+                                                </td>
+                                                <td>
+                                                    {!row.buildertek__Takeoff_Line__r.buildertek__Quantity__c}
+                                                </td>
+                                                <td>
+                                                    <ui:outputURL
+                                                                  value="{!'/one/one.app?#/sObject/'+ row.buildertek__Takeoff_Line__c + '/view'}"
+                                                                  target="_blank"
+                                                                  label="{!row.buildertek__Takeoff_Line__r.Name}" />
+                                                </td>
+                                                <td>
+                                                    {!row.buildertek__Takeoff_Line__r.buildertek__Location__c}
+                                                </td>
+                                                <td>
+                                                 {!row.buildertek__Build_Phase__r.Name}
+                                                </td>
+                                                <td>
+                                                    <lightning:icon iconName="action:delete" class="iconStyle"
+                                                                    alternativeText="{!groupIndex+'-'+index}" title="Delete"
+                                                                    onclick="{!c.onClickOpenDeleteModal}" />
+                                                </td>
+                                                <td>
+                                                    <lightning:icon iconName="action:edit" class="iconStyle"
+                                                                    alternativeText="{!groupIndex+'-'+index}" title="Edit"
+                                                                    onclick="{!c.onClickOpenEditModal}" />
+                                                </td>
+                                            </tr>
+                                        </aura:iteration> -->
+                                    </aura:iteration>
+                                </aura:set>
+                            </aura:if>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="slds-card__footer">
+                    <lightning:button iconName="utility:back" class="slds-button slds-button_neutral"
+                                      iconPosition="left" disabled="{!v.SSTLPageNumber == 1}" aura:id="prevPage" label="Previous"
+                                      onclick="{!c.handleSSTLPrev}" />
+                    <lightning:button iconName="utility:forward" class="slds-button slds-button_neutral"
+                                      iconPosition="right" disabled="{!v.SSTLIsNextDisabled}" aura:id="nextPage" label="Next"
+                                      onclick="{!c.handleSSTLNext}" />
+                </div>
+                <aura:if isTrue="{!v.isSpinner}">
+                    <div aura:id="spinnerId" class="slds-spinner_container">
+                        <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative"
+                             role="alert">
+                            <span class="slds-assistive-text">Loading</span>
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                        </div>
+                    </div>
+                </aura:if>
+            </lightning:card>
+        </div>
+    </div>
+    
+    <aura:if isTrue="{!v.isReplaceAll}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeModel }" alternativeText="close"
+                                          variant="bare-inverse" class="slds-modal__close" />
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Confirmation</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    Are you sure you want Replace All takeOff Lines?
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral" label="No" title="No" onclick="{! c.closeModel }" />
+                    <lightning:button variant="brand" label="Replace All" title="Replace All"
+                                      onclick="{! c.replaceAllTakeOffLines }" />
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    
+    <aura:if isTrue="{!v.isDeleteModal}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeDeleteModel }"
+                                          alternativeText="close" variant="bare-inverse" class="slds-modal__close" />
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Confirmation</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    {!v.deleteConfirmationBody}
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral" label="Cancel" title="No" onclick="{! c.closeDeleteModel }" />
+                    <lightning:button variant="brand" label="Delete" title="Delete"
+                                      onclick="{! c.onClickOpenDeleteModal }" />
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    
+    <aura:if isTrue="{!v.isEditModeOpen}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" onclick="{! c.onClickOpenEditModal }"
+                                          alternativeText="close" variant="bare-inverse" class="slds-modal__close" />
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Confirmation</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <lightning:recordEditForm recordId="{!v.SSTLId}" objectApiName="buildertek__Select_Sheet__c">
+                        <lightning:messages />
+                        <lightning:outputField fieldName="Name" />
+                        <lightning:button class="slds-m-top_small" variant="brand" type="submit" name="update"
+                                          label="Update" />
+                    </lightning:recordEditForm>
+                </div>
+                <!-- <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral" label="No" title="No" onclick="{! c.closeDeleteModel }" />
+                    <lightning:button variant="brand" label="Delete" title="Delete"
+                        onclick="{! c.onClickOpenDeleteModal }" />
+                </footer> -->
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    
+    
+    
+    <aura:if isTrue="{!v.isNewTakeoffLine}">
+        
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            
+            <div class="slds-modal__container">
+                
+                
+                
+                <!-- <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New Project Take Off Line</h2> -->
+                <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__Project_Takeoff_Lines__c">
+                    
+                    <!--Custom Styles for Modal Header and Footer--> 
+                    <aura:html tag="style">
+                        .cuf-content {
+                        padding: 0 0rem !important;
+                        }
+                        .slds-p-around--medium {
+                        padding: 0rem !important;
+                        }       
+                        .slds-modal__content{
+                        overflow-y:hidden !important;
+                        height:unset !important;
+                        max-height:unset !important;
+                        }
+                    </aura:html>
+                    
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeModel }" alternativeText="close"
+                                              variant="bare-inverse" class="slds-modal__close" />
+                        <p></p>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New TakeOff Line</h2>
+                        <p></p>
+                    </header>
+                    
+                    <div class="slds-grid slds-wrap" style = "background-color: white;">
+                        
+                        <div class="slds-grid slds-wrap">
+                            <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                                <label>Trade Type</label>
+                                <c:customLookup aura:id="tradeTypeId" objectAPIName="buildertek__Trade_Type__c"
+                                                IconName="custom:custom5" selectedRecord="{!v.selectedTradeType}" />
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                                <lightning:inputField aura:id="categoryId" fieldName="buildertek__Categories__c"
+                                                      value="{!v.newprojecttakeoffline.buildertek__Categories__c}" label="Category" />
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                                <lightning:inputField aura:id="categoryId" fieldName="buildertek__Product_Type__c"
+                                                      value="{!v.newprojecttakeoffline.buildertek__Product_Type__c}" label="Product Type" />
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                                <lightning:inputField aura:id="LocationId" fieldName="buildertek__Location__c"
+                                                      value="{!v.newprojecttakeoffline.buildertek__Location__c}" label="Location" />
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                                <lightning:input aura:id="quantityId" type="number"
+                                                 value="{!v.newprojecttakeoffline.buildertek__Quantity__c}" label="Quantity"
+                                                 autocomplete="off" />
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                                <lightning:input aura:id="uomId" value="{!v.newprojecttakeoffline.buildertek__UOM__c}" label="UOM"
+                                                 autocomplete="off" />
+                            </lightning:layoutItem>
+                            
+                            <!--   <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                                    <lightning:input aura:id="projtakeoffid" value="{!v.parentRecordId}" label="Project Takeoff"
+                                                     autocomplete="off" />
+                                </lightning:layoutItem> -->
+                            <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                                
+                                <lightning:inputField fieldName="buildertek__Project_Takeoff__c"  aura:id = "projtakeoffid" disabled = "true"></lightning:inputField>
+                            </lightning:layoutItem>
+                            
+                            <br />
+                            <br />
+                            <br />
+                            <br/>
+                            
+                        </div>
+                        
+                    </div>
+                    
+                    <footer aura:id="footer" class="slds-modal__footer">
+                        <lightning:button variant="neutral" label="Cancel" title="Cancel" onclick="{! c.closeModel }" />
+                        <!-- <lightning:button variant="neutral" label="Save &amp; New" title="Save &amp; New"
+                                              onclick="{!c.saveAndNew}" /> -->
+                        <lightning:button variant="brand" label="Save" title="Save" onclick="{!c.save}" />
+                    </footer>
+                </lightning:recordEditForm>
+                
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+        <aura:if isTrue="{!v.Spinner}">
+            <div aura:id="spinnerId" class="slds-spinner_container">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                    <div class="custom-loading-text">
+                        <b>Processing, Please Wait</b>
+                    </div>
+                </div>
+            </div>
+        </aura:if>
+    </aura:if> 
+    
+    <aura:if isTrue="{!v.isImportPackage}">
+        
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <div class="slds-modal__header" style="font-size:17px;">
+                    Import Package
+                </div>
+                <div class="slds-modal__content slds-p-around--large">
+                    <div class="slds slds-scope">
+                        <table class="slds-table slds-table_bordered slds-table_fixed-layout" role="grid">
+                            <thead>
+                                <tr class="slds-text-title_caps">
+                                    <th scope="col"
+                                        style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-left-radius:5px;vertical-align: top;line-height: 2; width: 15%;">
+                                        <ui:inputCheckbox aura:id="checkContractors" change="{!c.selectAll}" />
+                                    </th>
+                                    <th
+                                        style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2; width: 30%;">
+                                        Title
+                                    </th>
+                                    <th
+                                        style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2; width: 50%;">
+                                        Package Name
+                                    </th>
+                                    
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.paginationList}" var="rec">
+                                    <tr class="slds-hint-parent">
+                                        
+                                        <td style="width:50px;">
+                                            <ui:inputCheckbox aura:id="checkContractor" value="{rec.packageTakeOffCheck}"
+                                                              text="{!rec.packageRecord.Id}" change="{!c.handleCheck}" />
+                                        </td>
+                                        <td role="gridcell">
+                                            <ui:outputText value="{!rec.packageRecord.Name}" />
+                                        </td>
+                                        <td role="gridcell">
+                                            <ui:outputText value="{!rec.packageRecord.buildertek__Package_Name__c}" />
+                                        </td>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                        <br />
+                        <lightning:buttonGroup>
+                            <lightning:button label="Previous" disabled="{!v.startPage == 0}" onclick="{!c.previous}"
+                                              variant="brand" iconName='utility:back' />
+                            &nbsp; &nbsp; &nbsp;
+                            <lightning:button label="Next" disabled="{!v.endPage >= v.totalRecords}" onclick="{!c.next}"
+                                              variant="brand" iconName='utility:forward' iconPosition='right' />
+                        </lightning:buttonGroup>
+                    </div>
+                    <aura:if isTrue="{!v.Spinner}">
+                        <div aura:id="spinnerId" class="slds-spinner_container">
+                            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                                <span class="slds-assistive-text">Loading</span>
+                                <div class="slds-spinner__dot-a"></div>
+                                <div class="slds-spinner__dot-b"></div>
+                                <div class="custom-loading-text">
+                                    <b>Processing, Please Wait</b>
+                                </div>
+                            </div>
+                        </div>
+                    </aura:if>
+                </div>
+                <div class="slds-modal__footer">
+                    <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}">Cancel</button>
+                    <button class="slds-button slds-button--brand" onclick="{!c.importTakeoffLinesFromPackage}">Import Package</button>
+                </div>
+            </div>
+            
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+        <aura:if isTrue="{!v.Spinner}">
+            <div aura:id="spinnerId" class="slds-spinner_container">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                    <div class="custom-loading-text">
+                        <b>Processing, Please Wait</b>
+                    </div>
+                </div>
+            </div>
+        </aura:if>
+    </aura:if> 
+    
+    <aura:if isTrue="{!v.isDeletePopUp}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="min-width:30rem;">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Delete
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height:50px; text-align: center; font-weight: 700">
+                    Are you sure you want to Delete the selected Products?
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button label="No" title="No" onclick="{!c.cancelDelete}" />
+                    <lightning:button variant="neutral" label="Yes" title="Yes" onclick="{!c.deleteSelectedRightLines}" />
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if> 
+    
+    
+</aura:component>

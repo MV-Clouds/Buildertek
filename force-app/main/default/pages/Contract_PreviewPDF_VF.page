@@ -1,0 +1,60 @@
+<apex:page standardController="Contract__c" extensions="ContractPreviewPDFController">
+<style>
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
+display:none;
+}
+</style>
+    <script>
+        
+       <apex:includeScript value="{!URLFOR($Resource.GoogleAjax10_2, 'GoogleAjaxJs/GoogleAjax10-2.js')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.GoogleAjax10_2, 'GoogleAjaxJs/GoogleAjax10-3.js')}"/>
+
+var j$ = jQuery.noConflict();
+try{
+  j$(function() {
+    /*Append the jQuery CSS CDN Link to the Head tag.*/
+    j$('head').append('<link rel="stylesheet" href="{!URLFOR($Resource.contractJs)}" type="text/css" />');
+    
+    /*Create the HTML(DIV Tag) for the Dialog.*/
+    var html = '<div id="dialog" title="Preview PDF "><p>Do you want to go to the Home tab ?</p></div>';
+    
+    /*Check if Dialog(DIV Tag) already exists if not Append same to the Body tag.*/
+    if(!j$('[id=dialog]').size()){
+      j$('body').append(html);
+    }    
+
+    var iframe_url = '{!URLFOR("/apex/Contract_Generate_PDF_VF?id="+ contractList.Id + "&qtid="+ contractList.Doc_Template__c)}'
+    var tool_url = '{!URLFOR("/"+contractList.Id )}'
+
+    /*Open the jQuery Dialog.*/ 
+    j$( "#dialog" ).html('<iframe id="iframeContentId" src="' + iframe_url + '" frameborder="0" height="100%" width="100%" marginheight="0" marginwidth="0" scrolling="yes" />')
+     .dialog({
+      autoOpen: true,
+      modal: true,
+      resizable: true,
+      width: 800,
+      height: 600,
+      show: {duration: 10},
+      hide: {duration: 10},
+      
+     
+      /*buttons: {
+
+        Cancel: function() {
+          j$( this ).dialog( "close" );
+        },
+        Save: function() {
+          save();
+        }
+      }*/
+    });
+   
+  
+  }); 
+}
+catch(e){
+alert('An Error has Occured. Error: ' + e);
+}
+    </script>
+
+</apex:page>

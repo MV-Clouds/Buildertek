@@ -1,0 +1,229 @@
+<aura:component controller="CustomDashboardController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction,forceCommunity:availableForAllPageTypes" access="global">
+    <aura:attribute name="Contract" type="Object" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler name="change" value="{!v.Contract}" action="{!c.onContractHandler}" />
+    
+    <aura:attribute name="chartDataArray1" type="List" />
+    <aura:attribute name="chartDataArray2" type="List" />
+    <aura:attribute name="chartDataArray3" type="List" />
+    
+    <aura:attribute name="rows" type="Object[]" />
+    
+    <aura:attribute name="isChart" type="boolean" default="false" />
+    
+    <div style="background:#eee;" class="slds-grid slds-gutters dashDiv">
+        <div class="slds-col col slds-size_2-of-12">
+            <br/>
+            <span Style="FONT-WEIGHT: 700;">Customer Name</span>
+            <br/>
+            <span Style="FONT-WEIGHT: 500;word-break: break-all;text-align:center;">{!v.Contract.Name}</span>
+            <br/>
+            <br/>
+            <span Style="FONT-WEIGHT: 700;">Phone Number</span>
+            <br/>
+            <span Style="FONT-WEIGHT: 500;word-break: break-all;text-align:center;" >{!v.Contract.Phone}</span>
+            <br/>
+            <br/>
+            <span Style="FONT-WEIGHT: 700;">Email Address</span>
+            <br/>
+            <span  Style="FONT-WEIGHT: 500;word-break: break-all;text-align:center;">{!v.Contract.Email}</span>
+            <br/>
+            
+        </div>
+        
+        <div class="slds-col col slds-size_2-of-12">
+            <div class="colStyle">
+                <div Style="padding-top:5px;FONT-WEIGHT: 700;">Profit/Loss</div>
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col slds-size_12-of-12">
+                        <div style="FONT-WEIGHT: 500;">
+                            <span>
+                                <lightning:formattedNumber value="{!v.Contract.projectProfitLossTotal}" minimumFractionDigits="2" style="currency" currencyCode="USD"/>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="colStyle">
+                <div Style="padding-top:5px;FONT-WEIGHT: 700;">Gross Profit</div>
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col slds-size_12-of-12">
+                        <div style="FONT-WEIGHT: 500;">
+                            <span>
+                                <lightning:formattedNumber value="{!v.Contract.grossProfitTotal}" minimumFractionDigits="2" style="currency" currencyCode="USD"/>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="colStyle">
+                <div Style="padding-top:5px;FONT-WEIGHT: 700;">Costs In Excess of Billings</div>
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col slds-size_12-of-12">
+                        <div style="FONT-WEIGHT: 500;">
+                            <span>
+                                <lightning:formattedNumber value="{!v.Contract.CIEBTotal}" minimumFractionDigits="2" style="currency" currencyCode="USD"/>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="colStyle">
+                <div Style="padding-top:5px;FONT-WEIGHT: 700;">Billings In Excess of Costs</div>
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col slds-size_12-of-12">
+                        <div style="FONT-WEIGHT: 500;">
+                            <span>
+                                <lightning:formattedNumber value="{!v.Contract.BIECTotal}" minimumFractionDigits="2" style="currency" currencyCode="USD"/>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- div>
+               <div Style="FONT-WEIGHT: 700;">BIEC</div>
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col slds-size_12-of-12">
+                        <div style="font-size: 1.5em;font-weight: bold;color: cadetblue;"  class="slds-align_absolute-center">
+                            <span>
+                             <lightning:formattedNumber value="{!v.Contract.BIECTotal}" minimumFractionDigits="2" style="currency" currencyCode="USD"/>
+                            </span>
+                        </div>
+                    </div>
+               </div>
+            </div -->
+            
+        </div>
+        
+        <div class="slds-col col slds-size_2-of-12">
+            <div style="padding:5px;">
+                <div Style="padding-top:5px;FONT-WEIGHT: 700;">Open Change Orders</div>
+                <div class="slds-grid slds-gutters" style="margin-top: 15px;" >
+                    <div class="slds-col slds-size_1-of-12">
+                        <div  class="indicator"></div>
+                    </div>
+                    <div style="margin-left:5px">
+                        Total Co  <lightning:formattedNumber  value="{!v.Contract.TotalContractOrder}" minimumFractionDigits="2" style="currency" currencyCode="USD"/>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <ul class="chart-skills" aura:id="chartSkill" data-coverage='0%'>
+                    <li>
+                        <span>Open CO<br/><lightning:formattedNumber value="{!v.Contract.OpenOrderTotal}" minimumFractionDigits="2" style="currency" currencyCode="USD"/> </span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="slds-col col slds-size_2-of-12">
+            <div  style="padding:5px;">
+                <div Style="padding-top:5px;FONT-WEIGHT: 700;">Approved Change Orders</div>
+                <div class="slds-grid slds-gutters" style="margin-top: 15px;">
+                    <!-- div class="slds-col slds-size_4-of-12"></div -->
+                    <div class="slds-col slds-size_1-of-12">
+                        <div  class="indicator"></div>
+                    </div>
+                    <div style="margin-left:5px">
+                        Total Co  <lightning:formattedNumber  value="{!v.Contract.TotalContractOrder}" minimumFractionDigits="2" style="currency" currencyCode="USD"/>
+                    </div>
+                    
+                </div>
+            </div>
+            <div>
+                <ul class="chart-skills" aura:id="chartSkill" data-coverage='0%'>
+                    <li>
+                        <span>Aproved CO<br/><lightning:formattedNumber value="{!v.Contract.ApprovedOrderTotal}" minimumFractionDigits="2" style="currency" currencyCode="USD"/> </span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="slds-col col slds-size_2-of-12">
+            <div style="padding:5px;">
+                <div Style="padding-top:5px;FONT-WEIGHT: 700;">Open Invoices</div>
+                <div class="slds-grid slds-gutters" style="margin-top: 10px;">
+                    <!-- div class="slds-col slds-size_4-of-12"></div -->
+                    <div class="slds-col slds-size_1-of-12">
+                        <div  class="indicator"></div>
+                    </div>
+                    <div class="slds-col slds-size_11-of-12" style="margin-left:5px" >Total Invoice <lightning:formattedNumber  value="{!v.Contract.TotalInvoice}" minimumFractionDigits="2" style="currency" currencyCode="USD"/></div>
+                    
+                </div>
+            </div>
+            <div>
+                <ul class="chart-skills" aura:id="chartSkill" data-coverage='0%'>
+                    <li>
+                        <span>Open Invoice<br/><lightning:formattedNumber value="{!v.Contract.OpenInvoiceTotal}" minimumFractionDigits="2" style="currency" currencyCode="USD"/> </span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div>
+        <br/>
+        <aura:if isTrue="{!v.isChart}">
+            <div style="background:#eee;" class="slds-grid slds-gutters">
+                <div class="slds-col slds-size_3-of-12">
+                    <c:CustomChart chartDataArray="{!v.chartDataArray1}" chartHeader='Open Change Orders'/>
+                </div>
+                <div class="slds-col slds-size_3-of-12">
+                    <c:CustomChart chartDataArray="{!v.chartDataArray2}" chartHeader='Customer Approved Change Orders'/>
+                </div>
+                <div class="slds-col slds-size_3-of-12">
+                    <c:CustomChart chartDataArray="{!v.chartDataArray3}" chartHeader='Open Invoices' />
+                </div>
+                <div class="slds-col slds-size_3-of-12" style="border: 1px solid lightgray;border-radius: 5px;">
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_12-of-12" style="margin:10px 0px 0px 0px;">
+                            <span Style="FONT-WEIGHT: 700;padding-top:5px;">Past Due Scheduled Tasks</span>
+                        </div>
+                    </div>
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_12-of-12">
+                            <div class="tableheight" style="margin:10px 0px 0px 0px;overflow-y: scroll;overflow-x: hidden;">
+                                <table>
+                                    <tbody>
+                                        <aura:iteration items="{!v.rows}" var="row" indexVar="rowIndex">
+                                            <tr style="margin:5px 0px;">
+                                                <th scope="col" colspan="3" data-index="{!rowIndex}" onclick="{!c.toggle}" >
+                                                    <div data-index="{!row.id}" style="background:#ddd;border-radius: 15px 0px;margin:5px;text-align: center;"><a href="javascript:void(0)" onclick="{!c.onclickRec}">{!row.Name}</a></div>
+                                                </th>
+                                            </tr>
+                                            <aura:if isTrue="{!row.expanded}">
+                                                <tr style="background:#eee;">
+                                                    <th scope="col">
+                                                        <div style="width:100px" class="childRow">Task Name</div>
+                                                    </th>
+                                                    <th scope="col">
+                                                        <div style="width:70px" class="childRow">Duration</div>
+                                                    </th>
+                                                    <th scope="col">
+                                                        <div style="width:80px" class="childRow">Start Date</div>
+                                                    </th>
+                                                </tr>
+                                                <aura:iteration items="{!row.children}" var="child">
+                                                    <tr style="margin-left:10px;border: 1px solid lightgray;">
+                                                        <th scope="col">
+                                                            <div style="width:100px" data-index="{!child.id}" class="childRowData"><a href="javascript:void(0)" onclick="{!c.onclickRec}">{!child.Name}</a></div>
+                                                        </th>
+                                                        <th scope="col">
+                                                            <div style="width:70px" class="childRowData">{!child.Duration}</div>
+                                                        </th>                                                        
+                                                        <th scope="col">
+                                                            <div style="width:80px" class="childRowData">{!child.StartDate}</div>
+                                                        </th>
+                                                    </tr>
+                                                </aura:iteration>
+                                            </aura:if>
+                                        </aura:iteration>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aura:if>
+        <br/>
+    </div>
+    
+</aura:component>

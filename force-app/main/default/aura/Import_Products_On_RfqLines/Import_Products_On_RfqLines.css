@@ -1,0 +1,20 @@
+.THIS {
+}
+
+.THIS .custom-loading-text {
+    transform: rotate(-90deg);
+    position: absolute;
+    top: -0.5rem;
+    left: 1rem;
+    white-space: nowrap;
+    font-size: 20px;
+}
+
+.THIS .selectStyle{
+    width: 14%;
+    display: inline-block; 
+    padding: 0% 2% 0% 0%;
+}
+.THIS .slds-lookup__menu{
+    width: max-content !important; 
+}

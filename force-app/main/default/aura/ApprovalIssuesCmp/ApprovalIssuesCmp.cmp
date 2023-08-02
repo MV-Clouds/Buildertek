@@ -1,0 +1,160 @@
+<!--
+	@ PURPOSE : DISPLAYS ISSUE RECORDS WITH NON-OPEN ISSUES.
+	@ Name    : ApprovalIssuesCmp.xml
+-->
+<aura:component controller="IssueManagementCtrl" access="global">
+	
+	<lightning:workspaceAPI aura:id="workspace"/>
+	
+    <aura:attribute name="headerText" type="STRING" default="Submitted Issues For Approval"/>
+	
+	<aura:attribute name="listOfSubmittedIssues" type="Object[]" default="[]"/>
+	
+	<aura:attribute name="listOfApprovalIssues" type="Object[]" default="[]"/>
+	
+	<aura:attribute name="showSpinner" type="Boolean" />
+    
+	<aura:attribute name="isConsoleNavigation" type="Boolean" default="false"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+	
+	<aura:registerEvent name="refreshIssuesReportedTableEvt" type="c:RefreshIssuesReportedTable"/>
+    
+	<!-- START MODAL -->
+    <div style="height: 800px; width:auto;">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+			
+			<!-- START SPINNER -->
+			<aura:if isTrue="{!v.showSpinner}">
+				<lightning:spinner alternativeText="Loading" size="large" />
+			</aura:if>
+			<!-- END SPINNER -->
+			
+			<div class="slds-modal__container">
+				
+				<header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" class="slds-modal__close"
+										  size="large" variant="bare" alternativeText="Close"
+										  onclick="{! c.closeModal }"/>
+					<h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">
+						{!v.headerText}
+					</h2>
+                </header>
+				
+				<div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+					
+					<aura:if isTrue="{!not(empty(v.listOfApprovalIssues))}">
+						<div class="submitted_table">
+							<table class="slds-table slds-table_bordered slds-table_cell-buffer"> 
+								<thead>
+									<tr>
+										<th scope="col">
+											<div class="slds-truncate submittedTableCol" title="Name">Name</div>
+										</th>
+										<th scope="col">
+											<div class="slds-truncate submittedTableCol" title="Issue Status">Issue Status</div>
+										</th>
+										<th scope="col">
+											<div class="slds-truncate submittedTableCol" title="Notes &amp; Comments">Notes &amp; Comments</div>
+										</th>
+										<th scope="col">
+											<div class="slds-truncate submittedTableCol" title="Warranty Determination">Warranty Determination</div>
+										</th>
+										<th scope="col">
+											<div class="slds-truncate submittedTableCol" title="Work Type">Work Type</div>
+										</th>
+										<th scope="col">
+											<div class="slds-truncate submittedTableCol" title="Window ID">Window ID</div>
+										</th>
+										<th scope="col">
+											<div class="slds-truncate submittedTableCol" title="Control Panel">Control Panel</div>
+										</th>
+										<th scope="col">
+											<div class="slds-truncate submittedTableCol" title="Start Date">Start Date</div>
+										</th>
+										<th scope="col">
+											<div class="slds-truncate submittedTableCol" title="End Date">End Date</div>
+										</th>
+										<th scope="col">
+											<div class="slds-truncate submittedTableCol" title="Failure Component">Failure Component</div>
+										</th>
+										<th scope="col">
+											<div class="slds-truncate submittedTableCol" title="Record Type">Record Type</div>
+										</th>
+										<th scope="col">
+											<div class="slds-truncate submittedTableCol" title="Product">Product</div>
+										</th>
+										<th scope="col">
+											<div class="slds-truncate submittedTableCol" title="Requested Delivery Date">Requested Delivery Date</div>
+										</th>
+									</tr>
+								</thead>   
+								<tbody>
+									<aura:iteration items="{!v.listOfApprovalIssues}" var="approvalIssue" indexVar="index">
+										<tr>	
+											<td>
+												<a id="{!approvalIssue.Id}" onclick="{!c.openRecordInNewConsoleTab}">
+                                                    {!approvalIssue.Name}
+                                                </a>
+											</td>
+											<td>
+												<ui:outputText value="{!approvalIssue.Issue_Status__c}"/>
+											</td>
+											<td>
+												<ui:outputText value="{!approvalIssue.Comments__c}"/>
+											</td>
+											<td>
+												<ui:outputText value="{!approvalIssue.Warranty_Type__c}"/>
+											</td>
+											<td>
+												<ui:outputText value="{!approvalIssue.Work_Type__c}"/>
+											</td>
+											<td>
+												<ui:outputText value="{!approvalIssue.Window_ID__c}"/>
+											</td>
+											<td>
+												<ui:outputText value="{!approvalIssue.Control_Panel__c}"/>
+											</td>
+											<td>
+												<ui:outputDate value="{!approvalIssue.Start_Date__c}"/>
+											</td>
+											<td>
+												<ui:outputDate value="{!approvalIssue.End_Date__c}"/>
+											</td>
+											<td>
+												<ui:outputText value="{!approvalIssue.Failure_Component__c}"/>
+											</td>
+											<td>
+												<ui:outputText value="{!approvalIssue.RecordType.Name}"/>
+											</td>
+											<td>
+												<ui:outputText value="{!approvalIssue.Product__r.Name}"/>
+											</td>
+											<td>
+												<ui:outputDate value="{!approvalIssue.Requested_Delivery_Date__c}"/>
+											</td>
+										</tr>
+									</aura:iteration>
+								</tbody>
+							</table>
+						</div>
+					</aura:if>
+					
+				</div>
+				
+				<footer class="slds-modal__footer">
+					<lightning:button variant="brand" label="Close" title="Close"
+									  onclick="{! c.closeModal }" />   
+                </footer>
+				
+			</div>
+			
+		</section>
+		
+		<div class="slds-backdrop slds-backdrop_open"></div>
+		
+	</div>
+	<!-- END MODAL -->
+	
+</aura:component>

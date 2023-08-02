@@ -1,0 +1,5 @@
+<design:component>
+   <design:attribute name="issueList" label="issueList" />
+   <design:attribute name="wraaperValueStr" label="fieldToBeDisplayed" />
+
+</design:component>

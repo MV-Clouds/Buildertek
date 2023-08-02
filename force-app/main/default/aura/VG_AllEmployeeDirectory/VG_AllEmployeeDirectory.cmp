@@ -1,0 +1,193 @@
+<aura:component implements="forceCommunity:availableForAllPageTypes,force:appHostable,flexipage:availableForAllPageTypes" controller="VG_EmployeeDirectoryController" access="global">
+    
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}" />
+    
+    <aura:attribute name="usersInnerCount" type="Integer"  default="0" />
+    <aura:attribute name="roles" type="String[]" />
+    <aura:attribute name="users" type="User[]" />
+    <aura:attribute name="doInItCall" type="Boolean" default="true"/>
+    <aura:attribute name="userCount" type="Integer" />
+    <aura:attribute name="departments" type="String[]" />
+    <aura:attribute name="filterDepartments" type="String[]" />
+    <aura:attribute name="locations" type="String[]" />
+    <aura:attribute name="selectedDepartments" type="String[]" />
+    <aura:attribute name="selectedLocations" type="String[]" />
+    <aura:attribute name="selectedRoles" type="String[]" />
+    <aura:attribute name="keyword" type="String" default="" />
+    
+    <aura:attribute name="sortOptions" type="Object[]" />
+    <aura:attribute name="sortField" type="String" default="LastName" />
+    <aura:attribute name="sortDirection" type="String" default="ASC" />
+    <aura:attribute name="showSpinner" type="boolean" default="false" />
+    <aura:attribute name="timer" type="Integer"/>
+    <aura:attribute name="showMore" type="boolean" default="false"/>
+    <aura:attribute name="initialized" type="boolean" default="false"/>
+    
+    <aura:attribute name="selectedDep" type="String[]" />
+    <!-- Test Methods -->
+    <aura:method name="setLocation" action="{!c.setLocFiltersAPI}" access="public">
+        <aura:attribute name="isChecked" type="Boolean" />
+        <aura:attribute name="label" type="String" />
+    </aura:method>
+    <aura:method name="setDepartment" action="{!c.setDeptFiltersAPI}" access="public">
+        <aura:attribute name="isChecked" type="Boolean" />
+        <aura:attribute name="label" type="String" />
+    </aura:method>
+    <aura:method name="setRole" action="{!c.setRoleFiltersAPI}" access="public">
+        <aura:attribute name="isChecked" type="Boolean" />
+        <aura:attribute name="label" type="String" />
+    </aura:method>
+    
+    
+    <lightning:card title="" class="slds-card_boundary Cardstyle">
+        <lightning:breadcrumbs>        
+            <lightning:breadcrumb label="HOME"  onclick="{! c.navigateToHome }"/>
+            <!-- <lightning:breadcrumb label="ANNOUNCEMENTS"  onclick="{! c.navigateToHome }"/>-->
+            <lightning:breadcrumb label="ALL EMPLOYEE" />
+        </lightning:breadcrumbs>
+    </lightning:card>
+    
+    <div class="slds-box" style="position:relative; border:0; margin:0px;padding: 0px; background-color: white;">
+        <aura:if isTrue="{!v.showSpinner}">
+            <lightning:spinner aura:id="mySpinner"/>
+        </aura:if>
+        <div class="slds-page-header mobileSearch" style="background:none;padding-bottom: 0px;">
+            <div class="slds-grid slds-wrap">
+                
+                <div class="slds-large-size--1-of-2 titleContainer slds-small-size--1-of-1 slds-p-bottom--small">
+                    <!-- <h1 class="slds-page-header__title">{!$Label.c.Employee_Directory}</h1> -->
+                    <h1 class="slds-page-header__title" style="font-family: Gotham-Bold;font-size:18px;color:#4A4A4A;margin-left:-2% !important;">Employee Directory</h1>
+                </div>
+                <div class="slds-large-size--1-of-2 slds-small-size--1-of-1 buttonContainer">
+                    <div class="slds-form--inline">
+                        <div class="slds-form-element">
+                            <div class="slds-form-element__control">
+                                <lightning:buttonGroup >
+                                    <lightning:input aura:id="employeeSearchField" class="employeeSearch" style="z-index: 0;" type="search" label=" " name="search" placeholder="{!$Label.c.Search_Everything}" onchange="{!c.searchUsers}" />
+                                    
+                                    <lightning:buttonIcon value="filterCall" class="filterButton" iconName="utility:filterList" alternativeText="Filter Icon" onclick="{!c.showFilterBar}" />
+                                </lightning:buttonGroup>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Filter sidebar for mobile devices -->
+        <div id="mobileFilterBar" class="slds-box slds-m-top--none smallFilterBar">
+            <div class="slds-grid--vertical">
+                <h1 class="slds-text-heading--small slds-border--bottom slds-p-bottom--small" style="font-family: Gotham-Bold;font-size:13px;color:#4A4A4A;">Filters</h1>
+            </div>
+            <div class="slds-section slds-border--bottom slds-p-around--small">
+                <h4 class="slds-p-bottom--small" aura:id="filterSectionHeading" style="font-size:13px;color:#4A4A4A;">Locations</h4>
+                <ul aura:id="ulId">
+                    <aura:iteration items="{!v.locations}" var="loc">
+                        <li style="font-size:12px;color:#4A4A4A">
+                            <lightning:input aura:id="filterCheckbox" class="filterCheckbox" type="checkbox" label="{!loc}" name="{!loc}" checked="false" onchange="{!c.setLocFilters}" />
+                        </li>
+                    </aura:iteration>
+                </ul>
+            </div> 
+            <div class="slds-section slds-p-around--small">
+                <h4 class="slds-text-title--caps slds-p-bottom--small" aura:id="filterSectionHeading">Departments</h4>
+                <ul>
+                    <aura:iteration items="{!v.departments}" var="dept">
+                        <li> 
+                            <lightning:input aura:id="deptfilterCheckbox" class="filterCheckbox" type="checkbox" label="{!dept}" name="{!dept}" checked="false" onchange="{!c.setDeptFilters}" />
+                        </li>
+                    </aura:iteration>
+                </ul>
+            </div>
+        </div>
+        <!--  Filter section for desktop -->
+        <div class="slds-grid">
+            <div class="slds-box slds-size--1-of-4 slds-m-top--large largeFilterBar" style="">
+                <div class="slds-grid--vertical">
+                    <div class="filterbottom" style="">
+                        <h1 class="slds-text-heading--small slds-border--bottom slds-p-bottom--small filterHeadding" style="margin-left:-1% !important;">Filters</h1>
+                    </div> 
+                    <div class="slds-section slds-border--bottom slds-p-around--small" style="border-bottom:0px">
+                        <h4 class="slds-text-title slds-p-bottom--small" aura:id="filterSectionHeading" style="font-family: Gotham-Book;font-size:13px;color:#4A4A4A;margin-left:-3% !important;">Locations</h4>
+                        <ul>
+                            <aura:iteration items="{!v.locations}" var="loc">
+                                <li class ="filterList" style="margin-left:-3% !important;">
+                                    <lightning:input class="filterCheckbox" type="checkbox" label="{!loc}" name="{!loc}" checked="false" onchange="{!c.setLocFilters}" />
+                                </li>
+                            </aura:iteration>
+                        </ul>
+                    </div>
+                    <div class="slds-section slds-p-around--small">
+                        
+                        <h4 class="slds-text-title slds-p-bottom--small" style="font-family: Gotham-Book;font-size:13px;color:#4A4A4A;margin-left:-3% !important;">Departments</h4>
+                        
+                        <ul>
+                            <aura:iteration items="{!v.departments}" var="dept">
+                                <li class ="filterList" style="margin-left:-3% !important;">
+                                    <lightning:input class="deptfilterCheckbox" type="checkbox" label="{!dept}" name="{!dept}" checked="false" onchange="{!c.setDeptFilters}" />
+                                </li>
+                            </aura:iteration>
+                        </ul>
+                    </div>
+                    <div class="slds-section slds-p-around--small">
+                        
+                        <h4 class="slds-text-title slds-p-bottom--small" style="font-family: Gotham-Book;font-size:13px;color:#4A4A4A;margin-left:-3% !important;">Roles</h4>
+                        
+                        <ul>
+                            <aura:iteration items="{!v.roles}" var="role">
+                                <li class ="filterList" style="margin-left:-3% !important;">
+                                    <lightning:input class="filterCheckbox" type="checkbox" label="{!role}" name="{!role}" checked="false" onchange="{!c.setRolesFilters}" />
+                                </li>
+                            </aura:iteration>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            
+            <!-- Container for employee detail cards-->
+            <div class="slds-box slds-p-around--none slds-medium-size--3-of-4 slds-small-size--1-of-1 slds-x-small-size--1-of-1 slds-grow" style="border:0">
+                <aura:if isTrue="{!and(v.users.length==0,v.initialized)}">
+                    <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error slds-m-top_x-small slds-box slds-m-left_xxx-small " role="alert">
+                        <span class="slds-assistive-text">error</span>
+                        <h2>No Records Found
+                        </h2>
+                        
+                    </div>
+                </aura:if>
+                <!--START-->
+                <aura:iteration items="{!v.users}" var="dept">
+                    
+                    <div class ="depCard" >
+                        <div style="  margin-bottom: 8px;"><span style="padding-top: 10px; padding-bottom: 0%; font-family: Gotham-Bold;font-size:18px;color:#4A4A4A ;display:inline-block;margin-bottom:8px">{!dept.department}</span>
+                            <span class="slds-float_right"> <lightning:button class="slds-button moreButton" onclick="{!c.showMore}" label="{!v.showMore?'Less':'More'}" name="{!dept.department}"></lightning:button></span>
+                        </div>
+                        <div class="slds-grid slds-wrap" style="margin-top: -1% !important;">
+                            <aura:iteration items="{!dept.users}" var="user" >
+                                <div class="slds-p-around--x-small slds-large-size--1-of-5 slds-medium-size--1-of-2 slds-small-size--1-of-1 slds-x-small-size--1-of-1 detailCard" style="">
+                                    <div class="slds-box slds-p--none cardInside" style="   ">
+                                        <a class="item-title-link" data-url="{!user.Id}" onclick="{!c.goToURL}" style="text-decoration:none">
+                                            <div class="slds-grid--vertical detailCardMobile">
+                                                <div class="slds-col slds-align--absolute-center">
+                                                    <img src="{!user.SmallPhotoUrl}" style="border-radius:50%" width="90" height="90" />
+                                                </div>
+                                                <div class="slds-col slds-p-vertical--small" style="text-align:center;padding-top: 5px; padding-bottom: 0px;">
+                                                    <h4 class="slds-text-heading--x-small slds-truncate" style=" font-family: Gotham-Book;font-size:13px;color:#4A4A4A ;">{!user.FirstName}&nbsp;{!user.LastName}</h4>
+                                                    <p class="slds-text-body--small" style="font-size:0.8125rem">
+                                                        <abbr title="{!user.Title}"><p class="slds-text-color--weak slds-truncate" style="cursor:pointer;font-family: Gotham-Medium;font-size:10px;color:#4A4A4A ;">{!user.Title}</p></abbr>
+                                                        <abbr title="{!user.Email}"><p class="slds-truncate" style="cursor:pointer;font-family: Gotham-Medium;font-size:10px;color:#4A4A4A ;">{!user.Email}</p></abbr>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                            </aura:iteration>
+                        </div>
+                    </div>
+                </aura:iteration>
+                <!--END-->
+            </div>
+        </div>
+    </div>
+</aura:component>

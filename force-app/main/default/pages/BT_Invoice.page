@@ -1,0 +1,25 @@
+<!--<apex:page controller="InvoicePDFController" renderAs="pdf" action="{!PDFInvoice}">
+    <head>
+        
+        <title>BT Invoice</title>
+    </head>
+    <apex:form id="frmid" >
+        <apex:outputText value="{!templateBody}" escape="false" />
+    </apex:form>
+    
+</apex:page>-->
+<apex:page docType="html-5.0" showHeader="false" standardStylesheets="true" controller="InvoicePDFController"
+ action="{!PDFInvoice}" sidebar="false" id="thePage">
+    <head>
+        <title>BT Invoice</title>
+             <meta name="viewport" content="width=device-width, initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=yes"/> 
+    </head>
+    <apex:form id="frmid" >
+        <apex:outputPanel layout="block" rendered="{!isMobile}" >
+            <apex:outputText value="{!templateBody}" escape="false" />
+        </apex:outputPanel>
+        <apex:outputPanel layout="block" rendered="{!!isMobile}" >
+                <apex:iframe src="apex/buildertek__BT_Invoice1?id={!recordId}" height="1000px" />
+        </apex:outputPanel>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,13 @@
+.THIS .modal-body {
+        height: 40rem !important;
+        padding: 0px !important;
+        
+}
+
+.THIS.forceChatterLightningComponent .bodyWrapper {
+    padding: 0 !important;
+}
+.THIS.slds-modal__container {
+    max-width:80rem;
+    width: 60rem !important;
+}

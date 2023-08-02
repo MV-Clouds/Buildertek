@@ -1,0 +1,18 @@
+<apex:page controller="BT_CreateContractOnQuoteAcceptance" sidebar="false" lightningStylesheets="true">
+    <apex:slds />
+    <apex:form >
+        <apex:pageBlock mode="maindetail">
+            <apex:pageMessages />  
+            <apex:pageblocksection >
+                <apex:inputcheckbox value="{!isCreateChangeOrderonOverage}" label="Create Contract on Quote Acceptance">
+                </apex:inputcheckbox>
+                <apex:inputtext value="{!emailsubject}" label="Email Subject"/>
+                <apex:inputcheckbox value="{!isCreateInvoice}" label="Automatically Create Invoice from Contract Signing">
+                </apex:inputcheckbox>
+                 <center>
+                <apex:commandButton value="Save" id="onCreateChangeOrderonOverage" styleClass="slds-button slds-button_brand" action="{!onQuoteAccepted}"></apex:commandButton>
+                </center>
+            </apex:pageblocksection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

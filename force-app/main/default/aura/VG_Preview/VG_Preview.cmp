@@ -1,0 +1,3 @@
+<aura:component implements="force:lightningQuickAction" >
+	<lightning:button onclick="{!c.navigateToURL}"></lightning:button>
+</aura:component>

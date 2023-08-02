@@ -1,0 +1,954 @@
+<aura:component Controller="View_LVE_PreQualForm_Controller" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+    <aura:attribute name="showSuccessMessage" type="Boolean" access="global" default="false"/>
+    <aura:attribute name="isSuccess" type="Boolean" access="global"/>
+    <aura:attribute name="isError" type="Boolean" access="global"/>
+    <aura:attribute name="isRequired" type="Boolean" access="global" default="true"/>
+    <aura:attribute name="isPreview" type="String" default="" />
+    <aura:attribute name="Spinner" type="Boolean" default="false"/>
+      <aura:attribute name="currFileIndex" type="Integer" default="0"/>
+      <aura:attribute name="validationMessage" type="String" default=""/>
+    
+    <aura:attribute name="message" type="String" access="global"/>
+    <aura:attribute name="isInputDisabled" type="Boolean" access="global" default="true"/>
+    <aura:attribute name="pre" type="buildertek__Pre_Qual__c" default="{'sObjectType':'buildertek__Pre_Qual__c'}"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <aura:attribute name="recordId" type="String" />
+    
+    <aura:attribute type="Date" name="contactDate"/>
+    <aura:attribute name="provinceList" type="List"/>
+    <aura:attribute name="countryList" type="List"/>
+    
+    
+    <aura:attribute name="GeneralInfoFieldSet" type="List" access="private"/>
+    <aura:attribute name="CompanyInfoFieldSet" type="List" access="private"/>
+    <aura:attribute name="KeyManageMentSet" type="List" access="private"/>
+    <aura:attribute name="LVEFieldSet" type="List" access="private"/>
+    <aura:attribute name="ContractorFieldSet" type="List" access="private"/>
+    
+    <aura:attribute name="FileNameList" type="List" />
+    <aura:attribute name="uploadFileList" type="List" />
+    <aura:attribute name="FileLabelList" type="List" default="[]"/>
+    <aura:attribute name="fileData" type="List" access="global"/>
+    <aura:attribute name="uploadFile" type="Boolean" access="global"/>
+    
+      <aura:attribute name="LVEstimator" type="String" access="global"/>
+    <aura:attribute name="AdditionalNotes" type="String" access="global"/>
+    <aura:attribute name="SubmittedName" type="String" access="global"/>
+    <aura:attribute name="SubmitteTitle" type="String" access="global"/>
+    <aura:attribute name="SubmittedEmail" type="String" access="global"/>
+    
+    
+    <aura:attribute name="project1" type="buildertek__Past_Project__c" default="{'sObjectType':'buildertek__Past_Project__c'}"/>
+    <aura:attribute name="project2" type="buildertek__Past_Project__c" default="{'sObjectType':'buildertek__Past_Project__c'}"/>
+    <aura:attribute name="project3" type="buildertek__Past_Project__c" default="{'sObjectType':'buildertek__Past_Project__c'}"/>
+    <aura:attribute name="reference1" type="buildertek__References__c" default="{'sObjectType':'buildertek__References__c'}"/>
+    <aura:attribute name="reference2" type="buildertek__References__c" default="{'sObjectType':'buildertek__References__c'}"/>
+    <aura:attribute name="reference3" type="buildertek__References__c" default="{'sObjectType':'buildertek__References__c'}"/>
+    
+    
+    
+    
+    
+    <aura:attribute name="check1" type="Boolean" default="false"/>
+    <aura:attribute name="check2" type="Boolean" default="false"/>
+    <aura:attribute name="check3" type="Boolean" default="false"/>
+    <aura:attribute name="check4" type="Boolean" default="false"/>
+    <aura:attribute name="check5" type="Boolean" default="false"/>
+    <aura:attribute name="check6" type="Boolean" default="false"/>
+    <aura:attribute name="check7" type="Boolean" default="false"/>
+    <aura:attribute name="check8" type="Boolean" default="false"/>
+    <aura:attribute name="check9" type="Boolean" default="false"/>
+    <aura:attribute name="check10" type="Boolean" default="false"/>
+    <aura:attribute name="check11" type="Boolean" default="false"/>
+    <aura:attribute name="check12" type="Boolean" default="false"/>
+    <aura:attribute name="check13" type="Boolean" default="false"/>
+    <aura:attribute name="check14" type="Boolean" default="false"/>
+    <aura:attribute name="check15" type="Boolean" default="false"/>
+    <aura:attribute name="check16" type="Boolean" default="false"/>
+    <aura:attribute name="isButtonDisabled" type="Boolean" default="true" />
+    <aura:attribute name="Sendmecopy" type="Boolean" default="false"/>
+    
+    <aura:attribute name="validAllfields" type="Boolean" access="global" default="true"/>
+    
+    
+    <div style="background-color: white;padding-left:20px;">
+        <aura:if isTrue="{!v.showSuccessMessage}">
+            <div id="pageTop">
+                <div>
+                    <!--<span>
+                        <img src="{!v.documentURL}" style="height: 30px;width: 125px;"/> 
+                    </span>-->
+                    <span class="slds-m-top_x-large">
+                        <center>
+                            <b>
+                                <ul>
+                                    <h2 style="font-size: 1.3rem;">
+                                        Thank-You for submitting your information. The team will review your details and be in touch.
+                                    </h2>
+                                </ul>
+                            </b>
+                        </center>
+                        <br/>
+                    </span>
+                    <div class="slds-align_absolute-center slds-m-top_small">
+                        <lightning:button variant="neutral" label="Close" title="Close" onclick="{!c.closePage}" />
+                    </div>
+                </div>
+            </div>
+            
+            <aura:set attribute="else">
+                <div id="pageTop" class="slds-p-around_medium">
+                    <aura:if isTrue="{!v.isSuccess}">
+                        <div class="slds-notify slds-notify_alert slds-alert_success" role="alert" style="background-color:green">
+                            <span class="slds-assistive-text">success</span>
+                            <h2>
+                                {!v.message}
+                            </h2>
+                            <div class="slds-notify__close">
+                                
+                            </div>
+                        </div>
+                    </aura:if>
+                    <aura:if isTrue="{!v.isError}">
+                        <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+                            <span class="slds-assistive-text">error</span>
+                            <h2>
+                                {!v.message}
+                            </h2>
+                            <div class="slds-notify__close">
+                                
+                            </div>
+                        </div>
+                    </aura:if>
+                    
+                    <div class="headerDiv slds-align_absolute-center">
+                        <p style="text-align: center;font-size: 25px">
+                            <b>LVE: Pre-qualification Form</b>
+                        </p>  
+                    </div>
+                    <lightning:layout multipleRows="true">
+                        <lightning:layoutItem size="12" padding="around-small">
+                            <p  style="color:red;font-size: 14px;">
+                                <b>Read Me First:</b>
+                            </p> 
+                        </lightning:layoutItem>
+                        <p style="font-size: 13px; padding-left:8px;"> 
+                            1. To prepare for submission review this form in its entirety to ensure you have all required content before completing.<br/>
+                            2. See bottom of form for list of required forms.<br/>
+                            3. This form must be completed in its entirety in order to submit the form.<br/>
+                            4.  Please add Not Applicable for any fields that do not apply to your business.
+                        </p>
+                    </lightning:layout>
+                    
+                    
+                    
+                    
+                    <lightning:recordEditForm aura:id="recordEditForm"
+                                              objectApiName="buildertek__Pre_Qual__c"
+                                              onsubmit="{!c.handleSubmit}"
+                                              onerror="{!c.handleError}">
+                        <lightning:layout multipleRows="true">
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <lightning:input label="Form Date Field" type="date" name="input1" value="{!v.contactDate}" disabled="{!v.isInputDisabled}" aura:id="GCInput" required="{!v.isRequired}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="8" padding="around-small">
+                            </lightning:layoutItem>
+                        </lightning:layout>
+                        <lightning:layout multipleRows="true">
+                            <lightning:layoutItem size="4" padding="around-small">
+                                <div class="innertext"><b>General Information</b></div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="8" padding="around-small">
+                            </lightning:layoutItem>
+                            <aura:iteration items="{!v.GeneralInfoFieldSet}" var="field" >
+                                <lightning:layoutItem size="6"  padding="horizontal-small">
+                                    <aura:if isTrue="{!field.fieldName == 'Contact_Cell_Phone__c'}">
+                                        <div id="{!field.fieldName}">
+                                            <lightning:inputField aura:id="ContactCellPhone" class="{!field.fieldName}" required="{!v.isRequired}" value="{!field.fieldValue}" fieldName="{!field.fieldName}" disabled="{!v.isInputDisabled}" onchange="{!c.checkPhone}" maxlength = "14"/>
+                                        </div>
+                                        <aura:set attribute="else"> 
+                                            <aura:if isTrue="{!field.fieldName == 'Main_Office_Phone__c'}">
+                                                <div id="{!field.fieldName}">
+                                                    <lightning:inputField aura:id="MainOfficePhone" class="{!field.fieldName}" required="{!v.isRequired}" value="{!field.fieldValue}" fieldName="{!field.fieldName}" disabled="{!v.isInputDisabled}" onchange="{!c.checkPhone}" maxlength = "14"/>
+                                                </div>
+                                                <aura:set attribute="else">
+                                                    <div id="{!field.fieldName}">
+                                                        <lightning:inputField aura:id="field" class="{!field.fieldName}" required="{!v.isRequired}" value="{!field.fieldValue}" fieldName="{!field.fieldName}" disabled="{!v.isInputDisabled}"/>
+                                                    </div>
+                                                </aura:set>
+                                            </aura:if>
+                                            
+                                        </aura:set>
+                                    </aura:if> 
+                                </lightning:layoutItem>
+                            </aura:iteration>
+                        </lightning:layout>
+                        
+                        <lightning:layout multipleRows="true">
+                            <lightning:layoutItem size="4" padding="around-small">
+                                <div class="innertext"><b>Company Information</b></div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="8" padding="around-small">
+                            </lightning:layoutItem>
+                            <aura:iteration items="{!v.CompanyInfoFieldSet}" var="field" >
+                                
+                                <lightning:layoutItem size="6"  padding="horizontal-small">
+                              <aura:if isTrue="{!field.fieldName == 'Year_Founded_Incorporated__c'}">
+
+                                    <div id="{!field.fieldName}">
+                                    <lightning:inputField aura:id="fieldCheck" class="{!field.fieldName}" required="{!v.isRequired}" fieldName="{!field.fieldName}" value="{!field.fieldValue}" disabled="{!v.isInputDisabled}" onchange="{!c.removeComma}"/>
+                                        <span style="color:rgb(234,0,30);margin-left:33%;">{!v.validationMessage}</span>
+                                    </div>
+                                      <aura:set attribute="else">
+                                           <div id="{!field.fieldName}">
+                                    <lightning:inputField aura:id="field" class="{!field.fieldName}" required="{!v.isRequired}" fieldName="{!field.fieldName}" value="{!field.fieldValue}" disabled="{!v.isInputDisabled}"/>
+                                    </div>
+                                  </aura:set>
+                                    </aura:if>
+                                </lightning:layoutItem>
+                            </aura:iteration>
+                        </lightning:layout>
+                        
+                        <lightning:layout multipleRows="true">
+                            <lightning:layoutItem size="4" padding="around-small">
+                                <div class="innertext"><b>Key Management</b></div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="8" padding="around-small">
+                            </lightning:layoutItem>
+                            <aura:iteration items="{!v.KeyManageMentSet}" var="field" >
+                                
+                                <lightning:layoutItem size="6"  padding="horizontal-small">
+                                <!--    <div id="{!field.fieldName}">
+                                    <lightning:inputField aura:id="field" class="{!field.fieldName}" required="{!v.isRequired}" fieldName="{!field.fieldName}"  value="{!field.fieldValue}" disabled="{!v.isInputDisabled}"/>
+                                    </div> -->
+                                    
+                                        <aura:if isTrue="{!or(field.fieldName == 'Key_Management2_Full_Name__c',field.fieldName == 'Key_Management2_Title__c')}">
+                                        
+                                        <div id="{!field.fieldName}">
+                                            <!--lightning:input label="" variant="label-hidden" type="text" name="input1" value="{!v.LVEstimator}" disabled="{!v.isInputDisabled}" aura:id="myinput"/ -->
+                                            <lightning:inputField aura:id="field" class="{!field.fieldName}" required="false" fieldName="{!field.fieldName}"  value="{!field.fieldValue}" disabled="{!v.isInputDisabled}"/>
+                                        </div>
+                                        <aura:set attribute="else">
+                                            <aura:if isTrue="{!or(field.fieldName == 'Key_Management2_Total_years_experience__c',field.fieldName == 'Key_Management2_Years_in_this_position__c')}">
+                                                <lightning:inputField aura:id="field" class="{!field.fieldName}" required="false" fieldName="{!field.fieldName}"  value="{!field.fieldValue}" disabled="{!v.isInputDisabled}"/>
+                                                
+                                                <aura:set attribute="else">
+                                                    <aura:if isTrue="{!or(field.fieldName == 'Key_Management3_Full_Name__c',field.fieldName == 'Key_Management3_Title__c')}">
+                                                        <lightning:inputField aura:id="field" class="{!field.fieldName}" required="false" fieldName="{!field.fieldName}"  value="{!field.fieldValue}" disabled="{!v.isInputDisabled}"/>
+                                                        
+                                                        <aura:set attribute="else">
+                                                            <aura:if isTrue="{!or(field.fieldName == 'Key_Management3_Total_years_experience__c',field.fieldName == 'Key_Management3_Years_in_this_position__c')}">
+                                                                <lightning:inputField aura:id="field" class="{!field.fieldName}" required="false" fieldName="{!field.fieldName}"  value="{!field.fieldValue}" disabled="{!v.isInputDisabled}"/>
+                                                                
+                                                                <aura:set attribute="else">
+                                                                    <div id="{!field.fieldName}">
+                                                                        <lightning:inputField aura:id="field" class="{!field.fieldName}" required="{!v.isRequired}" fieldName="{!field.fieldName}"  value="{!field.fieldValue}" disabled="{!v.isInputDisabled}"/>
+                                                                    </div>
+                                                                </aura:set>
+                                                            </aura:if> 
+                                                        </aura:set>
+                                                    </aura:if> 
+                                                </aura:set>
+                                            </aura:if>   
+                                        </aura:set>
+                                    </aura:if>   
+                                    
+                                </lightning:layoutItem>
+                            </aura:iteration>
+                        </lightning:layout>
+                        
+                        
+                        <lightning:layout multipleRows="true">
+                            <lightning:layoutItem size="4" padding="around-small">
+                                <div class="innertext"><b>Contractor License Numbers</b></div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="8" padding="around-small">
+                            </lightning:layoutItem>
+                            <aura:iteration items="{!v.ContractorFieldSet}" var="field" >
+                                
+                                <lightning:layoutItem size="6"  padding="horizontal-small">
+                                  <!--  <div id="{!field.fieldName}">
+                                    <lightning:inputField aura:id="field" class="{!field.fieldName}" required="{!v.isRequired}" fieldName="{!field.fieldName}"  value="{!field.fieldValue}" disabled="{!v.isInputDisabled}"/>
+                                    </div> -->
+                                    
+                                      <aura:if isTrue="{!or(field.fieldName == 'Contract_License_State_2__c',field.fieldName == 'Contractor_License_Number2__c')}">
+                                                <lightning:inputField aura:id="field" class="{!field.fieldName}" required="false" fieldName="{!field.fieldName}"  value="{!field.fieldValue}" disabled="{!v.isInputDisabled}"/>
+                                                
+                                                <aura:set attribute="else">
+                                                    <aura:if isTrue="{!or(field.fieldName == 'Contract_License_State_3__c',field.fieldName == 'Contractor_License_Number3__c')}">
+                                                        <lightning:inputField aura:id="field" class="{!field.fieldName}" required="false" fieldName="{!field.fieldName}"  value="{!field.fieldValue}" disabled="{!v.isInputDisabled}"/>
+                                                        
+                                                        <aura:set attribute="else">
+                                                            <aura:if isTrue="{!or(field.fieldName == 'License_ever_been_denied_or_revoked__c',field.fieldName == 'Complaints_filed_Contractor_s_State_Lice__c')}">
+                                                                <lightning:inputField aura:id="field" class="{!field.fieldName}" required="false" fieldName="{!field.fieldName}"  value="{!field.fieldValue}" disabled="{!v.isInputDisabled}"/>
+                                                                
+                                                                <aura:set attribute="else">
+                                                                    <div id="{!field.fieldName}">
+                                                                        <lightning:inputField aura:id="field" class="{!field.fieldName}" required="{!v.isRequired}" fieldName="{!field.fieldName}"  value="{!field.fieldValue}" disabled="{!v.isInputDisabled}"/>
+                                                                    </div>
+                                                                </aura:set>
+                                                            </aura:if> 
+                                                        </aura:set>
+                                                    </aura:if> 
+                                                </aura:set>
+                                            </aura:if>   
+                                    
+                                </lightning:layoutItem>
+                            </aura:iteration>
+                        </lightning:layout>
+                        
+                        
+                        
+                        <lightning:layout multipleRows="true">
+                            <lightning:layoutItem size="4" padding="around-small">
+                                <div class="innertext"><b>LVE Team</b></div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="8" padding="around-small">
+                            </lightning:layoutItem>
+                            <aura:iteration items="{!v.LVEFieldSet}" var="field" >
+                                <lightning:layoutItem size="6"  padding="horizontal-small">
+                                    <aura:if isTrue="{!field.fieldName == 'If_Other_LVE_Estimator__c'}">
+                                        <div id="{!field.fieldName}">
+                                            <lightning:inputField aura:id="field" class="{!field.fieldName}" required="false" fieldName="{!field.fieldName}"  value="{!field.fieldValue}" disabled="{!v.isInputDisabled}"/>
+                                        </div>
+                                        <aura:set attribute="else">
+                                            <!-- Start -->
+                                            <aura:if isTrue="{!field.fieldName == 'Design_Engineer_Cell_Phone__c'}">
+                                                <div id="{!field.fieldName}">
+                                                    <lightning:inputField aura:id="DesignEngineer1" class="{!field.fieldName}" required="{!v.isRequired}" fieldName="{!field.fieldName}"  value="{!field.fieldValue}" disabled="{!v.isInputDisabled}"  onchange="{!c.checkPhone}" maxlength = "14"/>
+                                                </div>
+                                                <aura:set attribute="else">
+                                                    <aura:if isTrue="{!field.fieldName == 'Estimator_Cell_Phone__c'}">
+                                                        <div id="{!field.fieldName}">
+                                                            <lightning:inputField aura:id="EstimatorPhone" class="{!field.fieldName}" required="{!v.isRequired}" fieldName="{!field.fieldName}"  value="{!field.fieldValue}" disabled="{!v.isInputDisabled}"  onchange="{!c.checkPhone}" maxlength = "14"/>
+                                                        </div>
+                                                        <aura:set attribute="else">
+                                                            <aura:if isTrue="{!field.fieldName == 'Technician1_Cell_Phone__c'}">
+                                                                <div id="{!field.fieldName}">
+                                                                    <lightning:inputField aura:id="Technician1Phone" class="{!field.fieldName}" required="{!v.isRequired}" fieldName="{!field.fieldName}"  value="{!field.fieldValue}" disabled="{!v.isInputDisabled}"  onchange="{!c.checkPhone}" maxlength = "14"/>
+                                                                </div>
+                                                                <aura:set attribute="else">
+                                                                    <aura:if isTrue="{!field.fieldName == 'Technician2_Cell_Phone__c'}">
+                                                                        <div id="{!field.fieldName}">
+                                                                            <lightning:inputField aura:id="Technician2Phone" class="{!field.fieldName}" required="{!v.isRequired}" fieldName="{!field.fieldName}"  value="{!field.fieldValue}" disabled="{!v.isInputDisabled}"  onchange="{!c.checkPhone}" maxlength = "14"/>
+                                                                        </div>
+                                                                        <aura:set attribute="else">
+                                                                            <aura:if isTrue="{!field.fieldName == 'Foreman_Superindentent_Cell_phone__c'}">
+                                                                                <div id="{!field.fieldName}">
+                                                                                    <lightning:inputField aura:id="ForemanPhone" class="{!field.fieldName}" required="{!v.isRequired}" fieldName="{!field.fieldName}"  value="{!field.fieldValue}" disabled="{!v.isInputDisabled}"  onchange="{!c.checkPhone}" maxlength = "14"/>
+                                                                                </div>
+                                                                                <aura:set attribute="else">
+                                                                                    <div id="{!field.fieldName}">
+                                                                                        <lightning:inputField aura:id="field" class="{!field.fieldName}" required="{!v.isRequired}" fieldName="{!field.fieldName}"  value="{!field.fieldValue}" disabled="{!v.isInputDisabled}"/>
+                                                                                    </div>
+                                                                                </aura:set>
+                                                                            </aura:if> 
+                                                                        </aura:set>
+                                                                    </aura:if> 
+                                                                </aura:set>
+                                                            </aura:if>  
+                                                        </aura:set>
+                                                    </aura:if>  
+                                                </aura:set>
+                                            </aura:if>    
+                                            <!-- End -->
+                                        </aura:set>
+                                    </aura:if>    
+                                </lightning:layoutItem>
+                            </aura:iteration>
+                        </lightning:layout>
+                        
+                        
+                        
+                        
+                        
+                        
+                        <!-- Reference details -->
+                        <lightning:layout multipleRows="true">
+                            
+                            
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <div><b class="innertext">References</b></div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="9" padding="around-small">
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <div>Reference #1</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <div>Reference #2</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <div>Reference #3</div>
+                            </lightning:layoutItem>
+                            
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Company Name:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1"  value="{!v.reference1.buildertek__Company_Name__c}" disabled="{!v.isInputDisabled}" aura:id="GCInput" required="{!v.isRequired}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1"  value="{!v.reference2.buildertek__Company_Name__c}" disabled="{!v.isInputDisabled}" aura:id="GCInput" required="{!v.isRequired}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1"  value="{!v.reference3.buildertek__Company_Name__c}" disabled="{!v.isInputDisabled}" aura:id="GCInput" required="{!v.isRequired}"/>
+                            </lightning:layoutItem>
+                            
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Address:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference1.buildertek__Address__c}" disabled="{!v.isInputDisabled}" aura:id="GCInput" required="{!v.isRequired}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference2.buildertek__Address__c}" disabled="{!v.isInputDisabled}" aura:id="GCInput" required="{!v.isRequired}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference3.buildertek__Address__c}" disabled="{!v.isInputDisabled}" aura:id="GCInput" required="{!v.isRequired}"/>
+                            </lightning:layoutItem>
+                            
+                            
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>City:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1"  value="{!v.reference1.buildertek__City__c}" disabled="{!v.isInputDisabled}" aura:id="GCInput" required="{!v.isRequired}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1"  value="{!v.reference2.buildertek__City__c}" disabled="{!v.isInputDisabled}" aura:id="GCInput" required="{!v.isRequired}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1"  value="{!v.reference3.buildertek__City__c}" disabled="{!v.isInputDisabled}" aura:id="GCInput" required="{!v.isRequired}"/>
+                            </lightning:layoutItem>
+                            
+                            
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>State:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:select name="mySelect" label="" class="label-hidden" aura:id="GCInput" value="{!v.reference1.State__c}" disabled="{!v.isInputDisabled}" required="{!v.isRequired}">
+                                    <option value="">Choose one...</option>
+                                    <aura:iteration items="{!v.provinceList}" var="company" indexVar="index">
+                                        <option text="{!company}" value="{!company}" selected="{!company == v.reference1.State__c}"></option>/>
+                                    </aura:iteration>
+                                </lightning:select>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:select name="mySelect" label="" class="label-hidden" aura:id="GCInput" value="{!v.reference2.State__c}" disabled="{!v.isInputDisabled}" required="{!v.isRequired}">
+                                    <option value="">Choose one...</option>
+                                    <aura:iteration items="{!v.provinceList}" var="company" indexVar="index">
+                                        <option text="{!company}" value="{!company}" selected="{!company == v.reference2.State__c}"></option>/>
+                                    </aura:iteration>
+                                </lightning:select>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:select name="mySelect" label="" class="label-hidden" aura:id="GCInput" value="{!v.reference3.State__c}" disabled="{!v.isInputDisabled}" required="{!v.isRequired}">
+                                    <option value="">Choose one...</option>
+                                    <aura:iteration items="{!v.provinceList}" var="company" indexVar="index">
+                                        <option text="{!company}" value="{!company}" selected="{!company == v.reference3.State__c}"></option>/>
+                                    </aura:iteration>
+                                </lightning:select>
+                            </lightning:layoutItem>
+                            
+                            
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Zip/Postal Code :</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference1.buildertek__Zip__c}" disabled="{!v.isInputDisabled}" aura:id="GCInput" required="{!v.isRequired}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference2.buildertek__Zip__c}" disabled="{!v.isInputDisabled}" aura:id="GCInput" required="{!v.isRequired}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference3.buildertek__Zip__c}" disabled="{!v.isInputDisabled}" aura:id="GCInput" required="{!v.isRequired}"/>
+                            </lightning:layoutItem>
+                            
+                            <!--      <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Contact Name:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference1.Contact_Name__c}" disabled="{!v.isInputDisabled}" aura:id="GCInput" required="{!v.isRequired}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference2.Contact_Name__c}" disabled="{!v.isInputDisabled}" aura:id="GCInput" required="{!v.isRequired}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference3.Contact_Name__c}" disabled="{!v.isInputDisabled}" aura:id="GCInput" required="{!v.isRequired}"/>
+                            </lightning:layoutItem> -->
+                            
+                            
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Country:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <!--<lightning:input variant="label-hidden" type="email" name="input1" value="" disabled="{!v.isInputDisabled}" aura:id="ReferenceEmail1" required="{!v.isRequired}" messageWhenTypeMismatch="Enter a valid email address" onblur="{!c.changeValidation}" title="ReferenceEmail1"/>-->
+                                <lightning:select name="mySelect" label="" class="label-hidden" aura:id="GCInput" value="{!v.reference1.Country__c}" disabled="{!v.isInputDisabled}" required="{!v.isRequired}">
+                                    <option value="">Choose one...</option>
+                                    <aura:iteration items="{!v.countryList}" var="company" indexVar="index">
+                                        <option text="{!company}" value="{!company}" selected="{!company == v.reference1.Country__c}"></option>/>
+                                    </aura:iteration>
+                                </lightning:select>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <!-- <lightning:input variant="label-hidden" type="email" name="input1" value="" disabled="{!v.isInputDisabled}" aura:id="ReferenceEmail2" required="{!v.isRequired}" messageWhenTypeMismatch="Enter a valid email address" onblur="{!c.changeValidation}" title="ReferenceEmail2"/>-->
+                                <lightning:select name="mySelect" label="" class="label-hidden" aura:id="GCInput" value="{!v.reference2.Country__c}" disabled="{!v.isInputDisabled}" required="{!v.isRequired}">
+                                    <option value="">Choose one...</option>
+                                    <aura:iteration items="{!v.countryList}" var="company" indexVar="index">
+                                        <option text="{!company}" value="{!company}" selected="{!company == v.reference2.Country__c}"></option>/>
+                                    </aura:iteration>
+                                </lightning:select>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:select name="mySelect" label="" class="label-hidden" aura:id="GCInput" value="{!v.reference3.Country__c}" disabled="{!v.isInputDisabled}" required="{!v.isRequired}">
+                                    <option value="">Choose one...</option>
+                                    <aura:iteration items="{!v.countryList}" var="company" indexVar="index">
+                                        <option text="{!company}" value="{!company}" selected="{!company == v.reference3.Country__c}"></option>/>
+                                    </aura:iteration>
+                                </lightning:select>
+                            </lightning:layoutItem>
+                            
+                            
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Contact Name:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="tel" name="input1" value="{!v.reference1.buildertek__Contact_Name__c}" disabled="{!v.isInputDisabled}" aura:id="" required="{!v.isRequired}"   title="Referencephone1"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="tel" name="input1" value="{!v.reference2.buildertek__Contact_Name__c}" disabled="{!v.isInputDisabled}" aura:id="" required="{!v.isRequired}"  title="Referencephone2"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="tel" name="input1" value="{!v.reference3.buildertek__Contact_Name__c}" disabled="{!v.isInputDisabled}" aura:id="" required="{!v.isRequired}"  title="Referencephone3"/>
+                            </lightning:layoutItem>
+                            
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Email:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <div id='referenceemail1val'>
+                                    <lightning:input variant="label-hidden" type="Email" name="input1" value="{!v.reference1.buildertek__Email__c}" disabled="{!v.isInputDisabled}" aura:id="" required="{!v.isRequired}"  title="Referencephone1"/>
+                                </div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <div id='referenceemail2val'>
+                                    <lightning:input variant="label-hidden" type="Email" name="input1" value="{!v.reference2.buildertek__Email__c}" disabled="{!v.isInputDisabled}" aura:id="" required="{!v.isRequired}"  title="Referencephone2"/>
+                                </div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <div id='referenceemail3val'>
+                                    <lightning:input variant="label-hidden" type="Email" name="input1" value="{!v.reference3.buildertek__Email__c}" disabled="{!v.isInputDisabled}" aura:id="" required="{!v.isRequired}"  title="Referencephone3"/>
+                                </div>
+                            </lightning:layoutItem>
+                            
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Cell phone:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="tel" name="input1" value="{!v.reference1.buildertek__Cell_Phone__c}" disabled="{!v.isInputDisabled}" aura:id="Referencephone1" required="{!v.isRequired}"  title="Referencephone1"   onchange="{!c.checkPhone}" maxlength = "14" />
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="tel" name="input1" value="{!v.reference2.buildertek__Cell_Phone__c}" disabled="{!v.isInputDisabled}" aura:id="Referencephone2" required="{!v.isRequired}"  title="Referencephone2"  onchange="{!c.checkPhone}" maxlength = "14"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="tel" name="input1" value="{!v.reference3.buildertek__Cell_Phone__c}" disabled="{!v.isInputDisabled}" aura:id="Referencephone3" required="{!v.isRequired}"  title="Referencephone3"   onchange="{!c.checkPhone}" maxlength = "14" />
+                            </lightning:layoutItem>
+                            
+                            
+                        </lightning:layout>
+                        
+                        <!-- Reference details -->
+                        
+                        <!-- Past Projects -->
+                        <lightning:layout multipleRows="true">
+                            <lightning:layoutItem size="6" padding="around-small">
+                                <div class="innertext"><b>Past Projects Installing View Net</b></div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="6" padding="around-small">
+                            </lightning:layoutItem>
+                            
+                            <lightning:layoutItem size="3" padding="around-small">
+                                
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <div> PAST PROJECT #1 </div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <div> PAST PROJECT #2 </div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <div> PAST PROJECT #3 </div>
+                            </lightning:layoutItem>
+                            <!--<lightning:layoutItem size="2" padding="around-small" >
+                        <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Project Name :</div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="3" padding="around-small">
+                        
+                        <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project1.buildertek__Project_Name__c}" disabled="{!v.isInputDisabled}" aura:id="GCInput" required="true"/>
+                        
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="3" padding="around-small">
+                        
+                        <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project2.buildertek__Project_Name__c}" disabled="{!v.isInputDisabled}" aura:id="GCInput" required="{!v.isRequired}"/>
+                        
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="3"  padding="around-small">
+                        
+                        <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project3.buildertek__Project_Name__c}" disabled="{!v.isInputDisabled}" aura:id="GCInput" required="{!v.isRequired}"/>
+                        
+                    </lightning:layoutItem>-->
+                              <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Project Name:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project1.buildertek__Project_Name__c}" disabled="{!v.isInputDisabled}" aura:id="GCInput" required="{!v.isRequired}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project2.buildertek__Project_Name__c}" disabled="{!v.isInputDisabled}" aura:id="GCInput" required="{!v.isRequired}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project3.buildertek__Project_Name__c}" disabled="{!v.isInputDisabled}" aura:id="GCInput" required="{!v.isRequired}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Contractor Name:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project1.buildertek__Contractor_Name__c}" disabled="{!v.isInputDisabled}" aura:id="GCInput" required="{!v.isRequired}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project2.buildertek__Contractor_Name__c}" disabled="{!v.isInputDisabled}" aura:id="GCInput" required="{!v.isRequired}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project3.buildertek__Contractor_Name__c}" disabled="{!v.isInputDisabled}" aura:id="GCInput" required="{!v.isRequired}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Contact Name:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project1.buildertek__Contact_Name__c}" disabled="{!v.isInputDisabled}" aura:id="GCInput" required="{!v.isRequired}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project2.buildertek__Contact_Name__c}" disabled="{!v.isInputDisabled}" aura:id="GCInput" required="{!v.isRequired}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project3.buildertek__Contact_Name__c}" disabled="{!v.isInputDisabled}" aura:id="GCInput" required="{!v.isRequired}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Contact Email:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <div id='project1emailval'>
+                                <lightning:input variant="label-hidden" type="email" name="input1" value="{!v.project1.buildertek__Contact_Email__c}" disabled="{!v.isInputDisabled}" aura:id="ProjectEmail1" required="{!v.isRequired}"  title="ProjectEmail1"/>
+                                 </div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <div id='project2emailval'>
+                                <lightning:input variant="label-hidden" type="email" name="input1" value="{!v.project2.buildertek__Contact_Email__c}" disabled="{!v.isInputDisabled}" aura:id="ProjectEmail2" required="{!v.isRequired}"  title="ProjectEmail2"/>
+                                </div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <div id='project3emailval'>
+                                <lightning:input variant="label-hidden" type="email" name="input1" value="{!v.project3.buildertek__Contact_Email__c	}" disabled="{!v.isInputDisabled}" aura:id="ProjectEmail3" required="{!v.isRequired}"  title="ProjectEmail3"/>
+                                </div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Contact Cell:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="tel" name="input1" value="{!v.project1.buildertek__Cell_Phone__c}" disabled="{!v.isInputDisabled}" aura:id="projectphone1" required="{!v.isRequired}" onchange="{!c.checkPhone}" maxlength = "14"  title="projectphone1"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="tel" name="input1" value="{!v.project2.buildertek__Cell_Phone__c}" disabled="{!v.isInputDisabled}" aura:id="projectphone2" required="{!v.isRequired}"  onchange="{!c.checkPhone}" maxlength = "14"  title="projectphone2"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="tel" name="input1" value="{!v.project3.buildertek__Cell_Phone__c}" disabled="{!v.isInputDisabled}" aura:id="projectphone3" required="{!v.isRequired}"  onchange="{!c.checkPhone}" maxlength = "14"  title="projectphone3"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Contract Value:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <div id="project1ContractValue">
+                                <lightning:input variant="label-hidden" type="number" name="input1" value="{!v.project1.Contract_Value__c}" disabled="{!v.isInputDisabled}" aura:id="GCInput" required="{!v.isRequired}" step="0.01"  formatter="currency"/>
+                                 </div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <div id="project2ContractValue">
+                                <lightning:input variant="label-hidden" type="number" name="input1" value="{!v.project2.Contract_Value__c}" disabled="{!v.isInputDisabled}" aura:id="GCInput" required="{!v.isRequired}" step="0.01"  formatter="currency"/>
+                                </div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <div id="project3ContractValue">
+                                <lightning:input variant="label-hidden" type="number" name="input1" value="{!v.project3.Contract_Value__c}" disabled="{!v.isInputDisabled}" aura:id="GCInput" required="{!v.isRequired}" step="0.01"  formatter="currency"/>
+                                </div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Date Completed:</div>
+                            </lightning:layoutItem>
+                            
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="Date" name="input1" value="{!v.project1.buildertek__Date_Completed__c}" disabled="{!v.isInputDisabled}" aura:id="GCInput" required="{!v.isRequired}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="Date" name="input1" value="{!v.project2.buildertek__Date_Completed__c}" disabled="{!v.isInputDisabled}" aura:id="GCInput" required="{!v.isRequired}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="Date" name="input1" value="{!v.project3.buildertek__Date_Completed__c}" disabled="{!v.isInputDisabled}" aura:id="GCInput" required="{!v.isRequired}"/>
+                            </lightning:layoutItem>
+                            
+                            
+                            
+                        </lightning:layout>
+                        <!-- Past Projects -->
+                        
+                        
+                        
+                        <!-- File Upload -->
+                        <lightning:layout multipleRows="true">
+                            <lightning:layoutItem size="12" padding="slds-p-left_small">
+                                <h2>Add Files</h2>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="12" padding="slds-p-left_small">
+                                <div class="slds-form-element__control">
+                                    <div class="slds-file-selector slds-file-selector_files"> 
+                                        <div class="slds-file-selector__dropzone">
+                                            <input type="file" class="slds-file-selector__input slds-assistive-text" id="file-upload-input-01" onchange="{!c.handleFilesChange}" aria-labelledby="file-selector-primary-label file-selector-secondary-label" disabled="{!v.isInputDisabled}" multiple="true"/>
+                                            
+                                            <label class="slds-file-selector__body" for="file-upload-input-01" id="file-selector-secondary-label"> 
+                                                <span class="slds-file-selector__button slds-button slds-button_neutral">
+                                                    Upload Files
+                                                </span>
+                                                <!--<span class="slds-file-selector__text slds-medium-show">or Drop Files</span>-->
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <!-- <div class="slds-text-body_small slds-text-color_success">{!v.fileName} </div>-->
+                                    <div>
+                                        <aura:iteration items="{!v.FileNameList}" var="item" indexVar="indx">
+                                            <!-- <div> <lightning:icon iconName="action:delete" alternativeText="Delete" title="{!item}" size="xx-small" onclick="{!c.handleDelete}"/> </div><br/>-->
+                                            
+                                            <lightning:layout >
+                                                <lightning:layoutItem  size="2.5" padding="around-small" class="myclass">
+                                                    <div style="width: fit-content;word-break: break-all;">
+                                                        {!item}
+                                                    </div>
+                                                </lightning:layoutItem>
+                                                <lightning:layoutItem  size=".5" padding="around-small" class="myclass">
+                                                    <div  onclick="{!c.removeRow}" title="{!indx}" style="padding-top:5px">
+                                                        <lightning:icon iconName="utility:close" class="myUniqueClass" size="xx-small" alternativeText="left" />
+                                                    </div>
+                                                </lightning:layoutItem>
+                                                <lightning:layoutItem  size="9" padding="around-small">
+                                                </lightning:layoutItem>
+                                            </lightning:layout>
+                                            
+                                            
+                                            
+                                            <!--<div style="display:inline-flex;" padding="around-small"><div> {!item} </div> &nbsp;&nbsp;&nbsp;&nbsp;<div  onclick="{!c.removeRow}" title="{!indx}" >
+                                                                <lightning:icon iconName="action:delete" class="arrows" size="x-small" alternativeText="left" />
+                                              </div> </div><br/>-->
+                                        </aura:iteration>
+                                        
+                                    </div>
+                                    
+                                </div>
+                                <!--div>
+                                    <iframe aura:id="vfFrame" 
+                                            src="https://builderteklightning-developer-edition.na75.force.com/buildertek__CreateFile"
+                                            style="border: none;height: 5px;"/>
+                                </div>-->
+                            </lightning:layoutItem>
+                        </lightning:layout>
+                        <!-- File Upload -->
+                        <lightning:layout multipleRows="true">
+                            <lightning:layoutItem size="2" padding="around-small">
+                            </lightning:layoutItem>
+                            
+                            <lightning:layoutItem size="4" padding="around-small">
+                                
+                                <div class="slds-form-element">
+                                    <div class="slds-form-element__control">
+                                        <div class="slds-checkbox">
+                                            <lightning:input type="checkbox" name="options" id="checkbox2" aura:id="checkboxField" value="{!v.check1}" checked="{!v.check1}" disabled="{!v.isInputDisabled}" label="Completed W-9" onchange="{!c.checkbox}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-form-element">
+                                    <div class="slds-form-element__control">
+                                        <div class="slds-checkbox">
+                                            <lightning:input type="checkbox" name="options" id="checkbox3" aura:id="checkboxField" value="{!v.check2}" checked="{!v.check2}" disabled="{!v.isInputDisabled}" label="Copy of Active Contractor License(s)" onchange="{!c.checkbox}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-form-element__control">
+                                    <div class="slds-checkbox">
+                                        <lightning:input type="checkbox" name="options" id="checkbox4" aura:id="checkboxField" value="{!v.check3}" checked="{!v.check3}" disabled="{!v.isInputDisabled}" label="Certificate of General Liability Insurance" onchange="{!c.checkbox}"/>
+                                    </div>
+                                </div>
+                                <div class="slds-form-element__control">
+                                    <div class="slds-checkbox">
+                                        <lightning:input type="checkbox" name="options" id="checkbox5" aura:id="checkboxField" value="{!v.check4}" checked="{!v.check4}" disabled="{!v.isInputDisabled}" label="Certificate of Worker's Compensation Insurance" onchange="{!c.checkbox}"/>
+                                    </div>
+                                </div>
+                                <div class="slds-form-element__control">
+                                    <div class="slds-checkbox">
+                                        <lightning:input type="checkbox" name="options" id="checkbox6" aura:id="checkboxField" value="{!v.check5}" checked="{!v.check5}" disabled="{!v.isInputDisabled}" label="Company's current safety manual" onchange="{!c.checkbox}"/>
+                                    </div>
+                                </div>
+                                <div class="slds-form-element__control">
+                                    <div class="slds-checkbox">
+                                        <lightning:input type="checkbox" name="options" id="checkbox7" value="{!v.check6}" checked="{!v.check6}" disabled="{!v.isInputDisabled}" label="Surety Letter" onchange="{!c.checkbox}"/>
+                                    </div>
+                                </div>
+                                <div class="slds-form-element__control">
+                                    <div class="slds-checkbox">
+                                        <lightning:input type="checkbox" name="options" id="checkbox8" value="{!v.check7}" checked="{!v.check7}" disabled="{!v.isInputDisabled}" label="Minority certification(s)"  onchange="{!c.checkbox}"/>
+                                    </div>
+                                </div>
+                                <div class="slds-form-element__control">
+                                    <div class="slds-checkbox">
+                                        <lightning:input type="checkbox" name="options" id="checkbox8" value="{!v.check8}" checked="{!v.check8}" disabled="{!v.isInputDisabled}" label="Trade and Professional License(s)"  onchange="{!c.checkbox}"/>
+                                    </div>
+                                </div>
+                                <div class="slds-form-element">
+                                    <div class="slds-form-element__control">
+                                        <div class="slds-checkbox">
+                                            <lightning:input type="checkbox" name="options" id="checkbox2" aura:id="checkboxField" value="{!v.check9}" checked="{!v.check9}" disabled="{!v.isInputDisabled}" label="Most recent financial statement" onchange="{!c.checkbox}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-form-element">
+                                    <div class="slds-form-element__control">
+                                        <div class="slds-checkbox">
+                                            <lightning:input type="checkbox" name="options" id="checkbox3" aura:id="checkboxField" value="{!v.check10}" checked="{!v.check10}" disabled="{!v.isInputDisabled}" label="OSHA 300/300A Logs: Current Year" onchange="{!c.checkbox}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-form-element__control">
+                                    <div class="slds-checkbox">
+                                        <lightning:input type="checkbox" name="options" id="checkbox4" aura:id="checkboxField" value="{!v.check11}" checked="{!v.check11}" disabled="{!v.isInputDisabled}" label="OSHA 300/300A Logs: Last Year" onchange="{!c.checkbox}"/>
+                                    </div>
+                                </div>
+                                <div class="slds-form-element__control">
+                                    <div class="slds-checkbox">
+                                        <lightning:input type="checkbox" name="options" id="checkbox5" aura:id="checkboxField" value="{!v.check12}" checked="{!v.check12}" disabled="{!v.isInputDisabled}" label="OSHA 300/300A Logs: Last 2 Years" onchange="{!c.checkbox}"/>
+                                    </div>
+                                </div>
+                                <div class="slds-form-element__control">
+                                    <div class="slds-checkbox">
+                                        <lightning:input type="checkbox" name="options" id="checkbox6" aura:id="checkboxField" value="{!v.check13}" checked="{!v.check13}" disabled="{!v.isInputDisabled}" label="EMR: Current Year"  onchange="{!c.checkbox}"/>
+                                    </div>
+                                </div>
+                                <div class="slds-form-element__control">
+                                    <div class="slds-checkbox">
+                                        <lightning:input type="checkbox" name="options" id="checkbox7" value="{!v.check14}" checked="{!v.check14}" disabled="{!v.isInputDisabled}" label="EMR: Last Year" onchange="{!c.checkbox}" />
+                                    </div>
+                                </div>
+                                <div class="slds-form-element__control">
+                                    <div class="slds-checkbox">
+                                        <lightning:input type="checkbox" name="options" id="checkbox8" value="{!v.check15}" checked="{!v.check15}" disabled="{!v.isInputDisabled}" label="EMR: Last 2 Years"  onchange="{!c.checkbox}"/>
+                                    </div>
+                                </div>
+                                <div class="slds-form-element__control">
+                                    <div class="slds-checkbox">
+                                        <lightning:input type="checkbox" name="options" id="checkbox8" value="{!v.check16}" checked="{!v.check16}" disabled="{!v.isInputDisabled}" label="Additional Information" onchange="{!c.checkbox}" />
+                                    </div>
+                                </div>
+                                
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="6" padding="around-small">
+                            </lightning:layoutItem>    
+                            
+                        </lightning:layout>
+                        <lightning:layout multipleRows="true">
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div style="text-align:right"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Additional Information / Notes :</div>
+                            </lightning:layoutItem>
+                            
+                            <lightning:layoutItem size="5" padding="around-small">
+                                <div style="">
+                                    <lightning:input variant="label-hidden" type="text" aura:id="myinput" name="input1" value="{!v.AdditionalNotes}" disabled="{!v.isInputDisabled}" required="{!v.isRequired}"/>
+                                </div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="4" padding="around-small">
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div style="text-align:right"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Submitted by (NAME) </div>
+                            </lightning:layoutItem>
+                            
+                            <lightning:layoutItem size="5" padding="around-small">
+                                <div style="">
+                                    <lightning:input variant="label-hidden" type="text" aura:id="myinput" name="input1" value="{!v.SubmittedName}" disabled="{!v.isInputDisabled}" required="{!v.isRequired}"/>
+                                </div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="4" padding="around-small">
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div style="text-align:right"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Submitted by (Title) </div>
+                            </lightning:layoutItem>
+                            
+                            <lightning:layoutItem size="5" padding="around-small">
+                                <div style="">
+                                    <lightning:input variant="label-hidden" type="text" aura:id="myinput" name="input1" value="{!v.SubmitteTitle}" disabled="{!v.isInputDisabled}" required="{!v.isRequired}"/>
+                                </div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="4" padding="around-small">
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div style="text-align:right"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Submitted by (Email) </div>
+                            </lightning:layoutItem>
+                            
+                            <lightning:layoutItem size="5" padding="around-small">
+                                <div id="submittedemail">
+                                    <lightning:input variant="label-hidden" type="Email" aura:id="myinput" name="input1" value="{!v.SubmittedEmail}" disabled="{!v.isInputDisabled}" required="{!v.isRequired}"/>
+                                </div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="4" padding="around-small">
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                                
+                                <div class="slds-form-element">
+                                    <div class="slds-form-element__control">
+                                        <div class="slds-checkbox">
+                                            <lightning:input type="checkbox" name="options" id="checkbox2" aura:id="checkboxField" value="{!v.Sendmecopy}" checked="{!v.Sendmecopy}" disabled="{!v.isInputDisabled}" label="Send me a copy of my responses"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                            </lightning:layoutItem>
+                        </lightning:layout>
+                        <div style="text-align:center">
+                            
+                            
+                            <lightning:button variant="Brand" type="submit" label="Submit" title="Baseaction"  disabled="{!v.isButtonDisabled}" onclick="{!c.handleClick}"/>
+                        </div>
+                    </lightning:recordEditForm>
+                    
+                    
+                </div>
+            </aura:set>
+        </aura:if>
+        <aura:if isTrue="{!v.Spinner}">
+            <div aura:id="spinnerId" class="slds-spinner_container">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                    <div class="custom-loading-text">
+                        <b>Processing, Please Wait</b>
+                    </div>
+                </div>
+            </div>
+            
+        </aura:if>
+    </div>
+    
+</aura:component>

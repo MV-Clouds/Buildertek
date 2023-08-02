@@ -1,0 +1,687 @@
+<aura:component controller="IssueContactController" implements="force:appHostable,flexipage:availableForRecordHome">
+    
+    <aura:attribute name="options" type="List" default="[
+                                                        {'label': 'Account', 'value': 'oppAccLevel','help':'My help text for 1'},
+                                                        {'label': 'Contact', 'value': 'conLevel','help':'My help text for 1'},
+                                                        {'label': 'Partner Account ', 'value': 'partLevel','help':'My help text for 1'}]"/>
+    <aura:attribute name="showOpp" type="Boolean" default="false"/>
+    <aura:attribute name="showpart" type="Boolean" default="false"/>
+    <aura:attribute name="contactRec" type="Contact" />
+    <aura:attribute name="AccountRec" type="Account" />
+    <aura:attribute name="showCon" type="Boolean" default="false"/>
+    <aura:attribute name="openFilter" type="Boolean" default="false"/>
+    <aura:attribute name="value" type="String" default=""/>
+    <aura:attribute name="accountType" type="String" default=""/>
+    <aura:attribute name="oppStage" type="String" default=""/>
+    <aura:attribute name="constructionType" type="String" default=""/>
+     <aura:attribute name="partneraccountrole" type="String" default=""/>
+    <aura:attribute name="wrapDataMaster" type="Object" default="[]"/>
+    <aura:attribute name="disableLookup" type="Boolean" default="true"/>
+    <aura:attribute name="showSpinner" type="Boolean" default="false"/>
+    <aura:attribute name="wrapData" type="Object" default="[]"/>
+    <aura:attribute name="Searchrecordtype" type="string" default=""/>
+    <aura:handler name="selectedContactEvent" event="c:selectedRecordEvent" action="{!c.fetchAccountInfo}"/>
+    <aura:attribute type="String" name="sortField" />
+    <aura:attribute name="sortAsc" type="boolean"  />
+    <aura:attribute name="Account" type="boolean" default="true"/>
+    <aura:attribute name="Partneraccount" type="boolean" default="true"/>
+    <aura:attribute name="OpportunityName" type="boolean" default="true"/>
+    <aura:attribute name="stagename" type="boolean" default="true"/>
+    <aura:attribute name="Amountusd" type="boolean" default="true"/>
+    <aura:attribute name="Construction" type="boolean" default="true"/>
+    <aura:attribute name="State" type="boolean" default="true"/>
+    <aura:attribute name="startPosn" type="Integer" default="0"/>
+    <aura:attribute name="endPosn" type="Integer"/>
+    <aura:handler name="cleartable" event="c:cleardataevt" action="{!c.cleardata}"/>
+  
+    <div >    
+        <lightning:card  title="Customer Research" iconName="standard:opportunity"
+                        class="slds-p-around_medium slds-text-title_bold" >
+           
+               <!-- <label class="slds-form-element__legend slds-form-element__label">Use this database to find past custumer and account engagement </label>-->
+            <i>   <b>Use this database to find past customer and account engagement </b></i>
+            
+        </lightning:card>
+        <br/>
+    </div>
+ <div class="slds-box slds-theme_default">   
+    <h4><b>Select the options to search</b></h4>
+    <div >
+        <div >
+            <div class="slds-grid slds-gutters">
+                <div class="slds-col slds-size_1-of-5">
+                 <!--   <lightning:radioGroup class="slds-form-element__legend" name="Select Opportunity"
+                                          options="{!v.options}"
+                                          value="{!v.value}"
+                                          onchange="{!c.handleChange}"
+                                          /> -->
+                    <div class="uiInput uiInputRadio uiInput--default uiInput--radio">
+    <label class="uiLabel-left form-element__label uiLabel">
+        <ui:inputRadio  aura:id="r0" text="oppAccLevel" name="1" label="" change="{!c.handleChange}"/>
+        <span>Account</span>
+        <lightning:helptext 
+        content="Find all opportunities View has with this customer" iconVariant="inverse"
+                            />
+    </label><br/>
+                        <label class="uiLabel-left form-element__label uiLabel">
+        <ui:inputRadio  aura:id="r1"  text="conLevel" name="1" label="" change="{!c.handleChange}"/>
+        <span>Contact</span>
+                            <lightning:helptext 
+        content="Find all opportunities this contact is involved in" iconVariant="inverse"
+    />
+    </label><br/>
+                        <label class="uiLabel-left form-element__label uiLabel">
+        <ui:inputRadio  aura:id="r2"  text="partLevel" name="1" label="" change="{!c.handleChange}"/>
+        <span>Partner Account</span>
+                            <lightning:helptext 
+        content="Find all partner accounts that have worked with the searched account" iconVariant="inverse"
+    />
+    </label>
+</div>
+                 
+                    
+                </div>
+                <div class="slds-col slds-size_1-of-5">
+                </div>
+                <div class="slds-col slds-size_1-of-5">
+                </div>
+                <div class="slds-col slds-size_1-of-5">
+                </div>
+                <div class="slds-col slds-size_1-of-5">
+                    <aura:if isTrue="{!v.showOpp}">
+                        
+                        <lightning:button variant="brand" label="Download" title="Download" onclick="{!c.downloadFT}" />
+                    </aura:if>
+                    
+                     <aura:if isTrue="{!v.showpart}">
+                        
+                        <lightning:button variant="brand" label="Download" title="Download" onclick="{!c.downloadPT}" />
+                    </aura:if>
+                    
+                    <aura:if isTrue="{!v.showCon}">
+                        
+                        <lightning:button variant="brand" label="Download" title="Download" onclick="{!c.downloadST}" /><br/><br/>
+                        
+                    </aura:if>
+                </div>
+            </div>
+            <div class="slds-col slds-size_3-of-5">
+                <c:customLookup aura:id="custlookup" disableLookup="{!v.disableLookup}" Searchrecordtype="{!v.Searchrecordtype}"/> 
+            </div>
+        </div>
+    </div>        
+    <!-- fillter changes-->
+    <aura:if isTrue="{!(!v.disableLookup)}">  
+        
+            <table class="slds-table slds-table--bordered slds-table--cell-buffer slds-table--striped slds-border_left slds-border_right ">
+                <thead>
+                    <tr>
+                        <th  scope="col">
+                            <div class="slds-truncate" title="Account Name"><b>Account Type</b></div>
+                        </th>
+                        <th  scope="col">
+                            <div class="slds-truncate" title="Stage"><b>Stage</b></div>
+                        </th>
+                        <th  scope="col">
+                            <div class="slds-truncate" title="Construction Type"><b>Construction Type</b></div>
+                        </th>
+                        <aura:if isTrue="{!or(v.showOpp,v.showpart)}">
+                         <th  scope="col">
+                            <div class="slds-truncate" title="Partner Account Role"><b>Partner Account Role</b></div>
+                        </th>
+                        </aura:if>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <lightning:select value="{!v.accountType}"  onchange="{!c.applyFilters}">       
+                                <option value="">Choose one...</option>
+                                <aura:iteration items="{!v.wrapDataMaster.accountTypePLV}" var="item">
+                                    <option value="{!item.value}" >
+                                        {!item}
+                                    </option>
+                                </aura:iteration>
+                            </lightning:select></td>
+                        <td>
+                            <lightning:select value="{!v.oppStage}"  onchange="{!c.applyFilters}">       
+                                <option value="">Choose one...</option>
+                                <aura:iteration items="{!v.wrapDataMaster.stagePLV}" var="item">
+                                    <option value="{!item.value}">
+                                        {!item}
+                                    </option>
+                                </aura:iteration>
+                            </lightning:select></td>
+                        <td>
+                            <lightning:select value="{!v.constructionType}"  onchange="{!c.applyFilters}">       
+                                <option value="">Choose one...</option>
+                                <aura:iteration items="{!v.wrapDataMaster.constructionType}" var="item">
+                                    <option value="{!item.value}">
+                                        {!item}
+                                    </option>
+                                </aura:iteration>
+                            </lightning:select> 
+                        </td>
+                        <aura:if isTrue="{!or(v.showOpp,v.showpart)}">
+                          <td>
+                            <lightning:select value="{!v.partneraccountrole}"  onchange="{!c.applyFilters}">       
+                                <option value="">Choose one...</option>
+                                <aura:iteration items="{!v.wrapDataMaster.partneraccountrole}" var="item">
+                                    <option value="{!item.value}">
+                                        {!item}
+                                    </option>
+                                </aura:iteration>
+                            </lightning:select> 
+                        </td>
+                        </aura:if>
+                    </tr>
+                </tbody>
+            </table>
+        
+    </aura:if>
+   <div>
+        <aura:if isTrue="{!v.showOpp}">
+            <br/>
+		
+				<div >
+					<div class="slds-scrollable" style="height:19rem;width:82rem">
+                        <table class="slds-table slds-table_cell-buffer slds-no-row-hover slds-table_bordered slds-border_left slds-border_right">
+							<thead>
+								<tr class="slds-line-height_reset">
+									<th  scope="col" onclick="{!c.sortByAcccount}">
+										<div class="slds-truncate" title="Account Name"><b>Account Name</b>
+                                        <aura:if isTrue="{!v.Account}"><lightning:icon iconName="utility:arrowup"  size="xx-small" alternativeText="Indicates approval"/>
+                                         <aura:set attribute="else">
+                                                <lightning:icon iconName="utility:arrowdown"  size="xx-small" alternativeText="Indicates approval"/>
+                                            </aura:set>
+                                            </aura:if>
+                                            </div>
+									</th>
+									<th  scope="col">
+										<div class="slds-truncate" title="Account Type">Account Type</div>
+									</th>
+									<th  scope="col" onclick="{!c.sortBypartacc}">
+										<div class="slds-truncate" title="Partner Account Name">Partner Account Name
+                                         <aura:if isTrue="{!v.Partneraccount}"><lightning:icon iconName="utility:arrowup"  size="xx-small" alternativeText="Indicates approval"/>
+                                         <aura:set attribute="else">
+                                                <lightning:icon iconName="utility:arrowdown"  size="xx-small" alternativeText="Indicates approval"/>
+                                            </aura:set>
+                                            </aura:if>
+                                       
+                                        </div>
+									</th>
+									<th  scope="col" >
+										<div class="slds-truncate " title="Partner Account Role">Partner Account Role</div>
+									</th>
+									<th  scope="col" onclick="{!c.sortByOppName}">
+										<div class="slds-truncate " title="Opportunity Name">Opportunity Name
+                                         
+                                        <aura:if isTrue="{!v.OpportunityName}"><lightning:icon iconName="utility:arrowup"  size="xx-small" alternativeText="Indicates approval"/>
+                                         <aura:set attribute="else">
+                                                <lightning:icon iconName="utility:arrowdown"  size="xx-small" alternativeText="Indicates approval"/>
+                                            </aura:set>
+                                            </aura:if>
+                                       
+                                        </div>
+									</th>
+									<th  scope="col" onclick="{!c.sortBystage}">
+										<div class="slds-truncate" title="Stage">Stage
+                                         <aura:if isTrue="{!v.stagename}"><lightning:icon iconName="utility:arrowup"  size="xx-small" alternativeText="Indicates approval"/>
+                                         <aura:set attribute="else">
+                                                <lightning:icon iconName="utility:arrowdown"  size="xx-small" alternativeText="Indicates approval"/>
+                                            </aura:set>
+                                            </aura:if>
+                                       
+                                        </div>
+									</th>
+									
+									<th  scope="col" onclick="{!c.sortByamount}">
+										<div class="slds-truncate" title="Total Building SQFT">Total Building SQFT
+                                        <aura:if isTrue="{!v.Amountusd}"><lightning:icon iconName="utility:arrowup"  size="xx-small" alternativeText="Indicates approval"/>
+                                         <aura:set attribute="else">
+                                                <lightning:icon iconName="utility:arrowdown"  size="xx-small" alternativeText="Indicates approval"/>
+                                            </aura:set>
+                                            </aura:if>
+                                       
+                                        </div>
+									</th>
+									<th  scope="col" onclick="{!c.sortByConstruction}">
+										<div class="slds-truncate" title="Construction Type">Construction Type
+                                         <aura:if isTrue="{!v.Construction}"><lightning:icon iconName="utility:arrowup"  size="xx-small" alternativeText="Indicates approval"/>
+                                         <aura:set attribute="else">
+                                                <lightning:icon iconName="utility:arrowdown"  size="xx-small" alternativeText="Indicates approval"/>
+                                            </aura:set>
+                                            </aura:if>
+                                       
+                                        </div>
+									</th>
+									<th  scope="col">
+										<div class="slds-truncate" title="Opportunity Owner">Opportunity Owner</div>
+									</th>
+									<th  scope="col">
+										<div class="slds-truncate" title="Close Date">Close Date</div>
+									</th>
+									<th  scope="col">
+										<div class="slds-truncate" title="Design Win Date">Design Win Date</div>
+									</th>
+									<th  scope="col">
+										<div class="slds-truncate" title="Created Date">Created Date</div>
+									</th>
+                                    <th  scope="col">
+										<div class="slds-truncate" title="Market Segment">Market Segment</div>
+									</th>
+
+									<th  scope="col">
+										<div class="slds-truncate" title="City">City</div>
+									</th>
+									<th  scope="col" onclick="{!c.sortByState}">
+										<div class="slds-truncate" title="State">State
+                                         <aura:if isTrue="{!v.State}"><lightning:icon iconName="utility:arrowup"  size="xx-small" alternativeText="Indicates approval"/>
+                                         <aura:set attribute="else">
+                                                <lightning:icon iconName="utility:arrowdown"  size="xx-small" alternativeText="Indicates approval"/>
+                                            </aura:set>
+                                            </aura:if>
+                                       
+                                        
+                                        </div>
+									</th>
+									<th  scope="col">
+										<div class="slds-truncate" title="Account Id">Account Id</div>
+									</th>
+									<th  scope="col">
+										<div class="slds-truncate" title="Opportunity ID">Opportunity ID</div>
+									</th>
+								</tr>
+							</thead>
+                            <br/>
+							<tbody>
+								<aura:iteration items="{!v.wrapDataMaster.oppAccLvlRecd}" var="wrapRec">
+									<tr>
+										<td>{!wrapRec.AccountName}</td>
+										<td>{!wrapRec.AccountType}</td>
+										<td>{!wrapRec.PartnerAccountName}</td>
+										<td>{!wrapRec.PartnerAccountRole}</td>
+										<td>{!wrapRec.OpportunityName}</td>
+										<td>{!wrapRec.Stage}</td>
+										<td>{!wrapRec.TotalBuildingSQFT}</td>
+										<td>{!wrapRec.ConstructionType}</td>
+										<td>{!wrapRec.Owner}</td>
+										<td>{!wrapRec.CloseDate}</td>
+										<td>{!wrapRec.DesignWin}</td>
+										<td>{!wrapRec.CreatedDate}</td>
+                                        <td>{!wrapRec.MarketSegment}</td>
+										<td>{!wrapRec.City}</td>
+										<td>{!wrapRec.State}</td>
+										<td>{!wrapRec.AccountId}</td>
+										<td>{!wrapRec.OpportunityId}</td>
+									</tr>
+								</aura:iteration>
+							</tbody>
+						</table>
+					</div>	
+				</div> 
+			
+		
+        </aura:if>
+    </div>
+      
+     <div>
+        <aura:if isTrue="{!v.showpart}">
+            <br/>
+            <div>
+                <!--<div><b>Account-Level Database</b>
+                    <br/><br/>
+                </div>--><!-- <lightning:button variant="brand" label="Download" title="Download" onclick="{!c.downloadFT}" /><br/><br/>-->
+                <div class="slds-scrollable" style="height:19rem;width:82rem">
+                    <table class="slds-table slds-table_cell-buffer slds-no-row-hover slds-table_bordered slds-border_left slds-border_right ">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th  scope="col" onclick="{!c.sortByAcccount}">
+                                    <div class="slds-truncate" title="Account Name"><b>Account Name</b>
+                                    <aura:if isTrue="{!v.Account}"><lightning:icon iconName="utility:arrowup"  size="xx-small" alternativeText="Indicates approval"/>
+                                         <aura:set attribute="else">
+                                                <lightning:icon iconName="utility:arrowdown"  size="xx-small" alternativeText="Indicates approval"/>
+                                            </aura:set>
+                                            </aura:if>
+                                        
+                                    </div>
+                                </th>
+                                <th  scope="col">
+                                    <div class="slds-truncate" title="Account Type">Account Type</div>
+                                </th>
+                                <th  scope="col" onclick="{!c.sortBypartacc}">
+                                    <div class="slds-truncate" title="Partner Account Name">Partner Account Name
+                                     <aura:if isTrue="{!v.Partneraccount}"><lightning:icon iconName="utility:arrowup"  size="xx-small" alternativeText="Indicates approval"/>
+                                         <aura:set attribute="else">
+                                                <lightning:icon iconName="utility:arrowdown"  size="xx-small" alternativeText="Indicates approval"/>
+                                            </aura:set>
+                                            </aura:if>
+                                       
+                                    </div>
+                                </th>
+                                <th  scope="col">
+                                    <div class="slds-truncate" title="Partner Account Role">Partner Account Role</div>
+                                </th>
+                                <th  scope="col" onclick="{!c.sortByOppName}">
+                                    <div class="slds-truncate" title="Opportunity Name">Opportunity Name
+                                    <aura:if isTrue="{!v.OpportunityName}"><lightning:icon iconName="utility:arrowup"  size="xx-small" alternativeText="Indicates approval"/>
+                                         <aura:set attribute="else">
+                                                <lightning:icon iconName="utility:arrowdown"  size="xx-small" alternativeText="Indicates approval"/>
+                                            </aura:set>
+                                            </aura:if>
+                                       
+                                    </div>
+                                </th>
+                                <th  scope="col" onclick="{!c.sortBystage}">
+                                    <div class="slds-truncate" title="Stage">Stage
+                                    <aura:if isTrue="{!v.stagename}"><lightning:icon iconName="utility:arrowup"  size="xx-small" alternativeText="Indicates approval"/>
+                                         <aura:set attribute="else">
+                                                <lightning:icon iconName="utility:arrowdown"  size="xx-small" alternativeText="Indicates approval"/>
+                                            </aura:set>
+                                            </aura:if>
+                                       
+                                    </div>
+                                </th>
+                                
+                                <th  scope="col" onclick="{!c.sortByamount}">
+                                    <div class="slds-truncate" title="Total Building SQFT">Total Building SQFT
+                                    <aura:if isTrue="{!v.Amountusd}"><lightning:icon iconName="utility:arrowup"  size="xx-small" alternativeText="Indicates approval"/>
+                                         <aura:set attribute="else">
+                                                <lightning:icon iconName="utility:arrowdown"  size="xx-small" alternativeText="Indicates approval"/>
+                                            </aura:set>
+                                            </aura:if>
+                                       
+                                    </div>
+                                </th>
+                                <th  scope="col" onclick="{!c.sortByConstruction}">
+                                    <div class="slds-truncate" title="Construction Type">Construction Type
+                                     <aura:if isTrue="{!v.Construction}"><lightning:icon iconName="utility:arrowup"  size="xx-small" alternativeText="Indicates approval"/>
+                                         <aura:set attribute="else">
+                                                <lightning:icon iconName="utility:arrowdown"  size="xx-small" alternativeText="Indicates approval"/>
+                                            </aura:set>
+                                            </aura:if>
+                                       
+                                    </div>
+                                </th>
+                                <th  scope="col">
+                                    <div class="slds-truncate" title="Opportunity Owner">Opportunity Owner</div>
+                                </th>
+                                <th  scope="col">
+                                    <div class="slds-truncate" title="Close Date">Close Date</div>
+                                </th>
+                                <th  scope="col">
+                                    <div class="slds-truncate" title="Design Win Date">Design Win Date</div>
+                                </th>
+                                <th  scope="col">
+                                    <div class="slds-truncate" title="Created Date">Created Date</div>
+                                </th>
+                                <th  scope="col">
+										<div class="slds-truncate" title="Market Segment">Market Segment</div>
+									</th>
+                                <th  scope="col">
+                                    <div class="slds-truncate" title="City">City</div>
+                                </th>
+                                <th  scope="col" onclick="{!c.sortByState}">
+                                    <div class="slds-truncate" title="State">State
+                                    <aura:if isTrue="{!v.State}"><lightning:icon iconName="utility:arrowup"  size="xx-small" alternativeText="Indicates approval"/>
+                                         <aura:set attribute="else">
+                                                <lightning:icon iconName="utility:arrowdown"  size="xx-small" alternativeText="Indicates approval"/>
+                                            </aura:set>
+                                            </aura:if>
+                                       
+                                    </div>
+                                </th>
+                                <th  scope="col">
+                                    <div class="slds-truncate" title="Account Id">Account Id</div>
+                                </th>
+                                <th  scope="col">
+                                    <div class="slds-truncate" title="Opportunity ID">Opportunity ID</div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:iteration items="{!v.wrapDataMaster.partRleLvlRecd}" var="wrapRec">
+                                <tr>
+                                    <td>{!wrapRec.AccountName}</td>
+                                    <td>{!wrapRec.AccountType}</td>
+                                    <td>{!wrapRec.PartnerAccountName}</td>
+                                    <td>{!wrapRec.PartnerAccountRole}</td>
+                                    <td>{!wrapRec.OpportunityName}</td>
+                                    <td>{!wrapRec.Stage}</td>
+                                    <td>{!wrapRec.TotalBuildingSQFT}</td>
+                                    <td>{!wrapRec.ConstructionType}</td>
+                                    <td>{!wrapRec.Owner}</td>
+                                    <td>{!wrapRec.CloseDate}</td>
+                                    <td>{!wrapRec.DesignWin}</td>
+                                    <td>{!wrapRec.CreatedDate}</td>
+                                    <td>{!wrapRec.MarketSegment}</td>
+                                    <td>{!wrapRec.City}</td>
+                                    <td>{!wrapRec.State}</td>
+                                    <td>{!wrapRec.AccountId}</td>
+                                    <td>{!wrapRec.OpportunityId}</td>
+                                </tr>
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+                </div> </div> 
+        </aura:if>
+    </div>
+     
+     
+    <div>
+        <aura:if isTrue="{!v.showCon}">
+            
+            <br/>
+            <div>
+                <!--<div><b>Contact-Level Database</b>
+                    <br/><br/>
+                </div>-->
+                <div class="slds-scrollable" style="height:19rem;width:82rem">
+                    <!--<lightning:button variant="brand" label="Download" title="Download" onclick="{!c.downloadST}" /><br/><br/> -->
+                    
+                    <table class="slds-table slds-table_cell-buffer slds-no-row-hover slds-table_bordered slds-border_left slds-border_right">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th  scope="col">
+                                    <div class="slds-truncate" title="Contact Name">Contact Name</div>
+                                </th>
+                                <th  scope="col">
+                                    <div class="slds-truncate" title="Contact Account">Contact Account</div>
+                                </th>
+                                <th  scope="col" onclick="{!c.sortByoppacc}">
+                                    <div class="slds-truncate" title="Opportunity Account">Opportunity Account
+                                    <aura:if isTrue="{!v.Partneraccount}"><lightning:icon iconName="utility:arrowup"  size="xx-small" alternativeText="Indicates approval"/>
+                                         <aura:set attribute="else">
+                                                <lightning:icon iconName="utility:arrowdown"  size="xx-small" alternativeText="Indicates approval"/>
+                                            </aura:set>
+                                            </aura:if>
+                                    </div>
+                                </th>
+                                <th  scope="col">
+                                    <div class="slds-truncate" title="Contact Account Type ">Contact Account Type </div>
+                                </th>
+                                <th  scope="col">
+                                    <div class="slds-truncate" title="Contact Account Role">Contact Account Role</div>
+                                </th>
+                                
+                                <th  scope="col" onclick="{!c.sortByOppName}">
+                                    <div class="slds-truncate" title="Opportunity Name">Opportunity Name
+                                    <aura:if isTrue="{!v.OpportunityName}"><lightning:icon iconName="utility:arrowup"  size="xx-small" alternativeText="Indicates approval"/>
+                                         <aura:set attribute="else">
+                                                <lightning:icon iconName="utility:arrowdown"  size="xx-small" alternativeText="Indicates approval"/>
+                                            </aura:set>
+                                            </aura:if>
+                                       
+                                    </div>
+                                </th>
+                                
+                                <th  scope="col" onclick="{!c.sortBystage}">
+                                    <div class="slds-truncate" title="Stage">Stage
+                                     <aura:if isTrue="{!v.stagename}"><lightning:icon iconName="utility:arrowup"  size="xx-small" alternativeText="Indicates approval"/>
+                                         <aura:set attribute="else">
+                                                <lightning:icon iconName="utility:arrowdown"  size="xx-small" alternativeText="Indicates approval"/>
+                                            </aura:set>
+                                            </aura:if>
+                                       
+                                    </div>
+                                </th>
+                                
+                                <th  scope="col" onclick="{!c.sortByamount}">
+                                    <div class="slds-truncate" title="Total Building SQFT">Total Building SQFT
+                                    <aura:if isTrue="{!v.Amountusd}"><lightning:icon iconName="utility:arrowup"  size="xx-small" alternativeText="Indicates approval"/>
+                                         <aura:set attribute="else">
+                                                <lightning:icon iconName="utility:arrowdown"  size="xx-small" alternativeText="Indicates approval"/>
+                                            </aura:set>
+                                            </aura:if>
+                                       
+                                    </div>
+                                </th>
+                                <th  scope="col" onclick="{!c.sortByConstruction}">
+                                    <div class="slds-truncate" title="Construction Type">Construction Type
+                                    <aura:if isTrue="{!v.Construction}"><lightning:icon iconName="utility:arrowup"  size="xx-small" alternativeText="Indicates approval"/>
+                                         <aura:set attribute="else">
+                                                <lightning:icon iconName="utility:arrowdown"  size="xx-small" alternativeText="Indicates approval"/>
+                                            </aura:set>
+                                            </aura:if>
+                                       
+                                    </div>
+                                </th>
+                                <th  scope="col">
+                                    <div class="slds-truncate" title="Owner">Owner</div>
+                                </th>
+                                <th  scope="col">
+                                    <div class="slds-truncate" title="Close Date">Close Date</div>
+                                </th>
+                                <th  scope="col">
+                                    <div class="slds-truncate" title="Design Win Date">Design Win Date</div>
+                                </th>
+                                <th  scope="col">
+                                    <div class="slds-truncate" title="Created Date">Created Date</div>
+                                </th>
+                                <th  scope="col">
+										<div class="slds-truncate" title="Market Segment">Market Segment</div>
+									</th>
+                                <th  scope="col">
+                                    <div class="slds-truncate" title="City">City</div>
+                                </th>
+                                <th  scope="col" onclick="{!c.sortByState}">
+                                    <div class="slds-truncate" title="State">State
+                                    <aura:if isTrue="{!v.State}"><lightning:icon iconName="utility:arrowup"  size="xx-small" alternativeText="Indicates approval"/>
+                                         <aura:set attribute="else">
+                                                <lightning:icon iconName="utility:arrowdown"  size="xx-small" alternativeText="Indicates approval"/>
+                                            </aura:set>
+                                            </aura:if>
+                                       
+                                    </div>
+                                </th>
+                                <th  scope="col">
+                                    <div class="slds-truncate" title="Contact Account ID">Contact Account ID</div>
+                                </th>
+                                <th  scope="col">
+                                    <div class="slds-truncate" title="Opportunity Account ID">Opportunity Account ID</div>
+                                </th>
+                                <th  scope="col">
+                                    <div class="slds-truncate" title="Opportunity ID">Opportunity ID</div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                            <aura:iteration items="{!v.wrapDataMaster.cntctRleLvlRecd}" var="wrapRec">
+                                <tr>
+                                    <td>{!wrapRec.ContactName}</td>
+                                    <td>{!wrapRec.AccountContactName}</td>
+                                    <td>{!wrapRec.AccountName}</td>
+                                    <td>{!wrapRec.AccountContactType}</td>
+                                    <td>{!wrapRec.ContactRole}</td>
+                                    <td>{!wrapRec.OpportunityName}</td>
+                                    <td>{!wrapRec.Stage}</td>
+                                    <td>{!wrapRec.TotalBuildingSQFT}</td>
+                                    <td>{!wrapRec.ConstructionType}</td>
+                                    <td>{!wrapRec.Owner}</td>
+                                    <td>{!wrapRec.CloseDate}</td>
+                                    <td>{!wrapRec.DesignWin}</td>
+                                    <td>{!wrapRec.CreatedDate}</td>
+                                    <td>{!wrapRec.MarketSegment}</td>
+                                    <td>{!wrapRec.City}</td>
+                                    <td>{!wrapRec.State}</td>
+                                    <td>{!wrapRec.Contactaccountid}</td>
+                                    <td>{!wrapRec.AccountId}</td>
+                                    <td>{!wrapRec.OpportunityId}</td>
+                                </tr>
+                            </aura:iteration> 
+                        </tbody>
+                    </table>
+                </div></div>
+        </aura:if>
+    </div>
+    
+    <aura:if isTrue="{!v.openFilter}">
+        
+        <!-- Modal/Popup Box starts here-->
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- Modal/Popup Box Header Starts here-->
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close"
+                                          onclick="{!c.closeModel}"
+                                          alternativeText="close"
+                                          variant="bare-inverse"
+                                          class="slds-modal__close"/>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Filters</h2>
+                </header>
+                <!--Modal/Popup Box Body Starts here-->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <lightning:select value="{!v.accountType}" label="Account Type">       
+                        <option value="">Choose one...</option>
+                        <aura:iteration items="{!v.wrapDataMaster.accountTypePLV}" var="item">
+                            <option value="{!item.value}">
+                                {!item}
+                            </option>
+                        </aura:iteration>
+                    </lightning:select>
+                    <lightning:select value="{!v.oppStage}" label="Stage">       
+                        <option value="">Choose one...</option>
+                        <aura:iteration items="{!v.wrapDataMaster.stagePLV}" var="item">
+                            <option value="{!item.value}">
+                                {!item}
+                            </option>
+                        </aura:iteration>
+                    </lightning:select>
+                    <lightning:select value="{!v.constructionType}" label="Construction Type">       
+                        <option value="">Choose one...</option>
+                        <aura:iteration items="{!v.wrapDataMaster.constructionType}" var="item">
+                            <option value="{!item.value}">
+                                {!item}
+                            </option>
+                        </aura:iteration>
+                    </lightning:select>
+                </div>
+                <!--Modal/Popup Box Footer Starts here-->
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral"
+                                      label="Cancel"
+                                      title="Cancel"
+                                      onclick="{!c.closeModel}"/>
+                    <lightning:button variant="brand"
+                                      label="Apply"
+                                      title="Apply"
+                                      onclick="{!c.applyFilters}"/>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    <aura:if isTrue="{!v.showSpinner}">
+        <div class="backgroundInverse">
+            <div aura:id="spinnerId" class="slds-spinner_container">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </div>
+    </aura:if>
+    </div>
+</aura:component>

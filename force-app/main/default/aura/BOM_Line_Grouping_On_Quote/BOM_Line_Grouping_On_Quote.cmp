@@ -1,0 +1,543 @@
+<aura:component implements="force:hasRecordId,flexipage:availableForRecordHome" controller="BOM_Line_Grouping_On_Quote" access="global">
+
+    <aura:attribute name="recordId" type="string" />
+    <aura:attribute name="groupFieldList" type="List" />
+    <aura:attribute name="QuoteLineWrapper" type="Object" />
+    <aura:attribute name="page" type="Integer" description="Use for store page Number" />
+    <aura:attribute name="totalColumn" type="Integer" />
+    <aura:attribute name="firstGrouping" type="Boolean" default="false" />
+    <aura:attribute name="secondGrouping" type="Boolean" default="false" />
+    <aura:attribute name="thirdGrouping" type="Boolean" default="false" />
+    <aura:attribute name="forthGrouping" type="Boolean" default="false" />
+    <aura:attribute name="Spinner" type="boolean" default="false" />
+    <aura:attribute name="TotalRecordCount" type="Integer" default="0" />
+    <aura:attribute name="CollapeCount" type="Integer" default="0" />
+    <aura:attribute name="displayCmp" type="Boolean" default="false" />
+
+    <aura:method name="renderCmp" action="{!c.renderCmp}" description="call component from NewQuoteItemClone">
+        <aura:attribute name="displayCmp" type="Boolean" />
+        <aura:attribute name="recordId" type="string" />
+        <aura:attribute name="groupFieldList" type="List" />
+    </aura:method>
+
+    <aura:if isTrue="{!v.displayCmp}">
+        <c:BT_Spinner />
+
+        <div class="mainBomDiv">
+
+            <div id='collapseBtn' class="slds-float_left">
+                <span data-iconname="Expand All" id="{!'expandAllBtn_'+v.recordId}" onclick="{!c.expandCollapeAll}" style="display:none">
+                    <lightning:buttonIcon iconName="utility:add" variant="border-filled" iconClass="dark" alternativeText="Expand All" title="Expand All" />
+                </span>
+                <span data-iconname="Collapse All" id="{!'collapeseAllBtn_'+v.recordId}" onclick="{!c.expandCollapeAll}" style="display:inline-block;">
+                    <lightning:buttonIcon iconName="utility:dash" variant="border-filled" iconClass="dark" alternativeText="Collapse All" title="Collapse All" />
+                </span>
+            </div>
+
+            <table class="slds-table">
+                <tbody>
+
+                    <aura:if isTrue="{!v.firstGrouping}">
+                        <aura:iteration items="{!v.QuoteLineWrapper.groupWrapper}" var="group1">
+                            <tr>
+                                <td class="groupHeaderIcon">
+                                    <div id='collapseBtn' class="slds-float_left">
+                                        <span data-iconname="Expand Group" id="{!'expandGroupBtn_'+group1.groupIndex}" onclick="{!c.expandCollapeGroup}" style="display:none">
+                                            <lightning:buttonIcon iconName="utility:add" variant="border-filled" iconClass="dark" alternativeText="Expand Group" title="Expand Group" />
+                                        </span>
+                                        <span data-iconname="Collapse Group" id="{!'collapeseGroupBtn_'+group1.groupIndex}" onclick="{!c.expandCollapeGroup}" style="display:inline-block;">
+                                            <lightning:buttonIcon iconName="utility:dash" variant="border-filled" iconClass="dark" alternativeText="Collapse Group" title="Collapse Group" />
+                                        </span>
+                                    </div>
+                                </td>
+                                <td class="groupHeaderDiv" colspan="{!v.totalColumn+3}">
+                                    <aura:if isTrue="{!group1.groupName != undefined}">
+                                        {!group1.groupName}
+                                        <aura:set attribute="else">
+                                            No Grouping
+                                        </aura:set>
+                                    </aura:if>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="tableHeaderDiv blankDiv"></th>
+                                <aura:iteration items="{!v.QuoteLineWrapper.columns}" var="col">
+                                    <th class="tableHeaderDiv">
+                                        {!col.label}
+                                    </th>
+                                </aura:iteration>
+                            </tr>
+                            <aura:iteration items="{!group1.quoteLineList}" var="quoteItem">
+                                <tr class="{!'record_'+group1.groupIndex}">
+                                    <td class="blankDiv"> </td>
+                                    <aura:iteration items="{!quoteItem.FieldDataList}" var="fildData">
+                                        <td>
+                                            <aura:if isTrue="{! (fildData.fieldType == 'number' || fildData.fieldType == 'currency' || fildData.fieldName == 'Name' || fildData.fieldName == 'buildertek__Markup__c' 
+                                                                || fildData.fieldName == 'buildertek__Margin__c' || fildData.fieldName == 'buildertek__Additional_Discount__c' || fildData.fieldName == 'buildertek__Profit_Margin__c' )}">
+
+                                                <aura:if isTrue="{!fildData.fieldName == 'Name'}">
+                                                    <ui:outputURL value="{!'/one/one.app?#/sObject/'+ quoteItem.Id + '/view'}" target="_blank" label="{!fildData.fieldValue}" />
+                                                </aura:if>
+                                                
+                                                <aura:if isTrue="{!fildData.fieldType == 'number'}">
+                                                    <aura:if isTrue="{!fildData.fieldValue != null}">
+                                                        <lightning:formattedNumber value="{!fildData.fieldValue}" maximumFractionDigits="2"/>
+                                                        <aura:set attribute="else">
+                                                            <lightning:formattedNumber value="0" maximumFractionDigits="2"/>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </aura:if>
+
+                                                <aura:if isTrue="{!fildData.fieldType == 'currency'}">
+                                                    <aura:if isTrue="{!fildData.fieldValue != null}">
+                                                        <lightning:formattedNumber value="{!fildData.fieldValue}" style="currency" currencyDisplayAs="code"/>
+                                                        <aura:set attribute="else">
+                                                            <lightning:formattedNumber value="0" style="currency" currencyDisplayAs="code"/>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </aura:if> 
+
+                                                <aura:if isTrue="{! (fildData.fieldName == 'buildertek__Markup__c' || fildData.fieldName == 'buildertek__Margin__c' || 
+                                                                fildData.fieldName == 'buildertek__Additional_Discount__c' || fildData.fieldName == 'buildertek__Profit_Margin__c' )}" >
+                                                    
+                                                    <aura:if isTrue="{!fildData.fieldValue != null}">
+                                                        <lightning:formattedNumber value="{!fildData.fieldValue/100}" style="percent" maximumFractionDigits="2"/>
+                                                        <aura:set attribute="else">
+                                                            <lightning:formattedNumber value="0" style="percent" maximumFractionDigits="2"/>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </aura:if>
+
+                                                <aura:set attribute="else">
+                                                    {!fildData.fieldValue}
+                                                </aura:set>
+                                            </aura:if>
+                                        </td>
+                                    </aura:iteration>
+                                </tr>
+                            </aura:iteration>   
+                            <tr style="font-weight: bold;">
+                                <td class="blankDiv"> </td>
+                                <aura:iteration items="{!group1.fieldTotals.fieldTotalList}" var="total">
+                                    <td>
+                                        <aura:if isTrue="{!total.fieldName == 'Total'}">
+                                            <span>Total</span>
+                                        </aura:if>
+                                        <aura:if isTrue="{!total.fieldType == 'currency'}">
+                                            <aura:if isTrue="{!total.fieldValue != null}">
+                                                <lightning:formattedNumber value="{!total.fieldValue}" style="currency" currencyDisplayAs="code"/>
+                                                <aura:set attribute="else">
+                                                    <lightning:formattedNumber value="0" style="currency" currencyDisplayAs="code"/>
+                                                </aura:set>
+                                            </aura:if>
+                                        </aura:if> 
+                                    </td>
+                                </aura:iteration>
+                            </tr> 
+                        </aura:iteration>
+                    </aura:if>
+
+                    <aura:if isTrue="{!v.secondGrouping}">
+                        <aura:iteration items="{!v.QuoteLineWrapper.groupWrapper}" var="group1">
+                            <tr>
+                                <td class="groupHeaderDiv" colspan="{!v.totalColumn+4}">
+                                    <aura:if isTrue="{!group1.groupName != undefined}">
+                                        {!group1.groupName}
+                                        <aura:set attribute="else">
+                                            No Grouping
+                                        </aura:set>
+                                    </aura:if>
+                                </td>
+                            </tr>
+                            <aura:iteration items="{!group1.quoteLineList}" var="group2">
+                                <tr>
+                                    <td class="groupHeaderIcon">
+                                        <div id='collapseBtn' class="slds-float_left">
+                                            <span data-iconname="Expand Group" id="{!'expandGroupBtn_'+group1.groupIndex+group2.groupIndex}" onclick="{!c.expandCollapeGroup}" style="display:none">
+                                                <lightning:buttonIcon iconName="utility:add" variant="border-filled" iconClass="dark" alternativeText="Expand Group" title="Expand Group" />
+                                            </span>
+                                            <span data-iconname="Collapse Group" id="{!'collapeseGroupBtn_'+group1.groupIndex+group2.groupIndex}" onclick="{!c.expandCollapeGroup}" style="display:inline-block;">
+                                                <lightning:buttonIcon iconName="utility:dash" variant="border-filled" iconClass="dark" alternativeText="Collapse Group" title="Collapse Group" />
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td class="groupHeaderDiv" colspan="{!v.totalColumn+3}">
+                                        <aura:if isTrue="{!group2.groupName != undefined}">
+                                            {!group2.groupName}
+                                            <aura:set attribute="else">
+                                                No Grouping
+                                            </aura:set>
+                                        </aura:if>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="tableHeaderDiv blankDiv"></th>
+                                    <th class="tableHeaderDiv blankDiv"></th>
+                                    <aura:iteration items="{!v.QuoteLineWrapper.columns}" var="col">
+                                        <th class="tableHeaderDiv">
+                                            {!col.label}
+                                        </th>
+                                    </aura:iteration>
+                                </tr>
+                                <aura:iteration items="{!group2.quoteLineList}" var="quoteItem">
+                                    <tr class="{!'record_'+group1.groupIndex+group2.groupIndex}">
+                                        <td class="blankDiv"> </td>
+                                        <td class="blankDiv"> </td>
+                                        <aura:iteration items="{!quoteItem.FieldDataList}" var="fildData">
+                                            <td>
+                                                <aura:if isTrue="{! (fildData.fieldType == 'number' || fildData.fieldType == 'currency' || fildData.fieldName == 'Name' || fildData.fieldName == 'buildertek__Markup__c' 
+                                                                    || fildData.fieldName == 'buildertek__Margin__c' || fildData.fieldName == 'buildertek__Additional_Discount__c' || fildData.fieldName == 'buildertek__Profit_Margin__c' )}">
+            
+                                                    <aura:if isTrue="{!fildData.fieldName == 'Name'}">
+                                                        <ui:outputURL value="{!'/one/one.app?#/sObject/'+ quoteItem.Id + '/view'}" target="_blank" label="{!fildData.fieldValue}" />
+                                                    </aura:if>
+                                                    
+                                                    <aura:if isTrue="{!fildData.fieldType == 'number'}">
+                                                        <aura:if isTrue="{!fildData.fieldValue != null}">
+                                                            <lightning:formattedNumber value="{!fildData.fieldValue}" maximumFractionDigits="2"/>
+                                                            <aura:set attribute="else">
+                                                                <lightning:formattedNumber value="0" maximumFractionDigits="2"/>
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </aura:if>
+            
+                                                    <aura:if isTrue="{!fildData.fieldType == 'currency'}">
+                                                        <aura:if isTrue="{!fildData.fieldValue != null}">
+                                                            <lightning:formattedNumber value="{!fildData.fieldValue}" style="currency" currencyDisplayAs="code"/>
+                                                            <aura:set attribute="else">
+                                                                <lightning:formattedNumber value="0" style="currency" currencyDisplayAs="code"/>
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </aura:if> 
+            
+                                                    <aura:if isTrue="{! (fildData.fieldName == 'buildertek__Markup__c' || fildData.fieldName == 'buildertek__Margin__c' || 
+                                                                    fildData.fieldName == 'buildertek__Additional_Discount__c' || fildData.fieldName == 'buildertek__Profit_Margin__c' )}" >
+                                                        
+                                                        <aura:if isTrue="{!fildData.fieldValue != null}">
+                                                            <lightning:formattedNumber value="{!fildData.fieldValue/100}" style="percent" maximumFractionDigits="2"/>
+                                                            <aura:set attribute="else">
+                                                                <lightning:formattedNumber value="0" style="percent" maximumFractionDigits="2"/>
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </aura:if>
+            
+                                                    <aura:set attribute="else">
+                                                        {!fildData.fieldValue}
+                                                    </aura:set>
+                                                </aura:if>
+                                            </td>
+                                        </aura:iteration>
+                                    </tr>
+                                </aura:iteration>
+                                <tr style="font-weight: bold;">
+                                    <td class="blankDiv"> </td>
+                                    <td class="blankDiv"> </td>
+                                    <aura:iteration items="{!group2.fieldTotals.fieldTotalList}" var="total">
+                                        <td>
+                                            <aura:if isTrue="{!total.fieldName == 'Total'}">
+                                                <span>Total</span>
+                                            </aura:if>
+                                            <aura:if isTrue="{!total.fieldType == 'currency'}">
+                                                <aura:if isTrue="{!total.fieldValue != null}">
+                                                    <lightning:formattedNumber value="{!total.fieldValue}" style="currency" currencyDisplayAs="code"/>
+                                                    <aura:set attribute="else">
+                                                        <lightning:formattedNumber value="0" style="currency" currencyDisplayAs="code"/>
+                                                    </aura:set>
+                                                </aura:if>
+                                            </aura:if> 
+                                        </td>
+                                    </aura:iteration>
+                                </tr> 
+                            </aura:iteration>
+                        </aura:iteration>
+                    </aura:if>
+
+
+                    <aura:if isTrue="{!v.thirdGrouping}">
+                        <aura:iteration items="{!v.QuoteLineWrapper.groupWrapper}" var="group1">
+                            <tr>
+                                <td class="groupHeaderDiv" colspan="{!v.totalColumn+4}">
+                                    <aura:if isTrue="{!group1.groupName != undefined}">
+                                        {!group1.groupName}
+                                        <aura:set attribute="else">
+                                            No Grouping
+                                        </aura:set>
+                                    </aura:if>
+                                </td>
+                            </tr>
+                            <aura:iteration items="{!group1.quoteLineList}" var="group2">
+                                <tr>
+                                    <td class="groupHeaderDiv blankDiv"> </td>
+                                    <td class="groupHeaderDiv" colspan="{!v.totalColumn+3}">
+                                        <aura:if isTrue="{!group2.groupName != undefined}">
+                                            {!group2.groupName}
+                                            <aura:set attribute="else">
+                                                No Grouping
+                                            </aura:set>
+                                        </aura:if>
+                                    </td>
+                                </tr>
+                                <aura:iteration items="{!group2.quoteLineList}" var="group3">
+                                    <tr>
+                                        <td class="groupHeaderDiv blankDiv"> </td>
+                                        <td class="groupHeaderIcon">
+                                            <div id='collapseBtn' class="slds-float_left">
+                                                <span data-iconname="Expand Group" id="{!'expandGroupBtn_'+group1.groupIndex+group2.groupIndex+group3.groupIndex}" onclick="{!c.expandCollapeGroup}" style="display:none">
+                                                    <lightning:buttonIcon iconName="utility:add" variant="border-filled" iconClass="dark" alternativeText="Expand Group" title="Expand Group" />
+                                                </span>
+                                                <span data-iconname="Collapse Group" id="{!'collapeseGroupBtn_'+group1.groupIndex+group2.groupIndex+group3.groupIndex}" onclick="{!c.expandCollapeGroup}" style="display:inline-block;">
+                                                    <lightning:buttonIcon iconName="utility:dash" variant="border-filled" iconClass="dark" alternativeText="Collapse Group" title="Collapse Group" />
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td class="groupHeaderDiv" colspan="{!v.totalColumn+2}">
+                                            <aura:if isTrue="{!group3.groupName != undefined}">
+                                                {!group3.groupName}
+                                                <aura:set attribute="else">
+                                                    No Grouping
+                                                </aura:set>
+                                            </aura:if>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="tableHeaderDiv blankDiv"></th>
+                                        <th class="tableHeaderDiv blankDiv"></th>
+                                        <th class="tableHeaderDiv blankDiv"></th>
+                                        <aura:iteration items="{!v.QuoteLineWrapper.columns}" var="col">
+                                            <th class="tableHeaderDiv">
+                                                {!col.label}
+                                            </th>
+                                        </aura:iteration>
+                                    </tr>
+                                    <aura:iteration items="{!group3.quoteLineList}" var="quoteItem">
+                                        <tr class="{!'record_'+group1.groupIndex+group2.groupIndex+group3.groupIndex}">
+                                            <td class="blankDiv"> </td>
+                                            <td class="blankDiv"> </td>
+                                            <td class="blankDiv"> </td>
+                                            <aura:iteration items="{!quoteItem.FieldDataList}" var="fildData">
+                                                <td>
+                                                    <aura:if isTrue="{! (fildData.fieldType == 'number' || fildData.fieldType == 'currency' || fildData.fieldName == 'Name' || fildData.fieldName == 'buildertek__Markup__c' 
+                                                                        || fildData.fieldName == 'buildertek__Margin__c' || fildData.fieldName == 'buildertek__Additional_Discount__c' || fildData.fieldName == 'buildertek__Profit_Margin__c' )}">
+                
+                                                        <aura:if isTrue="{!fildData.fieldName == 'Name'}">
+                                                            <ui:outputURL value="{!'/one/one.app?#/sObject/'+ quoteItem.Id + '/view'}" target="_blank" label="{!fildData.fieldValue}" />
+                                                        </aura:if>
+
+                                                        <aura:if isTrue="{!fildData.fieldType == 'number'}">
+                                                            <aura:if isTrue="{!fildData.fieldValue != null}">
+                                                                <lightning:formattedNumber value="{!fildData.fieldValue}" maximumFractionDigits="2"/>
+                                                                <aura:set attribute="else">
+                                                                    <lightning:formattedNumber value="0" maximumFractionDigits="2"/>
+                                                                </aura:set>
+                                                            </aura:if>
+                                                        </aura:if>
+                
+                                                        <aura:if isTrue="{!fildData.fieldType == 'currency'}">
+                                                            <aura:if isTrue="{!fildData.fieldValue != null}">
+                                                                <lightning:formattedNumber value="{!fildData.fieldValue}" style="currency" currencyDisplayAs="code"/>
+                                                                <aura:set attribute="else">
+                                                                    <lightning:formattedNumber value="0" style="currency" currencyDisplayAs="code"/>
+                                                                </aura:set>
+                                                            </aura:if>
+                                                        </aura:if> 
+                
+                                                        <aura:if isTrue="{! (fildData.fieldName == 'buildertek__Markup__c' || fildData.fieldName == 'buildertek__Margin__c' || 
+                                                                        fildData.fieldName == 'buildertek__Additional_Discount__c' || fildData.fieldName == 'buildertek__Profit_Margin__c' )}" >
+                                                            
+                                                            <aura:if isTrue="{!fildData.fieldValue != null}">
+                                                                <lightning:formattedNumber value="{!fildData.fieldValue/100}" style="percent" maximumFractionDigits="2"/>
+                                                                <aura:set attribute="else">
+                                                                    <lightning:formattedNumber value="0" style="percent" maximumFractionDigits="2"/>
+                                                                </aura:set>
+                                                            </aura:if>
+                                                        </aura:if>
+                
+                                                        <aura:set attribute="else">
+                                                            {!fildData.fieldValue}
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </td>
+                                            </aura:iteration>
+                                        </tr>
+                                    </aura:iteration>
+                                    <tr style="font-weight: bold;">
+                                        <td class="blankDiv"> </td>
+                                        <td class="blankDiv"> </td>
+                                        <td class="blankDiv"> </td>
+                                        <aura:iteration items="{!group3.fieldTotals.fieldTotalList}" var="total">
+                                            <td>
+                                                <aura:if isTrue="{!total.fieldName == 'Total'}">
+                                                    <span>Total</span>
+                                                </aura:if>
+                                                <aura:if isTrue="{!total.fieldType == 'currency'}">
+                                                    <aura:if isTrue="{!total.fieldValue != null}">
+                                                        <lightning:formattedNumber value="{!total.fieldValue}" style="currency" currencyDisplayAs="code"/>
+                                                        <aura:set attribute="else">
+                                                            <lightning:formattedNumber value="0" style="currency" currencyDisplayAs="code"/>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </aura:if> 
+                                            </td>
+                                        </aura:iteration>
+                                    </tr> 
+                                </aura:iteration>
+                            </aura:iteration>
+                        </aura:iteration>
+                    </aura:if>
+
+                    <aura:if isTrue="{!v.forthGrouping}">
+                        <aura:iteration items="{!v.QuoteLineWrapper.groupWrapper}" var="group1">
+                            <tr>
+                                <td class="groupHeaderDiv" colspan="{!v.totalColumn+4}">
+                                    <aura:if isTrue="{!group1.groupName != undefined}">
+                                        {!group1.groupName}
+                                        <aura:set attribute="else">
+                                            No Grouping
+                                        </aura:set>
+                                    </aura:if>
+                                </td>
+                            </tr>
+                            <aura:iteration items="{!group1.quoteLineList}" var="group2">
+                                <tr>
+                                    <td class="groupHeaderDiv blankDiv"> </td>
+                                    <td class="groupHeaderDiv" colspan="{!v.totalColumn+3}">
+                                        <aura:if isTrue="{!group2.groupName != undefined}">
+                                            {!group2.groupName}
+                                            <aura:set attribute="else">
+                                                No Grouping
+                                            </aura:set>
+                                        </aura:if>
+                                    </td>
+                                </tr>
+                                <aura:iteration items="{!group2.quoteLineList}" var="group3">
+                                    <tr>
+                                        <td class="groupHeaderDiv blankDiv"> </td>
+                                        <td class="groupHeaderDiv blankDiv"> </td>
+                                        <td class="groupHeaderDiv" colspan="{!v.totalColumn+2}">
+                                            <aura:if isTrue="{!group3.groupName != undefined}">
+                                                {!group3.groupName}
+                                                <aura:set attribute="else">
+                                                    No Grouping
+                                                </aura:set>
+                                            </aura:if>
+                                        </td>
+                                    </tr>
+                                    <aura:iteration items="{!group3.quoteLineList}" var="group4">
+                                        <tr>
+                                            <td class="groupHeaderDiv blankDiv"> </td>
+                                            <td class="groupHeaderDiv blankDiv"> </td>
+                                            <td class="groupHeaderIcon">
+                                                <div id='collapseBtn' class="slds-float_left">
+                                                    <span data-iconname="Expand Group" id="{!'expandGroupBtn_'+group1.groupIndex+group2.groupIndex+group3.groupIndex+group4.groupIndex}" onclick="{!c.expandCollapeGroup}" style="display:none">
+                                                        <lightning:buttonIcon iconName="utility:add" variant="border-filled" iconClass="dark" alternativeText="Expand Group" title="Expand Group" />
+                                                    </span>
+                                                    <span data-iconname="Collapse Group" id="{!'collapeseGroupBtn_'+group1.groupIndex+group2.groupIndex+group3.groupIndex+group4.groupIndex}" onclick="{!c.expandCollapeGroup}" style="display:inline-block;">
+                                                        <lightning:buttonIcon iconName="utility:dash" variant="border-filled" iconClass="dark" alternativeText="Collapse Group" title="Collapse Group" />
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td class="groupHeaderDiv" colspan="{!v.totalColumn+1}">
+                                                <aura:if isTrue="{!group4.groupName != undefined}">
+                                                    {!group4.groupName}
+                                                    <aura:set attribute="else">
+                                                        No Grouping
+                                                    </aura:set>
+                                                </aura:if>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th class="tableHeaderDiv blankDiv"></th>
+                                            <th class="tableHeaderDiv blankDiv"></th>
+                                            <th class="tableHeaderDiv blankDiv"></th>
+                                            <th class="tableHeaderDiv blankDiv"></th>
+                                            <aura:iteration items="{!v.QuoteLineWrapper.columns}" var="col">
+                                                <th class="tableHeaderDiv">
+                                                    {!col.label}
+                                                </th>
+                                            </aura:iteration>
+                                        </tr>
+                                        <aura:iteration items="{!group4.quoteLineList}" var="quoteItem">
+                                            <tr class="{!'record_'+group1.groupIndex+group2.groupIndex+group3.groupIndex+group4.groupIndex}">
+                                                <td class="blankDiv"> </td>
+                                                <td class="blankDiv"> </td>
+                                                <td class="blankDiv"> </td>
+                                                <td class="blankDiv"> </td>
+                                                <aura:iteration items="{!quoteItem.FieldDataList}" var="fildData">
+                                                    <td>
+                                                        <aura:if isTrue="{! (fildData.fieldType == 'number' || fildData.fieldType == 'currency' || fildData.fieldName == 'Name' || fildData.fieldName == 'buildertek__Markup__c' 
+                                                                            || fildData.fieldName == 'buildertek__Margin__c' || fildData.fieldName == 'buildertek__Additional_Discount__c' || fildData.fieldName == 'buildertek__Profit_Margin__c' )}">
+
+                                                            <aura:if isTrue="{!fildData.fieldName == 'Name'}">
+                                                                <ui:outputURL value="{!'/one/one.app?#/sObject/'+ quoteItem.Id + '/view'}" target="_blank" label="{!fildData.fieldValue}" />
+                                                            </aura:if>
+                    
+                                                            <aura:if isTrue="{!fildData.fieldType == 'number'}">
+                                                                <aura:if isTrue="{!fildData.fieldValue != null}">
+                                                                    <lightning:formattedNumber value="{!fildData.fieldValue}" maximumFractionDigits="2"/>
+                                                                    <aura:set attribute="else">
+                                                                        <lightning:formattedNumber value="0" maximumFractionDigits="2"/>
+                                                                    </aura:set>
+                                                                </aura:if>
+                                                            </aura:if>
+                    
+                                                            <aura:if isTrue="{!fildData.fieldType == 'currency'}">
+                                                                <aura:if isTrue="{!fildData.fieldValue != null}">
+                                                                    <lightning:formattedNumber value="{!fildData.fieldValue}" style="currency" currencyDisplayAs="code"/>
+                                                                    <aura:set attribute="else">
+                                                                        <lightning:formattedNumber value="0" style="currency" currencyDisplayAs="code"/>
+                                                                    </aura:set>
+                                                                </aura:if>
+                                                            </aura:if> 
+                    
+                                                            <aura:if isTrue="{! (fildData.fieldName == 'buildertek__Markup__c' || fildData.fieldName == 'buildertek__Margin__c' || 
+                                                                            fildData.fieldName == 'buildertek__Additional_Discount__c' || fildData.fieldName == 'buildertek__Profit_Margin__c' )}" >
+                                                                
+                                                                <aura:if isTrue="{!fildData.fieldValue != null}">
+                                                                    <lightning:formattedNumber value="{!fildData.fieldValue/100}" style="percent" maximumFractionDigits="2"/>
+                                                                    <aura:set attribute="else">
+                                                                        <lightning:formattedNumber value="0" style="percent" maximumFractionDigits="2"/>
+                                                                    </aura:set>
+                                                                </aura:if>
+                                                            </aura:if>
+                    
+                                                            <aura:set attribute="else">
+                                                                {!fildData.fieldValue}
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </td>
+                                                </aura:iteration>
+                                            </tr>
+                                        </aura:iteration>
+                                        <tr style="font-weight: bold;">
+                                            <td class="blankDiv"> </td>
+                                            <td class="blankDiv"> </td>
+                                            <td class="blankDiv"> </td>
+                                            <td class="blankDiv"> </td>
+                                            <aura:iteration items="{!group4.fieldTotals.fieldTotalList}" var="total">
+                                                <td>
+                                                    <aura:if isTrue="{!total.fieldName == 'Total'}">
+                                                        <span>Total</span>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!total.fieldType == 'currency'}">
+                                                        <aura:if isTrue="{!total.fieldValue != null}">
+                                                            <lightning:formattedNumber value="{!total.fieldValue}" style="currency" currencyDisplayAs="code"/>
+                                                            <aura:set attribute="else">
+                                                                <lightning:formattedNumber value="0" style="currency" currencyDisplayAs="code"/>
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </aura:if> 
+                                                </td>
+                                            </aura:iteration>
+                                        </tr> 
+                                    </aura:iteration>
+                                </aura:iteration>
+                            </aura:iteration>
+                        </aura:iteration>
+                    </aura:if>
+
+                </tbody>
+            </table>
+        </div>
+                
+    </aura:if>
+</aura:component>

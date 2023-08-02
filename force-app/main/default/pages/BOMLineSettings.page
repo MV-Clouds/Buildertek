@@ -1,0 +1,13 @@
+<apex:page >
+    <apex:includeLightning />
+    <div id="lightning" />
+    <script>
+    	$Lightning.use("buildertek:BOMLineSettingsApp", function() { 
+            $Lightning.createComponent("buildertek:BT_BOMLineSettings",
+          	{},
+            "lightning",
+             function(cmp) {
+             });
+        });        
+      </script>
+</apex:page>

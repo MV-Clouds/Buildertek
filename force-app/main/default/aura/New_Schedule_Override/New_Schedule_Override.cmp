@@ -1,0 +1,220 @@
+<aura:component
+    implements="force:hasRecordId,lightning:actionOverride,force:lightningQuickActionWithoutHeader,force:hasSObjectName"
+    access="global" controller="NewScheduleOverride">
+
+    <aura:attribute name="scheduleObj" type="Schedule__c" default="{'sobjectType':'Schedule__c',
+                                                                                 'buildertek__Project__c':'',
+                                                                                 'buildertek__Initial_Start_Date__c':''
+                                                                                 }" />
+    <aura:attribute name="scheduleId" type="string" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="ProjectManagerId" type="String" />
+    <aura:attribute name="masterId" type="List" />
+    <aura:attribute name="masterCount" type="Integer" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="parentRecordId" type="String" default="" />
+    <aura:attribute name="Iscommunity" type="Boolean" default="false" />
+    <aura:attribute name="selectedExistingScheule" type="String" default="" access="public" />
+    <aura:attribute name="listOfFields" type="List" />
+    <aura:attribute name="selectedMasterId" type="String" />
+    <aura:attribute name="scheduleLineItems" type="list" />
+    <aura:attribute name="schedulerecId" type="string" />
+    <aura:attribute name="isSaveAndNew" type="Boolean" default="false" />
+
+    <aura:attribute name="Spinner" type="boolean" default="false" />
+    <aura:attribute name="showMessage" type="Boolean" default="false" />
+
+    <lightning:workspaceAPI aura:id="workspace" />
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth62}" />
+    <!-- <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+             aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open"> -->
+    <div class="slds-m-around--xx-large" style="background: white;">
+        <!--Custom Styles for Modal Header and Footer-->
+
+        <aura:if isTrue="{!v.Spinner}">
+            <div aura:id="spinnerId" class="slds-spinner_container" style="position:fixed;">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                    <div class="custom-loading-text">
+                        <aura:if isTrue="{!v.showMessage}">
+
+                            <b>Processing, Please Wait</b>
+                        </aura:if>
+
+                    </div>
+                </div>
+            </div>
+        </aura:if>
+
+        <lightning:recordEditForm aura:id="recordEditForm" objectApiName="buildertek__Schedule__c"
+            recordId="{!v.recordId}" onsubmit="{!c.handleOnSubmit}" onsuccess="{!c.handleOnSuccess}"
+            onerror="{!c.handleOnError}">
+            <aura:html tag="style">
+                .cuf-content {
+                padding: 0 0rem !important;
+                }
+                .slds-p-around--medium {
+                padding: 0rem !important;
+                }
+                .slds-modal__content{
+                overflow-y:hidden !important;
+                height:unset !important;
+                max-height:unset !important;
+                }
+            </aura:html>
+
+            <header class="slds-modal__header">
+                <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeModel }" alternativeText="close"
+                    variant="bare-inverse" class="slds-modal__close" />
+                <p></p>
+                <h3 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New Schedule</h3>
+                <p></p>
+
+            </header>
+            <h3 class="slds-section-title--divider" style="font-weight: bold">Information</h3>
+            <div>
+                <lightning:layout multipleRows="true">
+                    <aura:iteration items="{!v.listOfFields}" var="field">
+                        <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                            <div>
+                                <aura:if isTrue="{!and(field.name=='buildertek__Project__c',v.parentRecordId)}">
+                                    <lightning:inputField fieldName="{!field.name}" value="{!v.parentRecordId}" />
+                                    <aura:set attribute="else">
+                                        <aura:if
+                                            isTrue="{!and(field.name=='buildertek__Project_Managers__c',v.ProjectManagerId)}">
+                                            <lightning:inputField fieldName="{!field.name}"
+                                                value="{!v.ProjectManagerId}" />
+                                            <aura:set attribute="else">
+                                                <lightning:inputField fieldName="{!field.name}" />
+                                            </aura:set>
+                                        </aura:if>
+                                    </aura:set>
+                                </aura:if>
+                            </div>
+                        </lightning:layoutItem>
+                    </aura:iteration>
+                </lightning:layout>
+                <aura:if isTrue="{!v.masterCount}">
+                    <aura:if isTrue="{!v.masterCount > 4}">
+
+                        <div style="height: 12.2rem;overflow-y: scroll">
+                            <!-- class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="height:80%" -->
+
+                            <div>
+                                <h3 class="slds-section-title--divider" style="font-weight: bold">Master Schedules</h3>
+                            </div>
+                            <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                                <thead>
+                                    <tr class="slds-text-title_caps">
+                                        <th scope="col" class="slds-truncate">
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Duration">Name</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Project Description">Description</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Project Description">Total Working Days
+                                            </div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{!v.masterId}" var="item" indexVar="index">
+                                        <tr>
+                                            <td>
+                                                <span id="{!item.Id}" onchange="{!c.saveSelectedPO}">
+                                                    <ui:inputRadio aura:id="radio" name="select" label=""
+                                                        value="{!item.selectedPurchaseOrder}" />
+                                                </span>
+                                            </td>
+                                            <td class="slds-truncate" style="">
+                                                <a href="{!'/'+item.Id}">{!item.Name}</a>
+
+
+                                            </td>
+                                            <td>
+                                                {!item.buildertek__Description__c}
+                                            </td>
+                                            <td>
+                                                {!item.buildertek__Total_Duration__c}
+                                            </td>
+                                        </tr>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+
+                        </div>
+                        <aura:set attribute="else">
+                            <div>
+                                <!-- class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="height:80%" -->
+
+                                <div>
+                                    <h3 class="slds-section-title--divider" style="font-weight: bold">Master Schedules
+                                    </h3>
+                                </div>
+                                <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                                    <thead>
+                                        <tr class="slds-text-title_caps">
+                                            <th scope="col" class="slds-truncate">
+                                            </th>
+                                            <th scope="col">
+                                                <div class="slds-truncate" title="Duration">Name</div>
+                                            </th>
+                                            <th scope="col">
+                                                <div class="slds-truncate" title="Project Description">Description</div>
+                                            </th>
+                                            <th scope="col">
+                                                <div class="slds-truncate" title="Project Description">Total Working
+                                                    Days</div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!v.masterId}" var="item" indexVar="index">
+                                            <tr>
+                                                <td>
+                                                    <span id="{!item.Id}" onchange="{!c.saveSelectedPO}">
+                                                        <ui:inputRadio aura:id="radio" name="select" label=""
+                                                            value="{!item.selectedPurchaseOrder}" />
+                                                    </span>
+                                                </td>
+                                                <td class="slds-truncate" style="">
+                                                    <a href="{!'/'+item.Id}">{!item.Name}</a>
+
+
+                                                </td>
+                                                <td>
+                                                    {!item.buildertek__Description__c}
+                                                </td>
+                                                <td>
+                                                    {!item.buildertek__Total_Duration__c}
+                                                </td>
+                                            </tr>
+                                        </aura:iteration>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </aura:set>
+                    </aura:if>
+                </aura:if>
+
+            </div>
+            <div class="modal-footer slds-modal__footer slds-size_1-of-1">
+                <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{! c.closeModel }" />
+                <lightning:button variant="neutral" type="submit" title="Save &amp; New" label="Save &amp; New"
+                    onclick="{!c.onSaveandNew}" /> <!-- onclick="{!c.onSaveandNew}"-->
+
+                <lightning:button variant="brand" type="submit" name="save" label="Save" aura:id="saveSchedule" />
+
+
+            </div>
+        </lightning:recordEditForm>
+
+    </div>
+
+    <!-- </section> -->
+</aura:component>

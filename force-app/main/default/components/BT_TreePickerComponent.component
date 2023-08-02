@@ -1,0 +1,138 @@
+<!--**********************************************************************************
+* Copyright © 2017, BuilderTek.
+* All rights reserved
+*
+* VisualForce Component: BT_Treepickercomponent
+* Created by Sagar: 06/08/2017
+*
+* - Rendering the tree as per the tree node configuration with selected tree nodes list.
+*
+* - Modifications:
+* - Sagar, 06/08/2017 – Initial Development
+***********************************************************************************-->
+<apex:component controller="BT_TreePickerController">
+	<apex:attribute name="title" type="String"  
+        description="Title to display on picker"/>
+	<apex:attribute name="treeTooltip" type="String"  
+        description="Tooltip to display when mouse hover over tree area"/>
+    <apex:attribute name="selectedItemsTooltip" type="String"  
+        description="Tooltip to display when mouse hover over selected items area"/>  
+	<apex:attribute name="treeType" type="String" 
+        description="Tree type such as Controls, Assessments, Policies, Assets etc" required="true"/>
+     <apex:attribute name="treeConfigName" type="String"
+        description="Tree Configuration Name. If null or '', assumes treeType + ' Tree'"/>
+     <apex:attribute name="treeSource" type="String"
+        description="JSON string TreeNodes that will be used as tree source."/>           
+     <apex:attribute name="isExpandTreeRoots" type="Boolean" 
+        description="Set to true if root nodes need to pre expanded."/>     
+	 <apex:attribute name="isCheckable" type="Boolean"
+        description="Are the tree nodes checkable? if yes, set checkableNodes property to limit nodes that are checkable"/>
+     <apex:attribute name="checkableTreeNodes" type="String[]" assignTo="{!checkableNodes}"
+        description="Array of object type strings indicating that nodes of these object types are checkable"/>   
+	 <apex:attribute name="treeId" type="String" 
+        description="HTML element id where the tree needs to be rendered" required="true"/>
+    <apex:attribute name="treeWidth" type="String" default="350"
+        description="Tree width in pixel"/>
+    <apex:attribute name="treeHeight" type="String" default="350"
+        description="Total layout height in pixel"/>
+    <apex:attribute name="treeSelectMode" type="String" default="2"
+        description="Set treeSelectMode to 1 if you want single-selection enabled, 2 if you want multi-selection enabled, 3 if you want hierarchical multi-selection enabled." />
+    <apex:attribute name="showSelectedNodeNamesList" type="Boolean" default="false"
+        description="If set to true, shows selected node names on right. default is false."/>
+    <apex:attribute name="jsonStringForSelectedNodes" type="String" required="true" default="[]"
+        description="JSON string for selected tree nodes."/>
+    <apex:attribute name="selectableObjectNamesForHeader" type="String"  assignTo="{!selectedRecordType}" default="Record"
+        description="Used for header value of selected record table. If more then one objects are allowed to select, prepare string with '/' as seperater."/>    
+    <apex:attribute name="isShowPortalUsersOnly" type="Boolean"
+        description="Set to true if you want to show only Portal User in User Picker"/>
+    <apex:attribute name="isTreePersist" type="Boolean" default="false"
+        description="Set to true if you want to persist the state of tree."/>
+    <apex:attribute name="treeImageStaticResource" type="String" default="BT_ResourceUtils"
+	    description="Name of static resource from where icons serverd."/>
+    <apex:attribute name="queryParameters" type="String"
+        description="It will define the query Parameters tofilter out data in tree."/>
+    
+    <style>
+	    .apTreeSelectedRecordIcon{
+	        height: 16px;
+	        width: 16px;
+	    }
+	    .apTree{
+        	display:inline-table;
+        	width:100%;
+        }
+	    .apTreeContent{
+	        border: 1px solid #d8dde6;
+	        display:table-cell;
+	        padding:5px;
+	    }
+	    .apTreeSelectedRecord{
+	        border: 1px solid #d8dde6;
+	    }
+	</style>
+	
+	<c:BT_TreeComponent treeId="{!treeId}" treeSelectMode="{!treeSelectMode}"
+    				treeType="{!treeType}" 
+    				treeConfigName="{!treeConfigName}"
+    				treeSource="{!treeSource}"
+    				isExpandTreeRoots="{!isExpandTreeRoots}"
+                    isCheckable="true"
+                    checkableTreeNodes="{!updatedCheckableNodes}"
+                    isTreePersist="{!isTreePersist}"
+                    isTwoPanLayout="false" 
+                    treeWidth="{!treeWidth}"
+                    treeHeight="{!treeHeight}"
+                    jsonStringForSelectedNodes="{!jsonStringForSelectedNodes}"
+                    treeImageStaticResource="{!treeImageStaticResource}"
+                    queryParameters="{!queryParameters}">
+    </c:BT_TreeComponent>
+    
+    <apex:outputPanel layout="block" id="treeComponentDiv" styleClass="apTreePanelGrid slds" title="{!title}">
+        <apex:outputPanel styleClass="slds-page-header" layout="block" id="treeComponentHeader" rendered="{!title != null}">
+            <div id="treeTitle_{!treeId}" class="slds-grid">
+                <apex:outputPanel layout="block" styleClass="slds-col slds-has-flexi-truncate">
+                    <apex:outputPanel layout="block" styleClass="slds-media slds-no-space slds-grow">
+                        <apex:outputPanel layout="block" styleClass="slds-media__body">
+                            <h1 class="slds-page-header__title slds-m-right--small slds-align-middle slds-truncate" title="this should match the Record Title">{!title}</h1>
+                        </apex:outputPanel>
+                    </apex:outputPanel>
+                </apex:outputPanel>
+            </div>
+        </apex:outputPanel>
+                
+        <apex:outputPanel id="treeComponentContent" title="{!treeTooltip}">
+        	<apex:inputText style="display:none;" id="hiddenFieldForSelectedTreeNodesJsonString" value="{!jsonStringForSelectedNodes}" />
+        	<script>
+        		if("{!JSENCODE(jsonStringForSelectedNodes)}" == ''){
+        			var treeTitleId = "treeTitle_{!JSENCODE(treeId)}";
+        			j$("div[id$='"+treeTitleId+"']").parent().parent().parent().find("input[id$='hiddenFieldForSelectedTreeNodesJsonString']").val('[]');
+        		}
+        	</script>
+        	<apex:outputPanel layout="block" style="" styleClass="apTree">
+            	<apex:outputPanel layout="block" styleClass="apTreeContent" style="width:{!treeWidth}px; height:{!treeHeight}px; max-width:0px;">
+            		<div id='{!treeId}' class="{!IF(treeSelectMode == '1','fancytree-radio','')}" style="overflow: auto;"/>
+            	</apex:outputPanel>
+            	<div id="treeSelectedRecords_{!treeId}" class="apTreeSelectedRecord" style="{!IF(showSelectedNodeNamesList, 'display:table-cell;', 'display:none;')}">
+                    <apex:outputPanel layout="block" style="overflow:auto; height:{!treeHeight}px;">
+	                    <table class="slds-table slds-table--bordered slds-table--cell-buffer">
+                        	<thead>
+                        		<tr class="slds-text-title--caps">
+                        			<th scope="col">
+                        				<div class="slds-truncate"><apex:outputLabel value="{!$Label.buildertek__Selected} {!selectableObjectNamesForHeader} {!$Label.buildertek__Name}"/></div>
+                        			</th>
+                        		</tr>
+                        	</thead>
+                        	<tbody id="treeSelectedRecordsTableBody">
+                        		<tr id="treeNoRecordSelectedRow">
+                        			<th scope="row">
+                        				<div class="slds-truncate"><apex:outputLabel value="{!$Label.buildertek__No} {!selectableObjectNamesForHeader} {!$Label.buildertek__Selected}"/></div>
+                        			</th>
+                        		</tr>
+                        	</tbody>
+                        </table>
+                    </apex:outputPanel>
+                </div>
+            </apex:outputPanel>
+        </apex:outputPanel>
+    </apex:outputPanel>                
+</apex:component>

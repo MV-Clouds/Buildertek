@@ -1,0 +1,13 @@
+<apex:page standardStylesheets="false" showHeader="false" sidebar="false" >
+     <apex:includeLightning />
+    <div id="lightning" />  
+    <script>
+        $Lightning.use("buildertek:DashboardCMP_App", function() {
+          $Lightning.createComponent("buildertek:DashboardCMP", 				            
+              "lightning",
+              function(cmp) {
+              }
+          );
+        });
+    </script>
+</apex:page>

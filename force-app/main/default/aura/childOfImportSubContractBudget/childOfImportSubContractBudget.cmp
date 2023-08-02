@@ -1,0 +1,27 @@
+<aura:component >
+    <aura:attribute name="Record" type="List"/>	
+    <aura:attribute name="ApiName" type="String"/>	
+    <aura:attribute name="showData" type="String"/>	
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> 
+    
+    
+    
+    
+    <aura:if isTrue="{!and(v.showData,v.ApiName != 'Id')}">
+       
+        <aura:if isTrue="{!or(v.ApiName == 'buildertek__Contract_Amount__c',v.ApiName == 'buildertek__Shipping_Handling__c',v.ApiName == 'buildertek__Change_Order_Amount__c',v.ApiName == 'buildertek__Contract_Amount_Tax_Discount_SH__c',v.ApiName == 'buildertek__Revised_Contract_Amount__c',v.ApiName == 'buildertek__Markup_Amount__c')}">
+            <lightning:formattedNumber value="{!v.showData}" currencyCode="USD" style="currency" currencyDisplayAs="code"/>
+            <aura:set attribute="else">
+                {!v.showData}
+            </aura:set>
+        </aura:if>
+        <aura:set attribute="else">
+            <aura:if isTrue="{!v.ApiName != 'Id'}">
+                <span></span>
+                <aura:set attribute="else">
+                    <td>&nbsp;</td>
+                </aura:set>
+            </aura:if>
+        </aura:set>
+    </aura:if>
+</aura:component>

@@ -1,0 +1,12 @@
+<aura:component controller="UploadImagesController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global">
+    <aura:attribute name="fileId" type="String" />
+    <aura:handler name="init" value="{!this}" action="{!c.getProductId}"/>  
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>  
+    <aura:attribute name="files" type="AttachedContentDocument[]"/>  
+    <aura:attribute name="recordId" type="String" />  
+    <aura:attribute name="acceptFileTypes" type="String" />  
+    <aura:attribute name="showFileHeader" type="Boolean" default="true" />  
+    <aura:attribute name="uploadMultiple" type="Boolean" default="false"/>      
+    <aura:attribute name="showSpinner" type="boolean" default="false"/>
+    
+</aura:component>

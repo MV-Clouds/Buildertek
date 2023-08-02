@@ -1,0 +1,25 @@
+<apex:component controller="DisplayProosalImages" access="global">
+    <apex:attribute name="ProposalId" type="String" description="ProposalId to assign" assignTo="{!recordId}"/>
+    <apex:outputPanel rendered="{!IF(isRecordId == true,true,false)}">
+        <apex:repeat value="{!proposalImagesList}" var="rec">
+            <table width="100%">
+                <tr style="border-top: 2px solid black;">
+                    <td width="40%">
+                        <br/>
+                        <apex:image url="{!rec.Image__c}" />     
+                    </td>
+                    <td width="60%">
+                        <p>
+                            <b>ITEM 1</b><br/>
+                            Remaining vinyl soffit in the breezeway that will need to be
+                            pulled out. Trusses will remain in order to hold temp roof.
+                            Trusses will be replaced in orderly fashion so as to not allow
+                            rain water into the building.
+                        </p>    
+                    </td>
+                </tr><br/><br/>
+            </table>
+        </apex:repeat>    
+    </apex:outputPanel>
+    
+</apex:component>

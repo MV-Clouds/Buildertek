@@ -1,0 +1,10 @@
+<aura:component access="global" implements="forceCommunity:availableForAllPageTypes,force:appHostable,flexipage:availableForAllPageTypes,force:hasRecordId" >
+    <lightning:card title="" class="slds-card_boundary Cardstyle">
+        <div class="slds-p-left_large slds-p-right_medium">
+            <lightning:breadcrumbs>        
+                <lightning:breadcrumb label="HOME"  onclick="{! c.navigateToHome }"/>
+                <lightning:breadcrumb label="SITE MANAGEMENT"  onclick="{! c.navigateToSiteManagement }"/>
+            </lightning:breadcrumbs>
+        </div>
+    </lightning:card>
+</aura:component>

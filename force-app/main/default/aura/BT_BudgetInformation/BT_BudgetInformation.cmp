@@ -1,0 +1,162 @@
+<aura:component controller="BT_BudgetInformation" implements="lightning:actionOverride,force:hasRecordId,flexipage:availableForRecordHome" access="global">
+    <aura:attribute name="budget" type="Object" />  
+    <aura:attribute name="record" type="Object" />
+    <aura:attribute name="recordError" type="String"/>
+    <aura:attribute name="isDisabled" type="Boolean"/>
+    <aura:attribute name="isImportBudgetLines" type="Boolean"/>
+    <aura:attribute name="isPrintView" type="Boolean"/>
+    <aura:attribute name="isEdit" type="Boolean"/>
+    <aura:attribute name="isDelete" type="Boolean"/>
+    <force:recordData aura:id="recordLoader"
+                      recordId="{!v.recordId}"
+                      fields="buildertek__Is_Budget_Locked__c"
+                      targetRecord="{!v.record}" 
+                      targetFields="{!v.budget}"
+                      targetError="{!v.recordError}"
+                      recordUpdated="{!c.doInit}"
+                      />
+    <div class="slds">
+        <div class="slds-page-header">
+            <div class="slds-media">
+                <div class="slds-media__figure">
+                    <span class="slds-icon_container slds-icon-standard-opportunity" title="Description of icon when needed">
+                        <img alt="custom Icon" height="32" src="/apexpages/slds/latest/assets/icons/custom/custom5_120.png" width="32" />
+                    </span>
+                </div>
+                <div class="slds-media__body">
+                    <h3>
+                        <span><b>Budget</b></span><br/>
+                        <span>{!v.budget.Name}</span>   
+                    </h3>
+                    <div class="slds-button-group" role="group" style="float:right;">
+                        <lightning:button label="Import Budget Lines" onclick="{! c.openImportBudgetLines }" />
+                        <lightning:button label="Print" onclick="{! c.printView }" />
+                        <lightning:button label="Edit" disabled="{!v.isDisabled}" onclick="{! c.editBudget }" />
+                        <lightning:button label="Delete" disabled="{!v.isDisabled}" onclick="{! c.openDeleteModal }" />
+                    </div>
+                </div>
+            </div><br/>
+            <div class="slds-form slds-form_stacked" role="list">
+                <div class="slds-form-element">
+                    <c:BT_FieldSet objectApiName="buildertek__Budget__c" recordId="{!v.recordId}" fieldSetName="buildertek__BudgetFields" isIcon="{!v.budget.buildertek__Is_Budget_Locked__c}"/>	
+                </div>
+            </div>
+        </div>
+        <aura:if isTrue="{!v.isImportBudgetLines}">
+            <section role="dialog" tabindex="-1" aura:id="Modalbox" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-close">
+            	<div class="slds-modal__container" style="width: 50%;"> 
+            		<!-- ###### MODAL BOX HEADER Start ######-->
+            		<div class="slds-modal__header">
+            			Import Budget Lines
+            		</div>
+            		<!--###### MODAL BOX BODY Part Start######-->
+            		<div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+            			<div class="slds-form slds-form_stacked" role="list">
+            				<div class="slds-grid slds-gutters_small">
+            					<div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+            						<div class="slds-form-element slds-is-editing">
+            						    <c:ImportBudgetLines />	
+            						</div>    
+            					</div>
+            				</div>
+            			</div>
+            		</div>
+            		<!--###### MODAL BOX FOOTER Part Start ######-->
+            		<footer class="slds-modal__footer">
+            			<lightning:button variant="neutral" 
+            							  label="Cancel"
+            							  title="Cancel"
+            							  onclick="{!c.closeImportBudgetLines}"/>
+            		</footer>
+            	</div>
+            </section>
+            <div class="slds-backdrop--open" aura:id="Modalbackdrop"></div>    
+        </aura:if>
+        <aura:if isTrue="{!v.isPrintView}">
+            <section role="dialog" tabindex="-1" aura:id="PrintModalbox" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-close">
+            	<div class="slds-modal__container" style="width: 50%;"> 
+            		<!-- ###### MODAL BOX HEADER Start ######-->
+            		<div class="slds-modal__header">
+            			Import Budget Lines
+            		</div>
+            		<!--###### MODAL BOX BODY Part Start######-->
+            		<div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+            			<div class="slds-form slds-form_stacked" role="list">
+            				<div class="slds-grid slds-gutters_small">
+            					<div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+            						<div class="slds-form-element slds-is-editing">
+            						    <c:PrintBudgetInformation recordId="{!v.recordId}"/>	
+            						</div>    
+            					</div>
+            				</div>
+            			</div>
+            		</div>
+            		<!--###### MODAL BOX FOOTER Part Start ######-->
+            		<footer class="slds-modal__footer">
+            			<lightning:button variant="neutral" 
+            							  label="Cancel"
+            							  title="Cancel"
+            							  onclick="{!c.closePrintView}"/>
+            		</footer>
+            	</div>
+            </section>
+            <div class="slds-backdrop--open" aura:id="PrintModalbackdrop"></div>    
+        </aura:if>
+        <aura:if isTrue="{!v.isEdit}">
+            <section role="dialog" tabindex="-1" aura:id="EditModalbox" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-close">
+            	<div class="slds-modal__container" style="width: 100%;"> 
+            		<!-- ###### MODAL BOX HEADER Start ######-->
+            		<div class="slds-modal__header">
+            			Import Budget Lines
+            		</div>
+            		<!--###### MODAL BOX BODY Part Start######-->
+            		<div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+            			<div class="slds-form slds-form_stacked" role="list">
+            				<div class="slds-grid slds-gutters_small">
+            					<div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+            						<div class="slds-form-element slds-is-editing">
+            						    <c:BT_BudgetEdit recordId="{!v.recordId}"/>	
+            						</div>    
+            					</div>
+            				</div>
+            			</div>
+            		</div>
+            		<!--###### MODAL BOX FOOTER Part Start ######-->
+            		<footer class="slds-modal__footer"> 
+            			<lightning:button variant="neutral" 
+            							  label="Cancel"
+            							  title="Cancel"
+            							  onclick="{!c.closeEditModal}"/>
+            		</footer>
+            	</div>
+            </section>
+            <div class="slds-backdrop--open" aura:id="EditModalbackdrop"></div>    
+        </aura:if>
+        <aura:if isTrue="{!v.isDelete}">
+            <section role="dialog" tabindex="-1" aura:id="DeleteModalbox" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-close">
+            	<div class="slds-modal__container" style="width: 50%;"> 
+            		<!-- ###### MODAL BOX HEADER Start ######-->
+            		<div class="slds-modal__header" style="background: rgb(243, 242, 242);">
+            			Delete Budget
+            		</div>
+            		<!--###### MODAL BOX BODY Part Start######-->
+            		<div class="slds-modal__content slds-p-around_large" id="modal-content-id-1">
+            			<center><h3>Are You Sure You Want to Delete?</h3></center>	
+            		</div>
+            		<!--###### MODAL BOX FOOTER Part Start ######-->
+            		<footer class="slds-modal__footer"> 
+            			<lightning:button variant="neutral" 
+            							  label="Cancel"
+            							  title="Cancel"
+            							  onclick="{!c.closeDeleteModal}"/>
+            			<lightning:button variant="brand" 
+            							  label="Delete"
+            							  title="Delete"
+            							  onclick="{!c.deleteBudget}"/>				  
+            		</footer>
+            	</div>
+            </section>
+            <div class="slds-backdrop--open" aura:id="DeleteModalbackdrop"></div>    
+        </aura:if>
+    </div>
+</aura:component>

@@ -1,0 +1,19 @@
+.THIS .userTitle{
+    padding-left: 1em !important;
+    font-weight:bold;
+}
+
+.THIS .srNoTitle{
+    width: 4rem !important;
+    vertical-align: middle;
+    font-weight: bold;
+}
+
+.THIS .newSR{
+   background-color: #f7f9fb;
+   cursor:move;
+}
+
+.THIS .inProgressSR{
+   background-color: #f7f9fb;
+}

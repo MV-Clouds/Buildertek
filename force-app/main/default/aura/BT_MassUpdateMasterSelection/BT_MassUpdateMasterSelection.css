@@ -1,0 +1,30 @@
+.THIS .slds-form-element-label {
+   
+      display: none !important;
+}
+.THIS .slds-form-element__label {
+      display : none !important;
+}
+.THIS .manisha tr  {
+      /*height : 1px !important;*/
+      padding: 0px !important;
+    
+}
+
+.THIS input[name*="buildertek__UOM_PL__c"] {
+
+      pointer-events: none;
+      background-color: gainsboro;
+  }
+
+
+    /* padding: none !important;
+     *  padding-bottom: none !important;
+       height: none !important;
+    width: none !important;
+    display: unset !important;
+}
+.THIS .slds-form{
+   display: unset !important; 
+    
+}*/

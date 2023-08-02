@@ -1,0 +1,407 @@
+<!-- This Component Called From OptionUpgrade.cmp -->
+<aura:component controller="OptionUpgrade" access="global">
+
+    <lightning:workspaceAPI aura:id="workspace"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="optionWrapper" type="Object" />
+    <aura:attribute name="productWrapper" type="Object" />
+    <aura:attribute name="optionValue" type="Object" />
+    <aura:attribute name="productValue" type="Object" />
+    <aura:attribute name="isModalOpen" type="Boolean" default="false"/>
+    <aura:attribute name="nullPricebook" type="Boolean" default="false"/>
+    <aura:attribute name="nullProduct" type="Boolean" default="false" />
+    <aura:attribute name="Spinner" type="Boolean" default="false"/>
+    <aura:attribute name="totalPage" type="Integer" />
+    <aura:attribute name="pageNumber" type="Integer" default="1" />
+    <aura:attribute name="disableBtn" type="Boolean" default="false" />
+    <aura:attribute name="ImageModal" type="Boolean" default="false" />
+    <aura:attribute name="ImageIndex" type="Integer" default="0" />
+    <aura:attribute name="ImageList" type="List" />
+    <aura:attribute name="priceBookFilter" type="Boolean" default="false" />
+
+    <aura:attribute name="priceBookList" type="List" />
+    <aura:attribute name="selectedPriceBook" type="String" />
+
+    <aura:attribute name="oldSearchFamilyFilter" type="String" default="" />
+    <aura:attribute name="searchFamilyFilter" type="String" default="" />
+    <aura:handler name="change" value="{!v.searchFamilyFilter}" action="{!c.doSearch}" />
+    <aura:attribute name="ProductFamilyList" type="List" />
+    <aura:attribute name="displayFamilyList" type="Boolean" default="false" />
+
+    <aura:attribute name="oldSearchCategoryFilter" type="String" default="" />
+    <aura:attribute name="searchCategoryFilter" type="String" default="" />
+    <aura:handler name="change" value="{!v.searchCategoryFilter}" action="{!c.doSearch}" />
+    <aura:attribute name="ProductCategoryList" type="List" />
+    <aura:attribute name="displayCategoryList" type="Boolean" default="false" />
+
+    <aura:attribute name="oldSearchTypeFilter" type="String" default="" />
+    <aura:attribute name="searchTypeFilter" type="String" default="" />
+    <aura:handler name="change" value="{!v.searchTypeFilter}" action="{!c.doSearch}" />
+    <aura:attribute name="ProductTypeList" type="List" />
+    <aura:attribute name="displayTypeList" type="Boolean" default="false" />
+
+    <aura:attribute name="oldSearchNameFilter" type="String" default="" />
+    <aura:attribute name="searchNameFilter" type="String" default="" />
+    <aura:handler name="change" value="{!v.searchNameFilter}" action="{!c.doSearch}" />
+    <aura:attribute name="ProductNameList" type="List" />
+    <aura:attribute name="displayNameList" type="Boolean" default="false" />
+
+    <aura:attribute name="oldSearchManufacturerFilter" type="String" default="" />
+    <aura:attribute name="searchManufacturerFilter" type="String" default="" />
+    <aura:handler name="change" value="{!v.searchManufacturerFilter}" action="{!c.doSearch}" />
+    <aura:attribute name="ManufacturerList" type="List" />
+    <aura:attribute name="displayManufacturerList" type="Boolean" default="false" />
+
+
+
+    <div class="mainDiv" onclick="{!c.closeSearchOption}">
+
+        <aura:if isTrue="{!v.Spinner}">
+            <div aura:id="spinnerId" class="slds-spinner_container">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </aura:if>
+
+        <lightning:layout multipleRows="true" class="searchbarList">
+
+            <lightning:layoutItem padding="around-small" class="priceDiv">
+                <lightning:select label="Select Pricebook:" value="{!v.selectedPriceBook}" onchange="{!c.changePriceBook}">
+                    <aura:iteration items="{!v.priceBookList}" var="option">
+                        <option text="{!option.key}" value="{!option.value}" selected="{!(option.value == v.selectedPriceBook)}"/>
+                    </aura:iteration>
+                </lightning:select>
+            </lightning:layoutItem>
+
+            <lightning:layoutItem padding="around-small" class="slds15">
+                <lightning:input autocomplete="off" type="search" placeholder="Search Product Family" variant="label-hidden" value="{!v.searchFamilyFilter}" onclick="{!c.searchProductFamily}" onkeyup="{!c.searchProductFamily}" />
+                <aura:if isTrue="{!v.displayFamilyList}" >
+                    <div id="listbox-id-11" class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid searchResult" role="listbox">
+                        <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                            <aura:iteration items="{!v.ProductFamilyList}" var="result">
+                                <li role="presentation" class="slds-listbox__item" data-value="{!result}" onclick="{!c.clickHandler0}">
+                                    <div class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small" role="option">
+                                        <span class="slds-media__body">
+                                            <span class="slds-truncate" title="All Opportunities">
+                                                <span>{!result}</span>
+                                            </span>
+                                        </span>
+                                    </div>
+                                </li>
+                            </aura:iteration>
+                            <aura:if isTrue="{!empty(v.ProductFamilyList)}">
+                                <span>
+                                    <p class="blank-lst">
+                                        There Are No Product Family With This Name
+                                    </p>
+                                </span>
+                            </aura:if>
+                        </ul>
+                    </div>
+                </aura:if>
+            </lightning:layoutItem>
+
+            <lightning:layoutItem padding="around-small" class="slds15">
+                <lightning:input autocomplete="off" type="search" placeholder="Search Product Category" variant="label-hidden" value="{!v.searchCategoryFilter}" onclick="{!c.searchProductCategory}" onkeyup="{!c.searchProductCategory}" />
+                <aura:if isTrue="{!v.displayCategoryList}" >
+                    <div id="listbox-id-11" class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid searchResult" role="listbox">
+                        <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                            <aura:iteration items="{!v.ProductCategoryList}" var="result">
+                                <li role="presentation" class="slds-listbox__item" data-value="{!result}" onclick="{!c.clickHandler1}">
+                                    <div class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small" role="option">
+                                        <span class="slds-media__body">
+                                            <span class="slds-truncate" title="All Opportunities">
+                                                <span>{!result}</span>
+                                            </span>
+                                        </span>
+                                    </div>
+                                </li>
+                            </aura:iteration>
+                            <aura:if isTrue="{!empty(v.ProductCategoryList)}">
+                                <span>
+                                    <p class="blank-lst">
+                                        There Are No Product Category With This Name
+                                    </p>
+                                </span>
+                            </aura:if>
+                        </ul>
+                    </div>
+                </aura:if>
+            </lightning:layoutItem>
+
+            <lightning:layoutItem padding="around-small" class="slds15">
+                <lightning:input autocomplete="off" type="search" placeholder="Search Product Type" variant="label-hidden" value="{!v.searchTypeFilter}" onclick="{!c.searchProductType}" onkeyup="{!c.searchProductType}" />
+                <aura:if isTrue="{!v.displayTypeList}" >
+                    <div id="listbox-id-11" class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid searchResult" role="listbox">
+                        <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                            <aura:iteration items="{!v.ProductTypeList}" var="result">
+                                <li role="presentation" class="slds-listbox__item" data-value="{!result}" onclick="{!c.clickHandler2}">
+                                    <div class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small" role="option">
+                                        <span class="slds-media__body">
+                                            <span class="slds-truncate" title="All Opportunities">
+                                                <span>{!result}</span>
+                                            </span>
+                                        </span>
+                                    </div>
+                                </li>
+                            </aura:iteration>
+                            <aura:if isTrue="{!empty(v.ProductTypeList)}">
+                                <span>
+                                    <p class="blank-lst">
+                                        There Are No Product Type With This Name
+                                    </p>
+                                </span>
+                            </aura:if>
+                        </ul>
+                    </div>
+                </aura:if>
+            </lightning:layoutItem>
+
+            <lightning:layoutItem padding="around-small" class="slds15">
+                <lightning:input autocomplete="off" type="search" placeholder="Search Product Name" variant="label-hidden" value="{!v.searchNameFilter}" onclick="{!c.searchProductName}" onkeyup="{!c.searchProductName}" />
+                <aura:if isTrue="{!v.displayNameList}" >
+                    <div id="listbox-id-11" class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid searchResult" role="listbox">
+                        <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                            <aura:iteration items="{!v.ProductNameList}" var="result">
+                                <li role="presentation" class="slds-listbox__item" data-value="{!result}" onclick="{!c.clickHandler3}">
+                                    <div class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small" role="option">
+                                        <span class="slds-media__body">
+                                            <span class="slds-truncate" title="All Opportunities">
+                                                <span>{!result}</span>
+                                            </span>
+                                        </span>
+                                    </div>
+                                </li>
+                            </aura:iteration>
+                            <aura:if isTrue="{!empty(v.ProductNameList)}">
+                                <span>
+                                    <p class="blank-lst">
+                                        There Are No Product With This Name
+                                    </p>
+                                </span>
+                            </aura:if>
+                        </ul>
+                    </div>
+                </aura:if>
+            </lightning:layoutItem>
+
+            <lightning:layoutItem padding="around-small" class="slds15">
+                <lightning:input autocomplete="off" type="search" placeholder="Search Manufacturer" variant="label-hidden" value="{!v.searchManufacturerFilter}" onclick="{!c.searchManufacturer}" onkeyup="{!c.searchManufacturer}" />
+                <aura:if isTrue="{!v.displayManufacturerList}" >
+                    <div id="listbox-id-11" class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid searchResult" role="listbox">
+                        <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                            <aura:iteration items="{!v.ManufacturerList}" var="result">
+                                <li role="presentation" class="slds-listbox__item" data-value="{!result}" onclick="{!c.clickHandler4}">
+                                    <div class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small" role="option">
+                                        <span class="slds-media__body">
+                                            <span class="slds-truncate" title="All Opportunities">
+                                                <span>{!result}</span>
+                                            </span>
+                                        </span>
+                                    </div>
+                                </li>
+                            </aura:iteration>
+                            <aura:if isTrue="{!empty(v.ManufacturerList)}">
+                                <span>
+                                    <p class="blank-lst">
+                                        There Are No Manufacturer With This Name
+                                    </p>
+                                </span>
+                            </aura:if>
+                        </ul>
+                    </div>
+                </aura:if>
+            </lightning:layoutItem>
+
+        </lightning:layout>
+
+        <aura:if isTrue="{!v.isModalOpen}">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeModel }" alternativeText="close" variant="bare-inverse" class="slds-modal__close"/>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Upgrade Price</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+
+                        <aura:if isTrue="{!v.nullPricebook}">
+                            There Are No PriceBook In This Product
+                            <aura:set attribute="else">
+
+                                <div>
+                                    <div class="optionTitle">
+                                        Original Option
+                                    </div>
+                                    <table class="slds-table slds-table_bordered slds-table_fixed-layout " role="grid">
+                                        <thead>
+                                            <tr class="slds-text-title_caps">
+                                                <th> Product Name </th>
+                                                <th> Manufacturer </th>
+                                                <th> Sales Price </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class = "slds-scrollable">
+                                            <tr>
+                                                <td>
+                                                    <ui:outputURL value="{!'/one/one.app?#/sObject/'+ v.optionValue.buildertek__Product__c + '/view'}" target="_blank" label="{!v.optionValue.buildertek__Product__r.Name}" />
+                                                </td>
+                                                <td>
+                                                    <ui:outputURL value="{!'/one/one.app?#/sObject/'+ v.optionValue.buildertek__Manufacturer__c + '/view'}" target="_blank" label="{!v.optionValue.buildertek__Manufacturer__r.Name}" />
+                                                </td>
+                                                <td>
+                                                    <lightning:formattedNumber value="{!v.optionValue.buildertek__Cost__c}" style="currency" currencyCode="{!v.orgCurr}" currencyDisplayAs="code"/>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div>
+                                    <div class="optionTitle" style="padding-top: 30px;">
+                                        New Option
+                                    </div>
+                                    <table class="slds-table slds-table_bordered slds-table_fixed-layout " role="grid">
+                                        <thead>
+                                            <tr class="slds-text-title_caps">
+                                                <th> Product Name </th>
+                                                <th> Manufacturer </th>
+                                                <th> Upgrade Cost </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class = "slds-scrollable">
+                                            <tr>
+                                                <td>
+                                                    <ui:outputURL value="{!'/one/one.app?#/sObject/'+ v.productValue.Id + '/view'}" target="_blank" label="{!v.productValue.Name}" />
+                                                </td>
+                                                <td>
+                                                    <ui:outputURL value="{!'/one/one.app?#/sObject/'+ v.productValue.buildertek__Manufacturer__c + '/view'}" target="_blank" label="{!v.productValue.buildertek__Manufacturer__r.Name}" />
+                                                </td>
+                                                <td>
+                                                    <lightning:formattedNumber value="{!v.optionValue.buildertek__Upgrade_Costs__c}" style="currency" currencyCode="{!v.orgCurr}" currencyDisplayAs="code"/>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </aura:set>
+                        </aura:if>
+
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning:button variant="neutral" label="Cancel" onclick="{!c.closeModel}"/>
+                        <lightning:button variant="brand" label="Upgrade" onclick="{!c.onUpgrade}"/>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </aura:if>
+
+
+        <div class="slds-modal__content slds-p-around_xx-small contentDiv" onclick="{!c.closeSearchOption}">
+            <div class="slds slds-scope">
+
+                <table class="slds-table slds-table_bordered slds-table_fixed-layout " role="grid">
+                    <thead>
+                        <tr class="slds-text-title_caps">
+                            <th> Product Image </th>
+                            <th> Product Family </th>
+                            <th> Category </th>
+                            <th> Product Type </th>
+                            <th> Product Name </th>
+                            <th> Manufacturer </th>
+                            <th> </th>
+                        </tr>
+                    </thead>
+                    <tbody class = "slds-scrollable mainTableBody">
+                        <aura:iteration items="{!v.productWrapper}" var="ProductWrap" indexVar="index">
+
+                            <tr>
+                                <td class="prodImg">
+                                    <lightning:carousel disableAutoRefresh="false" disableAutoScroll="true">
+                                        <aura:iteration items="{!ProductWrap.contentDocsList}" var="contentDocs" indexVar="inx">
+                                            <lightning:carouselImage src="{!'https://btservice360-dev-ed.lightning.force.com/sfc/servlet.shepherd/document/download/'+contentDocs.ContentDocumentId}" onclick="{!c.onImageClick}" id="{!index+'-'+inx}">
+                                            </lightning:carouselImage>
+                                        </aura:iteration>
+                                        <aura:if isTrue="{!empty(ProductWrap.contentDocsList)}">
+                                            <div class="noImageDiv">
+                                                <img src="{!$Resource.NoImageFound}" />
+                                                No Image Found
+                                            </div>
+                                        </aura:if>
+                                    </lightning:carousel>
+                                </td>
+                                <td> {!ProductWrap.product.Family} </td>
+                                <td>
+                                    <ui:outputURL value="{!'/one/one.app?#/sObject/'+ ProductWrap.product.buildertek__Category__c + '/view'}" target="_blank" label="{!ProductWrap.product.buildertek__Category__r.Name}" />
+                                </td>
+                                <td>
+                                    <ui:outputURL value="{!'/one/one.app?#/sObject/'+ ProductWrap.product.buildertek__Product_Type__c + '/view'}" target="_blank" label="{!ProductWrap.product.buildertek__Product_Type__r.Name}" />
+                                </td>
+                                <td>
+                                    <ui:outputURL value="{!'/one/one.app?#/sObject/'+ ProductWrap.product.Id + '/view'}" target="_blank" label="{!ProductWrap.product.Name}" />
+                                </td>
+                                <td>
+                                    <ui:outputURL value="{!'/one/one.app?#/sObject/'+ ProductWrap.product.buildertek__Manufacturer__c + '/view'}" target="_blank" label="{!ProductWrap.product.buildertek__Manufacturer__r.Name}" />
+                                </td>
+                                <td>
+                                    <lightning:button variant="brand" label="Upgrade" onclick="{!c.handleClick}" value="{!index}" />
+                                </td>
+                            </tr>
+
+                        </aura:iteration>
+
+                    </tbody>
+                </table>
+
+                <aura:if isTrue="{!v.nullProduct}">
+                    <div class="blankProd">
+                        There are no products available with this category.
+                    </div>
+                </aura:if>
+
+            </div>
+        </div>
+
+        <aura:if isTrue="{!v.ImageModal}">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open" data-id="thisDiv1" onclick="{!c.closeImageModal}">
+                <div class="slds-modal__container" data-id="thisDiv2">
+                    <div id="imgMainDiv" style="position: relative;" data-id="thisDiv3">
+
+                        <aura:if isTrue="{!!(v.ImageIndex == 0)}">
+                            <lightning:buttonIcon aura:id="btn1" iconName="utility:back" variant="border-inverse" class="leftBtn" alternativeText="Previous" onclick="{!c.previousImage}" />
+                        </aura:if>
+                        <lightning:buttonIcon iconName="utility:close" onclick="{!c.closeImage}" alternativeText="close" variant="bare-inverse" class="slds-modal__close closeIcon" size="large"/>
+
+                        <div style="display: flex; justify-content: center;">
+                            <aura:iteration items="{!v.ImageList}" var="Image" indexVar="index">
+                                <aura:if isTrue="{!(index == v.ImageIndex)}">
+                                    <img id="imgDiv" src="{!'https://btservice360-dev-ed.lightning.force.com/sfc/servlet.shepherd/document/download/'+Image.ContentDocumentId}" data-id="thisDiv" style="width: 50vh;" />
+                                </aura:if>
+                            </aura:iteration>
+                        </div>
+
+                        <aura:if isTrue="{!!(v.ImageIndex == v.ImageList.length-1)}">
+                            <lightning:buttonIcon aura:id="btn2" iconName="utility:back" variant="border-inverse" class="rightBtn" alternativeText="Next" onclick="{!c.nextImage}" />
+                        </aura:if>
+
+                    </div>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </aura:if>
+
+        <aura:if isTrue="{!!v.nullProduct}">
+            <div class="btnDiv">
+                <lightning:button variant="brand" label="Previous" onclick="{!c.onPrevious}" disabled="{!or(v.pageNumber == 1, v.disableBtn)}" />
+                <lightning:button variant="brand" label="Next" onclick="{!c.onNext}" disabled="{!or(v.totalPage == v.pageNumber, v.disableBtn)}" />
+            </div>
+        </aura:if>
+
+    </div>
+
+</aura:component>

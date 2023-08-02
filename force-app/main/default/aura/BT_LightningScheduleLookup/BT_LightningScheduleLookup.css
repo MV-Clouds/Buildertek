@@ -1,0 +1,17 @@
+.THIS .leftPaddingClass {
+    padding-left: 2rem;
+    height: 30px !important;
+}
+.THIS .pillSize{
+ width:100%;
+ padding-top: 1%;
+ padding-bottom: 1%;
+}
+/*.THIS .pillSize{
+ width:88%;
+   height:100%;
+}
+
+.THIS .slds-pill-container{
+    min-width : 200px !important;
+}*/

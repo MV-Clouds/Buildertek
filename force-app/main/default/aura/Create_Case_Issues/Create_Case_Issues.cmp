@@ -1,0 +1,18 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+    
+     <lightning:layout horizontalAlign="spread">
+            <lightning:layoutItem flexibility="auto" padding="around-small"
+                                  size="12"
+                                  largeDeviceSize="12"
+                                  mediumDeviceSize="12"
+                                  smallDeviceSize="12">
+                <div class="centerDisplay">
+                    <lightning:button variant="brand" label="Log Issues"
+                                      onclick="{!c.navigateToCmp}" title="Primary action"
+                                      class="slds-m-center_x-small">
+                    </lightning:button>
+                </div>
+            </lightning:layoutItem>
+        </lightning:layout>
+	
+</aura:component>

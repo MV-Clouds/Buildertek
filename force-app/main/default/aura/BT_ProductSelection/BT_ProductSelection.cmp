@@ -1,0 +1,63 @@
+<aura:component controller="BT_ProductsAdderController">
+    <aura:attribute name="_pricebook2Id" type="String" required="true" />
+    <aura:attribute name="_recordId" type="String" />
+
+    <aura:attribute name="selectedProductMap" type="Object" />
+    <aura:attribute name="_opportunity" type="Opportunity" />
+
+    <aura:attribute name="productCandidates" type="Object[]" />
+    <aura:attribute name="_filter" type="Object" />
+    <aura:attribute name="showFilterBar" type="Boolean" default="false" />
+    <aura:attribute name="orderBy" type="String" />
+    <aura:attribute name="orderString" type="String" />
+    <aura:attribute name="selectedProductFamily" type="String" default="" />
+    <aura:attribute name="isSpinner" type="boolean" default="false" />
+
+    <aura:handler name="change" action="{!c.getProductByProductFamily}" value="{!v.selectedProductFamily}" />
+    <aura:handler name="change" action="{!c.getProductCandidates}" value="{!v._pricebook2Id}" />
+    <aura:handler name="change" action="{!c.applyFilter}" value="{!v._filter}" />
+    <aura:handler name="change" action="{!c.toggleFilterBar}" value="{!v.showFilterBar}" />
+
+    <aura:registerEvent name="handleProducts" type="c:BT_ProductEvent" />
+    <aura:handler name="firePricebookCheckEvent" event="c:BT_PricebookCheckEvent" action="{!c.getProductCandidates}" />
+
+    <aura:handler name="init" action="{!c.getProductCandidates}" value="{!this}" />
+
+    <aura:handler name="ProductSelectionEvent" event="c:ProductSelectionEvent" action="{!c.parentComponentEvent}" />
+    <!--aura:registerEvent name="ProductAdderEvent" type="c:ProductAdderEvent" />-->
+    <lightning:overlayLibrary aura:id="overlayLib" />
+    <div aura:id="pricebookSelection" class="slds-hide">
+        <!-- go to pricebook selection-->
+        <c:BT_PriceBookSelection _opportunity="{!v._opportunity}" />
+    </div>
+    <div aura:id="productSelection" class="slds-hide">
+
+        <div class="slds-hide" aura:id="productFilterBar">
+
+            <c:BT_ProductSelectionFilter _filter="{!v._filter}" showFilterBar="{!v.showFilterBar}" />
+        </div>
+        <!-- go to products selection-->
+        <c:BT_ProductSelectionTable selectedProductMap="{!v.selectedProductMap}"
+            productCandidates="{!v.productCandidates}" showFilterBar="{!v.showFilterBar}" orderBy="{!v.orderBy}"
+            selectedProductFamily="{!v.selectedProductFamily}" />
+    </div>
+    <div class="slds-float_right">
+        <button class="slds-m-left_small slds-button slds-button_neutral" aura:id="closebutton" onclick="{!c.close}"
+            name="Cancel">Cancel</button>
+        <button class="slds-m-left_small slds-button slds-button_brand slds-hide" aura:id="backbutton"
+            onclick="{!c.cancel}" name="Back">Back</button>
+    </div>
+    <aura:If isTrue="{!v.isSpinner}">
+        <div class="slds-spinner_container">
+            <div class="slds-spinner slds-spinner--medium  slds-spinner_brand" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                 <div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+            </div>
+        </div>
+        <!--<lightning:spinner variant="brand" size="large" />-->
+    </aura:If>
+</aura:component>

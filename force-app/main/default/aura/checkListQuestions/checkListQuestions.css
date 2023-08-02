@@ -1,0 +1,21 @@
+.THIS .Borders{
+    padding:10px;border:1px solid lightgray;border-radius:5px;margin-top:10px;background:white;
+}
+.THIS .HeaderBorders{
+    padding:10px;border:1px solid lightgray;border-radius:5px;margin-top:10px;background:white;text-align:center;background-color: gray; color: white
+}
+.THIS .slds-rich-text-area__content{
+
+   /*padding-top: 5rem !important;*/
+}
+/*.THIS .modal-header.slds-modal__header.empty.slds-modal__header--empty button{
+    display : none;
+}
+.THIS .custom-loading-text {
+    transform: rotate(-90deg);
+    position: absolute;
+    top: -0.5rem;
+    left: 1rem;
+    white-space: nowrap;
+    font-size: 20px;
+}*/

@@ -1,0 +1,115 @@
+/*
+	@ PURPOSE : STYLES THE LIGHTNING COMPONENT --> IssuesCreatedAndUpdate.xml
+	@ Name    : IssuesCreateAndUpdate.css
+*/
+.THIS .issues_reported {
+    width: 100%;   
+}
+
+.THIS .issues_reported .width23 {
+    width: 23% !important;   
+}
+
+.THIS .issues_reported .width4 {
+    width: 4% !important;   
+}
+.THIS .mr5 {
+   margin-right: 5px;    
+}
+
+.THIS .mb5 {
+   margin-bottom: 5px;    
+}
+
+.THIS .report_heading {
+	text-align: center;
+	font-weight: bold;
+    padding: 5px;
+}
+
+.THIS .css_table {
+	overflow-x: scroll !important;
+	padding-bottom: 100px;
+    height: 320px !important;
+}
+
+.THIS .igu_table {
+    overflow-x: scroll !important;
+    padding-bottom: 100px;
+    height: 320px !important;
+}
+
+.THIS .parts_table {
+    overflow-x: scroll !important;
+    padding-bottom: 100px;
+    height: 320px !important;
+}
+
+.THIS .cssTableCol {
+	width : 170px;
+}
+
+.THIS .iguTableCol {
+	width : 170px;
+}
+
+.THIS .partTableCol {
+	width : 170px;
+}
+
+.THIS .slds-tabs_default__content {
+    padding : 0 !important;
+}
+
+.THIS .slds-card__header {
+    padding : 0 !important;
+}
+
+.THIS .slds-grid { 
+    padding-bottom: 10px !important; 
+}
+
+.THIS .slds-form-element__label {
+    padding-top : 0 !important;
+    padding-bottom : 0 !important;
+}
+
+.THIS .fit_content.slds-dropdown { max-width : fit-content !important; }
+
+.THIS .slds-dropdown_fluid { width: auto !important; }
+
+.THIS .searchResult.slds-dropdown {
+    width: 100% !important;
+}
+
+.THIS .issue_email{
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    -webkit-hyphens: auto;
+    -ms-hyphens: auto;
+    hyphens: auto;
+}
+
+.THIS .req_del_date{
+    width: 73% !important;
+}
+
+.THIS th{
+    background: #e4e4e2 !important;
+    position: sticky;
+    top: 0;
+    z-index: 1;  
+}
+.THIS .css_table table td pre {
+      white-space: pre-wrap;       /* css-3 */
+      white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+      white-space: -pre-wrap;      /* Opera 4-6 */
+      white-space: -o-pre-wrap;    /* Opera 7 */
+      word-wrap: break-word;       /* Internet Explorer 5.5+ */
+      width: 200px;
+      font-size: 1.1em;
+    }
+.THIS .slds-form-element__label1 {
+      display : none;
+      visibility : hidden;
+}

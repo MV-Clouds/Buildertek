@@ -1,0 +1,16 @@
+.THIS {
+}
+
+.THIS .page-right {
+    background: #fff;
+    height:100%;
+}
+
+.THIS .page-left {
+    background: rgb(243, 242, 242);
+    
+}
+
+.THIS .slds-accordion__section .slds-button:focus { 
+	text-decoration: none !important;
+}

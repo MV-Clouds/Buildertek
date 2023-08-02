@@ -1,0 +1,15 @@
+<apex:page standardController="Pricing_Request_Line__c" showHeader="false" sidebar="false">
+  <apex:includeLightning />
+    <div  id="compContainer" />
+  <script>
+     $Lightning.use("c:CreatePOFromPRLApp", function() {
+         $Lightning.createComponent("c:CreatePOFromPRL",{ "recordId" :"{!$CurrentPage.parameters.id}" },
+             "CreatePOFromPRL",
+             function(cmp) {
+                component.set("v.recordId","{!$CurrentPage.parameters.id}");
+                console.log("c:VFPageApp loaded successfully in VF page");
+             }
+         );
+     });
+  </script>
+</apex:page>

@@ -1,0 +1,41 @@
+.THIS.SetWidth {
+    width : 200px;
+}
+
+.THIS.centerDiv {
+    vertical-align : middle;
+}
+
+.THIS .fc-center {
+    font-family:gotham-medium;
+    font-size:15px;
+}
+
+.THIS .fc-state-default{
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#F06C5C), to(#F06C5C))!important;
+}
+
+.THIS .fc-button:active{
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#F06C5C), to(#F06C5C))!important;
+    opacity: 1 !important; 
+}
+
+.THIS .fc-state-hover {
+    background-color:#F06C5C !important;
+}
+
+.THIS .fc-more {
+    color: #F06C5C !important;
+}
+
+.THIS .fc-button {
+    padding: 0;
+    border: none;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    height: 25px;
+    width: 26px;
+    border-radius: 50%;
+    color: white;
+}

@@ -1,0 +1,62 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId" access="global" Controller="QuoteDAO">
+    <!--<ltng:require styles="{!join(',',$Resource.BTDrag + '/BT-Drag.min.css')}"
+                  scripts="{!join(',',$Resource.Jquery + '/jquery/lightning/js/jquery-3.2.1.min.js',$Resource.BTDrag+ '/BT-Drag.min.js')}"
+                  afterScriptsLoaded="{!c.initialize}"/>-->
+    
+    
+    <aura:attribute name="groupFilter" type="string"/>
+    <aura:attribute name="deleteRecords" type="list"/>
+    <aura:attribute name="recordId" type="string"/>
+    <aura:attribute name="refreshGridAction" type="Aura.Action" default="{!c.refreshQuoteItemList}"/>
+    <aura:attribute name="newQi" type="Quote_Item__c" default="{ 'sobjectType': 'Quote_Item__c' }" access="public"/>
+    <aura:attribute name="newQuote" type="Quote_Item__c" default="{ 'sobjectType':'Quote_Item__c',
+                                                                              'buildertek__Quantity__c':1}" access="global"/>
+    <aura:attribute name="selectedLookUpRecord" type="sObject" default="{}"/>
+    <aura:attribute name="unitPrice" type="decimal"/>
+    <aura:handler name="onSaveSuccess" event="force:recordSaveSuccess" action="{!c.handleSaveSuccess}"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler name="render" value="{!this}" action="{!c.onRender}"/>
+    <aura:handler name="editQuoteItemEvent" event="c:BT_Edit_Quote_Item_Component_Event" action="{!c.eventAction}"/>
+    <aura:handler event="force:showToast" action="{!c.handleSaveSuccess}" /> 
+    <aura:handler name="destroy" value="{!this}" action="{!c.handleDestroy}"/>
+    <aura:handler name="cmpEvent" event="c:BT_Edit_Quote_Item_Component_Event" action="{!c.getsetparams}"/>
+    <!-- <aura:handler event="aura:locationChange" action="{!c.handlelocationchange}" /> -->
+    
+    <aura:attribute name="selectedRows" type="List"/>
+    <aura:attribute name="selectedCol" type="list" />
+    <aura:registerEvent name="oSelectedCheckboxValue" type="c:SelectedCheckboxValue"/>
+    <aura:handler name="change" value="{!v.selectedRows}" action="{!c.handleValueChange }"/>
+    <aura:attribute name="groupListSize" type="Integer"  default="0" description="Section list size"/>
+    <aura:method name="refreshData" action="{!c.doInit}" access="public"/>
+    <c:BT_Spinner />
+    
+    <div style="margin-top: -35px;">
+        <div style="float:right;margin-top: 25px;margin-right: 10px;">
+            <lightning:buttonGroup >
+                <!--<lightning:button variant="brand" label="Add New Product" onclick="{!c.newLineItem}"/>-->
+                <lightning:button iconName="utility:add" iconPosition="left" onclick="{!c.newGroup}" label="Add Group" class="sldsButtonGroup"/>
+                <lightning:button label="Add Product" onclick="{!c.addProduct}" class="sldsButtonGroup"/>
+                <lightning:button label="Select RFQ's" onclick="{!c.addRFQ}" class="sldsButtonGroup"/>
+                <!--  <lightning:button label="Save" onclick="{!c.saveQuoteItems}"/> -->
+                <lightning:button label="Delete" onclick="{!c.deleteSelectedItem}" class="sldsButtonGroup"/>
+                <button onclick="{!c.refreshQuoteItemList}" class="slds-button slds-button--icon-border" style="background-color:grey;">
+                    <span class="slds-button__icon">
+                        <lightning:icon iconName="utility:refresh" size="x-small" />
+                    </span> 
+                </button>
+            </lightning:buttonGroup>
+        </div>
+        <br/>
+        
+        <div aura:id="quoteItem"/>
+        <div class="av slds-box" id="{!v.recordId + 'groups'}"  style="min-height:50vh;padding:0px !important;">
+            <c:BT_QuoteGroupList aura:id="quoteItemList" groupFilter="{!v.groupFilter}" quoteId="{!v.recordId}" selectedRows="{!v.selectedRows}" groupListSize="{!v.groupListSize}" />
+        </div>
+    </div>
+    
+    <div aura:id="newQuoteItem"/>
+    
+    <lightning:overlayLibrary aura:id="overlayLib"/>
+    <lightning:notificationsLibrary aura:id="notifLib"/>
+    
+</aura:component>

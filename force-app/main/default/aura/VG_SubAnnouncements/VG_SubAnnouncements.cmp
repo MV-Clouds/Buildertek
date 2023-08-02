@@ -1,0 +1,57 @@
+<aura:component controller="VG_ContentService" implements="forceCommunity:availableForAllPageTypes,force:appHostable,flexipage:availableForAllPageTypes,forceCommunity:themeLayout" access="global">
+
+	<aura:attribute name="subAnnouncements" type="Object[]" />
+	<aura:attribute name="numOfCards" type="String" access="global" default="3"/>
+	<aura:attribute name="cardType" type="String" access="global" default="small"/>
+	<aura:attribute name="autoplay" type="String" access="global" default="true"/>
+	<aura:attribute name="autoplaySpeed" type="String" access="global" default="10000"/>
+    <aura:attribute name="iconFillColor" type="String" access="global" default="#FFFFFF"/>
+    <aura:attribute name="setCallback" type="Object" access="private" />
+     <aura:attribute name="includePreview" type="Boolean" default="false" />
+    <aura:attribute name="siteName" type="String" default="Landing Page" />
+    
+
+    <!-- Register Event -->
+    <aura:registerEvent name="SlickJsLoaded" type="c:SlickJSLoaded"/>
+    
+    <ltng:require styles="{!join(',',
+							$Resource.carousel + '/carousel/slick/slick.css',
+							$Resource.carousel + '/carousel/slick/slick-theme.css')}"
+                  scripts="{!join(',',
+							$Resource.carousel + '/carousel/jquery/jquery.js',
+							$Resource.carousel + '/carousel/slick/slick.min.js')}"
+        afterScriptsLoaded="{!c.doInit}"/>
+    
+	<div style="height:375px">
+		<div style="font-size:1.2rem;width:100%;transition: 0.3s;">
+    
+			<div class="headerdiv" >
+				<div class="announcement">Announcements</div>
+				<div style="width:33%;"><p style="float:right;"> <a class="viewstyle" onclick="{! c.navigateToAllAnnouncements }">View All </a></p></div>
+			</div>
+		
+			<div id="cardCarousel10" class="slds-m-horizontal--large carousel" style="margin-bottom:0px;">
+		
+				<aura:iteration items="{!v.subAnnouncements}" var="subAnnouncement">
+			 
+					<c:VG_Card_SubAnnouncements title="{!subAnnouncement.content.Primary_Text__c}"
+							primarysummary="{!subAnnouncement.content.Primary_Summary__c}"                 
+							header="{!subAnnouncement.content.Secondary_Text__c}"
+							text="{!subAnnouncement.content.Secondary_Summary_Detail__c}"
+							actionURL="{!subAnnouncement.content.Action_URL__c}"
+							actionBgColor="{!subAnnouncement.content.Action_BgColor__c}"
+							bgImage="{!(and(not(empty(subAnnouncement.content.ContentDocumentLinks.records)),subAnnouncement.content.ContentDocumentLinks.records[0] != null))? subAnnouncement.content.ContentDocumentLinks.records[0].ContentDocument.LatestPublishedVersionId:''}"
+							actionLabel="{!subAnnouncement.content.Action_Label__c}"
+							type="Sub_Announcements"
+							showAll="{!equals(v.cardType,'small')?false:true}"
+							BGColor="{!empty(subAnnouncement.content.Primary_BgColor__c)?'FFFFFF':subAnnouncement.content.Primary_BgColor__c}"
+							FGColor="{!empty(subAnnouncement.content.Primary_FgColor__c)?'4A4A4A':subAnnouncement.content.Primary_FgColor__c}"
+							recordId1="{!subAnnouncement.content.Id}"
+                            Gradient="{!empty(subAnnouncement.content.Background_Gradient__c)?'to bottom, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.22) 54%, rgba(23, 23, 23, 0) 100%':subAnnouncement.content.Background_Gradient__c}"            
+                                           
+												 />
+				</aura:iteration>
+			</div>
+		</div>
+	</div>
+</aura:component>

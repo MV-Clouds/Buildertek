@@ -1,0 +1,75 @@
+<aura:component controller="BT_FieldSetController" implements="flexipage:availableForRecordHome,force:hasRecordId" access="global">
+    <!-- define the attributes to be used in the component -->
+    <aura:attribute name="recordTypeId" type="String"/>
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="objectApiName" type="String"/>
+    <aura:attribute name="sObjectName" type="Object"/>
+    <aura:attribute name="currentStage" type="String"/>
+    <aura:attribute name="fields" type="FieldSetMember[]"/>  
+    <aura:attribute name="fieldSetName" type="String"/> 
+    <aura:attribute name="iconName" type="String"/>
+    <aura:attribute name="isIcon" type="Boolean"/>
+    <aura:attribute name="title" type="String"/> 
+    <aura:attribute name="mode" type="String"/> 
+    <aura:attribute name="inputModeBool" type="Boolean" default="false"/> 
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <lightning:card title="{!v.title}" iconName="{!v.iconName}" class="slds-p-around--none">        
+        <lightning:recordEditForm aura:id="recordViewForm" 
+                                  recordId="{!v.recordId}"
+                                  objectApiName="{!v.objectApiName}"
+                                  onsubmit="{!c.fireRefreshView}">
+            <div class="slds-grid slds-wrap slds-grid--pull-padded slds-p-around_small" >
+                 
+                <aura:iteration items="{!v.fields}" var="field">
+                    <aura:if isTrue="{!v.inputModeBool == true? true: false}">
+                        <div class="slds-col--padded slds-size--1-of-1 slds-medium-size--3-of-12 slds-large-size--3-of-12">
+                            <lightning:inputField fieldName="{!field.fieldPath}" />    
+                        </div>
+                    </aura:if>
+                    <aura:if isTrue="{!v.inputModeBool != true? true: false}">
+                        <div class="slds-p-around_small" style="width: max-content;float-right;" >
+                           <lightning:outputField fieldName="{!field.fieldPath}" />
+                        </div>
+                        <div class="{!if(v.isIcon == false,'slds-show','slds-hide')}">
+                            <div class="slds-p-around_small" style="width: max-content;">
+                                <lightning:buttonIcon iconName="utility:edit" variant="bare" alternativeText="edit" onclick="{!c.handleToggle}"/>
+                            </div>   
+                        </div>
+                    </aura:if>
+                </aura:iteration> 
+            </div>
+                
+            <div class="slds-align--absolute-center slds-p-top--small">
+                <span class="{!and(v.mode =='Output', v.inputModeBool)? '':'slds-hide'}">
+                    <lightning:button variant="neutral" class="slds-m-horizontal--xx-small"
+                                      name="Cancel" 
+                                      label="Cancel" onclick="{!c.handleToggle}"/>
+                </span>
+                <span class="{!v.inputModeBool == true? '': 'slds-hide'}">
+                    <lightning:button variant="neutral" class="slds-m-horizontal--xx-small"
+                                      name="Cancel" 
+                                      label="Cancel" onclick="{!c.handleToggle}"/>
+                    <lightning:button variant="brand" class="slds-m-horizontal--xx-small"
+                                      type="submit" name="update"
+                                      label="{!empty(v.recordId)?'Create':'Update'}" /><br/><br/>
+                </span>
+            </div>
+        </lightning:recordEditForm>
+    </lightning:card>
+    <!-- Spinner Start -->
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+                
+            </div>
+        </div>
+    </aura:if>
+    <!-- Spinner End -->
+</aura:component>

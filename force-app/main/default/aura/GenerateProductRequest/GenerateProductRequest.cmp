@@ -1,0 +1,82 @@
+<aura:component controller="GenerateProductReqController" implements="flexipage:availableForAllPageTypes,force:lightningQuickAction,force:hasRecordId,force:appHostable" access="global" >
+   <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+    <aura:attribute type="list" name="IssuesRecords"/>
+    <aura:attribute name="columns" type="List" default="[]"/>
+    <aura:attribute name="Spinner" type="boolean" default="false"/>
+    <aura:attribute name="messageData" type="string" default=""/>
+    <aura:attribute name="resultInfo" type="object" default=""/>
+    <aura:handler event="aura:waiting" action="{!c.showSpinner}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>
+    
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </aura:if>
+    
+    <div style="height:640px; width:100% !important;">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open slds-modal_medium">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <div>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Create Product Request</h2>
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick="{!c.cancel}">
+                            X
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                    </div>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                   
+                    <div class="{!or(v.IssuesRecords.length == 0,v.resultInfo.hasError)?'slds-hide':'slds-show'}">
+                        <table class="slds-table slds-table_bordered slds-table_striped slds-table_cell-buffer slds-table_fixed-layout">
+                            <thead>
+                                <tr class="slds-text-heading_label">
+                                    <th scope="col" style="width: 10%;"><div class="slds-truncate" title="Issue Number">Issues #</div></th>
+                                    <th scope="col" style="width: 15%;"><div class="slds-truncate" title="Description">Issue Description</div></th>
+                                    <th scope="col" style="width: 15%;"><div class="slds-truncate" title="Product SKU">Product SKU</div></th>
+                                    <th scope="col" style="width: 5%;"><div class="slds-truncate" title="Qty">Qty</div></th>           
+                                    <th scope="col" style="width: 10%;"><div class="slds-truncate" title="Shipping State">Street</div></th>  
+                                    <th scope="col" style="width: 10%;"><div class="slds-truncate" title="Shipping City">City</div></th>     
+                                    <th scope="col" style="width: 10%;"><div class="slds-truncate" title="Shipping State">State</div></th>                  
+                                    <th scope="col" style="width: 13%;"><div class="slds-truncate" title="Shipping Country">Country</div></th>
+                                    <th scope="col" style="width: 13%;"><div class="slds-truncate" title="Shipping Postal Code">Postal Code</div></th>                                    
+                                </tr>
+                            </thead>
+                            <tbody>
+                                
+                                <aura:iteration items="{!v.IssuesRecords}" var="issue">
+                                    <tr>
+                                        <td><div class="slds-truncate" title="{!issue.Name}"><a href="{!'/'+issue.Id}">{!issue.Name}</a></div></td>
+                                        <td><div class="slds-truncate" title="{!issue.Description__c}">{!issue.Description__c}</div></td>
+                                        <td><div class="slds-truncate" title="{!issue.Product__r.Product_SKU__c}">{!issue.Product__r.Product_SKU__c}</div></td>
+                                        <td><div class="slds-truncate" title="{!issue.Quantity__c}">{!issue.Quantity__c}</div></td>
+                                        <td><div class="slds-truncate" title="{!issue.Shipping_Country__c}">{!issue.Shipping_Street_1__c}</div></td>
+                                        <td><div class="slds-truncate" title="{!issue.Shipping_City__c}">{!issue.Shipping_City__c}</div></td>
+                                       <td><div class="slds-truncate" title="{!issue.Shipping_State_Province__c}">{!issue.Shipping_State_Province__c}</div></td>                              
+                                        <td><div class="slds-truncate" title="{!issue.Shipping_Country__c}">{!issue.Shipping_Country__c}</div></td>                                                  
+                                        <td><div class="slds-truncate" title="{!issue.Shipping_Postal_Code__c}">{!issue.Shipping_Postal_Code__c}</div></td>                                   
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="{!or(v.IssuesRecords.length == 0,v.resultInfo.hasError)?'slds-show':'slds-hide'}">
+                        <div class="{!v.messageData != ''?'slds-show validation':'slds-hide'}">
+                        	<b>Error : </b>  {!v.messageData}
+                        </div>
+                    </div>
+                </div>
+                <footer class="slds-modal__footer" style="text-align:center;"> 
+                    <button class="slds-button slds-button_neutral" onclick="{!c.cancel}">Cancel</button>
+                    <lightning:button class="slds-button slds-button_brand" label="Create" disabled="{!or(v.IssuesRecords.length == 0,v.resultInfo.hasError)}" title="Neutral action" onclick="{! c.handleClick }"/>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </div>
+</aura:component>

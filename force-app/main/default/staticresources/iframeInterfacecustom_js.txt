@@ -1,0 +1,14 @@
+window.Sfdc = window.Sfdc || {};
+Sfdc.xdomain = Sfdc.xdomain || {};
+Sfdc.xdomain.IframeInterface = function() {
+    return {
+        handleOnload: function() {
+            var a = window.location.href.split("#")[1] || "";
+            if (a) {
+                var a = new Sfdc.xdomain.Query(a)
+                  , b = a.targetFrame;
+                ("sfdc-console" === b ? top : "undefined" !== typeof a.targetParentFrame ? parent.frames[a.targetParentFrame].frames[b] : parent.frames[b]).Sfdc.xdomain.Listener.accept(a)
+            }
+        }
+    }
+}();

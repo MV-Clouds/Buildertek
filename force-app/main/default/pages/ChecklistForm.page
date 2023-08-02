@@ -1,0 +1,17 @@
+<apex:page sidebar="false" showHeader="false" standardStylesheets="false"> 
+    <apex:includeLightning />
+    <div id="lightning" />
+    <script>
+    	var contactId = "{!$CurrentPage.parameters.id}"
+        var selectCheckListName = "{!$CurrentPage.parameters.selectCheckListName}"
+        var checklistId = "{!$CurrentPage.parameters.checklistId}"
+        $Lightning.use("buildertek:ChecklistFormApp", function() {
+            $Lightning.createComponent("buildertek:ChecklistForm",
+            {recordId : contactId,selectedValue : checklistId,ChecklistName : selectCheckListName},
+            "lightning",
+            function(component) { 
+                
+            });
+        });
+    </script>
+</apex:page>

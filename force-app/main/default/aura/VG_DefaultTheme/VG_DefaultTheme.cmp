@@ -1,0 +1,17 @@
+<aura:component implements="forceCommunity:themeLayout">
+    <div>        
+        <div class="navigation">
+            
+            <c:VG_NavBar whiteFG="false"/>
+           
+        </div>
+        
+        <div role="main" aria-label="Landing Page Content" class="mainContentArea">
+            {!v.body}
+        </div>
+        <div role="contentinfo"  aria-label="Footer" class="footer">
+            <c:VG_Footer/>
+        </div>
+    </div>
+    
+</aura:component>

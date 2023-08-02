@@ -1,0 +1,136 @@
+<apex:page >
+    <html>
+<head>
+        <style type="text/css">
+            #box {
+                position:relative;
+                width:950px;
+                height:320px;
+                
+            }
+            #box img {
+                position:absolute;    
+                width:100%;
+                height:100%;
+            }
+            #box div {
+                position:absolute;
+                width:100%;
+                height:100%;
+                color:#fff;
+                line-height:100px;
+                
+            }
+            #box1 {
+                position:absolute;
+                width:900px;
+                height:356px;
+                
+            }
+            #box1 img {
+                position:absolute;
+                width:100%;
+                height:100%;
+            }
+            #box1 div {
+                position:absolute;
+                width:100%;
+                height:100%;
+                color:#fff;
+                line-height:300px;
+                
+            }
+            #box2 {
+                position:absolute;
+                width:900px;
+                height:356px;
+                
+            }
+            #box2 img {
+                position:absolute;
+                width:100%;
+                height:100%;
+            }
+            #box2 div {
+                position:absolute;
+                width:100%;
+                height:100%;
+                color:#fff;
+                line-height:400px;
+                
+            }
+        </style>
+    </head>
+<body style="font-family: Arial, Helvetica, sans-serif;">
+    <div class="wrapper-box" style="margin: 0 auto;background: #fcfcfc;">       
+        <div class="middle-box" style="position: relative; background:rgb(48, 100, 126);padding: 20px 40px;clear: both;overflow: hidden;">
+            <div>
+                <h3 style="font-size: 30px;font-family:Sans-serif;text-align:center;color:white;">view</h3>   
+                <span style="font-weight: normal;display:block;font-size:60wpx;font-family:Sans-serif;text-align:center;color:white;width:100%">CERTIFICATE</span>
+                <span style="font-weight: normal;display:block;line-height: 1;font-size:20px;font-family:Sans-serif;text-align:center;color:white;">——— OF COMPLETION ———</span>
+            </div>
+        </div>
+        
+        <br/><br/><br/><br/><br/>
+        <div style ="text-align:center;">
+            <div style="width: 100%">
+                THE CERTIFICATE IS PRESENTED TO
+            </div>
+            <br/><br/>
+            <div style= "font-family:Sans-serif;font-size:40px">    
+                <div style="width: 100%;">
+                    Name
+                </div>
+                <br/><br/>
+                <div style= "font-family:Sans-serif;font-size:15px">    
+                    <div style="width: 100%;">
+                        IN RECOGNITION OF SUCCESSFULLY COMPLETING
+                    </div>
+                    </div>  
+                    <br/>
+                    <div style= "font-family:Sans-serif;font-size:40px;color: rgb(48, 100, 126);">    
+                        <div style="width: 100%;">
+                            Test
+                        </div> 
+                    </div>  
+                 
+                <br/><br/>
+                <div class="footer" style="margin: 0 auto;background: #fcfcfc;">
+                <div class="left-box" style="float: left;width: 20%;color: rgb(120, 123, 121);">
+                    <span style="border-bottom:0.5px solid black;font-family:Sans-serif;font-size:18px"> <apex:outputText value="{0,date,dd'/'MM'/'yyyy}" >    
+                        <apex:param value=""/>    
+                        </apex:outputText>      </span>
+                    <span style="font-weight: normal;display:block;line-height: 1.6;font-size:18px;font-family:Sans-serif">Date</span>
+                </div>
+                
+                <div class="right-box" style="float: right;width: 20%;color: rgb(120, 123, 121);">
+                    <span style="border-bottom:1px solid black;font-family:Sans-serif;font-size:18px">TestSignature    </span>
+                    <span  style="font-weight: normal;display:block;line-height: 1.6;font-size:18px;font-family:Sans-serif">Manager, LVE Partnership</span>
+                </div> 
+                </div>   
+                 <div style="background:rgb(0, 172, 216);width:100%;height:5%"> 
+                                   &nbsp;
+                                   
+                                   <button style = "font-size: 15px;border:0px solid #000;border-radius:40px;padding:9px 26px 9px 26px;"> 
+                    <a href=" ">tetstst</a>
+                </button>
+               </div>      
+            </div>
+        </div>
+    </div>
+     <table style="width: 100%;text-align: left;border-spacing: 0;">
+            <thead >
+                <tr >
+                    <th style="font-size: 15px;border-bottom: 1px solid #ccc; border-right: 1px solid #ccc;padding: 5px 15px;">
+                          <div class="right-box" style="float: right;width: 20%;color: rgb(120, 123, 121);">
+                    <span style="border-bottom:1px solid black;font-family:Sans-serif;font-size:18px">TestSignature    </span>
+                    <span  style="font-weight: normal;display:block;line-height: 1.6;font-size:18px;font-family:Sans-serif">Manager, LVE Partnership</span>
+                </div> 
+                    </th>
+                    <th style="font-size: 15px;border-bottom: 1px solid #ccc; border-right: 50px solid #ccc;padding: 55px 55px;">Product Description</th>
+                </tr>
+            </thead>
+            </table>  
+</body>
+</html>
+</apex:page>

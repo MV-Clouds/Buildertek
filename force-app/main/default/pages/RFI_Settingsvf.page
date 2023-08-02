@@ -1,0 +1,14 @@
+<apex:page >
+     <apex:includeLightning />
+    <div id="lightning" />  
+    <script>
+        $Lightning.use("buildertek:RFI_SettingsApp", function() {
+          $Lightning.createComponent("buildertek:RFI_Settings",
+              {},            
+              "lightning",
+              function(cmp) {
+              }
+          );
+        });
+    </script>
+</apex:page>

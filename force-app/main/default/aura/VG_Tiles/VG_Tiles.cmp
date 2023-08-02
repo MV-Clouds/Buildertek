@@ -1,0 +1,37 @@
+<aura:component controller="VG_ContentService" access="global" implements="forceCommunity:availableForAllPageTypes,force:appHostable,flexipage:availableForAllPageTypes"  >
+    <aura:attribute name="tiles" type="Object[]" />
+    <aura:attribute name="showHeading" type="boolean" default="false"/>
+    <aura:attribute name="tileStyle" type="String" default="small" access="global"/>
+    <aura:attribute name="urlPrefix" type="String"/>
+    <aura:attribute name="includePreview" type="Boolean" default="false" />
+    <aura:attribute name="siteName" type="String" default="Human Resource" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <ltng:require styles="/resource/SLDS90/assets/styles/salesforce-lightning-design-system-ltng_old.css,/resource/eccustomcss/css/ecstyles.css"/>
+    
+    <aura:if isTrue="{! and(v.tiles != null , v.tiles.length > 0)}">
+        <aura:if isTrue="{! equals(v.tileStyle,'small')}">
+            <div class="slds " >
+                <div class="slds-grid slds-wrap /*slds-grid--align-center*/ hide slds-container--center">
+                    <aura:iteration var="tile" items="{!v.tiles}">
+                        <div class="slds-row slds-size--1-of-1 slds-small-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-6" >
+                            <a onclick="{!c.goToURL}"  data-url="{!tile.Action_URL__c}">
+                                <div class="slds-container--small slds-container--center slds-p-around--medium" >
+                                    <div class="slds-box box slds-align--center"  data-url="{!tile.Action_URL__c}" data-bgColor="{!tile.Primary_BgColor__c}" onclick="{!c.onclick}"
+                                         style="{!'background-color:#'+ tile.Primary_BgColor__c}">
+                                        <div class="slds-media slds-media--center innerdiv" >
+                                            <div class="slds-media__body" >
+                                                <a data-url="{!tile.Action_URL__c}"
+                                                   onclick="{!c.goToURL}"><h1 style="{!'color:#'+tile.Primary_FgColor__c +';font-family:gotham-book;font-size:14px;text-align:center;'}">{!tile.Primary_Text__c}</h1></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </aura:iteration>
+                </div>
+            </div>
+        </aura:if>
+    </aura:if>
+</aura:component>

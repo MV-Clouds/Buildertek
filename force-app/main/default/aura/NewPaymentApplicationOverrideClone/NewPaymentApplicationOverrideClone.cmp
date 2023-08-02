@@ -1,0 +1,152 @@
+<aura:component controller="getPaymentFields" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,lightning:actionOverride,forceCommunity:availableForAllPageTypes,lightning:hasPageReference,force:lightningQuickAction" access="global" >
+    
+    <aura:attribute name="listOfFields" type="List" />
+    <aura:attribute name="listOfFields1" type="List" />
+    <aura:attribute name="listOfFields2" type="List" />
+    <aura:attribute name = "appNumber" default = "1" type = "string" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <aura:html tag="style">
+        .slds-modal__container{
+        max-width: 65rem !important; 
+        width:100% !important;
+        }
+        .slds-modal__close{
+        display : none;
+        }
+        .slds-modal__container {
+        height: 100% !important;
+        } 
+        .slds-modal__content {
+        height: 500px !important;
+        } 
+        
+    </aura:html> 
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header">
+                <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">New Payment Application</h1>
+            </div>
+            <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__SOV_Payment_Application__c"
+                                      onsubmit="{!c.handleSubmit}" onsuccess="{!c.onRecordSuccess}" recordTypeId="{!v.RecordTypeId}">
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    
+                    <h3 class="slds-section-title--divider">Information</h3>
+                    <lightning:layout multipleRows="true">
+                        <aura:iteration items="{!v.listOfFields}" var="field">
+                         
+                            <lightning:layoutItem size="12" mediumDeviceSize="6" class="slds-p-around_x-small layoutItem">    
+                                <div>
+                                    <aura:if isTrue="{!or(field.name == 'Name',field.name == 'buildertek__Project__c') }">           
+                                        <lightning:inputField fieldName="{!field.name}" value="" required="true"/>
+                                        <aura:set attribute="else">
+                                            <aura:if isTrue="{!field.name =='buildertek__Application__c'}">
+                                                <lightning:inputField fieldName="{!field.name}" value="{!v.appNumber}"/>
+                                                <aura:set attribute="else">
+                                                    <aura:if isTrue="{!field.name =='RecordTypeId'}">
+                                                        <lightning:inputField fieldName="{!field.name}" aura:id= 'PAtype'/>
+                                                        <aura:set attribute="else">
+                                                            <aura:if isTrue="{!field.name =='buildertek__Payment_Application_To__c'}">
+                                                                <lightning:inputField fieldName="{!field.name}" aura:id="companyName"></lightning:inputField>
+                                                                <aura:set attribute="else">
+                                                                    <lightning:inputField fieldName="{!field.name}" value=""/>
+                                                                </aura:set>
+                                                            </aura:if>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </aura:set>
+                                            </aura:if>
+                                        </aura:set>        
+                                    </aura:if>
+                                </div>
+                            </lightning:layoutItem>
+                        
+                        </aura:iteration>
+                    </lightning:layout>
+                    
+                    <!-- Community  -->
+                  
+                    
+                    <h3 class="slds-section-title--divider">Community</h3>
+                    <lightning:layout multipleRows="true">
+                        <aura:iteration items="{!v.listOfFields}" var="field">
+                            <aura:if isTrue="{!and(field.name != 'RecordTypeId',field.name != 'buildertek__Budget__c') }">
+                                <lightning:layoutItem size="12" mediumDeviceSize="6" class="slds-p-around_x-small layoutItem">
+                                    <div>
+                                        <aura:if isTrue="{!or(field.name == 'Name',field.name == 'buildertek__Project__c') }">     
+                                            <lightning:inputField fieldName="{!field.name}" value="" required="true"/>
+                                            <aura:set attribute="else">
+                                                <aura:if isTrue="{!field.name =='buildertek__Application__c'}">
+                                                    <lightning:inputField fieldName="{!field.name}" value="{!v.appNumber}"/>
+                                                    <aura:set attribute="else">
+                                                        <aura:if isTrue="{!field.name =='buildertek__Payment_Application_To__c'}">
+                                                            <lightning:inputField fieldName="{!field.name}" aura:id="companyName"></lightning:inputField>
+                                                            <aura:set attribute="else">
+                                                                <aura:if isTrue="{!field.name =='buildertek__Vendor__c'}">
+                                                                    <lightning:inputField fieldName="{!field.name}" aura:id="vendorName" disabled = "true"></lightning:inputField>
+                                                                    <aura:set attribute="else">
+                                                                        <lightning:inputField fieldName="{!field.name}" value=""/>
+                                                                    </aura:set>
+                                                                </aura:if>
+                                                            </aura:set>
+                                                        </aura:if>                                                   
+                                                    </aura:set>
+                                                </aura:if>
+                                            </aura:set>      
+                                        </aura:if>
+                                    </div>
+                                </lightning:layoutItem>   
+                            </aura:if>
+                        </aura:iteration>
+                    </lightning:layout>
+                    <!-- Community -->
+                      <h3 class="slds-section-title--divider">CONTRACTORS APPLICATION FOR PAYMENT</h3>
+                    <lightning:layout multipleRows="true">
+                        <aura:iteration items="{!v.listOfFields2}" var="field">
+                            <lightning:layoutItem size="12" mediumDeviceSize="6" class="slds-p-around_x-small layoutItem">
+                                <div>
+                                    <aura:if isTrue="{!or(field.name == 'Name',field.name == 'buildertek__Project__c') }">
+                                        
+                                        <lightning:inputField fieldName="{!field.name}" value="" required="true"/>
+                                        <aura:set attribute="else">
+                                            <lightning:inputField fieldName="{!field.name}" value=""/>
+                                        </aura:set>
+                                        
+                                    </aura:if>
+                                </div>
+                            </lightning:layoutItem>
+                            
+                        </aura:iteration>
+                    </lightning:layout>
+                 
+                      <h3 class="slds-section-title--divider">CHANGE ORDER SUMMARY</h3>
+                    <lightning:layout multipleRows="true">
+                        <aura:iteration items="{!v.listOfFields1}" var="field">
+                            <lightning:layoutItem size="12" mediumDeviceSize="6" class="slds-p-around_x-small layoutItem">
+                                <div>
+                                    <aura:if isTrue="{!or(field.name == 'Name',field.name == 'buildertek__Project__c') }">
+                                        
+                                        <lightning:inputField fieldName="{!field.name}" value="" required="true"/>
+                                        <aura:set attribute="else">
+                                            <lightning:inputField fieldName="{!field.name}" value=""/>
+                                        </aura:set>
+                                        
+                                    </aura:if>
+                                </div>
+                            </lightning:layoutItem>
+                            
+                        </aura:iteration>
+                    </lightning:layout>
+                    
+                    
+                </div>
+                <div class="modal-footer slds-modal__footer slds-size_1-of-1">
+                    <lightning:button variant="Neutral" class="slds-button" label="Cancel" onclick="{!c.CloseScreen}"/>
+                    
+                    <lightning:button type="submit" label="Save" variant="Brand"/>
+                </div>
+            </lightning:recordEditForm>
+            
+        </div>
+    </section>
+</aura:component>

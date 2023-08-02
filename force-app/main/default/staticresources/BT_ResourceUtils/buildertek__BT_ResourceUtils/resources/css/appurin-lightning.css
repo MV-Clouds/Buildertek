@@ -1,0 +1,136 @@
+
+/**
+ Special handling of some of the SFDC CSS classes.
+ **/
+
+/* Lightning spinner */
+.apLightningSpinnerContainer{
+	position: fixed !important;
+}
+ 
+/* Aruvio Buttons*/ 
+.apInActiveLightningButton{
+}
+
+.apActiveLightningButton{
+	padding-left: 16px !important;
+    padding-right: 16px !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+	background: none !important;
+    background-color: #0070d2 !important;
+    border: 1px solid #0070d2 !important;
+    color: white!important;
+    position: relative !important;
+    display: inline-block !important;
+    border-radius: 4px!important;
+    font-size: inherit !important;
+    height: 30px!important;
+}
+.apActiveLightningButton:hover{
+	outline: 0 !important;
+	color: white !important;
+	box-shadow: 0 0 3px #0070D2 !important;
+}
+
+/* Appurin page block section in lightning. We have copied these css from Object Manager/Object Detail in lightning Experience.
+   In future if Salesforce handles the css for page block section, we will need to remove use of these css classes.
+*/
+.apSectionContainer {
+	align-items: stretch;
+	background-color: rgb(244, 246, 249);
+	display: flex;
+	flex-flow: column nowrap;
+	min-height: 100%;
+	padding: 1rem;
+}
+.apSectionContainer .apSectionContent {
+	flex: 1 1 auto;
+	overflow: auto;
+	position: relative;
+}
+.apSectionCard {
+	background-color: rgb(255, 255, 255);
+	border: 1px solid rgb(216, 221, 230);
+	border-radius: 0.25rem;
+	margin: 0;
+	padding-left: 0.5rem;
+	padding-right: 0.75rem;
+	padding-top: 0.75rem;
+}
+.apSectionCard .apSectionCardHeader {
+	color: rgb(22, 50, 92);
+	font-weight: 300;
+	padding-bottom: 1.5rem;
+	width: 100%;
+}
+.apSectionCard .apSectionCardHeader label {
+	color: #16325c !important;  
+	font-weight: 400;
+	font-size: 1rem;
+}
+.apSectionContent .apSectionCard {
+	margin-bottom: 1.0rem;
+}
+
+/*
+Css for lightning page header
+*/
+.apPageHeaderLink{
+	padding-left:5px;
+}
+
+
+/* Css for form control label */
+.avLightningFormElementLabel{
+	margin-right: 5px !important;
+}
+
+/* Css for lightning page header icon */
+.apLightningPageHeaderIcon{
+	width: 45px !important;
+	height: 45px !important;
+}
+
+/* Css for lightning notify */
+.apLightningNotify{
+	padding: 5px 0px 5px 0px !important;
+}
+
+/* Css for image button */
+.apLightningImageButton{
+	height: 16px !important;
+    width: 16px !important;
+    margin-left: 4px !important;
+}
+
+/* Css for button icon*/
+.apLightningButtonIcon{
+	width: 16px !important;
+	height: 16px !important;
+	padding: 0px !important;
+	border: 0px !important;
+	background: 0px !important;
+}
+
+/* Css for one pane section */
+.apLightningOneTile{
+	padding: 40px;
+	margin-top: 50px !important;
+	margin-right: 30% !important;
+	margin-left: 30% !important;
+	background: white;
+	border: lightgray solid 1px;
+	border-radius: 3px;
+	min-width: 400px;
+}
+
+.apLightningOneTileButton{
+	width:100% !important;
+	margin: 10px 0px 10px 0px !important;
+}
+
+/* Css for lightning page header button */
+.apPageHeaderMediaButtons{
+	padding-left: 5px;
+}

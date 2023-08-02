@@ -1,0 +1,13 @@
+<apex:page Controller="PurchaseOrderAttachmentController" renderAs="pdf" action="{!emailAttach}">
+<head>
+    <style> 
+        body { font-family: 'Arial Unicode MS'; }
+        .companyName { font: bold 30px; color: red; }  
+    </style>
+</head>
+<body>
+        <apex:outputText style="font-style:italic" value="{!emailBody}" escape="false">
+</apex:outputText>
+
+</body>
+</apex:page>

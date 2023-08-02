@@ -1,0 +1,122 @@
+<apex:page standardController="Contract__c" title="Import Master Contract" extensions="BT_ImportContract" recordSetVar="b">
+    <c:BT_JsAndCssIncludeComponent importJquery="true"
+                              importAppurinUtil="true"
+                              importJQueryLayout="false"
+                              importFancyTree="false"
+                              importJqGrid="false"
+                              importEasyTooltip="false"
+                              importAppurinCss="true"
+                              importCkEditor="false"
+                              importGnattChart="false"
+                              importLightningDesign="true"/>
+	
+	<apex:form > 
+		<div class="slds slds-scope" style="padding:30px;">
+			<br/>
+			<h1 style="font-size: 1.2rem;">Project > {!project.Name} > Select Master Contract To Import in Project</h1>
+			<br/>
+			<table class="slds-table slds-table_bordered slds-table_fixed-layout" role="grid">
+				<thead>
+					<tr class="slds-text-title_caps">
+						<th  aria-label="" scope="col" style="width: 50px;">
+							
+						</th>
+						<th  aria-label="Title" scope="col">
+							Title
+						</th>
+						<th aria-label="Description" scope="col">
+							Contract Amount
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+				<apex:repeat var="mContract" value="{!masterContracts}">
+					<tr class="slds-hint-parent">
+						<td style="width:50px;">
+							<apex:inputCheckbox value="{!mContract.isSelected}" id="selectedschedule"/>
+						</td>
+						<td role="gridcell">
+							{!mContract.contracts.Name}
+						</td>
+						<td  role="gridcell">
+							<apex:outputText value="{0, number, currency}">
+							    <apex:param value="{!mContract.contracts.Contract_Amount__c}" />
+							</apex:outputText>    
+						</td>
+					</tr>
+				</apex:repeat> 
+				</tbody>
+			</table> 
+			
+			<div>
+		        <div class="slds-docked-form-footer">
+		            <button type="button" class="slds-button slds-button_neutral" onclick="goback();">Cancel</button>
+		            <button type="button" class="slds-button slds-button_brand" onclick="save();">Import Master Contract </button>
+		        </div>
+		    </div>
+		</div>
+		<apex:includeScript value="/support/console/43.0/integration.js"/>
+		<script>
+			function goback(){
+				sforce.one.back(true);
+				sforce.console.getEnclosingTabId(closeSubtab, true);
+				sforce.console.getFocusedSubtabId(showTabId);
+				//testRefreshSubtabById();
+			}
+			
+	        var closeSubtab = function closeSubtab(result) {
+	            //Now that we have the tab ID, we can close it
+	            var tabId = result.id;
+	            sforce.console.closeTab(tabId, true);
+	        };
+	        
+	        var showTabId = function showTabId(result) {
+                //alert('Tab ID: ' + result.id);
+                var subtabId = result.id;
+                sforce.console.focusPrimaryTabById('ctab0_1', true, refreshSuccess);
+                sforce.console.refreshSubtabById(subtabId , true, refreshSuccess);
+            };
+	        
+	        
+	         function testRefreshSubtabById() {
+	            //Set the name of the tab by using the openSubtab method
+	            //This value is for example purposes only
+	            v//ar subtabId = 'ctab0';
+	            //sforce.console.refreshSubtabById('ctab0_7', true, refreshSuccess);
+	            //sforce.console.refreshSubtabById(subtabId, true, refreshSuccess);
+	            
+	            
+	        }
+		        var subtabTab = function subtabTab(result) {
+		            //Now that we have the tab ID, we can close it
+		            var tabId = result.id;
+		            //alert(tabId);
+		            return tabId;
+		        };
+	        
+		        var refreshSuccess = function refreshSuccess(result) {
+		            //Report whether refreshing the subtab was successful
+		            if (result.success == true) {
+		                //alert('Subtab refreshed successfully');
+		            } else {
+		                //alert('Subtab did not refresh');
+		            }
+		        };
+			
+		</script>
+		<apex:actionFunction action="{!Save}" name="save" status="splashStatus" oncomplete="goback();" rerender="showstate"></apex:actionFunction>
+		
+		<apex:actionStatus id="splashStatus" onstart="startSplash();" onstop="endSplash(); " />
+		<div class="slds">
+	        <div id="splashDiv" class="apInitiallyDivDisplayNone" style="z-index:9998;">
+	            <div class="slds-spinner_container apLightningSpinnerContainer">
+	                <div role="status" class="slds-spinner slds-spinner--medium slds-spinner--brand">
+	                    <span class="slds-assistive-text">Loading</span>
+	                    <div class="slds-spinner__dot-a"></div>
+	                    <div class="slds-spinner__dot-b"></div>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</apex:form>
+</apex:page>

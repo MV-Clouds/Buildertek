@@ -1,0 +1,133 @@
+.mainContainer {
+    height : 50em;
+}
+
+.b-float-root {
+    z-index: 100;
+}
+
+.container1 .b-schedulerbase.b-schedulerprobase{
+    position: relative;
+    top: -0.5em;
+}
+
+i.b-action-item.b-fa.b-fa-plus{
+    /*color: blue;*/
+    color: #3183fe !important;
+}
+
+i.b-action-item.b-fa.b-fa-pen{
+    color: #3183fe;/*orange;*/
+}
+
+i.b-action-item.b-fa.b-fa-trash{
+    color: grey;
+}
+
+i.b-action-item.b-fa.b-fa-check{
+    color: green;
+}
+
+i.b-action-item.b-fa.b-fa-comment-alt-plus::before{
+    content: "\f4a8";
+}
+
+.b-grid-row.milestoneCompleteColor {
+    background: rgb(175, 204, 247);
+}
+.b-grid-row.milestoneTypeColor {
+    background: rgb(199, 191, 215);
+    
+  }
+ 
+.b-grid-row.pastDueDatesText .b-grid-cell{
+    color:red;
+}
+.b-grid-row.notpastDueDatesText .b-grid-cell{
+    color:#606295 ;
+}
+.pastdateTextColor label.b-sch-label.b-sch-label-left{
+    color: red;
+}
+
+.spins::after {
+    position: absolute;
+    content: 'Processing, Please wait';
+    width: 100%;
+    text-align: center;
+    top: calc(50% + 3em);
+    font-weight: bold;
+    font-size: large;
+}
+.custom-loading-text {
+    transform: rotate(-90deg);
+    position: absolute;
+    top: -0.5rem;
+    left: 1rem;
+    white-space: nowrap;
+    font-size: 20px;
+}
+/*i.b-tree-icon.b-fa.b-fa-arrow-left.indentTrue{
+    margin-left: 1.5rem;
+} */
+
+.b-tree-cell-inner.indentCellTrue{
+    margin-left: 1.5rem;
+} 
+
+.b-sch-event-content i.b-fa.b-fa-arrow-right{
+    display: none;
+}
+.b-sch-event-content i.b-fa.b-fa-arrow-left{
+    display: none;
+}
+.b-mask.b-widget.b-mask-dark.b-prevent-transitions.b-visible.b-progress{
+    position: fixed;
+}
+
+.slds-spinner_container{
+    pointer-events:none;
+}
+.slds-modal__container{
+    max-width: 72rem !important;
+    width:72% !important;
+ }
+ .cuf-content {
+ padding: 0 0rem !important;
+ }
+ .slds-p-around--medium {
+ padding: 0rem !important;
+ }
+ .slds-modal__content {
+     height: unset !important;
+     max-height: unset !important;
+     box-shadow: none !important;
+ } 
+ .slds-modal__container{
+    max-width: 72rem !important;
+    width:72% !important;
+ 
+ }
+
+ .hideBtn{
+    display: none;
+ }
+.b-grid-header-text{
+    white-space:unset !important;
+}
+
+.dateInputDiv{
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    width: 25rem;
+    padding: 10px;
+}
+
+.dateModal{
+    z-index: 101;
+}
+
+.dateModalDiv{
+    z-index: 100;
+}

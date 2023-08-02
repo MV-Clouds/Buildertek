@@ -1,0 +1,34 @@
+<aura:component
+    implements="force:appHostable,force:lightningQuickAction,flexipage:availableForRecordHome,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes"
+    access="global" controller="TradeTypeScheduleItems">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="BaseURL" type="String" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="listOfRecords" type="List" default="[]" />
+
+    <lightning:card aura:id="lightCard" class="slds-card_boundary" title="Trade Type">
+        <div class="slds-grid">
+            <!-- List Of Trade Type -->
+            <div class="slds-col slds-scrollable" style="height:40rem;width:20%">
+                <div class="slds-m-left_large">
+                    <aura:iteration items="{!v.listOfRecords}" var="record" indexVar="index">
+                        <lightning:card>
+                            <span data-schedule="{!record.Id}" onclick="{!c.openSchedule}" class="slds-m-left_small">
+                                <ui:outputURL label="{!record.Name}" />
+                            </span>
+                        </lightning:card>
+                    </aura:iteration>
+                </div>
+            </div>
+
+            <!-- Gantt Chart -->
+            <div class="slds-scrollable_none slds-col" style="width:80%">
+                <aura:if isTrue="{!v.recordId}">
+                    <iframe class="BT_GanttChart"
+                        src="{!v.BaseURL+'/apex/buildertek__BT_TaskManagerTradeType?Id=' + v.recordId }" width="100%"
+                        height="900px" frameBorder="0" />
+                </aura:if>
+            </div>
+        </div>
+    </lightning:card>
+</aura:component>

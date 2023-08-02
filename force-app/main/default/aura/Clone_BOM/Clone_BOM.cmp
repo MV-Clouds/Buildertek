@@ -1,0 +1,44 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global"  controller="CloneBOM">
+	  <aura:attribute name="recordId" type="Id" />  
+    <aura:attribute name="versionValue" type="string" />
+    <aura:attribute name="BOMNameValue" type="string" />
+    <aura:attribute name="currentVersion" type="string" />
+    <aura:attribute name="Spinner" type="boolean" default="false"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+      <ltng:require styles="{!$Resource.MOdalPreviewWidth50}"/> 
+    <div class="slds-modal__header" style="font-size:17px;">
+        New BOM
+    </div>
+    <div class="slds-modal__content slds-p-around--large">
+        <div class="slds slds-scope">
+            <lightning:input type="text" name="input2" label="BOM Name" aura:id="BN" value="{!v.BOMNameValue}"/>
+            <br></br>
+            <lightning:input aura:id="CV" label="Current Version" value="{!v.currentVersion}" name="CurrnetVersion"  disabled="true" />
+            <br></br>
+            <lightning:input type="text" name="input1" label="New Version" aura:id="NV" value="{!v.versionValue}" placeholder="Enter New Version"/>
+            
+        </div> 
+       
+    </div>
+    <div class="slds-modal__footer">
+        <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}" >Cancel</button>
+        <lightning:button variant="brand" label="Save" title="Save" onclick="{! c.handleClick }" />
+    </div>
+
+     <aura:if isTrue="{!v.Spinner}">
+            <div aura:id="spinnerId" class="slds-spinner_container">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                    <div class="custom-loading-text">
+                        <b>Processing, Please Wait</b>
+                    </div>
+                </div>
+            </div>
+        </aura:if>
+        
+  
+</aura:component>

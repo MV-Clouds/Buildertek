@@ -1,0 +1,15 @@
+<apex:page showHeader="false" sidebar="false" tabstyle="BuilderTek_Calendar__tab"> 
+ <apex:includeLightning />
+
+ <div  id="FlipcardContainer" />
+
+ <script>
+ $Lightning.use("buildertek:CalendarApp", function() {
+ $Lightning.createComponent("buildertek:CustomCalendar", {},
+ "FlipcardContainer",
+ function(cmp) {
+ console.log('Component created, do something cool here');
+ });
+ });
+ </script>
+</apex:page>

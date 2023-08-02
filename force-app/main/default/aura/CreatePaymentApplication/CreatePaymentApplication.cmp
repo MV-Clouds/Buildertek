@@ -1,0 +1,509 @@
+<aura:component implements="force:lightningQuickActionWithoutHeader,force:hasRecordId,force:hasSObjectName" controller = "CreatePaymentApplicationForBudget" access="global">
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="projectFields" type="Project__c[]" />
+    <aura:attribute name="budgetLines" type="Budget_Item__c[]" />
+    <aura:attribute name="ShowPaymentApplicationFields" type ="boolean" default = "false"/>
+    <aura:attribute name="ApplicationFound" type ="boolean" default = "false"/>
+    <aura:attribute name="ApplicationNotFound" type ="boolean" default = "false"/>
+    <aura:attribute name="IsPaymentApplication" type ="boolean" default = "false"/>
+    <aura:attribute name="IsContinuationSheet" type ="boolean" default = "false"/>
+    <aura:attribute name="headerName" type ="string" />
+    <aura:attribute name="paymentRecordId" type ="string" />
+    <aura:attribute name="paymentApplicationId" type ="string" />
+    <aura:attribute name = "Application" type = "Object" /> 
+    <aura:attribute name="Project" type ="string" />
+    <aura:attribute name = "AllAppFields" type = "SOV_Payment_Application__c[]" />
+    <aura:attribute name="ApplicationFields" type = "List"  default = "['buildertek__Application__c',
+                                                                       'OwnerId','buildertek__Vendor__c',
+                               										   'buildertek__Project__c',
+                                                                       'buildertek__Contract_For__c',
+                               										   'buildertek__Architect__c',
+                                                                       'buildertek__Contract_Date__c']"  />
+    <aura:attribute name ="ApplicationApis"    type = "SOV_Payment_Application__c[]" />
+    <aura:attribute name = "CreateApplication" type = "SOV_Payment_Application__c" default = "{
+                                                                                                          sobjectType: 'buildertek__Application__c',
+                                                                                                          'Name':'',
+                                                                                                          'buildertek__Period_To__c':'',
+                                                                                                          'buildertek__Application__c':'',
+                                                                                                          'OwnerId':'',
+                                                                                                          'buildertek__Vendor__c':'',
+                                                                                                          'buildertek__Project__c':'',
+                                                                                                          'buildertek__Contract_For__c':'',
+                                                                                                          'buildertek__Architect__c':'',
+                                                                                                          'buildertek__Contract_Date__c':''
+                                                                                                          }" />
+    <aura:handler name = "init" value = "{!this}" action = "{!c.doInit}" />
+    <aura:attribute name="existingPaymentApplications" type="SOV_Payment_Application__c" default="{'sObjectType': 'buildertek__SOV_Payment_Application__c'}"/>
+    <aura:attribute name="newPaymentApplications" type="SOV_Payment_Application__c" default="{'sObjectType': 'buildertek__SOV_Payment_Application__c'}"/>
+    <aura:attribute name="continuationSheet" type="SOV_Continuation__c" default="{'sObjectType': 'buildertek__SOV_Continuation__c'}"/>
+    <aura:attribute name="continuationItems" type="list" />
+    <aura:attribute name="applicationNumber" type="string" />
+    <aura:attribute name="applicationEndDate" type="Date" />
+    <aura:attribute name="applicationStartDate" type="Date" />
+    <aura:attribute name="paymentApplicationName" type="String" />
+    <aura:attribute name="continuationSheetId" type="string" />
+    <aura:attribute name="ShowInsrtedLines" type="Boolean" />
+    <aura:attribute name="continuationSheetLines" type="SOV_Continuation_Sheet_Lines__c[]" />
+    <aura:attribute name="Spinner" type="Boolean" />
+    
+    <aura:attribute name="getcontinuationSheet" type="SOV_Continuation__c" />
+    <aura:attribute name="ApplicationNo" type = "String" />
+    <aura:attribute name="PeriodTo" type = "String" />
+    <aura:attribute name="Architect" type = "String" />
+    <aura:attribute name="paymentappName" type = "String" />
+    <aura:attribute name="Retainage" type = "String" />
+    <aura:attribute name="isdeleteClick" type="Boolean" />
+    <aura:attribute name="deleteContinuationSheetLines" type="List" />
+    <aura:attribute name="deleteContinuationSheetLine" type="List" />
+    <aura:attribute name="scheduleValueTotal" type="Decimal" />
+    <aura:attribute name="workFromPrevAppTotal" type="Decimal" />
+    <aura:attribute name="workcompletedTotal" type="Decimal" />
+    <aura:attribute name="materialsStoredTotal" type="Decimal" />
+    <aura:attribute name="totalCompletedStored" type="Decimal" />
+    <aura:attribute name="gcTotal" type="Decimal" />
+    <aura:attribute name="balanceTotal" type="Decimal" />
+    <aura:attribute name="isCSline" type="Boolean" default = "false"/>
+    <aura:attribute name="listOfFields" type="List" />
+    
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/> 
+    <lightning:workspaceAPI aura:id="workspace" />
+    <div class="mainDiv">
+        <div class="slds-page-header slds-page-header_record-home">
+            <div class="slds-page-header__row">
+                <div class="slds-page-header__col-title">
+                    <div class="slds-media">
+                        <div class="slds-media__figure">
+                            <span class="slds-icon_container">
+                            </span>
+                        </div>
+                        <div class="slds-media__body slds-align_absolute-center">
+                            <div class="slds-page-header__name">
+                                <div class="slds-page-header__name-title">
+                                    <h1>
+                                        <span class="slds-text-heading_small">
+                                            {!v.headerName}
+                                        </span>	
+                                    </h1>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>  
+        <div class="slds-modal__content slds-p-around--large">
+            
+			<aura:if isTrue="{!v.ShowPaymentApplicationFields}">
+				<aura:if isTrue="{!v.ApplicationNotFound}"> 
+					<div  class="slds-grid slds-gutters slds-wrap">
+						<lightning:recordEditForm aura:id ="recordEditForm"
+												  recordId=""
+												  objectApiName="buildertek__SOV_Payment_Application__c"
+												  >  
+							<lightning:layout  multipleRows="true">
+								<lightning:layoutItem size="6" padding="around-small">
+									<lightning:inputField type="text"  fieldName="Name" value="{!v.newPaymentApplications.Name}" aura:id="nameId"/>
+								</lightning:layoutItem>
+								<lightning:layoutItem size="6" padding="around-small">
+									<lightning:inputField type="text"  fieldName="buildertek__Period_To__c" value="{!v.newPaymentApplications.buildertek__Period_To__c}" />
+								</lightning:layoutItem>
+								<lightning:layoutItem size="6" padding="around-small">
+									<lightning:inputField type="text"  fieldName="buildertek__Application__c" value="{!v.newPaymentApplications.buildertek__Application__c}" />
+								</lightning:layoutItem>
+								<lightning:layoutItem size="6" padding="around-small">
+									<lightning:inputField type="text"  fieldName="buildertek__Vendor__c" value="{!v.newPaymentApplications.buildertek__Vendor__c}" />
+								</lightning:layoutItem>
+								<lightning:layoutItem size="6" padding="around-small">
+									<lightning:inputField type="text"  fieldName="buildertek__Project__c" value="{!v.newPaymentApplications.buildertek__Project__c}" />
+								</lightning:layoutItem>
+								<lightning:layoutItem size="6" padding="around-small">
+									<lightning:inputField type="text"  fieldName="buildertek__Architect__c" value="{!v.newPaymentApplications.buildertek__Architect__c}" />
+								</lightning:layoutItem>
+								<lightning:layoutItem size="6" padding="around-small">
+									<lightning:inputField type="text"  fieldName="buildertek__Contract_For__c" value="{!v.newPaymentApplications.buildertek__Contract_For__c}" />
+								</lightning:layoutItem>
+								<lightning:layoutItem size="6" padding="around-small">
+									<lightning:inputField type="text"  fieldName="buildertek__Contract_Date__c" value="{!v.newPaymentApplications.buildertek__Contract_Date__c}" />
+								</lightning:layoutItem>
+							</lightning:layout>
+						</lightning:recordEditForm> 
+					</div>
+				</aura:if>
+				<aura:if isTrue="{!v.ApplicationFound}"> 
+					<div  class="slds-grid slds-gutters slds-wrap">
+						<lightning:recordEditForm aura:id="recordEditForm"
+												  recordId="{!v.existingPaymentApplications.Id}"
+												  objectApiName="buildertek__SOV_Payment_Application__c"
+												  >    
+							<lightning:layout  multipleRows="true">
+								<lightning:layoutItem size="6" padding="around-small">
+									<lightning:inputField type="text"  fieldName="Name" value="{!v.paymentApplicationName}" aura:id="nameId"/>
+								</lightning:layoutItem>
+								<lightning:layoutItem size="6" padding="around-small">
+									<lightning:inputField type="text"  fieldName="buildertek__Period_To__c" value="{!v.applicationEndDate}" aura:id="periodId"/>
+								</lightning:layoutItem>
+								<lightning:layoutItem size="6" padding="around-small">
+									<lightning:inputField type="text"  fieldName="buildertek__Application__c" value="{!v.newPaymentApplications.buildertek__Application__c}" />
+								</lightning:layoutItem>
+								<lightning:layoutItem size="6" padding="around-small">
+									<lightning:inputField type="text"  fieldName="buildertek__Vendor__c" value="{!v.newPaymentApplications.buildertek__Vendor__c}" />
+								</lightning:layoutItem>
+								<lightning:layoutItem size="6" padding="around-small">
+									<lightning:inputField type="text"  fieldName="buildertek__Project__c" value="{!v.newPaymentApplications.buildertek__Project__c}" />
+								</lightning:layoutItem>
+								<lightning:layoutItem size="6" padding="around-small">
+									<lightning:inputField type="text"  fieldName="buildertek__Architect__c" value="{!v.newPaymentApplications.buildertek__Architect__c}" />
+								</lightning:layoutItem>
+								<lightning:layoutItem size="6" padding="around-small">
+									<lightning:inputField type="text"  fieldName="buildertek__Contract_For__c" value="{!v.newPaymentApplications.buildertek__Contract_For__c}" />
+								</lightning:layoutItem>
+								<lightning:layoutItem size="6" padding="around-small">
+									<lightning:inputField type="text"  fieldName="buildertek__Contract_Date__c" value="{!v.newPaymentApplications.buildertek__Contract_Date__c}" />
+								</lightning:layoutItem>
+							</lightning:layout>   
+						</lightning:recordEditForm> 
+					</div>
+				</aura:if>
+			</aura:if>
+			<aura:if isTrue="{!v.IsPaymentApplication}" >
+				<div  class="slds-grid slds-gutters slds-wrap">
+					<lightning:recordEditForm aura:id ="recordEditForm"
+											  objectApiName="buildertek__SOV_Continuation__c">
+						<lightning:layout multipleRows="true">
+							<lightning:layoutItem size="6" padding="around-small">
+								<lightning:inputField fieldName="Name" aura:id="sheetName" value="{!v.continuationSheet.Name}"/>   
+							</lightning:layoutItem>
+							<lightning:layoutItem size="6" padding="around-small">
+								<lightning:inputField fieldName="buildertek__Application__c" value="{!v.paymentApplicationId}" aura:id="applicationId"/>   
+							</lightning:layoutItem>
+							<lightning:layoutItem size="6" padding="around-small">
+								<lightning:inputField fieldName="buildertek__Application_Date__c" value="{!v.continuationSheet.buildertek__Application_Date__c}" aura:id="applicationDate"/>   
+							</lightning:layoutItem>
+							<lightning:layoutItem size="6" padding="around-small">
+								<lightning:inputField fieldName="buildertek__Period_To__c" value="{!v.continuationSheet.buildertek__Period_To__c}" aura:id="periodTo"/>   
+							</lightning:layoutItem>
+							<lightning:layoutItem size="6" padding="around-small">
+								<lightning:inputField fieldName="buildertek__Architect_Project_No__c" value="{!v.continuationSheet.buildertek__Architect_Project_No__c}" aura:id="architectNo"/>   
+							</lightning:layoutItem>
+						</lightning:layout>
+					</lightning:recordEditForm>
+				</div>
+			</aura:if>
+            <aura:if isTrue="{!v.IsContinuationSheet}">
+
+                <div class="slds-p-around_small">
+                    <lightning:layout multipleRows="true">
+                        <lightning:layoutItem size="6">
+                            <label><b>Payment App Name</b></label>&nbsp;&nbsp;
+                            <lightning:formattedText value="{!v.paymentappName}" />
+                        </lightning:layoutItem>
+                        <lightning:layoutItem size="6">
+                        </lightning:layoutItem>
+                        <lightning:layoutItem size="6">
+                            <label><b>Continuation Sheet </b></label>&nbsp;&nbsp;
+                            <lightning:formattedText value="{!v.getcontinuationSheet.Name}" />
+                        </lightning:layoutItem>
+                        <lightning:layoutItem size="6">
+                            <label><b>Application Number </b></label>&nbsp;&nbsp;
+                            <lightning:formattedNumber value="{!v.ApplicationNo}" />
+                        </lightning:layoutItem>
+                        <lightning:layoutItem size="6">
+                            <label><b>Project </b></label>&nbsp;&nbsp;
+                            <lightning:formattedText value="{!v.getcontinuationSheet.buildertek__SOV_Payment_Application__r.buildertek__Project__r.Name}" />
+                        </lightning:layoutItem>
+                        <lightning:layoutItem size="6">
+                            <label><b>Application Date </b></label>&nbsp;&nbsp;
+                            <lightning:formattedDateTime value="{!v.getcontinuationSheet.buildertek__Application_Date__c}" />
+                        </lightning:layoutItem>
+                        <lightning:layoutItem size="6">
+                            <label><b>Architect</b></label>&nbsp;&nbsp;
+                            <lightning:formattedText value="{!v.Architect}" />
+                        </lightning:layoutItem>
+                        <lightning:layoutItem size="6">
+                            <label><b>Period To </b></label>&nbsp;&nbsp;
+                            <lightning:formattedDateTime value="{!v.PeriodTo}" />
+                        </lightning:layoutItem>
+                    </lightning:layout>
+                </div> 
+                
+                <div class="slds-p-around_small">
+                <div class="scrollable slds-scrollable">
+                    <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal">
+                        <thead>
+                            <tr>
+                                <td>
+                                    S.No
+                                </td>
+                                <!--<td>
+                                    Item No#    
+                                </td>-->
+                                <td>
+                                    Description of Work
+                                </td>
+                                <td>
+                                    Schedule Value
+                                </td>
+                                <td>
+                                    <div style="text-align:center">Work Completed</div> 
+                                    <div style="text-align:center">From Previous App</div>
+                                </td>
+                                <td>
+                                    <div style="text-align:center">Work Completed</div> 
+                                    <div style="text-align:center">This Period</div>
+                                </td>
+                                <td>
+                                    <div style="text-align:center">Materials Presently</div> 
+                                    <div style="text-align:center">Stored</div>
+                                </td>
+                                <td>
+                                    <div style="text-align:center">Total Completed</div> 
+                                    <div style="text-align:center">and Stored</div>
+                                </td>
+                                <td>
+                                    %(G/C)
+                                </td>
+                                <td>
+                                    Balance To Finish
+                                </td>
+                                <td>
+                                    Retainage
+                                </td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:iteration items="{!v.continuationItems}" var="item" indexVar="index"> <!-- {!v.continuationSheetLines} -->
+                                <tr >
+                                    <td>
+                                        {!index+1}
+                                    </td>
+                                    <!-- <td>
+                                        <lightning:input type="text" value="{!item.Name}" variant="label-hidden" class="nameClass"/>
+                                    </td>-->
+                                    <td>
+                                        <lightning:input type="text" value="{!item.buildertek__Description_of_Work__c}" variant="label-hidden" />
+                                    </td>
+                                    <td>
+                                        <aura:if isTrue="{!item.Id}">
+                                            <lightning:input type="number" value="{!item.buildertek__Scheduled_Value__c ? item.buildertek__Scheduled_Value__c : 0}" aura:id="buildertek__Scheduled_Value__c" variant="label-hidden" formatter="currency" step="0.01" onchange="{!c.changeValue}" name="{!item.Id}"/> <!-- onchange="{!c.changeValue}" -->
+                                        	<aura:set attribute="else">
+                                            	<lightning:input type="number" value="{!item.buildertek__Scheduled_Value__c ? item.buildertek__Scheduled_Value__c : 0}" aura:id="buildertek__Scheduled_Value__c" variant="label-hidden" formatter="currency" step="0.01" onchange="{!c.changeValue}" name="{!'customrec_'+index}"  /> <!-- onchange="{!c.changeValue}" -->
+                                            </aura:set>
+                                        </aura:if>
+                                    </td>
+                                    <td>
+                                        <aura:if isTrue="{!item.Id}">
+                                            <lightning:input type="number" value="{!item.buildertek__Work_Completed_from_Previous_Application__c ? item.buildertek__Work_Completed_from_Previous_Application__c : 0}" aura:id="buildertek__Work_Completed_from_Previous_Application__c" variant="label-hidden" formatter="currency" step="0.01" onchange="{!c.changeValue}"  name="{!item.Id}"/> <!-- onchange="{!c.changeValue}" -->
+                                        	<aura:set attribute="else">
+                                            	<lightning:input type="number" value="{!item.buildertek__Work_Completed_from_Previous_Application__c ? item.buildertek__Work_Completed_from_Previous_Application__c : 0}" aura:id="buildertek__Work_Completed_from_Previous_Application__c" variant="label-hidden" formatter="currency" step="0.01" onchange="{!c.changeValue}"  name="{!'customrec_'+index}"  /> <!-- onchange="{!c.changeValue}" -->
+                                            </aura:set>
+                                        </aura:if>
+                                        
+                                    </td>
+                                    <td>
+                                        <aura:if isTrue="{!item.Id}">
+                                        	<lightning:input type="number" value="{!item.buildertek__Work_Completed__c ? item.buildertek__Work_Completed__c : 0}" aura:id="buildertek__Work_Completed__c" variant="label-hidden" formatter="currency" step="0.01" onchange="{!c.changeValue}"  name="{!item.Id}"/>   <!-- onchange="{!c.changeValue}" -->
+                                            <aura:set attribute="else">
+                                            	<lightning:input type="number" value="{!item.buildertek__Work_Completed__c ? item.buildertek__Work_Completed__c : 0}" aura:id="buildertek__Work_Completed__c" variant="label-hidden" formatter="currency" step="0.01" onchange="{!c.changeValue}"  name="{!'customrec_'+index}" />    <!-- onchange="{!c.changeValue}" -->
+                                            </aura:set>
+                                        </aura:if>
+                                        
+                                    </td>
+                                    <td>
+                                        <aura:if isTrue="{!item.Id}">
+                                        	<lightning:input type="number" value="{!item.buildertek__Material_Presently_Stored__c ? item.buildertek__Material_Presently_Stored__c : 0}" aura:id="buildertek__Material_Presently_Stored__c" variant="label-hidden" formatter="currency" step="0.01" onchange="{!c.changeValue}"  name="{!item.Id}"/>    <!-- onchange="{!c.changeValue}" -->
+                                        	 <aura:set attribute="else">
+                                            	<lightning:input type="number" value="{!item.buildertek__Material_Presently_Stored__c ? item.buildertek__Material_Presently_Stored__c : 0}" aura:id="buildertek__Material_Presently_Stored__c" variant="label-hidden" formatter="currency" step="0.01" onchange="{!c.changeValue}" name="{!'customrec_'+index}" />   <!-- onchange="{!c.changeValue}" -->
+                                            </aura:set>
+                                        </aura:if>
+                                    </td>
+                                    <td>
+                                        <lightning:input type="number" value="{!item.buildertek__Total__c}" variant="label-hidden" disabled="true" formatter="currency" step="0.01"/>
+                                    </td>
+                                    <td>
+                                        <lightning:input type="number" value="{!item.buildertek__New_G_C__c/100}" variant="label-hidden" disabled="true" formatter="percent" step="0.01"/>
+                                    </td>
+                                    <td>
+                                        <lightning:input type="number" value="{!item.buildertek__Balance_To_Finish__c}" variant="label-hidden" disabled="true" formatter="currency" step="0.01"/>
+                                    </td>
+                                   <!-- <td>
+                                         <lightning:input type="number" value="{!item.buildertek__Work_Completed_from_Previous_Application__c + item.buildertek__Work_Completed__c}" variant="label-hidden" disabled="true" formatter="currency" step="0.01"/>
+                                    </td> -->
+                                    
+                                  <!--  <td>
+                                        <lightning:input type="number" value="{!item.buildertek__Work_Completed_from_Previous_Application__c + item.buildertek__Work_Completed__c}" variant="label-hidden" disabled="true" formatter="currency" step="0.01"/>
+                                    </td> -->
+                                    <td>
+                                        <lightning:input type="number" value="{!(item.buildertek__Work_Completed_from_Previous_Application__c + item.buildertek__Work_Completed__c) * v.Retainage/100}" variant="label-hidden" disabled="true" formatter="currency" step="0.01"/>
+                                    </td>
+                                    <!-- <aura:if isTrue="{!v.isApplication}">
+                                        <lightning:input type="number" value="{!item.buildertek__Work_Completed_from_Previous_Application__c + item.buildertek__Work_Completed__c}" variant="label-hidden" disabled="true" formatter="currency" step="0.01"/>
+                                        <aura:set attribute="else">
+                                        <lightning:input type="number" value="{!item.buildertek__Work_Completed__c * !v.Retainage}" variant="label-hidden" disabled="true" formatter="currency" step="0.01"/>
+                                        </aura:set>
+                                    </aura:if> -->
+                                    <td>
+                                       <span data-index="{!index}" onclick="{!c.addNewRow}">
+                                            <lightning:icon iconName="utility:add"
+                                                            size="xx-small" /> 
+                                        </span> 
+                                        <!-- <lightning:button label="Add" title="Add Row" onclick="{!c.addNewRow}" value="{!index}"/> -->
+                                        &nbsp;&nbsp;&nbsp;
+                                        <!--<span data-recordid="{!''+item.Id+'_'+index}" onclick="{!c.deleteRow}">
+                                            <lightning:icon iconName="utility:delete"
+                                                            size="xx-small" />
+                                        </span>-->
+                                        <span data-index='{!index}' onclick="{!c.deleteRow}">
+                                            <lightning:icon iconName="utility:delete"
+                                                            size="xx-small" />
+                                        </span> 
+                                    </td>
+                                </tr>
+                            </aura:iteration>
+                            <tr>
+                                <td>
+                                    Total
+                                </td> 
+                                <td>
+                                </td>
+                                <td>
+                                    <b><lightning:formattedNumber value="{!v.scheduleValueTotal}" style="currency"/></b>     
+                                </td>
+                                <td>
+                                    <b><lightning:formattedNumber value="{!v.workFromPrevAppTotal}" style="currency"/></b>     
+                                </td>
+                                <td>
+                                    <b><lightning:formattedNumber value="{!v.workcompletedTotal}" style="currency"/></b>     
+                                </td>
+                                <td>
+                                    <b><lightning:formattedNumber value="{!v.materialsStoredTotal}" style="currency"/></b>     
+                                </td>
+                                <td>
+                                    <b><lightning:formattedNumber value="{!v.totalCompletedStored}" style="currency"/></b>     
+                                </td>
+                                <td>
+                                    <b><lightning:formattedNumber value="{!v.gcTotal}" style="currency"/></b>     
+                                </td>
+                                <td>
+                                    <b><lightning:formattedNumber value="{!v.balanceTotal}" style="currency"/></b>     
+                                </td>
+                                <td>
+                                    <b><lightning:formattedNumber value="{!v.Retainage}" style="currency"/></b>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div> 
+                
+                
+
+                
+               <!-- <div class="scrollable slds-scrollable">
+                    <aura:iteration items="{!v.continuationItems}" var="item" indexVar="index">
+                        <lightning:layout multipleRows="true" class="layoutClass">
+                            <lightning:layoutItem size="1" padding="around-small">
+                                {!index+1}
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <lightning:input type="text" value="{!item.Name}" label="Item No#"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input type="text" value="{!item.buildertek__Description_of_Work__c}" label="Description of Work"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input type="text" value="{!item.buildertek__Scheduled_Value__c}" label="Schedule Value"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input type="text" value="{!item.buildertek__Work_Completed_from_Previous_Application__c}" label="Work Completed From Previous App"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input type="text" value="{!item.buildertek__Work_Completed__c}" label="Work Completed This Period"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input type="text" value="{!item.buildertek__Material_Presently_Stored__c}" label="Materials Presently Stored"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input type="text" value="{!item.buildertek__Total__c}" label="Total Completed and Stored" disabled="true"/>
+                            </lightning:layoutItem>
+                           
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <lightning:input type="text" value="{!item.buildertek__Balance_To_Finish__c}" label="Balance To Finish" disabled="true"/>
+                            </lightning:layoutItem>
+                        </lightning:layout> 	   
+                    </aura:iteration>   
+                </div>   -->
+                
+			</aura:if>
+            
+            
+            
+			<aura:if isTrue="{!v.ShowInsrtedLines}">
+				<div class="scrollable slds-scrollable">
+					<aura:iteration items="{!v.continuationSheetLines}" var="item" indexVar="index">
+						<lightning:layout multipleRows="true" class="layoutClass">
+							<lightning:layoutItem size="1" padding="around-small">
+								{!index+1}
+							</lightning:layoutItem>
+							<lightning:layoutItem size="2" padding="around-small">
+								<lightning:input type="text" value="{!item.Name}" label="Item No#"/>
+							</lightning:layoutItem>
+							<lightning:layoutItem size="3" padding="around-small">
+								<lightning:input type="text" value="{!item.buildertek__Description_of_Work__c}" label="Description of Work"/>
+							</lightning:layoutItem>
+							<lightning:layoutItem size="3" padding="around-small">
+								<lightning:input type="text" value="{!item.buildertek__Scheduled_Value__c}" label="Schedule Value"/>
+							</lightning:layoutItem>
+							<lightning:layoutItem size="3" padding="around-small">
+								<lightning:input type="text" value="{!item.buildertek__Work_Completed_from_Previous_Application__c}" label="Work Completed From Previous App"/>
+							</lightning:layoutItem>
+							<lightning:layoutItem size="3" padding="around-small">
+								<lightning:input type="text" value="{!item.buildertek__Work_Completed__c}" label="Work Completed This Period"/>
+							</lightning:layoutItem>
+							<lightning:layoutItem size="3" padding="around-small">
+								<lightning:input type="text" value="{!item.buildertek__Material_Presently_Stored__c}" label="Materials Presently Stored"/>
+							</lightning:layoutItem>
+							<lightning:layoutItem size="3" padding="around-small">
+								<lightning:input type="text" value="{!item.buildertek__Total__c}" label="Total Completed and Stored" disabled="true"/>
+							</lightning:layoutItem>
+							<lightning:layoutItem size="1" padding="around-small">
+								<lightning:input type="text" value="{!item.buildertek__New_G_C__c}" label="%(G/C)" disabled="true"/>
+							</lightning:layoutItem>
+							<lightning:layoutItem size="2" padding="around-small">
+								<lightning:input type="text" value="{!item.buildertek__Balance_To_Finish__c}" label="Balance To Finish" disabled="true"/>
+							</lightning:layoutItem>
+						</lightning:layout> 	   
+					</aura:iteration> 
+				</div>
+			</aura:if>   
+            <div class="slds-p-around_small slds-align_absolute-center">
+                <lightning:button variant="neutral" label="Cancel" onclick="{! c.closeModel }" />
+                <aura:if isTrue="{!v.ShowPaymentApplicationFields}">
+                    <lightning:button variant="brand" label="Submit"  onclick="{! c.saveApplication }" />
+                </aura:if>
+                <aura:if isTrue="{!v.IsPaymentApplication}">
+                    <lightning:button variant="brand" label="Submit"  onclick="{! c.createContinuationSheet }" />
+                </aura:if>
+                <aura:if isTrue="{!v.IsContinuationSheet}">
+                    <lightning:button variant="brand" label="Submit" aura:id="submit" onclick="{!c.createContinuationSheetLines}"/>
+                </aura:if>
+                <aura:if isTrue="{!v.ShowInsrtedLines}">
+                    <lightning:button variant="brand" label="Update" onclick="{!c.updateContinuationSheetLines}"/>
+                </aura:if>
+            </div>
+        </div>
+        <aura:if isTrue="{!v.Spinner}">
+            <div aura:id="spinnerId" class="slds-spinner_container">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                     <div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+                </div>
+            </div>
+         </aura:if>
+    </div>    
+     <lightning:notificationsLibrary aura:id="notifLib" />
+            <lightning:overlayLibrary aura:id="overlayLib" />
+</aura:component>

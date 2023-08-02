@@ -1,0 +1,45 @@
+<!--**********************************************************************************
+* Copyright © 2017, BuilderTek.
+* All rights reserved
+*
+* VisualForce Page: BT_EditFile
+* Created by Sagar
+
+* - Edit file in multi upload file component
+
+* - Modifications:
+* - Sagar - Initial 
+***********************************************************************************-->
+<apex:page extensions="BT_EditFileController" title="{!$Label.buildertek__New} {!$ObjectType.File__c.label}" sidebar="false" showHeader="true"  standardController="File__c">
+    <c:BT_JsAndCssIncludeComponent importJquery="true"
+                              importAppurinUtil="true"
+                              importJQueryLayout="false"
+                              importFancyTree="false"
+                              importJqGrid="false"
+                              importEasyTooltip="true"
+                              importAppurinCss="true"
+                              importCkEditor="false"
+                              importGnattChart="false"
+                              importLightningDesign="true"/>
+                              
+    <apex:outputPanel rendered="{!isError}">
+        <apex:pagemessages id="pageLoadErrorMessage"/>
+        <script>
+            Appurin.lightning.createLightningPageMessage({'classicPageMessageId' : '{!$Component.pageLoadErrorMessage}'});   
+        </script>
+    </apex:outputPanel>
+    
+    <apex:panelGroup rendered="{!!isError}">
+        <head>
+            <script>
+            
+                var uploadFileWindowURL = '{!JSENCODE(uploadFileURL)}';
+                if(Appurin.lightning.isLightningExperience()){
+                    Appurin.lightning.navigateToURL(uploadFileWindowURL, false);
+                } else{
+                    window.open(uploadFileWindowURL,"_self");
+                }
+            </script>
+        </head>
+    </apex:panelGroup>
+</apex:page>

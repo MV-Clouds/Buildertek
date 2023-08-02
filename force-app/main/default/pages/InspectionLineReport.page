@@ -1,0 +1,68 @@
+<apex:page controller="InspectionLinesReport">
+    <apex:form >
+        <script src="{$Resource.CanvasJs}"></script>
+        <style>
+            .canvasjs-chart-credit{
+                display: none !important;
+            }
+        </style>
+        <script>
+            window.onload = function () {
+                CanvasJS.addColorSet("greenShades",
+                [
+                "#2F4F4F",
+                "#008080",
+                "#2E8B57",
+                "#3CB371",
+                "#90EE90"                
+                ]);
+                var All = ''; 
+                All = '{!JSENCODE(piechartString)}';
+                var Allstring = JSON.parse(All);
+                for(var i= 0;i < Allstring.length;i++){
+                    var dataPoints = [];    
+                    var labels = 0;
+                    var Poslabels = 0;
+                    var Neglabels = 0;
+                    for(var j=0; j<Allstring[i].Pielist.length; j++){
+                        if(Allstring[i].Pielist[j] != undefined){
+                            dataPoints.push({  y: 25, legendText: Allstring[i].Pielist[j].data, name: Allstring[i].Pielist[j].data }); 
+                        }    
+                    }
+                }
+                var chart = new CanvasJS.Chart("chartContainer", {
+                	animationEnabled: true,
+                    title:{
+                		text: "4",
+                		horizontalAlign: "center",
+                		verticalAlign: "center",
+                		dockInsidePlotArea: true,
+                		fontFamily: "tahoma",
+                		fontWeight: "normal",
+                	},
+                	legend: {
+                	    horizontalAlign: "right",
+                	    verticalAlign: "center",
+                        itemWidth: 120,
+                        fontSize: 15
+                    },
+                	data: [{
+                        type: 'doughnut',
+                        showInLegend: true,
+                        innerRadius: "65%",
+                        toolTipContent: "{name}",
+                        dataPoints: dataPoints
+                	}]
+                });
+                chart.render();
+            }
+        </script>
+        <div>
+            <h3 style="margin-left: 5%;font-size: 15px;">Inspection Health Status</h3>
+        </div><br/><br/> 
+        <div>
+         <h3 style="position: fixed;left: 31%;font-size: 15px;">Record Count</h3>
+        </div><br/>
+        <div id="chartContainer" style="height: 300px; width: 100%;"></div>     
+    </apex:form>
+</apex:page>

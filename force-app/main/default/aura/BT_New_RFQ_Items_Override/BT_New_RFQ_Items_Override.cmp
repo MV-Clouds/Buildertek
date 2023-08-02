@@ -1,0 +1,169 @@
+<aura:component controller="RFQLinesDAO" implements="force:hasRecordId,flexipage:availableForRecordHome" access="global">
+    
+    <aura:attribute name="onSuccess" type="Object"/>
+    <aura:attribute name="rfqItemId" type="String"/>
+    <aura:attribute name="onCancel" type="Object"/>
+    <aura:attribute name="selectedCostCode" type="sObject"/>
+    <aura:attribute name="newRFQLine" type="RFQ_Item__c" default="{ 'sobjectType': 'RFQ_Item__c', 'buildertek__Quantity__c': 1 }" access="public"/>
+    <aura:attribute name="mainObjectFieldAPI" type="string" />
+    <aura:attribute name="mainObjectId" type="string" />
+    <aura:attribute name="showProductFileds" type="Boolean" />
+    <aura:attribute name="selectedLookUpRecord" type="String" />
+    <aura:attribute name="Spinner" type="Boolean" />
+    <aura:attribute name="open" type="Boolean" default="false" />
+    <aura:attribute name="rfqname" type="Boolean" default="false" />
+    <aura:attribute name="openModel" type="Boolean" default="false" />
+    <aura:attribute type="String" name="hiddenAttrib" default="anyvalue" />
+    <aura:handler name="oSelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.handleComponentEvent}"/>
+    <aura:handler name="SelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.handleComponentEvents}"/>
+    <aura:handler name="selectedSearchValue" event="c:BT_SelectedSearchValue" action="{!c.handleComponentEvt}"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="isName" type="boolean" default = "false"/>    
+    
+    <aura:attribute name="pricebookoptions" type="List" />
+    <aura:attribute name="pricebookName" type="string" />
+    <aura:attribute name="productfamily" type="string" />
+    <aura:attribute name="productfamilyoptions" type="List" />
+    <aura:attribute name="listofproductfamily" type="List" />
+    <aura:attribute name="listOfFields" type="List" />
+    <aura:attribute name="parentRecordId" type="String" />
+    
+    <aura:attribute name="newPOItem" type="RFQ_Item__c" default="{ 'sobjectType': 'RFQ_Item__c'}"
+                    access="global" />
+    
+    
+    <aura:attribute name="tradeTypesList" type="list" />
+    <aura:attribute name="selectedTradeTypeId" type="String" default="All"/>
+    <aura:attribute name="selectedTradeTypeIdName" type="String" default="All"/>
+    <ltng:require styles="{!$Resource.ModalPreviewCSS}"/>
+    
+    
+    <!-- <aura:if isTrue="{!v.openModel}" > -->
+    
+    <div aura:id="coContainer" class="c-container" >
+        <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__RFQ_Item__c">
+            <lightning:layout multipleRows="true">
+                <aura:if isTrue="{!v.showProductFileds}">
+                    <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                        <label class="slds-form-element__label slds-no-flex 'slds-hide'">Pricebook</label>
+                        <div  aura:id="newButtonDiv">
+                            <ui:inputSelect value="{! v.pricebookName }" change="{!c.changeEvent}"
+                                            class="pricebook-class" required="true">
+                                
+                                <aura:iteration var="option" items="{! v.pricebookoptions }">
+                                    <option value="{! option.value }"
+                                            selected="{!option.value == v.pricebookName}">{!
+                                        option.key }</option>
+                                </aura:iteration>
+                            </ui:inputSelect> 
+                        </div>
+                    </lightning:layoutItem>              
+                    <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small" class="changepadding">
+                        Product Family
+                        <ui:inputSelect value="{!v.productfamily}" change="{!c.changefamily}"
+                                        class="pricebook-class" required="true">
+                            <aura:iteration var="option" items="{!v.listofproductfamily}">
+                                <option value="{!option.productfamilyvalues}"
+                                        selected="{!option.productfamilyvalues == v.productfamily}">
+                                    {!option.productfamilyvalues}</option>
+                            </aura:iteration>
+                        </ui:inputSelect>
+                    </lightning:layoutItem>
+                    
+                    <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                        Product
+                        <div style="padding-top: 0.1rem;">
+                        <c:BT_LightningLookup aura:id="productId" objectAPIName="Product2" IconName="standard:product" SearchKeyWord="" selectedRecord= "{!v.selectedLookUpRecord}" parentId="{! v.pricebookName }" prodctfamly ="{!v.productfamily}"/> 
+                        </div>
+                        <!-- <c:BT_LightningLookup objectAPIName="Product2" IconName="standard:product" SearchKeyWord="{!v.selectedLookUpRecord}"/>-->
+                    </lightning:layoutItem>
+                    
+                </aura:if>
+                <aura:if isTrue="{!v.showProductFileds}">
+                    <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                        RFQ
+                        <lightning:inputField aura:id="rfqId" fieldName="buildertek__RFQ_Package__c" variant="label-hidden" required="true"/>
+                    </lightning:layoutItem>
+                    <aura:set attribute="else">
+                        <div style="display: none;">
+                            <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                                RFQ
+                                <lightning:inputField aura:id="rfqId" fieldName="buildertek__RFQ_Package__c" variant="label-hidden" required="true"/>
+                            </lightning:layoutItem>
+                        </div>
+                        
+                    </aura:set> 
+                </aura:if>
+                
+                <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small"  >
+                    <!--  <div class="slds-required">*</div>RFQ Item-->
+                    <label class="slds-form-element__label" for="form-element-03">
+                        <abbr class="slds-required" title="required">* </abbr>RFQ Item</label>
+                    <lightning:inputField aura:id="rfqName" fieldName="Name" value="{!v.newRFQLine.Name}" required="true" variant="label-hidden"  onchange="{!c.changedescription }"/>
+                </lightning:layoutItem>
+                <!-- <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                    
+                    <lightning:inputField aura:id="masterItem" fieldName="buildertek__Master_Item__c" value="{!v.newRFQLine.buildertek__Master_Item__c}" label="MasterItem"/>
+                </lightning:layoutItem> -->
+                <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                    Description
+                    <lightning:inputField aura:id="description" fieldName="buildertek__Description__c" value="{!v.newRFQLine.buildertek__Description__c}"   variant="label-hidden" />
+                </lightning:layoutItem>
+                <!--  <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                    Trade Type
+                    <div style = "margin-left: -8%;margin-top: -2%;">
+                        <c:BT_SearchWithDropDown  inputValue="All" results="{!v.tradeTypesList}" myInputId="tradeTypeId" myULId="tradeTypeULId" selectedOption="{!v.selectedTradeTypeId}"/>
+                    </div>
+                     <lightning:inputField aura:id="tradeType" fieldName="buildertek__Trade_Type__c" value="{!v.newRFQLine.buildertek__Trade_Type__c}" label="Trade Type" /> 
+                 </lightning:layoutItem> -->
+                <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                    Quantity
+                    <lightning:inputField aura:id="quantity" fieldName="buildertek__Quantity__c" value="{!v.newRFQLine.buildertek__Quantity__c}" variant="label-hidden" />
+                </lightning:layoutItem>
+                <!--<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                    Cost Code
+                    <c:customLookup objectAPIName="buildertek__Cost_Codes__c" IconName="standard:account" selectedRecord="{!v.selectedCostCode}" />	
+                    &lt;!&ndash;	<lightning:inputField aura:id="costCode" fieldName="buildertek__Cost_Code__c" value="{!v.newRFQLine.buildertek__Cost_Code__c}" variant="label-hidden" />&ndash;&gt;
+                </lightning:layoutItem>-->
+                
+               <!-- <aura:if isTrue="{!v.showProductFileds}">-->
+                    <!-- <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                        Unit Price
+                        <lightning:inputField aura:id="unitPrice" fieldName="buildertek__Unit_Price__c" value="{!v.newRFQLine.buildertek__Unit_Price__c}" variant="label-hidden" />
+                    </lightning:layoutItem> -->
+                   <!-- <aura:set attribute="else">
+                        <div style="display: none;">
+                            <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                                Unit Price
+                                <lightning:inputField aura:id="unitPrice" fieldName="buildertek__Unit_Price__c" value="{!v.newRFQLine.buildertek__Unit_Price__c}" variant="label-hidden" />
+                            </lightning:layoutItem>
+                        </div>
+                    </aura:set> 
+                </aura:if>-->
+                
+                
+            </lightning:layout>
+        </lightning:recordEditForm> 
+        
+    </div>
+    <!-- </aura:if> -->
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                    <b>Processing, Please Wait</b>
+                </div>
+            </div>
+        </div>    
+    </aura:if>
+    <div class="slds-hide">
+        <div aura:id="footer">
+            <button class="slds-button slds-button_neutral" onclick="{!c.doCancel}">Cancel</button>
+            <button class="slds-button slds-button_neutral" onclick="{!c.doSaveAndNew}">Save &amp; New</button>
+            <button class="slds-button slds-button_brand" onclick="{!c.doSave}">Save</button>
+        </div>
+    </div>
+</aura:component>

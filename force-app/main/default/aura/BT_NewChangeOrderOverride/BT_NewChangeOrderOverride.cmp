@@ -1,0 +1,331 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction,lightning:actionOverride,lightning:hasPageReference" access="global"  controller="NewChangeOrderController">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="parentRecordId" type="String" default="" />
+    <aura:attribute name="RecordTypeId" type="String" default="" />    
+    <aura:attribute name="parentprojectRecordId" type="String" default="" />
+    <aura:attribute name="parentRFQRecordId" type="String" default="" />
+    <aura:attribute name="parentContractRecordId" type="String" default="" />
+    <aura:attribute name="parentPurchaseOrderRecordId" type="String" default="" />
+    <aura:attribute name="parentbudgetRecordId" type="String" default="" />
+    <aura:attribute name="COType" type="String" default="" />
+    <aura:attribute name="parentaccountingPeriodRecordId" type="String" default="" />
+    <aura:attribute name="isLoading" type="Boolean" />
+    <aura:attribute name="listOfFields" type="List" />
+    <aura:attribute name="NameOfCO" type="String"/>
+    <aura:attribute name="CustomerAccountName" type="String"/>
+    
+    <aura:attribute name="salesforceSelectedV" type="String"/>
+    
+    <aura:attribute name="createWithOutCOLines" type="Boolean" default="false" />
+    <aura:attribute name="createWithCOLines" type="Boolean" default="false" />
+
+    <aura:attribute name="sobjecttype" type="String" default="{!v.sObjectName}"/>
+    <aura:attribute name="isCommunity" type="Boolean" default="false" />
+    
+    <aura:attribute name="vendorId" type="String"/>
+    <aura:attribute name="AccountId" type="String"/>
+
+    <aura:attribute name="coLineList" type="List" />
+    <aura:attribute name="listOfCOFields" type="List" />
+    <aura:attribute name="isSaveNew" type="Boolean" />
+
+    
+    
+    <lightning:workspaceAPI aura:id="workspace" />
+    <ltng:require styles="{!$Resource.ModalPreview62moreMedia}"/>
+    <aura:html tag="style">
+        .slds-modal__container{
+            width: 60% !important;
+            padding: 0 !important;
+            max-width: 80rem !important;
+        }
+    </aura:html>
+
+    <aura:if isTrue="{!v.isLoading}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                    <b>Processing, Please Wait</b></div>
+            </div>
+        </div>
+    </aura:if>
+
+    <aura:if isTrue="{!v.createWithOutCOLines}" >
+        <div class="slds-modal__container">
+            <header class="slds-modal__header">
+                <h1 id="modal-heading-01" class="slds-text-heading--medium">New Change Order</h1>
+            </header>   
+    
+            <div class="slds-modal__content" id="modal-content-id-1" >
+                <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__Change_Order__c" onsubmit="{!c.handleSubmit}" onsuccess="{!c.onRecordSuccess}" onerror="{!c.handleError}" recordTypeId="{!v.RecordTypeId}">
+                    <lightning:messages />
+                    <div class="" style="height:50vh;width:100%;overflow: auto;">
+                        <div class="slds-p-around_medium" style="background-color:white;">
+                        <h2 class="slds-section-title--divider">Information</h2>
+                        <lightning:layout multipleRows="true">
+                            <aura:iteration items="{!v.listOfFields}" var="field">
+                                <lightning:layoutItem size="12" mediumDeviceSize="6" class = "slds-p-around_xx-small">
+                                    <div class = "slds-p-around_xx-small">
+                                        <aura:if  isTrue="{!and(and(and(and(and(and(and(and(field.name !='buildertek__Project__c', field.name !='buildertek__Customer_Account__c')
+                                                          ,field.name != 'buildertek__RFQ__c'),field.name != 'Name'),
+                                                          field.name != 'buildertek__Contract__c'),field.name != 'buildertek__Purchase_Order__c'),
+                                                          field.name != 'buildertek__Budget__c'),field.name != 'buildertek__Period__c'),field.name != 'buildertek__Type__c')}" >  
+                                            <aura:if  isTrue="{!field.name =='buildertek__Vendor__c'}" >   
+                                                
+                                                <aura:if  isTrue="{!v.isCommunity}">
+                                                    <lightning:inputField fieldName="{! field.name }" value="{!v.vendorId}" disabled="true"/>
+                                                    <aura:set attribute="else">
+                                                        <lightning:inputField fieldName="{! field.name }"  value = "" />
+                                                    </aura:set>
+                                                </aura:if>
+                                                <aura:set attribute="else">
+                                                    <aura:if  isTrue="{!field.name =='buildertek__Status__c'}" >  
+                                                        <aura:if  isTrue="{!v.isCommunity}">
+                                                            <lightning:inputField fieldName="{! field.name }" value="Pending" disabled="true" />
+                                                            <aura:set attribute="else">
+                                                                <lightning:inputField fieldName="{! field.name }"  value = ""  aura:id="selectedVendor" onchange="{!c.vendorChanged}"/>
+                                                            </aura:set>
+                                                        </aura:if>
+                                                        <aura:set attribute="else">
+                                                            <lightning:inputField fieldName="{! field.name }" required="{!field.Required}" />  
+                                                        </aura:set>
+                                                    </aura:if>
+                                                    
+                                                </aura:set>
+                                            </aura:if>
+                                            
+                                            <aura:set attribute="else"> 
+                                                <aura:if  isTrue="{!and(field.name =='buildertek__Customer_Account__c')}" >   
+                                                    <aura:if  isTrue="{!v.isCommunity}">
+                                                        <lightning:inputField fieldName="{! field.name }" value="{!v.vendorId}" disabled="true"/>
+                                                        <aura:set attribute="else">
+                                                            <lightning:inputField fieldName="{! field.name }" value="{!v.CustomerAccountName}"  required="{!field.Required}"/>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </aura:if>
+                                                <aura:if  isTrue="{!and(field.name =='buildertek__Project__c')}" >                                            
+                                                    <lightning:inputField fieldName="{! field.name }" aura:id="purchaseorder"  value = "{!v.parentprojectRecordId}"/>
+                                                </aura:if>
+                                                
+                                                <aura:if  isTrue="{!and(field.name =='buildertek__RFQ__c')}" >                                            
+                                                    <lightning:inputField fieldName="{! field.name }"  value = "{!v.parentRFQRecordId}"/>
+                                                </aura:if>
+                                                <aura:if  isTrue="{!and(field.name =='buildertek__Contract__c')}" >                                            
+                                                    <lightning:inputField fieldName="{! field.name }"   value = "{!v.parentContractRecordId}"/>
+                                                </aura:if>
+                                                <aura:if  isTrue="{!and(field.name =='buildertek__Purchase_Order__c')}" >                                            
+                                                    <lightning:inputField fieldName="{! field.name }" aura:id="purchaseorder"  value = "{!v.parentPurchaseOrderRecordId}"/>
+                                                </aura:if>
+                                                <aura:if  isTrue="{!and(field.name =='buildertek__Budget__c')}" >                                            
+                                                    <lightning:inputField fieldName="{! field.name }"  value = "{!v.parentbudgetRecordId}"/>
+                                                </aura:if>
+                                                <aura:if  isTrue="{!and(field.name =='buildertek__Period__c')}" >                                            
+                                                    <lightning:inputField fieldName="{! field.name }" value = "{!v.parentaccountingPeriodRecordId}"/>
+                                                </aura:if>
+                                                <aura:if  isTrue="{!and(field.name =='Name')}" >
+                                                     <lightning:inputField fieldName="{! field.name }" value = "{!v.NameOfCO}" autocomplete="off" required="true" aura:id="Name"/>
+                                                   <!-- <lightning:input fieldName="{! field.name }" label = "Change Order Name" aura:id="Name"  required="true" type="text" value = "{!v.NameOfCO}" autocomplete="off"/> -->
+                                                </aura:if>
+                                                <aura:if  isTrue="{!and(field.name =='buildertek__Type__c')}" >     
+                                                    <aura:if  isTrue="{!v.isCommunity}">
+                                                        <lightning:inputField fieldName="{! field.name }"  value = "Vendor" disabled="true"/>
+                                                        <aura:set attribute="else">
+                                                            <lightning:inputField fieldName="{! field.name }"  value = "" />
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </aura:if> 
+                                                
+                                            
+                                            </aura:set>
+                                        </aura:if>
+                                    </div>
+                                    
+                                </lightning:layoutItem>
+                            </aura:iteration>
+                        </lightning:layout>  
+                        </div>  
+                    </div>                        
+                    <footer class="slds-modal__footer" style = "padding-top: 10px">
+                        
+                        <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{!c.gotoList }" />
+                        <lightning:button variant="neutral" type="submit" title="Save &amp; New" label="Save &amp; New" onclick="{!c.handlesaveNnew}" />
+                        <lightning:button variant="brand" type="submit" name="save" label="Save"  />
+                        
+                    </footer>
+                    
+                </lightning:recordEditForm>
+            </div>
+            
+        </div>
+    </aura:if>
+
+    
+    <aura:if isTrue="{!v.createWithCOLines}" >    
+        <div class="slds-modal__container">
+            <header class="slds-modal__header">
+                <h1 id="modal-heading-01" class="slds-text-heading--medium">Create Change Order</h1>
+            </header>   
+    
+            <div class="slds-modal__content" id="modal-content-id-1" >
+                <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__Change_Order__c" onsubmit="{!c.handleSubmit}"  density="Comfy" onerror="{!c.handleError}" recordTypeId="{!v.RecordTypeId}">
+                    <lightning:messages />
+                    <div class="" style="height:50vh;width:100%;overflow: auto;">
+
+                        <div class="slds-p-around_medium" style="background-color:white;">
+                            <h2 class="slds-section-title--divider" style=" font-weight:bold">Information</h2>
+                            <lightning:layout multipleRows="true">
+                                <aura:iteration items="{!v.listOfFields}" var="field">
+                                    <lightning:layoutItem size="12" mediumDeviceSize="6" class = "slds-p-around_xx-small">
+                                        <div class = "slds-p-around_xx-small">
+                                            <aura:if  isTrue="{!and(and(and(and(and(and(and(and(field.name !='buildertek__Project__c', field.name !='buildertek__Customer_Account__c')
+                                                            ,field.name != 'buildertek__RFQ__c'),field.name != 'Name'),
+                                                            field.name != 'buildertek__Contract__c'),field.name != 'buildertek__Purchase_Order__c'),
+                                                            field.name != 'buildertek__Budget__c'),field.name != 'buildertek__Period__c'),field.name != 'buildertek__Type__c')}" >  
+                                                <aura:if  isTrue="{!field.name =='buildertek__Vendor__c'}" >   
+                                                    
+                                                    <aura:if  isTrue="{!v.isCommunity}">
+                                                        <lightning:inputField fieldName="{! field.name }" value="{!v.vendorId}" disabled="true"/>
+                                                        <aura:set attribute="else">
+                                                            <lightning:inputField fieldName="{! field.name }"  value = "" />
+                                                        </aura:set>
+                                                    </aura:if>
+                                                    <aura:set attribute="else">
+                                                        <aura:if  isTrue="{!field.name =='buildertek__Status__c'}" >  
+                                                            <aura:if  isTrue="{!v.isCommunity}">
+                                                                <lightning:inputField fieldName="{! field.name }" value="Pending" disabled="true" />
+                                                                <aura:set attribute="else">
+                                                                    <lightning:inputField fieldName="{! field.name }"  value = ""  aura:id="selectedVendor" onchange="{!c.vendorChanged}"/>
+                                                                </aura:set>
+                                                            </aura:if>
+                                                            <aura:set attribute="else">
+                                                                <lightning:inputField fieldName="{! field.name }" required="{!field.Required}" />  
+                                                            </aura:set>
+                                                        </aura:if>
+                                                        
+                                                    </aura:set>
+                                                </aura:if>
+                                                
+                                                <aura:set attribute="else"> 
+                                                    <aura:if  isTrue="{!and(field.name =='buildertek__Customer_Account__c')}" >   
+                                                        <aura:if  isTrue="{!v.isCommunity}">
+                                                            <lightning:inputField fieldName="{! field.name }" value="{!v.vendorId}" disabled="true"/>
+                                                            <aura:set attribute="else">
+                                                                <lightning:inputField fieldName="{! field.name }" value="{!v.CustomerAccountName}" />
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </aura:if>
+                                                    <aura:if  isTrue="{!and(field.name =='buildertek__Project__c')}" >                                            
+                                                        <lightning:inputField fieldName="{! field.name }" aura:id="purchaseorder"  value = "{!v.parentprojectRecordId}" />
+                                                    </aura:if>
+                                                    
+                                                    <aura:if  isTrue="{!and(field.name =='buildertek__RFQ__c')}" >                                            
+                                                        <lightning:inputField fieldName="{! field.name }"  value = "{!v.parentRFQRecordId}"/>
+                                                    </aura:if>
+                                                    <aura:if  isTrue="{!and(field.name =='buildertek__Contract__c')}" >                                            
+                                                        <lightning:inputField fieldName="{! field.name }"   value = "{!v.parentContractRecordId}"/>
+                                                    </aura:if>
+                                                    <aura:if  isTrue="{!and(field.name =='buildertek__Purchase_Order__c')}" >                                            
+                                                        <lightning:inputField fieldName="{! field.name }" aura:id="purchaseorder"  value = "{!v.parentPurchaseOrderRecordId}"/>
+                                                    </aura:if>
+                                                    <aura:if  isTrue="{!and(field.name =='buildertek__Budget__c')}" >                                            
+                                                        <lightning:inputField fieldName="{! field.name }"  value = "{!v.parentbudgetRecordId}"/>
+                                                    </aura:if>
+                                                    <aura:if  isTrue="{!and(field.name =='buildertek__Period__c')}" >                                            
+                                                        <lightning:inputField fieldName="{! field.name }" value = "{!v.parentaccountingPeriodRecordId}"/>
+                                                    </aura:if>
+                                                    <aura:if  isTrue="{!and(field.name =='Name')}" >
+                                                        <lightning:inputField fieldName="{! field.name }" value = "{!v.NameOfCO}" autocomplete="off" required="true" aura:id="Name"/>
+                                                    </aura:if>
+                                                    <aura:if  isTrue="{!and(field.name =='buildertek__Type__c')}" >     
+                                                        <aura:if  isTrue="{!v.isCommunity}">
+                                                            <lightning:inputField fieldName="{! field.name }"  value = "Vendor" disabled="true"/>
+                                                            <aura:set attribute="else">
+                                                                <lightning:inputField fieldName="{! field.name }"  value = "" />
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </aura:if> 
+
+                                                    
+                                                    
+                                                
+                                                </aura:set>
+                                            </aura:if>
+                                        </div>
+                                        
+                                    </lightning:layoutItem>
+                                </aura:iteration>
+                            </lightning:layout>  
+
+                            <h2 class="slds-section-title--divider" style=" font-weight:bold">CO Lines</h2>
+                            <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-m-top_small" aura:id="coLineTable">
+                                <thead>
+                                    <tr class="slds-text-title_caps">
+                                        
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Product Name">Item Name</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Description">Quantity</div>
+                                        </th>
+                                        <th scope="col" >
+                                            <div class="slds-truncate" title="Quantity">Unit Cost</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Unit Price">Markup</div>
+                                        </th>
+                                        <th scope="col">
+                
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{!v.coLineList}" var="item" indexVar="index">
+                                        <tr class="slds-hint-parent">
+                    
+                                            <td data-label="Name">
+                                                <lightning:input aura:id="poItemName" value="{!item.Name}" />
+                                            </td>
+                                            <td data-label="Quantity">
+                                                <lightning:input type='number' aura:id="unitCost" value="{!item.buildertek__Quantity__c}" step="0.01" onblur="{!c.roundToTwoDecimals}"/>
+                                            </td>
+                                            <td data-label="unitCost">
+                                                <lightning:input type='number' aura:id="quantity" value="{!item.buildertek__Unit_Price__c}" step="0.01" onblur="{!c.roundToTwoDecimals}"/>
+                                            </td>
+                                            <td data-label="Markup">
+                                                <lightning:input type='number' aura:id="quantity" value="{!item.buildertek__Markup__c}" step="0.01" onblur="{!c.roundToTwoDecimals}"/>
+                                            </td>
+                                            <td>
+                                                <span data-id="{!index}" onclick="{!c.removeCOLine}">
+                                                    <lightning:icon iconName="action:delete" size="x-small" alternativeText="Error!"  variant="error" class="imageAction" /> 
+                                                </span>                     
+                                            </td>
+                                        </tr>
+                                    </aura:iteration>  
+                                </tbody>
+                            </table>
+                            <br/>
+                            <lightning:button variant="brand" label="Add New Row" onclick="{!c.addNewLine}" />                             
+
+                        </div>
+
+                        
+                    </div>                    
+
+                    
+                    <footer class="slds-modal__footer" style = "padding-top: 10px">
+                        
+                        <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{!c.gotoList }" />
+                        <lightning:button variant="neutral" type="submit" title="Save &amp; New" label="Save &amp; New" onclick="{!c.handlesaveNnew}" />
+                        <lightning:button variant="brand" type="submit" name="save" label="Save"  />
+                        
+                    </footer>
+                    
+                </lightning:recordEditForm>
+            </div>
+            
+        </div>
+    </aura:if>
+</aura:component>

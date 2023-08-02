@@ -1,0 +1,146 @@
+<apex:page renderAs="advanced_pdf" cache="true" id="AllprojectSnapshotwithFilter" Controller="AllprojectDashboardwithfilterController" standardStylesheets="false" sidebar="false" docType="html-5.0" applyHtmlTag="false" showHeader="false">
+
+    <head>
+        <title>Moremac All Project Snapshot</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+        <style>
+            @page {
+
+                @bottom-center {
+                    content: "Page "counter(page) " of "counter(pages);
+                }
+
+                size: A3 landscape;
+                margin: 0mm;
+                margin-bottom: 60px;
+                margin-top: 20px;
+            }
+
+            table {
+                -fs-table-paginate: paginate;
+            }
+
+            table, thead, th, td {
+                border: 1px solid #FFF !important;
+                border-collapse: collapse !important;
+                border-radius: 10px !important;
+                padding: 1em !important;
+            }
+
+            th{
+                background-color: #497e70;
+                color: #FFF;
+            }
+
+            tr {
+                border: 1px solid #D9E4E6;
+                page-break-inside: avoid;
+            }
+        </style>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" />
+        <apex:includeScript value="https://code.jquery.com/jquery-2.2.0.min.js" />
+    </head>
+
+    <body style="margin: 0px;">
+        <div id="content">
+            <apex:form >
+                <div class="headerpart margin">
+                    <div>
+                        <center>
+                            <h2>All Project Snapshot</h2>
+                            <b>Date Generated</b>
+                            <span class='bi bi-calendar-date'>&nbsp;:&nbsp;</span>
+                            <apex:outputText value="{0,date,dd/MM/yyyy}">
+                                <apex:param value="{!Today}" />
+                            </apex:outputText>
+                        </center>
+                    </div>
+                </div>
+                <br />
+                <apex:pageBlock id="ReservationsBlock">
+                    <apex:variable value="{!1}" var="counter" />
+                    <div class="content" style="overflow: auto;margin: 0 1% !important;">
+                        <table width="99%" class="responstable">
+                            <thead>
+                                <tr>
+                                    <th>Project</th>
+                                    <th>Sales Agent</th>
+                                    <th>Walk In</th>
+                                    <th>Phone / Digital</th>
+                                    <th>Enquiry</th>
+                                    <th>Stock Available</th>
+                                    <th>New Deposits</th>
+                                    <th>Verbal Holds</th>
+                                    <th>New Contracts</th>
+                                    <th>Outstanding Deposits</th>
+                                    <th>Deposit Cancellations</th>
+                                    <th>Contract Cancellations</th>
+                                    <th>Sales MTD</th>
+                                    <th>NETT Sales MTD</th>
+                                    <th>Sales Revenue</th>
+                                    <th>Avg. Lot Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <apex:repeat value="{!projectlist}" var="proj">
+                                    <tr style="background-color:{!IF(mod(counter,2)==0, '#EAF3F3','#f8f8f8')}">
+                                        <td>
+                                            <b>{!proj.projectName}</b>
+                                        </td>
+                                        <td>
+                                            {!proj.salesAgent}
+                                        </td>
+                                        <td>
+                                            {!proj.walkIn}
+                                        </td>
+                                        <td>
+                                            {!proj.phoneDigital}
+                                        </td>
+                                        <td>
+                                            {!proj.enquiry}
+                                        </td>
+                                        <td>
+                                            {!proj.stockAvailable}
+                                        </td>
+                                        <td>
+                                            {!proj.newDeposit}
+                                        </td>
+                                        <td>
+                                            {!proj.verbalHolds}
+                                        </td>
+                                        <td>
+                                            {!proj.newContracts}
+                                        </td>
+                                        <td>
+                                            {!proj.outstandingDesposits}
+                                        </td>
+                                        <td>
+                                            {!proj.depositCancellation}
+                                        </td>
+                                        <td>
+                                            {!proj.contractCancellation}
+                                        </td>
+                                        <td>
+                                            {!proj.salesMTD}
+                                        </td>
+                                        <td>
+                                            {!proj.netsalesMTD}
+                                        </td>
+                                        <td>
+                                            $ {!proj.salesRevenue}
+                                        </td>
+                                        <td>
+                                            $ {!proj.avglotPrice}
+                                        </td>
+                                    </tr>
+                                    <apex:variable value="{!counter+1}" var="counter" />
+                                </apex:repeat>
+                            </tbody>
+                        </table>
+                    </div>
+                </apex:pageBlock>
+            </apex:form>
+        </div>
+    </body>
+</apex:page>

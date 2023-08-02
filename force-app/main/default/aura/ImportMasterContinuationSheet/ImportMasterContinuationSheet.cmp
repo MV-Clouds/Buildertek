@@ -1,0 +1,115 @@
+<aura:component controller="ImportMasterContinuationSheet" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global" >
+    
+    <aura:attribute name="onSuccess" type="Object"/>
+    <aura:attribute name="onCancel" type="Object"/>
+    <aura:attribute name="mainObjectId" type="String" />
+    <aura:attribute name="objInfo" type="Object"   />
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <aura:attribute name="selectedobjInfo" type="list"   /> 
+    <aura:attribute name="Spinner" type="boolean" default="false"/>
+    
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/> 
+    
+    <div aura:id="coContainer" class="c-container">
+        
+        <div class="slds-modal__header" style="font-size:17px;">
+            Import Master Continuation Sheet
+        </div>
+        
+        
+        <div class="slds-modal__content slds-p-around--large">
+            <div class="slds slds-scope">
+                
+                <table class="slds-table slds-table_bordered slds-table_fixed-layout" role="grid">
+                    <thead>
+                        <tr class="slds-text-title_caps"  >
+                            <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-left-radius:5px;vertical-align: top;line-height: 2;width: 30px !important;padding-top: 8px;;">
+                                <ui:inputCheckbox aura:id="checkContractors" change="{!c.selectAll}" />		
+                            </th>
+                            
+                            <th style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                                <div class="slds-truncate" title="Quote Line">Continuation Sheet</div>
+                            </th>
+                            
+                            <th style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                                <div class="slds-truncate" title="Quote Line">Application #</div>
+                            </th>
+                            <th style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                                <div class="slds-truncate" title="Quote Line">Architect Project No:</div>
+                            </th>
+                            <th style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                                <div class="slds-truncate" title="Quote Line">Application Date</div>
+                            </th>
+                            <th style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                                <div class="slds-truncate" title="Quote Line">Type</div>
+                            </th>
+                            <th style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                                <div class="slds-truncate" title="Quote Line">Period To</div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <aura:if isTrue="{! (v.objInfo != null)}"> 
+                            <aura:iteration items="{!v.objInfo}" var="obj">
+                                <tr>
+                                    <td>
+                                        <ui:inputCheckbox aura:id="checkContractor"  text="{!obj.MasterRFQItem.Id}" change="{!c.handleCheck}"/>
+                                    </td>
+                                    <td role="gridcell">                                      
+                                        <ui:outputtext value="{!obj.MasterRFQItem.Name}" />
+                                    </td>
+                                    <td>
+                                        <ui:outputtext value="{!obj.MasterRFQItem.buildertek__Application__c}" />
+                                    </td>
+                                    <td role="gridcell">                                     
+                                        <ui:outputtext value="{!obj.MasterRFQItem.buildertek__Architect_Project_No__c}" />
+                                    </td>
+                                    <td role="gridcell">                                    
+                                        <ui:outputtext value="{!obj.MasterRFQItem.buildertek__Application_Date__c}" />
+                                    </td>
+                                    <td role="gridcell">                                      
+                                        <ui:outputtext value="{!obj.MasterRFQItem.buildertek__Type__c}" />
+                                    </td>
+                                    <td role="gridcell">                                       
+                                        <ui:outputtext value="{!obj.MasterRFQItem.buildertek__Period_To__c}" />
+                                    </td>
+                                    
+                                    
+                                </tr>
+                            </aura:iteration>
+                        </aura:if> 
+                        <aura:if isTrue="{! (v.objInfo == null)}"> 
+                            <h1 style="font-size:18px">No Records to Display</h1>
+                        </aura:if> 
+                    </tbody>
+                </table>            
+            </div>
+            
+            <aura:if isTrue="{!v.Spinner}">
+                <div aura:id="spinnerId" class="slds-spinner_container">
+                    <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                        <span class="slds-assistive-text">Loading</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                        <div class="custom-loading-text">
+                            <b>Processing, Please Wait</b>
+                        </div>
+                    </div>
+                </div>
+            </aura:if>
+            
+        </div>
+        
+        
+        
+    </div>
+    
+    
+    <div class="slds-modal__footer">
+        <button class="slds-button slds-button--neutral" onclick="{!c.doCancel}" >Cancel</button>
+        <button class="slds-button slds-button--brand" onclick="{!c.doSave}">Import</button>
+    </div>
+    
+    
+</aura:component>

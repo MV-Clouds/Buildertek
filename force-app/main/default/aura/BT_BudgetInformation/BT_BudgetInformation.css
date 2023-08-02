@@ -1,0 +1,20 @@
+.THIS .slds-form-element__icon {
+    display: none !important;
+}
+.THIS .slds-card{
+    position: relative !important;
+    padding: 0px important;
+    background: rgb(255, 255, 255) !important;
+    border: none !important;
+    border-radius: unset !important;
+    background-clip: unset !important;
+    box-shadow: none !important;
+}
+.THIS .slds-button_icon-bare {
+    line-height: 5 !important;
+    vertical-align: baseline !important;
+    color: lightgray !important;
+}
+.THIS .slds-button-group {
+    margin-top: -35px;
+}

@@ -1,0 +1,19 @@
+/*.THIS.btmodal .modal-container{
+            width: 100% !important;
+    		max-width: 70rem !important;
+        }*/
+.THIS .custom-loading-text {
+    transform: rotate(-90deg);
+    position: absolute;
+    top: -0.5rem;
+    left: 1rem;
+    white-space: nowrap;
+    font-size: 20px;
+}
+.THIS .slds-form-element .slds-form-element__icon {
+    display: none !important;
+}
+
+.THIS .changepadding{
+    padding-top : 14px;
+}

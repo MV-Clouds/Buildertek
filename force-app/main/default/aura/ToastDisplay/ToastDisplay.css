@@ -1,0 +1,56 @@
+.THIS .toast_ntf {
+    height: 0px;
+}
+
+.THIS .slds-icon_small {
+    margin: 0;
+}
+
+.THIS h2 {
+    color: rgba(0, 0, 0, 0.5);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.THIS h1 {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.THIS .my-icon {
+    --sds-c-icon-color-foreground: rgba(83, 76, 76, 0.521);
+}
+
+.THIS .toast_shadow {
+    box-shadow: 1px 2px 4px 0px #888888;
+    border-radius: 3px;
+}
+
+.THIS .status_success {
+    --sds-c-icon-color-foreground: rgb(36, 146, 3);
+    /* fill: rgb(36, 146, 3) ; */
+}
+
+.THIS .status_success svg {
+    fill: rgb(36, 146, 3);
+}
+
+.THIS .border_line_css {
+    border: 2px solid rgb(36, 146, 3);
+}
+
+.THIS .status_error {
+    --sds-c-icon-color-foreground: rgb(243, 41, 6);
+}
+
+.THIS .border_line_e_css {
+    border: 2px solid rgb(255, 8, 8);
+}
+
+.THIS .success_bg {
+    background-color: rgba(229, 255, 238, 1) !important;
+}
+
+.THIS .error_bg {
+    background-color: rgba(255, 232, 232, 1) !important;
+}

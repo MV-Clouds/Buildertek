@@ -1,0 +1,5 @@
+<aura:event type="COMPONENT" description="Event to comunicate with budget item componet">
+    <aura:attribute name="budgetitemid" type="String" default=""/>
+    <aura:attribute name="budgetitems" type="Budget_Item__c[]" default=""/>
+    <aura:attribute name="action" type="String" default=""/>
+</aura:event>
