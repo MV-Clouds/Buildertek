@@ -6,9 +6,7 @@ import { loadScript, loadStyle } from "lightning/platformResourceLoader";
 import GanttStyle from "@salesforce/resourceUrl/BT_Bryntum_NewGanttCss";
 import GANTTModule from "@salesforce/resourceUrl/BT_Bryntum_NewGantt_ModuleJS";
 import { NavigationMixin } from "lightning/navigation";
-import { refreshApex } from "@salesforce/apex";
 
-// import GanttStyle from "@salesforce/resourceUrl/BT_Bryntum_NewGanttCss";
 import GanttToolbarMixin from "./lib/GanttToolbar";
 import data from "./data/launch-saas";
 import scheduleWrapperDataFromApex from "@salesforce/apex/bryntumGanttController.getScheduleWrapperAtLoading";
@@ -20,9 +18,12 @@ import {
   recordsTobeDeleted,
 } from "./gantt_componentHelper";
 import { populateIcons } from "./lib/BryntumGanttIcons";
-import bryntum_gantt from "@salesforce/resourceUrl/bryntum_gantt";
+
 
 export default class Gantt_component extends NavigationMixin(LightningElement) {
+  //Record Id
+  @api recordId;
+
   @track spinnerDataTable = false;
 
   @track islibraryloaded = false;
@@ -36,7 +37,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
   @api isLoading = false;
   @api showExportPopup;
   @api showImportPopup;
-  @api recordId;
   @api taskRecordId;
   @track showContractor = false;
   @track showEditResourcePopup = false;
@@ -721,7 +721,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           type: "enddate",
           allowedUnits: "datetime",
           draggable: false,
-          editor: false,
+          // editor: false,
         },
         {
           type: "duration",
