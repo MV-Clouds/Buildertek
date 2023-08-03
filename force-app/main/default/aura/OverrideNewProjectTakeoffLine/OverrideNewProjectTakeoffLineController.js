@@ -1,18 +1,19 @@
 ({
     doInit: function (component, event, helper) {
         component.set("v.isOpen", true);
+        component.set("v.Spinner", true);
+
         var value = helper.getParameterByName(component, event, 'inContextOfRef');
         var context = '';
         var parentRecordId = '';
-        // component.set("v.parentRecordId", parentRecordId);
+        component.set("v.parentRecordId", parentRecordId);
         if (value != null) {
             context = JSON.parse(window.atob(value));
             parentRecordId = context.attributes.recordId;
-            // component.set("v.parentRecordId", parentRecordId);
+            component.set("v.parentRecordId", parentRecordId);
         } else {
             var relatedList = window.location.pathname;
             var stringList = relatedList.split("/");
-            // alert('stringList---'+stringList);
             parentRecordId = stringList[4];
             if (parentRecordId == 'related') {
                 var stringList = relatedList.split("/");
@@ -20,19 +21,13 @@
             }
             component.set("v.parentRecordId", parentRecordId);
         }
-
-        // component.find('quantityId').set("v.value", 1);
-        //alert('parent-------'+ parentRecordId);
-        // component.find('projtakeoffid').set("v.value", parentRecordId);
+        console.log('parent-------'+ parentRecordId);
         helper.fetchpricebooks(component, event, helper);
-        helper.getFieldSetforTakeOffLines(component, event, helper);
-
-        
-
+        helper.getFieldSetforTakeOffLines(component, event, helper , parentRecordId);
     },
+
     handleComponentEvent: function (component, event, helper) {
         var selectedAccountGetFromEvent = event.getParam("recordByEvent");
-        // component.set("v.newprojecttakeoffline.buildertek__Item_Name__c",selectedAccountGetFromEvent.Name);
         component.set("v.newprojecttakeoffline.buildertek__Product__c", selectedAccountGetFromEvent.Id);
         component.set("v.productId", selectedAccountGetFromEvent.Id);
         component.set("v.productName", selectedAccountGetFromEvent.Name);
@@ -41,7 +36,6 @@
 
     handleComponentEvents: function (component, event, helper) {
         var selectedAccountGetFromEvent = event.getParam("recordByEvent");
-        // component.set("v.newprojecttakeoffline.buildertek__Item_Name__c",selectedAccountGetFromEvent.Name);
         component.set("v.newprojecttakeoffline.buildertek__Product__c", selectedAccountGetFromEvent.Id);
         component.set("v.productId", selectedAccountGetFromEvent.Id);
         component.set("v.productName", selectedAccountGetFromEvent.Name);
@@ -80,14 +74,7 @@
         .catch(function(error) {
             console.log(error);
         });
-        $A.get("e.force:closeQuickAction").fire();
         component.set("v.isOpen", false);
-        window.setTimeout(
-            $A.getCallback(function() {
-                $A.get('e.force:refreshView').fire();
-            }), 1000
-        );
-
     },
 
     save: function (component, event, helper) {
@@ -180,8 +167,10 @@
 
     },
     saveAndNew: function (component, event, helper) {
-        component.set("v.Spinner", true);
+        console.log('saveAndNew Button Click');
+        // component.set("v.Spinner", true);
         component.set("v.isSaveNew", true);
+        // debugger;
 
         // var selectedTradeType = component.get("v.selectedTradeType");
         // var selTradeType;
@@ -324,8 +313,8 @@
                   var recordId = response.getReturnValue();
                 //   console.log('recordId-->>',{recordId});
                 //   var listofPOItems = component.get("v.listofPOItems");
-                    component.set("v.Spinner", false);              
-                //   var toastEvent = $A.get("e.force:showToast");
+                  component.set("v.Spinner", false);              
+                  var toastEvent = $A.get("e.force:showToast");
                   toastEvent.setParams({
                       "type": "Success",
                       "title": "Success!",
@@ -347,9 +336,7 @@
                           "recordId": recordId,
                           "slideDevName": "Detail"
                       });
-                      navEvt.fire();
-                    //   component.set("v.parentRecordId", null);
-    
+                      navEvt.fire();    
                       var focusedTabId = '';
                       var workspaceAPI = component.find("workspace");
                       workspaceAPI.getFocusedTabInfo().then(function(response) {
@@ -376,5 +363,4 @@
           });
           $A.enqueueAction(action);
       },
-
 })

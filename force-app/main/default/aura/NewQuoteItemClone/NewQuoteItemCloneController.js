@@ -36,14 +36,10 @@
             });
         });
 
-
+        // var mainDiv = component.find("av").getElement();
+        // var Element = document.getElementById("slds");
+        // console.log('bottom => ', mainDiv);
     },
-
-    // SetCss: function(component, event, helper) {
-    //   var mainDiv = component.find("av").getElement();
-    //     var Element = document.getElementById("slds");
-    //     console.log('bottom => ', Element.clientHeight);  
-    // },
 
     doInit: function(component, event, helper) {
         component.set("v.Spinner2", true);

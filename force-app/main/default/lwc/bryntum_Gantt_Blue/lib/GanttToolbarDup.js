@@ -1,5 +1,4 @@
 /* globals bryntum : true */
-import  insertUpdateTask from '@salesforce/apex/BT_NewGanttChartCls.insertUpdateTask';
 export default base => class GanttToolbar extends base {
     static get $name() {
         return 'GanttToolbar';
@@ -8,10 +7,10 @@ export default base => class GanttToolbar extends base {
     set parent(parent) {
         super.parent = parent;
         const me = this;
-        
+
         me.gantt = parent;
         parent.project.on({
-            
+
             /*commented by sai */
             //load: 'zoomInOnLoad',
             load    : 'updateStartDateField',
@@ -33,7 +32,7 @@ export default base => class GanttToolbar extends base {
     get parent() {
         return super.parent;
     }
-    
+
     static get defaultConfig() {
         console.log(parent)
         var centerDate = parent; //new Date(); //this.gantt.project.startDate;
@@ -102,7 +101,7 @@ export default base => class GanttToolbar extends base {
                 {
                     type  : 'buttonGroup',
                     items : [
-                        
+
                         {
                             type     : 'button',
                             color    : 'b-blue',
@@ -232,7 +231,7 @@ export default base => class GanttToolbar extends base {
                             onAction   : 'up.onCriticalPathsClick'
                         }
                     ]
-                }, 
+                },
                 {
                     label      : 'Scroll to date',
                     inputWidth : '5em',
@@ -242,7 +241,7 @@ export default base => class GanttToolbar extends base {
                     step       : '1w',
                     listeners  : {
                         change : 'up.onscrollToDate'
-                        
+
                     },
                     highlightExternalChange : false
                 },
@@ -320,7 +319,7 @@ export default base => class GanttToolbar extends base {
                         }
                     ]
                 }, */
-                
+
             ]
         };
     }
@@ -337,7 +336,7 @@ export default base => class GanttToolbar extends base {
     updateStartDateField() {
         try{
             this.gantt.zoomIn();
-            this.gantt.zoomIn(); 
+            this.gantt.zoomIn();
             const startDateField = this.widgetMap.startDateField;
             if(this.gantt.project.startDate){
                 this.gantt.scrollToDate(this.gantt.project.startDate, { block : 'center', animate : 0 });
@@ -364,10 +363,10 @@ export default base => class GanttToolbar extends base {
                         this.gantt.callGanttComponent.schedulerVar.subGrids['normal']['collapsed'] = this.gantt.callGanttComponent.hideSchedule;
                     }
                 } */
-                
+
             }
-            
-            
+
+
         }
     }
     onSaveClick(){
@@ -379,7 +378,7 @@ export default base => class GanttToolbar extends base {
         console.log('taskData-->',taskData)
         console.log('dependenciesData-->',dependenciesData)
         console.log('resourceData-->',resourceData)
-       
+
         var rowData = [];
         if(this.gantt.data){
             if(this.gantt.data.length > 1){
@@ -406,7 +405,7 @@ export default base => class GanttToolbar extends base {
                          endDate= new Date(rowData[i].endDate);
                          //endDate.setDate(endDate.getDate() + 1)
                      }
-                     
+
                      rowData[i].endDate = endDate
                      updateData['Id'] = rowData[i]['id']
                      updateData['Name'] = rowData[i]['name']
@@ -442,7 +441,7 @@ export default base => class GanttToolbar extends base {
                              updateData['buildertek__Phase__c'] = rowData[i]['parentId'].split('_')[1]
                          }
                      }
-                     
+
                      var filledDependency = false
                      for(var j=0;j<dependenciesData.length;j++){
                          if(dependenciesData[j]['to'] == rowData[i]['id']){
@@ -459,20 +458,20 @@ export default base => class GanttToolbar extends base {
                      }
                      updateDataList.push(updateData)
                  }
-                
-                        
+
+
                  if(this.gantt.callGanttComponent){
                      if(this.gantt.callGanttComponent.scheduleData){
-                         
+
                          this.gantt.callGanttComponent.hideSchedule = this.gantt.subGrids['normal']['collapsed'] ;
                          if(this.gantt.subGrids['normal']){
                              if(this.gantt.subGrids['normal']['collapsed']){
-                                 this.gantt.callGanttComponent.hideSchedule = this.gantt.subGrids['normal']['collapsed'] 
+                                 this.gantt.callGanttComponent.hideSchedule = this.gantt.subGrids['normal']['collapsed']
                              }else{
                                  this.gantt.callGanttComponent.hideSchedule = false
                              }
                          }
-                         
+
                          //this.gantt.callGanttComponent.scheduleData.buildertek__Hide_Gantt_Schedule__c = this.gantt.callGanttComponent.hideSchedule;
                          this.gantt.callGanttComponent.hideScheduleFromUser = this.gantt.callGanttComponent.hideSchedule;
                          //this.gantt.callGanttComponent.updateValOnSch(this.gantt.callGanttComponent.hideSchedule);
@@ -481,7 +480,7 @@ export default base => class GanttToolbar extends base {
                  }
                  this.gantt.callGanttComponent.callinsertUpdateTaskList(updateDataList)
                  this.gantt.callGanttComponent.scheduleItemsDataList = updateDataList;
-                 
+
                   if(this.gantt.callGanttComponent.template.querySelector('.container').children.length){
                     this.gantt.callGanttComponent.template.querySelector('.container').innerHTML = '';
                     this.gantt.callGanttComponent.template.querySelector('.container1').innerHTML = '';
@@ -489,9 +488,9 @@ export default base => class GanttToolbar extends base {
                     //this.GanttVar.crudManager.taskStore.refreshData()
                   }else{
                     this.gantt.callGanttComponent.createGantt();
-                  } 
-                 
-                 
+                  }
+
+
                  console.log(this.gantt.taskStore);
                  console.log(this.gantt.dependencyStore);
                  console.log('dfr',ganttRowData)
@@ -525,7 +524,7 @@ export default base => class GanttToolbar extends base {
         }); */
         this.gantt.callGanttComponent.addNewTask();
     }
-    
+
     onExpandAllClick() {
         this.gantt.expandAll();
     }
@@ -550,7 +549,7 @@ export default base => class GanttToolbar extends base {
     onShiftNextClick() {
         this.gantt.shiftNext();
     }
-    
+
     /* onStartDateChange({ value, oldValue }) {
         if (!oldValue) { // ignore initial set
             return;
@@ -563,7 +562,7 @@ export default base => class GanttToolbar extends base {
             this.gantt.scrollToDate(value, { block : 'center', animate : 500 });
         }
     }
-    
+
     onFilterChange({ value }) {
         if (value === '') {
             this.gantt.taskStore.clearFilters();
@@ -591,7 +590,7 @@ export default base => class GanttToolbar extends base {
                    /*  this.gantt.callGanttComponent.hideSchedule = this.gantt.subGrids['normal']['collapsed'] ;
                     if(this.gantt.subGrids['normal']){
                         if(this.gantt.subGrids['normal']['collapsed']){
-                            this.gantt.callGanttComponent.hideSchedule = this.gantt.subGrids['normal']['collapsed'] 
+                            this.gantt.callGanttComponent.hideSchedule = this.gantt.subGrids['normal']['collapsed']
                         }else{
                             this.gantt.callGanttComponent.hideSchedule = false
                         }
@@ -601,10 +600,10 @@ export default base => class GanttToolbar extends base {
                     this.gantt.callGanttComponent.hideScheduleFromUser = this.gantt.callGanttComponent.hideSchedule;
                     //this.gantt.callGanttComponent.updateValOnSch(this.gantt.callGanttComponent.hideSchedule);
                     this.gantt.callGanttComponent.updateValOnUser(this.gantt.callGanttComponent.hideSchedule);
-                      
+
                 }
             }
-            
+
             /* if(this.gantt.callGanttComponent.scheduleData){
                 this.gantt.callGanttComponent.scheduleData.buildertek__Hide_Gantt_Schedule__c = subGrid.collapsed;
                 this.gantt.callGanttComponent.updateValOnSch(subGrid.collapsed);
@@ -613,7 +612,7 @@ export default base => class GanttToolbar extends base {
     }
      onFeaturesShow({ source : menu }) {
         const { gantt } = this;
-        
+
          menu.items.forEach(item => {
             const { feature } = item;
             if (feature) {

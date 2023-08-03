@@ -1,7 +1,4 @@
-/* globals bryntum : true */
-import  insertUpdateTask from '@salesforce/apex/BT_NewGanttChartCls.insertUpdateTask';
-import  updateTaskRecord from '@salesforce/apex/BT_NewGanttChartCls.updateTaskRecord';
-import MailingPostalCode from '@salesforce/schema/Contact.MailingPostalCode';
+
 export default base => class GanttToolbar extends base {
     static get $name() {
         return 'GanttToolbar';
@@ -476,7 +473,7 @@ export default base => class GanttToolbar extends base {
                         endDate= new Date(rowData[i].endDate);
                         //endDate.setDate(endDate.getDate() + 1)
                     }
-                    
+
                     console.log('after 1st update value of i:- ',i);
                     rowData[i].endDate = endDate;
                     if(rowData[i]['id'].indexOf('_generate') == -1){
@@ -546,7 +543,7 @@ export default base => class GanttToolbar extends base {
                         }
                     }
                     updateDataClone = Object.assign({},updateData);
-                    
+
                     console.log('after dependenciesData :- ',dependenciesData);
                     console.log('updateDataClone :- ',updateDataClone);
                     console.log('resourceData :- ',resourceData);

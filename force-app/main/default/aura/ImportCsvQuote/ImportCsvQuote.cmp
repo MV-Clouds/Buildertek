@@ -5,12 +5,13 @@
      
     <!-- aura:handler event="aura:waiting" action="{!c.waiting}"/>
     <aura:handler event="aura:doneWaiting" action="{!c.doneWaiting}"/ -->
-    <aura:html tag="style">
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
+    <!-- <aura:html tag="style">
  
         .forceChatterBasePublisher :not(.PHONE) .cuf-content {
             padding: 0px !important;
         }
-        .slds-p-around_medium, .slds-p-around--medium {
+        .slds-p-around_medium, .slds-p-aroundmedium {
             padding:0px !important;
             overflow: visible;
         }
@@ -21,7 +22,7 @@
             overflow-y: visible !important;
             flex: 1;
         }
-    </aura:html>
+    </aura:html> -->
      
     <div class="slds-modal__content slds-p-around--medium" style="padding:0px !important">
         <div class="slds-modal__header" style="font-size:17px;">
