@@ -188,7 +188,16 @@
 	            }
 	        });
 	        $A.enqueueAction(action);
-	    }
+	    }else {
+            component.set("v.Spinner", false);
+	                    var toastEvent = $A.get("e.force:showToast");
+                        toastEvent.setParams({
+                            "title": "Error!",
+                            "message": "Please Select atleast One Quote record.",
+                            "type": 'Error'
+                        });
+                        toastEvent.fire(); 
+        }
 	},
 	
 	next: function (component, event, helper) {

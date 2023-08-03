@@ -56,24 +56,19 @@
         </header>
         <div class="slds-modal__content" id="modal-content-id-1">
 
-            <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__Project_Takeoff_Lines__c" onsubmit="{!c.handleSubmit}" density="Comfy" >
+            <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__Project_Takeoff_Lines__c" onsubmit="{!c.handleSubmit}"  density="Comfy" >
                     <div class="" style="height:50vh;width:100%;overflow: auto;">
                         <div class="slds-p-around_medium" style="background-color:white;">
                             <lightning:layout multipleRows="true">
                                 <aura:iteration items="{!v.listOfFields0}" var="field">
                                     <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
-                                        <lightning:inputField fieldName="{!field.name}" />
-                                        <!-- <aura:if isTrue="{!and(field.name!='buildertek__Project__c',field.name!='Name')}">
+                                        <aura:if  isTrue="{!field.name !='buildertek__Project_Takeoff__c'}">
                                             <lightning:inputField fieldName="{!field.name}" />
                                             <aura:set attribute="else">
-                                                <aura:if isTrue="{!field.name=='Name'}" >
-                                                    <lightning:inputField fieldName="Name" required="true"/>
-                                                </aura:if>
-                                                <aura:if isTrue="{!field.name=='buildertek__Project__c'}" >
-                                                    <lightning:inputField fieldName="{!field.name}" value="{!v.parentprojectRecordId}" />
-                                                </aura:if>
+                                                <lightning:inputField fieldName="{!field.name}" aura:id="projectTakeOff" />
                                             </aura:set>
-                                        </aura:if> -->
+                                            
+                                        </aura:if>
                                     </lightning:layoutItem>
                                 </aura:iteration>
                             </lightning:layout>

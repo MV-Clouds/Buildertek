@@ -1529,16 +1529,24 @@
         console.log('isproject',isproject);
         var headerDiv = component.find("headerDiv");
         console.log('headerDiv',headerDiv);
-        
+        var totalPage = component.get("v.total");
+        console.log('totalPage',totalPage);
+
         // Check if the current URL contains a specific keyword or phrase
         if (isproject) {
             console.log('in if');
-            $A.util.addClass(headerDiv, "divconts");
-        } else {
+            $A.util.addClass(headerDiv, "divcont1");
+        } else if(!isproject){
             console.log('in else');
-            $A.util.removeClass(headerDiv, "divconts");
+            $A.util.removeClass(headerDiv, "divcont1");
+
+            // if(totalPage < 50){
+            //     $A.util.addClass(headerDiv, "divcont2");
+            // } else {
+            //     $A.util.removeClass(headerDiv, "divcont2");
+            // }
         }
-    }
+    },
 
 
 })

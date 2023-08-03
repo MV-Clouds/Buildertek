@@ -1,17 +1,6 @@
 /* globals bryntum : true */
 import { LightningElement, api, track, wire } from "lwc";
 import { NavigationMixin } from "lightning/navigation";
-import { ShowToastEvent } from "lightning/platformShowToastEvent";
-import { loadScript, loadStyle } from "lightning/platformResourceLoader";
-//import  GanttDup  from "@salesforce/resourceUrl/bryntumScheduleProModuleJS";
-//import  GanttStyle  from "@salesforce/resourceUrl/Bt_BryntumNewGanttCss";
-import GanttStyle from "@salesforce/resourceUrl/BT_Bryntum_NewGanttCss";
-//import GANTT from "@salesforce/resourceUrl/bryntum_gantt";
-import GANTTModule from "@salesforce/resourceUrl/BT_Bryntum_NewGantt_ModuleJS";
-//import  SchedulerPro  from "@salesforce/resourceUrl/bryntumScheduleProModuleJS";
-import GanttToolbarMixin from "./lib/GanttToolbar";
-import GanttToolbarMixinDup from "./lib/GanttToolbarDup";
-import data from "./data/launch-saas";
 
 
 
@@ -29,12 +18,7 @@ import data from "./data/launch-saas";
 
 
 
-import PARSER from "@salesforce/resourceUrl/PapaParse";
 
-import { formatData, saveeditRecordMethod } from "./bryntum_GanttHelper";
-
-
-import { getPicklistValues, getObjectInfo } from "lightning/uiObjectInfoApi";
 
 export default class Gantt_component extends NavigationMixin(LightningElement) {
   @api showpopup = false;

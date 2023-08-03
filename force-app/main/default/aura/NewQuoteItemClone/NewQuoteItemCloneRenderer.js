@@ -1,10 +1,6 @@
 ({
-    afterRender: function (component, helper) {
+    afterRender: function (cmp, helper) {
         this.superAfterRender();
         /*cmp.find("inputId").focus();*/
-        // console.log('inside after render');
-        // var mainDiv = component.find("av").getElement();
-        // var Element = document.getElementById("slds");
-        // console.log('bottom => ', Element.clientHeight);
     }
 })

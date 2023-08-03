@@ -613,6 +613,7 @@ public class ProjectTaskTriggerHandler{
 
 	//@future
 	public static void processRecords(Set<Id> scheduleIds, Id schId, Set<Id> TaskIds, Boolean isFromImportTask, String isAfterInsert){
+		try {
 		system.debug(isFromImportTask);
 
 		List<buildertek__Project_Task__c> previuosTasks = [Select Id, Name, buildertek__Start__c, buildertek__Finish__c, buildertek__Duration__c
@@ -1051,6 +1052,12 @@ public class ProjectTaskTriggerHandler{
 		// UpdateScheduleItemdatesbatchhelper.batchjobexcute(mapAllTask.keySet());
 
 		ProjectTaskTriggerHandler.blnSkipTaskTrigger = false;
+	} catch (Exception ex) {
+		System.debug('An error occurred: ' + ex.getMessage());
+        System.debug('Error line number: ' + ex.getLineNumber());
+        System.debug('Error stack trace: ' + ex.getStackTraceString());
+
+	}
 	}
 
 	public void insertUpdateMilestones(Project_Task__c[] ProjectTasks, Map<ID, Project_Task__c> ProjectTaskMap){

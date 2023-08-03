@@ -146,8 +146,6 @@
                      <div  data-inputname='buildertek__Dependency__c'>
                        <label>Predecessor</label><!--conchange={changeInputVal}-->
 
-                       <c-custom-lwc-lookup field-api-name="buildertek__Dependency__c" value-from-parent={newTaskRecordCreate.buildertek__Dependency__c}  obj-name="buildertek__Project_Task__c" search-placeholder="Search Schedule Items" schedule-id ={recordId} icon-name="custom:custom70" onlookupselected={handleAccountSelection}>
-                       </c-custom-lwc-lookup>
                      </div>
                    </lightning-layout-item>
                    <lightning-layout-item size="6"  padding="around-small">
@@ -189,24 +187,20 @@
                    <lightning-layout-item size="6"  padding="around-small">
                      <label>Internal Resource</label>
                      <div data-inputname='buildertek__Resource__c'> <!-- onchange={changeInputVal}-->
-                       <c-custom-lwc-lookup field-api-name="buildertek__Resource__c" value-from-parent={newTaskRecordCreate.buildertek__Resource__c} obj-name="Contact" search-placeholder="Search Contacts" icon-name="standard:contact" schedule-id ="" onlookupselected={handleAccountSelection}>
 
-                       </c-custom-lwc-lookup>
                      </div>
                    </lightning-layout-item>
                    <lightning-layout-item size="6"  padding="around-small">
                      <div data-inputname='buildertek__Contractor__c'>
                        <label>Contractor</label>
-                       <c-custom-lwc-lookup field-api-name="buildertek__Contractor__c" value-from-parent={newTaskRecordCreate.buildertek__Contractor__c} obj-name="Account" search-placeholder="Search Accounts" icon-name="standard:account" schedule-id ="" onlookupselected={handleAccountSelection}>
-                       </c-custom-lwc-lookup>
+
                      </div>
 
                    </lightning-layout-item>
                    <lightning-layout-item size="6"  padding="around-small">
                      <label>Contractor Resource</label>
                      <div data-inputname='buildertek__Contractor_Resource__c'>
-                       <c-custom-lwc-lookup field-api-name="buildertek__Contractor_Resource__c" value-from-parent={newTaskRecordCreate.buildertek__Contractor_Resource__c} obj-name="Contact" search-placeholder="Search Contacts" icon-name="standard:contact" schedule-id ="" onlookupselected={handleAccountSelection}>
-                       </c-custom-lwc-lookup>
+                       
                    </div>
                    </lightning-layout-item>
 
@@ -294,8 +288,7 @@
          </header>
 
          <div  class="slds-text-align_center slds-modal__content slds-p-around_medium" id="modal-content-id-4">
-           <c-file-preview rec-id-list={showFileForRecord}>
-           </c-file-preview>
+
          </div>
          <footer class="slds-modal__footer">
            <button class="slds-button slds-button_neutral" variant="neutral" title="Close" label="Close" onclick={closeEditPopup}>Close</button>
@@ -351,17 +344,13 @@
    <div class="slds-backdrop slds-backdrop_open"></div>
  </template>
  <template if:true={showEditResourcePopup}>
-   <c-edit-resources field-api-name={selectedContactApiName} selected-resourceid={selectedResourceContact}
-    oncontactselected={handlecontactSelection} onclosepopuevent={closeEditPopup} onsaveres={saveSelectedContact}>
-   </c-edit-resources>
+
    <!-- <div class="slds-backdrop slds-backdrop_open"></div> -->
  </template>
 
  <!--Added for contract-->
    <template if:true={showContractor}>
-       <c-edit-acc-resources field-api-name={selectedContactApiName} selected-resourceid={selectedResourceAccount}
-       oncontactselected={handleaccountSelectionContractor} onclosepopuevent={closeEditPopup} onsaveres={saveSelectedContact}>
-       </c-edit-acc-resources>
+
    </template>
 
    <!-- Schedule originals start and end date modal -->
