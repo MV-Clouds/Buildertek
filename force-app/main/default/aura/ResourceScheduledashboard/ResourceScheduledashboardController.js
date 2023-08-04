@@ -1,6 +1,6 @@
 ({
     doInit: function(component, event, helper) {
-
+        
         //helper.getResources(component);
         var today = new Date();
         component.set("v.calendarView", "Dayview");
@@ -11,8 +11,6 @@
         helper.currentWeekDates(component, Datevalue);
         helper.currentMonthsDates(component, Datevalue);
         helper.getprojectTaskscontacts(component);
-        // helper.gettabname(component);
-
     },
 
     Standardview: function(component, event, helper) {
@@ -953,6 +951,58 @@
 
     closeModal1: function(component, event, helper) {
         component.set("v.showModal1", false);
+    },
+    clickDeleteButton:function(component, event, helper) {
+        console.log('Click delete button..');
+        component.set("v.showDeleteBox", true);
+        component.set("v.showModal", false);
+        var currentId=event.currentTarget.dataset.id;
+        console.log(currentId);
+        component.set('v.selectedResource' ,currentId);
+
+    },
+    closeDeleteBox:function(component, event, helper) {
+        component.set("v.showDeleteBox", false);
+        component.set("v.showModal", true);
+    },
+    removeResource:function(component, event, helper) {
+        component.set("v.Spinner",true);
+
+        component.set("v.showDeleteBox", false);
+        component.set("v.showModal", false);
+        var selectedId=component.get('v.selectedResource');
+         if(selectedId !=null && selectedId!= undefined){
+             var action=component.get('c.deleteResource');
+             action.setParams({
+                 scheduleItemId:selectedId,
+             });
+             action.setCallback(this, function(response) {
+
+                 if (response.getState() == 'SUCCESS') {
+                     var toastEvent = $A.get("e.force:showToast");
+                     toastEvent.setParams({
+                         "title": "Success!",
+                         "type": "success",
+                         "message": "Resource remove from Schedule Item."  
+                     });
+                     toastEvent.fire();
+     
+                 }else{
+                     var toastEvent = $A.get("e.force:showToast");
+                     toastEvent.setParams({
+                         "title": "Error!",
+                         "type": "error",
+                         "message": "Something went wrong."  
+                     });
+                     toastEvent.fire();
+                 }
+                component.set("v.Spinner",false);
+
+             });
+             $A.enqueueAction(action);
+         }
+
+
     }
 
 })
