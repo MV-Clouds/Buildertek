@@ -957,8 +957,21 @@
         component.set("v.showDeleteBox", true);
         component.set("v.showModal", false);
         var currentId=event.currentTarget.dataset.id;
-        console.log(currentId);
-        component.set('v.selectedResource' ,currentId);
+        var currentTaskName=event.currentTarget.dataset.name;
+        component.set('v.selectedTaskName' , currentTaskName);
+        console.log('updated::');
+
+
+        // console.log(currentId);
+        // component.set('v.selectedResource' ,currentId);
+
+        // var scheduleItemlist=component.get('v.contactScheduleItemList');
+        // scheduleItemlist.forEach(function(value){
+        //     if(value.Id==currentId){
+        //         component.set('v.selectedTaskName' , value.Name);
+        //     }
+        // })
+
 
     },
     closeDeleteBox:function(component, event, helper) {
@@ -966,11 +979,13 @@
         component.set("v.showModal", true);
     },
     removeResource:function(component, event, helper) {
-        component.set("v.Spinner",true);
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "SHOW"
+        }).fire();
 
         component.set("v.showDeleteBox", false);
         component.set("v.showModal", false);
-        var selectedId=component.get('v.selectedResource');
+        var selectedId=component.get('v.selectedResource');        
          if(selectedId !=null && selectedId!= undefined){
              var action=component.get('c.deleteResource');
              action.setParams({
@@ -996,8 +1011,9 @@
                      });
                      toastEvent.fire();
                  }
-                component.set("v.Spinner",false);
-
+                 $A.get("e.c:BT_SpinnerEvent").setParams({
+                    "action": "HIDE"
+                }).fire();
              });
              $A.enqueueAction(action);
          }
