@@ -1,6 +1,6 @@
 ({
     doInit: function(component, event) {
-        
+
         //projName
         var action = component.get("c.getProject");
         action.setParams({
@@ -15,11 +15,30 @@
                       }
                     component.set("v.projName", scheduleData);
                 }
-                
+
             }
         })
         $A.enqueueAction(action);
-        
+
+        var action2 = component.get("c.chekIsOldGantt");
+        action2.setParams({});
+        action2.setCallback(this, function (response) {
+            if (response.getState() == 'SUCCESS') {
+                let result = response.getReturnValue();
+                component.set("v.isOldGantt", result);
+            }else{
+                let toastEvent = $A.get("e.force:showToast");
+                toastEvent.setParams({
+                    "title": "Error!",
+                    "type": "error",
+                    "message": "Something Went Wrong."
+                });
+                toastEvent.fire();
+            }
+        })
+        $A.enqueueAction(action2);
+
+
         //ObjNameOnInit
         var workspaceAPI = component.find("workspace");
          workspaceAPI.getFocusedTabInfo().then(function(response) {
@@ -40,9 +59,6 @@
              if(focusedTab.url.indexOf('buildertek__Schedule__c') > -1 && component.get("v.sobjecttype") == 'buildertek__Schedule__c' && recId) { //focusedTab.title.indexOf('SC-')
                  $A.enqueueAction(action1);
              }
-            /*if(focusedTab.title.indexOf('SC-') == 0 && {
-                
-            }*/
        })
         .catch(function(error) {
             console.log(error);
@@ -52,7 +68,7 @@
     handleFilterChange: function(component, event) {
         var filters = event.getParam('message');
         component.set('v.message', filters);
-        
+
         window.setTimeout(
             $A.getCallback(function() {
                 var appEvent = $A.get("e.c:refresheventForGantt");
@@ -62,21 +78,21 @@
                 appEvent.fire();
             }), 200
         );
-        
+
     },
     handleRefreshFromTable :  function(component, event) {
         if(event.getParam('refreshmessage') == 'Refresh Component from table'){
             if(component.find('ganttchildfromaura')){
                 component.find('ganttchildfromaura').getFiredFromAura();
             }
-            
+
            // $A.get('e.force:refreshView').fire()
         }
     },
-    
+
     /*onTabClosed  :  function(component, event) {
         component.set("v.tabClosedAtt",true);
-        
+
        // component.destroy()
     },*/
      onTabFocused : function(component, event, helper) {
@@ -101,12 +117,12 @@
                  $A.enqueueAction(action);
              }
             /*if(focusedTab.title.indexOf('SC-') == 0 && {
-                
+
             }*/
        })
         .catch(function(error) {
             console.log(error);
         });
     }
-    
+
 })

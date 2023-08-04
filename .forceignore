@@ -1,6 +1,9 @@
 # GitIgnore for Salesforce Projects
 # Project Settings and MetaData
 .project
+.sf
+.sfdx
+
 .settings/
 .metadata
 build.properties
