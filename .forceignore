@@ -3,6 +3,7 @@
 .project
 .sf
 .sfdx
+
 .settings/
 .metadata
 build.properties
@@ -34,6 +35,3 @@ mm.log
 
 # OSX-specific exclusions
 .[dD][sS]_[sS]tore
-**/jsconfig.json
-
-**/.eslintrc.json

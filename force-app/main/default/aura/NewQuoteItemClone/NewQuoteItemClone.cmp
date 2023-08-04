@@ -217,7 +217,71 @@
     <c:BT_Spinner />
     <aura:attribute name="parentValue" type="String" />
     <!-- <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> -->
-
+    <aura:HTML tag="style">
+        <!-- @media only screen and (max-width: 1980px) and (min-width: 1600px){
+            .slds-tabs_default{
+                min-height: 71vh; height: 71vh;
+            }
+        }
+        @media only screen and (max-width: 1600px) and (min-width: 1440px){
+            .slds-tabs_default{
+                min-height: 77vh; height: 77vh;
+            }
+        }
+        @media only screen and (max-width: 1440px) and (min-width: 1369px){
+            .slds-tabs_default{
+                min-height: 81vh; height: 81vh;
+            }
+        }
+        @media only screen and (max-width: 1369px) and (min-width: 1280px){
+            .slds-tabs_default{
+                min-height: 86vh; height: 86vh;
+            }
+        }
+        @media only screen and (max-width: 1280px) and (min-width: px){
+            .slds-tabs_default{
+                min-height: 86vh; height: 86vh;
+            }
+        }
+        @media only screen and (max-width: 1080px){
+            .slds-tabs_default{
+                min-height: 91vh; height: 91vh;
+            }
+        } -->
+        .slds-tabs_default{
+            min-height: 67vh; height: 67vh;
+        }
+        @media only screen and (max-height: 1080px) and (min-height: 990px){
+            .slds-tabs_default{
+                min-height: 67vh; height: 67vh;
+            }
+        }
+        @media only screen and (max-height: 990px) and (min-height: 900px){
+            .slds-tabs_default{
+                min-height: 71vh; height: 71vh;
+            }
+        }
+        @media only screen and (max-height: 900px) and (min-height: 810px){
+            .slds-tabs_default{
+                min-height: 75vh; height: 75vh;
+            }
+        }
+        @media only screen and (max-height: 810px) and (min-height: 720px){
+            .slds-tabs_default{
+                min-height: 80vh; height: 80vh;
+            }
+        }
+        @media only screen and (max-height: 720px) and (min-height: 630px){
+            .slds-tabs_default{
+                min-height: 84vh; height: 84vh;
+            }
+        }
+        @media only screen and (max-height: 630px) and (min-height: 540px){
+            .slds-tabs_default{
+                min-height: 89vh; height: 89vh;
+            }
+        }
+    </aura:HTML>
 
 
 
