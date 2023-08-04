@@ -1,3 +1,4 @@
+**/jsconfig.json
 # GitIgnore for Salesforce Projects
 # Project Settings and MetaData
 .project
@@ -32,3 +33,6 @@ mm.log
 
 # OSX-specific exclusions
 .[dD][sS]_[sS]tore
+
+
+**/.eslintrc.json
