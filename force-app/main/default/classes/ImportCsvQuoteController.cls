@@ -182,6 +182,10 @@ public with sharing class ImportCsvQuoteController {
                                 when 'Projected Costs' {
                                     // quote.Product__c = listCSVData.get(intIndex).get(intInnerIndex);
                                 }
+
+                                // when else {
+                                //     response.isSuccess = false;
+                                // }
                             }
                         }
                         listQuotes.add(quote);
@@ -190,24 +194,29 @@ public with sharing class ImportCsvQuoteController {
                     
                     
                     if(!listQuotes.isEmpty()) {
-                        if(Schema.sObjectType.buildertek__Quote_Item__c.isCreateable()&&
-                            Schema.sObjectType.buildertek__Quote_Item__c.fields.Name.isCreateable()&&
-                            Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Quote__c.isCreateable() &&
-                			Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Cost_Code__c.isCreateable() &&
-                			Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Additional_Discount__c.isCreateable() &&
-                            Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Description__c.isCreateable()&&
-                            Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Applied_Markup__c.isCreateable() &&
-                			Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Grouping__c.isCreateable() &&
-                			Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Markup__c.isCreateable() &&
-                            Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Product__c.isCreateable()&&
-                            Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Quantity__c.isCreateable() &&
-                			Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Unit_Cost__c.isCreateable() &&
-                			Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__UOM__c.isCreateable() &&
-                			Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Vendor__c.isCreateable() ){
-                                System.debug('listQuotes :: '+ listQuotes);
-                                insert listQuotes;
-                			}
-                        response.strMessage = 'Quote line items inserted successfully.';
+                        // if(response.isSuccess){
+                            if(Schema.sObjectType.buildertek__Quote_Item__c.isCreateable()&&
+                                Schema.sObjectType.buildertek__Quote_Item__c.fields.Name.isCreateable()&&
+                                Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Quote__c.isCreateable() &&
+                                Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Cost_Code__c.isCreateable() &&
+                                Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Additional_Discount__c.isCreateable() &&
+                                Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Description__c.isCreateable()&&
+                                Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Applied_Markup__c.isCreateable() &&
+                                Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Grouping__c.isCreateable() &&
+                                Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Markup__c.isCreateable() &&
+                                Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Product__c.isCreateable()&&
+                                Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Quantity__c.isCreateable() &&
+                                Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Unit_Cost__c.isCreateable() &&
+                                Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__UOM__c.isCreateable() &&
+                                Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Vendor__c.isCreateable() ){
+                                    System.debug('listQuotes :: '+ listQuotes);
+                                    insert listQuotes;
+                                }
+                            response.strMessage = 'Quote line items inserted successfully.';
+                        // } else{
+                        //         response.isSuccess = false;
+                        //             response.strMessage = 'Please check headers in your File';
+                        // }
                     }
                     else {
                         response.isSuccess = false;
