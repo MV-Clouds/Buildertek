@@ -1,8 +1,11 @@
 ({
-    save : function(component, helper) {
+    save : function(component, helper, file) {
+        try{
         var MAX_FILE_SIZE = 750000;
         var fileInput = component.find("file").getElement();
         var file = fileInput.files[0];
+        // var file = event.getSource().get("v.files");
+        console.log('file1 =: ', file)
         var isSelect = component.get("v.isSelect");
         
         if(file != undefined && isSelect){
@@ -36,6 +39,9 @@
                 mode: 'dismissible'
             });
             toastEvent.fire();
+        }
+    } catch(error){
+            console.log('eoor => ', {error});
         }
         
     },
