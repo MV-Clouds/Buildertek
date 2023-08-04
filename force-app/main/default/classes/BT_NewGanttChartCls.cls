@@ -1,27 +1,21 @@
 public class BT_NewGanttChartCls{
 
-    //* getting settings from admin object for hidding column
-    @AuraEnabled
-    public static List<Boolean> getColumnSettings(){
-        List<buildertek__Admin_Interface_Node_Configuration__c> adminSettings = new List<buildertek__Admin_Interface_Node_Configuration__c>();
-        List<Boolean> BoolList = new List<Boolean>{true,true,true};
-
-        adminSettings = [Select Id, buildertek__Hide_Internal_Resource__c, buildertek__Hide_Contractor__c, buildertek__Hide_Contractor_Resource__c from buildertek__Admin_Interface_Node_Configuration__c WHERE Name=:'Schedule Configuration'];
-        if (adminSettings.size() > 0) {
-            BoolList[0] = adminSettings[0].buildertek__Hide_Internal_Resource__c;
-            BoolList[1] = adminSettings[0].buildertek__Hide_Contractor__c;
-            BoolList[2] = adminSettings[0].buildertek__Hide_Contractor_Resource__c;
-        }
-
-        return BoolList;
-    }
-
     @AuraEnabled
     public static buildertek__Schedule__c getProject(String recordId){
         buildertek__Schedule__c proj = [SELECT Id, Name, buildertek__Description__c, buildertek__Project__c, buildertek__Project__r.Name
                                         from buildertek__Schedule__c
                                         where Id = :recordId];
         return proj;
+    }
+
+    @AuraEnabled
+    public static Boolean chekIsOldGantt(){
+        Boolean oldGanttRenderer;
+        List<buildertek__Admin_Interface_Node_Configuration__c> adminInterfaceNodeConfigurations = [Select Id, buildertek__Old_Gantt_Chart__c from buildertek__Admin_Interface_Node_Configuration__c WHERE Name=:'Schedule Configuration'];
+        if (adminInterfaceNodeConfigurations.size() > 0) {
+            oldGanttRenderer = adminInterfaceNodeConfigurations[0].buildertek__Old_Gantt_Chart__c;
+        }
+        return oldGanttRenderer;
     }
 
     @AuraEnabled
@@ -72,6 +66,8 @@ public class BT_NewGanttChartCls{
 
         String milestonequery = 'Select buildertek__Project__r.Name,buildertek__Schedule__r.Name, buildertek__Dependency__r.Finish__c,buildertek__Contractor_Resource__r.Name,buildertek__Contractor__r.Name,buildertek__Resource__r.Name, ' + BT_Utils.getQueryStringForObjectWithAllFields('Project_Task__c');
         milestonequery = milestonequery + ' From buildertek__Project_Task__c where buildertek__Schedule__c =:scheduleid AND buildertek__Milestone__c= true';
+        System.debug('BT_Utils.PMAM@# '+BT_Utils.getQueryStringForObjectWithAllFields('Project_Task__c'));
+        System.debug('milestonequery '+milestonequery);
         List<buildertek__Project_Task__c> milestoneTaskList = DataBase.query(milestonequery);
 
         Map<String, List<buildertek__Project_Task__c>> TaskWithPhaseMap = new Map<String, List<buildertek__Project_Task__c>>();
@@ -429,7 +425,7 @@ public class BT_NewGanttChartCls{
             newTask.buildertek__Schedule__c = scheduleId;
             newTask.buildertek__Duration__c = updatedprojecttask.buildertek__Duration__c;
             newTask.buildertek__Phase__c = updatedprojecttask.buildertek__Phase__c;
-            // newTask.buildertek__Lag__c = updatedprojecttask.buildertek__Lag__c;
+            newTask.buildertek__Lag__c = updatedprojecttask.buildertek__Lag__c;
             newTask.buildertek__Type__c = updatedprojecttask.buildertek__Type__c;
             newTask.buildertek__Indent_Task__c = updatedprojecttask.buildertek__Indent_Task__c;
             if (updatedprojecttask.buildertek__Order__c != null){
@@ -611,40 +607,24 @@ public class BT_NewGanttChartCls{
 
         List<buildertek__Project_Task__c> updatedprojecttaskList = (List<buildertek__Project_Task__c>)System.JSON.deserialize(taskJSON, List<buildertek__Project_Task__c>.class);
         List<buildertek__Project_Task__c> newUpdateList = new List<buildertek__Project_Task__c>();
-        Integer i = 0;
-        /* for(buildertek__Project_Task__c task: updatedprojecttaskList){
-         system.debug(task.Id);
-         system.debug(task.buildertek__Dependency__c);
-         buildertek__Project_Task__c newTask =  new buildertek__Project_Task__c();
-         newTask.Id = task.Id;
-         newTask.buildertek__Order__c = i;
-         newUpdateList.add(newTask);
-         //system.debug(task.buildertek__Dependency__c)
-         } */
-        /* List<buildertek__Project_Task__c> updatenewList = new List<buildertek__Project_Task__c>();
-         system.debug(updatedprojecttaskList[0].buildertek__Start__c);
-         for(buildertek__Project_Task__c task: updatedprojecttaskList){
-         buildertek__Project_Task__c newTask =  new buildertek__Project_Task__c();
-         newTask.Id = task.Id;
-         newTask.Name = task.Name;
-         newTask.buildertek__Start__c = task.buildertek__Start__c;
-         newTask.buildertek__Finish__c = task.buildertek__Finish__c;
-         newTask.buildertek__Duration__c = task.buildertek__Duration__c;
-         newTask.buildertek__Completion__c = task.buildertek__Completion__c;
-         updatenewList.add(newTask);
-         } */
+        Map<Id, buildertek__Project_Task__c> projectTaskMap = new Map<Id, buildertek__Project_Task__c>();
+        for (buildertek__Project_Task__c pt : updatedprojecttaskList) {
+            System.debug('Old check project task in save changes + '+pt);
+            projectTaskMap.put(pt.Id, pt);
+        }
+
+        for (buildertek__Project_Task__c pt : updatedprojecttaskList) {
+            if (pt.buildertek__Dependency__c != null) {
+                pt.buildertek__Lag__c = ProjectTaskTriggerHandler.calculateDuration(projectTaskMap.get(pt.buildertek__Dependency__c).buildertek__Finish__c, pt.buildertek__Start__c)-1;
+            }
+        }
+
+        for (buildertek__Project_Task__c pt : updatedprojecttaskList) {
+            System.debug('New check project task in save changes + '+pt);
+        }
+
         if (isUpdate){
-            //ProjectTaskTriggerHandler.blnSkipTaskTrigger = true;
-            //update newUpdateList;
-
-
             upsert updatedprojecttaskList;
-
-
-            //update updatedprojecttaskList;
-
-            //ProjectTaskTriggerHandler.blnSkipTaskTrigger = false;
-
         }
         System.debug(taskJSON);
     }
@@ -1056,6 +1036,51 @@ public class BT_NewGanttChartCls{
             return data;
         }
     }
+
+
+    //* store wbs value
+    @AuraEnabled
+    public static void setWBSValue(String scheduleItemMap){
+        try {
+            System.debug('setWBSValue Called');
+
+            List<buildertek__Project_Task__c> scheduleItemList = new List<buildertek__Project_Task__c>();
+            Map<String, Object> dataMap = (Map<String, Object>) JSON.deserializeUntyped(scheduleItemMap);
+            Set<String> ScheduleItemIds= new Set<String>();
+
+            for (String key : dataMap.keySet()) {
+                Object value = dataMap.get(key);
+                // Process the key-value pair as needed
+                String jsonString = JSON.serialize(value);
+                jsonString = jsonString.replace('"','');
+                ScheduleItemIds.add(jsonString);
+            }
+
+            scheduleItemList = [Select Id , buildertek__WBS__c, Name From buildertek__Project_Task__c WHERE Id IN:ScheduleItemIds];
+
+            if (scheduleItemList.size() > 0) {
+                for(buildertek__Project_Task__c scheduleItem:scheduleItemList){
+                    for (String key : dataMap.keySet()) {
+                        Object value = dataMap.get(key);
+                        // Process the key-value pair as needed
+                        System.debug('Key: ' + key + ', Value: ' + value);
+                        if(value == scheduleItem.Id && key!= '1'){
+                            scheduleItem.buildertek__WBS__c=key;
+                        }
+                    }
+                }
+                ProjectTriggerHandler.blnSkipProjectTrigger = true;
+                update scheduleItemList;
+                ProjectTriggerHandler.blnSkipProjectTrigger = false;
+            }
+
+        } catch (Exception e) {
+            System.debug(e);
+            System.debug('line number for WBS ==>' + e.getLineNumber() + ' - error ==>' + e.getMessage());
+        }
+    }
+
+
 
     // wrapper class
     public with sharing class customValueWrapper{
