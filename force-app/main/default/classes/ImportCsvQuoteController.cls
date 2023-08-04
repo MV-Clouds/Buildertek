@@ -35,13 +35,10 @@ public with sharing class ImportCsvQuoteController {
                     }
                 }
                 
-                System.debug('strFileData ::: '+strFileData);
-                
                 if(!String.isBlank(strFileData) && response.isSuccess) {
-                    System.debug('If 1 ::: ');
+
                     List<buildertek__Quote_Item__c > listQuotes = new List<buildertek__Quote_Item__c >();
                     listCSVData = getListOfFileContentsAsStrings(strFileData);
-                    System.debug('If 2 ::: listCSVData : ' + listCSVData);
 					Map<String,buildertek__Quote_Item__c > quoteItemMap = new Map<String,buildertek__Quote_Item__c >();
 
                     //get id from name 
@@ -52,31 +49,23 @@ public with sharing class ImportCsvQuoteController {
                     Map<String,Product2> productMap=new Map<String,Product2>();
                     Map<String,buildertek__Cost_Codes__c> costCodeMap=new Map<String,buildertek__Cost_Codes__c>();
                     Map<String,buildertek__Quote_Line_Group__c> groupingMap=new Map<String,buildertek__Quote_Line_Group__c>();
-                    System.debug('If 3 ::: listCSVData.size() : ' + listCSVData.size());
-                    System.debug('If 3.5 ::: listCSVData.get(0) : ' + listCSVData.get(0));
+
                     for(Integer intIndex = 1; intIndex < listCSVData.size(); intIndex++) {
-                        System.debug('If 3.9 ::: intIndex : ' + intIndex);
-                        System.debug('If 4 ::: listCSVData.get(intIndex).size() : ' + listCSVData.get(0).size());
-                        System.debug('If 4.5 ::: listCSVData.get(intIndex).size() : ' + listCSVData.get(intIndex));
-                        // System.debug('If 4 ::: listCSVData.get(0).get(intInnerIndex : ' + listCSVData.get(0).get(0));
+
                         for(Integer intInnerIndex = 0; intInnerIndex < listCSVData.get(intIndex).size(); intInnerIndex++) {
-                            System.debug('If 4 ::: listCSVData.get('+intIndex+').get('+intInnerIndex+')) ' + listCSVData.get(intIndex).get(intInnerIndex).replace('\n',''));
                             switch on listCSVData.get(0).get(intInnerIndex) {
                                 when 'Product Description' {
-                                    // system.debug(' when Product Description :: ' + listCSVData.get(intIndex).get(intInnerIndex));
                                     if(String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))) {
                                         productList.add(listCSVData.get(intIndex).get(intInnerIndex).replace('\n',''));
                                     }
                                 }
                                 when 'Cost Code' {
-                                    // system.debug(' when Cost Code :: ' + listCSVData.get(intIndex).get(intInnerIndex));
                                     if(String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))) {
                                         //quote.buildertek__Cost_Code__c = listCSVData.get(intIndex).get(intInnerIndex);
                                         costCodeList.add(listCSVData.get(intIndex).get(intInnerIndex).replace('\n',''));
                                     }
                                 }
                                 when 'Grouping' {
-                                    // system.debug(' when Grouping :: ' + listCSVData.get(intIndex).get(intInnerIndex));
                                     if(String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))) {
                                        // quote.buildertek__Grouping__c = listCSVData.get(intIndex).get(intInnerIndex).trim();
                                        groupingList.add(listCSVData.get(intIndex).get(intInnerIndex).replace('\n',''));
@@ -221,7 +210,7 @@ public with sharing class ImportCsvQuoteController {
         catch(Exception ex) {
             response.isSuccess = false;
             response.strMessage = ex.getMessage();
-            System.debug('Error in importBudgets => ' + ex + '\n at line no ==> ' + ex.getLineNumber());
+            // System.debug('Error in importBudgets => ' + ex + '\n at line no ==> ' + ex.getLineNumber());
         }
         
         return response;

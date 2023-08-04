@@ -57,8 +57,8 @@
         
         action.setParams({
             budgetId: component.get("v.recordId"),
-            fileData: fileContents
-            // fileData: encodeURIComponent(fileContents)
+            // fileData: encodeURIComponent(fileContents),
+            fileData: fileContents     // ==> Chages For Ticket No : AC -28
         });
 
         action.setCallback(this, function(response) {
