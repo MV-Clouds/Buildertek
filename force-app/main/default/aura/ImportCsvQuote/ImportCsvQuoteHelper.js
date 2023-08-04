@@ -47,8 +47,9 @@
     },
       
     upload: function(component, helper, file, fileContents) {
-        $A.util.addClass(component.find("uploading").getElement(), "uploading");
-    	$A.util.removeClass(component.find("uploading").getElement(), "notUploading");
+        component.set('v.Spinner', true);
+        // $A.util.addClass(component.find("uploading").getElement(), "uploading");
+    	// $A.util.removeClass(component.find("uploading").getElement(), "notUploading");
         
         var action = component.get("c.importBudgets"); 
 		
@@ -69,9 +70,10 @@
 
         action.setCallback(this, function(response) {
             var state = response.getState();
-            $A.util.removeClass(component.find("uploading").getElement(), "uploading");
-    	$A.util.addClass(component.find("uploading").getElement(), "notUploading");
+        //     $A.util.removeClass(component.find("uploading").getElement(), "uploading");
+    	// $A.util.addClass(component.find("uploading").getElement(), "notUploading");
             if(state === "SUCCESS") {
+                component.set('v.Spinner', false);
                 var result = response.getReturnValue();
                 console.log('result ', result);
                 if(result.isSuccess) {
@@ -84,6 +86,7 @@
                 }
             }
             else {
+                component.set('v.Spinner', false);
                 var errors = response.getError();
                 var error = '';
                 
