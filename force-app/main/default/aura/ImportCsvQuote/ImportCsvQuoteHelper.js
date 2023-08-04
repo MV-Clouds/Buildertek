@@ -16,6 +16,7 @@
             var self = this;
             fr.onload = function() {
                 var fileContents = fr.result;
+                console.log('fr.type : ', typeof fileContents);
                 var base64Mark = 'base64,';
                 var dataStart = fileContents.indexOf(base64Mark) + base64Mark.length;
                 
@@ -56,7 +57,8 @@
         
         action.setParams({
             budgetId: component.get("v.recordId"),
-            fileData: encodeURIComponent(fileContents)
+            fileData: fileContents
+            // fileData: encodeURIComponent(fileContents)
         });
 
         action.setCallback(this, function(response) {

@@ -2,7 +2,6 @@
 	<aura:attribute name="recordId" type="Id"/>
     <aura:attribute name="isSelect" type="boolean" default="false"/>
     <aura:attribute name="selectedFile" type="string" default="" />
-     
     <!-- aura:handler event="aura:waiting" action="{!c.waiting}"/>
     <aura:handler event="aura:doneWaiting" action="{!c.doneWaiting}"/ -->
     <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />

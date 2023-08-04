@@ -1814,7 +1814,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
         tbar: new GanttToolbar(),
         rowHeight: 30,
         barMargin: 5,
-        minHeight: "80em",
+        // minHeight: "80em",
         viewPreset: "weekAndDayLetter",
         dependencyIdField: "sequenceNumber",
         // dependencyIdField: "wbsCode",
