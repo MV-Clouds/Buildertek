@@ -300,29 +300,24 @@
                 <a href="{!v.fromWhereBudgetIsOpen}" style="font-size:17px;padding-right: 50px;" onclick="{!c.closetab}">{!v.budgetName} </a>
                 <div class="rkclass">
                     <div class="rkclasses">
-                        <p>Original Budget </p><p> {!v.OriginalBudget}</p>
+                        <p>Original Budget </p><lightning:formattedNumber value="{!v.OriginalBudget}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code" />
                     </div>
                     <div class="rkclasses">
-                        <p>Total Costs </p><p> {!v.TotalCosts}</p>
+                        <p>Total Costs </p><lightning:formattedNumber value="{!v.TotalCosts}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code" />
                     </div>
                     <div class="rkclasses">
-                        <p>Total Sales Price </p><p> {!v.TotalSalesPrice}</p>
+                        <p>Total Sales Price </p><lightning:formattedNumber value="{!v.TotalSalesPrice}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code" />
                     </div>
                     <div class="rkclasses">
-                        <p>Gross Margin (%) </p><p> {!v.GrossMarginPer}</p>
+                        <p>Gross Margin (%) </p><lightning:formattedNumber value="{!v.GrossMarginPer}" style="percent" minimumFractionDigits="2" />
                     </div>
                     <div class="rkclasses">
-                        <p>Gross Margin ($) </p><p> {!v.GrossMargin}</p>
+                        <p>Gross Margin ($) </p><lightning:formattedNumber value="{!v.GrossMargin}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code" />
                     </div>
                     <div class="rkclasses">
-                        <p>Projected Gross Margin (%) </p><p> {!v.ProjectedGrossMargin}</p>
-                    </div>
-                    
-                    
-                    
-                    
-                    
-                    
+                        <p>Projected Gross Margin (%) </p><lightning:formattedNumber value="{!v.ProjectedGrossMargin}" style="percent" minimumFractionDigits="2" />
+                    </div> 
+                <!-- </div> -->
                 </div>
             </div>
         </aura:if>
