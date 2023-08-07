@@ -905,7 +905,7 @@
 
                                                     </td>
                                                 </tr>
-                                                <tr class="slds-text-heading--label" style="line-height: 2">
+                                                <tr class="slds-text-heading--label" style="line-height: 1.5;">
                                                     <th></th>
                                                     <th colspan="2" class="slds-is-sortable" scope="col" width="5px">
                                                         <div class="slds-form-element">
@@ -1367,7 +1367,6 @@
 
 
                                                 <aura:if isTrue="{!parentGroupIndex != v.TotalRecords.groupHierarchy.length-1}">
-                                                    <br />
                                                 </aura:if>
                                             </aura:iteration>
                                         </tbody>
