@@ -10,3 +10,11 @@
     text-align: center;
     padding: 5px;
 }
+.THIS input[readonly][role=combobox][disabled] {
+    background-color: white;
+    border-color: rgb(119, 119, 119);
+    color: var(--slds-c-input-text-color, var(--sds-c-input-text-color));
+}
+.THIS .slds-has-error .slds-form-element__help{
+    position: absolute;
+}
