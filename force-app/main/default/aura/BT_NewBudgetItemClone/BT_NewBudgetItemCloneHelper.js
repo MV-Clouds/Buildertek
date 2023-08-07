@@ -2394,12 +2394,15 @@
         // Check if the current URL contains a specific keyword or phrase
         if (isBudget) {
             console.log('in if');
-            $A.util.addClass(headerDiv, "divconts");
+            $A.util.addClass(headerDiv, "divconts1");
+            $A.util.removeClass(headerDiv, "divconts2");
         } else {
             console.log('in else');
-            $A.util.removeClass(headerDiv, "divconts");
+            $A.util.addClass(headerDiv, "divconts2");
+            $A.util.removeClass(headerDiv, "divconts1");
         }
     },
+
     addInvoicePOHelper:function (component, event, helper) {
 
         component.set('v.addInvoicePOSection' , true);
