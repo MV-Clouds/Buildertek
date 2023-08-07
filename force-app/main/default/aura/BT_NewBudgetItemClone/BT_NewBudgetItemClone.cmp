@@ -286,6 +286,8 @@
     <aura:attribute name="addInvoicePOSection" type="Boolean" default="false" />
     <aura:attribute name="invoicePORecordList" type="Account_Payable__c[]" />
 
+    <!-- To set slds_tab_defaul height for responsive display ====== Start  BUIL - 3466-->
+    <aura:attribute name="slds_tab_height_diff" type="String" default="0px"/>
     <aura:HTML tag="style">
         .slds-tabs_default{
             min-height: 72vh; height: 72vh;
@@ -297,30 +299,36 @@
         }
         @media only screen and (max-height: 990px) and (min-height: 900px){
             .slds-tabs_default{
-                min-height: 72vh; height: 72vh;
+                min-height: calc(72vh + {!v.slds_tab_height_diff}); 
+                height: calc(72vh + {!v.slds_tab_height_diff});
             }
         }
         @media only screen and (max-height: 900px) and (min-height: 810px){
             .slds-tabs_default{
-                min-height: 77.5vh; height: 87.5vh;
+                min-height: calc(77.7vh + {!v.slds_tab_height_diff}); 
+                height: calc(77.5vh + {!v.slds_tab_height_diff});
             }
         }
         @media only screen and (max-height: 810px) and (min-height: 720px){
             .slds-tabs_default{
-                min-height: 83vh; height: 83vh;
+                min-height: calc(83vh + {!v.slds_tab_height_diff}); 
+                height: calc(83vh + {!v.slds_tab_height_diff});
             }
         }
         @media only screen and (max-height: 720px) and (min-height: 630px){
             .slds-tabs_default{
-                min-height: 88.5vh; height: 88.5vh;
+                min-height:calc(88.5vh + {!v.slds_tab_height_diff}); 
+                height: calc(88.5vh + {!v.slds_tab_height_diff});
             }
         }
         @media only screen and (max-height: 630px) and (min-height: 540px){
             .slds-tabs_default{
-                min-height: 94vh; height: 94vh;
+                min-height: calc(94vh + {!v.slds_tab_height_diff}); 
+                height: calc(94vh + {!v.slds_tab_height_diff});
             }
         }
     </aura:HTML>
+    <!-- =============================== End ======================= -->
 
 
 

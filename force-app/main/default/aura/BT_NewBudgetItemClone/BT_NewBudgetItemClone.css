@@ -247,7 +247,8 @@
     }
   } */
   .THIS .divconts1{
-    max-height: 62vh;
+    max-height: 60vh;
+    height : 59vh;
     overflow: auto;
 }
 .THIS .divconts2{

@@ -1101,6 +1101,17 @@
                         component.set("v.TotalRecords", result);
                         component.set("v.TotalRecordsCopy", result);
                         console.log('budget lines::', result);
+                        
+                    }
+
+                    // To set slds_tab_defaul height for responsive display ==> BUIL - 3466
+                    console.log('v.total 2 => ', component.get("v.total"));
+                    var total = component.get("v.total");
+                    if(total > 60){
+                        component.set("v.slds_tab_height_diff", '42px');
+                    }
+                    else{
+                        component.set("v.slds_tab_height_diff", '0px');
                     }
 
                     $A.get("e.c:BT_SpinnerEvent").setParams({
@@ -2390,8 +2401,10 @@
         console.log('isBudget',isBudget);
         var headerDiv = component.find("headerDiv");
         console.log('headerDiv',headerDiv);
+        console.log('v.total => ', component.get("v.total"));
         
         // Check if the current URL contains a specific keyword or phrase
+        // To set slds_tab_defaul height for responsive display ==> BUIL - 3466
         if (isBudget) {
             console.log('in if');
             $A.util.addClass(headerDiv, "divconts1");
