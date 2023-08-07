@@ -143,7 +143,8 @@ public with sharing class ImportCsvQuoteController {
                                 
                                 when 'Quantity' {
                                     if(String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))) {
-                                        quote.buildertek__Quantity__c = Decimal.valueOf(listCSVData.get(intIndex).get(intInnerIndex));
+                                        Decimal dec = Decimal.valueOf(listCSVData.get(intIndex).get(intInnerIndex));
+                                        quote.buildertek__Quantity__c = (Integer)Math.round(dec);
                                     }
                                 }
                                 
@@ -172,6 +173,8 @@ public with sharing class ImportCsvQuoteController {
                                 when 'Markup' {
                                     if(String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))) {
                                         quote.buildertek__Markup__c = Decimal.valueOf(listCSVData.get(intIndex).get(intInnerIndex).replace('%',''));
+                                        System.debug('quote.buildertek__Markup__c' + quote.buildertek__Markup__c);
+                                        System.debug(' Decimal.valueOf(listCSVData.get(intIndex).get(intInnerIndex)' +  Decimal.valueOf(listCSVData.get(intIndex).get(intInnerIndex)));
                                     }
                                 }
                                 
@@ -215,7 +218,7 @@ public with sharing class ImportCsvQuoteController {
                             response.strMessage = 'Quote line items inserted successfully.';
                         // } else{
                         //         response.isSuccess = false;
-                        //             response.strMessage = 'Please check headers in your File';
+                        //             response.strMessage = 'Your file header are not Corrects. Please Review it Once.';
                         // }
                     }
                     else {
@@ -248,18 +251,18 @@ public with sharing class ImportCsvQuoteController {
         // try{
         if(String.isNotBlank(strContents)) {
             List<String> listLines;
-            
-            // if(strContents.contains('\r')) {
-            //     // Split up the file contents into List of rows [ Using new line ].
-            //     listLines = strContents.split('\n');
-            // }
-            // else if(strContents.contains('\n')) {
-            //     // Split up the file contents into List of rows [ Using new line ].
-            //     listLines = strContents.split('\n');
-            // }
+            if(strContents.contains('\r')) {
+                // Split up the file contents into List of rows [ Using new line ].
+                // listLines = strContents.split('\r');
+                listLines = strContents.split('\r\n');  // ===> Chages For Ticket No : AC-28
 
-            // Chages For Ticket No : AC-26
-            listLines = strContents.split('\n');
+            }
+            else if(strContents.contains('\n')) {
+                // Split up the file contents into List of rows [ Using new line ].
+                listLines = strContents.split('\n');
+            }
+
+            // listLines = strContents.split('\n');
             
             if(listLines != Null && !listLines.isEmpty()) {
                 // Appending cell values separated by New Lines.
