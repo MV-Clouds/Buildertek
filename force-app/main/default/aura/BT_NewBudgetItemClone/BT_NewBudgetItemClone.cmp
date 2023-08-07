@@ -292,7 +292,32 @@
         }
         @media only screen and (max-height: 1080px) and (min-height: 990px){
             .slds-tabs_default{
+                min-height: 67vh; height: 67vh;
+            }
+        }
+        @media only screen and (max-height: 990px) and (min-height: 900px){
+            .slds-tabs_default{
                 min-height: 72vh; height: 72vh;
+            }
+        }
+        @media only screen and (max-height: 900px) and (min-height: 810px){
+            .slds-tabs_default{
+                min-height: 77.5vh; height: 87.5vh;
+            }
+        }
+        @media only screen and (max-height: 810px) and (min-height: 720px){
+            .slds-tabs_default{
+                min-height: 83vh; height: 83vh;
+            }
+        }
+        @media only screen and (max-height: 720px) and (min-height: 630px){
+            .slds-tabs_default{
+                min-height: 88.5vh; height: 88.5vh;
+            }
+        }
+        @media only screen and (max-height: 630px) and (min-height: 540px){
+            .slds-tabs_default{
+                min-height: 94vh; height: 94vh;
             }
         }
     </aura:HTML>
@@ -332,7 +357,7 @@
                 </div>
             </div>
         </aura:if>
-        <div id="mainContainer" style="min-height: 100%; height: 100%;">
+        <div id="mainContainer" style="">
 
             <div>
 
@@ -850,7 +875,7 @@
                                         <tbody>
                                             <aura:iteration items="{!v.TotalRecords.groupHierarchy}" var="group" indexVar="parentGroupIndex">
                                                 <tr class="groupHeader">
-                                                    <td colspan="{!v.TotalRecords.columns.length + 2}" style="padding-block: 1px;">
+                                                    <td colspan="{!v.TotalRecords.columns.length + 3}" style="padding-block: 1px;">
                                                         <div class="slds-grid">
                                                             <span style="display:none;" class="{!v.currentTab+' '+v.budgetId+' expandGrpIcon_'+parentGroupIndex}" data-grpindex="{!parentGroupIndex}" onclick="{!c.expandCollapseGroups}">
                                                                 <lightning:icon iconName="utility:add" size="xx-small"
