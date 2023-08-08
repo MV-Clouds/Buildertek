@@ -289,10 +289,16 @@
     <!-- To set slds_tab_defaul height for responsive display ====== Start  BUIL - 3466-->
     <aura:attribute name="slds_tab_height_diff" type="String" default="0px"/>
     <aura:HTML tag="style">
-        .slds-tabs_default{
-            min-height: 72vh; height: 72vh;
+        .slds-tabs_card{
+            min-height: fit-content !important; 
+            height: fit-content !important;
         }
-        @media only screen and (max-height: 1080px) and (min-height: 990px){
+
+        .slds-tabs_default{
+            min-height: fit-content !important; 
+            height: fit-content;
+        }
+        <!-- @media only screen and (max-height: 1080px) and (min-height: 990px){
             .slds-tabs_default{
                 min-height: 67vh; height: 67vh;
             }
@@ -326,7 +332,7 @@
                 min-height: calc(94vh + {!v.slds_tab_height_diff}); 
                 height: calc(94vh + {!v.slds_tab_height_diff});
             }
-        }
+        } -->
     </aura:HTML>
     <!-- =============================== End ======================= -->
 
