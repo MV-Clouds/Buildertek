@@ -286,6 +286,56 @@
     <aura:attribute name="addInvoicePOSection" type="Boolean" default="false" />
     <aura:attribute name="invoicePORecordList" type="Account_Payable__c[]" />
 
+    <!-- To set slds_tab_defaul height for responsive display ====== Start  BUIL - 3466-->
+    <aura:attribute name="slds_tab_height_diff" type="String" default="0px"/>
+    <aura:HTML tag="style">
+        .slds-tabs_card{
+            min-height: fit-content !important; 
+            height: fit-content !important;
+        }
+
+        .slds-tabs_default{
+            min-height: fit-content !important; 
+            height: fit-content;
+        }
+        <!-- @media only screen and (max-height: 1080px) and (min-height: 990px){
+            .slds-tabs_default{
+                min-height: 67vh; height: 67vh;
+            }
+        }
+        @media only screen and (max-height: 990px) and (min-height: 900px){
+            .slds-tabs_default{
+                min-height: calc(72vh + {!v.slds_tab_height_diff}); 
+                height: calc(72vh + {!v.slds_tab_height_diff});
+            }
+        }
+        @media only screen and (max-height: 900px) and (min-height: 810px){
+            .slds-tabs_default{
+                min-height: calc(77.7vh + {!v.slds_tab_height_diff}); 
+                height: calc(77.5vh + {!v.slds_tab_height_diff});
+            }
+        }
+        @media only screen and (max-height: 810px) and (min-height: 720px){
+            .slds-tabs_default{
+                min-height: calc(83vh + {!v.slds_tab_height_diff}); 
+                height: calc(83vh + {!v.slds_tab_height_diff});
+            }
+        }
+        @media only screen and (max-height: 720px) and (min-height: 630px){
+            .slds-tabs_default{
+                min-height:calc(88.5vh + {!v.slds_tab_height_diff}); 
+                height: calc(88.5vh + {!v.slds_tab_height_diff});
+            }
+        }
+        @media only screen and (max-height: 630px) and (min-height: 540px){
+            .slds-tabs_default{
+                min-height: calc(94vh + {!v.slds_tab_height_diff}); 
+                height: calc(94vh + {!v.slds_tab_height_diff});
+            }
+        } -->
+    </aura:HTML>
+    <!-- =============================== End ======================= -->
+
 
 
 
@@ -294,39 +344,34 @@
 
 
     <c:BT_Spinner />
-    <div style="background: white;border-radius: 5px;height: auto;" class="slds-scrollable">
+    <div style="background: white;border-radius: 5px;height: 100%;" class="slds-scrollable">
         <aura:if isTrue="{!v.isbudget}">
             <div class="slds-modal__header rkclass" style="text-align: left;">
                 <a href="{!v.fromWhereBudgetIsOpen}" style="font-size:17px;padding-right: 50px;" onclick="{!c.closetab}">{!v.budgetName} </a>
                 <div class="rkclass">
                     <div class="rkclasses">
-                        <p>Original Budget </p><p> {!v.OriginalBudget}</p>
+                        <p>Original Budget </p><lightning:formattedNumber value="{!v.OriginalBudget}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code" />
                     </div>
                     <div class="rkclasses">
-                        <p>Total Costs </p><p> {!v.TotalCosts}</p>
+                        <p>Total Costs </p><lightning:formattedNumber value="{!v.TotalCosts}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code" />
                     </div>
                     <div class="rkclasses">
-                        <p>Total Sales Price </p><p> {!v.TotalSalesPrice}</p>
+                        <p>Total Sales Price </p><lightning:formattedNumber value="{!v.TotalSalesPrice}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code" />
                     </div>
                     <div class="rkclasses">
-                        <p>Gross Margin (%) </p><p> {!v.GrossMarginPer}</p>
+                        <p>Gross Margin (%) </p><lightning:formattedNumber value="{!v.GrossMarginPer/100}" style="percent" minimumFractionDigits="2" />
                     </div>
                     <div class="rkclasses">
-                        <p>Gross Margin ($) </p><p> {!v.GrossMargin}</p>
+                        <p>Gross Margin ($) </p><lightning:formattedNumber value="{!v.GrossMargin}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code" />
                     </div>
                     <div class="rkclasses">
-                        <p>Projected Gross Margin (%) </p><p> {!v.ProjectedGrossMargin}</p>
-                    </div>
-                    
-                    
-                    
-                    
-                    
-                    
+                        <p>Projected Gross Margin (%) </p><lightning:formattedNumber value="{!v.ProjectedGrossMargin/100}" style="percent" minimumFractionDigits="2" />
+                    </div> 
+                <!-- </div> -->
                 </div>
             </div>
         </aura:if>
-        <div id="mainContainer">
+        <div id="mainContainer" style="">
 
             <div>
 
@@ -355,7 +400,7 @@
                                     title="Collapse All" class="pointer1" />
                             </span>
                         </div>
-                    <div style="display:flex;justify-content:end;" class="slds-m-top_medium slds-m-bottom_medium slds-m-right_small">
+                    <div style="display:flex;justify-content:end;" class="slds-m-top_small slds-m-bottom_small slds-m-right_small">
                         <!-- <div style="display:flex;">
                             <div style="width: fit-content;">
                                 <lightning:input aura:id="vendor" name="Group By Vendor" label="Group By Vendor" type="toggle" checked="{!v.groupByVendortoggle}" onclick="{!c.checkToogle}" />
@@ -455,11 +500,11 @@
                     </div>
                 </div>
                 <div aura:id="budgetItem" />
-                <div class="av slds-box" id="{!v.recordId + 'groups'}" style="min-height:45vh;padding:0px !important;">
+                <div class="av slds-box" id="{!v.recordId + 'groups'}" style="min-height:100%; padding-block:0px !important; padding-inline: 10px; margin-top: -5px;">
                     <div>
                         <aura:if isTrue="{!v.recordId != null}">
-                            <div style="padding:10px;">
-                                <div aura:id="inlineEditQuote" class="slds-m-top_medium slds-m-bottom_medium">
+                            <div style="padding:0px; min-height:100%; height: 100%;">
+                                <div aura:id="inlineEditQuote" class="slds-m-top_medium slds-m-bottom_medium" style="margin-block: 10px !important">
                                     <table class="slds-table slds-table_bordered slds-table_cell-buffer" style="border:1px solid grey;border-radius: 5px;">
                                         <thead style="border:1px solid rgb(216, 237, 255);">
                                             <tr class="slds-text-title_caps">
@@ -520,7 +565,7 @@
                                         </thead>
                                         <tbody>
                                             <tr class="tableRow">
-                                                <td>
+                                                <td style="padding-block: 12px;">
                                                     <ui:inputSelect value="{!v.pricebookName }" change="{!c.changeEvent}" class="pricebook-class pointer1">
                                                         <aura:iteration var="option" items="{! v.pricebookoptions }">
                                                             <option value="{! option.value }" selected="{!option.value == v.pricebookName}">{! option.key }
@@ -837,15 +882,14 @@
 
 
                             <div class="slds-scrollable" style="height:100%; padding:0px !important;">
-                                <div class="divcont" aura:id="headerDiv">
+                                <div class="divcont" aura:id="headerDiv" style="">
                                     <!--height:30rem class="slds-scrollable"-->
                                     <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-m-right_small" aura:id="budgetLineItemTable">
                                         <thead></thead>
                                         <tbody>
                                             <aura:iteration items="{!v.TotalRecords.groupHierarchy}" var="group" indexVar="parentGroupIndex">
                                                 <tr class="groupHeader">
-                                                    <td></td>
-                                                    <td colspan="{!v.TotalRecords.columns.length + 2}">
+                                                    <td colspan="{!v.TotalRecords.columns.length + 3}" style="padding-block: 1px;">
                                                         <div class="slds-grid">
                                                             <span style="display:none;" class="{!v.currentTab+' '+v.budgetId+' expandGrpIcon_'+parentGroupIndex}" data-grpindex="{!parentGroupIndex}" onclick="{!c.expandCollapseGroups}">
                                                                 <lightning:icon iconName="utility:add" size="xx-small"
@@ -860,7 +904,7 @@
                                                                     style="border: 1px solid #b9b9b9; padding: 0.1rem 0.3rem 0.3rem 0.3rem"
                                                                     class="pointer1" />
                                                             </span>
-                                                            <div class="slds-col slds-size_6-of-12" data-index='{!parentGroupIndex}' style="font-weight: 400;font-size:18px;margin-left:1rem">
+                                                            <div class="slds-col slds-size_6-of-12" data-index='{!parentGroupIndex}' style="font-weight: 400;font-size:17px;margin-left:1rem; line-height: 2;">
 
                                                                 {!group.groupName}
 
@@ -875,7 +919,7 @@
 
                                                     </td>
                                                 </tr>
-                                                <tr class="slds-text-heading--label" style="line-height: 2">
+                                                <tr class="slds-text-heading--label" style="line-height: 1.5;">
                                                     <th></th>
                                                     <th colspan="2" class="slds-is-sortable" scope="col" width="5px">
                                                         <div class="slds-form-element">
@@ -974,7 +1018,7 @@
                                                                     <lightning:input value="{!recs.recordName}" onchange="{!c.changeNameHandler}" style="padding-bottom:1.3rem !important;" />
 
                                                                     <aura:set attribute="else">
-                                                                        <span style="white-space: pre-wrap;">
+                                                                        <span style="    white-space: nowrap; word-wrap: break-word;">
                                                                              <ui:outputURL
                                                                                 value="{!'/one/one.app?#/sObject/'+ recs.recordId + '/view' + v.additionalUrl}"
                                                                                 label="{!recs.recordName}" /> 
@@ -1337,7 +1381,6 @@
 
 
                                                 <aura:if isTrue="{!parentGroupIndex != v.TotalRecords.groupHierarchy.length-1}">
-                                                    <br />
                                                 </aura:if>
                                             </aura:iteration>
                                         </tbody>

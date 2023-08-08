@@ -35,3 +35,7 @@ mm.log
 
 # OSX-specific exclusions
 .[dD][sS]_[sS]tore
+
+**/jsconfig.json
+
+**/.eslintrc.json
