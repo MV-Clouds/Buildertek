@@ -2518,7 +2518,7 @@ public with sharing class QuoteDAO{
             }      
         }
 
-        sQuery = 'select id, Name from ' + ObjectName + ' WHERE ' + searchKey + ' AND ' + filter + ' order by Name ASC';
+        sQuery = 'select id, Name from ' + ObjectName + ' WHERE ' + searchKey + ' AND ' + filter + ' order by Name ASC LIMIT 800';
         List<sObject> lstOfRecords = Database.query(sQuery);
         for (sObject obj : lstOfRecords){
             returnList.add(obj);
