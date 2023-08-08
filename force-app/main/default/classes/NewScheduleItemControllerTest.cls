@@ -15,7 +15,7 @@ private class NewScheduleItemControllerTest {
         WorkOrder testWorkOrder = new WorkOrder();
         testWorkOrder.buildertek__Project__c = proj.Id; // Replace with a valid Project Id
         testWorkOrder.ContactId = con.Id; // Replace with a valid Contact Id
-        insert testWorkOrder;
+        insert testWorkOrder; 
 
         // Call the method being tested
         Test.startTest();
