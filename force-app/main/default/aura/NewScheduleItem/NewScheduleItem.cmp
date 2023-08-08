@@ -147,5 +147,5 @@
                
            </div>
         </div>
-    </aura:if>
+    </aura:if> 
 </aura:component>

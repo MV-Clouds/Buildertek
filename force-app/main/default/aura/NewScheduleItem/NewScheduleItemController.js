@@ -57,7 +57,7 @@
        });
        action.setCallback(this, function(response){
             var state = response.getState();
-            if(state === "SUCCESS"){
+            if(state === "SUCCESS"){ 
                 var result = response.getReturnValue();
                     component.set("v.Spinner", false);
                     $A.get("e.force:closeQuickAction").fire()

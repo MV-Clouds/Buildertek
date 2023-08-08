@@ -17,7 +17,7 @@ public without sharing class NewScheduleItemController {
             ScheduleWrapRec.scheduleCheckbox = false;
             ScheduleWrapList.add(ScheduleWrapRec);
         }
-        return ScheduleWrapList;    
+        return ScheduleWrapList;     
     }
     
     

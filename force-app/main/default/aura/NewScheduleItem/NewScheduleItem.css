@@ -16,5 +16,5 @@
     color: var(--slds-c-input-text-color, var(--sds-c-input-text-color));
 }
 .THIS .slds-has-error .slds-form-element__help{
-    position: absolute;
+    position: absolute; 
 }

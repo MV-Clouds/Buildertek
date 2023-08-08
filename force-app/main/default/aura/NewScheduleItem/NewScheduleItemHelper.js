@@ -13,7 +13,7 @@
                     component.set("v.disablePro", 'true');
                 }
                 if(result.ContactId != null){
-                    component.set("v.selectedContactRecord", result.ContactId);
+                    component.set("v.selectedContactRecord", result.ContactId); 
                     component.set("v.disableCon", 'true');
                 }
         	} 
