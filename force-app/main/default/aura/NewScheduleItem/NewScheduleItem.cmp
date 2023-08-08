@@ -1,8 +1,6 @@
 <aura:component controller="NewScheduleItemController" implements="force:appHostable,flexipage:availableForRecordHome,force:lightningQuickActionWithoutHeader,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes" access='global'>
      <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
-     <!-- <aura:attribute name="Schedules" type="list" />  -->
-     <aura:attribute name="Schedules" type="List" />
-    <aura:attribute name="scheduleOptions" type="List" />
+     <aura:attribute name="scheduleOptions" type="List" />
      <aura:attribute name="Spinner" type="boolean" default="false"/>
      <aura:attribute name="disablePro" type="boolean" default="false"/>
      <aura:attribute name="disableCon" type="boolean" default="false"/>
@@ -63,12 +61,6 @@
                 <div class="slds-form-element__row">
                     <div class="slds-form-element slds-size_1-of-2 slds-p-around_small">
                         <div class="slds-form-element__control">
-                            <!-- <lightning:select name="colorId" label="Schedule" aura:id="colorId" value="{!v.selectedValue}" required="true" onchange="{!c.handleScheduleChange}" onfocus="{!c.getschdule}">
-                                <option text="None" value="None" /> 
-                                <aura:iteration items="{!v.Schedules}" var="sch">
-                                    <option text="{!sch.getSchedulesList.Name +' - '+sch.getSchedulesList.buildertek__Description__c}" value="{!sch.getSchedulesList.Id}" />
-                                </aura:iteration>
-                            </lightning:select> -->
                             <lightning:combobox name="colorId" label="Schedule" aura:id="colorId" value="{!v.selectedValue}" required="true" 
                 placeholder="Select a schedule" options="{!v.scheduleOptions}" 
                 onchange="{!c.handleScheduleChange}" onfocus="{!c.getschdule}" />
@@ -142,7 +134,7 @@
                         title="Save"
                         onclick="{! c.save }"/>
     </footer>
-    <!-- </aura:if>-->
+    
     <aura:if isTrue="{!v.Spinner}">
         <div aura:id="spinnerId" class="slds-spinner_container">
            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">

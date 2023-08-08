@@ -11,7 +11,6 @@
         	    if(result.buildertek__Project__c != null){
                     component.set("v.selectedProjectId", result.buildertek__Project__c);
                     component.set("v.disablePro", 'true');
-                    // helper.getSchedules(component, event, helper);
                 }
                 if(result.ContactId != null){
                     component.set("v.selectedContactRecord", result.ContactId);

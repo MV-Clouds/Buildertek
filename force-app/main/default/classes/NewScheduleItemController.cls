@@ -109,18 +109,7 @@ public without sharing class NewScheduleItemController {
        @AuraEnabled public Schedule__c getSchedulesList;
    }
    
-//    public static DateTime adjustDate(DateTime startDate) {
-//     DateTime currDate = DateTime.newInstance(startDate.year(), startDate.month(), startDate.day());
-//     String todayDay = currDate.format('EEEE');
-    
-//     if (todayDay == 'Saturday') {
-//         startDate = startDate.addDays(2);
-//     } else if (todayDay == 'Sunday') {
-//         startDate = startDate.addDays(1);
-//     }
-    
-//     return startDate;
-//  }
+
  public static Date modifyDate(Date inputDate) {
     // Convert the Date to a DateTime to use the format method
     DateTime dt = DateTime.newInstance(inputDate.year(), inputDate.month(), inputDate.day());
