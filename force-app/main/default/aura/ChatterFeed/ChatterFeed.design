@@ -1,4 +1,0 @@
-<design:component>
-	<design:attribute name="GroupID" label="Group ID"  description="publisher group id" /> 
-    <design:attribute name="ReadOnly" label="Read Only"  description="read only text" /> 
-</design:component>

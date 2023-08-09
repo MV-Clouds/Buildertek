@@ -1,5 +1,0 @@
-({
-	getObjectName : function() {
-		
-	}
-})

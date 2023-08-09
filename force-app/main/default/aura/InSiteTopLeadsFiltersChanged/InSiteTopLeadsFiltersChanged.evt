@@ -1,4 +1,0 @@
-<aura:event type="COMPONENT" description="Fired when the top leads filters are updated">
-	<aura:attribute name="noteType" type="Integer" description="Specifies the ID of the note type to filter by" />
-	<aura:attribute name="sort" type="String" description="Specifies the sorting criteria" />
-</aura:event>

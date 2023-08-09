@@ -1,5 +1,0 @@
-<apex:component controller="PreviewContractController" >
-	<apex:form >
-       {!templateBody} 
-    </apex:form>
-</apex:component>

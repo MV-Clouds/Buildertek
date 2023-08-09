@@ -1,3 +1,0 @@
-<design:component >
-	<design:attribute name="feedName" label="Feed Name" default="" />
-</design:component>

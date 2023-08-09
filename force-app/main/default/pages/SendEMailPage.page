@@ -1,5 +1,0 @@
-<apex:page controller="SendEMailController" showheader="false" id="pageId" action="{!updateRFQ}">
-    <div style='text-align: center;padding:20px;font-size:20px;'>
-        <button type="button" class="slds-button slds-button_neutral" onclick="closeWindow();">Send Email</button>
-    </div>
-</apex:page>

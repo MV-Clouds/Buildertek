@@ -1,4 +1,0 @@
-<design:component>
-   <design:attribute name="recordId" label="Record ID" />
-   <design:attribute name="recordObjectName" label="Record Cloned" />
-</design:component>

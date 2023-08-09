@@ -1,3 +1,0 @@
-<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction,lightning:actionOverride" access="GLOBAL">
-    <c:createNewSchedule />
-</aura:component>

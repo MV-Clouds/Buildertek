@@ -1,3 +1,0 @@
-<design:component>
-   <design:attribute name="recId" label="recId" />
-</design:component>

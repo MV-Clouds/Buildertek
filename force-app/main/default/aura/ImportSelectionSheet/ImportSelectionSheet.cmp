@@ -1,3 +1,0 @@
-<aura:component implements="force:appHostable,flexipage:availableForRecordHome,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes" controller="ImportSelectionSheet" access="global">
-	
-</aura:component>

@@ -1,4 +1,0 @@
-<aura:component >
-     <button class="slds-button slds-button_brand" onclick="{!c.showAlert}">Close</button>
-	
-</aura:component>

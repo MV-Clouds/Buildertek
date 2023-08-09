@@ -1,3 +1,0 @@
-<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes">
-    <forceChatter:feed type="groups"/>	    
-</aura:component>

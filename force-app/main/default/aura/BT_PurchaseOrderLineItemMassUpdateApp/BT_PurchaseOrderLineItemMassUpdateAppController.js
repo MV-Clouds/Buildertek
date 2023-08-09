@@ -1,5 +1,0 @@
-({
-    handleApplicationEvent: function (component, event) {
-        
-    }
-})

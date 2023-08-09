@@ -1,3 +1,0 @@
-<design:component>
-	<design:attribute name="RecentSearch" label="Recent Search"  description="RecentSearch" /> 
-</design:component>

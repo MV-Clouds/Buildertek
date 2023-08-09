@@ -1,1 +1,0 @@
-window.JQ$ = jQuery.noConflict();

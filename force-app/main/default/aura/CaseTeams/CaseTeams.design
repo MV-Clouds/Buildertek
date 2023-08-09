@@ -1,3 +1,0 @@
-<design:component>
-    <design:attribute name="rowsDisplayed" label="Rows Displayed"/>
-</design:component>

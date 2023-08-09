@@ -1,7 +1,0 @@
-<aura:component>
-	<ltng:require scripts="{!join(',', $Resource.insite + '/insite/momentjs/moment.min.js')}" afterScriptsLoaded="{!c.init}"/>
-	<aura:attribute name="timestamp" type="Integer"/>
-	<aura:attribute name="format" type="String"/>
-
-	<span aura:id="output" class="insite-formatted-date"></span>
-</aura:component>

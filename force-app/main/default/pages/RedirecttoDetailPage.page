@@ -1,3 +1,0 @@
-<apex:page showHeader="false" sidebar="false" standardStylesheets="false" controller="PRViewController" action="{!redirectPage}" cache="false">
-
-</apex:page>

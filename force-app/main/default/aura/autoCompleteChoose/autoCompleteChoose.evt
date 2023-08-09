@@ -1,3 +1,0 @@
-<aura:event type="COMPONENT" description="auto complete match selected">
-	<aura:attribute name="record" type="String[]"/>
-</aura:event>

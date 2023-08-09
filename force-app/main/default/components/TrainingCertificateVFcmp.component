@@ -1,5 +1,0 @@
-<apex:component controller="TrainingCertificateController" access="global" >
-
-<apex:outputText value="{!templateBody}" escape="false" /> 
-
-</apex:component>

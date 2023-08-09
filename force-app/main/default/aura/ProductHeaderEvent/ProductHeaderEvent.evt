@@ -1,3 +1,0 @@
-<aura:event type="COMPONENT" description="Sample Component Event">
-    <aura:attribute name="OrderByProduct" type="String" />
-</aura:event>

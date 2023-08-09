@@ -1,3 +1,0 @@
-<apex:page standardController="pba__Snippet__c" sidebar="false" showHeader="false"> 
-   <apex:outputText value="{! pba__Snippet__c.pba__Text__c}"  escape="false"/>
-</apex:page>

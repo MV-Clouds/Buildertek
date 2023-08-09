@@ -1,3 +1,0 @@
-<apex:page sidebar="false" showHeader="false" renderAs="pdf">
-    <apex:iframe src="/servlet/servlet.FileDownload?file=0681K00000givyBQAQ"/> 
-</apex:page>

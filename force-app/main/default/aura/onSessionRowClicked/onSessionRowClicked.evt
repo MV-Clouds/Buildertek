@@ -1,4 +1,0 @@
-<aura:event type="COMPONENT" description="Fires when a row of the journey table is clicked to allow for triggering in the parent.">
-	<aura:attribute name="sessionId" type="Integer" description="Specifies the ID of the selected session."/>
-	<aura:attribute name="sku" type="String" description="Specifies the selected client SKU"/>
-</aura:event>

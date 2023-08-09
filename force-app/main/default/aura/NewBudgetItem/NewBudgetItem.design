@@ -1,3 +1,0 @@
-<design:component label="Budget">
-	<design:attribute name="pendingLabel" label="Pending PO" />
-</design:component>
