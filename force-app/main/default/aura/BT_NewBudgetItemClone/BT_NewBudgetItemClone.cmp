@@ -1,6 +1,6 @@
 <aura:component implements="flexipage:availableForRecordHome,forceCommunity:availableForAllPageTypes,force:hasRecordId,force:lightningQuickAction,lightning:isUrlAddressable" access="global" controller="BudgetDAO">
     <aura:attribute name="isBudgetlinedelete" type="Boolean" default="false" />
-     <!-- For Testong Git changes -->
+    
     <aura:attribute name="pendingLabel" type="String" default="Pending Po's" access="global" />
     <aura:attribute name="BudgetlinePopupHeader" type="String" default="" />
     <aura:attribute name="budgetItemId" type="String" default="" />
@@ -464,11 +464,11 @@
                                         <!-- <lightning:button label="Add Product" onclick="{!c.addProduct}" class="sldsButtonGroup" />-->
                                         <!--  <lightning:button label="Create Scheduled Items" onclick="{!c.checkSchedules}" class="sldsButtonGroup"/>-->
                                         <!--createScheduleItem-->
-                                        <lightning:button label="New Invoice (AP)" onclick="{!c.newInvoice}" class="sldsButtonGroup" />
-                                        <lightning:button label="New Invoice (AR)" onclick="{!c.newInvoiceAR}" class="sldsButtonGroup" />
+                                        <!-- <lightning:button label="New Invoice (AP)" onclick="{!c.newInvoice}" class="sldsButtonGroup" />
+                                        <lightning:button label="New Invoice (AR)" onclick="{!c.newInvoiceAR}" class="sldsButtonGroup" /> -->
                                         <!-- <lightning:button label="New RFQ" onclick="{!c.newRFQ}" class="sldsButtonGroup" /> -->
-                                        <lightning:button label="New CO" onclick="{!c.newCO}" class="sldsButtonGroup" disabled="{!v.disableAddCO}"/>
-                                        <lightning:button label="New PO" onclick="{!c.newPO}" class="sldsButtonGroup" />
+                                        <!-- <lightning:button label="New CO" onclick="{!c.newCO}" class="sldsButtonGroup" disabled="{!v.disableAddCO}"/> -->
+                                        <!-- <lightning:button label="New PO" onclick="{!c.newPO}" class="sldsButtonGroup" /> -->
                                         <!-- <lightning:button label="New Expense" onclick="{!c.newExpense}" class="sldsButtonGroup" /> -->
                                         <!-- <lightning:button label="Contingency" onclick="{!c.onContingency}" class="sldsButtonGroup" /> -->
                                         <!-- commented on 26thmay DFL <lightning:button label="New Sub-Contract" onclick="{!c.newSubContract}" class="sldsButtonGroup"/>-->
