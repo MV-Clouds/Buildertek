@@ -13,6 +13,7 @@ export default class FilePrivewInLWC extends NavigationMixin(LightningElement) {
     @api files;
     @api recIdList;
     @api isFileExist = false;
+    @track isLoading = false;
     // Reteriving the files to preview
     /* @wire(getRelatedFiles,{lstParentIds: '$recIdList'})
     filesData({data, error}) {
@@ -25,45 +26,46 @@ export default class FilePrivewInLWC extends NavigationMixin(LightningElement) {
         }
     } */
 
-    getFiles(){
-        var that = this;
-        var recList = [];
-        if(this.recIdList){
-            recList.push(this.recIdList)
+    getFiles() {
+        console.log('getFiles');
+        if (!this.recIdList) {
+            return;
         }
-        if(recList.length){
-            getRelatedFiles({lstParentIds: recList}).then(function(response){
+        this.isLoading = true; 
+        const recList = [this.recIdList];
 
-                console.log(response)
-                if(Object.values(response)[0]){
-                    var flist = [];
-                    for(var i=0;i<Object.values(response).length;i++){
-                        for(var j=0;j<Object.values(response)[i].length;j++){
+        getRelatedFiles({ lstParentIds: recList })
+            .then((response) => {
+                console.log(response);
+                if (Object.values(response)[0]) {
+                    let flist = [];
+                    for (let i = 0; i < Object.values(response).length; i++) {
+                        for (let j = 0; j < Object.values(response)[i].length; j++) {
                             flist.push(Object.values(response)[i][j]);
                         }
-                        
                     }
-                    that.files = flist;
-                    //that.files = Object.values(response)[0];
-                    that.isFileExist = true;
-                    that.recIdList = '';
-    
+                    this.files = flist;
+                    this.isFileExist = true;
+                    this.recIdList = '';
+                } else {
+                    this.isFileExist = false; 
                 }
-                
-                //this.records = response;
-            }).catch(function(error){
+            })
+            .catch((error) => {
                 console.log(error);
             })
-        }
-        
+            .finally(() => {
+                this.isLoading = false;
+            });
     }
+    
+    connectedCallback(){
+        this.getFiles();
+    } 
 
-    /* connectedCallback(){
-        this.getFiles();
-    } */
-    renderedCallback(){
-        this.getFiles();
-    }
+    // renderedCallback(){
+    //     this.getFiles();
+    // }
     
 
     // when you click the preview button this method will call and

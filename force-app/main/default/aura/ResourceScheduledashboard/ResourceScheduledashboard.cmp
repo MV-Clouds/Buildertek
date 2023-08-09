@@ -56,6 +56,18 @@
 
     <aura:attribute name="showModal" type="Boolean" default="fasle" />
     <aura:attribute name="showModal1" type="Boolean" default="fasle" />
+    <!--BUIL-  3467 -->
+    <aura:attribute name="showDeleteBox" type="Boolean" default="fasle" />
+    <aura:attribute name="selectedResource" type="Boolean" default="fasle" />
+    <aura:attribute name="Spinner" type="Boolean" default="false"/>
+    <aura:attribute name="selectedTaskName" type="String" />
+
+
+    
+
+
+
+    
     <aura:attribute name="contactScheduleItemList" type="List" default="" />
 
     <aura:attribute name="tradeTypeScheduleItemList" type="List" default="" />
@@ -73,6 +85,9 @@
     </aura:method>
 
     <body style="font-family: 'Poppins', sans-serif;">
+
+        
+
         <div class="wrapper" style="background-color:white">
             <header style="background: #1b5297;padding: 11px 20px;">
                 <div class="left-box" style="display: inline-block;vertical-align: middle;width: 25%;">
@@ -210,14 +225,10 @@
                             <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Assigned Schedule Items</h2>
                         </header>
                         <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
-
-
-
-
-
                             <table class="slds-table slds-table--bordered ">
                                 <thead>
                                     <tr>
+                                        <th scope="col"></th>
                                         <th scope="col"><span class="slds-truncate">Project</span></th>
                                         <th scope="col"><span class="slds-truncate">Task Name</span></th>
                                         <th scope="col"><span class="slds-truncate">Start Date</span></th>
@@ -230,6 +241,11 @@
                                     <aura:iteration items="{!v.contactScheduleItemList}" var="item">
 
                                         <tr>
+                                            <td>
+                                                <span data-id="{!item.Id}"  data-name="{!item.Name}" onclick="{!c.clickDeleteButton}">
+                                                    <lightning:icon iconName="utility:delete" size="xx-small" />   
+                                                </span>     
+                                            </td>
                                             <td>{!item.buildertek__Schedule__r.buildertek__Project__r.Name}</td>
                                             <td>
                                                 <ui:outputURL
@@ -264,6 +280,24 @@
                         <footer class="slds-modal__footer">
                             <button class="slds-button slds-button_neutral" onclick="{!c.closeModal}">Cancel</button>
                            <!-- <button class="slds-button slds-button_brand">Save</button> -->
+                        </footer>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </div>
+
+            <div class="{!if(v.showDeleteBox == true,'slds-show','slds-hide')}">
+                <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header">
+                            <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Delete Resource</h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                            <center><p>Are you sure you want to remove this Resource from   "{!v.selectedTaskName}"?</p></center> 
+                        </div>
+                        <footer class="slds-modal__footer">
+                            <button class="slds-button slds-button_neutral" onclick="{!c.closeDeleteBox}">No</button>
+                           <button class="slds-button slds-button_brand" onclick="{!c.removeResource}">Yes</button>
                         </footer>
                     </div>
                 </section>
@@ -320,10 +354,11 @@
                 </section>
                 <div class="slds-backdrop slds-backdrop_open"></div>
             </div>
-
-
-
         </div>
+
+        <c:BT_Spinner />
+
+       
 
     </body>
 </aura:component>

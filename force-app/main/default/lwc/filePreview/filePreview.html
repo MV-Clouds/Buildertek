@@ -37,7 +37,14 @@
             </table>
         </template>
         <template if:false={isFileExist}>
-            There are no files for this item
+            <p if:false={isLoading}>
+            There are no files for this item </p>
         </template>
+        
+        <div class="spinner">
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading" variant="brand" size="medium"></lightning-spinner>
+            </template>
+        </div>
   
 </template>

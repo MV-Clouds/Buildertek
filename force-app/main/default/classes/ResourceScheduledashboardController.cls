@@ -346,4 +346,17 @@ public class ResourceScheduledashboardController{
         @AuraEnabled
         public String TradeType{ get; set; }
     }
+
+    @AuraEnabled
+    public static void deleteResource(String scheduleItemId){
+        if(scheduleItemId !=null){
+
+            buildertek__Project_Task__c scheduleItem=[Select Id, Name , buildertek__Contractor_Resource__c  From buildertek__Project_Task__c WHERE Id=:scheduleItemId LIMIT 1];
+            if(scheduleItem.buildertek__Contractor_Resource__c!=null){
+                scheduleItem.buildertek__Contractor_Resource__c=null;
+            }
+            update scheduleItem;
+        }
+    }
+
 }
