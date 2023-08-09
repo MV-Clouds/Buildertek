@@ -556,16 +556,14 @@ public with sharing class bryntumGanttController {
     }
 
     @AuraEnabled
-    public static String upsertDataOnSaveChanges(String scheduleRecordStr, String taskRecordsStr, List<String> listOfRecordsToDelete){
+    public static String upsertDataOnSaveChanges(String scheduleRecordStr, String taskRecordsStr, List<String> listOfRecordsToDelete, Map<String, String> childParentMap, Map<String, Object> projectTaskMap){
         String msg;
         buildertek__Schedule__c scheduleRecord = (buildertek__Schedule__c)System.JSON.deserialize(scheduleRecordStr, buildertek__Schedule__c.class);
         List<buildertek__Project_Task__c> taskRecords = (List<buildertek__Project_Task__c>)System.JSON.deserialize(taskRecordsStr, List<buildertek__Project_Task__c>.class);
-        // Map<Id, buildertek__Project_Task__c> IdandRecordMap = (Map<Id, buildertek__Project_Task__c>)System.JSON.deserialize(taskIdAndRecordDataMap, Map<Id, buildertek__Project_Task__c>.class);
-        // Map<String, Object> IdandRecordMap = (Map<String, Object>)JSON.deserializeUntyped(taskIdAndRecordDataMap);
-        // System.debug('taskIdAndRecordDataMap :--> '+taskIdAndRecordDataMap);
-        // Map<String, Object> IdandRecordMap = (Map<String, Object>)System.JSON.deserializeUntyped(taskIdAndRecordDataMap);
-        // System.debug('upsertDataonSaveChanges IdandRecordMap :- '+ IdandRecordMap);
+        
         try {
+            System.debug('childParentMap ==> '+childParentMap);
+            System.debug('projectTaskMap ==> '+projectTaskMap);
             System.debug('listOfRecordsToDelete '+listOfRecordsToDelete);
             System.debug('listOfRecordsToDelete size '+listOfRecordsToDelete.size());
             if (listOfRecordsToDelete.size() > 0) {
@@ -574,9 +572,30 @@ public with sharing class bryntumGanttController {
                     delete taskListToDelete;
                 }
             }
-            ProjectTaskTriggerHandler.blnSkipTaskTrigger = true;
+
             update scheduleRecord;
-            upsert taskRecords;
+            ProjectTaskTriggerHandler.blnSkipTaskTrigger = true;
+            if (projectTaskMap.size() > 0) {
+                Map<String, buildertek__Project_Task__c> newProjectTaskMap = new Map<String, buildertek__Project_Task__c>();
+                for (String key : projectTaskMap.keySet()) {
+                    String jsonString = JSON.serialize(projectTaskMap.get(key));
+                    buildertek__Project_Task__c task = (buildertek__Project_Task__c)JSON.deserialize(jsonString, buildertek__Project_Task__c.class);
+                    newProjectTaskMap.put(key, task);
+                }
+                upsert newProjectTaskMap.values();
+             
+                if (childParentMap.size() > 0) {
+                    List<buildertek__Project_Task__c> newTaskList = new List<buildertek__Project_Task__c>();
+                    for (String taskId : childParentMap.keySet()) {
+                        buildertek__Project_Task__c task = newProjectTaskMap.get(taskId);
+                        task.buildertek__Dependency__c = newProjectTaskMap.get(childParentMap.get(taskId)).Id;
+                        newTaskList.add(task);
+                    }
+                    if (newTaskList.size() > 0) {
+                        update newTaskList;
+                    }
+                }
+            }
             ProjectTaskTriggerHandler.blnSkipTaskTrigger = false;
             msg = 'Success';
         } catch (Exception e) {
