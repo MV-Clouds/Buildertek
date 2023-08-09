@@ -29,7 +29,7 @@
     <!-- https://www.lightningdesignsystem.com/components/lookups/ --> 
     
     <div  aura:id="searchRes" class="mainDiv slds-form-element slds-lookup slds-is-close" data-select="single">
-        <label class="slds-form-element__label" for="lookup-348">{!v.label}</label>
+        <!-- <label class="slds-form-element__label" for="lookup-348">{!v.label}</label> -->
         <!--This part is for display search bar for lookup-->  
         <div class="slds-form-element__control subDiv">
             
