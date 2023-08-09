@@ -301,9 +301,10 @@
 
     getFamily : function(component, event, helper, priceBookId, index) {
         // console.log('helper.getFamily : PriceBookId : ', priceBookId , ' index : ', index);
-        var action = component.get("c.ProductsthroughPB");
+        var action = component.get("c.getProductfamilyRecords");
         action.setParams({
-            pbookId : priceBookId
+                'ObjectName': "Product2",
+                'parentId': priceBookId
         });
         action.setCallback(this, function(response) {
             var state = response.getState();
@@ -313,8 +314,9 @@
                 
                 var familySet = new Set();
                 for(var i = 0; i < result.length; i++) {
-                    familySet.add(result[i].Family);
+                    familySet.add(result[i].productfamilyvalues);
                 }
+                console.log({familySet});
                 //create a list of family where we have label and value
                 var familyList = [];
                 familyList.push({
@@ -330,36 +332,37 @@
                     }
                 });
                 var quoteLineWrapperList = component.get('v.quoteLineWrapperList');
-                quoteLineWrapperList[index].GroupingOptions = component.get('v.GroupingOptions');
-                quoteLineWrapperList[index].productList = result;
+                // quoteLineWrapperList[index].GroupingOptions = component.get('v.GroupingOptions');
+                // quoteLineWrapperList[index].productList = result;
                 quoteLineWrapperList[index].productFamilyList = familyList;
-                var productOptionList = [];
-                if(result.length > 0) {
-                    productOptionList.push({
-                        label : 'Please Select Product',
-                        value : ''
-                    });
-                    for(var i = 0; i < result.length; i++) {
-                        productOptionList.push({
-                            label : result[i].Name,
-                            value : result[i].Id
-                        });
-                    }
-                }
-                quoteLineWrapperList[index].productOptionList = productOptionList;
-                quoteLineWrapperList[index].QuoteLine = {
-                    buildertek__Quote__c : component.get('v.recordId'),
-                    buildertek__Product__c : '',
-                    Name : '',
-                    buildertek__Grouping__c : '',
-                    buildertek__Notes__c : '',
-                    buildertek__Quantity__c : '',
-                    buildertek__Unit_Cost__c : '',
-                    buildertek__Margin__c : '',
-                    buildertek__Markup__c : '',
-                }
+                console.log(quoteLineWrapperList[index].productFamilyList);
+                // var productOptionList = [];
+                // if(result.length > 0) {
+                //     productOptionList.push({
+                //         label : 'Please Select Product',
+                //         value : ''
+                //     });
+                //     for(var i = 0; i < result.length; i++) {
+                //         productOptionList.push({
+                //             label : result[i].Name,
+                //             value : result[i].Id
+                //         });
+                //     }
+                // }
+                // quoteLineWrapperList[index].productOptionList = productOptionList;
+                // quoteLineWrapperList[index].QuoteLine = {
+                //     buildertek__Quote__c : component.get('v.recordId'),
+                //     buildertek__Product__c : '',
+                //     Name : '',
+                //     buildertek__Grouping__c : '',
+                //     buildertek__Notes__c : '',
+                //     buildertek__Quantity__c : '',
+                //     buildertek__Unit_Cost__c : '',
+                //     buildertek__Margin__c : '',
+                //     buildertek__Markup__c : '',
+                // }
                 component.set('v.quoteLineWrapperList', quoteLineWrapperList);
-                console.log('quoteLineWrapperList', quoteLineWrapperList);
+                // console.log('quoteLineWrapperList', quoteLineWrapperList);
                 component.set('v.isLoading', false);
             } else if (state === "ERROR") {
                 console.log('A Problem Occurred: ' + JSON.stringify(response.error));
@@ -374,7 +377,6 @@
             }
         }); 
         $A.enqueueAction(action);
-        
     },
 
     setProductDetails : function(component, event, helper, index, productId) {

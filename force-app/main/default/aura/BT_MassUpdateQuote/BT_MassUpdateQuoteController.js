@@ -356,4 +356,15 @@
         })
         $A.enqueueAction(action);
     },
+
+    handleComponentEvent: function(component, event, helper) {
+        // get the selected Account record from the COMPONETN event
+        var selectedAccountGetFromEvent = event.getParam("recordByEvent");
+        // component.set("v.productId", selectedAccountGetFromEvent.Id);
+        // component.set("v.productName", selectedAccountGetFromEvent.Name);
+        // helper.getProductDetails(component, event, helper);
+        // helper.getUOMValues(component, event, helper);
+        // var temp = component.get("v.newQuote.buildertek__Unit_Price__c");
+        console.log('temp varr ', JSON.stringify(selectedAccountGetFromEvent));
+    },
 })

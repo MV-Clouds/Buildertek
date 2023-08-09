@@ -42,9 +42,12 @@
     <lightning:overlayLibrary aura:id="overlayLib" />
     <lightning:workspaceAPI aura:id="workspace" />
     <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
+    <aura:attribute name="selectedLookUpRecord" type="sObject" default="{}" />
+
    
-    <aura:handler name="datafromChild" event="c:senDatafromChild" action="{!c.handleComponentEvent}"/> 
-    
+    <!-- <aura:handler name="datafromChild" event="c:senDatafromChild" action="{!c.handleComponentEvent}"/>  -->
+    <aura:handler name="oSelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.handleComponentEvent}" />
+
     <div class="slds-modal__content slds-scrollable" style="height:100% !important">
         <lightning:card aura:id="lightCard" class="slds-card_boundary slds-page-header slds-scrollable" title="Quote Lines">
             <aura:set attribute="actions">
@@ -117,11 +120,28 @@
                                     </lightning:select>
                                 </td>
                                 <td>
-                                    <lightning:select name="{!index}" value="{!quoteLineWrapper.productId}" class="product-class pointer1" onchange="{!c.gotProduct}">
+                                    <!-- <lightning:select name="{!index}" value="{!quoteLineWrapper.productId}" class="product-class pointer1" onchange="{!c.gotProduct}">
                                         <aura:iteration items="{!quoteLineWrapper.productOptionList}" var="productOption">
                                             <option name="{!quoteLineWrapper}" value="{!productOption.value}">{!productOption.label}</option>
                                         </aura:iteration>
-                                    </lightning:select>
+                                    </lightning:select> -->
+                                    <aura:html tag="style">
+                                        .mainDiv{
+                                            padding-top:0% !important;
+
+                                        }
+                                        .pillSize{
+
+                                            padding-top: 2% !important;
+                                            padding-bottom: 2% !important;
+                                        }
+                                        .subDiv{
+                                            width:100% !important;
+                                            margin-top:0% !important;
+
+                                        }
+                                    </aura:html>
+                                    <c:BT_LightningLookup objectAPIName="Product2" IconName="standard:product"  selectedRecord="{! v.selectedLookUpRecord}" aura:id="productId"   parentId="{!quoteLineWrapper.pricebookEntryId}" prodctfamly="{!quoteLineWrapper.productFamily}"  />
                                 </td>
                                 <td>
                                     <lightning:input name="{!index}" value="{!quoteLineWrapper.QuoteLine.Name}" class="description-class" />

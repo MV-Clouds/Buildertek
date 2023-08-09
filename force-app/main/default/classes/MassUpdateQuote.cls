@@ -215,18 +215,18 @@ public with sharing class MassUpdateQuote{
         for (PriceBookEntry pEntry: pEntries) {
             productWrapper aProduct = new productWrapper();
             aProduct.Id = pEntry.Product2Id;
-            aProduct.Name = pEntry.Product2.Name;
-            aProduct.ProductCode = pEntry.Product2.ProductCode;
-            aProduct.Description = pEntry.Product2.Description;
+            // aProduct.Name = pEntry.Product2.Name;
+            // aProduct.ProductCode = pEntry.Product2.ProductCode;
+            // aProduct.Description = pEntry.Product2.Description;
             aProduct.Family = pEntry.Product2.Family;
-            aProduct.IsActive = pEntry.Product2.IsActive;
+            // aProduct.IsActive = pEntry.Product2.IsActive;
             aProduct.UnitPrice = pEntry.UnitPrice;            
             aProduct.Size = pEntry.Pricebook2.Name;
             aProduct.Selected = false;
             aProduct.MarkUp = pEntry.buildertek__Markup__c;
             aProduct.Discount = pEntry.buildertek__Discount__c;
             aProduct.UnitCost = pEntry.buildertek__Unit_Cost__c;
-            aProduct.Phase = pEntry.Product2.buildertek__Quote_Group__c;
+            // aProduct.Phase = pEntry.Product2.buildertek__Quote_Group__c;
             products.add(aProduct);
         }
 
@@ -330,6 +330,45 @@ public with sharing class MassUpdateQuote{
             return false;
         }
     }
+
+    public class productfamilyClass{
+        @AuraEnabled
+        public string productfamilyvalues{ get; set; }
+    }
+
+
+    @AuraEnabled
+    public list<productfamilyClass> pfwrapperlst{ get; set; }
+
+    //get product family Values
+    @AuraEnabled
+    public static list<productfamilyClass> getProductfamilyRecords(String ObjectName, string parentId){
+        system.debug('ObjectName-->' + ObjectName);
+        Map<String, String> options = new Map<String, String>();
+        List<sObject> returnList = new List<sObject>();
+
+        list<string> ProdIds = new list<string>();
+        if (ObjectName == 'Product2' && parentId != null){
+
+            list<pricebookEntry> PElist;
+            PElist = [select id, Product2Id   from pricebookEntry  where pricebook2Id = :parentId];
+            for (pricebookEntry PE : PElist){
+                ProdIds.add(PE.Product2Id);
+            }
+        }
+        //list<Product2> productfamlylst = [select id, Name,family from Product2 where Id IN :ProdIds AND family != null order by family];
+        List<AggregateResult> productfamlylst = [SELECT toLabel(Family) familyLabel  FROM Product2 where (Id IN :ProdIds AND family != null) group by family];
+        list<productfamilyClass> pfwrapperlst = new list<productfamilyClass>();
+        if (productfamlylst.size() > 0){
+            for (AggregateResult agg : productfamlylst){
+                productfamilyClass pf = new productfamilyClass();
+                pf.productfamilyvalues = string.valueof(agg.get('familyLabel'));
+                pfwrapperlst.add(pf);
+            }
+        }
+        return pfwrapperlst;
+    }
+
 
 
 
