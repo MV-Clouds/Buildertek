@@ -1,0 +1,374 @@
+<aura:component controller="SubContractOrderFromProjectClass" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global" >
+    <aura:attribute name="masterBudgetsList" type="object" />
+    <aura:attribute name="Spinner" type="Boolean" />
+    <aura:attribute name="selectedobjInfo" type="list"   /> 
+    <aura:attribute name="selectedobj" type="list"   /> 
+    <aura:attribute name="selectedids" type="list"   /> 
+    
+    <!-- Attribute Declration For Pagination -->
+    <aura:attribute name="PaginationList" type="Object"/>
+    <aura:attribute name="startPage" type="Integer" />
+    <aura:attribute name="Vendor" type="String" />
+    <aura:attribute name="Phase" type="String" />
+    <aura:attribute name="endPage" type="Integer"/>
+    <aura:attribute name="totalRecords" type="Integer"/>
+    <aura:attribute name="pageSize" type="Integer" default="15"/>
+    <!-- Attribute Declration For Pagination End-->
+    <!-- Attribute Declration For Search Functionality-->
+    <aura:attribute name="searchResult" type="List"/>
+    <aura:attribute name="searchKeyword" type="String" />
+    <aura:attribute name="searchResult1" type="List" />
+    <aura:attribute name="searchKeyword1" type="String" />
+    <aura:attribute name="searchResult2" type="List" />
+    <aura:attribute name="searchKeyword2" type="String" />
+    <!-- Attribute Declration For Search Functionality-->
+    <aura:attribute name="selectedPOList" type = "Boolean" default = "false"/>
+    <aura:attribute name="SelectedPurchaseOrders" type="List" />
+    <aura:attribute name="fileName" type="String" default="No File Selected.." />
+    
+    
+    <!--  Attributes for Header Details   -->
+    <aura:attribute name="totalPOs" type="Integer" default="0"/>
+    <aura:attribute name="totalPOAmount" type="decimal" default="0"/>
+    <aura:attribute name="totalPaidAmount" type="decimal" default="0"/>
+    <aura:attribute name="totalRemainingAmount" type="decimal" default="0"/>
+    <aura:attribute name="orderedPercent" type="decimal" default="0"/>
+    <aura:attribute name="paidPercent" type="decimal" default="0"/>
+    <!--  Attributes for Header Details   -->
+    
+    <!--   Attributes to attach documents  Start   -->
+    
+    <aura:attribute name="fileData2" type="List" access="global"/>
+    <aura:attribute name="fileName2" type="String" access="global"/>
+    <aura:attribute name="FileLabelList" type="List" default="[]"/>
+    <aura:attribute name="FileNameList" type="List" />
+    <aura:attribute name="fileBody" type="string" access="global"/>
+    
+    <!--   Attributes to attach documents  End   -->
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> 
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/> 
+    
+    <lightning:layout multipleRows="true">
+        
+        <lightning:layoutItem padding="around-large" size="4">
+            <lightning:input value="{!v.searchKeyword1}"
+                             placeholder="Vendor"
+                             aura:id="searchKey1"
+                             name="searchField"
+                             class="pointer"
+                             text = "hai"
+                             type  = "search"
+                             autocomplete="false"
+                             onchange="{! c.searchKeyChange1 }"/>
+        </lightning:layoutItem>
+        <lightning:layoutItem padding="around-large" size="4">
+            <lightning:input value="{!v.searchKeyword2}"
+                             placeholder="Cost Code"
+                             aura:id="searchKey2"
+                             name="searchField"
+                             class="pointer"
+                             text = "hai"
+                             type  = "search"
+                             autocomplete="false"
+                             onchange="{! c.searchKeyChange2 }"/>
+        </lightning:layoutItem>
+        <lightning:layoutItem padding="around-large" size="4">
+            <lightning:input value="{!v.searchKeyword}"
+                             placeholder="Phase"
+                             aura:id="searchKey"
+                             name="searchField"
+                             class="pointer"
+                             text = "hai"
+                             type  = "search"
+                             autocomplete="false"
+                             onchange="{! c.searchKeyChange }"/>
+        </lightning:layoutItem>
+    </lightning:layout>
+    
+    <div style = "text-align:right;margin-right:8px;">
+        <button class="slds-button slds-button--brand"  onclick="{!c.orderPO}" disabled="{!v.isdisabled}"> Order PO's</button>
+    </div>
+    
+    <div class=" slds-p-around--large">
+        <div class="slds slds-scope">
+            <table class="slds-table slds-table_bordered slds-table_fixed-layout" role="grid">
+                <thead>
+                    <tr class="slds-text-title_caps">
+                        <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-left-radius:5px;vertical-align: top;line-height: 2;width: 30px !important;">
+                            <ui:inputCheckbox aura:id="checkContractors" change="{!c.selectAll}" />		
+                        </th>
+                        <th  style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                            Vendor
+                        </th>
+                        <th  style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                            Sub-Contract
+                        </th>
+                        <th  style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                            Phase
+                        </th>
+                        <th  style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                            Original Contract Amount
+                        </th>
+                        <th  style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                            Cost Code
+                        </th>
+                        <!-- <th  style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+           po
+         </th>-->
+                        
+                        <!-- <th  style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2; width: 12rem;">
+                            Signed Contract Date
+         </th>
+                        <th  style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2; width: 14rem;">
+         Original Contract Amount
+         </th>-->
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.PaginationList}" var="rec">
+                        <tr class="slds-hint-parent">
+                            <aura:if isTrue="{!rec.budgetRecord != null}">
+                                
+                                <!-- <aura:iteration items="{!v.selectedobj}" var="record">-->
+                                <aura:if isTrue="{!rec.budgetRecord.buildertek__Purchase_Orders1__r != null}">
+                                    <td style = "background : #d8e6f5"> 
+                                    </td> 
+                                    <aura:set attribute="else">
+                                        <td> 
+                                            <ui:inputCheckbox aura:id="checkContractor" value="{rec.budgetCheck}"  text="{!rec.budgetRecord.Id}" change="{!c.handleCheck}" />
+                                        </td> 
+                                    </aura:set>
+                                </aura:if>
+                                <aura:if isTrue="{!rec.budgetRecord.buildertek__Purchase_Orders1__r != null}">
+                                    <td role="gridcell" class="slds-truncate" title = "{!rec.budgetRecord.buildertek__Contractor__r.Name}"  style = "background : #d8e6f5">
+                                        <ui:outputText value="{!rec.budgetRecord.buildertek__Contractor__r.Name}" />  
+                                    </td> 
+                                    <aura:set attribute="else">
+                                        <td role="gridcell" class="slds-truncate" title = "{!rec.budgetRecord.buildertek__Contractor__r.Name}" >
+                                            <ui:outputText value="{!rec.budgetRecord.buildertek__Contractor__r.Name}" />  
+                                        </td> 
+                                    </aura:set>
+                                </aura:if>
+                                
+                                <aura:if isTrue="{!rec.budgetRecord.buildertek__Purchase_Orders1__r != null}">
+                                    <td role="gridcell" class="slds-truncate" title = "{!rec.budgetRecord.buildertek__Sub_Contract__r.Name}" style = "background : #d8e6f5">
+                                        <ui:outputURL
+                                                      value="{!'/one/one.app?#/sObject/'+ rec.budgetRecord.Id + '/view'}"
+                                                      target="_blank" label="{!rec.budgetRecord.buildertek__Sub_Contract__r.Name}" />
+                                    </td>
+                                    <aura:set attribute="else">
+                                        <td role="gridcell" class="slds-truncate" title = "{!rec.budgetRecord.buildertek__Sub_Contract__r.Name}">
+                                            <ui:outputURL
+                                                          value="{!'/one/one.app?#/sObject/'+ rec.budgetRecord.Id + '/view'}"
+                                                          target="_blank" label="{!rec.budgetRecord.buildertek__Sub_Contract__r.Name}" />
+                                        </td>
+                                    </aura:set>
+                                </aura:if>
+                                
+                                <aura:if isTrue="{!rec.budgetRecord.buildertek__Purchase_Orders1__r != null}">
+                                    <td role="gridcell" class="slds-truncate" title = "{!rec.budgetRecord.buildertek__Group__r.Name}" style = "background : #d8e6f5">
+                                        <ui:outputText value="{!rec.budgetRecord.buildertek__Group__r.Name}"  />
+                                    </td>
+                                    <aura:set attribute="else">
+                                        <td role="gridcell">
+                                            <ui:outputText value="{!rec.budgetRecord.buildertek__Group__r.Name}"  />
+                                        </td>
+                                    </aura:set>
+                                </aura:if>
+                                
+                                <aura:if isTrue="{!rec.budgetRecord.buildertek__Purchase_Orders1__r != null}">
+                                    <td role="gridcell" class="slds-truncate" title = "{!rec.budgetRecord.buildertek__Sub_Contract__r.buildertek__Contract_Amount__c}" style = "background : #d8e6f5">
+                                        <lightning:formattedNumber value="{!rec.budgetRecord.buildertek__Sub_Contract__r.buildertek__Contract_Amount__c}" currencyCode="USD" style="currency" currencyDisplayAs="code"/>
+                                    </td>
+                                    <aura:set attribute="else">
+                                        <td>
+                                            <lightning:formattedNumber value="{!rec.budgetRecord.buildertek__Sub_Contract__r.buildertek__Contract_Amount__c}" currencyCode="USD" style="currency" currencyDisplayAs="code"/>
+                                            <!-- <ui:outputText value="{!rec.budgetRecord.buildertek__Sub_Contract__r.buildertek__Contract_Amount__c}" /> --> 
+                                        </td>
+                                    </aura:set>
+                                </aura:if>
+                                <aura:if isTrue="{!rec.budgetRecord.buildertek__Purchase_Orders1__r != null}">
+                                    <td role="gridcell" class="slds-truncate" title = "{!rec.budgetRecord.buildertek__Cost_Code__r.Name}" style = "background : #d8e6f5">
+                                        <ui:outputText value="{!rec.budgetRecord.buildertek__Cost_Code__r.Name}" />  
+                                    </td>
+                                    <aura:set attribute="else">
+                                        <td role="gridcell">
+                                            <ui:outputText value="{!rec.budgetRecord.buildertek__Cost_Code__r.Name}" />  
+                                        </td> 
+                                    </aura:set>
+                                </aura:if>
+                                <!--  <td role="gridcell">
+                                 <ui:outputText value="{!rec.budgetRecord.buildertek__Purchase_Order__c}" /> 
+                            </td>-->
+                                <!-- <td role="gridcell">
+                                     <lightning:formattedNumber value="{!rec.budgetRecord.buildertek__Contract_Amount__c}" currencyCode="USD" style="currency" currencyDisplayAs="code"/>
+                            </td>-->
+                                <aura:set attribute="else">
+                                    <div Style="text-align : center; font-size: 1.2rem;"> There is No  Sub-Contracts  </div>
+                                </aura:set>
+                            </aura:if>
+                        </tr>
+                    </aura:iteration>
+                </tbody>
+            </table>
+            <br/>
+        </div> 
+        <aura:if isTrue="{!v.Spinner}">
+            <div aura:id="spinnerId" class="slds-spinner_container">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                    <div class="custom-loading-text">
+                        <b>Processing, Please Wait</b>
+                    </div>
+                </div>
+            </div>
+        </aura:if>
+    </div>
+    <div class="slds-modal__footer">
+        <lightning:button label="Previous" disabled="{!v.startPage == 0}"  
+                          onclick="{!c.previous}" variant="brand"
+                          iconName='utility:back' iconPosition='left' class = 'slds-float_left'/>
+        &nbsp; &nbsp; &nbsp;
+        <lightning:button label="Next" disabled="{!v.endPage >= v.totalRecords}" 
+                          onclick="{!c.next}" variant="brand"
+                          iconName='utility:forward' iconPosition='left' class = 'slds-float_left' />
+        <button class="slds-button slds-button--brand" onclick="{!c.orderPO}" disabled="{!v.isdisabled}">Order PO's</button>
+    </div>	
+    <aura:if isTrue="{!v.selectedPOList}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="min-width:30rem; ;max-width: 45%">
+                <aura:html tag="style">
+                    .cuf-content {
+                    padding: 0 0rem !important;
+                    }
+                    .slds-p-around--medium {
+                    padding: 0rem !important;
+                    }       
+                    .slds-modal__content{
+                    overflow-y:hidden !important;
+                    height:unset !important;
+                    max-height:unset !important;
+                    }
+                </aura:html>
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">
+                        <b>Are you sure you want to Order these Purchase Orders ? </b>
+                    </h2>
+                </header>
+                <div class="slds-modal__content " id="modal-content-id-1" style = "margin-top:-9px; margin-bottom : -9px">
+                    <div class="slds-card__body slds-scrollable left-screen" style="max-height:450px" >
+                        <table class="slds-table slds-table--bordered">
+                            <thead>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th style="font-weight: 700;padding-left:15px">
+                                        Name
+                                    </th>
+                                    <th style="font-weight: 700;">Vendor</th>
+                                    <th style="font-weight: 700;">Cost Code</th>
+                                    <th style="font-weight: 700;">Sub-Contractor</th>
+                                    <th style="font-weight: 700;">Email</th>
+                                    <!-- <th style="font-weight: 700;">PO Tota</th>-->
+                                    <th></th>
+                                </tr>
+                                <aura:iteration items="{!v.SelectedPurchaseOrders}" var="row" indexVar="recIndex">
+                                    <tr>
+                                        <td >
+                                            <ui:outputURL
+                                                          value="{!'/one/one.app?#/sObject/'+ row.budgetRecord.Id + '/view'}"
+                                                          target="_blank" label="{!row.Name}" />
+                                        </td>
+                                        <td>
+                                            <aura:if isTrue="{!row.buildertek__Contractor__c}">
+                                                <!--       <ui:outputText value="{!row.buildertek__Vendor__r.Name}" />  --> 
+                                                <ui:outputURL
+                                                              value="{!'/one/one.app?#/sObject/'+ row.buildertek__Contractor__c + '/view'}"
+                                                              target="_blank" label="{!row.buildertek__Contractor__r.Name}" />  
+                                                <aura:set attribute="else">
+                                                    <h1 style = "color:red;">
+                                                        There is no Vendor assigned to this Sub-Contractor
+                                                    </h1>
+                                                </aura:set>
+                                            </aura:if> 
+                                        </td>
+                                        <td>
+                                            <ui:outputText value="{!row.buildertek__Cost_Code__r.Name}"  />  
+                                        </td>
+                                        <td>
+                                            <ui:outputText value="{!row.buildertek__Sub_Contract__r.Name}"  />  
+                                        </td>
+                                        <td> 
+                                            <aura:if isTrue="{!row.buildertek__Contractor__r.Name}">
+                                                <aura:if isTrue="{!row.buildertek__Contractor__r.buildertek__Email_Address__c}">
+                                                    <ui:outputText value="{!row.buildertek__Contractor__r.buildertek__Email_Address__c}" /> 
+                                                    <aura:set attribute="else">
+                                                        <h1 style = "color:red;">
+                                                            There is no Email for this Vendor
+                                                        </h1>
+                                                    </aura:set>
+                                                </aura:if>
+                                                <aura:set attribute="else">
+                                                    <span></span>
+                                                </aura:set>
+                                            </aura:if>
+                                        </td>
+                                        <td>
+                                            <!--  <span style="cursor: pointer"  onclick="{!c.uploadFile}">
+                                                <lightning:icon iconName="utility:upload" size="xx-small" class="my-icon" />
+                                            </span>  -->
+                                            <div class="slds-file-selector__dropzone">
+                                                <input type="file" class="slds-file-selector__input slds-assistive-text" data-index = "{!row.buildertek__Sub_Contract__c}" id="{!row.Id}" onchange="{!c.handleFilesChange2}" aria-labelledby="file-selector-primary-label file-selector-secondary-label"  multiple="true"/>
+                                                <label class="slds-file-selector__body" for="{!row.Id}" id="file-selector-secondary-label2"> 
+                                                    <span class="slds-file-selector__button slds-button slds-button_neutral">
+                                                        Upload Files
+                                                    </span>
+                                                </label> 
+                                                <!--    <lightning:input aura:id="fuploader" onchange="{!c.handleFilesChange}" type="file" name="file" label="Upload File" multiple="true"/>
+                                            <div class="slds-text-body_small slds-text-color_error">{!v.fileName} </div> -->
+                                                <aura:iteration items="{!v.FileNameList}" var="sr" indexVar="fileindex">
+                                                    <aura:if isTrue="{!sr.poId == row.buildertek__Sub_Contract__c}">
+                                                        <div>
+                                                            <span>
+                                                                <lightning:pill class="slds-m-around_xx-small slds-text-body_small slds-text-color_error" label="{!sr.FileName}" name="{!fileindex+'_'+row.Id}" onremove="{! c.clear }">
+                                                                    <aura:set attribute="media">
+                                                                        <lightning:icon iconName="standard:file" size="x-small" alternativeText="icon"/>
+                                                                    </aura:set>
+                                                                </lightning:pill>
+                                                            </span>
+                                                        </div>
+                                                    </aura:if>
+                                                </aura:iteration>
+                                            </div>  
+                                        </td>   
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="Neutral" class="slds-button" label="Close" onclick="{!c.closePOListPopUp}"/>
+                    <button class="slds-button slds-button--brand" onclick="{!c.confirmOrderPO}"> Yes</button>
+                </footer>
+            </div>
+            <aura:if isTrue="{!v.Spinner2}">
+                <div aura:id="spinnerId" class="slds-spinner_container">
+                    <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                        <span class="slds-assistive-text">Loading</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                        <div class="custom-loading-text">
+                            <b>Processing, Please Wait</b>
+                        </div>
+                    </div>
+                </div>
+            </aura:if>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if> 
+</aura:component>

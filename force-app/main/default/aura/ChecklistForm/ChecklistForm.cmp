@@ -1,0 +1,99 @@
+<aura:component controller="checkListQuestionsCtrl" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="options" type="List"/>
+    <aura:attribute name="Questions" type="List"/>
+    <aura:attribute name="selectedValue" type="String"/>
+    <aura:attribute name="ChecklistName" type="String"/>
+  	<aura:attribute name="showchecklist" type="boolean" default="false"/>
+    <aura:attribute name="SuccessMessage" type="boolean" default="false"/>
+    <aura:attribute name="SelectCheckList" type="String[]" default=""/> 
+    <aura:attribute name="Spinner" type="boolean" default="false"/>
+     <aura:attribute name="imgUrl" type="String" default=""/>
+    <aura:attribute name="siteUrl" type="String" default=""/>
+    <aura:attribute name="DynamiccheckListName" type="string" />
+    <aura:attribute name="isShowcancel" type="boolean" default="false"/>
+    <aura:attribute name="ischecklistNameError" type="boolean" default="false"/>
+    
+       <aura:attribute name="isDisableButton" type="boolean" default="true"/>
+    
+    <div>
+    
+        
+        <lightning:layout multipleRows="true">
+            <lightning:layoutitem size="2"></lightning:layoutitem>
+            <lightning:layoutitem size="8">
+                <div class="Borders" >
+                     <aura:if isTrue="{!v.Spinner}">                
+                    <div aura:id="spinnerId" class="slds-spinner_container">
+                        <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                            <span class="slds-assistive-text">Loading</span>
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                        </div>
+                    </div>
+                </aura:if>
+                    <aura:if isTrue="{!v.SuccessMessage}">
+                         <div class="slds-col slds-size_12-of-12 slds-var-p-around_small" style="background:Green;color: white;font-weight: bold;;z-index: 100;top: 0px;font-size:18px;padding:20px">
+                    		Checklist Submitted Successfully
+                		</div>
+                         <div class="slds-align_absolute-center slds-m-top_small">
+                        	 <lightning:button variant="neutral" label="Close" title="Close" onclick="{!c.closePage}" />
+                        </div> 
+                    </aura:if>
+                    <aura:if isTrue="{!!v.SuccessMessage}">
+                        <div style="width: 100%;text-align: center;margin-bottom: 20px;">
+                            <img src="{!v.imgUrl}" id="logoImg" style="width:60%;"/>
+                        </div>
+                         <!-- width:646px -->
+                      <!--   <div style="width:20rem;">
+                            <lightning:input name="ChecklistName" label="Checklist Name" value="{!v.DynamiccheckListName}" required="true" onchange="{!c.nameOnchange}"/>
+                             <aura:if isTrue="{!v.ischecklistNameError}" >
+            	                  <span style="color:rgb(194, 57, 52);">Please complete this field</span>  
+                             </aura:if>
+                        </div> -->
+                        <aura:iteration items="{!v.Questions}" var="Group">
+                            <div style="background: #e2e2e2;padding: 10px;border-radius: 5px;font-weight: 600;font-size: 15px;margin-top:10px;margin-bottom:10px">
+                                <aura:if isTrue="{!and(Group.GroupName != '',Group.GroupName != null)}">
+                                    {!Group.GroupName}
+                                </aura:if>
+                                <aura:if isTrue="{!or(Group.GroupName == '',Group.GroupName == null)}">
+                                    No Grouping 
+                                </aura:if>
+                            </div>
+                            <aura:iteration items="{!Group.QuestionsInnerclasslist}" var="Question">
+                                <aura:if isTrue="{!Question.QuestionType == 'Text Response'}">
+                                    <label class="slds-form-element__label"><b>{!Question.QuestionName}</b></label> 
+                                    <lightning:input name="input2" variant="label-hidden" value="{!Question.QuestionValue}" style="width:80%"/>
+                                </aura:if> 
+                                <aura:if isTrue="{!Question.QuestionType == 'Single Select Answer'}">
+                                     <lightning:radioGroup name="{!Question.QuestionId}"
+                                                  label="{!Question.QuestionName}"
+                                                  options="{! Question.QuestionOptions }"
+                                                  value="{! Question.QuestionValue }"
+                                                  type="radio"
+                                                  />
+                                    
+                                </aura:if> 
+                                <aura:if isTrue="{!Question.QuestionType == 'Multi Select Answer'}">
+                                    <lightning:checkboxGroup name="{!Question.QuestionId}"
+                                                    label="{!Question.QuestionName}"
+                                                    options="{! Question.QuestionOptions }"
+                                                    value=""
+                                                    onchange = "{!c.getcheckboxlist}"
+                                                             />
+                                </aura:if> 
+                             </aura:iteration>
+                        </aura:iteration>
+                             <div class="slds-align_absolute-center slds-m-top_small">
+                                     <aura:if isTrue="{!v.isDisableButton}">
+                                <lightning:button variant="brand" label="Submit" title="Submit" onclick="{! c.handleClick }" />
+                                 </aura:if>
+                            </div>  
+                    </aura:if>
+             	</div>
+              </lightning:layoutitem>
+                <lightning:layoutitem size="2"></lightning:layoutitem>
+           </lightning:layout>
+            
+       </div>
+</aura:component>

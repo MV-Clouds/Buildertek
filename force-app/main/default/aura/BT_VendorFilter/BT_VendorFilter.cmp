@@ -1,0 +1,82 @@
+<aura:component implements="flexipage:availableForAllPageTypes" access="global" controller="BT_FilterCriteriaCompoController"> 
+   <ltng:require styles="{!join(',',
+                          $Resource.Jquery + '/jquery/css/ui-smoothness/jquery-ui.min.css',
+                          $Resource.Jquery + '/jquery/css/ui-smoothness/jqgrid-ui-custom.min.css')}"
+                  scripts="{!join(',',
+                           $Resource.Jquery + '/jquery/lightning/js/jquery-3.2.1.min.js',
+                           $Resource.Jquery + '/jquery/lightning/js/jquery-migrate-1.4.1.min.js',
+                           $Resource.Jquery + '/jquery/lightning/js/jquery-ui-1.12.1.min.js',
+                           $Resource.Jquery + '/jquery/lightning/js/BT-lightningutil.min.js',
+                           $Resource.Jquery + '/jquery/jqgrid/grid.locale-en.min.js?v=1',
+                           $Resource.Jquery + '/jquery/jqgrid/jquery.jqGrid.min.js?v=1')}" 
+                  afterScriptsLoaded="{!c.initialize}"/>
+    <aura:handler event="c:BT_FilterEvent" action="{!c.initialize}"/>
+    <aura:attribute name="gridLoad" type="Boolean" default="false"></aura:attribute>
+
+    <!-- JqGrid Atrributes -->
+    <aura:attribute name="tableWidth" type="String" description="setting grid width based on screen." />
+ 	<aura:attribute name="TableId" type="String" default="vendorFilterResult" description="Id of the grid."/>
+    <aura:attribute name="returnURL" type="String" description="setting return url to the attribute."/>
+    
+    <!-- Additional attributes for this component -->
+    <aura:attribute name="filterConditions" type="String" description="This will be queary string to apply in SOQL" default=""/>
+    <aura:attribute name="objectName" type="String" description="This will be target object to get record data" default="Account"/>
+    <aura:attribute name="fieldSetName" type="String" description="Field set name for grid columns" default="BT_Filter_Criteria_Fields"/>
+    
+    <!-- Column and Data Attributes -->
+    <aura:attribute name="cloumnsHeader" type="String" description="JSON string of column header deatils to use in jqgrid script." />
+    <aura:attribute name="columnsModel" type="String" description="JSON string of column model deatils to use in jqgrid script."/>
+    <aura:attribute name="rowData" type="String" description="JSON string of all records which needs to display in grid."/>
+    
+    <!-- Other attribute -->
+    <aura:attribute name="height" description="Set JqGrid Height." type="String" default="198" />
+    <aura:attribute name="endSplash" type="object" default="" description="End splash function call by reference"/>    
+   
+    <!-- Processing Div -->
+    <div id="avsplashDiv" style="display:none;z-index:9999;">
+        <div class="avdisableBackPage" style="z-index:9999;"></div>
+        <div class="avsplashDiv">
+            <center>
+               <div class="slds-spinner--brand slds-spinner slds-spinner--small" role="alert">
+                   <span class="slds-assistive-text">Loading</span>
+                   <div class="slds-spinner__dot-a"></div>
+                   <div class="slds-spinner__dot-b"></div>
+                    <div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+               </div>
+            </center>
+        </div>
+    </div>
+
+    <aura:if isTrue="{!v.gridLoad}">
+		
+         <c:BT_GridComponent TableId="{!v.TableId}" PagerId="vendoreSerchResultPager" Pagination="true"
+                           RecordsToShowPerPage="10" rowList="['10','20','50','100','500']" multiselect="true" ColumnChooser="false" CheckAll="true"
+                           TableWidth="{!v.tableWidth}" Height="{!v.height}" defaultSelectAll="false"
+                           Grouping="false" ColumnHeaders="{!v.cloumnsHeader}" 
+                           ColumnModels="{!v.columnsModel}" Searching="true"
+                           RecordDetails="{!v.rowData}" Frozen="true"
+                           isGridDefaultValuesToCheck="true"/>
+        
+    </aura:if>
+    <br/>
+    <div class="slds-align_absolute-center">
+        <lightning:button variant="brand" label="Cancel" onclick="{! c.cancel }" />
+        <lightning:button variant="brand" label="Add Selected Vendors" onclick="{! c.addSelected }" />
+    </div>
+    
+    <div id="pleaseSelectVendor" class="slds-align_absolute-center" style="display:none;">
+        <div  class="slds-notify_container slds-is-absolute" >
+            <div class="slds-notify slds-notify_toast slds-theme_error" role="alert">
+                <span class="slds-assistive-text">error</span>
+                <span class="slds-icon_container slds-icon-utility-error slds-m-right_small slds-no-flex slds-align-top" title="Description of icon when needed">
+                    <lightning:icon iconName="utility:error" size="small" alternativeText="error" variant="inverse"/>
+                </span>
+                <div class="slds-notify__content">
+                    <h2 class="slds-text-heading_small ">Please Select Vendor</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</aura:component>

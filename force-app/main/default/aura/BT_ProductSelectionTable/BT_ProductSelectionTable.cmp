@@ -1,0 +1,159 @@
+<aura:component controller="BT_ProductsAdderController">
+	<aura:attribute name="paginationInfo" type="Object" />
+    <aura:attribute name="productCandidatesInCurrentPage" type="Object[]" />
+	<aura:attribute name="productCandidates" type="Object[]" />
+    <aura:attribute name="selectedProductMap" type="Object" />
+    <aura:attribute name="selectedItemNum" type="Integer" default="0" />
+    <aura:attribute name="orderBy" type="String" />
+    <aura:attribute name="productFamily" type="List"/>
+    <aura:attribute name="headers" type="Object[]" 
+                    default="[{label: 'Product', showIcons: false}, 
+                             {label: 'Code', showIcons: false}, 
+                             {label: 'Price', showIcons: false}, 
+                             {label: 'Description', showIcons: false}]"/>
+                             
+    <aura:attribute name="showSpinner" type="Boolean" default="false" />
+    <aura:attribute name="checkedAll" type="Boolean" default="false" />
+    <aura:attribute name="showFilterBar" type="Boolean" default="false"/>
+    <aura:attribute name="orderString" type="String" />
+    <aura:attribute name="selectedProductFamily" type="String" default=""/>
+    
+    <c:BT_RecordsPaginator _display_items="{!v.productCandidatesInCurrentPage}"
+                        _pagination_info="{!v.paginationInfo}"
+                        _records="{!v.productCandidates}"/> 
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler name="change" value="{!v.productCandidates}" action="{!c.clearSelectedItems}" />
+
+    <aura:handler name="change" value="{!v.paginationInfo.pageNumber}" action="{!c.autoUpdateCheckBox}" />
+    <aura:handler name="change" value="{!v.selectedProductMap}" action="{!c.updateSelectedItems}" />    
+    <aura:handler name="change" value="{!v.showFilterBar}" action="{!c.updateFilterListStyle}" />    
+    
+    <aura:registerEvent name="createProducts" type="c:BT_CreateProductEvent"/>
+    <aura:handler name="ProductHeaderEvent" event="c:ProductHeaderEvent" action="{!c.parentComponentEvent}"/>
+    <aura:registerEvent name="ProductSelectionEvent" type="ProductSelectionEvent"/>
+    
+    <aura:If isTrue="{!v.showSpinner}">
+        <div class="slds-spinner_container">
+            <div class="slds-spinner slds-spinner--medium" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+
+            </div>
+        </div>
+        <!--<lightning:spinner variant="brand" size="large" />-->
+    </aura:If>
+    
+    <div class="slds-grid">
+        <div class="slds-col subHeader">
+            <div class="slds-container--left pageTitle">
+                Products
+            </div> 
+            <div class="slds-container--left" style="width:200px;">  
+                    <lightning:select name="productFamily" label="Select Product Family" value="{!v.selectedProductFamily}">
+                        <option value="">All</option>
+                        <aura:iteration items="{!v.productFamily}" var="obj">
+                            <option value="{!obj.value}">{!obj.label}</option>
+                        </aura:iteration> 
+                    </lightning:select> 
+
+            </div> 
+        </div>
+        <div class="subHeader slds-grid--vertical-align-end">
+            <aura:if isTrue="{!v.selectedItemNum > 0}">
+                <div class="slds-button-group" role="group">
+                    <button class="slds-button slds-button_brand"
+                            onclick="{!c.createProducts}">Add Products</button>
+                </div>
+            </aura:if>
+        </div>
+    </div>
+    
+    <lightning:layout horizontalAlign="spread" >
+        <lightning:layoutItem class="subHeader">
+            <c:BT_ProductSelectionTableListView totalSize="{!v.paginationInfo.totalSize}"
+                                                selectedItemNum="{!v.selectedItemNum}"/>
+        </lightning:layoutItem>
+        <lightning:layoutItem class="subHeader">
+            <a href="javascript:void(0);"
+               onclick="{!c.toggleFilterBar}">
+                <lightning:icon iconName="utility:filterList" aura:id="filterList"/>
+            </a>
+        </lightning:layoutItem>
+    </lightning:layout>    
+    
+
+    
+    <table class="slds-table slds-table--bordered slds-table--fixed-layout" role="grid">
+        
+        <thead>
+            <tr class="">
+                <th class="slds-cell-shrink" scope="col">
+                    <label class="slds-checkbox">
+                        <ui:inputCheckbox value="{!v.checkedAll}" 
+                                          name="selectAll" 
+                                          change="{!c.checkAllCheckBoxes}" />
+                        <span class="slds-checkbox--faux"></span>
+                        <span class="slds-assistive-text">Select All</span>
+                    </label>
+                </th>
+                <aura:iteration items="{!v.headers}" var="header">
+                	<c:BT_TableHeader aura:id="headerId" label="{!header.label}" />
+                </aura:iteration>                
+            </tr>
+        </thead>
+        
+        
+        <tbody>
+            <aura:iteration items="{!v.productCandidatesInCurrentPage}" var="candidate" >
+                <tr class="slds-hint-parent">
+                    <td role="gridcell" class="slds-cell-shrink" data-label="Select row Cloudhub">
+                        <label class="slds-checkbox">
+                            <ui:inputCheckbox name="{!candidate.pBEntry.Id}"
+                                              value="{!candidate.isSelected}" 
+                                              change="{!c.checkAllCheckBoxes}" />
+                            <span class="slds-checkbox--faux"></span>
+                            <span class="slds-assistive-text">Select row</span>
+                        </label>
+                    </td>
+                    <th scope="row" data-label="Product Name">
+                        <div class="slds-cell-wrap" title="{!candidate.pBEntry.Product2.Name}">{!candidate.pBEntry.Product2.Name}</div>
+                    </th>
+                    <th scope="row" data-label="Product Code">
+                        <div class="slds-truncate" title="{!candidate.pBEntry.Product2.ProductCode }">{!candidate.pBEntry.Product2.ProductCode }</div>
+                    </th>
+                    <th scope="row" data-label="Unit Price">
+                        <div class="slds-truncate" 
+                             title="{!candidate.pBEntry.UnitPrice}">
+                            <ui:outputCurrency aura:id="curr" 
+                                               value="{!candidate.pBEntry.UnitPrice}"/>
+                        </div>
+                    </th>
+                    <th scope="row" data-label="Description">
+                        <div class="slds-cell-wrap" title="{!candidate.pBEntry.Product2.Description}">{!candidate.pBEntry.Product2.Description}</div>
+                    </th>
+                </tr>
+            </aura:iteration>
+        </tbody>     
+    </table>
+    
+    <div style="Padding:5px"
+         class="slds-button-group slds-grid--align-center" role="group">    
+        <aura:if isTrue="{!v.productCandidates.length > 0}">
+            
+            <c:BT_PaginationButtons _pagination_info="{!v.paginationInfo}"  />
+            
+            <aura:set attribute="else">
+                <div style="Padding: 50px">
+                    <p>
+                        Please wait...
+                    </p>
+                </div>       	
+            </aura:set>
+        </aura:if>
+    </div>     
+</aura:component>

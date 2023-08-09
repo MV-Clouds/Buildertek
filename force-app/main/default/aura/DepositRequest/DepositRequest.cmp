@@ -1,0 +1,142 @@
+<aura:component controller="DepositRequest" implements="flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader">
+    <aura:attribute name="quote" type="SBQQ__Quote__c"></aura:attribute>
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="recordTypeId" type="Id"/>
+    <aura:attribute name="recordTypeName" type="String" default="Deposit_Request"/>
+    
+    <aura:attribute name="title" type="String" />
+    <aura:attribute name="severity" type="String" />
+    <aura:attribute name="showMessage" type="Boolean" />
+    <aura:attribute name="layoutStructure" type="map" />
+    <aura:handler   name="init" action="{!c.doInit}" value="{!this}" />
+    <aura:attribute name="mapValues" type="object" /> 
+    <aura:attribute name="customers" type="List" />
+    <aura:attribute name="pageLayout" type="String" default="Invoice__c-Invoice Layout"/>
+    <aura:attribute name="sobjectName" type="String" default="Invoice__c"/>
+    <aura:attribute name="disableButton" type="Boolean" default="false"/>
+    
+    <aura:attribute name="AutoPopulateInvoiceType" type="String" />
+    <aura:attribute name="AutoPopulateIntegrationStatus" type="String" />
+    <aura:attribute name="SuccessMessage" type="String" />
+    <aura:attribute name="ErrorMessage" type="String" />
+    <aura:attribute name="invoiceId" type="String" />
+    <aura:attribute name="TermsPicklistValue" type="List" /> 
+    <aura:attribute name="CPOnameList" type="List" />
+    <aura:attribute name="AutoPopulateOppLookupProjectID" type="String" />
+    <aura:attribute name="AutoPopulateAccLookupCustomerID" type="String" />
+    <aura:attribute name="AutoPopulateQuote" type="String" />
+    <aura:attribute name="AutoPopulateTodayDateAttribute" type="Date" /> 
+    <aura:attribute name="AutoPopulateOpportunity" type="String" />
+    <aura:attribute name="AutoPopulateBillingStreet" type="String" />
+    <aura:attribute name="AutoPopulateBillingCity" type="String" />
+    <aura:attribute name="AutoPopulateBillingCountry" type="String" />
+    <aura:attribute name="AutoPopulateBillingState" type="String" />
+    <aura:attribute name="AutoPopulateBillingZip" type="String" />
+    <aura:attribute name="AutoPopulateBillingToAccount" type="String" />
+    <aura:attribute name="AutoPopulateCurrencyIsoCode" type="String" />
+
+    
+<lightning:spinner aura:id="spinner" variant="brand" />
+    
+    <lightning:recordEditForm aura:id="editForm"
+                              objectApiName="Invoice__c"
+                              onload="{!c.handleLoad}"
+                              onsubmit="{!c.verifyData}"
+                              onsuccess="{!c.handleSuccess}"
+                              >
+        <lightning:messages/>
+        <div class="modal-header slds-modal__header slds-size_1-of-1">         
+            <h4 class="title slds-text-heading--medium">New Deposit Request Invoice</h4>     
+        </div>
+        
+        <div class="slds-grid slds-wrap">  
+            
+            <div class="slds-col slds-size_1-of-1 slds-size_1-of-2 slds-p-around_small">
+                <label for="customLabel">Deposit Amount</label>
+                <lightning:inputField aura:id="customLabel" fieldName="Invoiced_Amount__c" variant="label-hidden"/>
+                
+                <lightning:inputField fieldName="Invoice_Date__c" value="{!v.AutoPopulateTodayDateAttribute}"/>
+                <!-- <lightning:inputField fieldName="Customer_PO_Number__c"/> -->
+                
+                <lightning:select name="cpoAttributeName" label="Customer PO Number" aura:id="AutoPopulateCPO">
+                    <option value="-None-">-None-</option>
+                    <aura:if isTrue="{!v.CPOnameList !=null}">             
+                        <aura:iteration items="{!v.CPOnameList}"  var="cpoKey" indexVar="keyVar">            
+                            <option value="{!cpoKey}">{!cpoKey}</option>                    
+                        </aura:iteration>
+                    </aura:if>
+                </lightning:select>
+                <label for="customLabel">Currency</label>
+                <lightning:inputField aura:id="AutoPopulateCurrencyIsoCode" required="true" value="{!v.AutoPopulateCurrencyIsoCode}" fieldName="CurrencyIsoCode" variant="label-hidden"/>
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-size_1-of-2 slds-p-around_small">
+                <lightning:inputField fieldName="Allocation__c"/>
+                <lightning:select name="select1" label="Payment Terms" aura:id="AutoPopulateTermsFromOER">
+                    <aura:iteration items="{!v.TermsPicklistValue}"  var="mapKey" indexVar="key">            
+                        <option value="{!mapKey}">{!mapKey}</option>                    
+                    </aura:iteration>
+                </lightning:select>
+                <lightning:inputField fieldName="Description__c"/>                 
+            </div>
+                </div>     
+        <lightning:inputField fieldName="Invoice_Type__c" aura:id="AutoPopulateInvoiceType" value="{!v.AutoPopulateInvoiceType}" class="slds-hide"/>
+        <lightning:inputField fieldName="Integration_Status__c" aura:id="AutoPopulateIntegrationStatus" value="{!v.AutoPopulateIntegrationStatus}" class="slds-hide"/>        
+        
+        <div class="slds-grid slds-wrap">
+            <div class="slds-col slds-size_1-of-1 slds-size_1-of-2 slds-p-around_small">
+                <lightning:inputField fieldName="Opportunity__c" aura:id="AutoPopulateOpportunity" value="{!v.AutoPopulateOpportunity}" disabled="true"/>
+                <lightning:inputField fieldName="Project_Id__c" aura:id="AutoPopulateOppLookupProjectID" value="{!v.AutoPopulateOppLookupProjectID}" disabled="true"/>
+                <lightning:inputField fieldName="Quote__c" aura:id="AutoPopulateQuote" value="{!v.AutoPopulateQuote}" disabled="true"/>
+            </div>            
+            <div class="slds-col slds-size_1-of-1 slds-size_1-of-2 slds-p-around_small">
+                <lightning:inputField fieldName="Bill_to_Account__c" aura:id="AutoPopulateBillingToAccount" value="{!v.AutoPopulateBillingToAccount}" disabled="true"/>
+                <lightning:inputField fieldName="Customer_Id__c" aura:id="AutoPopulateAccLookupCustomerID" value="{!v.AutoPopulateAccLookupCustomerID}" disabled="true"/>                
+                <lightning:inputField fieldName="Billing_Street_1__c" aura:id="AutoPopulateBillingStreet" value="{!v.AutoPopulateBillingStreet}" disabled="true"/>
+                <lightning:inputField fieldName="Billing_State_Province__c" aura:id="AutoPopulateBillingState" value="{!v.AutoPopulateBillingState}" disabled="true"/>
+                <lightning:inputField fieldName="Billing_City__c" aura:id="AutoPopulateBillingCity" value="{!v.AutoPopulateBillingCity}" disabled="true"/>
+                <lightning:inputField fieldName="Billing_Postal_Code__c" aura:id="AutoPopulateBillingZip" value="{!v.AutoPopulateBillingZip}" disabled="true"/>
+                <lightning:inputField fieldName="Billing_Country__c" aura:id="AutoPopulateBillingCountry" value="{!v.AutoPopulateBillingCountry}" disabled="true"/>
+            </div>
+        </div>         
+   
+        <ul class="slds-button-group-row slds-align_absolute-center">
+            <li class="slds-button-group-item">
+                <lightning:button variant="brand" disabled ="{!v.disableButton}" class="slds-button uiButton-brand uiButton slds-align_absolute-center" name="save" label="Save" type="Submit"/>
+            </li>
+            <li class="slds-button-group-item">
+                <lightning:button variant="brand" disabled ="{!v.disableButton}" class="slds-button uiButton-brand slds-align_absolute-center"  name="cancel" label="Cancel" onclick="{!c.navigateToDetailPage}"/>
+            </li>
+        </ul> 
+        
+    </lightning:recordEditForm>
+    
+    
+    <!--********************************** For Success/Error Message. Code starts********************************-->
+    
+    <div class="{! empty(v.SuccessMessage) &amp;&amp; empty(v.ErrorMessage) ? 'slds-hide' : 'slds-show'}">
+        <div class="slds-modal slds-fade-in-open slds-modal--prompt" aura:id="ErrorDisplayModal" role="alertdialog" tabindex="-1" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper">
+            <div class="slds-modal__container">
+                
+                
+                <div class="slds-modal__content slds-p-around--medium">
+                    <div class="slds-grid slds-grid--align-center">
+                        <div class="slds-form-element__control slds-size--1-of-1" align="center" style="{! empty(v.SuccessMessage) ? 'display:none;' : ''}">
+                            <b>{!v.SuccessMessage}</b>
+                        </div>
+                        <div class="slds-form-element__control slds-size--1-of-1" align="center" style="{! empty(v.ErrorMessage) ? 'display:none;' : ''}">
+                            <b>{!v.ErrorMessage}</b>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="slds-modal__footer slds-theme--default">
+                    <lightning:button label="Close" class="slds-button slds-button_brand" onclick="{!c.handleHideErrorDisplayModal}"/>
+                </div>
+            </div>
+        </div>
+        <div class="slds-backdrop slds-backdrop--open"></div>
+    </div>
+    
+    <!--********************************** For Success/Error Message. Code ends********************************-->
+</aura:component>

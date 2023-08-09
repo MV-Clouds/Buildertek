@@ -1,0 +1,733 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes"
+    access="global" Controller="QuoteDAO">
+    <!--<ltng:require styles="{!join(',',$Resource.BTDrag + '/BT-Drag.min.css')}"
+                  scripts="{!join(',',$Resource.Jquery + '/jquery/lightning/js/jquery-3.2.1.min.js',$Resource.BTDrag+ '/BT-Drag.min.js')}"
+                  afterScriptsLoaded="{!c.initialize}"/>-->
+    <aura:attribute name="productfamily" type="string" />
+    <aura:attribute name="productfamilyoptions" type="List" />
+    <aura:attribute name="listofproductfamily" type="List" />
+    <aura:handler name="onSelectEvt" event="c:BT_LookupEvent" action="{!c.handleLookUpEvent}" />
+    <aura:attribute name="groupFilter" type="string" />
+    <aura:attribute name="deleteRecords" type="list" />
+    <aura:attribute name="recordId" type="string" />
+    <aura:attribute name="QuoteInfo" type="Quote__c" default="{ 'sobjectType':'Quote__c'}" access="global" />
+    <aura:attribute name="refreshGridAction" type="Aura.Action" default="{!c.refreshQuoteItemList}" />
+    <aura:attribute name="newQi" type="Quote_Item__c" default="{ 'sobjectType': 'Quote_Item__c' }" access="public" />
+    <aura:attribute name="newQuote" type="Quote_Item__c" default="{ 'sobjectType':'Quote_Item__c',
+                                                                              'buildertek__Quantity__c':1}"
+        access="global" />
+    <aura:attribute name="selectedLookUpRecord" type="sObject" default="{}" />
+    <aura:attribute name="unitPrice" type="decimal" />
+    <aura:handler name="onSaveSuccess" event="force:recordSaveSuccess" action="{!c.handleSaveSuccess}" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler name="render" value="{!this}" action="{!c.onRender}" />
+    <aura:handler name="editQuoteItemEvent" event="c:BT_Edit_Quote_Item_Component_Event" action="{!c.eventAction}" />
+    <aura:handler event="force:showToast" action="{!c.handleSaveSuccess}" />
+    <aura:handler name="destroy" value="{!this}" action="{!c.handleDestroy}" />
+    <aura:handler name="cmpEvent" event="c:BT_Edit_Quote_Item_Component_Event" action="{!c.getsetparams}" />
+    <!-- <aura:handler event="aura:locationChange" action="{!c.handlelocationchange}" /> -->
+
+    <aura:attribute name="selectedRows" type="List" />
+    <aura:attribute name="selectedCol" type="list" />
+    <aura:registerEvent name="oSelectedCheckboxValue" type="c:SelectedCheckboxValue" />
+    <aura:attribute name="groupListSize" type="Integer" default="0" description="Section list size" />
+    <aura:attribute name="wrapperListLength" type="Integer" />
+    <aura:method name="refreshData" action="{!c.doInit}" access="public" />
+    <aura:attribute name="headerFields" type="List" default="" description="Quote header fields" />
+    <aura:attribute name="quoteByGroupId" type="Map" access="public" default="{}"
+        description="Section details by parent id map" />
+    <aura:attribute name="groups" type="List" description="section detail list" />
+    <aura:attribute name="initReference" type="Aura.Action" default="{!c.doInit}"
+        description="Init Reference action used to call from child components" />
+    <aura:attribute name="groupLoaded" type="Boolean" default="false"
+        description="This boolean will be true once all section list loaded through aura itration." />
+    <aura:attribute name="save" type="Aura.Action" description="Save action Reference action" />
+    <aura:attribute name="columns" type="List" />
+    <aura:attribute name="dummyData" type="List" />
+    <aura:registerEvent name="ClearSelectedRecordEvent" type="c:BT_CLearLightningLookupEvent" />
+    <aura:handler name="RefreshEvent" event="c:BT_RefreshEvent" action="{!c.handleEvent}" />
+    <aura:handler name="oSelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.handleComponentEvent}" />
+    <aura:attribute name="productId" type="string" />
+    <aura:attribute name="productName" type="string" />
+    <aura:attribute name="options" type="List" />
+    <aura:attribute name="costCode" type="string" />
+    <aura:attribute name="costCodeFilter" type="string" />
+    <aura:attribute name="record" type="Object" />
+    <aura:attribute name="Spinner" type="boolean" default="false" />
+    <aura:attribute name="InnerList" type="Object" />
+    <aura:attribute name="isSelectAll" type="boolean" default="false" />
+    <aura:attribute name="summaryColumns" type="List" />
+    <aura:attribute name="Table_header_Records" type="object" access="global" />
+    <aura:attribute name="TotalRecords" type="object" access="global" />
+    <aura:attribute name="isOpen" type="boolean" default="false" />
+    <aura:attribute name="quoteItemId" type="String" />
+    <aura:attribute name="isEditMode" type="boolean" default="false" />
+    <aura:attribute name="fieldName" type="String" />
+    <aura:attribute name="datalist" type="list" />
+    <aura:attribute name="priorityOption" type="List" />
+    <aura:attribute name="editedGroupId" type="String" />
+    <aura:attribute name="pricebookoptions" type="List" />
+    <aura:attribute name="pricebookName" type="string" />
+    <aura:attribute name="QuoteString" type="String" />
+    <aura:attribute name="showButtons" type="boolean" default="false" />
+    <aura:attribute name="finalString" type="object" />
+    <aura:attribute name="quoteItemList" type="Quote_Item__c[]" />
+
+    <!-- refresh component event -->
+    <aura:handler event="force:refreshView" action="{!c.refreshComponentHandler}" />
+
+    <!-- MassUpdate start -->
+    <aura:attribute name="enableMassUpdate" type="boolean" default="false" />
+    <aura:attribute name="selectedMassLookUpRecord" type="sObject" default="{}" />
+    <aura:attribute name="newMassQuote" type="Quote_Item__c" default="{ 'sobjectType':'Quote_Item__c'}"
+        access="global" />
+    <aura:attribute name="newMassQi" type="Quote_Item__c" access="public" />
+    <aura:attribute name="duplicateRecs" type="List" default="[]" />
+    <aura:attribute name="isDuplicate" type="Boolean" default="false" />
+    <aura:attribute name="isMassDuplicate" type="Boolean" default="false" />
+    <aura:attribute name="isChangeData" type="Boolean" default="false" />
+    <aura:attribute name="isMarkup" type="Boolean" default="false" />
+    <aura:attribute name="QuoteRec" type="Quote__c" default="{ 'sobjectType':'Quote__c','buildertek__Markup__c':'0'}"
+        access="global" />
+    <aura:attribute name="QuoteRecCopy" type="Quote__c"
+        default="{ 'sobjectType':'Quote__c','buildertek__Markup__c':'0'}" access="global" />
+    <aura:attribute name="isQuoteRecChange" type="Boolean" default="false" />
+    <aura:attribute name="currentId" type="String" default="" />
+
+    <aura:attribute name="isQuotelinedelete" type="Boolean" default="false" />
+    <aura:attribute name="QuotelinePopupHeader" type="String" default="" />
+    <aura:attribute name="QuotelinePopupDescription" type="String" default="" />
+
+    <aura:attribute name="PopupHeader" type="String" default="" />
+    <aura:attribute name="PopupDescription" type="String" default="" />
+
+    <!-- MassUpdate End -->
+
+    <!-- Pagination Start -->
+
+    <aura:attribute name="page" type="integer" description="using for store page Number" />
+    <aura:attribute name="pages" type="integer" description="using for store All Pages page Number" />
+    <aura:attribute name="total" type="integer" description="total records count store " />
+
+    <!-- Pagination End -->
+
+    <aura:method name="refreshComponent" action="{!c.doInit}" />
+    <!-- Handler -->
+    <aura:handler name="change" value="{!v.groupLoaded}" action="{!c.groupLoaded}" />
+    <aura:attribute name="parentAttribute" type="Boolean" default="false" />
+    <c:BT_Spinner />
+
+    <div style="margin-top: -20px;">
+
+        <!-- div style="float:right;margin-top: 25px;margin-right: 10px;"-->
+
+        <div style="float: right;margin-top: 25px;" class="slds-m-top_medium slds-m-bottom_medium slds-m-right_small">
+
+            <lightning:buttonGroup>
+                <!--<div class="slds-truncate" title="test" style="padding: 10px 0px 0px 10px; width:170px;color:#004487;">
+                    Total Customer Amount</div>
+                <ui:inputNumber aura:id="testId" value="{!v.QuoteRec.buildertek__Total_Customer_Quote_Amount__c}" class="uiInputCss">
+                  </ui:inputNumber>-->
+                <div class="slds-truncate" title="test1" style="padding: 10px 0px 0px 10px; width:110px;color:#004487;">
+                    Global Markup</div>
+                <ui:inputNumber aura:id="testId" value="{!v.QuoteRec.buildertek__Markup__c}" class="uiInputCss">
+                </ui:inputNumber>
+                <lightning:buttonIcon iconName="utility:save" class="saveInputCss slds-m-left_xx-small"
+                    onclick="{!c.onMarkupChange}" alternativeText="Save" />
+                <!--<lightning:button onclick="{!c.newRFQ}" label="Create RFQ" class="sldsButtonGroup"/>-->
+                <aura:if isTrue="{!v.enableMassUpdate}">
+                    <lightning:button iconName="utility:save" iconPosition="left" onclick="{!c.onClickMassUpdate}"
+                        label="{!v.enableMassUpdate==true?'Save':'Mass Update'}" class="sldsButtonGroup" />
+                    <lightning:button iconName="utility:close" iconPosition="left"
+                        onclick="{!c.onClickMassUpdateCancel}" label="Cancel" class="sldsButtonGroup" />
+                    <aura:set attribute="else">
+                        <lightning:button iconPosition="left" onclick="{!c.onClickAddlines}" label="Add Lines"
+                            class="sldsButtonGroup" />
+                        <lightning:button iconName="utility:copy" iconPosition="left"
+                            onclick="{!c.onClickMassDuplicate}" label="Duplicate Lines" class="sldsButtonGroup" />
+                        <lightning:button iconName="utility:edit" iconPosition="left" onclick="{!c.onClickMassUpdate}"
+                            label="{!v.enableMassUpdate==true?'Save':'Mass Update'}" class="sldsButtonGroup" />
+                        <!--<lightning:button variant="brand" label="Add New Product" onclick="{!c.newLineItem}"/>-->
+                        <!--<lightning:button iconName="utility:add" iconPosition="left" onclick="{!c.newGroup}" label="Add Group" class="sldsButtonGroup"/>-->
+                        <lightning:button label="Add Product" onclick="{!c.addProduct}" class="sldsButtonGroup" />
+                        <lightning:button label="Import RFQ's" onclick="{!c.addRFQ}" class="sldsButtonGroup" />
+                        <!-- <lightning:button label="Save" onclick="{!c.saveQuoteItems}"/> -->
+                        <lightning:button label="Delete" onclick="{!c.deleteSelectedQuoteItem}"
+                            class="sldsButtonGroup" />
+                    </aura:set>
+                </aura:if>
+            </lightning:buttonGroup>
+        </div>
+        Jon Snow
+        <br />
+
+        <div aura:id="quoteItem" />
+        <div class="av slds-box" id="{!v.recordId + 'groups'}" style="min-height:50vh;padding:0px !important;">
+            <div>
+                <!--<aura:if isTrue="{!v.recordId!= null}">-->
+                <div style="padding:10px;margin-top: -5px;">
+                    <!-- <lightning:button variant="neutral" iconName="utility:add" iconPosition="left" onclick="{!c.newGroup}" label="Add Group" /> -->
+                    <br />
+                    <!-- inline Quote Editing -->
+
+                    <div aura:id="inlineEditQuote" style="margin-top:25px; margin-bottom:25px;">
+
+                        <table class="slds-table slds-table_bordered slds-table_cell-buffer"
+                            style="border:1px solid grey;border-radius: 5px;">
+                            <thead style="border:1px solid rgb(216, 237, 255);">
+                                <tr class="slds-text-title_caps">
+                                    <th scope="col"
+                                        style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-left-radius:5px;">
+                                        <div class="slds-truncate" title="Pricebook">Pricebook</div>
+                                    </th>
+                                    <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; ">
+                                        <div class="slds-truncate" title="Product Family">Product Family</div>
+                                    </th>
+                                    <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; ">
+                                        <div class="slds-truncate" title="Product">Product</div>
+                                    </th>
+                                    <th style="background-color:rgba(27, 82, 151, 1.0); color:white; ">
+                                        <div class="slds-truncate" title="Quote Line">Quote Line</div>
+                                    </th>
+                                    <!-- <th style="background-color:rgba(27, 82, 151, 1.0); color:white; ">
+                                        <div class="slds-truncate" title="Cost Code">Cost Code</div> 
+                                    </th> -->
+                                    <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white;  ">
+                                        <div class="slds-truncate" title="Grouping">Grouping</div>
+                                    </th>
+                                    <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; ">
+                                        <div class="slds-truncate" title="UOM">UOM</div>
+                                    </th>
+                                    <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+                                        <div class="slds-truncate" title="Quantity">Quantity</div>
+                                    </th>
+                                    <th style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+                                        <div class="slds-truncate" title="Unit Price">Unit Cost</div>
+                                    </th>
+                                    <th style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+                                        <div class="slds-truncate" title="Mark Up">Markup</div>
+                                    </th>
+                                    <th scope="col"
+                                        style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-right-radius:5px; ">
+                                        <div class="slds-truncate" title="save">Save</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <ui:inputSelect value="{! v.pricebookName }" change="{!c.changeEvent}"
+                                            class="pricebook-class">
+                                            <aura:iteration var="option" items="{! v.pricebookoptions }">
+                                                <option value="{! option.value }"
+                                                    selected="{!option.value == v.pricebookName}">{! option.key }
+                                                </option>
+                                            </aura:iteration>
+                                        </ui:inputSelect>
+                                    </td>
+
+                                    <td>
+                                        <ui:inputSelect value="{!v.productfamily}" change="{!c.changefamily}"
+                                            class="pricebook-class">
+                                            <aura:iteration var="option" items="{!v.listofproductfamily}">
+                                                <option value="{!option.productfamilyvalues}"
+                                                    selected="{!option.productfamilyvalues == v.productfamily}">
+                                                    {!option.productfamilyvalues}</option>
+                                            </aura:iteration>
+                                        </ui:inputSelect>
+
+                                    </td>
+                                    <td style="width:200px;">
+
+                                        <c:BT_LightningLookup objectAPIName="Product2" IconName="standard:product"
+                                            selectedRecord="{!v.selectedLookUpRecord}" aura:id="productId"
+                                            parentId="{! v.pricebookName }" prodctfamly="{!v.productfamily}" />
+                                    </td>
+                                    <td>
+                                        <!--<force:inputField value="{!v.newQuote.Name}"/>-->
+                                        <ui:inputText value="{!v.newQuote.Name}" aura:id="quoteLineID" />
+                                    </td>
+                                    <!--  <td>
+                                        <c:BT_LookUp aura:id="costCodeId" _field="buildertek__Cost_Code__c" 
+                                                     _sobject="buildertek__Quote_Item__c" 
+                                                     _value="{!v.newQuote.buildertek__Cost_Code__c}"
+                                                     _target_sobject="buildertek__Cost_Codes__c"
+                                                     _text_value = "{!v.costCode}"
+                                                     _label=""
+                                                     _filter="{!v.costCodeFilter}"
+                                                     />
+                                    </td> -->
+                                    <td>
+                                        <!--<force:inputField value="{!v.newQuote.buildertek__Grouping__c}"/>-->
+                                        <c:BT_LookUp aura:id="groupId" _field="buildertek__Grouping__c"
+                                            _sobject="buildertek__Quote_Item__c"
+                                            _value="{!v.newQuote.buildertek__Grouping__c}" _label="" _filter="" />
+                                    </td>
+
+                                    <td>
+                                        <!--<force:inputField value="{!v.newQuote.buildertek__UOM__c}" />-->
+                                        <!--<ui:inputText value="{!v.newQuote.buildertek__UOM__c}" aura:id="UOMId"/>-->
+                                        <ui:inputSelect value="{! v.newQuote.buildertek__UOM__c }" class="select-class">
+                                            <aura:iteration var="option" items="{! v.options }">
+                                                <option value="{! option.value }">{! option.label }</option>
+                                            </aura:iteration>
+                                        </ui:inputSelect>
+                                    </td>
+                                    <td>
+                                        <!--<force:inputField value="{!v.newQuote.buildertek__Quantity__c}"/>-->
+                                        <ui:inputNumber value="{!v.newQuote.buildertek__Quantity__c}" />
+                                    </td>
+                                    <td>
+                                        <!--<force:inputField value="{!v.newQuote.buildertek__Unit_Cost__c}" />-->
+                                        <ui:inputCurrency value="{!v.newQuote.buildertek__Unit_Cost__c}"
+                                            aura:id="unitCostId" />
+                                    </td>
+                                    <td>
+                                        <ui:inputNumber value="{!v.newQuote.buildertek__Markup__c}" aura:id="markUpId"
+                                            format=".00%" />
+                                    </td>
+
+                                    <td>
+                                        <lightning:buttonIcon iconName="utility:save" alternativeText="save"
+                                            onclick="{!c.saveQuoteRecord}" />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+
+                </div>
+
+                <!--<aura:if isTrue="{!and(v.groupListSize == 0, v.groupLoaded)}">-->
+                <!--<div class="av-list">
+                 <div style="margin-top:5rem;">
+                     <c:BT_Illustration name="Setup" title="Add Group to Start Quote"/>
+                 </div>
+             </div>-->
+                <!--<aura:set attribute="else">-->
+                <aura:if isTrue="{!or(or(or(v.isDuplicate,v.isMassDuplicate),v.isOpen),v.isQuoteRecChange)}">
+                    <div class="slds-m-around_xx-large">
+                        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                            aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                            <div class="slds-modal__container">
+                                <header class="slds-modal__header">
+                                    <aura:if isTrue="{!v.isOpen}">
+                                        <lightning:buttonIcon iconName="utility:close" onclick="{!c.closeModel}"
+                                            alternativeText="close" variant="bare-inverse" class="slds-modal__close" />
+                                    </aura:if>
+                                    <aura:if isTrue="{!or(v.isDuplicate,v.isMassDuplicate)}">
+                                        <lightning:buttonIcon iconName="utility:close"
+                                            onclick="{!c.closeDuplicateModel}" alternativeText="close"
+                                            variant="bare-inverse" class="slds-modal__close" />
+                                    </aura:if>
+
+                                    <aura:if isTrue="{!v.isQuoteRecChange}">
+                                        <lightning:buttonIcon iconName="utility:close" onclick="{!c.closeModelQuoteRec}"
+                                            alternativeText="close" variant="bare-inverse" class="slds-modal__close" />
+                                    </aura:if>
+                                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">
+                                        {!v.PopupHeader}</h2>
+                                </header>
+                                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                                    <center>
+                                        <h2>{!v.PopupDescription}</h2>
+                                    </center>
+                                </div>
+                                <footer class="slds-modal__footer">
+                                    <aura:if isTrue="{!v.isOpen}">
+                                        <lightning:button variant="neutral" label="Cancel" title="Cancel"
+                                            onclick="{!c.closeModel}" />
+                                        <lightning:button variant="brand" label="Delete" title="Delete"
+                                            onclick="{!c.deleteQuoteItems}" />
+                                    </aura:if>
+
+                                    <aura:if isTrue="{!or(v.isDuplicate,v.isMassDuplicate)}">
+                                        <lightning:button variant="neutral" label="Cancel" title="Cancel"
+                                            onclick="{!c.closeDuplicateModel}" />
+                                    </aura:if>
+
+                                    <aura:if isTrue="{!v.isDuplicate}">
+                                        <lightning:button variant="brand" label="Duplicate" title="Duplicate"
+                                            onclick="{!c.duplicateQuote}" />
+                                    </aura:if>
+                                    <aura:if isTrue="{!v.isMassDuplicate}">
+                                        <lightning:button variant="brand" label="Duplicate" title="Duplicate"
+                                            onclick="{!c.onMassDuplicate}" />
+                                    </aura:if>
+                                    <aura:if isTrue="{!v.isQuoteRecChange}">
+                                        <lightning:button variant="neutral" label="Cancel" title="Cancel"
+                                            onclick="{!c.closeModelQuoteRec}" />
+                                        <lightning:button variant="brand" label="Save" title="Save"
+                                            onclick="{!c.saveQuoteSingleRecord}" />
+                                    </aura:if>
+                                </footer>
+                            </div>
+                        </section>
+                        <div class="slds-backdrop slds-backdrop_open"></div>
+                    </div>
+                </aura:if>
+
+                <aura:if isTrue="{!v.isQuotelinedelete}">
+                    <div class="slds-m-around_xx-large">
+                        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                            aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                            <div class="slds-modal__container">
+                                <header class="slds-modal__header">
+                                    <aura:if isTrue="{!v.isQuotelinedelete}">
+                                        <lightning:buttonIcon iconName="utility:close"
+                                            onclick="{!c.closeQuotelineModel}" alternativeText="close"
+                                            variant="bare-inverse" class="slds-modal__close" />
+                                    </aura:if>
+
+                                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">
+                                        {!v.QuotelinePopupHeader}</h2>
+                                </header>
+                                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                                    <center>
+                                        <h2>{!v.QuotelinePopupDescription}</h2>
+                                    </center>
+                                </div>
+                                <footer class="slds-modal__footer">
+                                    <aura:if isTrue="{!v.isQuotelinedelete}">
+                                        <lightning:button variant="neutral" label="Cancel" title="Cancel"
+                                            onclick="{!c.closeQuotelineModel}" />
+                                        <lightning:button variant="brand" label="Delete" title="Delete"
+                                            onclick="{!c.deleteSelectedQuoteItemlines}" />
+                                    </aura:if>
+
+
+                                </footer>
+                            </div>
+                        </section>
+                        <div class="slds-backdrop slds-backdrop_open"></div>
+                    </div>
+                </aura:if>
+<!--Quote Details View or Edit-->
+                <div class="slds">
+                    <div class="slds-scrollable" style="height: 30rem;">
+                        
+                        <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal">
+                            <!--Table must be responsive-->
+                            <thead>
+                                <tr class="slds-text-heading--label" style="line-height: 2">
+                                    <th></th>
+                                    <th class="slds-is-sortable" scope="col" width="5px">
+                                        <!-- <ui:inputCheckbox value="{!v.isSelectAll}" change="{!c.handleSelectAll}" aura:id="selectAll"/>-->
+                                        <div class="slds-form-element">
+                                            <div class="slds-form-element__control">
+                                                <label class="slds-checkbox" width="10px">
+                                                    <ui:inputCheckbox value="{!v.isSelectAll}"
+                                                        change="{!c.handleSelectAll}" aura:id="selectAll" class="" />
+                                                    <span class="slds-checkbox--faux" style="top:-2px;"></span>
+                                                    <span class="slds-form-element__label text"></span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <aura:iteration items="{!v.columns}" var="col">
+                                        <aura:if
+                                            isTrue="{!and(col.fieldName!='Name',and(col.fieldName!='buildertek__Notes__c',col.fieldType!='reference'))}">
+                                            <th class="slds-is-sortable inputCss" scope="col"
+                                                style="padding-right:5px !important;padding-left:5px !important;">
+                                                <div class="slds-truncate" title="{!col.label}">{!col.label}</div>
+                                            </th>
+                                            <aura:set attribute="else">
+                                                <aura:if isTrue="{!and(col.fieldType=='reference')}">
+                                                    <th class="slds-is-sortable lookupCss" scope="col"
+                                                        style="padding-right:5px !important;padding-left:5px !important;">
+                                                        <div class="slds-truncate" title="{!col.label}">{!col.label}
+                                                        </div>
+                                                    </th>
+                                                    <aura:set attribute="else">
+                                                        <th class="slds-is-sortable" scope="col"
+                                                            style="padding-right:5px !important;padding-left:5px !important;">
+                                                            <div class="slds-truncate" title="{!col.label}">{!col.label}
+                                                            </div>
+                                                        </th>
+                                                    </aura:set>
+                                                </aura:if>
+                                            </aura:set>
+                                        </aura:if>
+
+                                    </aura:iteration>
+                                    <th>
+                                    </th>
+                                    <th>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.TotalRecords.groups}" var="group">
+                                    <tr class="groupHeader">
+                                        <th>
+                                        </th>
+                                        <th>
+                                        </th>
+                                        <th>
+                                            {!group.Name}
+                                        </th>
+                                        <aura:iteration items="{!v.TotalRecords.wrapperList}" var="rec"
+                                            indexVar="totalRecordsIndex">
+                                            <aura:if
+                                                isTrue="{!group.Name == rec.groupName &amp;&amp; rec.fieldType != 'false'}">
+                                                <aura:if isTrue="{!rec.fieldType == 'CURRENCY'}">
+                                                    <th>
+                                                        <aura:if isTrue="{!rec.totalValue != null}">
+                                                            <lightning:formattedNumber value="{!rec.totalValue}"
+                                                                style="currency" />
+                                                            <aura:set attribute="else">
+                                                                $0.00
+                                                            </aura:set>
+                                                        </aura:if>
+                                                        <button
+                                                            class="slds-button slds-button_icon slds-cell-edit__button slds-m-left_x-small"
+                                                            tabindex="-1" title="">
+                                                            <span style="display:none;">
+                                                            </span>
+                                                            <span class="slds-assistive-text">Edit</span>
+                                                        </button>
+                                                    </th>
+                                                </aura:if>
+                                            </aura:if>
+                                            <!-- <aura:if isTrue="{!v.wrapperListLength != totalRecordsIndex}">  -->
+                                            <aura:if
+                                                isTrue="{!group.Name == rec.groupName &amp;&amp; rec.fieldType == 'false'}">
+                                                <th style="text-align:right">
+
+                                                </th>
+                                            </aura:if>
+                                            <!-- </aura:if> -->
+                                        </aura:iteration>
+                                    </tr>
+
+                                    <aura:iteration items="{!v.TotalRecords.tarTable.ListOfEachRecord}" var="tar"
+                                        indexVar="quoteIndex">
+                                        <tr class="slds-hint-parent">
+                                            <aura:if isTrue="{!group.Id == tar.groupId}">
+                                                <td>
+                                                    {!tar.recordCount +1}
+                                                </td>
+                                                <td>
+                                                    <!--<div class="slds-truncate" title=""><ui:inputCheckbox class="green-checkbox" aura:id="checkQuoteItem" value="" text="{!tar.recordId}"/></div>-->
+                                                    <div class="slds-form-element">
+                                                        <div class="slds-form-element__control">
+                                                            <label class="slds-checkbox" style="width:2px;">
+                                                                <ui:inputCheckbox text="{!tar.recordId}"
+                                                                    aura:id="checkQuoteItem" value=""
+                                                                    change="{!c.unCheckAll}" />
+                                                                <span class="slds-checkbox--faux"
+                                                                    style="top:-2px;"></span>
+                                                                <span class="slds-form-element__label text"></span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td scope="row" class="slds-cell-edit" data-label="Name">
+
+                                                    <aura:if
+                                                        isTrue="{!or(and(and(v.isEditMode, v.fieldName == 'Name'), v.quoteItemId == tar.recordId),and(v.enableMassUpdate))}">
+                                                        <ui:inputText aura:id="inputId" value="{!tar.recordName}"
+                                                            change="{!c.updateQuoteData}" blur="{!c.onblur}" />
+                                                        <aura:set attribute="else">
+                                                            <div class="slds-truncate" title="{!tar.recordName}">
+                                                                <a href="javascript:void(0);" role="menuitem"
+                                                                    tabindex="-1" data-record="{!tar.recordId}"
+                                                                    onclick="{!c.doView}">
+                                                                    {!tar.recordName}
+                                                                </a>
+                                                                <button
+                                                                    class="slds-button slds-button_icon slds-cell-edit__button slds-m-left_x-small"
+                                                                    tabindex="-1" title="">
+                                                                    <span style="display:none;"
+                                                                        data-id="{!tar.recordId}" data-label="Name"
+                                                                        data-group="{!tar.groupId}"
+                                                                        onclick="{!c.inlineEdit}">
+                                                                        <lightning:icon iconName="utility:edit"
+                                                                            size="xx-small" alternativeText="edit" />
+                                                                    </span>
+                                                                    <span class="slds-assistive-text">Edit</span>
+                                                                </button>
+                                                            </div>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </td>
+                                                <aura:iteration items="{!tar.recordList}" var="value">
+                                                    <!--<td style="text-align:right">
+                                                            <div class="slds-truncate">
+                                                                {!value.recordValue}
+                                                            </div>
+                                                        </td>-->
+                                                    <td class="ShowIconClass" data-myvalue="{!value}">
+
+                                                        <!-- aura:if isTrue="{!or(and(and(v.isEditMode, v.fieldName == value.fieldName), v.quoteItemId == tar.recordId),enableMassUpdate)}" -->
+                                                        <!--   <aura:if isTrue="{!or(and(and(v.isEditMode, v.fieldName == value.fieldName), v.quoteItemId == tar.recordId),and(v.enableMassUpdate,or(or(or(value.fieldName=='buildertek__Quantity__c',value.fieldName == 'buildertek__Unit_Price__c'),value.fieldName=='buildertek__Additional_Discount__c'),value.fieldName == 'buildertek__Markup__c')))}">-->
+
+                                                        <aura:if
+                                                            isTrue="{!or(and(and(v.isEditMode, v.fieldName == value.fieldName),v.quoteItemId == tar.recordId),and(v.enableMassUpdate,or(or(or(or(or(or(or(value.fieldName=='buildertek__Quantity__c',or(or(value.fieldName == 'buildertek__Unit_Price__c',value.fieldName == 'buildertek__Priority__c'),value.fieldName == 'buildertek__Vendor__c')),value.fieldName=='buildertek__Additional_Discount__c'),value.fieldName=='buildertek__Unit_Cost__c'),value.fieldName=='buildertek__Applied_Markup__c'),value.fieldName == 'buildertek__UOM__c'),value.fieldName == 'buildertek__Markup__c'),value.fieldName=='buildertek__Notes__c')))}">
+                                                            <!--    <aura:if isTrue="{!or(and(and(v.isEditMode, v.fieldName == value.fieldName),v.quoteItemId == tar.recordId),and(v.enableMassUpdate,or(or(or(or(or(or(or(or(value.fieldName=='buildertek__Quantity__c',value.fieldName == 'buildertek__Unit_Price__c'),value.fieldName=='buildertek__Additional_Discount__c'),value.fieldName=='buildertek__Unit_Cost__c'),value.fieldName=='buildertek__Notes__c'),value.fieldName=='buildertek__Applied_Markup__c'),value.fieldName == 'buildertek__Markup__c'),value.fieldName=='buildertek__Notes__c')))}">-->
+                                                            <aura:if isTrue="{!value.fieldType != 'picklist'}">
+                                                                <aura:if isTrue="{!value.fieldType == 'reference'}">
+                                                                    <c:BT_LookupFields
+                                                                        childObjectName="buildertek__Quote_Item__c"
+                                                                        selectedRecordId="{!value.originalValue}"
+                                                                        fieldName="{!value.fieldName}"
+                                                                        index="{!quoteIndex}" />
+                                                                    <aura:set attribute="else">
+                                                                        <ui:inputText aura:id="inputId"
+                                                                            value="{!value.originalValue}"
+                                                                            change="{!c.updateQuoteData}"
+                                                                            blur="{!c.onblur}" />
+                                                                    </aura:set>
+                                                                </aura:if>
+
+                                                                <aura:set attribute="else">
+                                                                    <ui:inputSelect value="{! value.originalValue }"
+                                                                        class="select-class">
+                                                                        <aura:iteration var="option"
+                                                                            items="{! v.options }">
+                                                                            <option value="{! option.value }"
+                                                                                selected="{!value.originalValue == option.value}">
+                                                                                {! option.label }</option>
+                                                                        </aura:iteration>
+                                                                    </ui:inputSelect>
+                                                                </aura:set>
+                                                            </aura:if>
+                                                            <aura:set attribute="else">
+                                                                <div class="slds-truncate">
+                                                                    <aura:if isTrue="{!value.fieldType == 'currency'}">
+                                                                        <aura:if isTrue="{!value.originalValue != ''}">
+                                                                            <lightning:formattedNumber
+                                                                                value="{!value.originalValue}"
+                                                                                style="currency" class="inputCss" />
+                                                                            <aura:set attribute="else">
+                                                                                <lightning:formattedNumber value="0.00"
+                                                                                    style="currency" class="inputCss" />
+                                                                            </aura:set>
+                                                                        </aura:if>
+                                                                    </aura:if>
+                                                                    <aura:if isTrue="{!value.fieldType == 'number'}">
+
+                                                                        <lightning:formattedNumber
+                                                                            value="{!value.originalValue}"
+                                                                            class="inputCss" />
+                                                                    </aura:if>
+                                                                    <aura:if isTrue="{!value.fieldType == 'string'}">
+
+                                                                        <lightning:formattedNumber
+                                                                            value="{!value.originalValue/100}"
+                                                                            style="percent" minimumFractionDigits="2"
+                                                                            class="inputCss" />
+                                                                    </aura:if>
+                                                                    <aura:if isTrue="{!value.fieldType == 'textarea'}">
+                                                                        <lightning:formattedRichText
+                                                                            value="{!value.originalValue}"
+                                                                            class="textAreaCss" />
+                                                                    </aura:if>
+                                                                    <aura:if isTrue="{!value.fieldType == 'picklist'}">
+                                                                        {!value.originalValue}
+                                                                    </aura:if>
+                                                                    <aura:if isTrue="{!value.referenceValue}">
+                                                                        <ui:outputURL
+                                                                            value="{!'/one/one.app?#/sObject/'+ value.originalValue + '/view'}"
+                                                                            target="_blank"
+                                                                            label="{!value.referenceValue}" />
+                                                                    </aura:if>
+                                                                    <!--{!value.recordValue}-->
+                                                                    <button
+                                                                        class="slds-button slds-button_icon slds-cell-edit__button slds-m-left_x-small"
+                                                                        tabindex="-1" title="">
+                                                                        <aura:if isTrue="{!value.isEditable == true}">
+                                                                            <span style="display:none;"
+                                                                                data-id="{!tar.recordId}"
+                                                                                data-label="{!value.fieldName}"
+                                                                                data-group="{!tar.groupId}"
+                                                                                onclick="{!c.inlineEdit}">
+                                                                                <lightning:icon iconName="utility:edit"
+                                                                                    size="xx-small"
+                                                                                    alternativeText="edit" />
+                                                                            </span>
+                                                                        </aura:if>
+                                                                        <span class="slds-assistive-text">Edit</span>
+                                                                    </button>
+                                                                </div>
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </td>
+                                                </aura:iteration>
+                                                <td style="text-align:right">
+                                                    <div class="slds-truncate">
+                                                        <span data-id="{!tar.recordId}" onclick="{!c.onclickDuplicate}">
+                                                            <lightning:icon iconName="utility:copy" size="xx-small" />
+                                                            &nbsp;
+                                                        </span>
+                                                        <span data-id="{!tar.recordId}" onclick="{!c.editQuote}">
+                                                            <lightning:icon iconName="utility:edit" size="xx-small" />
+                                                            &nbsp;
+                                                        </span>
+                                                        <span data-id="{!tar.recordId}" onclick="{!c.deleteQuote}">
+                                                            <lightning:icon iconName="utility:delete" size="xx-small" />
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                </td>
+                                            </aura:if>
+                                        </tr>
+                                    </aura:iteration>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+
+                    </div>
+                    <br />
+                    <aura:if isTrue="{!v.total.length > 50}">
+                        <div class="slds-align_absolute-center">
+                            <lightning:button disabled="{!v.page == 1}" variant="brand" label="Previous"
+                                onclick="{! c.navigate }" />
+                            <lightning:button disabled="{!v.page == v.pages}" aura:id="previousPage" variant="brand"
+                                label="Next" onclick="{! c.navigate }" />
+                        </div>
+                    </aura:if>
+
+                    <br />
+                </div>
+                <div class="slds-align_absolute-center">
+                    <aura:if isTrue="{!v.showButtons}">
+                        <center>
+                            <lightning:buttonGroup class="slds-m-around_medium">
+                                <lightning:button label="Cancel" onclick="{!c.closeInlineEditForm}" />
+                                <lightning:button label="Save" onclick="{!c.SaveEditedValues}" variant="brand" />
+                            </lightning:buttonGroup>
+                        </center>
+                    </aura:if>
+                </div>
+                <!-- </aura:set>-->
+                <!--</aura:if>-->
+                <!--</aura:if>-->
+
+                <aura:if isTrue="{!v.Spinner}">
+                    <div aura:id="spinnerId" class="slds-spinner_container">
+                        <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative"
+                            role="alert">
+                            <span class="slds-assistive-text">Loading</span>
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                              <div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+                
+                        </div>
+                    </div>
+                </aura:if>
+            </div>
+        </div>
+    </div>
+
+    <div aura:id="newQuoteItem" />
+
+    <lightning:overlayLibrary aura:id="overlayLib" />
+    <lightning:notificationsLibrary aura:id="notifLib" />
+
+
+</aura:component>

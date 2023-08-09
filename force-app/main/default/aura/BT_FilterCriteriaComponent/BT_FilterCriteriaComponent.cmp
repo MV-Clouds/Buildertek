@@ -1,0 +1,42 @@
+<aura:component Controller="BT_FilterCriteriaCompoController">
+	<aura:attribute name="title" type="String"/>
+    <aura:attribute name="defaultFilterRows" type="Integer"/>
+    <aura:attribute name="objectName" type="String"/>
+    <aura:attribute name="fieldsetName" type="String"/>
+    <aura:attribute name="showClearAllLink" type="Boolean"/>
+    <aura:attribute name="defaultFilterRowJSON" type="String"/>
+    <aura:attribute name="fieldlist" type="List"/>
+    <aura:attribute name="filterCriteriaList" type="List"/>
+    
+    
+    <div aura:id="filter">
+        <b class="slds-scope slds">{!v.title}</b>
+		<br/>
+        <table id="filterSection" style="margin-left:15px;margin-top:5px;width:60%">
+			<tr class="slds-scope slds">
+				<td>
+				    Field
+				</td>
+				<td>
+				    Operator
+				</td>
+				<td>
+				    Value
+				</td>
+			</tr>
+            <aura:iteration items="{!filterCriteriaList}" var="field" >
+                <tr>
+                    <td style="padding:2px;">
+                        <div class="slds-scope slds">
+                            <lightning:select name="fields" label=" " required="true">
+                                <aura:iteration items="{!fieldlist}" var="field" >
+                                    <option value="{!field.label}" text="{!field.label}"></option>
+                                </aura:iteration>
+                            </lightning:select>
+                        </div>
+                    </td>
+                </tr>
+            </aura:iteration>
+        </table>
+    </div>
+</aura:component>

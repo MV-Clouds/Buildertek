@@ -1,0 +1,24 @@
+<!--**********************************************************************************
+* Copyright © 2017, BuilderTek.
+* All rights reserved
+*
+* VisualForce Page: BT_FoldersTabRedirect
+* Created by Sagar
+
+* - Override the list view for folder
+
+* - Modifications:
+* - Sagar - Initial 
+***********************************************************************************-->
+
+<apex:page >
+<script>
+        window.onload = onload;
+        function onload{
+            loadData();
+        }
+</script>
+<apex:form >
+<apex:actionFunction name="loadData" action="{!URLFOR($Action.Folder__c.List, $ObjectType.Folder__c)}" />
+</apex:form> 
+</apex:page>

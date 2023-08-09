@@ -1,0 +1,13 @@
+<aura:component controller="RFQDAO" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global" >
+	<aura:attribute name="quoteId" type="String"/>
+	<aura:attribute name="selectedQuoteItem" type="String"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <lightning:notificationsLibrary aura:id="notifLib"/>
+    <div aura:id="progressbar">
+    	<center>
+	    	<img alt="Creating new change order." src="{!$Resource.gearsloading}" style="height:150px !important;"/>
+	    	<br/>
+	    	Creating new RFQ <br/> Please don't leave this page until RFQ is created.
+    	</center> 
+    </div>
+</aura:component>

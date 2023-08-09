@@ -1,0 +1,162 @@
+<aura:component access="global" controller="BudgetDAO">
+    <aura:attribute name="budgetId" type="String" />
+
+    <aura:attribute name="fieldSetName" type="String" />
+    <aura:attribute name="fieldSetValues" type="List" />
+    <aura:attribute name="arrfieldNames" type="List" />
+    <aura:attribute name="isModalOpen" type="Boolean" />
+    <aura:attribute name="parentRecordId" type="String" />
+    <aura:attribute name="fields" type="List" default="[]" />
+    <aura:attribute name="listOfRecords" type="Budget__c[]" />
+    <aura:attribute name="cloneListOfRecords" type="Quote__c[]" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="recordName" type="String" />
+    <aura:attribute name="numberOfItems" type="Integer" />
+    <aura:attribute name="massUpdateEnable" type="Boolean" default="true" />
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+    <aura:attribute name="UOMvalues" type="string" />
+    
+    <aura:attribute name="selectedLookUpRecord" type="sObject" default="{}" />
+    <aura:attribute name="groupIds" type="list" />
+    <aura:attribute name="options" type="List" />
+    <aura:attribute name="pricebookoptions" type="List" />
+    <aura:attribute name="pricebookName" type="string" />
+    <aura:attribute name="productfamily" type="string" />
+    <aura:attribute name="productfamilyoptions" type="List" />
+    <aura:attribute name="listofproductfamily" type="List" />
+    <aura:attribute name="Message" type="String" default="" />
+    <aura:attribute name="costttypeoptions" type="List" />
+    
+    <!-- <aura:handler name="oSelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.handleComponentEvent}"/> -->
+    <aura:attribute name="productId" type="string" />
+    <aura:attribute name="productName" type="string" />
+    
+    <aura:attribute name="selectedRows" type="List" />
+    
+    <!-- sai -->
+    <aura:registerEvent name="ChildBudgetLineEvent" type="c:BT_BudgetAddLineEvent"/>
+     <aura:registerEvent name="ChildBudgetLineLookupEvent" type="c:BT_BudgetItemLookupEvent"/>
+    
+    <aura:handler name="change" value="{!v.productfamily}" action="{!c.handleValueChange}"/>
+    <aura:handler name="change" value="{!v.pricebookName}" action="{!c.handleValueChange}"/>
+    <aura:handler name="change" value="{!v.productId}" action="{!c.handleValueChange}"/>
+    <aura:handler name="change" value="{!v.UOMvalues}" action="{!c.handleValueChange}"/>
+    <aura:handler name="change" value="{!v.selectedContractor}" action="{!c.handleValueChange}"/>
+    <aura:handler name="change" value="{!v.newBudgetLine}" action="{!c.handleValueChange}"/>
+   <aura:attribute name="recordItem" type="Object" description="" /> 
+    
+    
+    <aura:attribute name="save" type="Aura.Action" description="Save action Reference action" />
+    <aura:registerEvent name="ClearSelectedRecordEvent" type="c:BT_CLearLightningLookupEvent" />
+     <aura:attribute name="record" type="sObject" description="record which is being displayed" />
+    <aura:attribute name="field" type="Object" description="field object which is being rendered" />
+        <aura:attribute name="index" type="Integer" />
+
+    <aura:attribute name="selectedContractor" type="sObject" default="{}" />
+    <aura:attribute name="listOfSearchRecords" type="List"
+                    description="Use,for store the list of search records which returns from apex class" />
+    <aura:attribute name="SearchKeyWord" type="string" />
+    <!-- <aura:handler name="SelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.doInit}"/> -->
+    <aura:handler name="oSelectedCheckboxValue" event="c:SelectedCheckboxValue" action="{!c.handleCheckboxEvent}" />
+    <aura:handler name="oSelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.handleComponentEvent}" />
+    <aura:attribute name="rawData" type="Object" />
+    <aura:attribute name="checkboxValue" type="Boolean" default="false" />
+    <aura:attribute name="ShowSpinner" type="Boolean" default="false" />
+    <!--<aura:registerEvent name="checkboxSelect" type="c:SelectAllCheckBoxes"/>-->
+    <aura:attribute name="clearLookupValue" type="Aura.Action" />
+    <aura:attribute name="newBudgetLine" type="Budget_Item__c" default="{ 'sobjectType':'Budget_Item__c',
+                                                                        'buildertek__Quantity__c':1}"
+                    access="global" />
+     
+    
+    <aura:attribute name="PageNumber" type="integer" default="1" />
+    <aura:attribute name="pageSize" type="integer" default="25" />
+    <aura:attribute name="TotalPages" type="integer" default="0" />
+    <aura:attribute name="TotalRecords" type="Integer" default="0" />
+    <aura:attribute name="RecordStart" type="integer" default="0" />
+    <aura:attribute name="RecordEnd" type="integer" default="0" />
+    <aura:attribute name="isNextDisabled" type="Boolean" default="true" />
+     <aura:attribute name="deleteQuoteLines" type="List" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> 
+    <lightning:overlayLibrary aura:id="overlayLib" />
+    <lightning:workspaceAPI aura:id="workspace" />
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
+    <aura:if isTrue="{!v.isLoading}">
+        <lightning:spinner alternativeText="Loading" variant="brand" size="large" />
+    </aura:if>
+
+    
+    <tr>
+        <td>
+            <ui:inputSelect value="{!v.pricebookName }" change="{!c.changeEvent}"
+                            class="pricebook-class pointer1" >
+                <aura:iteration var="option" items="{! v.pricebookoptions }" >
+                    <option value="{! option.value }"
+                            selected="{!option.value == v.pricebookName}">{! option.key }
+                    </option>
+                </aura:iteration>
+            </ui:inputSelect>
+        </td>
+        <td>
+            <ui:inputSelect value="{!v.productfamily}" change="{!c.changefamily}"
+                            class="pricebook-class pointer1">
+                <aura:iteration var="option" items="{!v.listofproductfamily}">
+                    <option value="{!option.productfamilyvalues}"
+                            selected="{!option.productfamilyvalues == v.productfamily}">
+                        {!option.productfamilyvalues}</option>
+                </aura:iteration>
+            </ui:inputSelect>
+        </td>
+        <td>
+            <div>
+            	<c:BT_LightningLookup aura:id="productId" objectAPIName="Product2"
+                                  IconName="standard:product" selectedRecord="{!v.selectedLookUpRecord}"
+                                  parentId="{!v.pricebookName }" prodctfamly="{!v.productfamily}" massBudgetLineIndex="{!v.index}"/>
+            </div>
+            
+        </td>
+        <td>
+            <ui:inputText value="{!v.newBudgetLine.Name}" aura:id="budgetLineID" />
+        </td>
+        
+        <td>
+            <c:BT_LookUp aura:id="groupId" _field="buildertek__Group__c"
+                         _sobject="buildertek__Budget_Item__c"
+                         _value="{!v.newBudgetLine.buildertek__Group__c}" _label="" _filter="" />
+        </td>
+        <td>
+            <ui:inputSelect value="{! v.UOMvalues }"
+                            class="select-class pointer1" change ="{!c.onInputChange}">
+                <aura:iteration var="option" items="{! v.options }">
+                    <option value="{! option.value }" selected="{!option.value == v.UOMvalues}" >{! option.key }</option>
+                </aura:iteration>
+            </ui:inputSelect>
+        </td>
+        <td>
+            <c:customLookup aura:id="accountId" objectAPIName="Account"
+                            IconName="standard:account" selectedRecord="{!v.selectedContractor}" />
+        </td>
+        <td>
+            <ui:inputNumber value="{!v.newBudgetLine.buildertek__Quantity__c}" />
+        </td>
+        <td>
+            <ui:inputCurrency value="{!v.newBudgetLine.buildertek__Unit_Price__c}"
+                              aura:id="unitPriceId" />
+        </td>
+        <td>
+        	 <span  onclick="{!c.deletebudgetlineRecord}" data-index='{!v.index}' class="pointer1">
+                                            <lightning:icon iconName="action:close" alternativeText="Delete"
+                                                            class="some-indicator" size="x-small" title="Delete" />
+                                        </span>
+        </td>
+      <!--  <td>
+            <span data-recordid="{!''+row.Id+'_'+index}" onclick="{!c.deletequotelineRecord}" data-index='{!index}'>
+                <lightning:icon iconName="action:close" alternativeText="Delete"
+                                class="some-indicator" size="x-small" title="Delete" />
+            </span>
+        </td>-->
+    </tr>
+    
+    
+</aura:component>

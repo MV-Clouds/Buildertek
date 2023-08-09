@@ -1,0 +1,6 @@
+.THIS .highcharts-credits{
+    display: none;
+}
+
+.THIS .highcharts-menu .highcharts-menu-item:first-child{ display: none;}
+.THIS .highcharts-menu hr{ display: none;}

@@ -1,0 +1,83 @@
+<aura:component
+                implements="force:appHostable,force:lightningQuickActionWithoutHeader,flexipage:availableForRecordHome,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes"
+                controller="ImportTakeOffLinesCSV" access="global">
+    <aura:attribute name="isSelect" type="boolean" default="true" />
+    <aura:attribute name="selectedFile" type="string" default="" />
+    <aura:attribute name="recordId" type="string" />
+    <aura:attribute name="errorMessage" type="string" />
+    <aura:attribute name="fileName" type="string" default="Select file" />
+    <aura:attribute name="Spinner" type="boolean" default="false" />
+    <aura:attribute name="isErrorOccured" type="boolean" default="false" />
+    <aura:attribute name="isOpen" type="boolean" default="false" />
+    <aura:attribute name="BaseURLs" type="string" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
+    
+    <div class="slds-modal__header" style="font-size:17px;">
+        Import TakeOff Lines
+    </div>
+    
+    <div class="slds-modal__content slds-p-around--large">
+        <div class="slds-box slds-theme_default slds-box_small">
+            <p>
+                <strong>Note: </strong> This import functionality will import Last Estimate Date,Version, Build Phase, Record Type, Product Type, Category, UOM, Product SKU, Product Code,
+                Trade Type, Slab SQF, Summary Value 1, Build Reference 1, Base Location, Location, Location Detailed Area, Location Detail Reference 1,
+                Install Location, Install Location Reference, Series Number, Sub Series Number, Sub Series Item, Area Reference, Quantity,
+                Material Value, Length, Width, Height, Thickness, Top SQFT, Edge, Linear Edge, Linear Feet, Sink Cut Out, Stove Cut Out, Other Cut Outs, Service Category, Quantity 2, Slab SQFT 2, Suppress Record, Product Count  and Price Book in TakeOff Lines.
+                
+                
+                
+                <!-- ,Trade Type, Category, Product Type, Location,
+                Quantity, UOM, Product SKU, Product Code, Build Phase, Length, Width, Thickness, Edge, Height, Base Location, Location Detailed Area,
+                Area Reference, Build Reference 1, Install Location, Install Location Reference, Item Count, Linear Feet,
+                Location Detail Reference 1, Material Value, Other Cut Outs, Record Type, Series Number, Sink Cut Out, 
+                Slab SQF, Stove Cut Out, Sub Series Item, Sub Series Number, Summary Value 1, Top SQFT, Unit Count and Version in TakeOff Lines.-->
+            </p>
+        </div>
+        <br />
+        <div class="container slds-grid slds-gutters">
+            <div>
+               <lightning:input aura:id="file" type="file" name="file" multiple="false" onchange="{!c.handleFilesChange}" variant = "label-hidden" />
+                <div class="slds-text-body_small">{!v.fileName} </div>
+                <aura:if isTrue="{!v.isErrorOccured}">
+                    <div class="slds-text-body_small">
+                        
+                        <div class="slds-text-color_error">
+                            {!v.errorMessage}
+                        </div>
+                        
+                    </div>
+                </aura:if>
+            </div>
+            
+            <div>
+                 <button class="slds-button slds-button--brand" onclick="{!c.downloadCsv}">Download CSV</button> <br/><br/>
+                <!--<aura:if isTrue="{!v.isSelect}">
+            &nbsp; &nbsp;
+            <lightning:pill label="{!v.selectedFile}" onremove="{! c.handleRemove }" />&nbsp;
+        </aura:if>-->
+                
+                
+                
+            </div>
+        </div>
+        <aura:if isTrue="{!v.Spinner}">
+            <div aura:id="spinnerId" class="slds-spinner_container">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                    <div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+                </div>
+            </div>
+        </aura:if>
+    </div>
+    <div class="slds-modal__footer">
+        <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}">Cancel</button>
+        <ui:button class="slds-button slds-button_brand" label="Import TakeOff Lines" press="{!c.save}" disabled = "{!v.isSelect}" />
+    </div>
+    
+</aura:component>

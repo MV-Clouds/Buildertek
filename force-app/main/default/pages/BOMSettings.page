@@ -1,0 +1,28 @@
+<apex:page controller="BOMSettingsController" sidebar="false" lightningStylesheets="true">
+<apex:slds />
+<apex:form >
+    <apex:pageBlock mode="maindetail">
+        <apex:pageMessages />
+        <apex:pageblocksection >
+             <apex:inputcheckbox value="{!isUpdatethequantity}" label="Update Quantity">
+            </apex:inputcheckbox>
+            <apex:inputcheckbox value="{!isShowFabricationTaxes}" label="Show Fabrication Taxes">
+            </apex:inputcheckbox>
+            <center>
+            <apex:commandButton value="Save" id="onCreateChangeOrderonOverage" styleClass="slds-button slds-button_brand" action="{!onCreateChangeOrderonOverage}"></apex:commandButton>
+            </center>
+        </apex:pageblocksection>
+    </apex:pageBlock>
+</apex:form>
+    <apex:includeLightning />
+    <div id="lightning" />
+    <script>
+        $Lightning.use("buildertek:TakeOffApp", function() {
+            $Lightning.createComponent("buildertek:BT_TakeOffSettings",
+            {},
+            "lightning",
+             function(cmp) {
+             });
+        });        
+      </script>
+</apex:page>

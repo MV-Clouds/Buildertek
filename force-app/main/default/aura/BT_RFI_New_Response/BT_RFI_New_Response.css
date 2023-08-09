@@ -1,0 +1,85 @@
+.THIS .custom-loading-text {
+    transform: rotate(-90deg);
+    position: absolute;
+    top: -0.5rem;
+    left: 1rem;
+    white-space: nowrap;
+    font-size: 20px;
+}
+
+/*.THIS .slds-modal__container{
+	width: 80% !important;      
+	max-width: 80% !important;
+    height : 100% !important;
+    
+}*/
+.THIS .slds-modal__content{
+	width: 100% !important;      
+	max-width: 100% !important;
+    height : 100% !important;
+    
+}
+
+.THIS .pointer{
+    cursor: pointer;
+}
+
+.THIS .heightClass{
+    height: 80vh !important;
+}
+
+.THIS .custom-loading-text {
+    transform: rotate(-90deg);
+    position: absolute;
+    top: -0.5rem;
+    left: 1rem;
+    white-space: nowrap;
+    font-size: 20px;
+}
+.THIS .iconWithoutBorder svg {
+    fill: #337ab7 !important;
+    color: #337ab7 !important;
+}
+
+.THIS .iconWithoutBorder:hover svg {
+    fill: #1b5297 !important;
+    color: #1b5297 !important;
+}
+
+.THIS .modal-body .slds-modal__content{
+          	height: 800px !important;
+          	max-height:800px !important;
+          }
+
+
+.THIS .notUploading {
+    visibility: hidden;
+}
+
+.THIS .uploading {
+    visibility: visible;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+.THIS .small-spinner {
+    height: 20px;
+    width: 20px;
+}
+
+.THIS .file {
+    margin-bottom: 5px;
+    display: block;
+}
+
+.THIS .customButton{
+   background-color: #0176D3;
+   color: #fff; 
+}
+
+/* */
+
+.THIS .runtime_platform_actionsQuickActionWrapper .quick-actions-panel {
+    overflow-y: hidden;
+    flex: 1;
+}

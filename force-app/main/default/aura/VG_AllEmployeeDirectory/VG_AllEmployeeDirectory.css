@@ -1,0 +1,162 @@
+.THIS .buttonIcons button {
+    height: auto;
+    width: auto;
+}
+.THIS .moreButton{
+    margin-top:5px;
+    font-family: Gotham-Book;
+    color:#F06C5C;
+}
+.THIS.Cardstyle{
+    border:unset;
+    margin-left:6px !important;
+}
+.THIS .slds-list__item>a{
+    color:#F05F4D !IMPORTANT;
+}
+.THIS .slds-breadcrumb__item>a{
+    color:#F05F4D !IMPORTANT;
+    
+}
+
+.THIS .slds-float_right{
+    margin-right: 1%;
+}
+.THIS .depCard{
+    margin-left: 1%;border-radius: 4px;
+    box-shadow: 1px 1px 1px 2px rgba(0,0,0,0.14);
+    margin-top: 8px;
+    background-color: white;
+    padding-left: 2%;
+    padding-bottom: 5px;
+}
+.THIS .largeFilterBar{
+    margin-top:8px;
+    padding: 0px;
+    border-radius: 4px; 
+    box-shadow: 1px 1px 1px 1px rgba(0,0,0,0.11);
+}
+.THIS .filterbottom{
+    border-bottom: 1px solid #d5d5de;padding: 8px;
+}
+.THIS .filterHeadding{
+    font-family: Gotham-Bold;font-size:13px;color:#4A4A4A ;
+    border-bottom: 0px;padding-bottom: 0px;
+}
+.THIS .filterList{
+    font-family: Gotham-Book;font-size:12px;color:#4A4A4A
+}
+.THIS .employeeSearch .slds-form-element__label {
+    display: none;
+    visibility: hidden;
+    z-index: 0;
+}
+.THIS .detailCard{
+    padding:0px;
+    width: 19%;
+    margin-right: 1%;
+    margin-bottom: .5%;
+}
+.THIS .cardInside{
+    width: 100%;
+    height: 165px;
+    padding: 8px; 
+    background-color: white;
+}
+.THIS .smallFilterBar {
+    display:none;
+    width: 0;
+    opacity: 0;
+    position: absolute;
+    right: 0;
+    transition: all .17s ease-in-out;
+    background-color: white;
+}
+.THIS .showFilterBar {
+    opacity: 1;
+    width: 70%;
+}
+/* For handeld devices like smartphones */
+@media screen and (max-width: 767px) {
+    .THIS .slds-float_right{
+        font-size: 12px;
+        
+        font-family: Gowtham-medium;
+        margin-right: 4.1%;
+    }
+    .THIS .mobileSearch{
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+    .THIS .depCard{
+        margin-left: 1%;border-radius: 4px;
+        box-shadow: 1px 1px 1px 2px rgba(0,0,0,0.14);
+        margin-top: 8px;
+        background-color: white;
+        padding-left: 2%;
+        padding-bottom: 2%;
+    }
+    .THIS .employeeSearch {
+        width: 100%;
+        z-index: 0;
+    }
+    .THIS .smallFilterBar {
+        display:block;
+        width: 75%;
+        z-index: 99;
+        
+    }
+    .THIS .titleContainer {
+        text-align: center;
+    }
+    .THIS .buttonContainer {
+        text-align: center;
+        width:100%;
+    }
+    .THIS .filterButton {
+        width: 15%;
+        height: 40px;
+        display: block;
+    }
+    .THIS .largeFilterBar {
+        display: none;
+    }
+    .THIS .hideMobile {
+        display: none;
+    }
+    .THIS .showMobile {
+        display: inline-block;
+    }
+    .THIS .detailCardMobile {
+        height: 230px;
+    }
+    .THIS .slds-button-group{
+        width: 100%;
+    }
+    .THIS .detailCard{
+        padding:0px;
+        width: 47.5%;
+        margin-right: 1%;
+        margin-bottom: .5%;
+    } 
+    .THIS .moreButton{
+        margin-top:5px;
+        font-family: Gotham-Book;
+        color:#F06C5C;
+    }
+}
+/* For tablets and above */
+@media screen and (min-width: 768px) {
+    .THIS .buttonContainer {
+        text-align: right;
+    }
+    .THIS .filterButton {
+        display: none;
+    }
+    .THIS .showMobile {
+        display: none;
+    }
+    .THIS .detailCardMobile {
+        height: 210px;
+    }
+}

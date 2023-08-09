@@ -1,0 +1,13 @@
+<apex:page >
+    <apex:includeLightning />
+    <div id="lightning" />
+    <script>
+    	$Lightning.use("buildertek:TrainingSettingsApp", function() {
+            $Lightning.createComponent("buildertek:TrainingSettings",
+          	{},
+            "lightning",
+             function(cmp) {
+             });
+        });        
+      </script>
+</apex:page>

@@ -1,0 +1,22 @@
+.THIS .row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.THIS .quick-actions-panel{
+    max-height:20px;
+}
+
+.THIS .slds-table:not(.slds-no-row-hover) tbody .backgroundNone:hover>td{
+    background: none;
+}
+
+  .THIS .custom-loading-text {
+    transform: rotate(-90deg);
+    position: absolute;
+    top: -0.5rem;
+    left: 1rem;
+    white-space: nowrap;
+    font-size: 20px;
+}

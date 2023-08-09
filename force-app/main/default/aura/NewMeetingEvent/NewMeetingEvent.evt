@@ -1,0 +1,4 @@
+<aura:event type="COMPONENT">
+    <aura:attribute name="ownerId" type="String"/>
+    <aura:attribute name="datarowIndex" type="String"/>
+</aura:event>

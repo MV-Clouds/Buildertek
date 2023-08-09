@@ -1,0 +1,183 @@
+<aura:component implements="force:hasRecordId,force:lightningQuickActionWithoutHeader" controller="InvoiceDAO"
+	access="global">
+	<ltng:require styles="{!$Resource.ModalPreviewWidth100}" />
+	<aura:attribute name="budgetlineid" type="string" />
+    <aura:attribute name="budgetId" type="string" />
+    <aura:attribute name="invoiceDescription" type="string" />
+	<aura:attribute name="newCO" type="Account_Payable_Clone__c" default="{ 'sobjectType': 'Account_Payable_Clone__c'}"
+		access="public" />
+	<aura:attribute name="newCOItems" type="Account_Payable_Item_Clone__c[]" access="public" />
+	<aura:attribute name="newInvoiceItem" type="Account_Payable_Item_Clone__c"
+		default="{ 'sobjectType': 'Account_Payable_Item_Clone__c','buildertek__Product__c': null,
+                                                                                         'buildertek__Description__c': '',
+                                                                                         'buildertek__Quantity__c': null,
+                                                                                         'buildertek__Unit_Price__c': null}" />
+	<aura:attribute name="coItemsToInsert" type="List" />
+	<aura:attribute name="cancelCallback" type="object" access="public" />
+	<aura:attribute name="saveCallback" type="Aura.Action" access="public" />
+	<aura:attribute name="selectedLookupValue" type="object" />
+	<aura:attribute name="Spinner" type="Boolean" />
+    <aura:attribute name="options" type="List" />
+    <aura:attribute name="RecordTypes" type="List" />
+
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+	<div aura:id="btspinner" class="slds-hide" style="position: relative; height: 80px;">
+		<lightning:spinner alternativeText="Loading" size="medium" variant="brand" />
+	</div>
+
+	<div aura:id="coContainer" class="c-container">
+		<h3 class="slds-section__title slds-theme--shade primaryPaletteBorder test-id__section-header-container">
+			<span
+				class="test-id__section-header-title section-header-title slds-p-horizontal--small slds-truncate">Invoice Details</span>
+		</h3>
+		<lightning:layout multipleRows="true">
+			<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                <div><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Invoice Description</div>
+                <div style="position: relative;top: -13px;">
+				<lightning:input aura:id="coName" value="{!v.invoiceDescription}" />
+                </div>
+			</lightning:layoutItem>
+            
+            
+            <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                    <lightning:recordEditForm aura:id="povendor"
+                                              objectApiName="buildertek__Account_Payable_Clone__c">
+                        <lightning:messages />
+                        <!--<lightning:inputField fieldName="buildertek__Purchase_Order__c" value="" required="true" aura:id="poId"/>-->
+                    </lightning:recordEditForm>
+                    <!--<lightning:inputField aura:id="povendor" fieldName="buildertek__Vendor__c" value="{!v.newPO.buildertek__Vendor__c}" required="true" />-->
+                </lightning:layoutItem>
+            
+            
+			<!--<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+				Status
+				<lightning:input type="picklist" aura:id="coStatus" value="{!v.newCO.buildertek__Status__c}" required="true" /> 
+               
+                <lightning:select  value="{! v.newInvoice.buildertek__Status__c }"
+                                                class="select-class" required="true">
+                                                <aura:iteration var="option" items="{! v.options }">
+                                                    <option value="{! option.value }">{! option.key }</option>
+                                                </aura:iteration>
+                                            </lightning:select >
+			</lightning:layoutItem>-->
+			<!--<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+				Details
+                <lightning:input aura:id="coDescription" value="{!v.newInvoice.buildertek__Details__c}" style="margin-top:-10px !important;" />
+			</lightning:layoutItem>-->
+		
+            
+			<!--<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+					Vendor
+					<force:inputField aura:id="coVendor"  value="{!v.newCO.buildertek__Vendor__c}"  required="true"/>
+					<p><lightning:formattedText aura:id="fteErrorone" class="error-text-one" value="Please select Vendor" /></p>
+				</lightning:layoutItem>-->
+		</lightning:layout>
+
+		<div aura:id="coItemComp">
+			<h3 class="slds-section__title slds-theme--shade primaryPaletteBorder test-id__section-header-container">
+				<span
+					class="test-id__section-header-title section-header-title slds-p-horizontal--small slds-truncate">
+					Invoice Item(s)</span>
+			</h3>
+			<br />
+			<table class="slds-table slds-table_bordered slds-table_cell-buffer">
+				<thead>
+					<tr class="slds-text-title_caps">
+						<th scope="col" width="5%">
+							S.NO
+						</th>
+						<th scope="col">
+							<div class="slds-truncate" title="Product Name">Product Name</div>
+						</th>
+						<th scope="col">
+							<div class="slds-truncate" title="Description">Description</div>
+						</th>
+						<th scope="col" width="5%">
+							<div class="slds-truncate" title="Quantity">Quantity</div>
+						</th>
+						<th scope="col" width="5%">
+							<div class="slds-truncate" title="Unit Price">Unit Price</div>
+						</th>
+					
+						<th scope="col" width="5%">
+
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<aura:iteration items="{!v.coItemsToInsert}" var="item" indexVar="index">
+						<tr>
+							<td class="slds-truncate">{!item.rowIndex+1}</td>
+							<td>
+								<!--<div class="slds-truncate" title="{!item.Name}"><lightning:input name="product item" label=" " value="{!item.changeOrderItem.Name}" /></div>-->
+								<div class="slds-truncate" >
+									<lightning:recordEditForm aura:id="recordViewForm"
+										objectApiName="buildertek__Account_Payable_Item_Clone__c">
+										<lightning:messages />
+										<lightning:inputField onchange="{!c.updateProductInfo}" aura:id="{!index}"
+											fieldName="buildertek__Product__c"
+											value="{!item.changeOrderItem.buildertek__Product__c}"
+											variant="label-hidden" />
+									</lightning:recordEditForm>
+								</div>
+							</td>
+							<td>
+								<div class="slds-truncate" title="{!item.changeOrderItem.buildertek__Description__c}" style = "padding-bottom: 6%;">
+									<!--<lightning:textarea name="item description" label=" "
+										value="{!item.changeOrderItem.buildertek__Description__c}" />-->
+                                    <lightning:input name="item description" label=" "
+										value="{!item.changeOrderItem.buildertek__Description__c}" />
+								</div>
+							</td>
+							<td>
+								<div class="slds-truncate" title="{!item.changeOrderItem.buildertek__Quantity__c}" style = "padding-bottom: 28%;">
+									<lightning:input name="quantity" label=" "
+										value="{!item.changeOrderItem.buildertek__Quantity__c}" />
+								</div>
+							</td>
+							<td>
+								<div class="slds-truncate" title="{!item.changeOrderItem.buildertek__Unit_Price__c}" style = "padding-bottom: 27%;">
+									<lightning:input name="unitPrice" label=" "
+										value="{!item.changeOrderItem.buildertek__Unit_Price__c}" />
+								</div>
+							</td>
+							
+							<td>
+								<div class="slds-truncate" style = "padding-bottom: 10%;">
+									<button class="slds-button" data-name="{!item.rowIndex}"
+										onclick="{!c.removeProduct}">
+										<lightning:icon iconName="action:delete" size="x-small" alternativeText="Error!"
+											variant="error" class="imageAction" />
+									</button>
+								</div>
+							</td>
+						</tr>
+					</aura:iteration>
+				</tbody>
+			</table>
+			<div class="slds-truncate">
+				<button class="slds-button" onclick="{!c.addProduct}">
+					<lightning:icon iconName="utility:add" size="x-small" class="imageAction" />
+				</button>
+			</div>
+		</div>
+		<div aura:id="footer" style="display:none">
+			<button class="slds-button slds-button_neutral" onclick="{!c.doCancel}">Cancel</button>
+			<button class="slds-button slds-button_brand" onclick="{!c.doSave}">Save</button>
+		</div>
+		<aura:if isTrue="{!v.Spinner}">
+			<div aura:id="spinnerId" class="slds-spinner_container">
+				<div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+					<span class="slds-assistive-text">Loading</span>
+					<div class="slds-spinner__dot-a"></div>
+					<div class="slds-spinner__dot-b"></div>
+                     <div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+				</div>
+			</div>
+		</aura:if>
+	</div>
+	<lightning:notificationsLibrary aura:id="notifLib" />
+</aura:component>

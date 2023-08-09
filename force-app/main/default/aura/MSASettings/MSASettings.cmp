@@ -1,0 +1,512 @@
+<aura:component controller="MSASettingsController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+	<aura:attribute name="options" type="list" />
+    <aura:attribute name="msaSettings" type="MSA_Settings__c" default="{'sObjectType' : 'buildertek__MSA_Settings__c'}"/>
+    <aura:attribute name="selectedValue" type="String" />
+    <aura:attribute name="isEdit" type="Boolean" default="false"/>
+    <aura:attribute name="results" type="List" />
+    <aura:attribute name="openDropDown" type="Boolean" default="false" />
+    <aura:attribute name="openPDFDropDown" type="Boolean" default="false" />
+    <aura:attribute name="selectedOption" type="String" />
+    <aura:attribute name="selectedPDFOption" type="String" />
+    <aura:attribute name="inputValue" type="String" />
+    <aura:attribute name="inputSearchFunction" type="Object" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <div class="slds slds-p-around_medium">
+        <div class="pageHeader slds-page-header slds-page-header_record-home">
+            <div class="slds-page-header__row">
+                <div class="slds-page-header__col-title">
+                    <div class="slds-media">
+                        <div class="slds-media__figure">
+                            <span class="slds-icon_container">
+                                <lightning:icon iconName="utility:settings" size="medium"/>	
+                            </span>
+                        </div>
+                        <div class="slds-media__body">
+                            <div class="slds-page-header__name">
+                                <div class="slds-page-header__name-title">
+                                    <h1>
+                                        <span class="slds-text-heading_small">MSA Settings</span>	
+                                    </h1>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-page-header__col-actions">
+                    <div class="slds-page-header__controls">
+                        <div class="slds-page-header__control">
+                            <aura:if isTrue="{!!v.isEdit}">
+                                <lightning:button label="edit" onclick="{!c.edit}" />
+                            </aura:if>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-page-header__row slds-page-header__row_gutters">
+                
+            </div>
+        </div>
+        <div class="slds-p-around_medium">
+            <aura:if isTrue="{!v.isEdit}">
+                <div class="slds-form" role="list">
+                    <div class="slds-form__row">
+                        <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <label class="slds-form-element__label" >Company Full Name</label>
+                                <div class="slds-form-element__control">
+                                    <lightning:input type="text" label="" variant="label-hidden" value="{!v.msaSettings.buildertek__Company_Full_Name__c}"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <label class="slds-form-element__label" >Company Name</label>
+                                <div class="slds-form-element__control">
+                                    <lightning:input type="text" label="" variant="label-hidden" value="{!v.msaSettings.buildertek__Company_Name__c}"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-form__row">
+                        <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <label class="slds-form-element__label" >Company Street</label>
+                                <div class="slds-form-element__control">
+                                    <lightning:input type="text" label="" variant="label-hidden" value="{!v.msaSettings.buildertek__Street__c}"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <label class="slds-form-element__label" >Company City</label>
+                                <div class="slds-form-element__control">
+                                    <lightning:input type="text" label="" variant="label-hidden" value="{!v.msaSettings.buildertek__City__c}"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-form__row">
+                        <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <label class="slds-form-element__label" >Company State</label>
+                                <div class="slds-form-element__control">
+                                    <lightning:input type="text" label="" variant="label-hidden" value="{!v.msaSettings.buildertek__State__c}"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <label class="slds-form-element__label" >Company Zipcode</label>
+                                <div class="slds-form-element__control">
+                                    <lightning:input type="text" label="" variant="label-hidden" value="{!v.msaSettings.buildertek__Zipcode__c}"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-form__row">
+                        <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <label class="slds-form-element__label" >Phone</label>
+                                <div class="slds-form-element__control">
+                                    <lightning:input type="text" label="" variant="label-hidden" value="{!v.msaSettings.buildertek__Phone__c}"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <label class="slds-form-element__label" >Fax</label>
+                                <div class="slds-form-element__control">
+                                    <lightning:input type="text" label="" variant="label-hidden" value="{!v.msaSettings.buildertek__Fax__c}"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-form__row">
+                        <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <label class="slds-form-element__label" >Company Website</label>
+                                <div class="slds-form-element__control">
+                                    <lightning:input type="text" label="" variant="label-hidden" value="{!v.msaSettings.buildertek__Website__c}"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <label class="slds-form-element__label" >MSA Template</label>
+                                <div class="slds-form-element__control">
+                                    <div class="slds-form-element__control">
+                                        <div class="slds-combobox_container">
+                                            <div class="{! v.openDropDown ? 'slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open' : 'slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click'}"
+                                                 aria-expanded="true" aria-haspopup="listbox" role="combobox" >
+                                                <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+                                                    <div>
+                                                        <input type="text"
+                                                           class="slds-input slds-combobox__input slds-has-focus slds-combobox__input-value"
+                                                           id="myInput" aria-autocomplete="list" aria-controls="listbox-id-11"
+                                                           autocomplete="no" onkeyup="{!c.searchHandler}" role="textbox" onclick="{!c.searchAll}" placeholder="Please Select"
+                                                           value="{!v.msaSettings.buildertek__MSA_Template__c}"/>
+                                                    </div>
+                                                    
+                                                </div>
+                                                <div id="listbox-id-11" class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid"
+                                                     role="listbox" style="width:100%">
+                                                    <ul id="myUL" class="slds-listbox slds-listbox_vertical" role="presentation">
+                                                        <aura:iteration items="{!v.results}" var="result">
+                                                            <li role="presentation" class="slds-listbox__item"
+                                                                data-value="{!result.value}" onclick="{!c.optionClickHandler}">
+                                                                <div
+                                                                     class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small"
+                                                                     role="option">
+                                                                    <span class="slds-media__body">
+                                                                        <span class="slds-truncate" title="All Oobjects">
+                                                                            <span>{!result.label}</span>
+                                                                        </span>
+                                                                    </span>
+                                                                </div>
+                                                            </li>
+                                                        </aura:iteration>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--<lightning:input type="text" label="" variant="label-hidden" value="{!v.msaSettings.buildertek__MSA_Template__c}"/>-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-form__row">
+                        <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <label class="slds-form-element__label" >MSA PDF Template</label>
+                                <div class="slds-form-element__control">
+                                    <div class="slds-form-element__control">
+                                        <div class="slds-combobox_container">
+                                            <div class="{! v.openPDFDropDown ? 'slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open' : 'slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click'}"
+                                                 aria-expanded="true" aria-haspopup="listbox" role="combobox" >
+                                                <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+                                                    <div>
+                                                        <input type="text"
+                                                           class="slds-input slds-combobox__input slds-has-focus slds-combobox__input-value"
+                                                           id="myInput1" aria-autocomplete="list" aria-controls="listbox-id-12"
+                                                           autocomplete="no" onkeyup="{!c.searchPDFHandler}" role="textbox" onclick="{!c.searchPDFAll}" placeholder="Please Select PDF Template"
+                                                           value="{!v.msaSettings.buildertek__MSA_PDF_Template__c}"/>
+                                                    </div>
+                                                    
+                                                </div>
+                                                <div id="listbox-id-12" class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid"
+                                                     role="listbox" style="width:100%">
+                                                    <ul id="myUL1" class="slds-listbox slds-listbox_vertical" role="presentation">
+                                                        <aura:iteration items="{!v.results}" var="result">
+                                                            <li role="presentation" class="slds-listbox__item"
+                                                                data-value="{!result.value}" onclick="{!c.PDFOptionClickHandler}">
+                                                                <div
+                                                                     class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small"
+                                                                     role="option">
+                                                                    <span class="slds-media__body">
+                                                                        <span class="slds-truncate" title="All Oobjects">
+                                                                            <span>{!result.label}</span>
+                                                                        </span>
+                                                                    </span>
+                                                                </div>
+                                                            </li>
+                                                        </aura:iteration>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--<lightning:input type="text" label="" variant="label-hidden" value="{!v.msaSettings.buildertek__MSA_Template__c}"/>-->
+                                </div>
+                            </div>
+                        </div>
+                         <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <label class="slds-form-element__label" style="font-weight: bold;">MSA Email</label>
+                                <div class="slds-form-element__control">
+                                   <lightning:input type="text" label="" variant="label-hidden" value="{!v.msaSettings.buildertek__MSA_Email__c}"/> 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-form__row">
+                        <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <label class="slds-form-element__label" style="font-weight: bold;">Site URL</label>
+                                <div class="slds-form-element__control">
+                                    <lightning:input type="text" label="" variant="label-hidden" value="{!v.msaSettings.buildertek__Site_URL__c}"/> 
+                                    
+                                </div>
+                            </div>
+                        </div>
+                         <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <label class="slds-form-element__label" style="font-weight: bold;">Pre Qual Template</label>
+                                <div class="slds-form-element__control">
+                                     <lightning:input type="text" label="" variant="label-hidden" value="{!v.msaSettings.buildertek__Pre_Qual_Template_Name__c}"/> 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                         <div class="slds-form__row">
+                        <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <label class="slds-form-element__label" style="font-weight: bold;">Submit MSA Template</label>
+                                <div class="slds-form-element__control">
+                                    <lightning:input type="text" label="" variant="label-hidden" value="{!v.msaSettings.buildertek__Submit_MSA_template_Name__c}"/> 
+                                    
+                                </div>
+                            </div>
+                        </div>
+                         <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <label class="slds-form-element__label" style="font-weight: bold;">Send MSA Template</label>
+                                <div class="slds-form-element__control">
+                                     <lightning:input type="text" label="" variant="label-hidden" value="{!v.msaSettings.buildertek__Send_MSA_Template_Name__c}"/> 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                         <div class="slds-form__row">
+                        <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <label class="slds-form-element__label" style="font-weight: bold;">MSA Owner sign Template</label>
+                                <div class="slds-form-element__control">
+                                    <lightning:input type="text" label="" variant="label-hidden" value="{!v.msaSettings.buildertek__MSA_Sign_Template_Name__c}"/> 
+                                    
+                                </div>
+                            </div>
+                        </div>
+                         <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <label class="slds-form-element__label" style="font-weight: bold;">MSA Sign Template</label>
+                                <div class="slds-form-element__control">
+                                     <lightning:input type="text" label="" variant="label-hidden" value="{!v.msaSettings.buildertek__MSA_Sign_Contractor_Template_Name__c}"/> 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="slds-form__row">
+                        <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <label class="slds-form-element__label" style="font-weight: bold;">From Email Address</label>
+                                <div class="slds-form-element__control">
+                                    <lightning:input type="text" label="" variant="label-hidden" value="{!v.msaSettings.buildertek__From_Email_Address__c}"/> 
+                                    
+                                </div>
+                            </div>
+                        </div>
+                         <div class="slds-form__item" role="listitem">
+                            
+                        </div>
+                    </div>
+                    
+                </div>
+                <div class="slds-align_absolute-center slds-m-top_medium">
+                    <lightning:button label="Cancel" variant="neutral" onclick="{!c.cancel}" />&nbsp;&nbsp;
+                    <lightning:button label="Save" variant="brand" onclick="{!c.save}" />
+                </div>
+                <aura:set attribute="else">
+                    <div class="slds-form" role="list">
+                        <div class="slds-form__row">
+                            <div class="slds-form__item" role="listitem">
+                                <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                    <label class="slds-form-element__label" style="font-weight: bold;">Company Full Name</label>
+                                    <div class="slds-form-element__control">
+                                        {!v.msaSettings.buildertek__Company_Full_Name__c}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-form__item" role="listitem">
+                                <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                    <label class="slds-form-element__label" style="font-weight: bold;">Company Name</label>
+                                    <div class="slds-form-element__control">
+                                        {!v.msaSettings.buildertek__Company_Name__c}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-form__row">
+                            <div class="slds-form__item" role="listitem">
+                                <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                    <label class="slds-form-element__label" style="font-weight: bold;">Company Street</label>
+                                    <div class="slds-form-element__control">
+                                        {!v.msaSettings.buildertek__Street__c}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-form__item" role="listitem">
+                                <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                    <label class="slds-form-element__label" style="font-weight: bold;">Company City</label>
+                                    <div class="slds-form-element__control">
+                                        {!v.msaSettings.buildertek__City__c}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-form__row">
+                            <div class="slds-form__item" role="listitem">
+                                <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                    <label class="slds-form-element__label" style="font-weight: bold;">Company State</label>
+                                    <div class="slds-form-element__control">
+                                        {!v.msaSettings.buildertek__State__c}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-form__item" role="listitem">
+                                <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                    <label class="slds-form-element__label" style="font-weight: bold;">Company Zipcode</label>
+                                    <div class="slds-form-element__control">
+                                        {!v.msaSettings.buildertek__Zipcode__c}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-form__row">
+                            <div class="slds-form__item" role="listitem">
+                                <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                    <label class="slds-form-element__label" style="font-weight: bold;">Phone</label>
+                                    <div class="slds-form-element__control">
+                                        {!v.msaSettings.buildertek__Phone__c}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-form__item" role="listitem">
+                                <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                    <label class="slds-form-element__label" style="font-weight: bold;">Fax</label>
+                                    <div class="slds-form-element__control">
+                                        {!v.msaSettings.buildertek__Fax__c}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-form__row">
+                            <div class="slds-form__item" role="listitem">
+                                <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                    <label class="slds-form-element__label" style="font-weight: bold;">Company Website</label>
+                                    <div class="slds-form-element__control">
+                                        {!v.msaSettings.buildertek__Website__c}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-form__item" role="listitem">
+                                <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                    <label class="slds-form-element__label" style="font-weight: bold;">MSA Template</label>
+                                    <div class="slds-form-element__control">
+                                        {!v.msaSettings.buildertek__MSA_Template__c}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-form__row">
+                        <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <label class="slds-form-element__label" style="font-weight: bold;">MSA PDF Template</label>
+                                <div class="slds-form-element__control">
+                                    {!v.msaSettings.buildertek__MSA_PDF_Template__c}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <label class="slds-form-element__label" style="font-weight: bold;">MSA Email</label>
+                                <div class="slds-form-element__control">
+                                    {!v.msaSettings.buildertek__MSA_Email__c}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                         <div class="slds-form__row">
+                        <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <label class="slds-form-element__label" style="font-weight: bold;">Site URL</label>
+                                <div class="slds-form-element__control">
+                                    {!v.msaSettings.buildertek__Site_URL__c}
+                                </div>
+                            </div>
+                        </div>
+                             
+                             
+                         
+                             <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <label class="slds-form-element__label" style="font-weight: bold;">Pre Qual Template</label>
+                                <div class="slds-form-element__control">
+                                    {!v.msaSettings.buildertek__Pre_Qual_Template_Name__c}
+                                </div>
+                            </div>
+                        </div> 
+                        </div>
+                             
+                             <div class="slds-form__row">
+                             <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <label class="slds-form-element__label" style="font-weight: bold;">Submit MSA Template</label>
+                                <div class="slds-form-element__control">
+                                    {!v.msaSettings.buildertek__Submit_MSA_template_Name__c}
+                                </div>
+                            </div>
+                        </div>  
+                             
+                             
+                             <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <label class="slds-form-element__label" style="font-weight: bold;">Send MSA Template</label>
+                                <div class="slds-form-element__control">
+                                    {!v.msaSettings.buildertek__Send_MSA_Template_Name__c}
+                                </div>
+                            </div>
+                        </div> 
+                        </div>
+                          <div class="slds-form__row">   
+                          <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <label class="slds-form-element__label" style="font-weight: bold;">MSA Owner sign Template</label>
+                                <div class="slds-form-element__control">
+                                    {!v.msaSettings.buildertek__MSA_Sign_Template_Name__c}
+                                </div>
+                            </div>
+                        </div>      
+                        <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <label class="slds-form-element__label" style="font-weight: bold;">MSA Sign Template</label>
+                                <div class="slds-form-element__control">
+                                    {!v.msaSettings.buildertek__MSA_Sign_Contractor_Template_Name__c}
+                                </div>
+                            </div>
+                        </div>    
+                        </div>
+                        
+                        <div class="slds-form__row">   
+                          <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <label class="slds-form-element__label" style="font-weight: bold;">From Email Address</label>
+                                <div class="slds-form-element__control">
+                                    {!v.msaSettings.buildertek__From_Email_Address__c}
+                                </div>
+                            </div>
+                        </div>      
+                        <div class="slds-form__item" role="listitem">
+                            
+                        </div>    
+                        </div>
+                             
+                             <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <label class="slds-form-element__label" style="font-weight: bold;"></label>
+                                <div class="slds-form-element__control">
+                                   
+                                </div>
+                            </div>
+                        </div>
+                       
+                    
+                    </div>
+                </aura:set>
+            </aura:if>
+        </div>
+    </div>
+</aura:component>

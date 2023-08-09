@@ -1,0 +1,199 @@
+<aura:component controller="CheckInCustomRecordPageController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+
+    <aura:handler name="popUpBooleanValue" event="c:CloseCheckInEvent" action="{!c.handleComponentEvent}"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.getCheckInRecords}" />
+    <aura:attribute name="checkIns" type="list" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="offset" type="integer" />
+    <aura:attribute name="next" type="boolean" />
+    <aura:attribute name="prev" type="boolean" />
+    <aura:attribute name="orgBaseURL" type="string" />
+
+    <aura:attribute name="isRecordTabPage" type="boolean" default="false" />
+    <aura:attribute name="isPopupModalOpen" type="boolean" default="false" />
+
+    <aura:attribute name="currentPage" type="integer" />
+    <aura:attribute name="totalPage" type="integer" />
+
+    <aura:attribute name="Spinner" type="boolean" default="false" />
+
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </aura:if>
+
+    <div class="main-body" style="height: inherit;">
+
+        <!-- Create Check-In popup Modal start -->
+        <aura:if isTrue="{!v.isPopupModalOpen}">
+
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <c:CreateNewCheckInBtn/>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+
+        </aura:if>
+        <!-- Create Check-In popup Modal end -->
+
+
+
+        
+        <!-- Only Visiable to all record page for Tablet view only-->
+        <aura:if isTrue="{!v.isRecordTabPage}">
+            <div class="record-page-to-header tab-dsp-div">
+                <div>
+                    <lightning:button class="chkn-btn-mob" variant="brand-outline" label="Creat Check-In" title="Creat Check-In" onclick="{! c.handleCreateCheckIn }" />
+                </div>
+            </div>
+        </aura:if>
+
+
+
+        <div class="main-table-div">
+            <div class="tbl-header">
+                <div class="tbl-hd-th id-cell">No.</div>
+                <div class="tbl-hd-th name-cell">Name</div>
+                <div class="tbl-hd-th status-cell st-txt">Status</div>
+                <div class="tbl-hd-th notes-cell js-center pd-none-div">Notes</div>
+                <!-- <div class="tbl-hd-th photo-cell pc-hdr hgt-aut">Attached Photos</div> -->
+                
+                <aura:if isTrue="{!!v.isRecordTabPage}">
+                    <div class="tbl-hd-th photo-cell pc-hdr hgt-aut">Attached Photos</div>
+                </aura:if>
+
+                <aura:if isTrue="{!v.isRecordTabPage}">
+                    <div class="tbl-hd-th photo-cell pc-hdr hgt-aut">
+                        <div>Attached Photos</div>
+                        <div class="inline-crt-btn"><lightning:button class="chkn-btn" variant="brand-outline" label="Creat Check-In" title="Creat Check-In" onclick="{! c.handleCreateCheckIn }" /></div>
+                    </div>
+                </aura:if>
+                
+            </div>
+
+            <div class="tbl-body">
+
+                <aura:if isTrue="{!empty(v.checkIns)}">
+                    <div class="no-check-in-div">
+                        No check-Ins to show
+                    </div>
+                </aura:if>
+
+                <aura:iteration items="{!v.checkIns}" var="ci" indexVar="index">
+                    <div class="ci-row">
+                        <div class="td-txt id-cell num-txt"> {!v.offset + index + 1}</div>
+                        <!-- <div class="td-txt name-cell">{!ci.Name}</div> -->
+                        <div class="td-txt name-cell">
+                            <!-- <a href="{!orgBaseURL + '/' + ci.Id }" target="_blank">{!ci.Name}</a> -->
+                            <div class="notes-div notes">
+                                <a href="{!orgBaseURL + '/' + ci.Id }" target="_blank">{!ci.Name}</a>
+                            </div>
+                        </div>
+                        <div class="td-txt status-cell">
+                            <div class="status-clr-div" data-status="{!ci.buildertek__Status__c}">{!ci.buildertek__Status__c}</div>
+                        </div>
+                        <div class="td-txt notes-cell">
+                            <div class="notes-border-div notes">{!ci.buildertek__Notes__c}</div>
+                        </div>
+                        <div class="td-txt photo-cell ph-hg-at">
+
+                            <!-- <aura:if isTrue="{!ci.ContentDocumentLinks}">
+                                <div class="main-file-cmp">
+                                    <aura:iteration items="{!ci.ContentDocumentLinks}" var="cd">
+                                        <div class="slds-m-horizontal_x-small">
+                                            <lightning:fileCard fileId="{!cd.ContentDocumentId}" />
+                                        </div>
+                                    </aura:iteration>
+                                </div>
+                            </aura:if> -->
+
+                            <aura:if isTrue="{!ci.ContentDocumentLinks}">
+                                <div class="main-file-cmp">
+                                    <aura:iteration items="{!ci.ContentDocumentLinks}" var="cd" indexVar="indexNum">
+                                        <div class="slds-m-horizontal_x-small">
+                                            <lightning:carouselImage description="{!cd.ContentDocument.Title}" src="{!orgBaseURL + '/sfc/servlet.shepherd/document/download/' + cd.ContentDocumentId}" onclick="{!c.onImageClick}" id="{!cd.ContentDocumentId+'-'+index}"/>
+                                        </div>
+                                    </aura:iteration>
+                                </div>
+                            </aura:if>
+
+                            <aura:if isTrue="{!!ci.ContentDocumentLinks}">
+                                <div class="no-file-div">No Files Available</div>
+                            </aura:if>
+
+                        </div>
+                    </div>
+
+                    <!-- for Tablet-view statrt-->
+
+                    <div class="ci-row-tab">
+                        <div class="pt-1-tab">
+                            <div class="id-tab">
+                                <div class="hdr-tab">No:</div>
+                                <div class="txt-tab pd-1-tab">{!v.offset + index + 1}</div>
+                            </div>
+                            <div class="name-tab">
+                                <div class="hdr-tab cn-tab-hdr">Name:</div>
+                                <div class="txt-tab notes-tab">
+                                    <div class="notes-div ">
+                                        <a href="{!orgBaseURL + '/' + ci.Id }">{!ci.Name}</a>
+                                    </div>    
+                                </div>
+                            </div>
+                            <div class="status-tab">
+                                <div class="hdr-tab">Status: &nbsp;</div>
+                                <div class="status-clr-div" data-status="{!ci.buildertek__Status__c}">{!ci.buildertek__Status__c}</div>
+                            </div>
+                        </div>
+
+                        <div class="pt-2-tab">
+                            <div class="txt-tab note-tab notes">{!ci.buildertek__Notes__c}</div>
+                            <div class="file-div-tab">
+                                
+                                <aura:if isTrue="{!ci.ContentDocumentLinks}">
+                                    <div class="main-file-cmp">
+                                        <aura:iteration items="{!ci.ContentDocumentLinks}" var="cd" indexVar="indexNum">
+                                            <div class="slds-m-horizontal_x-small">
+                                                <lightning:carouselImage description="{!cd.ContentDocument.Title}" src="{!orgBaseURL + '/sfc/servlet.shepherd/document/download/' + cd.ContentDocumentId}" onclick="{!c.onImageClick}" id="{!cd.ContentDocumentId+'-'+index}"/>
+                                            </div>
+                                        </aura:iteration>
+                                    </div>
+                                </aura:if>
+                                
+                                <aura:if isTrue="{!!ci.ContentDocumentLinks}">
+                                    <div class="no-file-div">No Files Available</div>
+                                </aura:if>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- for Tablet-view end -->
+
+                </aura:iteration>
+            </div>
+
+            <div class="tbl-footer">
+                <ui:button class="prv-btn active-btn slds-button slds-button--neutral" press="{!c.Previous}" disabled="{!v.prev}">
+                    <span>Previous</span>
+                </ui:button>
+
+                <div class="pagintaion-num-div">
+                    <div> {!v.currentPage} of {!v.totalPage}</div>
+                </div>
+
+                <ui:button class="next-btn active-btn slds-button slds-button--neutral" press="{!c.Next}" disabled="{!v.next}" >
+                    <span>Next</span>
+                </ui:button>
+            </div>
+        </div>
+    </div>
+
+</aura:component>

@@ -1,0 +1,39 @@
+<aura:component >
+    <ltng:require styles="{!$Resource.BTSignaturePad + '/css/signature-pad.css'}"
+                  scripts="{!join(',',
+                           $Resource.BTSignaturePad + '/js/signature_pad.js',
+                           $Resource.BTSignaturePad + '/js/app.js')}"
+                  		afterScriptsLoaded="{!c.initialize}" />
+    
+    <aura:attribute name="signaturePad" type="object" />
+    <div id="signature-pad" class="signature-pad">
+        <div class="signature-pad--body">
+            <canvas></canvas>
+        </div>
+        <div class="signature-pad--footer">
+            <div class="description">Sign above</div>
+            
+            <div class="signature-pad--actions" style="float:right;">
+               
+                <div>
+                    <button type="button" class="button slds-button clear" data-action="clear" title="Clear All">
+                    	<lightning:icon iconName="utility:clear" size="x-small" alternativeText="clear" class="myIconCustomClass"/>
+                    </button>
+                    <button type="button" class="button slds-button" data-action="change-color" title="Change color">
+                        <lightning:icon iconName="utility:classic_interface" size="x-small" alternativeText="change-color" class="myIconCustomClass"/>
+                    </button>
+                    <button type="button" class="button slds-button" data-action="undo" title="undo">
+                    	<lightning:icon iconName="utility:undo" size="x-small" alternativeText="undo" class="myIconCustomClass"/>
+                    </button>
+                </div>
+                <!-- 
+                <div>
+                    <button type="button" class="button save" data-action="save-png">Save as PNG</button>
+                    <button type="button" class="button save" data-action="save-jpg">Save as JPG</button>
+                    <button type="button" class="button save" data-action="save-svg">Save as SVG</button>
+                </div>
+				 -->
+            </div>
+        </div>
+    </div>
+</aura:component>

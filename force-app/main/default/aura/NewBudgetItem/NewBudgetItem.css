@@ -1,0 +1,98 @@
+.THIS .slds-icon-text-default {
+    fill: rgba(27, 82, 151, 1.0);
+}
+
+.THIS .slds-form-element__icon {
+    top: -3px !important;
+}
+
+.THIS .newbudgetgroupingclass {
+    margin: 0 auto;
+    width: 100%;
+    max-width: 70rem !important;
+    min-width: 20rem;
+}
+
+.THIS .slds-table thead th {
+    background-color: var(--lwc-tableColorBackgroundHeader, rgb(250, 250, 249));
+    color: var(--lwc-tableColorTextHeader, rgb(81, 79, 77));
+    padding: var(--lwc-tableCellSpacing, 0.25rem 0.5rem);
+    font-weight: var(--lwc-fontWeightBold, 700);
+    line-height: 2;
+}
+
+.THIS .subGroupHeader {
+    background-color: rgba(27, 82, 151, 1.0) !important;
+    color: white !important;
+}
+
+.THIS .subGroupHeader:hover {
+    background: rgba(27, 82, 151, 1.0) !important;
+    color: white !important;
+}
+
+.THIS .groupHeader {
+    background-color: rgba(27, 82, 151, 1.0) !important;
+    color: white !important;
+}
+
+.THIS .groupHeader:hover {
+    background: rgba(27, 82, 151, 1.0) !important;
+    color: white !important;
+}
+
+.THIS .slds-table tbody tr:hover th {
+    background: rgba(27, 82, 151, 1.0) !important;
+}
+
+.THIS .select-class {
+    height: 36px !important;
+    width: fit-content !important;
+}
+
+.THIS .pricebook-class {
+    height: 36px !important;
+}
+
+.THIS .Expensemodal {
+                       max-width: 60rem;
+}
+
+.THIS .contingencyModal {
+    max-width: 120rem !important;
+    width: 90% !important;
+}
+
+.THIS .slds-form-element__icon {
+    display: none;
+}
+
+.THIS .slds-combobox__form-element {
+    top: -8px;
+}
+
+/*.THIS .slds-table tbody td:hover span{
+    display: flex;
+}*/
+
+
+.THIS .slds-form {
+    margin-top: 0px !important;
+}
+
+.THIS .slds-form-element__icon {
+    display: none !important;
+}
+
+.THIS .slds-form-element__label {
+    margin-top: -10px !important;
+}
+
+.THIS .slds-form-element_stacked{
+    margin-bottom: 0px !important;
+    padding: 0px !important;
+}
+.THIS .labelbottom{
+    position: relative;
+    bottom: 8px;
+}

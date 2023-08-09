@@ -1,0 +1,120 @@
+.THIS .buttonIcons button {
+  height: auto;
+  width: auto;
+}
+.THIS .employeeSearch .slds-form-element__label {
+  display: none;
+  visibility: hidden;
+}
+.THIS.Cardstyle{border:unset;}
+
+.THIS .smallFilterBar {
+  width:unset;
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  transition: all .17s ease-in-out;
+  background-color: white;
+}
+
+.THIS .slds-breadcrumb {
+   color:#F05F4D !IMPORTANT;
+ 
+}
+.THIS .slds-list__item>a{
+   color:#F05F4D !IMPORTANT;
+ 
+}
+ .THIS .slds-breadcrumb__item>a{
+   color:#F05F4D !IMPORTANT;
+ 
+}
+
+.THIS .slds-grow{width:75% !important;margin-top:1.3%;border-color:white;
+    }
+.THIS .slds-input{    padding: 0px;
+    width: 230px;
+    margin-right: 50px;padding-left: 30px;}
+.THIS .slds-card{width:32%; display:inline-block;margin:0.5%}
+
+
+
+/* For handeld devices like smartphones */
+@media screen and (max-width: 767px) {
+    .THIS .slds-card{margin:1%;margin-top: 5%;margin-bottom:5%;
+    width: 134%;}
+        .THIS .mobileSearch{
+            padding-left: 0px;
+    }
+    .THIS .depCard{
+    margin-left: 1%;border-radius: 4px;
+    box-shadow: 1px 1px 1px 2px rgba(0,0,0,0.14);
+    margin-top: 8px;
+    background-color: white;
+    padding-left: 2%;
+    padding-bottom: 2%;
+}
+    .THIS .smallFilterBar {
+    display:block;
+   /* width:40%;*/
+        z-index: 1;
+  
+}
+    .THIS .showFilterBar {
+  opacity: 1;
+  width: 50%;
+}
+    .THIS .slds-input{
+        padding: 0;
+   width: 325px!important;
+    margin-right: 40px;
+    padding-left: 30px;
+    }
+
+  .THIS .titleContainer {
+    text-align: center;
+  }
+  .THIS .buttonContainer {
+    text-align: center;
+  }
+    .THIS .slds-page-header{
+            padding-bottom:2px;
+        padding-left: 0;
+        }  
+  .THIS .filterButton {
+    display: block;
+        margin-right: 11%;
+   		margin-top: 6px;
+        height:38px;
+  }
+  .THIS .largeFilterBar {
+    display: none;
+  }
+  .THIS .hideMobile {
+    display: none;
+  }
+  .THIS .showMobile {
+    display: inline-block;
+  }
+  .THIS .detailCardMobile {
+    height: 230px;
+  }
+}
+/* For tablets and above */
+
+@media screen and (min-width: 768px) {
+  .THIS .buttonContainer {
+    text-align: right;
+  }
+  .THIS .filterButton {
+    display: none;
+    }
+   
+  
+  .THIS .showMobile {
+    display: none;
+  }
+  .THIS .detailCardMobile {
+    height: 210px;
+  }
+}

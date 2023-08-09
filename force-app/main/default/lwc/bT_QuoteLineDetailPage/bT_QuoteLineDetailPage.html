@@ -1,0 +1,209 @@
+<template>
+    <lightning-card>
+        <template if:true={isDetail}>
+            <lightning-record-view-form record-id={recordId} object-api-name={objectApiName} layout-type="FULL">
+                <div class="container">       
+                    <lightning-layout class="half">
+                        <lightning-layout-item size="12" padding="horizontal-small">
+                            <div class="field_cont">
+                                <lightning-output-field class="bottom_line" field-name="buildertek__Priority__c"></lightning-output-field>
+                                <lightning-button-icon class="editKey" icon-name="utility:edit"  variant="bare" alternative-text="Edit" title="Edit" onclick={handleEdit}></lightning-button-icon>
+                            </div>
+                            <div class="field_cont">
+                                <lightning-output-field class="bottom_line" field-name="buildertek__Product__c"></lightning-output-field>
+                                <lightning-button-icon class="editKey" icon-name="utility:edit"  variant="bare" alternative-text="Edit" title="Edit" onclick={handleEdit}></lightning-button-icon>
+                            </div>
+                            <div class="field_cont">
+                                <lightning-output-field class="bottom_line" field-name="Name"></lightning-output-field>
+                                <lightning-button-icon class="editKey" icon-name="utility:edit"  variant="bare" alternative-text="Edit" title="Edit" onclick={handleEdit}></lightning-button-icon>
+                            </div>
+                            <div class="field_cont">
+                                <lightning-output-field class="bottom_line" field-name="buildertek__Grouping__c"></lightning-output-field>
+                                <lightning-button-icon class="editKey" icon-name="utility:edit"  variant="bare" alternative-text="Edit" title="Edit" onclick={handleEdit}></lightning-button-icon>
+                            </div>
+                            <div class="field_cont">
+                                <lightning-output-field class="bottom_line" field-name="buildertek__Status__c"></lightning-output-field>
+                                <lightning-button-icon class="editKey" icon-name="utility:edit"  variant="bare" alternative-text="Edit" title="Edit" onclick={handleEdit}></lightning-button-icon>
+                            </div>
+                            <div class="field_cont">
+                                <lightning-output-field class="bottom_line" field-name="buildertek__Quantity__c"></lightning-output-field>
+                                <lightning-button-icon class="editKey" icon-name="utility:edit"  variant="bare" alternative-text="Edit" title="Edit" onclick={handleEdit}></lightning-button-icon>
+                            </div>
+                            <div class="field_cont">
+                                <lightning-output-field class="bottom_line" field-name="buildertek__Unit_Cost__c"></lightning-output-field>
+                                <lightning-button-icon class="editKey" icon-name="utility:edit"  variant="bare" alternative-text="Edit" title="Edit" onclick={handleEdit}></lightning-button-icon>
+                            </div>
+                            <div class="field_cont">
+                                <lightning-output-field class="bottom_line" field-name="buildertek__Total_Cost__c"></lightning-output-field>
+                            </div>
+                            <div class="field_cont">
+                                <lightning-output-field class="bottom_line" field-name="buildertek__Additional_Discount__c"></lightning-output-field>
+                                <lightning-button-icon class="editKey" icon-name="utility:edit"  variant="bare" alternative-text="Edit" title="Edit" onclick={handleEdit}></lightning-button-icon>
+                            </div>
+                            <lightning-output-field class="bottom_line"  field-name="buildertek__Discount_Amount__c"></lightning-output-field>
+                            <div class="field_cont">
+                                <lightning-output-field class="bottom_line"  field-name="buildertek__Markup__c"></lightning-output-field>
+                                <lightning-button-icon class="editKey" icon-name="utility:edit"  variant="bare" alternative-text="Edit" title="Edit" onclick={handleEdit}></lightning-button-icon>
+                            </div>
+                            <lightning-output-field class="bottom_line"  field-name="buildertek__Markup_Amount__c"></lightning-output-field>
+                            <lightning-output-field class="bottom_line"  field-name="buildertek__Net_Unit__c"></lightning-output-field>
+                            <lightning-output-field class="bottom_line"  field-name="buildertek__Total_Pre_Tax_Amount__c"></lightning-output-field>
+                            <div class="field_cont">
+                                <lightning-output-field class="bottom_line"  field-name="buildertek__Tax__c"></lightning-output-field>
+                                <lightning-button-icon class="editKey" icon-name="utility:edit"  variant="bare" alternative-text="Edit" title="Edit" onclick={handleEdit}></lightning-button-icon>
+                            </div>
+                            <lightning-output-field class="bottom_line"  field-name="buildertek__Tax_Amount__c"></lightning-output-field>
+                            <lightning-output-field class="bottom_line"  field-name="buildertek__Net_Total_Price__c"></lightning-output-field>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                    <lightning-layout class="half">
+                        <lightning-layout-item size="12" padding="horizontal-small">
+                           <lightning-output-field class="bottom_line" field-name="buildertek__Quote__c"></lightning-output-field>
+                            <div class="field_cont">
+                                <lightning-output-field class="bottom_line" field-name="buildertek__Division_Lookup__c"></lightning-output-field>
+                                <lightning-button-icon class="editKey" icon-name="utility:edit"  variant="bare" alternative-text="Edit" title="Edit" onclick={handleEdit}></lightning-button-icon>
+                            </div>
+                            <div class="field_cont">
+                                <lightning-output-field class="bottom_line" field-name="buildertek__Cost_Code__c"></lightning-output-field>
+                                <lightning-button-icon class="editKey" icon-name="utility:edit"  variant="bare" alternative-text="Edit" title="Edit" onclick={handleEdit}></lightning-button-icon>
+                            </div>
+                            <div class="field_cont">
+                                <lightning-output-field class="bottom_line" field-name="buildertek__Gross_Profit__c"></lightning-output-field>
+                            </div>
+                            <div class="field_cont">
+                                <lightning-output-field class="bottom_line" field-name="buildertek__Profit_Margin__c"></lightning-output-field>
+                            </div>
+                            <div class="field_cont">
+                                <lightning-output-field class="bottom_line" field-name="buildertek__Margin__c"></lightning-output-field>
+                                <lightning-button-icon class="editKey" icon-name="utility:edit"  variant="bare" alternative-text="Edit" title="Edit" onclick={handleEdit}></lightning-button-icon>
+                            </div>
+                            <div class="field_cont">
+                                <lightning-output-field class="bottom_line" field-name="buildertek__Margin_To_Markup__c"></lightning-output-field>
+                            </div>
+                            <div class="field_cont">
+                                <lightning-output-field class="bottom_line" field-name="buildertek__Margin_Amount__c"></lightning-output-field>
+                                <lightning-button-icon class="editKey" icon-name="utility:edit"  variant="bare" alternative-text="Edit" title="Edit" onclick={handleEdit}></lightning-button-icon>
+                            </div>
+                            <div class="field_cont">
+                                <lightning-output-field class="bottom_line" field-name="buildertek__Sales_Tax_Amount_Manual__c"></lightning-output-field>
+                                <lightning-button-icon class="editKey" icon-name="utility:edit"  variant="bare" alternative-text="Edit" title="Edit" onclick={handleEdit}></lightning-button-icon>
+                            </div>
+                            <lightning-output-field class="bottom_line"  field-name="buildertek__BOM_Tax__c"></lightning-output-field>
+                            <div class="field_cont">
+                                <lightning-output-field class="bottom_line"  field-name="buildertek__BOM_Line__c"></lightning-output-field>
+                                <lightning-button-icon class="editKey" icon-name="utility:edit"  variant="bare" alternative-text="Edit" title="Edit" onclick={handleEdit}></lightning-button-icon>
+                            </div>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </div>
+
+            <br>
+            <br>
+            <div class="header">
+            <h1>Related Objects</h1>
+            </div>
+            <lightning-layout multiple-rows="true">
+                <lightning-layout-item size="6" class="field_cont" padding="horizontal-small">
+                    <lightning-output-field class="bottom_line" field-name="buildertek__RFQ__c"></lightning-output-field>
+                    <lightning-button-icon class="editKey" icon-name="utility:edit"  variant="bare" alternative-text="Edit" title="Edit" onclick={handleEdit}></lightning-button-icon>
+                </lightning-layout-item>
+            </lightning-layout>
+            <br>
+            <div class="header">
+            <h1>Quote Line Details</h1>
+            </div>
+            <lightning-layout multiple-rows="true">
+                <lightning-layout-item size="6" class="field_cont" padding="horizontal-small">
+                    <lightning-output-field class="bottom_line" field-name="CreatedById"></lightning-output-field>
+                </lightning-layout-item>
+                <lightning-layout-item size="6" class="field_cont" padding="horizontal-small">
+                    <lightning-output-field class="bottom_line" field-name="LastModifiedById"></lightning-output-field>
+                </lightning-layout-item>
+                <lightning-layout-item size="6" class="field_cont" padding="horizontal-small">
+                    <lightning-output-field class="bottom_line" field-name="CreatedDate"></lightning-output-field>
+                </lightning-layout-item>
+                <lightning-layout-item size="6" class="field_cont" padding="horizontal-small">
+                    <lightning-output-field class="bottom_line" field-name="LastModifiedDate"></lightning-output-field>
+                </lightning-layout-item>
+            </lightning-layout>
+        </lightning-record-view-form>
+        </template>
+
+        <template if:true={isEdit}>
+            <lightning-record-edit-form  object-api-name={objectApiName} record-id={recordId} onsubmit={handleSave} onsuccess={handleSuccess} >
+                <div class="container">
+                    <lightning-layout class="half">
+                        <lightning-layout-item size="12" padding="horizontal-small">
+                            <lightning-input-field field-name="buildertek__Priority__c"></lightning-input-field>
+                            <lightning-input-field field-name="buildertek__Product__c" onchange={hnadleChange}></lightning-input-field>
+                            <lightning-input-field field-name="Name" value={ProductName}></lightning-input-field>
+                            <lightning-input-field field-name="buildertek__Grouping__c"></lightning-input-field>
+                            <lightning-input-field field-name="buildertek__Status__c"></lightning-input-field>  
+                            <lightning-input-field field-name="buildertek__Quantity__c"></lightning-input-field>                                               
+                            <lightning-input-field field-name="buildertek__Unit_Cost__c" value={UnitPrice}></lightning-input-field>
+                            <lightning-output-field field-name="buildertek__Total_Cost__c"></lightning-output-field>
+                            <lightning-input-field field-name="buildertek__Additional_Discount__c"></lightning-input-field>
+                            <lightning-output-field field-name="buildertek__Discount_Amount__c"></lightning-output-field>
+                            <lightning-input-field field-name="buildertek__Markup__c"></lightning-input-field>
+                            <lightning-output-field field-name="buildertek__Markup_Amount__c"></lightning-output-field>
+                            <lightning-output-field field-name="buildertek__Net_Unit__c"></lightning-output-field>
+                            <lightning-output-field field-name="buildertek__Total_Pre_Tax_Amount__c"></lightning-output-field>
+                            <lightning-input-field field-name="buildertek__Tax__c"></lightning-input-field>
+                            <lightning-output-field field-name="buildertek__Tax_Amount__c"></lightning-output-field>
+                            <lightning-output-field field-name="buildertek__Net_Total_Price__c"></lightning-output-field>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                    <lightning-layout class="half">
+                        <lightning-layout-item size="12" padding="horizontal-small">
+                            <lightning-output-field field-name="buildertek__Quote__c"></lightning-output-field>
+                            <lightning-input-field field-name="buildertek__Division_Lookup__c"></lightning-input-field>
+                            <lightning-input-field field-name="buildertek__Cost_Code__c"></lightning-input-field>
+                            <lightning-output-field field-name="buildertek__Gross_Profit__c"></lightning-output-field>
+                            <lightning-output-field field-name="buildertek__Profit_Margin__c"></lightning-output-field>  
+                            <lightning-input-field field-name="buildertek__Margin__c"></lightning-input-field>                                               
+                            <lightning-output-field field-name="buildertek__Margin_To_Markup__c"></lightning-output-field>
+                            <lightning-output-field field-name="buildertek__Margin_Amount__c"></lightning-output-field>
+                            <lightning-input-field field-name="buildertek__Sales_Tax_Amount_Manual__c"></lightning-input-field>
+                            <lightning-output-field field-name="buildertek__BOM_Tax__c"></lightning-output-field>
+                            <lightning-input-field field-name="buildertek__BOM_Line__c"></lightning-input-field>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </div>
+                <br>
+                <br>
+                <div class="header">
+                    <h1>Related Objects</h1>
+                </div>
+                <lightning-layout multiple-rows="true">
+                    <lightning-layout-item size="6" class="field_cont" padding="horizontal-small">
+                        <lightning-input-field field-name="buildertek__RFQ__c"></lightning-input-field>
+                    </lightning-layout-item>
+                </lightning-layout>
+                <br>
+                <div class="header">
+            <h1>Quote Line Details</h1>
+            </div>
+            <lightning-layout multiple-rows="true">
+                <lightning-layout-item size="6" class="field_cont" padding="horizontal-small">
+                    <lightning-output-field class="bottom_line" field-name="CreatedById"></lightning-output-field>
+                </lightning-layout-item>
+                <lightning-layout-item size="6" class="field_cont" padding="horizontal-small">
+                    <lightning-output-field class="bottom_line" field-name="LastModifiedById"></lightning-output-field>
+                </lightning-layout-item>
+                <lightning-layout-item size="6" class="field_cont" padding="horizontal-small">
+                    <lightning-output-field class="bottom_line" field-name="CreatedDate"></lightning-output-field>
+                </lightning-layout-item>
+                <lightning-layout-item size="6" class="field_cont" padding="horizontal-small">
+                    <lightning-output-field class="bottom_line" field-name="LastModifiedDate"></lightning-output-field>
+                </lightning-layout-item>
+            </lightning-layout>
+                <br>
+                <div class="save">
+                    <lightning-button label="Cancle" title="Non-primary action" onclick={handleCancel} class="slds-m-left_x-small"></lightning-button>
+                    <lightning-button class="saveBtn" type="submit" label="Save" variant="brand"></lightning-button>
+                </div>
+            </lightning-record-edit-form>
+        </template>
+    </lightning-card>
+
+</template>

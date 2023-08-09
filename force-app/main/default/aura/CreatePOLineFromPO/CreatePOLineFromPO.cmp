@@ -1,0 +1,17 @@
+<aura:component controller="PreviewPurchaseOrderController" implements="lightning:actionOverride,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global">
+   
+    <div>
+        <c:New_Purchase_Order_Item_Override  isCalledFromParent="true"/>
+    </div>
+    <aura:html tag="style">
+        .slds-modal__container {
+            width: auto !important;
+            max-width:50rem !important;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content{
+            padding: 0 !important;
+        }
+    </aura:html>
+
+
+</aura:component>

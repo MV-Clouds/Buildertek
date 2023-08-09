@@ -1,0 +1,88 @@
+<aura:component implements="force:hasRecordId" controller="RFQDAO" access="global">
+	
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="rfq" type="Object" description="RFQ record object"/>
+    <aura:attribute name="config" type="object"  description="BT Record object configuration"/>
+    <aura:attribute name="vendorlistInfoMessage" type="String" description="Related List Info Message"/>
+    
+    <aura:method name="recordUpdatedMethod" action="{! c.recordUpdated }" 
+  				 description="This method is call when force record data is reload"> 
+	    <aura:attribute name="param1" type="Object" /> 
+	</aura:method>
+	
+    <div class="c-container">
+    		
+			<c:BT_Message aura:id="infoMessage" type="info" message="{!v.vendorlistInfoMessage}"/>
+			
+            <div class="slds-grid slds-wrap">
+                <div class="slds-size_1-of-2 slds-large-size_6-of-12">
+                   <div style="float:left;width:90%;" class="forceRelatedListSingleContainer">
+                    <lightning:card >
+                        <aura:set attribute="title">
+                            <lightning:icon iconName="utility:cases" size="x-small" /> &nbsp;Available Vendors
+                        </aura:set>
+                        
+                        <aura:set attribute="actions">
+                        	<lightning:buttonGroup >
+						        <button onclick="{!c.refreshVendorList}" class="slds-button slds-button--icon-border">
+	                                <span class="slds-button__icon">
+									   <lightning:icon iconName="utility:refresh" size="x-small" />
+	                                </span> 
+	                            </button>
+						   </lightning:buttonGroup>
+					   </aura:set>
+                        
+                        <p class="slds-p-horizontal--small">
+                      		<div aura:id="avilabelVendorList_LHS"></div>
+                        </p>
+                    </lightning:card>
+                   </div>
+	                   <div style="margin-top: 60px;"> 
+                 			<aura:if isTrue="{!v.rfq.buildertek__Status__c != 'Awarded'}">
+                      	   		<aura:if isTrue="{!v.rfq.buildertek__Status__c != 'Accepted'}">
+			                       <div onclick="{!c.addVendor}" style="cursor:pointer" title="Add Selected Vendors">
+			                           <lightning:icon iconName="utility:right" size="medium" class="slds-p-left_small"/>
+			                       </div>
+			                       <br/>
+			                       <div onclick="{!c.removeVendor}" style="cursor:pointer" title="Remove Selected Vendors">
+			                           <lightning:icon iconName="utility:left" size="medium" class="slds-p-left_small"/>
+			                       </div>
+		                       </aura:if>
+	                       </aura:if>
+	                   </div>
+                </div>
+                
+                <div class="slds-size_1-of-2 slds-large-size_6-of-12 forceRelatedListSingleContainer">
+                   <lightning:card >
+                       <aura:set attribute="title">
+                           <lightning:icon iconName="utility:task" size="x-small" /> &nbsp;Selected Vendors
+                       </aura:set>
+                       
+                       <aura:set attribute="actions">
+                           
+                           <lightning:buttonGroup >
+						        <lightning:button label="Send Email" iconName="utility:email" onclick="{!c.sendEmailClick}"/>
+						        <button onclick="{!c.refreshSelectedVendorList}" class="slds-button slds-button--icon-border">
+	                                <span class="slds-button__icon">
+									   <lightning:icon iconName="utility:refresh" size="x-small" />
+	                                </span> 
+	                            </button>
+						   </lightning:buttonGroup>
+                       </aura:set>
+                       <p class="slds-p-horizontal--small">
+                     		<div aura:id="selectedVendorList_RHS"></div>
+                       </p>
+                   </lightning:card>
+                </div>
+            </div>
+    </div>
+    <lightning:spinner variant="brand" size="medium" aura:id="BTSpinner" class="slds-hide"/>
+    
+    <!-- aura waiting/doneWaiting hendler 
+    <aura:handler event="aura:waiting" action="{!c.showSpinner}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>
+    -->
+    
+    <aura:handler name="init" value="{!this}" action="{!c.initialize}"/>
+ 
+</aura:component>

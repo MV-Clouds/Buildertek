@@ -1,0 +1,100 @@
+<aura:component implements="flexipage:availableForRecordHome,forceCommunity:availableForAllPageTypes" access="global"
+    Controller="BT_ImportWarrantyItems">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="recordId" type="string" />
+    <aura:attribute name="baseURLs" type="string" />
+    <aura:attribute name="listOfRecords" type="List" />
+    <aura:attribute name="isLoading" type="Boolean" />
+    <aura:attribute name="isAllSelected" type="Boolean" default="false" />
+
+    <aura:attribute name="pageNumber" type="integer" default="1" />
+    <aura:attribute name="pageSize" type="integer" default="10" />
+    <aura:attribute name="totalPages" type="integer" default="0" />
+    <aura:attribute name="totalRecords" type="Integer" default="0" />
+    <aura:attribute name="recordStart" type="integer" default="0" />
+    <aura:attribute name="recordEnd" type="integer" default="0" />
+    <aura:attribute name="isNextDisabled" type="Boolean" default="true" />
+
+    <aura:html tag="style">
+        .slds-modal__container{
+        max-width: 80% !important;
+        min-width: 80% !important;
+        width: 80% !important;
+        }
+    </aura:html>
+
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+        aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+            <header class="slds-modal__header">
+                <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeModel }" alternativeText="close"
+                    variant="bare-inverse" class="slds-modal__close" />
+                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Import Master Warranty</h2>
+            </header>
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                <table class="slds-table slds-table--bordered">
+                    <thead>
+                        <tr>
+                            <th>
+                                <label class="slds-checkbox" style="width:2px;">
+                                    <ui:inputCheckbox aura:id="checkWarrentyItems" value="{!v.isAllSelected}"
+                                        change="{!c.onCheckAll}" />
+                                    <span class="slds-checkbox--faux" style="top:-2px;"></span>
+                                    <span class="slds-form-element__label text"></span>
+                                </label>
+                            </th>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Project</th>
+                            <th>Warranty Length</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <aura:iteration items="{!v.listOfRecords}" var="row" indexVar="index">
+                            <tr>
+                                <th>
+                                    <lightning:input type="checkbox" text="{!index}" aura:id="checkWarrentyItem"
+                                        checked="{!row.isSelected}" />
+                                </th>
+                                <th>
+                                    <ui:outputURL value="{!'/one/one.app?#/sObject/'+ row.Id + '/view'}" target="_blank"
+                                        label="{!row.Name}" />
+                                </th>
+                                <th>{!row.buildertek__Description__c}</th>
+                                <th>
+                                    <ui:outputURL
+                                        value="{!'/one/one.app?#/sObject/'+ row.buildertek__Project__r.Id + '/view'}"
+                                        target="_blank" label="{!row.buildertek__Project__r.Name}" />
+                                </th>
+                                <th>{!row.buildertek__Length_of_Warranty__c}</th>
+                            </tr>
+                        </aura:iteration>
+                    </tbody>
+                </table>
+            </div>
+            <footer class="slds-modal__footer">
+                <lightning:button iconName="utility:back" iconPosition="left" disabled="{!v.pageNumber == 1}"
+                    aura:id="prevPage" label="Previous" onclick="{!c.handlePrev}" />
+                <lightning:button iconName="utility:forward" iconPosition="right" disabled="{!v.isNextDisabled}"
+                    aura:id="nextPage" label="Next" onclick="{!c.handleNext}" />
+                <lightning:button variant="neutral" label="Cancel" title="Cancel" onclick="{! c.closeModel }" />
+                <lightning:button variant="brand" label="Import Master Warranty" title="Import Master Warranty"
+                    onclick="{! c.importMasterWarranty }" />
+            </footer>
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+    <aura:if isTrue="{!v.isLoading}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                 <div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+                
+            </div>
+        </div>
+    </aura:if>
+</aura:component>

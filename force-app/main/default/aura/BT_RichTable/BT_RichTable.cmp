@@ -1,0 +1,44 @@
+<aura:component >
+    <aura:attribute name="richTableColumns" type="List" description="Rich Table column name"/>
+    <aura:attribute name="richTableData" type="List" description="Rich Table Data"/>
+    <aura:attribute name="richTableDataTypesOption" type="List" default='[{"label":"Text", "value":"Text"},{"label":"Date", "value":"Date"},{"label":"Number", "value": "Number"},{"label":"Text Area", "value": "TextArea"}]' description="RichTable header name"/>
+    
+    <aura:method name="dataTableValidation" action="{!c.dataTableValidation}" description="this method is called from parent component for validation."/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+    
+    <label class="slds-form-element__label slds-no-flex" >Configure Table Columns</label>
+    <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+        <thead>
+            <tr>
+                <aura:iteration items="{!v.richTableColumns}" var="columnName">
+                    <th scope="col" class="slds-cell-wrap"><div class="slds-truncate" title="{!columnName}">{!columnName}</div></th>
+                </aura:iteration>
+            </tr>
+        </thead>
+        <tbody>
+            <aura:iteration items="{!v.richTableData}" var="data" indexVar="index">
+                <tr aura:id="rows" id="{!'row' + index}">
+                    <td data-label="Action" class="slds-size_1-of-12" scope="row" data-index="{!index}">
+                        <lightning:buttonIcon iconName="utility:delete" variant="bare" name="{!index}" onclick="{!c.deleteRow}" alternativeText="delete" />
+                    </td>
+                    <td data-label="Column Header" class="slds-size_2-of-12">
+                        <div class="slds-required" style="float:left">* </div>
+                        <lightning:input aura:id="columnHeaders" type="text" required="true" variant="label-hidden" name="{!index}" value="{!data.header}" messageWhenValueMissing="Column Header: Field is required"/>
+                    </td>
+                    <td data-label="Data Type" class="slds-size_2-of-12" data-index="{!index}">
+                        <lightning:combobox variant="label-hidden" name="{!index}" options="{!v.richTableDataTypesOption}" value="{!data.dataType}"/>
+                    </td>
+                    <td data-label="Show Total" class="slds-size_1-of-12 " data-index="{!index}">
+                        <lightning:input aura:id="showTotal" id="{!'showTotal' + index}" type="checkbox" variant="label-hidden" name="Show Total" value="{!data.showTotal}" onchange="{!c.changeInputValue}" disabled="{!(data.dataType == 'Number' ?false:true)}" checked="{!(data.showTotal == 'Yes'?true:false)}"/>
+                    </td>
+                    <td data-label="Required" class="slds-size_1-of-12 ">
+                        <lightning:input type="checkbox" variant="label-hidden" name="Required" value="{!data.required}" onchange="{!c.changeInputValue}" checked="{!(data.required == 'Yes'?true:false)}"/>
+                    </td>
+                </tr>
+            </aura:iteration>
+        </tbody>
+    </table>
+    
+    <lightning:button label="Add New Row" title="Add New Row" variant="Brand" class="slds-m-top_x-small" onclick="{!c.addNewRow}"/>
+</aura:component>

@@ -1,0 +1,77 @@
+<aura:component
+                implements="force:appHostable,lightning:isUrlAddressable,force:lightningQuickAction,flexipage:availableForRecordHome,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes"
+                access="global" controller="CreateDuplicateTakeofflineController">
+    <aura:attribute name="takeOffLineId" type="String" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler name="change" value="{!v.pageReference}" action="{!c.doInit}" />
+    <aura:attribute name="clonedTakeOffLine" type="Object" />
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+    
+    <aura:attribute name="takeOffRecordId" type="String" />
+    <aura:attribute type="object" name="takeOffLineList"/> 
+    <aura:attribute name="takeOfflineTableColumns" type="List"/>
+    <aura:attribute name="maxRowSelection" type="Integer" default="1"/>
+    <aura:attribute name="showDuplicateButton" type="Boolean" default="false"/>
+    
+    <div>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-mainModal" aria-modal="true"
+                 aria-describedby="modal-heading-secondaryModal" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                
+                <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeScreen }"
+                                      alternativeText="close" variant="bare-inverse" class="slds-modal__close" />
+                <div class="slds-modal__content slds-p-around_medium slds-is-relative slds-modal__content_headless" id="modal-heading-secondaryModal" >
+                    <aura:if isTrue="{!v.isLoading}">
+                        <lightning:spinner alternativeText="Loading" variant="brand" size="large" />
+                    </aura:if>
+                    <h1 class="slds-text-heading_medium slds-p-around_small slds-m-bottom_small" style="background: #f0f0f0">Please Select a TakeOffLine To Duplicate</h1>
+                    <div class="slds-box slds-p-around_none">
+                        <lightning:datatable
+                                             columns="{! v.takeOfflineTableColumns }"
+                                             data="{! v.takeOffLineList }"
+                                             keyField="Id"
+                                             maxRowSelection="{! v.maxRowSelection }"
+                                             onrowselection="{! c.handleRowSelection }"/>
+                        <aura:if isTrue="{!v.showDuplicateButton}">
+                            <div class="slds-border_top slds-p-around_small slds-text-align_center">
+                                <lightning:button label="Duplicate" onclick="{!c.handleDuplicateClick}" variant="brand" />
+                            </div>
+                        </aura:if>
+                    </div>
+                    
+                    <aura:if isTrue="{!v.clonedTakeOffLine != null}">
+                        <lightning:recordEditForm aura:id="takeOffLineRecordEditForm" objectApiName="buildertek__Project_Takeoff_Lines__c"
+                                                  onsubmit="{!c.handleOnSubmit}" onsuccess="{!c.handleOnSuccess}" onerror="{!c.handleOnError}">
+                            <lightning:messages />
+                            
+                            <div class="slds-box slds-m-top_medium">
+                                <div class="slds-grid slds-wrap slds-gutters">
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <lightning:inputField fieldName="buildertek__UOM__c" value="{!v.clonedTakeOffLine.buildertek__UOM__c}"></lightning:inputField>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <lightning:inputField fieldName="buildertek__TL_SERVICE_CATEGORY__c" value="{!v.clonedTakeOffLine.buildertek__TL_SERVICE_CATEGORY__c}"></lightning:inputField>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <lightning:inputField fieldName="buildertek__Product_Count__c" value="{!v.clonedTakeOffLine.buildertek__Product_Count__c}"></lightning:inputField>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <lightning:inputField fieldName="buildertek__TO_REC_TYPE__c" value="{!v.clonedTakeOffLine.buildertek__TO_REC_TYPE__c}"></lightning:inputField>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </lightning:recordEditForm>
+                    </aura:if>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral" label="Cancel" title="Cancel"
+                                      onclick="{! c.closeScreen}" />
+                    <lightning:button variant="brand" label="Save" title="Save" onclick="{!c.saveRecord}" />
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+        
+    </div>
+</aura:component>

@@ -1,0 +1,6 @@
+<aura:component controller="PDFViewerController" access="GLOBAL">
+    <aura:attribute name="fileId" type="string" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+	<aura:attribute access="GLOBAL" name="pdfData" type="String" description="PDF data in base64 encoded format"/>
+    <iframe aura:id="pdfFrame" src="/resource/PDFViewerJS/lcins1_pdfjs/web/viewer.html" class="pdfFrame" onload="{!c.loadpdf}"></iframe>
+</aura:component>

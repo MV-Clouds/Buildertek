@@ -1,0 +1,16 @@
+<!--
+ - Created by kritik on 09/05/22.
+ -->
+
+<apex:page id="stockReport" Controller="DashboardReportController" docType="html-5.0">
+    <apex:form >
+        <apex:pageblock id="stockReport" title="Stock Report" >
+            <apex:pageblockTable value="{!stockReport}" var="stock">
+                <apex:column value="{!stock.stock_summary}"/>
+                <apex:column value="{!stock.sold}"/>
+                <apex:column value="{!stock.available}"/>
+                <apex:column value="{!stock.total}"/>
+            </apex:pageblockTable>
+        </apex:pageblock>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,30 @@
+.THIS lightning-icon.some-indicator {
+    background-color: #006DCC;
+    width: 2rem;
+    height: 2rem;
+}
+
+.THIS lightning-icon.some-indicator>lightning-primitive-icon>svg>use {
+    fill: white;
+    background-color: #006DCC;
+    width: 2rem;
+    height: 2rem;
+}
+
+.THIS .slds-form-element__icon {
+    display: none !important;
+}
+
+.THIS .slds-form-element__label {
+    margin-top: 0px;
+    /* display : none;
+        visibility : hidden;*/
+}
+
+.THIS .tableRow .buildertekBT_LookupFields{
+    padding-top: 7px;
+}
+
+.THIS .tableDiv{
+    min-height: 70vh;
+}

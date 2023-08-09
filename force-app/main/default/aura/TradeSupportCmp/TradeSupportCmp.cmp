@@ -1,0 +1,321 @@
+<!--
+	@ PURPOSE : 1. LAUNCHES FROM WORK ORDER DETAIL PAGE
+				2. DISPLAYS TRADE SUPPORT ISSUES FOR PROJECT MANAGER.
+	@ Name    : TradeSupportCmp.xml
+-->
+<aura:component controller="IssueManagementCtrl">
+	
+	<lightning:workspaceAPI aura:id="workspace"/>
+	
+	<aura:attribute name="listOfCHWTradeIssueWrappers" type="Object[]" default="[]" required="true"/>
+    
+    <aura:attribute name="listOfIGUTradeIssueWrappers" type="Object[]" default="[]" required="true"/>
+	
+	<aura:attribute name="recordWorkOrder" type="Object" default="{}" required="false"/>
+	
+	<aura:attribute name="recordWorkOrderSettings" type="Object" default="{}"/>
+	
+	<aura:attribute name="showSpinner" type="Boolean" />
+	
+	<aura:attribute name="areAllCHWTradeIssuesSelected" type="Boolean" default="false" />
+	
+	<aura:attribute name="areAllIGUTradeIssuesSelected" type="Boolean" default="false" />
+	
+	<aura:registerEvent name="refreshIssuesReportedTableEvt" type="c:RefreshIssuesReportedTable"/>
+	
+	<aura:attribute name="isConsoleNavigation" type="Boolean" default="false"/>
+	
+	<!-- START SPINNER -->
+	<aura:if isTrue="{!v.showSpinner}">
+		<lightning:spinner alternativeText="Loading" size="large" />
+	</aura:if>
+	<!-- END SPINNER -->
+	
+	<aura:if isTrue="{! and( empty( v.listOfCHWTradeIssueWrappers ), empty( v.listOfIGUTradeIssueWrappers ) ) }">
+		<div class="slds-align_absolute-center">
+			<div class="space-up-down">
+				<button class="slds-button slds-button_brand"
+						onclick="{!c.cancel}">Return to Work Order</button>
+			</div>
+		</div>
+	</aura:if>
+	
+	<!-- START CHW TRADE ISSUES SECTION -->
+	<aura:if isTrue="{! not( empty( v.listOfCHWTradeIssueWrappers ) ) }">
+		<div class="slds-section slds-is-open" aura:id="chwtradeIssuesSectionId">
+			
+			<!-- START SECTION HEADER -->
+			<h3 class="slds-section__title">
+				<button class="slds-button slds-section__title-action">
+					<span onclick="{!c.toggleSection}" data-title="chwtradeIssuesSectionId">
+						<lightning:icon iconName="utility:switch"
+										size="x-small"
+										class="slds-section__title-action-icon slds-button__icon_left"
+										alternativeText="button icon" 
+										/>
+					</span>
+					<span class="slds-truncate">Control HW Issues ( Trade Support )</span>
+				</button>
+			</h3>
+			<!-- END SECTION HEADER -->
+			
+			<!--SECTION BODY-->
+			<aura:if isTrue="{!not(empty(v.listOfCHWTradeIssueWrappers))}">
+				<div class="slds-section__content">
+					
+					<div class="trade_table">
+					
+						<!-- START CONTROL HARDWARE TRADE SUPPORT ISSUES TABLE -->
+						<table class="slds-table slds-table_bordered slds-table_cell-buffer"> 
+							<thead>
+								<tr>
+									<th scope="col">
+										<div class="slds-truncate" title="Action">
+											<div style="display:inline-block;">
+												<ui:inputCheckbox value="{!v.areAllCHWTradeIssuesSelected}"
+																  click="{!c.selectAllCHWTradeIssues}"/>
+											</div>
+										</div>
+									</th>
+									<th scope="col">
+										<div class="slds-truncate tradeTableCol" title="Name">Name</div>
+									</th>
+									<th scope="col">
+										<div class="slds-truncate tradeTableCol" title="Trade Support">Trade Support</div>
+									</th>
+									<th scope="col">
+										<div class="slds-truncate tradeTableCol" title="Trade Support Provided?">Trade Support Provided?</div>
+									</th>
+									<th scope="col">
+										<div class="slds-truncate tradeTableCol" title="Control Panel">Control Panel</div>
+									</th>
+									<th scope="col">
+										<div class="slds-truncate tradeTableCol" title="Window ID">Window ID</div>
+									</th>
+									<th scope="col">
+										<div class="slds-truncate tradeTableCol" title="Failure Component">Failure Component</div>
+									</th>
+									<th scope="col">
+										<div class="slds-truncate tradeTableCol" title="Work Type">Work Type</div>
+									</th>
+									<th scope="col">
+										<div class="slds-truncate tradeTableCol" title="Issue Status">Issue Status</div>
+									</th>
+									<th scope="col">
+										<div class="slds-truncate tradeTableCol" title="Notes &amp; Comments">Notes &amp; Comments</div>
+									</th>
+									<th scope="col">
+										<div class="slds-truncate tradeTableCol" title="Issue Description">Issue Description</div>
+									</th>
+								</tr>
+							</thead>   
+							<tbody>
+								<aura:iteration items="{!v.listOfCHWTradeIssueWrappers}" var="chwTradeIssueWrapper" indexVar="index">
+									<tr>
+										<td>
+											<ui:inputCheckbox value="{!chwTradeIssueWrapper.isSelected}"/>
+										</td>
+										<td>
+											<a id="{!chwTradeIssueWrapper.recordIssue.Id}" onclick="{!c.openRecordInNewConsoleTab}">
+												{!chwTradeIssueWrapper.recordIssue.Name}
+											</a>
+										</td>
+										<td>
+											<ui:outputText value="{!chwTradeIssueWrapper.recordIssue.Required_Trade__c}"/>
+										</td>
+										<td>
+											<aura:if isTrue="{! and( chwTradeIssueWrapper.isSelected, v.recordWorkOrderSettings.Edit_Special_Fields__c ) }">
+												<ui:inputCheckbox value="{!chwTradeIssueWrapper.recordIssue.Trade_Support_Provided__c}"/>
+												<aura:set attribute="else">
+													<ui:outputCheckbox value="{!chwTradeIssueWrapper.recordIssue.Trade_Support_Provided__c}"/>
+												</aura:set>
+											</aura:if>
+										</td>
+										<td>
+											<ui:outputText value="{!chwTradeIssueWrapper.recordIssue.Control_Panel__c}"/>
+										</td>
+										<td>
+											<ui:outputText value="{!chwTradeIssueWrapper.recordIssue.Window_ID__c}"/>
+										</td>
+										<td>
+											<ui:outputDate value="{!chwTradeIssueWrapper.recordIssue.Failure_Component__c}"/>
+										</td>
+										<td>
+											<ui:outputText value="{!chwTradeIssueWrapper.recordIssue.Work_Type__c}"/>
+										</td>
+										<td>
+											<ui:outputText value="{!chwTradeIssueWrapper.recordIssue.Issue_Status__c}"/>
+										</td>
+										<td>
+											<ui:outputText value="{!chwTradeIssueWrapper.recordIssue.Comments__c}"/>
+										</td>
+										<td>
+											<ui:outputText value="{!chwTradeIssueWrapper.recordIssue.Description__c}"/>
+										</td>
+									</tr>
+								</aura:iteration>
+							</tbody>
+						</table>
+						<br/>
+						
+						<!-- START SPINNER -->
+						<aura:if isTrue="{!v.showSpinner}">
+							<lightning:spinner alternativeText="Loading" size="large" />
+						</aura:if>
+						<!-- END SPINNER -->
+		
+					</div>
+					<br/>
+					<div class="slds-align_absolute-center ">
+						<button class="slds-button slds-button_brand"
+								onclick="{!c.updateCHWTradeIssues}">Save</button>
+						<button class="slds-button slds-button_neutral"
+							onclick="{!c.cancel}">Cancel</button>
+					</div>
+					<br/>
+				</div>
+			</aura:if>
+		</div>
+	</aura:if>
+	<!-- END CHW TRADE ISSUES SECTION -->
+	
+	<!-- START IGU TRADE ISSUES SECTION -->
+	<aura:if isTrue="{! not( empty( v.listOfIGUTradeIssueWrappers ) ) }">
+		<div class="slds-section slds-is-open" aura:id="igutradeIssuesSectionId">
+			
+			<!-- START SECTION HEADER -->
+			<h3 class="slds-section__title">
+				<button class="slds-button slds-section__title-action">
+					<span onclick="{!c.toggleSection}" data-title="igutradeIssuesSectionId">
+						<lightning:icon iconName="utility:switch"
+										size="x-small"
+										class="slds-section__title-action-icon slds-button__icon_left"
+										alternativeText="button icon" 
+										/>
+					</span>
+					<span class="slds-truncate">IGU Issues ( Trade Support )</span>
+				</button>
+			</h3>
+			<!-- END SECTION HEADER -->
+			
+			<!--SECTION BODY-->
+			<aura:if isTrue="{!not(empty(v.listOfIGUTradeIssueWrappers))}">
+				<div class="slds-section__content">
+					
+					<div class="trade_table">
+					
+						<!-- START CONTROL HARDWARE TRADE SUPPORT ISSUES TABLE -->
+						<table class="slds-table slds-table_bordered slds-table_cell-buffer"> 
+							<thead>
+								<tr>
+									<th scope="col">
+										<div class="slds-truncate" title="Action">
+											<div style="display:inline-block;">
+												<ui:inputCheckbox value="{!v.areAllIGUTradeIssuesSelected}"
+																  click="{!c.selectAllIGUTradeIssues}"/>
+											</div>
+										</div>
+									</th>
+									<th scope="col">
+										<div class="slds-truncate tradeTableCol" title="Name">Name</div>
+									</th>
+									<th scope="col">
+										<div class="slds-truncate tradeTableCol" title="Trade Support">Trade Support</div>
+									</th>
+									<th scope="col">
+										<div class="slds-truncate tradeTableCol" title="Trade Support Provided?">Trade Support Provided?</div>
+									</th>
+									<th scope="col">
+										<div class="slds-truncate tradeTableCol" title="Control Panel">Control Panel</div>
+									</th>
+									<th scope="col">
+										<div class="slds-truncate tradeTableCol" title="Window ID">Window ID</div>
+									</th>
+									<th scope="col">
+										<div class="slds-truncate tradeTableCol" title="Failure Component">Failure Component</div>
+									</th>
+									<th scope="col">
+										<div class="slds-truncate tradeTableCol" title="Work Type">Work Type</div>
+									</th>
+									<th scope="col">
+										<div class="slds-truncate tradeTableCol" title="Issue Status">Issue Status</div>
+									</th>
+									<th scope="col">
+										<div class="slds-truncate tradeTableCol" title="Notes &amp; Comments">Notes &amp; Comments</div>
+									</th>
+									<th scope="col">
+										<div class="slds-truncate tradeTableCol" title="Issue Description">Issue Description</div>
+									</th>
+								</tr>
+							</thead>   
+							<tbody>
+								<aura:iteration items="{!v.listOfIGUTradeIssueWrappers}" var="iguTradeIssueWrapper" indexVar="index">
+									<tr>
+										<td>
+											<ui:inputCheckbox value="{!iguTradeIssueWrapper.isSelected}"/>
+										</td>
+										<td>
+											<a id="{!iguTradeIssueWrapper.recordIssue.Id}" onclick="{!c.openRecordInNewConsoleTab}">
+												{!iguTradeIssueWrapper.recordIssue.Name}
+											</a>
+										</td>
+										<td>
+											<ui:outputText value="{!iguTradeIssueWrapper.recordIssue.Required_Trade__c}"/>
+										</td>
+										<td>
+											<aura:if isTrue="{!and( iguTradeIssueWrapper.isSelected, v.recordWorkOrderSettings.Edit_Special_Fields__c ) }">
+												<ui:inputCheckbox value="{!iguTradeIssueWrapper.recordIssue.Trade_Support_Provided__c}"/>
+												<aura:set attribute="else">
+													<ui:outputCheckbox value="{!iguTradeIssueWrapper.recordIssue.Trade_Support_Provided__c}"/>
+												</aura:set>
+											</aura:if>
+										</td>
+										<td>
+											<ui:outputText value="{!iguTradeIssueWrapper.recordIssue.Control_Panel__c}"/>
+										</td>
+										<td>
+											<ui:outputText value="{!iguTradeIssueWrapper.recordIssue.Window_ID__c}"/>
+										</td>
+										<td>
+											<ui:outputDate value="{!iguTradeIssueWrapper.recordIssue.Failure_Component__c}"/>
+										</td>
+										<td>
+											<ui:outputText value="{!iguTradeIssueWrapper.recordIssue.Work_Type__c}"/>
+										</td>
+										<td>
+											<ui:outputText value="{!iguTradeIssueWrapper.recordIssue.Issue_Status__c}"/>
+										</td>
+										<td>
+											<ui:outputText value="{!iguTradeIssueWrapper.recordIssue.Comments__c}"/>
+										</td>
+										<td>
+											<ui:outputText value="{!iguTradeIssueWrapper.recordIssue.Description__c}"/>
+										</td>
+									</tr>
+								</aura:iteration>
+							</tbody>
+						</table>
+						<br/>
+						
+						<!-- START SPINNER -->
+						<aura:if isTrue="{!v.showSpinner}">
+							<lightning:spinner alternativeText="Loading" size="large" />
+						</aura:if>
+						<!-- END SPINNER -->
+						
+					</div>
+					<br/>
+					<div class="slds-align_absolute-center ">
+						<button class="slds-button slds-button_brand"
+								onclick="{!c.updateIGUTradeIssues}">Save</button>
+						<button class="slds-button slds-button_neutral"
+								onclick="{!c.cancel}">Cancel</button>
+					</div>
+					<br/>
+				</div>
+			</aura:if>
+		</div>
+	</aura:if>
+	<!-- END IGU TRADE ISSUES SECTION -->
+	
+</aura:component>

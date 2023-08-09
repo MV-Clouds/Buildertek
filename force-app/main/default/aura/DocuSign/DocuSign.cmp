@@ -1,0 +1,105 @@
+<aura:component controller="DocuSignController" implements="force:appHostable,lightning:isUrlAddressable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global">
+    
+    <aura:attribute name="ContentDocumentList" type="object" />
+    <aura:attribute name="PaginationList" type="Object"/>
+    <aura:attribute name="recordId" type="String" />
+    
+    <lightning:navigation aura:id = "navService"/>
+    <aura:attribute name="pageReference" type="Object"/>
+    <aura:attribute name="url" type="String"/>
+
+    <aura:attribute name="Spinner" type="Boolean" />
+    <aura:attribute name="showMessage" type="Boolean" default="false" />
+    
+    <aura:attribute name="SelectedDocuments" type="List"/>
+    <aura:attribute name= "docusignTemps" type="List" />
+    
+    <aura:attribute name="TemplatesList" type="List"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> 
+    
+    <aura:html tag="style">
+        .cuf-content {
+            padding: 0 0rem !important;
+        }
+        .slds-p-around--medium {
+            padding: 0rem !important;
+        }       
+        .slds-modal__content{
+            overflow-y:hidden !important;
+            height:unset !important;
+            max-height:unset !important;
+        }
+    </aura:html>
+    
+    
+    <!--  <div class="slds-modalheader" style="font-size:17px;">
+        Select Documents
+        <button class="slds-button slds-button-neutral" style = "padding-left: 50px;" onclick="{!c.sendEnv}">Send For Signature</button> 
+        
+    </div> -->
+    
+    <div class="slds-modal__header" style="font-size:17px;">
+        Select Templates 
+    </div>
+    
+    <div class="slds-modal__content slds-p-around--large" style="padding-bottom: 2px">
+        <div class="slds slds-scope">
+            <table class="slds-table slds-table_bordered slds-table_fixed-layout" role="grid">
+                <thead>
+                    <tr class="slds-text-title_caps">
+                        <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-left-radius:2px;vertical-align: top;line-height: 2;width: 30px !important; padding-top: 8px;">
+                            <ui:inputCheckbox aura:id="checkContractors" change="{!c.selectAll}"  />
+                            
+                        </th>
+                        <th  style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                            Title
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    <aura:iteration items="{!v.TemplatesList}" var="rec">
+                        <tr class="slds-hint-parent">
+                            <td> 
+                                
+                                <input type="checkbox" class = 'inputCheck' data-temid="{!rec.templateId}" onchange="{!c.handleCheck}" aura:id="checkContractor" value="{rec.budgetCheck}"/>
+                                
+                            </td> 
+                            <td role="gridcell">
+                                <ui:outputText value="{!rec.name}" />  
+                            </td> 
+                           
+                        </tr>
+                    </aura:iteration> 
+                    
+                </tbody>
+            </table>
+            <br/>
+            
+        </div> 
+        
+    </div>
+    <div class="slds-modal__footer">
+      
+        <lightning:button label="Cancel" title="Neutral action" onclick="{! c.cancel }"/>
+          <lightning:button variant="brand" label="Send" title="Send for Signature" onclick="{!c.sendEnv}" />
+    </div>
+    
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container" style="position:fixed;">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                    <aura:if isTrue="{!v.showMessage}">
+                        <!--<b>Importing Schedule Lines... </b>-->
+                        <b>Processing, Please Wait</b>
+                    </aura:if>
+                </div>
+            </div>
+        </div>
+    </aura:if>
+    
+</aura:component>

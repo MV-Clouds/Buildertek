@@ -1,0 +1,47 @@
+<apex:page docType="html-5.0" sidebar="false" standardStylesheets="false" showHeader="false" applyHtmlTag="true">
+    <html>
+        <apex:stylesheet value="{!URLFOR($Resource.Print_View_Styles)}" />
+        <apex:stylesheet value="{!URLFOR($Resource.Print_View_Fonts)}" />
+        <apex:stylesheet value="{!URLFOR($Resource.Print_View_Font)}" />
+        
+        <head>
+            <style>  
+               @media print{@page {size: landscape}}
+            </style>
+        </head>
+        <body>
+            <center><h3 style="font-family:'Salesforce Sans',Arial,sans-serif;font-size:23px;text-transform:uppercase;">Quote Information</h3></center>
+            <div width="100%">
+                <c:BT_printParentInformationComponent objName="buildertek__Quote__c" secName="Quote Details"
+                                                      fieldName="Name,buildertek__Project__c,buildertek__Status__c,buildertek__Primary__c,
+                                                                 buildertek__Sales_Rep__c,buildertek__Description__c,
+                                                                 buildertek__Payment_Terms__c,buildertek__Primary_Contact__c,
+                                                                 buildertek__Quote_Amount__c,buildertek__Opportunity__c,
+                                                                 buildertek__Expires_On__c"/>
+            </div><br/><br/>
+            <div style="padding-top: 160px;padding-bottom: 160px;" width="100%">
+                <c:BT_printParentInformationComponent objName="buildertek__Quote__c" secName="Address Information"
+                                                      fieldName="buildertek__Bill_To_Name__c,buildertek__Ship_To_Name__c,
+                                                                 buildertek__Bill_To_Street__c,buildertek__Ship_To_Street__c,
+                                                                 buildertek__Bill_To_City__c,buildertek__Ship_To_City__c,
+                                                                 buildertek__Bill_To_State__c,buildertek__Ship_To_State__c,
+                                                                 buildertek__Bill_To_Zip_Code__c,buildertek__Ship_To_Zip_Code__c,
+                                                                 buildertek__Bill_To_Country__c,buildertek__Ship_To_Country__c"/>
+            </div><br/><br/>
+            <div width="100%">
+                <c:BT_printLineItemComponent childObjectName="buildertek__Quote_Item__c" parentObjectName="buildertek__Quote__c" groupName="true" groupObj="buildertek__Grouping__c" groupObjs="buildertek__Quote_Line_Group__c"
+                                             childObjectFields="Name,buildertek__Quantity__c,buildertek__UOM__c,buildertek__Unit_Cost__c,
+                                                                buildertek__Unit_Price__c,buildertek__Total_Cost__c,buildertek__List_Total__c,
+                                                                buildertek__MFG_Discount__c,buildertek__Markup__c,buildertek__Net_Unit__c,
+                                                                buildertek__Net_Total__c,buildertek__Profit_Margin__c,buildertek__Discount__c"
+                                            sumOfFields="buildertek__Unit_Cost__c,buildertek__Unit_Price__c,
+                                                        buildertek__Total_Cost__c,buildertek__List_Total__c,
+                                                        buildertek__Net_Unit__c,buildertek__Net_Total__c"/>                                        
+            </div>                                         
+                                                        
+            <script>
+              window.print();     
+            </script>
+        </body>
+    </html>
+</apex:page>

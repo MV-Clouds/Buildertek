@@ -1,0 +1,174 @@
+<aura:component
+    implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction,lightning:isUrlAddressable"
+    access="global" controller="BT_EmailChangeOrderController">
+
+    <aura:attribute name="isOpen" type="boolean" default="false" />
+    <aura:attribute name="onSuccess" type="Object" />
+    <aura:attribute name="onCancel" type="Object" />
+    <aura:attribute name="selectedToContact" type="sObject[]" default="[]" />
+    <aura:attribute name="selectedCcContact" type="sObject[]" default="[]" />
+    <aura:attribute name="selectedFiles" type="sObject[]" default="[]" />
+    <aura:attribute name="selectedFillIds" type="sObject[]" default="[]" />
+    <aura:attribute name="parentRecordId" type="String" default="" />
+
+    <aura:attribute name="pdfFileName" type="String" default="Change Order" />
+    <aura:attribute name="templatefolderName" type="String" default="BT CO" />
+    <aura:attribute name="templates" type="List" default="[]" />
+    <aura:attribute name="fileAttachments" type="List" default="[]" />
+    <aura:attribute name="selectedTemplate" type="String" default="" />
+    <aura:attribute name="documentsList" type="List" default="[]" />
+
+    <aura:attribute name="templateBody" type="String" default="" />
+    <aura:attribute name="subject" type="String" default="" />
+    <aura:attribute name="showTemplate" type="Boolean" default="true" />
+
+    <aura:attribute name="objectAPI" type="String" />
+    <aura:attribute name="records" type="List" />
+    <aura:attribute name="modalPromise" type="Aura.Action" />
+    <aura:attribute name="fileOptsList" type="Object" />
+    <aura:attribute name="fileName" type="String" default="No File Selected.." />
+    <aura:attribute name="selectedfilesFill" type="list" />
+    <aura:attribute name="selectedfileslist" type="Object" />
+
+    <aura:method name="refreshData" action="{!c.init}"></aura:method>
+    <aura:attribute name="toEmail" type="String" />
+    <aura:attribute name="emailIds" type="List" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <aura:attribute name="showBodyTemplate" type="Boolean" default="false" />
+    <aura:attribute name="bodytemplatesList" type="List" default="[]" />
+    <aura:attribute name="selectedbodyTemplateItem" type="String" default="" />
+    <aura:attribute name="selectedInvoiceBodyContent" type="String" default="" />
+    <lightning:notificationsLibrary aura:id="notifLib" />
+    <aura:method name="closeModalPopup" action="{!c.closeModel}" description="">
+    </aura:method>
+    <lightning:workspaceAPI aura:id="workspace" />
+    <c:BT_Spinner />
+    <section role="dialog" tabindex="-1" aura:id="Modalbox" aria-labelledby="modal-heading-01" aria-modal="true"
+        aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+        <div class="slds-box">
+            <div class="slds-email-composer">
+                <div class="slds-form-element slds-email-composer__combobox" style="padding-bottom: 10px;">
+                    <label class="slds-form-element__label" for="recipients-to">To</label>
+                    <div class="slds-form-element__control">
+                        <div class="slds-combobox_container slds-has-inline-listbox">
+                              <c:BT_MultiSelectLookup objectAPIName="contact"
+                                                           IconName="standard:contact"
+                                                           lstSelectedRecords="{!v.selectedToContact}"
+                                                           label=""/>
+                        </div>
+                    </div>
+                </div>
+                <aura:if isTrue="{!v.objectAPI == 'buildertek__Account_Payable__c'}">
+                <div class="slds-form-element slds-email-composer__combobox"
+                        style="margin-top: 10px;padding-bottom: 10px;">
+                        <label class="slds-form-element__label" for="recipients-to">To</label>
+                        <div class="slds-form-element__control slds-size--1-of-1">
+                            <div class="slds-combobox_container slds-has-inline-listbox">
+                                <lightning:input aura:id="emailForm" type="text" name="toEmail" value="{!v.toEmail}"
+                                    onchange="{!c.onEmailChange}" class="slds-size--1-of-1" />
+                            </div>
+                        </div>
+                        <div class="slds-form-element__control slds-size--1-of-1">
+                            <aura:iteration items="{!v.emailIds}" var="email" indexVar="index">
+                                <lightning:pill label="{!email}" name="{!index}" onremove="{!c.handleEmailRemove}">
+                                    <aura:set attribute="media">
+                                        <lightning:icon iconName="standard:email" alternativeText="Email" />
+                                    </aura:set>
+                                </lightning:pill>
+                            </aura:iteration>
+                        </div>
+                    </div>
+                </aura:if>
+                <div class="slds-form-element slds-email-composer__combobox" style="padding-top: 10px;padding-bottom: 10px;">
+                    <label class="slds-form-element__label" for="recipients-cc">Cc</label>
+                    <div class="slds-form-element__control">
+                        <div class="slds-combobox_container slds-has-inline-listbox">
+                            <c:BT_MultiSelectLookup objectAPIName="contact"
+                                                    IconName="standard:contact"
+                                                    lstSelectedRecords="{!v.selectedCcContact}"
+                                                    label=""/>
+                        </div>
+                    </div>
+                </div>
+                 <aura:if isTrue="{!v.showBodyTemplate}">
+                    <lightning:select name="templates" label="Select Body Template" aura:id="template" value="{!v.selectedbodyTemplateItem}" onchange = "{!c.emailTemplate}">
+                        <aura:iteration items="{!v.bodytemplatesList}" var="temp">
+                            <option text="{!temp.Name}" value="{!temp.Id}"/>
+                        </aura:iteration>
+                    </lightning:select>    
+                </aura:if> 
+                
+                <div class="slds-form-element" style="margin-top: -0.5rem;margin-bottom: 0.5rem;">
+                    <lightning:input type="text" placeholder="Enter Subject" value="{!v.subject}"/>
+                </div>
+                
+                <div class="slds-form-element">
+                    <lightning:inputRichText aura:id="bodyId" placeholder="Email Body" value="{!v.templateBody}" />
+                </div>
+                <br/>
+                <aura:if isTrue="{!v.showTemplate}">
+                    <lightning:select name="templates" label="Select Template" aura:id="template" value="{!v.selectedTemplate}">
+                        <aura:if isTrue="{!v.objectAPI == 'buildertek__Permit__c'}">
+                            <option text="-- None --" value=""/>
+                        </aura:if>
+                        <aura:iteration items="{!v.templates}" var="temp">
+                            <option text="{!temp.Name}" value="{!temp.Id}"/>
+                        </aura:iteration>
+                    </lightning:select>    
+                </aura:if>
+                <br/>
+                <div class="slds-form-element slds-email-composer__combobox" style="padding-left:0px !important;border-bottom: 0px;">
+                    <!-- <lightning:button name="Add" class="addattchment slds-float_left slds-m-bottom_medium" variant="brand" label="Add" onclick="{!c.uploadFile}" /> -->
+                    <!--<div class="slds-file-selector slds-file-selector_files">
+                      <div class="slds-file-selector__dropzone">
+                        <input type="file" class="slds-file-selector__input slds-assistive-text" onchange="{!c.doSave}" id="fileToUpload" aria-labelledby="file-selector-primary-label file-selector-secondary-label" />
+                        <label class="slds-file-selector__body" for="fileToUpload" id="file-selector-secondary-label">
+                          <span class="slds-file-selector__button slds-button slds-button_neutral">
+                            Upload Images</span>
+                          <span class="slds-file-selector__text slds-medium-show" ondragover="{!c.onDragOver}" ondrop="{!c.onDrop}">or Drop Files</span>
+                        </label>
+                      </div>
+                    </div>-->
+                    <!-- <div class="slds-form-element__control">
+                        <div class="slds-combobox_container slds-has-inline-listbox">
+                            <c:BT_MultiSelectLookup objectAPIName="buildertek__File__c"
+                                                    IconName="standard:file"
+                                                    lstSelectedRecords="{!v.selectedFiles}"
+                                                    label=""
+                                                    placeholder="Attachments"/>
+                        </div>
+                    </div> -->
+                    
+                    
+                        <div style="border:1px solid lightgray;border-radius:5px;padding:10px;margin-top:10px">
+                            <lightning:layout multipleRows = "true">                                        
+                                <div><lightning:input aura:id="fuploader" onchange="{!c.handleFilesChange}" type="file" variant="label-hidden" name="file" label=""  multiple="true" accept="image/png,image/jpeg,image/jpg,.zip, .doc, .docx, .rtf, .ppt, .pptx, .xls, .xlsx, .pdf, .txt"/>
+    
+                                    <!-- <div class="slds-text-body_small slds-text-color_error">{!v.fileName} </div> -->                                  
+                                    
+                                    <aura:iteration items="{!v.selectedfilesFill}" var="sr">
+                                        <lightning:pill class="slds-m-around_xx-small slds-text-body_small slds-text-color_error" label="{!sr.Name}" name="{!sr.Name}" onremove="{! c.clear }">
+                                            <aura:set attribute="media">
+                                                <lightning:icon iconName="standard:file" size="x-small" alternativeText="icon"/>
+                                            </aura:set>
+                                        </lightning:pill>
+                                    </aura:iteration>
+                                </div>                                        
+                            </lightning:layout>
+                        </div>                                       
+                        
+                    
+                    
+                </div>
+            </div>
+            <div class="slds-hide">
+                <div aura:id="footer">
+                     <lightning:button name="cancel" variant="Neutral" label="Cancel" onclick="{!c.cancel}"/>
+                     <lightning:button class="slds-float_right" name="Send" variant="brand" type="submit" label="Send" onclick="{!c.sendemail}"/>
+                 </div>
+            </div>
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+</aura:component>

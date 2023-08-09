@@ -1,0 +1,5 @@
+<design:component>
+	 <design:attribute name="opportunityRec" label="Orderrecords" description="Only the first one in the collection is used" />
+     <design:attribute name="oppId" label="oppRec" description="opp id"/>
+     <design:attribute name="selectedContact" label="selected Con" description="Selected Contact" />
+</design:component>

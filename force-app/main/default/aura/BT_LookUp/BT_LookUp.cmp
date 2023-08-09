@@ -1,0 +1,61 @@
+<aura:component controller="BT_LookUpController">
+
+    <!--not support with filter yet -->
+    <aura:attribute name="_field" type="String" required="true" />
+    <aura:attribute name="_sobject" type="String" required="true" />
+    <aura:attribute name="_value" type="String" required="true" />
+    <aura:attribute name="_text_value" type="String" />
+    <aura:attribute name="_filter" type="String" />
+    <aura:attribute name="_label" type="String" />
+    <aura:attribute name="_target_sobject" type="String" />
+    <aura:attribute name="_placeholder" type="String" default="Search " />
+    <aura:attribute name="searchList" type="Object[]" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+
+    <div class="slds-form-element__control">
+        <!-- <label class="slds-form-element__label" for="lookup-330">{!v._label}</label> -->
+        <div class="slds-input-has-icon slds-input-has-icon_right">
+            <lightning:icon iconName="utility:search" class="slds-input__icon" size="x-small" />
+            <input class="slds-lookup__search-input slds-input" type="text" placeholder="{!v._placeholder}" value="{!v._text_value}" onkeyup="{!c.search}" style="width:100%" onclick="{!c.searchAll}" onkeydown="{!c.closeSelectBox}" onblur="{!c.closeDropDown}" />
+        </div>
+
+        <div class="slds-lookup__menu" aura:id="selectedlookUp">
+            <ul class="slds-lookup__list" role="listbox">
+                <aura:if isTrue="{!v.searchList.length > 0}">
+                    <aura:iteration items="{!v.searchList}" var="item">
+                        <li role="presentation" onblur="{!c.closeSelectBox}">
+                            <span class="slds-lookup__item-action slds-media slds-media--center" role="option">                            
+                                <div class="slds-media__body">
+                                    <div class="slds-lookup__result-text">
+                                        
+                                    </div>
+                                    <aura:if isTrue="{!v._target_sobject == 'buildertek__Cost_Codes__c'}">
+                                        <span class="slds-lookup__result-meta slds-text-body--small"
+                                              id="{!item.Id}"
+                                              title="{!item.buildertek__Cost_Code_Name__c}"
+                                              onclick="{!c.itemSelected}"
+                                              >
+                                            <!-- {!v._target_sobject} •  -->{!item.buildertek__Cost_Code_Name__c} 
+                                        </span>
+                            <aura:set attribute="else">
+                                <span class="slds-lookup__result-meta slds-text-body--small" id="{!item.Id}" title="{!item.Name}" onclick="{!c.itemSelected}">
+                                                <!-- {!v._target_sobject} •  -->{!item.Name} 
+                                            </span>
+                            </aura:set>
+                </aura:if>
+
+        </div>
+        </span>
+        </li>
+        </aura:iteration>
+        <aura:set attribute="else">
+            <span onclick="{!c.closeSelectBox}">No Records Found</span>
+        </aura:set>
+        </aura:if>
+
+        </ul>
+    </div>
+    </div>
+
+</aura:component>

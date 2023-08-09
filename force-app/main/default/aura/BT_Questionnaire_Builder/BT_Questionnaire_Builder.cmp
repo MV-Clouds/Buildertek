@@ -1,0 +1,68 @@
+<aura:component
+    implements="force:appHostable,flexipage:availableForRecordHome,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes"
+    controller="BT_QuestionnaireBuilder" access="global">
+
+    <ltng:require styles="{!join(',',$Resource.BTDrag + '/BT-Drag.min.css')}"
+        scripts="{!join(',',$Resource.Jquery + '/jquery/lightning/js/jquery-3.2.1.min.js',$Resource.BTDrag+ '/BT-Drag.min.js')}"
+        afterScriptsLoaded="{!c.loadSections}" />
+
+
+    <!-- Attributes -->
+    <aura:attribute name="recordId" type="String" access="public" description="Questionnaire record Id" />
+    <aura:attribute name="questionnaire" type="Object" description="Questionnaire record object" />
+    <aura:attribute name="simpleQuestionnaire" type="Object"
+        description="Questionnaire sample record object used in force data service" />
+    <aura:attribute name="questionnaireError" type="String" description="Used to show force data service error" />
+    <aura:attribute name="overlayLib" type="String" description="Used to show force data service error" />
+    <aura:attribute name="isJsLoad" type="Boolean" default="false" description="Used to identify js is loaded" />
+    <aura:attribute name="questionnaireFields" type="List" description="Questionnaire fields from fieldset" />
+    <aura:attribute name="save" type="Aura.Action" default="{!c.save}"
+        description="Save action reference action used to call from child components" />
+    <aura:attribute name="defaultTreeFilterCondition" type="String" default=""
+        description="Default filter condition for the tree." />
+
+    <aura:attribute name="callerName" type="String" access="global" />
+    <lightning:notificationsLibrary aura:id="notifLib" />
+
+    <aura:handler name="init" value="{! this }" action="{! c.init }" />
+    <force:recordData aura:id="questionnaireRecordLoader" recordId="{!v.recordId}"
+        fields="Name,buildertek__Repository_Area__c" targetRecord="{!v.questionnaire}"
+        targetFields="{!v.simpleQuestionnaire}" targetError="{!v.questionnaireError}" />
+
+    <!-- Spinner  -->
+    <c:BT_Spinner />
+
+    <div class="questionnaire-container">
+        <lightning:layout>
+            <div class="page-left slds-size--3-of-12" style="max-width: 300px;overflow: auto;">
+                <lightning:layoutItem flexibility="auto" padding="around-medium">
+                    <aura:if isTrue="{!v.isJsLoad}">
+                        <c:BT_LightningTree treeType="Other" checkable="false" maxAutoExpandLevel="1"
+                            treeConfigurationName="Section Tree"
+                            defaultFilterCondition="{!v.defaultTreeFilterCondition}" />
+                    </aura:if>
+                </lightning:layoutItem>
+            </div>
+            <lightning:layoutItem flexibility="auto">
+                <div class="page-right" style="max-height: 960px;overflow: auto;min-height: 600px;">
+                    <div aura:id="container">
+                        <div class="av" id="{!v.recordId + 'sections'}">
+                            <c:BT_SectionList adId="{!v.recordId}" save="{!v.save}" callerName="{!v.callerName}" />
+                        </div>
+                    </div>
+                </div>
+            </lightning:layoutItem>
+        </lightning:layout>
+    </div>
+
+    <div>
+        <!--
+        <div class="slds-docked-form-footer">
+            <button type="button" class="slds-button slds-button_brand" onclick="{!c.goback}">Cancel</button>
+            <button type="button" class="slds-button slds-button_brand" onclick="{!c.save}">Save</button>
+        </div>
+		-->
+    </div>
+
+    <lightning:overlayLibrary aura:id="overlayLib" />
+</aura:component>

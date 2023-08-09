@@ -1,0 +1,9 @@
+.THIS rightcls{
+    float: right;
+}
+.THIS .slds-table .slds-truncate {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: pre-wrap
+}

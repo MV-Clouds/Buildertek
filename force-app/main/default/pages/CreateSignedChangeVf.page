@@ -1,0 +1,19 @@
+<apex:page standardController="Change_Order__c" recordSetVar="objects">
+   <html>
+      <body>
+    <apex:includeLightning />
+    <div  id="compContainer" />
+    <apex:param assignTo="{!rId}" value="{!$CurrentPage.parameters.id}"/>    
+  <script>     
+     $Lightning.use("c:CreateSignedChangeApp", function() {
+         $Lightning.createComponent("c:CreateSignedChange",
+            { recordId : '{!$CurrentPage.parameters.id}' },             
+             "compContainer",
+             function(cmp) {
+               console.log("c:VFPageApp loaded successfully in VF page");                          
+            });
+   });
+  </script>
+  </body>
+  </html>
+</apex:page>

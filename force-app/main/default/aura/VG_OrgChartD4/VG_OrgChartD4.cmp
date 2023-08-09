@@ -1,0 +1,12 @@
+<aura:component controller="VG_OrgChartUtilsCtrl" access="global" implements="forceCommunity:availableForAllPageTypes,force:appHostable,flexipage:availableForAllPageTypes"  >
+	
+    <ltng:require scripts="{!join(',',
+                           $Resource.carousel + '/carousel/jquery/jquery.js',
+                           $Resource.OrgChart + '/d3.js',
+                           $Resource.OrgChart + '/d3-tip.js')}"
+                  afterScriptsLoaded="{!c.onScriptsLoaded}"/>
+    
+    <div id="body">
+    </div>
+
+</aura:component>

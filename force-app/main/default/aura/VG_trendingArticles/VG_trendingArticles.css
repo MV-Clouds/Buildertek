@@ -1,0 +1,10 @@
+.THIS .articlestle{
+    font-weight:600;
+    color:#4a4a4a;
+}
+
+@media screen and (max-width: 760px) {
+    .THIS.mobileViewArticle{
+        display:none;
+    }
+}

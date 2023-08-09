@@ -1,0 +1,84 @@
+.THIS .groupHeader {
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    background-color: #fafaf9;
+    font-family: 'Salesforce Sans', 'Open Sans', Arial, sans-serif;
+    font-size: 18px;
+    color: #6b6d70;
+    font-weight: 400;
+    font-style: normal;
+    text-decoration: none;
+    margin: 0;
+    border: 0;
+    padding: 10px 15px 5px;
+    border-bottom-color: #dedbd7;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    line-height: 3;
+}
+
+.THIS .slds-icon_container_circle {
+    padding: 0px !important;
+    background-color: transparent !important;
+}
+
+.THIS .iconStyle {
+    transform: rotate(180deg) !important;
+    background-color: transparent !important;
+}
+
+.THIS .slds-icon-text-default {
+    fill: rgba(27, 82, 151, 1.0);
+}
+
+.THIS .addedLines {
+    background: lightblue;
+}
+
+.THIS .addedLines:hover {
+    background: lightblue !important;
+}
+
+.THIS .iconStyle svg {
+    fill: rgba(27, 82, 151, 1.0);
+    color: rgba(27, 82, 151, 1.0);
+    border-radius: 50%;
+    width: 1rem;
+    height: 1rem;
+    background-color: transparent !important;
+    transform: rotate(180deg) !important;
+}
+
+
+.THIS .favIconStyle {
+    transform: rotate(180deg) !important;
+    background-color: transparent !important;
+}
+
+
+.THIS .favIconStyle svg {
+    fill: #3f4042 !important;
+    color: #3f4042 !important;
+    border-radius: 50%;
+    width: 1.4rem;
+    height: 1.4rem;
+    background-color: transparent !important;
+    transform: rotate(180deg) !important;
+}
+
+.THIS .fontSize {
+    font-size: 14px !important;
+}
+
+.THIS slds-card__header,
+.THIS slds-grid {
+    display: none !important;
+}
+.THIS .custom-loading-text {
+    transform: rotate(-90deg);
+    position: absolute;
+    top: -0.5rem;
+    left: 1rem;
+    white-space: nowrap;
+    font-size: 20px;
+}

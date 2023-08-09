@@ -1,0 +1,53 @@
+<aura:component controller="VG_ContentService"  access="global" implements="forceCommunity:availableForAllPageTypes,force:hasRecordId,force:appHostable,flexipage:availableForAllPageTypes">
+    <aura:attribute name="title" type="string" default=" " />
+    <aura:attribute name="header" type="string" default=" " />
+    <aura:attribute name="text" type="string" default=" " />
+    <aura:attribute name="primarysummary" type="string" default=" " />
+    <aura:attribute name="actionLabel" type="string" default=" " />
+    <aura:attribute name="actionURL" type="string" default=" " />
+    <aura:attribute name="actionBgColor" type="string" default=" " />
+    <aura:attribute name="bgImage" type="string" default="068e0000000k6zIAAQ" />
+    <aura:attribute name="type" type="string" default=" " /> 
+    <aura:attribute name="showAll" type="string" default=" " />
+    <aura:attribute name="BGColor" type="String" default="FFFFFF"/>
+    <aura:attribute name="FGColor" type="String" default="000000"/>
+    <aura:attribute name="Gradient" type="String"/>    
+    <aura:attribute name="recordId1" type="String" default=""/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    
+    
+    <div class="slds-card slds-p-around-small slds-grid slds-grid--vertical subAnnouncement"  >
+     <!-- Added href to right-click work -->
+        <a href="{! 'announcementdetail?id='+v.recordId1}">
+            <div class="bg-img" style="{!empty(v.bgImage)?'background-color:#'+v.BGColor+';height: 177px;margin-top:0px':'background-color:#'+v.BGColor+';height: 177px;background-image:'+ ' linear-gradient('+v.Gradient+');background:url(/sfc/servlet.shepherd/version/renditionDownload?rendition=ORIGINAL_Png&amp;versionId='+v.bgImage+') no-repeat;background-position: center;background-size: cover;margin-top:0px'}">                
+                <h2 class="slds-text color-text-default" Style="{!'color:#'+v.FGColor +';font-family:gotham-medium;font-size:20px;padding:2px'}" >
+                    
+                    <aura:if isTrue="{! v.title !=null}">
+                        <div style="display:table;height: 177px;width: 100%;text-align:center;">
+                            <span style="display: table-cell;vertical-align: middle;">
+                                {!v.title}  
+                            </span>
+                        </div>
+                        
+                    </aura:if></h2>
+            </div><hr style="margin:0px"/>
+            <div style="height:60px;color:#4a4a4a;">
+                <div class="slds-p-top--x-small" style="height:60px;">
+                    <h2 class="slds-text-heading_medium  marker" >&nbsp;{!v.header}</h2>
+                </div>
+                
+                <!-- <div class="linetruncate   slds-p-top-x-small " >
+                  
+                    <p class=" slds-text-body-small"  >{!v.primarysummary}</p>
+                </div> -->
+                <div class="slds-card__footer" style="Padding:0px;margin:0px;font-family:gotham-medium;font-size:12px;padding-right: 4%;">
+                    <aura:if isTrue="{! and(v.actionLabel != null,v.actionLabel != '') }">
+                        <ui:outputURL value="{!v.actionURL}" label="{!v.actionLabel}"  class="slds-button slds-button-brand fontcolor"/>               
+                    </aura:if>
+                </div>
+            </div>
+        </a>
+    </div>
+    
+</aura:component>

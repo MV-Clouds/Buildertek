@@ -1,0 +1,125 @@
+.THIS.container {	width: 100%;
+    padding: 10px 0px;
+    margin: 0px;
+}
+
+.THIS .center {
+    margin: 0px auto;
+}
+
+.THIS .announcement{width:60%;font-size:16px;font-family:gotham-bold; }
+.THIS .viewstyle{test-decoration:none;font-size:14px;color:#F06C5C;font-family: Gotham-Medium;}
+.THIS .headerdiv{width:100%;display:flex; padding-top:1%;padding-bottom:1%;margin-left:24px;}
+
+.THIS .content {
+    max-width: 768px;
+    font-size: 12px;
+    color: #3c3d3e;
+}
+
+.THIS .slick-dots{
+    margin-top:5px;
+    bottom:0;
+    padding-bottom: 9px;
+    position: relative;
+}
+
+.THIS .slick-dots li.slick-active button:before {
+    color: #44B4C8 !important;
+}
+.THIS .slick-dots li button::before {
+    
+    color: #95d1dc;
+    opacity: 0.7;
+} 
+.THIS .prevBtn {
+    font-size: 0;
+    line-height: 0;
+    position: absolute;
+    top: 50%;
+    display: block;
+    width: 20px;
+    height: 20px;
+    margin-top: -10px;
+    padding: 0;
+    cursor: pointer;
+    color: grey;
+    border: none;
+    outline: none;
+    background: transparent;
+    left: -25px;
+}
+
+.THIS .nextBtn {
+    font-size: 0;
+    line-height: 0;
+    position: absolute;
+    top: 50%;
+    display: block;
+    width: 20px;
+    height: 20px;
+    margin-top: -10px;
+    padding: 0;
+    cursor: pointer;
+    color: grey;
+    border: none;
+    outline: none;
+    background: transparent;
+    right: -25px;
+}
+
+.THIS .slick-prev:before {
+    color:#F05F4D;
+    font-size: 30px;
+}
+.THIS .slick-next:before {
+    color:#F05F4D;
+    font-size: 30px;
+}
+.THIS .slick-prev{
+    left: 6px;
+    top: 146px;
+}
+
+.THIS .slick-dots li button::before {
+    font-size: 11px; }
+
+.THIS .slick-next {
+    top: 146px;
+    right: 22px;
+}
+@media screen and (max-width: 768px) {
+    .THIS .slick-prev {
+        display:none !important;
+    }
+    .THIS .slick-next {
+        display:none !important;
+    }
+    .THIS .slick-dots{
+        margin-top: 3%;
+    }
+    
+    .THIS .slick-slider{
+        margin-left:0px !important;
+        margin-right:0px !important;
+        margin-bottom: 30px !important;
+    }
+    
+}
+
+@media screen and (max-width: 760px) {
+    .THIS .viewstyle{
+        test-decoration:none;
+        font-size:14px;
+        color:#F06C5C;
+        font-family: Gotham-Medium;
+        padding-right: 27px;
+    }
+    
+    .THIS .announcement{
+        margin-left: -8px;
+        width: 65%;
+        font-size: 16px;
+        font-family: gotham-bold;
+    }
+}

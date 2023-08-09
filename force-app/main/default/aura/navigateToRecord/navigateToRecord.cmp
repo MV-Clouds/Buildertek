@@ -1,0 +1,3 @@
+<aura:component implements="force:lightningQuickAction,lightning:availableForFlowActions,lightning:availableForFlowActions,flexipage:availableForAllPageTypes,lightning:availableForFlowScreens" access="global" >
+    <aura:attribute name="recId" type="String"/>
+</aura:component>

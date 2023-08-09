@@ -1,0 +1,67 @@
+<aura:component  implements="force:hasRecordId,force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable,lightning:actionOverride,force:hasSObjectName" access="global" controller="CreateScheduleFromQuoteController">
+
+    <aura:attribute name="recordError" type="Object" />
+    <aura:attribute name="quoteRecord" type="Object" />
+    <aura:attribute name="recordFields" type="Object" />
+    <aura:attribute name="isDisabled" type="Boolean" default="false" />
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+    <aura:attribute name="scheduleId" type="Id" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="sObjectName" type="String" />
+
+
+
+
+
+    <lightning:navigation aura:id="navService"/>
+    <ltng:require styles="{!$Resource.ModalPreviewCSS}"/>
+
+    <aura:html tag="style">
+        .cuf-content {
+             padding:  0rem !important;
+        }
+        .slds-p-around--medium {
+             padding: 0rem !important;
+        }
+        .slds-modal__content {
+            overflow: hidden !important;
+        }
+    </aura:html>
+
+    <force:recordData aura:id="recordViewer"
+    layoutType="FULL"
+    recordId="{!v.recordId}"
+    targetError="{!v.recordError}"
+    targetRecord="{!v.quoteRecord}"
+    targetFields="{!v.recordFields}"
+    mode="VIEW" />
+
+    <header class="slds-modal__header" style="font-size:17px;">
+        Create Schedule
+    </header>
+    <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__Schedule__c" onsubmit="{!c.handleSubmit}" onsuccess="{!c.onRecordSuccess}" onerror="{!c.handleError}">
+        <div class="slds-modal__content " id="modal-content-id-1" style='padding:1rem' >
+            <lightning:inputField   fieldName="buildertek__Description__c" required="true" /> 
+            <lightning:inputField  fieldName="buildertek__Initial_Start_Date__c" required="true" />
+            <lightning:inputField fieldName="buildertek__Project_Managers__c" />
+            <lightning:inputField fieldName="buildertek__Project__c" value="{!v.recordFields.buildertek__Project__c}"  />
+
+        </div>
+        <footer aura:id="footer" class="slds-modal__footer">
+            <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{! c.closeModel }" />
+            <lightning:button variant="brand" type="submit" name="save" label="Save" disabled="{!v.isDisabled}" />
+        </footer>
+    </lightning:recordEditForm>
+
+
+    <aura:if isTrue="{!v.isLoading}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </aura:if>
+
+</aura:component>

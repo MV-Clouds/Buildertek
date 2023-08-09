@@ -1,0 +1,73 @@
+<aura:component controller="SendPaymentEmailController"  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global" >    
+    <!--<aura:html tag="style">
+        .slds-modal__container {
+        min-width: 60vw;
+        }
+    </aura:html>--> 
+    <aura:attribute name="myMessage" type="String" default='hidden'/>
+    <aura:attribute name="sub" type="String" default=''/>        
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="recordContactEmail" type="String" /> 
+    <aura:attribute name="recordCarrier" type="String" />             
+    <aura:attribute name="SendMailBox" type="Boolean" default="false"/>
+    <aura:attribute name="Emaillink" type="String" default=""/>
+    <aura:attribute name="IsSpinner" type="Boolean" default="false" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />  
+    <lightning:workspaceAPI aura:id="workspace" />   
+    <aura:html tag="style">
+        .quick-actions-panel {
+        overflow: hidden !important;
+        }
+        .slds-modal__content{
+        overflow: hidden !important;
+        }
+    </aura:html> 
+    <lightning:notificationsLibrary aura:id="notifLib" />
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/>
+     <aura:if isTrue="{!v.IsSpinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                    <b>Processing, Please Wait</b>
+                </div>
+                
+            </div>
+        </div>
+    </aura:if>
+    <aura:if isTrue="{!v.SendMailBox}">
+        <div class="slds-modal__content ">
+            <div class="slds slds-scope">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" alternativeText="close12"
+                                          variant="bare-inverse" class="slds-modal__close" />
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Send Payment</h2>
+                </header>
+                <div class="slds-modal__content" id="modal-content-id-1" style="height:100%">
+                    <div class = "slds-text-align_center" >
+                        <br/>
+                        <br/>
+                        <label  style="font-size:15px;"> Are you sure you want to send this payment link to <b>{!v.Emaillink}</b>?  </label>
+                        <br/>
+                        <br/>
+                        <br/>
+                    </div>
+                    <div class="slds-col modal-footer slds-modal__footer slds-buttoncustom" >
+                        <lightning:button variant="brand"
+                                          label="Yes"
+                                          title="Yes"
+                                          onclick="{!c.Send }"/>
+                        <lightning:button variant="neutral"
+                                          label="No"
+                                          title="No"
+                                          onclick="{!c.Cancel}"/>
+                    </div> 
+                </div>
+            </div>
+        </div>
+    </aura:if>
+
+    
+</aura:component>

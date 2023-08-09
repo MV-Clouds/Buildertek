@@ -1,0 +1,18 @@
+.THIS .slds-page-header{
+    padding: 0.3rem !important;
+    background: rgb(243, 242, 242) !important;
+    border-bottom: none !important;
+    background-clip: unset !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+.THIS .slds-input-has-icon_left-right .slds-input__icon_left {
+    display: none !important;
+}
+.THIS .slds-pill__remove svg{
+    margin-top: -52px !important;
+}
+.THIS .slds-pill__action {
+    min-width: 200px !important;
+    text-overflow: none !important;
+}

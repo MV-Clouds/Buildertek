@@ -1,0 +1,142 @@
+<aura:component controller="ShowSentEmailBodyController" implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:lightningQuickActionWithoutHeader" access="global">
+    <aura:attribute name="recordId" type="Object"  />
+    <aura:attribute name="submittalIntialRec" type="Object" />
+    <aura:attribute name="submittalFinalRec" type="Object" />
+     <aura:attribute name="IsInitialEmail" type="Boolean" /> 
+     <aura:attribute name="IsLastEmail" type="Boolean" />
+    <aura:attribute name="emailList" type="List" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <div class="slds" style="background:rgb(255, 255, 255);">
+        <table class="slds-table" width="100%">
+            <tr>
+                <th width="50%">Initial Email</th>
+                <th width="50%">Last Email</th>
+            </tr>
+        </table>
+        <div class="slds-grid slds-wrap">
+            <div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-2 slds-p-left--medium slds-p-right--medium">
+              <div class="slds-timeline__item_expandable slds-timeline__item_email slds-is-open">
+                    <span class="slds-assistive-text">email</span>
+                    <div class="slds-media">
+                        <div class="slds-media__figure">
+                            <div class="slds-icon_container slds-icon-standard-email slds-timeline__icon" title="email">
+                                <lightning:icon iconName="standard:email"/>
+                            </div>
+                        </div>
+                        <div class="slds-media__body">
+                            <aura:if isTrue="{!v.IsInitialEmail}">
+                                <div class="slds-grid slds-grid_align-spread slds-timeline__trigger">
+                                    <div class="slds-grid slds-grid_vertical-align-center slds-truncate_container_75 slds-no-space">
+                                        <h3 class="slds-truncate" title="Re: Mobile conversation on Monday with the new global team">
+                                            <a href="javascript:void(0);">
+                                                <strong>  {!v.submittalIntialRec.Subject} </strong>
+                                            </a>
+                                        </h3>
+                                        <div class="slds-no-flex">
+                                            <span class="slds-icon_container slds-icon-utility-groups" title="Group email">
+                                                <lightning:icon class="icongreen" iconName="utility:arrowup"/>
+                                                <span class="slds-assistive-text">Group email</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="slds-timeline__actions slds-timeline__actions_inline">
+                                        <p class="slds-timeline__date"> 
+                                            <lightning:formattedDateTime value="{!v.submittalIntialRec.MessageDate}" year="numeric" month="numeric" day="numeric" hour="2-digit" minute="2-digit" timeZoneName="short" />
+                                            
+                                        </p>
+                                    </div>
+                                </div>
+                                <p class="slds-m-horizontal_xx-small"><a href="javascript:void(0);">You</a> emailed <a href="javascript:void(0);">{!v.submittalIntialRec.RelatedTo.Name}</a> </p>
+                                <article class="slds-box slds-timeline__item_details slds-theme_shade slds-m-top_x-small slds-m-horizontal_xx-small slds-p-around_medium" id="email-item-narrow"
+                                         aria-hidden="false">
+                                    <ul class="slds-list_horizontal slds-wrap">
+                                        <li class="slds-grid slds-grid--vertical slds-size_1-of-2 slds-p-bottom_small">
+                                            <span class="slds-text-title slds-p-bottom_x-small">From Address</span>
+                                            <span class="slds-text-body_medium slds-truncate" title="Jackie Dewar"><a href="javascript:void(0);">{!v.submittalIntialRec.FromAddress}</a></span>
+                                        </li>
+                                        <li class="slds-grid slds-grid--vertical slds-size_1-of-2 slds-p-bottom_small">
+                                            <span class="slds-text-title slds-p-bottom_x-small">To Address</span>
+                                            <span class="slds-text-body_medium slds-truncate"><a href="javascript:void(0);">{!v.submittalIntialRec.ToAddress}</a></span>
+                                        </li>
+                                    </ul>
+                                    <div>
+                                        <span class="slds-text-title">Text Body</span>
+                                        <p class="slds-p-top_x-small">                                        
+                                            <aura:unescapedHtml value="{!v.submittalIntialRec.HtmlBody}"/>
+                                        </p>
+                                    </div>
+                                    <br/>                                
+                                </article>
+                                <aura:set attribute="else">
+                                    <p>No past activities</p>
+                                </aura:set>
+                            </aura:if>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-2 slds-p-left--medium slds-p-right--medium">
+                <div class="slds-timeline__item_expandable slds-timeline__item_email slds-is-open">
+                    <span class="slds-assistive-text">email</span>
+                    <div class="slds-media">
+                        <div class="slds-media__figure">
+                            <div class="slds-icon_container slds-icon-standard-email slds-timeline__icon" title="email">
+                                <lightning:icon iconName="standard:email"/>
+                            </div>
+                        </div>
+                        <div class="slds-media__body">
+                            <aura:if isTrue="{!v.IsLastEmail}">
+                                <div class="slds-grid slds-grid_align-spread slds-timeline__trigger">
+                                    <div class="slds-grid slds-grid_vertical-align-center slds-truncate_container_75 slds-no-space">
+                                        <h3 class="slds-truncate" title="Re: Mobile conversation on Monday with the new global team">
+                                            <a href="javascript:void(0);">
+                                                <strong>  {!v.submittalFinalRec.Subject} </strong>
+                                            </a>
+                                        </h3>
+                                        <div class="slds-no-flex">
+                                            <span class="slds-icon_container slds-icon-utility-groups" title="Group email">
+                                                <lightning:icon class="icongreen" iconName="utility:arrowup"/>
+                                                <span class="slds-assistive-text">Group email</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="slds-timeline__actions slds-timeline__actions_inline">
+                                        <p class="slds-timeline__date"> 
+                                            <lightning:formattedDateTime value="{!v.submittalFinalRec.MessageDate}" year="numeric" month="numeric" day="numeric" hour="2-digit" minute="2-digit" timeZoneName="short" />
+                                            
+                                        </p>
+                                    </div>
+                                </div>
+                                <p class="slds-m-horizontal_xx-small"><a href="javascript:void(0);">You</a> emailed <a href="javascript:void(0);">{!v.submittalFinalRec.RelatedTo.Name}</a> </p>
+                                <article class="slds-box slds-timeline__item_details slds-theme_shade slds-m-top_x-small slds-m-horizontal_xx-small slds-p-around_medium" id="email-item-narrow"
+                                     aria-hidden="false">
+                                <ul class="slds-list_horizontal slds-wrap">
+                                    <li class="slds-grid slds-grid--vertical slds-size_1-of-2 slds-p-bottom_small">
+                                        <span class="slds-text-title slds-p-bottom_x-small">From Address</span>
+                                        <span class="slds-text-body_medium slds-truncate" title="Jackie Dewar"><a href="javascript:void(0);">{!v.submittalFinalRec.FromAddress}</a></span>
+                                    </li>
+                                    <li class="slds-grid slds-grid--vertical slds-size_1-of-2 slds-p-bottom_small">
+                                        <span class="slds-text-title slds-p-bottom_x-small">To Address</span>
+                                        <span class="slds-text-body_medium slds-truncate"><a href="javascript:void(0);">{!v.submittalFinalRec.ToAddress}</a></span>
+                                    </li>
+                                </ul>
+                                <div>
+                                    <span class="slds-text-title">Text Body</span>
+                                    <p class="slds-p-top_x-small">                                        
+                                        <aura:unescapedHtml value="{!v.submittalFinalRec.HtmlBody}"/>
+                                    </p>
+                                </div>
+                                <br/>                                
+                            </article>
+                                <aura:set attribute="else">
+                                    <p>No past activities</p>
+                                </aura:set>
+                            </aura:if>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> 
+</aura:component>

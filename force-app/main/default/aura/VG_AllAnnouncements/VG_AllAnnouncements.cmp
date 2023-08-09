@@ -1,0 +1,153 @@
+<aura:component implements="forceCommunity:availableForAllPageTypes,force:hasRecordId" access="global" controller="VG_AnnouncementsController">	
+    <aura:attribute name="Announcements" type="EC_Content__C[]" />
+  	<aura:attribute name="months" type="Object[]" />
+  	<aura:attribute name="years" type="Object[]" /> 
+	<aura:attribute name="selectedMonths" type="Integer[]" />
+	<aura:attribute name="selectedYears" type="Integer[]" />
+	<aura:attribute name="recordId1" type="Id" />
+    <aura:attribute name="siteName" type="String" />
+	
+	
+    <lightning:card title="" class="slds-card_boundary Cardstyle">
+        <div class="slds-p-left_large slds-p-right_medium" style="padding-left: 1rem;padding-bottom:.5%">
+    <lightning:breadcrumbs>        
+        <lightning:breadcrumb label="HOME PAGE"  onclick="{! c.navigateToHome }"/>
+       <!-- <lightning:breadcrumb label="ANNOUNCEMENTS"  onclick="{! c.navigateToHome }"/>-->
+    	<lightning:breadcrumb label="ALL ANNOUNCEMENTS"  onclick="{! c.navigateToAllAnnouncements }"/>
+    </lightning:breadcrumbs>
+         </div>
+    </lightning:card>
+    
+     <!-- Test Methods -->
+    <aura:method name="setMonth" action="{!c.setMonFiltersAPI}" access="public">
+        <aura:attribute name="isChecked" type="Boolean" />
+        <aura:attribute name="name" type="Integer" />
+    </aura:method>
+     <aura:method name="setYear" action="{!c.setYearFiltersAPI}" access="public">
+        <aura:attribute name="isChecked" type="Boolean" />
+        <aura:attribute name="label" type="Integer" />
+    </aura:method>
+	
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}" />
+	
+	
+	<div class="slds-box" style="position:relative; border:0;padding-top: unset; ">
+    <div class="slds-page-header" style="background:none;padding: unset;">
+      <div class="slds-grid slds-wrap">
+         <div class="slds-large-size--1-of-2 titleContainer slds-small-size--1-of-1 slds-p-bottom--small" >
+          <h1 class="slds-page-header__title" style="font-size: 1.5rem;padding: unset;">Announcements     </h1>
+        </div>
+        <div class="slds-large-size--1-of-2 slds-small-size--1-of-1 buttonContainer">
+          <div class="slds-form--inline">
+            <div class="slds-form-element">
+              <div class="slds-form-element__control">
+                <lightning:buttonGroup >
+                  <lightning:input aura:id="employeeSearchField" class="employeeSearch" type="search" label=" " name="search" placeholder="Search Announcements" onchange="{!c.searchAnnouncements}" />
+                  <lightning:buttonIcon class="filterButton" iconName="utility:filterList" alternativeText="Filter Icon" onclick="{!c.showFilterBar}" />
+                </lightning:buttonGroup>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+ <div></div>
+    </div>
+    <!-- Filter sidebar for mobile devices -->
+    <div id="mobileFilterBar" class="slds-box slds-m-top--none smallFilterBar">
+      <div class="slds-grid--vertical">
+        <h1 class="slds-text-heading--small slds-border--bottom slds-p-bottom--small">Filters</h1>
+      </div>
+      <div class="slds-section slds-border--bottom slds-p-around--small">
+        <h4 class="slds-p-bottom--small"  aura:id="filterSectionHeading">Months </h4>
+        <ul aura:id="ulId">
+          <aura:iteration items="{!v.months}" var="loc" indexVar="indx">
+            <li>
+              <lightning:input aura:id="filterCheckbox" class="filterCheckbox" type="checkbox" label="{!loc}" name="{!indx+1}" checked="false" onchange="{!c.setMonFilters}" />
+            </li>
+          </aura:iteration>
+        </ul>
+      </div>
+      <div class="slds-section slds-p-around--small">
+        <h4 class="slds-text-title--caps slds-p-bottom--small"  aura:id="filterSectionHeading">Years</h4>
+        <ul>
+          <aura:iteration items="{!v.years}" var="dept">
+            <li>
+              <lightning:input aura:id="filterCheckbox" class="filterCheckbox" type="checkbox" label="{!dept}" name="{!dept}" checked="false" onchange="{!c.setYearFilters}" />
+            </li>
+          </aura:iteration>
+        </ul>
+      </div>
+    </div>
+    <!--  Filter section for desktop -->
+    <div class="slds-grid">
+      <div class="slds-box slds-size--1-of-4 slds-m-top--large largeFilterBar">
+        <div class="slds-grid--vertical">
+          <h1 class="slds-text-heading--small slds-border--bottom slds-p-bottom--small">Filters</h1>
+          <div class="slds-section slds-border--bottom slds-p-around--small">
+            <h4 class="slds-text-title--caps slds-p-bottom--small" style="font-size: .85rem;" aura:id="filterSectionHeading">Months</h4>
+            <ul>
+              <aura:iteration items="{!v.months}" var="loc" indexVar="indx">
+                <li style="padding-bottom:0.6%">
+                  <lightning:input class="filterCheckbox" type="checkbox" label="{!loc}" name="{!indx+1}" checked="false" onchange="{!c.setMonFilters}" />
+                </li>
+              </aura:iteration>
+            </ul>
+          </div>
+          <div class="slds-section slds-p-around--small">
+            <h4 class="slds-text-title--caps slds-p-bottom--small" style="font-size: .85rem;">Years</h4>
+            <ul>
+              <aura:iteration items="{!v.years}" var="dept">
+                <li style="padding-bottom:0.6%">
+                  <lightning:input class="filterCheckbox" type="checkbox" label="{!dept}" name="{!dept}" checked="false" onchange="{!c.setYearFilters}" />
+                </li>
+              </aura:iteration>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <!-- Container for employee detail cards-->
+    <div class="slds-box slds-p-around--none slds-medium-size--5-of-4 slds-small-size--1-of-1 slds-x-small-size--1-of-1 slds-grow" style="">
+       
+ 
+    <div style="height:auto;padding-left: 0.4%;" >
+<div   style="font-size:1.2rem;width:100%;transition: 0.3s;margin: 0.2%;">
+   
+    <div id="cardCarousel10" class="slds--horizontal--large  carousel" style="margin-bottom:0px" >
+        <aura:if isTrue="{!v.Announcements.length==0}">
+                        <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error slds-m-top_x-small slds-box slds-m-left_xxx-small " role="alert">
+                            <span class="slds-assistive-text">error</span>
+                            <h2>No Records Found</h2>
+                        </div>
+         </aura:if> 
+    
+        <aura:iteration items="{!v.Announcements}" var="card" >
+            
+		<c:VG_Card_SubAnnouncements title="{!card.Primary_Text__c}"
+                       header="{!not(empty(card.Secondary_Text__c)) ? card.Secondary_Text__c : card.Primary_Summary__c}"
+                       text="{!card.Secondary_Summary__c}"
+                       primarysummary ="{!card.Primary_Summary__c}"               
+                       actionURL="{!card.Action_URL__c}"
+                       actionBgColor="{!card.Action_BgColor__c}"
+                       bgImage="{!(and(not(empty(card.ContentDocumentLinks[0])),card.ContentDocumentLinks[0].ContentDocument!= null))? card.ContentDocumentLinks[0].ContentDocument.LatestPublishedVersionId:''}"
+                       actionLabel="{!card.Action_Label__c}"
+                       type="Sub_Announcements"
+                       showAll="{!equals(v.cardType,'small')?false:true}"
+                       BGColor="{!empty(card.Primary_BgColor__c)?'FFFFFF':card.Primary_BgColor__c}"
+                       FGColor="{!empty(card.Primary_FgColor__c)?'4A4A4A':card.Primary_FgColor__c}"
+                       recordId1="{!card.Id}" 
+                       Gradient="{!card.Background_Gradient__c}"
+                                         />
+        </aura:iteration>
+            
+    </div>
+    </div></div>
+         
+		  
+        </div>
+      </div>
+    </div>
+  
+	
+    <!--<c:VG_SubAnnouncements/> -->
+	
+</aura:component>

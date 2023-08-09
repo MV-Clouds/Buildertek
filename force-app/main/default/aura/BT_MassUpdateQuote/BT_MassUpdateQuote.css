@@ -1,0 +1,35 @@
+.THIS lightning-icon.some-indicator {
+  /*  background-color: #006DCC; 
+     background-color: red; */
+    width: 2rem;
+    height: 2rem;
+}
+
+.THIS lightning-icon.some-indicator>lightning-primitive-icon>svg>use {
+    fill: white;
+    background-color: #006DCC;
+    width: 2rem;
+    height: 2rem;
+}
+
+.THIS .modal {
+    display: block !important;
+}
+
+.THIS .modal-dialog {
+    overflow-y: initial !important
+}
+
+.THIS .modal-body {
+    height: 80vh;
+    overflow-y: auto;
+}
+.THIS .slds-modal__container{
+	width: 80% !important;      
+	max-width: 80% !important;
+}
+
+.THIS .table-Header{
+    background-color:rgba(27, 82, 151, 1.0); 
+    color:white;
+}

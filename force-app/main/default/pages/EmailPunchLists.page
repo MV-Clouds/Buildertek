@@ -1,0 +1,8 @@
+<apex:page standardController="Punch_List__c" recordSetVar="punchLists" extensions="EmailPunchListsController" docType="html-5.0" sidebar="false" standardStylesheets="false" showHeader="false" applyHtmlTag="true">
+     <apex:includeLightning />
+    <div id="lightning" ></div> 
+    <script>
+        $Lightning.use("c:BT_EmailPunchListsApplication", function() {$Lightning.createComponent("c:BT_EmailPunchLists",
+          { RecordId : '{!parentId}' },"lightning",function(cmp) {});});
+    </script>
+</apex:page>

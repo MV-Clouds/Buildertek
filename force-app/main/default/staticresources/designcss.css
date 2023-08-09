@@ -1,0 +1,22 @@
+lightning-accordion-section .slds-accordion__summary-action {
+    font-size: 16px !important;
+    font-family: sans-serif !important;
+    font-weight: 500 !important;
+}
+input {
+    line-height: 40px !important;
+}
+@media (max-width: 1400px) {
+    input {
+        line-height: 10px !important;
+    }
+    .slds-textarea {
+        min-height: 100px;
+    }
+  }
+  .slds-size_3-of-4{
+    width: 65% !important;
+  }
+  .slds-size_1-of-4 {
+    width: 35% !important;
+}

@@ -1,0 +1,21 @@
+.THIS .fm_table {
+	overflow-x: scroll !important;
+    height: 350px !important;
+}
+.THIS .fm_table table th{
+	/* padding-left: 8px !important; */
+}
+
+.THIS .fmTableCol {
+	width : 150px;
+}
+.THIS .searchSection {
+    display : inline-flex;
+    margin-bottom: 10px;
+}
+
+.THIS .fm_selection_btn {
+ 	height: 32px !important;
+	margin-top: 17px;
+    margin-left: 10px; 
+}

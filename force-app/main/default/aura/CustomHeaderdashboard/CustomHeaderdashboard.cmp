@@ -1,0 +1,5 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction,forceCommunity:availableForAllPageTypes" access="global">
+    <div class="" Style="margin-top: 25px;text-align: center;font-size: 22px;font-weight: 600;">
+   		<h1>Contract Dashboard</h1>
+    </div>
+</aura:component>

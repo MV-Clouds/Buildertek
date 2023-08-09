@@ -1,0 +1,81 @@
+<aura:component controller="ChecklistSettings" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+   <aura:attribute name="showLoadingSpinner" type="boolean" default="false" />
+  
+   <aura:attribute name="fileName" type="String" default="" />
+     <aura:attribute name="imgUrl" type="String" default=""/>
+    <aura:attribute name="Url" type="String" default=""/>
+    <aura:attribute name="Text" type="String" default="
+                                                       "/>
+     <aura:method name="doinit"  action="{!c.doInit}"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <div style="background:white;margin:-12px;padding:12px;height:86vh;overflow:auto">
+        <div class="slds-page-header" style="background:white">
+            <div class="slds-page-header__row">
+                <div class="slds-page-header__col-title">
+                    <div class="slds-media"> 
+                        <div class="slds-media__body">
+                            <div class="slds-page-header__name">
+                                <div class="slds-page-header__name-title">
+                                    <h1>
+                                        <span class="slds-page-header__title slds-truncate" title="" style="font-weight: 600;">Checklist Settings</span>
+                                    </h1>
+                                </div>
+                                
+                            </div>        
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> 
+        
+ 
+
+ 
+        <div style="border:1px solid lightgray;border-radius:5px;padding:10px;margin-top:10px">
+         <lightning:layout >
+              <lightning:layoutItem size="1" padding="around-small">
+                  <div ><b>Site URL</b></div>
+             </lightning:layoutItem>
+              <lightning:layoutItem  size="5"  padding="around-small">
+                  <lightning:input name="siteURL" variant="label-hidden"  value="{!v.Url}"/>
+             </lightning:layoutItem>
+             <lightning:layoutItem size="1" padding="around-small">
+                  <div ><b>Subject Footer</b></div>
+             </lightning:layoutItem>
+             <lightning:layoutItem size="5" >
+                  
+                 <lightning:textarea name="Text Area" value="{!v.Text}"  />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+             </lightning:layoutItem>
+        </lightning:layout>
+             <lightning:button variant="brand" label="Update" title="Brand action" onclick="{! c.updateCheckList }" />
+        </div>
+        
+        
+        <div style="border:1px solid lightgray;border-radius:5px;padding:10px;margin-top:10px">
+  			<lightning:layout multipleRows = "true">
+                <lightning:layoutitem size="3">
+                    <div style="padding-bottom: 5px;"><label style="font-size:15px;font-weight:600">Select Logo</label></div>
+                    <div><lightning:input aura:id="fileId" onchange="{!c.handleFilesChange}" type="file" variant="label-hidden" name="file" label="" multiple="false" accept="image/png,image/jpeg,image/jpg"/>
+                    <div class="slds-text-body_small slds-text-color_error">{!v.fileName} </div>
+         
+                        <!--use aura:if for show-hide the loading spinner image--> 
+                       <aura:if isTrue="{!v.showLoadingSpinner}">
+                          <div class="slds-text-body_small slds-text-color_error">Uploading... 
+                             <img src="/auraFW/resources/aura/images/spinner.gif" class="spinner-img" alt="Loading"/>'
+                          </div>
+                        </aura:if><br/>
+                        <button class="slds-button slds-button_brand" onclick="{!c.doSave}">Save</button>
+                    </div>
+                </lightning:layoutitem>
+                <lightning:layoutitem size="6">
+                     <div style="width: 100%;text-align: center;margin-bottom: 20px;">
+                          <img src="{!v.imgUrl}" id="logoImg" />
+                     </div>
+                </lightning:layoutitem>
+ 			</lightning:layout>
+ 
+   			
+        </div>
+    </div>
+</aura:component>

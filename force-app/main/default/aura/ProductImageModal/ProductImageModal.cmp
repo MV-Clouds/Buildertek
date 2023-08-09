@@ -1,0 +1,56 @@
+<aura:component controller="AddProductForSSTL" access="global">
+    
+    <aura:attribute name="recordId" type="String" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="listOfImages" type="List" default="[]" />
+    <aura:attribute name="isSpinner" type="Boolean" default="true" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+    <aura:html tag="style">
+        .slds-modal__content{
+        height:unset !important;
+        max-height:unset !important;
+        }
+        .slds-modal__container{
+        max-width: 80% !important;
+        min-width: 80% !important;
+        width: 80% !important;
+        }
+    </aura:html>
+    <aura:if isTrue="{!v.isSpinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative"
+                 role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                 <div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+            </div>
+        </div>
+    </aura:if>
+    <aura:if isTrue="{!v.listOfImages.length > 0}">
+        <div style="width:100% !important;justify-content: center !important;">
+            <lightning:layout horizontalAlign="space" verticalAlign="center" multipleRows="true">
+                <aura:iteration items="{!v.listOfImages}" var="img">
+                    <lightning:layoutItem flexibility="auto" size="12" smallDeviceSize="6" mediumDeviceSize="6"
+                                          largeDeviceSize="6" padding="around-small" >
+                        <div style="text-align: center;">
+                            <img src="{!('/sfc/servlet.shepherd/version/download/'+img.Id)}"
+                                 style="width:60vh; height:40vh;" />
+                        </div>
+                    </lightning:layoutItem>
+                </aura:iteration>
+            </lightning:layout>
+        </div>
+        <aura:set attribute="else">
+            <div class="slds-align_absolute-center slds-m-around_xx-large">
+                <p class="slds-text-title_bold" style="text-align: center;">
+                    No Product Images found.
+                </p>
+            </div>
+            <div class="slds-m-around_xx-large slds-align_absolute-center">
+            </div>
+        </aura:set>
+    </aura:if>
+</aura:component>

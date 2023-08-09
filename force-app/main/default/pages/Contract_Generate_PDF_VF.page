@@ -1,0 +1,181 @@
+<apex:page standardController="Contract__c" extensions="contractGeneratePDF" sidebar="false" showHeader="false" standardStyleSheets="true" applyBodyTag="false" readOnly="false" >
+    <apex:form id="frm">
+    <apex:pageMessages />
+
+        <apex:stylesheet value="{!URLFOR($Resource.Doc_css, '/css/3.3.5-bootstrap.min.css')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.Doc_js, '/js/3.3.5-bootstrap.min.js')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.Doc_js, '/js/jquery-1.8.2.js')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.Doc_js, '/js/1.9.0-jquery-ui.js')}"/>
+        <apex:stylesheet value="{!URLFOR($Resource.Doc_css, '/css/1.9.1-themes-base-jquery-ui.css')}"/>         
+        
+        
+        <link href="{!$Resource.EmailTagStyle}" rel="stylesheet" type="text/css"/>
+        <script src="{!$Resource.EmailTagJS}" type="text/javascript" charset="utf-8"></script>
+        <c:QuotePDF_Styles />
+        
+        
+        <script>
+
+        </script>
+        <script> 
+         function navigateTo(sObjectId) {
+          if ((typeof sforce != 'undefined') && sforce && (!!sforce.one)){
+              if(sObjectId != ''){
+                sforce.one.navigateToSObject(sObjectId, 'detail');
+              }
+            } 
+            else {
+                 var url = location.href;
+                 var baseURL = url.substring(0, url.indexOf('/', 14));
+                 if(sObjectId != ''){
+                    window.top.location.href = baseURL+ '/'+sObjectId;
+                 }
+                 
+            }         
+         }   
+        function myFunction() {
+            paraFunction(document.getElementById("mySingleField").value);
+        }
+        </script>
+        
+                <style>
+            @media (min-width: 768px) { .container { max-width: 750px; } }
+        .user_name{
+        font-size:14px;
+        font-weight: bold;
+        }
+        .comments-list .media{
+        border-bottom: 1px dotted #ccc;
+        }
+ul.tagit {
+max-height:100px;
+overflow:auto;
+}
+.form-control{
+font-size:15px;
+}
+.myClass{
+color:white !important;
+background:#4c93b1 !important;
+border: 1px solid #36a0fe !important;
+border-bottom-color: #6e9dc7 !important;
+margin: 4px !important;
+}
+.inputButton{
+    color:white !important;
+    background:#4c93b1 !important;
+    border: 1px solid #36a0fe !important;
+    border-bottom-color: #6e9dc7 !important;
+    margin: 4px !important;
+    font-weight: bold;
+    font-size: .9em;
+    border-radius: 3px;
+    padding: 4px 3px;
+}
+    
+        </style>
+
+
+        <div class="container">
+        <apex:outputPanel rendered="{!if(id != null && selectedid != null,true,false)}">
+            <div class="container-fluid">
+                   <div class="row" style="border:2px solid silver;">   
+                        <apex:iframe src="/apex/Contract_Template_PDF_VF?qid={!id}&qtid={!selectedid}" height="400px" scrolling="true" id="theIframe"/>
+                   </div>
+          <apex:outputPanel id="opp2">      
+        <div class="row">
+       
+                <script type="text/javascript">
+                  var j$ = jQuery.noConflict();
+                 
+                    var names =[];
+                     <apex:repeat value="{!userList}" var="a">
+                           names.push('{!JSENCODE(HTMLENCODE(a.name))}');
+                    </apex:repeat>
+                    j$(document).ready(function(){
+                        j$("[id$=mydata]").autocomplete({
+                            source : names
+                        }); 
+                    });
+                    
+               j$(function(){
+                 
+                j$("[id$=singleFieldTags]").tagit({
+                    
+                    singleField: true,
+                    singleFieldNode: j$("[id$=mySingleField]")
+                });            
+            });
+            
+            
+            j$(document).ready(function(){
+            j$(".ui-widget-content").attr("placeholder","Enter Email Address");
+            });
+              function sendMail() {
+                paraFunction(document.getElementById("mySingleField").value);
+              }
+              function userMails(){
+                paraFunction1(document.getElementById("mySingleField").value); 
+              }
+            
+               </script>
+               <apex:actionFunction name="paraFunction" action="{!SendPDF}" rerender="frm,redirectPanel">
+                   <apex:param assignTo="{!sendCC}" name="interviewDate" value="" />
+               </apex:actionFunction> 
+               <apex:actionFunction name="paraFunction1" action="{!userValue}" reRender="opp2">
+                   <apex:param assignTo="{!sendCC}" name="interviewDate" value="" />
+               </apex:actionFunction> 
+                
+                    <div class="col-sm-6">
+                     <div >
+                            <apex:inputText onblur="userMails()" html-placeholder="Search User Email" styleClass="form-control" id="mydata" value="{!inputtext}" style="padding:4px;margin:2px">
+                           <!--  <apex:actionSupport event="onblur" action="{!userValue}" reRender="opp2" status="actionStatusDisplay"/> -->
+                            </apex:inputText>
+                        </div>
+
+                    </div>                   
+                    <div class="col-sm-6">
+                    <input name="tags" id="mySingleField" value="{!sendCC}" type="hidden"/>
+                    <ul id="singleFieldTags"></ul>
+                    </div>
+
+
+               </div>
+
+</apex:outputPanel>
+           
+
+                   <div class="row">
+                       <div class="col-sm-12" style="text-align: right;">
+                             <apex:commandButton styleClass="myClass" id="createPDF" action="{!CreatePDF}" rerender="frm,redirectPanel" value="Create PDF" />
+                             <apex:commandButton styleClass="myClass" id="sendPDF"  onclick="sendMail()"  rerender="frm,redirectPanel"  value="Send PDF" />
+                             <input Class="inputButton" type="button" value="Cancel" onclick="navigateTo('{!id}')"/> 
+                       </div>
+                       <apex:outputPanel id="redirectPanel" >
+                                <apex:outputText rendered="{!shouldRedirect}">
+                                    <script type="text/javascript">
+                                    
+                                        window.top.location.href = '{!JSENCODE(redirectUrl)}';
+                                    </script>
+                                </apex:outputText>
+                       </apex:outputPanel>
+                 </div>
+                
+                
+            </div>
+            </apex:outputPanel>
+            <apex:outputPanel rendered="{!if(id != null && selectedid != null,false,true)}">
+                <div class="row col">
+                    <div class="alert alert-warning">
+                        Please select the default Template to view the PDF.
+                    </div>
+                    <div class="col-sm-12" style="text-align: right;">
+                    <input Class="inputButton" type="button" value="Cancel" onclick="navigateTo('{!id}')"/>
+                    </div>
+                </div>
+            </apex:outputPanel>
+            
+        </div>
+        
+     </apex:form>
+</apex:page>

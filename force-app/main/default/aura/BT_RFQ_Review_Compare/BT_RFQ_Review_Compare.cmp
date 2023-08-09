@@ -1,0 +1,154 @@
+<aura:component
+    implements="force:appHostable,flexipage:availableForRecordHome,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes"
+    controller="RFQDAO" access="global">
+    <ltng:require styles="{!join(',', 
+                          $Resource.FaFaFont + '/css2.css', 
+                          $Resource.FaFaFont + '/datepicker.css', 
+                          $Resource.Sprites + '/css/fontawesome.min.css', 
+                          $Resource.FaFaFont + '/owl.carousel.css')}" scripts="{!join(',', 
+                           $Resource.FaFaFont + '/bootstrap.min.js', 
+                           $Resource.FaFaFont + '/bootstrap-datepicker.js', 
+                           $Resource.FaFaFont + '/jquery.aCollapTable.js', 
+                           $Resource.FaFaFont + '/jquery-1.12.3.mindata analysis .js', 
+                           $Resource.FaFaFont + '/owl.carousel.min.js')}" afterScriptsLoaded="{!c.scriptsLoaded}" />
+    <aura:attribute name="selectedVendor" type='List' />
+    <aura:attribute name="dynamicClass" type='String' />
+    <aura:attribute name="dynamicStyle" type='String' />
+    <aura:attribute name="isAwarded" type="Boolean" />
+    <aura:attribute name="isAwardedClick" type="Boolean" />
+    <aura:attribute name="vendorName" type='String' default="" />
+    <aura:attribute name="vendorId" type='String' default="" />
+    <aura:handler name='init' value='{!this}' action='{!c.doInit}' />
+
+    <aura:attribute name="confirmAward" type="Aura.Action" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+
+    <div style="font-family: 'Poppins', sans-serif;" >
+        <div class="wrapper">
+            <header style="background: #1b5297;padding: 11px 20px;">
+                <div class="left-box" style="display: inline-block;vertical-align: middle;width: 30%;">
+                    <h1 style="margin: 0;color: #fff;font-size: 18px;">RFQ Responses comparison</h1>
+                </div>
+            </header>
+            <div class="inner-wrapper-box">
+                <div class="side-detail-box">
+                    <div class="tab-content">
+                        <div class="inner-box">
+                            <div class="slds-grid slds-gutters slds-scrollable" style="padding:5px;  ">
+                                <aura:iteration items="{!v.selectedVendor}" var="vlist">
+                                    <!-- <div class="{!v.dynamicClass}" style="{!v.dynamicStyle}" > -->
+                                        <table class="table table-bordered" style="min-width:50%;">
+                                            <thead>
+                                                <tr style="background: #3a8ed8;color: #fff;width:50%">
+                                                    <th colspan="3" style="text-align: center;padding: 8px;">
+                                                        {!vlist.buildertek__Vendor__r.Name}</th>
+                                                    <th></th>
+                                                    <th colspan="1" style="text-align: center;">
+                                                        <aura:if isTrue="{!!v.isAwarded}">
+                                                            <aura:if isTrue="{!vlist.buildertek__Status__c=='Awarded'}">
+                                                                Awarded
+                                                                <aura:set attribute="else">
+                                                                    <lightning:buttonIcon aura:id="{!vlist.Id}"
+                                                                        name="{!vlist.Id}" title="Award"
+                                                                        iconName="utility:ribbon"
+                                                                        onclick="{!c.awardSelectedVendor}"
+                                                                        variant="bare" alternativeText="{!vlist.Name}"
+                                                                        class="awardIcon1" />
+                                                                </aura:set>
+                                                            </aura:if>
+                                                            <aura:set attribute="else">
+                                                                <aura:if
+                                                                    isTrue="{!vlist.buildertek__Status__c=='Awarded'}">
+                                                                    Awarded
+                                                                    <aura:set attribute="else">
+                                                                        <span></span>
+                                                                    </aura:set>
+                                                                </aura:if>
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr style="font-weight: bold;font-size: 13px;width:50%;height:3rem">
+                                                    <td style="width:15%;padding: 8px;">Item Name</td>
+                                                    <td style="width:5%;text-align: center;padding: 8px;">Quantity</td>
+                                                     <td style="width:5%;text-align: center;padding: 8px;">Estimated Work(Days)</td>
+                                                    <td style="width:6%;text-align: center;padding: 8px;">Unit Price
+                                                    </td>
+                                                    <td
+                                                        style="background: #eee;width: 5%;text-align: center;padding: 4px;">
+                                                        Total Price</td>
+                                                </tr>
+                                                <aura:iteration items="{!vlist.buildertek__Vendor_Items__r}"
+                                                    var="recordList">
+                                                    <tr style="width:50%">
+                                                        <td style="width:15%;padding: 8px;height:3rem;">
+                                                            {!recordList.Name}</td>
+                                                        <td
+                                                            style="width:5%;text-align: center;padding: 8px;height:3rem;">
+                                                            {!recordList.buildertek__Quantity__c}</td>
+                                                         <td
+                                                            style="width:5%;text-align: center;padding: 8px;height:3rem;">
+                                                            {!recordList.buildertek__Estimated_Work_Days__c}</td>
+                                                        <td
+                                                            style="width:12%;text-align: center;padding: 8px;">
+                                                           <!-- {!recordList.buildertek__Unit_Price__c}-->
+                                                            <lightning:formattedNumber value="{!recordList.buildertek__Unit_Price__c}" 
+                                                                                  style="currency" currencyCode="USD" currencyDisplayAs="code"/>
+                                                        </td>
+                                                        
+                                                        <td
+                                                            style="background: #eee;width: 6.4%;text-align: center;padding: 8px;">
+                                                            <!--{!recordList.buildertek__Total_Price__c}-->
+                                                            <lightning:formattedNumber value="{!recordList.buildertek__Total_Price__c}" 
+                                                                                  style="currency" currencyCode="USD" currencyDisplayAs="code"/>
+                                                        </td>
+                                                    </tr>
+                                                </aura:iteration>
+                                                <tr style="width:50%;">
+                                                    <td  style="padding: 8px;"></td>
+                                                    <td style="padding: 8px;"></td>
+                                                    <td style="padding: 8px;"></td>
+                                                    <td></td>
+                                                    <td style="background: #3a8ed8;
+                                                                   color: #fff;padding: 4px; width: 5%;text-align:center;">
+                                                        <!--{!vlist.buildertek__Quote_Amount__c}-->
+                                                        <lightning:formattedNumber value="{!vlist.buildertek__Quote_Amount__c}" 
+                                                                                  style="currency" currencyCode="USD" currencyDisplayAs="code"/>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                       
+                                    <!-- </div> -->
+
+                                </aura:iteration>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <aura:if isTrue='{!v.isAwardedClick}'>
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container" style="min-width:30rem;">
+                    <header class="slds-modal__header">
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">RFQ Award Confirmation
+                        </h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1"
+                        style="min-height:50px">
+                        Are you sure you want to Award this bid to {!v.vendorName}?
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning:button label="No" title="No" onclick="{!c.cancelAward}" />
+                        <lightning:button variant="brand" label="Yes" title="Yes" onclick="{!v.confirmAward}" />
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </aura:if>
+    </div>
+</aura:component>

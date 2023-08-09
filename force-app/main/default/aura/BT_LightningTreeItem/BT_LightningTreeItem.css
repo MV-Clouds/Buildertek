@@ -1,0 +1,57 @@
+.THIS .avSelectedTreeNode{
+    opacity: 0.2;
+}
+.THIS .avCheckedTreeNode{
+	background: rgb(236, 235, 234);
+}
+
+.THIS .iconStyle{
+    margin:5px;   
+    border-radius: 50%;
+    width:1rem; 
+    height:1rem;
+    transform: rotate(180deg) !important;
+    padding-left: 0px !important;
+}
+
+.THIS .iconStyle svg{
+    fill: #337ab7 !important;
+    color: #337ab7 !important;
+    border-radius: 50%;
+    width:1.4rem;
+    height:1.4rem;
+    transform: rotate(180deg) !important;
+    
+}
+
+.THIS .collapseIcon{
+    margin:5px;   
+    border-radius: 50%;
+    border-color:#337ab7 !important;
+    width:1rem;
+    height:1rem;
+    transform: rotate(180deg) !important;
+    margin-left : 4px !important;
+    
+}
+
+.THIS .collapseIcon svg{
+    fill: White !important;
+    color: #337ab7 !important;
+    background: #337ab7 !important;
+    border-color:#337ab7 !important;
+    border-style: solid !important;
+    border-radius: 50%;
+    width:1.2rem;
+    height:1.2rem;
+    transform: rotate(180deg) !important;
+}
+
+.THIS .marginTop{
+    margin-top: 10px;
+}
+
+
+.THIS .iconTopMargin{
+    margin-top: 8px;
+}

@@ -1,0 +1,90 @@
+<aura:component controller ="RFQVendorItemController" implements="flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global" >
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="rfqtovendorId" type="Id" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="RFQVendorLineList" type="RFQ_To_Vendor__c[]"/>
+    <aura:attribute name="data" type="list"/>
+    <aura:attribute name="columns" type="List"/>
+    <aura:attribute name="UpdatedList" type="RFQ_To_Vendor__c[]"/>
+    <aura:attribute name="submitted" type="boolean"/>
+    <aura:attribute name="iseditable" type="boolean" default="true"/>
+    <aura:attribute name="showPopup" type="Boolean" default="false" />
+    <aura:attribute name="modalPromise" type="Aura.Action"/>
+    <aura:attribute name="selectedFiles" type="sObject[]" default="[]"/>
+    <lightning:overlayLibrary aura:id="overlay"/>
+    <aura:attribute name="files" type="List"/>
+    <aura:attribute name="Isfiles" type="Boolean" default="false" />
+    <aura:attribute name="Isnofiles" type="Boolean" default="false" />
+     <aura:attribute name="vendorstandardfiles" type="List"/>
+    <aura:attribute name="rfqfiles" type="List"/>
+    <aura:attribute name="Isrfqfiles" type="Boolean" default="false" />
+    <aura:attribute name="rfqstandardfiles" type="List"/>
+    <aura:attribute name="Isnorfqfiles" type="Boolean" default="false" />
+    <aura:attribute name="rfqrecordId" type="String" default="" />
+    
+    <aura:html tag="style">
+        .slds-modal__container .cls{
+        width:90% !important;      
+        max-width: 90% !important;    
+        
+        }
+        .slds-modal__content {
+        //overflow: hidden !important;
+        }
+    </aura:html>
+    
+    <div> 
+        <lightning:card iconName="standard:custom" title="Vendor RFQ Documents">
+            
+            <div>        
+                <aura:if isTrue="{!v.Isfiles}">
+                    <aura:iteration items="{!v.files}" var="obj">
+                        <div>
+                            <a href="{!obj.buildertek__File_Presigned_URL__c}" title="{!obj.Name}" target="_blank" style="font-size:15px;padding-left:2%;">{!obj.Name}</a> 
+                            <br/>
+                        </div>
+                    </aura:iteration>  
+                    <aura:iteration items="{!v.vendorstandardfiles}" var="obj1">
+                        <div>
+                            <a href="{!'/vendor/sfc/servlet.shepherd/version/download/'+obj1.Id}" target="_blank" style="font-size:15px;padding-left:2%;">{!obj1.Title}</a>
+                           <!-- <a href="{!obj1.Title}" data-Id="{!obj1.Id}" title="{!obj1.Title}" onclick="{!c.getSelectedpreviewFile}" style="font-size:15px;padding-left:2%;">{!obj1.Title}</a>-->
+                        </div>
+                    </aura:iteration>  
+                </aura:if>
+                <aura:if isTrue="{!v.Isnofiles}">
+                        <div style="font-size:15px;padding-left:2%;">
+                            <h2>No Files</h2>
+                            <br/>
+                        </div>
+                </aura:if>
+            </div>
+        </lightning:card>
+    </div>
+    <div>
+        <br/>
+        <lightning:card iconName="standard:custom" title="Company RFQ Documents">
+            <div>        
+                <aura:if isTrue="{!v.Isrfqfiles}">
+                    <aura:iteration items="{!v.rfqfiles}" var="obj">
+                        <div>
+                            <a href="{!obj.buildertek__File_Presigned_URL__c}" title="{!obj.Name}" target="_blank" style="font-size:15px;padding-left:2%;">{!obj.Name}</a> 
+                            <br/>
+                        </div>
+                    </aura:iteration>  
+                    <aura:iteration items="{!v.rfqstandardfiles}" var="obj1">
+                        <div>
+                            <a href="{!'/vendor/sfc/servlet.shepherd/version/download/'+obj1.Id}" target="_blank" style="font-size:15px;padding-left:2%;">{!obj1.Title}</a>
+                           <!-- <a href="{!obj1.Title}" data-Id="{!obj1.Id}" title="{!obj1.Title}" onclick="{!c.getSelectedpreviewFile}" style="font-size:15px;padding-left:2%;">{!obj1.Title}</a>-->
+                        </div>
+                    </aura:iteration> 
+                </aura:if>
+                <aura:if isTrue="{!v.Isnorfqfiles}">
+                        <div style="font-size:15px;padding-left:2%;">
+                            <h2>No Files</h2>
+                            <br/>
+                        </div>
+                </aura:if>
+            </div>
+        </lightning:card>
+    </div>
+</aura:component>

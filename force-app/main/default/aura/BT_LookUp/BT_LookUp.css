@@ -1,0 +1,10 @@
+.THIS .slds-input {
+    height: 34px !important;
+}
+.THIS .embed-style{
+    right: 5%;
+    position: relative;
+}
+.THIS .slds-lookup__menu{
+    width: max-content ; 
+}

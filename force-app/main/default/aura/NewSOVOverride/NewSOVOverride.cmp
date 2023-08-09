@@ -1,0 +1,150 @@
+<aura:component controller="newPaymentAppOverrideController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,lightning:actionOverride,forceCommunity:availableForAllPageTypes,lightning:hasPageReference,force:lightningQuickAction" access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="RecordTypeId" type="String" default="" />   
+     <aura:attribute name="RecordTypeName" type="String" default="" />
+    <aura:attribute name="IsBudgetLines" type="Boolean" default = "false"/>
+    <aura:attribute name="applicationValues" type="Object" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="Vendorname" type="String" />
+    <aura:attribute name="defaultVendorname" type="String" />
+    <aura:attribute name="communityUserId" type="String" />
+    <aura:attribute name="Spinner" type="boolean" default="false"/>
+    <aura:attribute name="message" type="boolean" default="false"/>
+    <aura:attribute name="Iscommunity" type="Boolean" default = "false"/>
+    <aura:attribute name="isSOVList" type="Boolean" default = "false"/>
+       <lightning:workspaceAPI aura:id="workspace" />
+    
+    <aura:attribute name="isSaveAndNew" type="Boolean" default="true" />
+     <aura:attribute name="newattr" type="Boolean" default="false" />
+    
+    <aura:attribute name="parentprojectRecordId" type="String" default="" />
+    
+    
+    <lightning:notificationsLibrary aura:id="notifLib" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+    <aura:attribute name="isOpen" type="boolean" default="false"/>
+    
+    
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/> 
+    
+    
+    <div class="slds-m-around--xx-large" style="position:relative">
+        <lightning:recordEditForm aura:id="leadCreateForm" objectApiName="buildertek__Schedule_of_Values__c" onsubmit="{!c.handleOnSubmit}"
+                                  onsuccess="{!c.handleOnSuccess}" recordTypeId="{!v.RecordTypeId}" onerror = "{!c.handleError}">
+            <lightning:messages />
+            
+            <!--Custom Styles for Modal Header and Footer--> 
+            <aura:html tag="style">
+                .cuf-content {
+                padding: 0 0rem !important;
+                }
+                .slds-p-around--medium {
+                padding: 0rem !important;
+                }       
+                .slds-modal__content{
+                overflow-y:hidden !important;
+                height:unset !important;
+                max-height:unset !important;
+                }
+            </aura:html>
+            
+            <!--Modal Header-->  
+            
+            <div class="modal-header slds-modal__header slds-size_1-of-1">
+                <h4 class="title slds-text-heading--medium">New Schedule Of Value</h4>
+            </div>
+            <!--End Modal Header-->  
+            
+            <div class="slds-p-around--large" style="background-color:white;">
+                <h3 class="slds-section-title--divider">Information</h3>
+                
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col" style="padding: 10px;">
+                        <lightning:inputField fieldName="Name" required="true"></lightning:inputField> 
+                        <!--    <lightning:inputField fieldName="buildertek__Project__c"></lightning:inputField>  -->
+                        <!-- <lightning:inputField fieldName="buildertek__Project__c" value = "{!v.parentprojectRecordId}" required="true"></lightning:inputField> -->
+                        <aura:if isTrue="{!v.RecordTypeName != 'Master'}">
+                            <lightning:inputField fieldName="buildertek__Project__c" value = "{!v.parentprojectRecordId}" required="true"></lightning:inputField>
+                        </aura:if>
+                        <aura:if isTrue="{!v.RecordTypeName == 'Master'}">
+                            <lightning:inputField fieldName="buildertek__Project__c" value = "{!v.parentprojectRecordId}"></lightning:inputField>
+                        </aura:if>
+                         <aura:if isTrue="{!!v.Iscommunity}">
+                        <lightning:inputField fieldName="buildertek__Due_Date__c"></lightning:inputField>
+                        </aura:if>
+                    </div>
+                    <div class="slds-col" style="padding: 10px;">
+                        
+                        
+                      <!--  <aura:if isTrue="{!v.Iscommunity}">
+                            <lightning:inputField fieldName="buildertek__Type__c" aura:id= 'sovType' disabled="true"></lightning:inputField>
+                            <aura:set attribute="else"> 
+                                <lightning:inputField fieldName="buildertek__Type__c" aura:id= 'sovType1'></lightning:inputField>
+                            </aura:set>
+                        </aura:if>  -->
+                        
+                        <aura:if isTrue="{!v.Iscommunity}">
+                            <lightning:inputField fieldName="buildertek__Status__c" aura:id= 'sovstatus' disabled="true"></lightning:inputField>   
+                            <aura:set attribute="else">
+                                <lightning:inputField fieldName="buildertek__Status__c" aura:id= 'sovstatus1'></lightning:inputField>   
+                            </aura:set>
+                        </aura:if> 
+                        <aura:if isTrue="{!!v.Iscommunity}">
+                            
+                            
+                            <aura:if isTrue="{!or(v.RecordTypeName == 'Standard' , v.RecordTypeName == 'Master')}">
+                                
+                                <aura:set attribute="else">
+                                    <lightning:inputField fieldName="buildertek__Vendor__c" aura:id= 'vendor' required="true"></lightning:inputField>
+                                    
+                                </aura:set>
+                            </aura:if>
+                            
+                        </aura:if>
+                        
+                    </div>
+                    
+                </div>
+                
+            </div> 
+            <!--End of Modal Body--> 
+            <!--Modal Footer-->
+            <div class="modal-footer slds-modal__footer slds-size_1-of-1">
+                <lightning:button variant="Neutral" class="slds-button" label="Cancel" onclick="{!c.CloseScreen}"/> 
+                
+                <!-- <aura:if isTrue="{!v.Iscommunity}">
+                    <lightning:button type="submit" label="Next" variant="Neutral"/>
+                    <aura:set attribute="else">
+                        <lightning:button type="submit" label="Save" variant="Neutral"/>
+                    </aura:set>
+                </aura:if>  -->
+                <lightning:button type="submit" label="Save" variant="Neutral" title="save"  onclick="{!c.setSaveAndNewFasle}"/>
+                <lightning:button type="submit"  label="Save and Add SOV Lines" variant="Neutral" onclick="{!c.saveandclose}"/>
+                
+                <aura:if isTrue="{!v.Iscommunity}">
+                <lightning:button type="submit"  label="Save and Import Master SOV" variant="Neutral" onclick="{!c.saveImportMasterSOV}"/>
+               
+                </aura:if> 
+                
+            </div>
+            
+            
+            
+        </lightning:recordEditForm>
+    </div>
+    
+    
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                    <b>Processing, Please Wait</b>
+                </div>
+            </div>
+        </div>
+    </aura:if>
+    
+</aura:component>

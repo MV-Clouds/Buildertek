@@ -1,0 +1,65 @@
+<aura:component controller="UploadImagesController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global">
+    <aura:attribute name="description" type="String"/> 
+    <aura:attribute name="attachmentId" type="String"/> 
+    <aura:attribute name="Spinner" type="Boolean" default="false"/> 
+    <aura:attribute name="files" type="ContentDocument[]"/> 
+    <aura:attribute name="documentIdList" type="List"/>
+    <aura:attribute name="uploadedImagesList" type="List"/> 
+    <aura:attribute name="filetype" type="List" default="['.png', '.jpg', '.jpeg']" />
+                  
+     <ltng:require styles="{!$Resource.MOdalPreviewWidth52}"/>                
+                 
+    <div class="slds-modal__header" style="font-size:17px;">
+        Upload Images
+    </div>
+    <div class="slds-modal__content slds-p-around--large">
+        <aura:if isTrue="{!v.Spinner}">
+            <div aura:id="spinnerId" class="slds-spinner_container">
+               <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                 <span class="slds-assistive-text">Loading</span>
+                 <div class="slds-spinner__dot-a"></div>
+                 <div class="slds-spinner__dot-b"></div>
+                    <div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+                   
+               </div>
+            </div>
+         </aura:if>
+        <!-- <lightning:textarea name="Description" label="Description" value="{!v.description}"/>                     -->
+        <!--<div class="slds-file-selector slds-file-selector_files">
+            <div class="slds-file-selector__dropzone">
+                <input type="file" class="slds-file-selector__input slds-assistive-text" onchange="{!c.doSave}" id="fileToUpload" aria-labelledby="file-selector-primary-label file-selector-secondary-label" />
+                <label class="slds-file-selector__body" for="fileToUpload" id="file-selector-secondary-label">
+                    <span class="slds-file-selector__button slds-button slds-button_neutral">
+                        Upload Images
+                    </span>
+                    <span class="slds-file-selector__text slds-medium-show" ondragover="{!c.onDragOver}" ondrop="{!c.onDrop}">or Drop Files</span>
+                </label>
+            </div>
+        </div> -->
+        <lightning:fileUpload name="fileUploader"
+                            multiple="true"
+                            accept="{!v.filetype}"
+                            recordId="{!v.recordId}"
+                            onuploadfinished="{!c.handleUploadFinished}" />
+                            
+        <br/>
+        <table>
+            <aura:iteration items="{!v.uploadedImagesList}" var="row">
+                <tr>
+                    <td>
+                        <img src="{!row.label}" width="300" height="200" />        
+                    </td>
+                    <td>
+                        <ui:outputText value="{!row.description}" />    
+                    </td>
+                </tr>        
+            </aura:iteration>
+        </table>
+    </div>
+    <div class="slds-modal__footer">
+        <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}" >Cancel</button>
+       <!-- <button class="slds-button slds-button-brand" onclick="{!c.saveModel}">Save</button> -->
+    </div>   
+</aura:component>

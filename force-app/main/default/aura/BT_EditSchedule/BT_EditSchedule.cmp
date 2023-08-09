@@ -1,0 +1,80 @@
+<aura:component controller="EditScheduleController" implements="flexipage:availableForAllPageTypes,lightning:actionOverride,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:appHostable" access="global" >
+    <aura:attribute name="recordId" type="String" />
+     <aura:attribute name="Schedule" type="Schedule__c" default="{ 'sobjectType': 'Schedule__c'}" access="public"/>
+    <aura:attribute name="isOpen" type="Boolean" />
+    <aura:attribute name="isNew" type="Boolean" />
+    <aura:attribute name="Spinner" type="Boolean" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <div class="slds-m-around_xx-large">   
+    	<aura:if isTrue="{!v.isOpen}">
+    		<section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+    			<div class="slds-modal__container">
+    				<header class="slds-modal__header">
+    					<lightning:buttonIcon iconName="utility:close"
+    										  onclick="{! c.closeModel}"
+    										  alternativeText="close"
+    										  variant="bare-inverse"
+    										  class="slds-modal__close"/>
+    					<h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Edit Schedule</h2>
+    				</header>
+    				<div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+    				    <lightning:layout multipleRows="true">
+    				        <lightning:layoutItem padding="around-small" size="6">
+    				            <ui:inputTextArea class="slds-input" aura:id="description" label="Description"  value="{!v.Schedule.buildertek__Description__c}" />
+    				        </lightning:layoutItem> 
+    				        <lightning:layoutItem padding="around-small" size="6">
+    				            <label>% Complete</label><br/>
+    				            <ui:outputNumber value="{!v.Schedule.buildertek__Complete__c}" />
+    				        </lightning:layoutItem> 
+    				        <lightning:layoutItem padding="around-small" size="6">
+    				            <label>Start Date</label><br/>
+    				            <ui:outputDate aura:id="oDate" value="{!v.Schedule.buildertek__Start_Date__c}" />
+    				        </lightning:layoutItem> 
+    				        <lightning:layoutItem padding="around-small" size="6">
+    				            <ui:inputNumber class="slds-input" label="Days Completed" value="{!v.Schedule.buildertek__Days_Completed__c}" />
+    				        </lightning:layoutItem> 
+    				        <lightning:layoutItem padding="around-small" size="6">
+    				            <label>End Date</label><br/>
+    				            <ui:outputDate aura:id="endDate" value="{!v.Schedule.buildertek__End_Date__c}" />
+    				        </lightning:layoutItem> 
+    				        <lightning:layoutItem padding="around-small" size="6">
+    				            <label>Total Duration (Days)</label><br/>
+    				            <ui:outputNumber value="{!v.Schedule.buildertek__Total_Duration__c}" />
+    				        </lightning:layoutItem> 
+    				        <lightning:layoutItem padding="around-small" size="6">
+    				            <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__Schedule__c">
+        				            <lightning:inputField aura:id="accountId" fieldName="buildertek__Contractor__c" />
+        				        </lightning:recordEditForm> 
+    				        </lightning:layoutItem> 
+    				        <lightning:layoutItem padding="around-small" size="6">
+    				            <label>Type</label>
+    				            <ui:inputSelect class="slds-input" aura:id="typeId" value="{!v.Schedule.buildertek__Type__c}">
+    				                <ui:inputSelectOption text="Standard"/>
+    				                <ui:inputSelectOption text="Master"/>
+    				            </ui:inputSelect>
+    				        </lightning:layoutItem> 
+    				    </lightning:layout>	
+    				</div>
+    				<footer class="slds-modal__footer">
+    					<button class="slds-button slds-button--neutral" onclick="{!c.closeModel}" >Cancel</button>
+    					<button class="slds-button slds-button--brand" onclick="{!c.UpdateRecord}">Save</button>
+    				</footer>
+    			</div>
+    		</section>
+    		<div class="slds-backdrop slds-backdrop_open"></div>
+    	</aura:if>
+    	<aura:if isTrue="{!v.Spinner}">
+            <div aura:id="spinnerId" class="slds-spinner_container">
+               <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                 <span class="slds-assistive-text">Loading</span>
+                 <div class="slds-spinner__dot-a"></div>
+                 <div class="slds-spinner__dot-b"></div>
+                    <div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+                   
+               </div>
+            </div>
+        </aura:if>
+    </div>
+</aura:component>

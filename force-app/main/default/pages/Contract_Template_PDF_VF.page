@@ -1,0 +1,239 @@
+<apex:page applyBodyTag="false" controller="ContractTemplate_PDF_AC"  renderAs="pdf">
+        <head>
+                <style type="text/css" media="print">
+                       @page {
+                                 @top-center {
+                                       content: element(header);
+                               }
+                               @bottom-left {
+                                     content: element(footer);
+                               }
+                               margin-bottom: 10em;
+                            }
+                                     div.header {
+                                      padding: 10px;
+                                      position: running(header);
+                           }
+                       div.footer {
+                                display: block;
+                                padding: 5px;
+                                 position: running(footer);
+                      }
+                                     .pagenumber:before {
+                                        content: counter(page);
+                       }
+                                   .pagecount:before {
+                             content: counter(pages);
+                        }
+                        
+                        #tab-line-item td,th{
+                            max-width:30%;
+                        }
+                        
+                    </style>
+              </head>
+<body style="font-family:'{!contractInfoList.Font_Family__c}'">
+          <!--    
+           <div class="header">
+              <div><apex:outputText value="{!HeaderInfo.Template_Header__c}" escape="false" /></div> 
+           </div>
+          -->  
+          
+           <div class="footer" style="height:30mm;">
+               <div width="100%" align="left"  style="font-size: 12px;">
+                  <apex:outputText value="{!FooterInfo.Template_Footer__c}" escape="false"/>
+               </div>
+              <apex:outputpanel rendered="{!contractInfoList.Show_Page_Number__c}">
+               <div width="100%" align="right" style="white-space:nowrap;font-family:'{!contractInfoList.Font_Family__c}'">Page <span class="pagenumber"/> of <span class="pagecount"/></div>
+              </apex:outputpanel>
+              </div>
+           
+           
+          <div class="content">
+               <table width="100%"  >
+<tr>
+<td width="100%">
+<apex:outputText value="{!HeaderInfo.Template_Header__c}" escape="false" />
+</td>  
+</tr>
+
+
+
+
+
+<tr> 
+<td width="100%" align="left" style="font-size:12px;" >
+<apex:outputText value="{!contractInfoList.Template_Body__c}" escape="false" />
+</td>
+</tr> 
+
+
+<apex:repeat value="{!contractPageList}" var="rc"> 
+
+<apex:repeat value="{!contractTemplateInner}" var="ic"> 
+<tr style="page-break-before:always;display:{!IF(ic.TemplatePage.Template_Page_Brake__c == true && rc.Page_Sort_order__c == ic.TemplatePage.Page_Sort_order__c, 'table-row', 'none')}"> 
+<td width="100%" style="font-size:12px;" >
+<apex:outputText value="{!ic.StringTemplatePage}" escape="false" />
+</td>
+</tr> 
+
+
+<tr style="display:{!IF(ic.TemplatePage.Template_Page_Brake__c != true && rc.Page_Sort_order__c == ic.TemplatePage.Page_Sort_order__c, 'table-row', 'none')}">
+<td width="100%"  style="font-size:12px;" >
+<apex:outputText value="{!ic.StringTemplatePage}" escape="false" />
+</td>
+</tr> 
+
+</apex:repeat> 
+
+<tr style="page-break-before:always;display:{!IF(rc.Template_Page_Brake__c == true && rc.Page_Sort_order__c == LineItemsSortOrder, 'table-row', 'none')}"> 
+<td width="100%">
+<table id="tab-line-item" width="100%" cellpadding="2px" cellspacing="0px" style="font-size:12px;" >
+    <tr style="background-color:#e3e3e3">
+        <apex:repeat value="{!FIeldsNameList}" var="fn">
+            <th  style="line-height: 2;border-top: 1px solid black;border-left: 1px solid black;border-right: 1px solid black;"><b>{!fn} </b></th>
+        </apex:repeat>
+    </tr>
+    
+    
+<apex:repeat value="{!contractLineList}" var="ql">
+    <tr >
+        <apex:repeat value="{!FIeldsNameList}" var="fnl">
+        
+            <td style="width:{!FieldWidthMap[fnl]}%;vertical-align:top;border: 1px solid black;border-bottom: 1px solid  black;line-height: 2;border-right: 1px solid  #black;font-size: 14px;">
+                <apex:outputpanel rendered="{!IF(FieldAPIMap[fnl] == 'Product2.Name',true,false)}">
+                    <apex:outputText value="{!JSENCODE(HTMLENCODE(ql[FieldAPIMap[fnl]]))}"  escape="false"/>
+                </apex:outputpanel>
+                
+                <apex:outputpanel rendered="{!IF(FieldAPIMap[fnl] != 'Product2.Name',true,false)}">
+                    <apex:outputpanel rendered="{!IF(FieldTypeMap[fnl] == 'CURRENCY',true,false)}">
+                        <span style="text-align: right !important;">
+                            <apex:outputText value="{0, Number, Currency}" >
+                                <apex:param value="{!ql[FieldAPIMap[fnl]]}" />
+                            </apex:outputText> 
+                        </span>
+                    </apex:outputPanel> 
+                     <apex:outputpanel rendered="{!IF(FieldTypeMap[fnl] == 'PERCENT',true,false)}">
+                        <apex:outputText value="{0, Number, 0.00%}">
+                            <apex:param value="{!ql[FieldAPIMap[fnl]]/100}" />
+                        </apex:outputText>        
+                    </apex:outputPanel>
+                    <apex:outputpanel rendered="{!IF(FieldTypeMap[fnl] != 'PERCENT' && FieldTypeMap[fnl] != 'CURRENCY',true,false)}">
+                        <apex:outputText value="{!ql[FieldAPIMap[fnl]]}"  escape="false"/>
+                    </apex:outputPanel>    
+                </apex:outputpanel>   
+            </td>
+        </apex:repeat>
+    </tr>
+</apex:repeat>
+</table>
+</td>
+</tr>
+
+<tr style="display:{!IF(rc.Template_Page_Brake__c != true && rc.Page_Sort_order__c == LineItemsSortOrder, 'table-row', 'none')}"> 
+<td width="100%">
+<table id="tab-line-item" width="100%" cellpadding="2px" cellspacing="0px" style="font-size:12px;vertical-align:top !important;" >
+    <thead>
+        <tr style="background-color:#e3e3e3;">
+            <apex:repeat value="{!FIeldsNameList}" var="fn">
+                <th style="line-height: 2;border-top: 1px solid black;border-left: 1px solid black;border-right: 1px solid black;text-align: center;"><b>{!fn}</b></th>
+            </apex:repeat>
+        </tr>
+    </thead>
+    <tbody>
+        <apex:repeat value="{!contractLineList}" var="ql">
+            <tr>
+                <apex:repeat value="{!FIeldsNameList}" var="fnl">
+                      
+                                                           
+                    <td style="width:{!FieldWidthMap[fnl]}%;vertical-align:top;border: 1px solid black;border-bottom: 1px solid  black;line-height: 2;border-right: 1px solid  #black;font-size: 14px;">
+                        <apex:outputpanel rendered="{!IF(FieldAPIMap[fnl] == 'Product2.Name',true,false)}">
+                            <apex:outputText value="{!JSENCODE(HTMLENCODE(ql[FieldAPIMap[fnl]]))}"  escape="false"/>
+                        </apex:outputpanel>
+                        
+                        <apex:outputpanel rendered="{!IF(FieldAPIMap[fnl] != 'Product2.Name',true,false)}">
+                            <apex:outputpanel rendered="{!IF(FieldTypeMap[fnl] == 'CURRENCY',true,false)}">
+                                <span style="text-align: right !important;float:right;">
+                                    <apex:outputText value="{0, Number, Currency}" >
+                                        <apex:param value="{!ql[FieldAPIMap[fnl]]}" />
+                                    </apex:outputText> 
+                                </span>
+                            </apex:outputPanel> 
+                             <apex:outputpanel rendered="{!IF(FieldTypeMap[fnl] == 'PERCENT',true,false)}">
+                                <center>
+                                    <apex:outputText value="{0, Number, 0.00%}">
+                                        <apex:param value="{!ql[FieldAPIMap[fnl]]/100}" />
+                                    </apex:outputText>
+                                </center>
+                            </apex:outputPanel>
+                            <apex:outputpanel rendered="{!IF(FieldTypeMap[fnl] == 'DOUBLE',true,false)}">
+                                <center>
+                                    <apex:outputText value="{0, Number, 0}">
+                                        <apex:param value="{!ql[FieldAPIMap[fnl]]}" />
+                                    </apex:outputText>
+                                </center>
+                            </apex:outputPanel>
+                            <apex:outputpanel rendered="{!IF(FieldTypeMap[fnl] != 'PERCENT' && FieldTypeMap[fnl] != 'CURRENCY' && FieldTypeMap[fnl] != 'DOUBLE',true,false)}">
+                                <apex:outputText value="{!ql[FieldAPIMap[fnl]]}"  escape="false"/>
+                            </apex:outputPanel>    
+                        </apex:outputpanel>
+                    </td>
+                </apex:repeat>
+            </tr>
+        </apex:repeat>
+    </tbody>    
+</table>
+</td>
+</tr>
+ <tr style="margin-top:20px;display:{!IF(rc.Page_Sort_order__c == LineItemsSortOrder, 'table-row', 'none')}">
+    <td align="right" >
+        <table border="1" align="right" width="150px" cellpadding="0" cellspacing="0" style="font-size:12px;" > 
+        <tr>
+            <td align="left" style="line-height: 2;font-size: 14px;">
+                Subtotal
+            </td>
+            <td align="right" style="line-height: 2;font-size: 14px;">
+                <apex:outputText value="{0, Number, Currency}" >
+                    <apex:param value="{!Subtotal}" />
+                </apex:outputText>
+            </td>
+        </tr>
+        <tr>
+            <td align="left" style="line-height: 2;font-size: 14px;">
+                Discount(%)
+            </td>
+            <td align="right" style="line-height: 2;font-size: 14px;">
+                <apex:outputText value="{0, Number, Percent}" >
+                    <apex:param value="{!contractDiscount/100}" />
+                </apex:outputText>
+            </td>
+        </tr>
+        <tr>
+            <td align="left" style="line-height: 2;font-size: 14px;">
+                Tax(%)
+            </td>
+            <td align="right" style="line-height: 2;font-size: 14px;">
+                <apex:outputText value="{0, Number, Percent}" >
+                    <apex:param value="{!contractTax/100}" />
+                </apex:outputText>
+            </td>
+        </tr>
+        <tr>
+            <td align="left" style="line-height: 2;font-size: 14px;">
+                Total
+            </td>
+            <td align="right" style="line-height: 2;font-size: 14px;">
+                <apex:outputText value="{0, Number, Currency}" >
+                    <apex:param value="{!Total}" />
+                </apex:outputText>
+            </td>
+        </tr>
+        </table>
+    </td>
+</tr> 
+</apex:repeat>
+
+</table>
+</div>
+</body>          
+</apex:page>

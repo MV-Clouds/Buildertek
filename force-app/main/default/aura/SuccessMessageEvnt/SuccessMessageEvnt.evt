@@ -1,0 +1,4 @@
+<aura:event type="APPLICATION" description="Show Message" >
+     <aura:attribute name="SuccessMsg" type="String" default=""/>
+     <aura:attribute name="isSuccess" type="Boolean" default="false"/>
+</aura:event>

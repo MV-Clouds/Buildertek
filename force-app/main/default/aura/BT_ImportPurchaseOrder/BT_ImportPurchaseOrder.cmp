@@ -1,0 +1,130 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction,lightning:isUrlAddressable" access="global"
+                controller="BT_ImportPurchaseOrder" >
+ <!-- export attributes start  -->
+    <!--aura init handler, call js "loadContactList" function on component load, and display contact data on table-->   
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <!--Declare Attribute for store Contact Records List-->  
+    <aura:attribute name="ListOfContact" type="Account[]"/> 
+    <!-- export attributes end-->
+    
+    <!-- Import attributes start  -->
+    <aura:attribute name="ShowModule" type="boolean" default="false"/>
+    <aura:attribute name="showcard" type="boolean" default="false"/>
+    
+    <aura:attribute name="isOpen" type="boolean" default="false" />
+    <aura:attribute name="BaseURLs" type="string" />
+    <aura:attribute name="RecordId" type="string" />
+    <aura:attribute name="Spinner" type="boolean" default="false" />
+    <aura:attribute name="showMessage" type="Boolean" default="false" />
+    <aura:attribute name="fileName" type="string" default="select file" />
+    
+    <aura:method name="closeModalPopup" action="{!c.closeModel}" description="" >
+    </aura:method>  
+    
+    
+      <lightning:workspaceAPI aura:id="workspace"/>
+    
+    <div class="slds-m-around_xx-large">
+        <aura:if isTrue="{!v.isOpen}">
+            
+            <!--###### MODAL BOX Start######-->
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                     aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <!-- ###### MODAL BOX HEADER Start ######-->
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close" onclick="{!c.closeModel}"
+                                              alternativeText="close" variant="bare-inverse" class="slds-modal__close" />
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Import PurchaseOrders</h2>
+                    </header>
+                    <!--###### MODAL BOX BODY Part Start######-->
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <div class="slds-grid">
+                            <div class="slds-size_1-of-12">
+                                
+                            </div>
+                            <div class="slds-size_10-of-12">
+                                <div class="slds-box slds-theme_default slds-box_small">
+                                    <p>
+                                        <strong>Note: </strong> This import functionality will import Vendor, Project, Required Delivery Date, 
+                                         Status and Description fields in Purchase Order and Product, PO Description, 
+                                        Discount, Quantity, Received, Unit Cost and UOM in Purchase Order Line.
+                                        
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            
+                            <div class="slds-size_1-of-12">
+                            </div>
+                        </div>
+                        <br />
+                        
+                        <div class="slds-grid">
+                            <div class="slds-size_1-of-12">
+                            </div>
+                            <div class="slds-size_10-of-12">
+                                <lightning:input aura:id="file" type="file" name="file" multiple="false"
+                                                 onchange="{!c.handleFilesChange}" />
+                                <div class="slds-text-body_small">{!v.fileName} </div>
+                            </div>
+                            <div class="slds-size_1-of-12">
+                                
+                            </div>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                    <!--###### MODAL BOX FOOTER Part Start ######-->
+                    <footer class="slds-modal__footer">
+                        <!-- Import attributes end  -->
+                        
+                        <div>
+                            <div style="margin-right:8px;display:inline-block;" onclick="{!c.CreateRecord}" class="importPurchaseBtn">
+                            	<lightning:button aura:id="importBtn" label="Import Purchase Order"  class="slds-button slds-button--brand"/>
+                            </div>
+                            
+                            <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}">Cancel</button>
+                                 
+                        </div>
+                        
+                    </footer>
+                  
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+            <!--###### MODAL BOX Part END Here ######-->
+            
+        </aura:if>
+        <aura:if isTrue="{!v.Spinner}">
+            <div aura:id="spinnerId" class="slds-spinner_container">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                    <div class="custom-loading-text">
+                        <aura:if isTrue="{!v.showMessage}">
+                            
+                            <b>Processing, Please Wait</b>
+                            
+                            <!-- <b>Importing Schedule Lines... </b>-->
+                        </aura:if>
+                        
+                    </div>
+                </div>
+            </div>
+        </aura:if>
+    </div>
+    
+    
+    <aura:if isTrue = "{!v.showcard}">
+        <lightning:card>
+            <div id="divCSV">
+            </div>  
+        </lightning:card>
+    </aura:if>
+    
+	
+</aura:component>

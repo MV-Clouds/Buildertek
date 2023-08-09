@@ -1,0 +1,68 @@
+<aura:component controller="BT_QuestionnaireBuilder">
+
+    <aura:attribute name="section" type="object" access="public" description="Section details" />
+    <aura:attribute name="recordViewForm" type="Aura.Component[]"
+        description="Place holder for section record View Form" />
+    <aura:attribute name="questionGroupDetails" type="Aura.Component[]"
+        description="Place holder for Question Group details" />
+    <aura:attribute name="icone" type="String" default="add"
+        description="This attribute is used to twiste accordion icone" />
+    <aura:attribute name="headerFields" type="List" default="" description="Section header fields" />
+    <aura:attribute name="recordTypeDeveloperName" type="string" default=""
+        description="Record Type Developer Name of section" />
+    <aura:attribute name="initReference" type="Aura.Action"
+        description="Init Reference action used to call from child components" />
+    <aura:attribute name="initChildReference" type="Aura.Action"
+        description="Init Reference action used to call from child components" />
+    <aura:attribute name="newSection" type="string" description="Newly created section" />
+    <aura:attribute name="callerName" type="String" />
+    <aura:attribute name="selectionId" type="String" />
+    <aura:attribute name="parentId" type="String" />
+
+    <aura:attribute name="index" type="String" description="Iteration index" />
+    <aura:method name="twistAccordion" action="{!c.twistAccordion}" />
+    <aura:handler event="c:BT_TreeNodeClickEvent" action="{!c.handleTreeNodeClick}" />
+    
+    <div id="{!'accordion'+globalId}" class="av-section-handle slds-accordion__section slds-is-close">
+        <div class="slds-accordion__summary highlight">
+            <h3 class="av-nodrag slds-text-heading_small slds-accordion__summary-heading">
+                <button aria-expanded="true" class="slds-button slds-accordion__summary-action"
+                    onclick="{!c.twistAccordion}">
+                    <div onclick="{!c.twistAccordion}">
+                        <lightning:icon iconName="{!'utility:'+v.icone}" variant="bare" size="large"
+                            onclick="{!c.twistAccordion}" class="{!(v.icone=='dash' ? 'collapseIcon' : 'iconStyle')}" />
+                    </div>
+                    <span class="slds-truncate" style="font-size: 1rem;color:#000;"
+                        title="{!v.section.Name}"><b>&nbsp;{!v.section.Name}</b></span>
+                </button>
+                <div class="{!if(v.callerName == 'builder','accordion_edit','slds-hide')}" style="padding:5px;"><a
+                        href="javascript:void(0);" onclick="{!c.openNewSectionComponent}">
+                        <lightning:icon iconName="utility:edit" size="x-small" /></a></div>
+            </h3>
+            <div class="{!if(v.callerName == 'builder','accordion_edit','slds-hide')}"
+                style="padding:5px;padding-left:10px;">
+                <lightning:buttonIcon iconName="utility:move" variant="bare" />
+            </div>
+        </div>
+        <div aria-hidden="false" class="av-nodrag slds-accordion__content" style="cursor: default;">
+            <div style="padding-left:1.4rem;padding-right:10px;margin-top: -10px;">
+                <div aura:id="recordView">{!v.recordViewForm}</div>
+            </div>
+
+            <div aura:id="questionGroupDetails" style="padding-right:10px;">
+                <div class="av" id="{!v.section.Id+'nestableQuestionGroups'}">{!v.questionGroupDetails}</div>
+            </div>
+
+            <div class="av-nodrag" style="padding-left: 1rem !important;padding:10px;">
+                <lightning:button class="{!if(v.callerName == 'builder','','slds-hide')}" variant="brand"
+                    iconName="utility:add" iconPosition="left" onclick="{!c.openNewQuestionGroupComponent}"
+                    label="Add Selection Type" />
+                <!--<lightning:button variant="neutral" iconName="utility:add" iconPosition="left" onclick="{!c.addSubSection}" label="Subcategory" /> -->
+                <div class="{!if(v.callerName == 'builder','slds-hide','slds-show')}">
+                    <lightning:button variant="brand" onclick="{!c.saveQuestionGroupHierarchy}" label="Save" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <lightning:overlayLibrary aura:id="overlayLib" />
+</aura:component>

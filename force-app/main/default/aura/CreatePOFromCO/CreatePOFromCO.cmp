@@ -1,0 +1,27 @@
+<aura:component controller="CreatePOFromCO" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global">
+    
+	<aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <lightning:notificationsLibrary aura:id="notifLib"/>
+<!--	<div>
+    	<center>
+	    	<img alt="Cenerating new receivable." src="{!$Resource.gearsloading}" style="height:150px !important;"/>
+	    	<br/>
+	    	Creating New PO <br/> Please don't leave this page until PO is created.
+    	</center> 
+    </div> -->
+    
+      <div aura:id="spinnerId" class="slds-spinner_container" style="position:fixed;">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                    <aura:if isTrue="{!v.showMessage}">
+                        <!--<b>Importing Schedule Lines... </b>-->
+                        <b>Processing, Please Wait</b>
+                    </aura:if>
+                </div>
+            </div>
+        </div>
+    
+</aura:component>

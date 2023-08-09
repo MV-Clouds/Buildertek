@@ -1,0 +1,17 @@
+<aura:component access="global" 
+                implements="lightning:isUrlAddressable,forceCommunity:availableForAllPageTypes,force:appHostable,flexipage:availableForAllPageTypes">
+    
+    <aura:attribute name="SiteType" type="String" default="Human Resource"/>
+    <aura:attribute name="siteTypeLoaded" type="Boolean" default="false"/>
+    <aura:attribute name="PreviewMode" type="Boolean" default="false"/>
+    <aura:attribute name="SiteId" type="String" default=""/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <aura:if isTrue="{!or(v.siteTypeLoaded, !v.PreviewMode)}">
+        <div>
+            <div role="main" aria-label="Dynamic Page Content" >
+                <c:VG_DynamicComponents siteType="{!v.SiteType}" previewMode="{!v.PreviewMode}" siteId="{!v.SiteId}"/>
+            </div>
+        </div>
+	</aura:if>
+</aura:component>

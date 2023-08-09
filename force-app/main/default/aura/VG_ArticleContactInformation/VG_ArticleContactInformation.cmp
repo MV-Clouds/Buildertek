@@ -1,0 +1,24 @@
+<aura:component implements="force:hasRecordId,forceCommunity:availableForAllPageTypes" controller="VG_KnowledgeDataAccess" access="global">
+	
+	<aura:attribute name="title" type="String" default="Contact Information"/>
+	<aura:attribute name="phone" type="string" default="1 800 768 8967"/>
+    <aura:attribute name="hours" type="String" default="M-F 8:00 AM to 6:00 PM EST"/>
+    <aura:attribute name="website" type="string" default="www.viewglass.com" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+     <aura:if isTrue="{!v.Phone!=null || v.Hours!=null || v.Website!=null}">
+    <lightning:card>
+        <aura:set attribute="title">           
+            <ui:outputText value= "{! v.title }" class="title"/>
+        </aura:set>
+       
+			<ol>
+				<li><ui:outputText value="{!'Phone: '+v.phone}"/> </li>
+				<li><ui:outputText value="{!'Hours: '+v.hours}"/></li> 
+				<li><ui:outputText value="{!'Website: '+v.website}"/></li>
+			</ol>
+			
+       
+    </lightning:card>
+          </aura:if>
+</aura:component>

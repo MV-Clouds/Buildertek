@@ -1,0 +1,49 @@
+<aura:component controller="VG_ContentService" access="global" implements="forceCommunity:availableForAllPageTypes,force:appHostable,flexipage:availableForAllPageTypes"  >
+    <aura:attribute name="quickLinks" type="Object[]" />
+    <aura:attribute name="moreQuickLinks" type="Object[]" />
+    <aura:attribute name="quickLinkstyle" type="String" default="small" access="global"/>    
+    <aura:attribute name="tileStyle" type="String"/>
+     <aura:attribute name="includePreview" type="Boolean" default="false" />
+    <aura:attribute name="siteName" type="String" default="Human Resource" />
+    
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <ltng:require styles="/resource/SLDS90/assets/styles/salesforce-lightning-design-system-ltng_old.css,/resource/eccustomcss/css/ecstyles.css"/>
+   <!-- <div class="custom-box" style="height: 375px;background-color:white; ">-->
+    <div style="width:100%;display:flex;    padding-left: 6px;    margin-top: 0.75rem;    margin-left: 4%;">
+        <div class="maindiv">HR Articles</div>
+       
+        <div class="morediv">
+            <aura:if isTrue="{! v.moreQuickLinks.length != 0}">
+                <lightning:buttonMenu label ="More" aura:id="menu"  alternativeText="Show menu" class="menufont" >
+                    <aura:iteration var="quickLink" items="{!v.moreQuickLinks}">
+                        <div class="slds-media slds-media--center innerdiv" style="line-height:1" > 
+                        <!--    <img  src="{!(and(not(empty(quickLink.ContentDocumentLinks.records)),quickLink.ContentDocumentLinks.records[0] != null))?  '/sfc/servlet.shepherd/version/renditionDownload?rendition=ORIGINAL_Png&amp;versionId='+quickLink.ContentDocumentLinks.records[0].ContentDocument.LatestPublishedVersionId : $Resource.ProfileContainer}" width="49" style="border-radius: 4px;"/>&nbsp;&nbsp;-->
+                       &nbsp;&nbsp;        <div class="slds-media__body"> 
+                                <a data-url="{!quickLink.Action_URL__c}"   
+                                   onclick="{!c.goToURL}"><h1 style="{!'color:#'+(empty(quickLink.Primary_FgColor__c)?'000000':quickLink.Primary_FgColor__c)+';font-family:gotham-book;font-size:14px;'}">{!quickLink.Primary_Text__c}</h1></a>
+                            </div><br/><br/><br/>
+                        </div>  <br/>  
+                    </aura:iteration>                 
+                </lightning:buttonMenu>   
+            </aura:if>  
+        </div>  
+    </div>
+    
+    <aura:if isTrue="{! and(v.quickLinks != null , v.quickLinks.length > 0)}"> 
+        <aura:if isTrue="{! equals(v.quickLinkstyle,'small')}">
+             
+            <aura:iteration var="quickLink" items="{!v.quickLinks}">
+                <div class="slds-media slds-media--center innerdiv" style=" /*padding-bottom: 0.5rem;*/ margin-left: 5%;     line-height: 1;   padding-left: 6px;">
+                   <!-- <img  src="{!(and(not(empty(quickLink.ContentDocumentLinks.records)),quickLink.ContentDocumentLinks.records[0] != null))?  '/sfc/servlet.shepherd/version/renditionDownload?rendition=ORIGINAL_Png&amp;versionId='+quickLink.ContentDocumentLinks.records[0].ContentDocument.LatestPublishedVersionId : $Resource.ProfileContainer}" width="49" style="border-radius: 4px;"/>&nbsp;&nbsp;-->
+              <div class="slds-media__body"> 
+                        <a data-url="{!quickLink.Action_URL__c}"  
+                           onclick="{!c.goToURL}"><h1 style="{!'color:#'+(empty(quickLink.Primary_FgColor__c)?'000000':quickLink.Primary_FgColor__c)+';font-family:gotham-book;font-size:14px;width:90%'}">{!quickLink.Primary_Text__c}</h1></a>
+                    </div><br/><br/><br/>
+                </div>    
+            </aura:iteration>  <br/>
+            
+        </aura:if>                       
+    </aura:if>
+  
+</aura:component>

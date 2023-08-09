@@ -1,0 +1,12 @@
+.THIS.slds-p-around--medium {
+            padding: 0rem !important;
+        }
+ .THIS.slds-modal__content {
+            height: unset !important;
+            max-height: unset !important;
+            box-shadow: none !important;
+        } 
+.THIS.slds-modal__container{
+    max-width: 62rem !important;
+    width:62% !important;
+}

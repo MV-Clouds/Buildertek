@@ -1,0 +1,18 @@
+<aura:component implements="forceCommunity:availableForAllPageTypes" access="global" >
+	<div class="slds-box">
+		<lightning:tabset>
+	        <lightning:tab label="Details">
+	            <force:recordView recordId="a1Q41000001jbezEAA"/>
+	        </lightning:tab>
+	        <lightning:tab label="Contracts">
+	            Contracts
+	        </lightning:tab>
+	        <lightning:tab label="Change Orders">
+	            Change Orders
+	        </lightning:tab>
+	        <lightning:tab label="Selection Sheets">
+	            Selection Sheets
+	        </lightning:tab>
+	    </lightning:tabset>
+	</div>
+</aura:component>

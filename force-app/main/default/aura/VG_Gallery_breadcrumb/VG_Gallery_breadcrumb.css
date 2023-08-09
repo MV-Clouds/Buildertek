@@ -1,0 +1,17 @@
+.THIS .slds-breadcrumb {
+    color:#F05F4D !IMPORTANT;
+    
+}
+.THIS .slds-list__item>a{
+    color:#F05F4D !IMPORTANT;
+    
+}
+.THIS .slds-breadcrumb__item>a{
+    color:#F05F4D !IMPORTANT;
+    
+}
+
+
+.THIS.Cardstyle{border:unset;}
+
+.THIS .slds-p-left_large{padding-left:unset;}

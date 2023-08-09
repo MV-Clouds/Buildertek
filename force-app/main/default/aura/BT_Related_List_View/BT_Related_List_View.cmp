@@ -1,0 +1,79 @@
+<aura:component implements="force:hasRecordId" controller="RFQDAO" access="global">
+
+    <aura:attribute name="recordId" type="String" description="Related record Id"/>
+    <aura:attribute name="relatedInfoMessage" type="String" description="Related List Info Message"/>
+    
+    <aura:attribute name="relatedObjectAPI" type="String" description="This will be target object API name" default="buildertek__RFQ_Item__c"/>
+    <aura:attribute name="relatedObjectFieldsSetName" type="String" description="This will be target object field set name" default="buildertek__BT_Related_List_View_Fields"/>
+    <aura:attribute name="filterConditions" type="String" description="This will be target object API name" default=""/>
+    <aura:attribute name="rfq" type="object" default="{ 'sobjectType': 'RFQ__c' }" description="RFQ record object"/>
+    <aura:attribute name="config" type="object"  description="BT Record object configuration"/>
+    <aura:attribute name="refreshRelatedList" type="Aura.Action" default="{! c.refreshRelatedList }" description="Refresh grid action"/>
+    
+    <lightning:spinner variant="brand" size="medium" aura:id="BTSpinner" class="slds-hide"/>
+    
+    <!-- aura waiting/doneWaiting hendler 
+    <aura:handler event="aura:waiting" action="{!c.showSpinner}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>  -->
+    
+    <aura:handler name="init" value="{!this}" action="{!c.initialize}"/>
+    
+    <div class="c-container">
+       <div class="slds-grid slds-wrap">
+           <div class="slds-size_1-of-1 slds-large-size_12-of-12">
+            
+			   <c:BT_Message aura:id="infoMessage" type="info" message="{!v.relatedInfoMessage}"/>
+			   
+               <div class="forceRelatedListSingleContainer">
+	               <lightning:card >
+	                   <aura:set attribute="title">
+	                       <lightning:icon iconName="utility:cases" size="x-small" /> &nbsp;RFQ Items
+	                   </aura:set>
+	                   
+	                   <aura:set attribute="actions">
+	                       <lightning:buttonGroup >
+	                       	   <aura:if isTrue="{!v.rfq.buildertek__Status__c != 'Awarded'}">
+	                       	   		<aura:if isTrue="{!v.rfq.buildertek__Status__c != 'Accepted'}">
+	                       	   			<aura:if isTrue="{!v.rfq.buildertek__Status__c != 'Request Sent'}">
+			                           
+				                           <lightning:button variant="brand" label="New" onclick="{! c.newRFQItem }"/>
+				                           
+				                           <aura:if isTrue="{! v.config.buildertek__Allow_To_Select_Item_From_Budget__c }">
+			                           			<lightning:button variant="brand" label="Select From Budget"   onclick="{! c.selectFromBudget }"/>
+				                           </aura:if>
+				                           
+				                           <aura:if isTrue="{! v.config.buildertek__Allow_To_Select_Item_From_Quote__c }">
+				                           		<lightning:button variant="brand" label="Select From Quote"  onclick="{! c.selectFromQuote }"/>
+				                           </aura:if>
+				                           
+				                           <aura:if isTrue="{! v.config.buildertek__Allow_To_Import_Item__c }">
+				                           		<lightning:button variant="brand" label="Import" onclick="{! c.navigateToImport }"/>
+				                           </aura:if>
+				                           
+				                           <button onclick="{!c.deleteSelectedItems}" class="slds-button slds-button--icon-border">
+				                                <span class="slds-button__icon">
+												   <lightning:icon iconName="utility:delete" size="x-small" />
+				                                </span> 
+				                            </button>
+			                            </aura:if>
+		                            </aura:if>
+	                            </aura:if>
+	                           <button onclick="{!c.refreshRelatedList}" class="slds-button slds-button--icon-border">
+	                                <span class="slds-button__icon">
+									   <lightning:icon iconName="utility:refresh" size="x-small" />
+	                                </span> 
+	                            </button>
+	                       </lightning:buttonGroup>
+	                   </aura:set>
+	                   
+	                   <p class="slds-p-horizontal--small">
+                  			<div aura:id="relatedListholder"></div>
+	                   </p>
+	               </lightning:card>
+           		</div>
+           </div>
+       </div>
+    </div>
+    <lightning:overlayLibrary aura:id="overlayLib"/>
+    <div aura:id="ModalDialogPlaceholder" />
+</aura:component>

@@ -1,0 +1,184 @@
+<aura:component controller="RFQToVendorLayoutCommunityController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,lightning:actionOverride,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="Iscommunity" type="Boolean" default = "false"/>
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="Vendorname" type="String" />
+    <aura:attribute name="communityUserId" type="String" />
+    <aura:attribute name="isEditable" type="boolean" default = "false"/>
+    <aura:attribute name="continuationSheetLines" type="Schedule_of_Value_Lines__c[]" />
+    <aura:attribute name="deleteContinuationSheetLine" type="List" />
+    <aura:attribute name="isdeleteClick" type="Boolean" />
+    <aura:attribute name="IsAwarded" type="Boolean" />
+    <aura:attribute name="acceptPopUp" type="Boolean" />
+    <aura:attribute name="rejectPopUp" type="Boolean" /> 
+    <aura:attribute name="isRFQAccepted" type="Boolean" />
+    <aura:attribute name="isRFQRejected" type="Boolean" />
+    <aura:attribute name="isAnotherVendor" type="Boolean" />
+    <aura:attribute name="isSubmitted" type="Boolean" />
+    <aura:attribute name="isalreadyaccepted" type="boolean" default = "false"/>
+    <aura:attribute name="isalreadyawarded" type="boolean" default = "false"/>
+    <aura:attribute name="isRFQRejectedbyanthoervendor" type="boolean" default = "false"/>
+    <aura:attribute name="loaded" type="Boolean" default="false" />
+    
+    <aura:if isTrue="{!v.loaded}">
+        <div class="demo-only">
+            <div class="slds-spinner_container">
+                <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                    <div class="custom-loading-text">
+                        Please Wait... 
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aura:if>
+
+    <aura:if isTrue="{!and(!v.isAnotherVendor,!v.isRFQAccepted)}" >
+        <aura:if isTrue='{!v.isalreadyaccepted}'>
+            <div class="slds-modal__container" style="min-width:30rem; padding: 0px;">
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height:50px; text-align: center;font-weight: bold;background-color: red;color: white;">
+                <!--This project has already accepted by another vendor.-->
+                 This Project has been Accepted to another Vendor. Thank you for your interest.
+            </div>
+        </div>
+        </aura:if>
+        <aura:if isTrue='{!v.isalreadyawarded}'>
+            <div class="slds-modal__container" style="min-width:30rem; padding: 0px;">
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height:50px; text-align: center;font-weight: bold;background-color: red;color: white;">
+               <!--This project has already awarded by another vendor.-->
+                This Project has been Awarded to another Vendor.  Thank you for your interest.
+            </div>
+        </div>
+        </aura:if>
+        <aura:if isTrue="{!and(v.IsAwarded)}">
+            <div class="slds-box">
+                <div class="slds-modal__content " id="modal-content-id-1">
+                    <div style="padding-bottom:1rem;text-align:center;">
+                        <!--<h3 style="display:inline-block;margin-right:1rem;">Do You Want To Accept The RFQ?</h3>-->
+                        <h3 style="display:inline-block;margin-right:1rem;">Do you want to accept this Project?</h3>
+                        <button class="slds-button slds-button_neutral" style="display:inline-block;"  onclick="{! c.rejectRFQ }">Reject</button>
+                        <button class="slds-button slds-button_neutral" style="display:inline-block;" onclick="{! c.acceptRFQ }">Accept</button>
+                    </div>
+                </div>
+                <aura:if isTrue='{!v.acceptPopUp}'>
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                             aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                        <div class="slds-modal__container" style="min-width:30rem;">
+                            <header class="slds-modal__header">
+                                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Accept
+                                </h2>
+                            </header>
+                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height:50px">
+                                <center>
+                                    <!--Are you sure you want to Accept this RFQ?-->
+                                    Are you sure you want to Accept this Project?
+                                </center>
+                            </div>
+                            <footer class="slds-modal__footer">
+                                <lightning:button label="No" title="No" onclick="{!c.cancelSubmit}" />
+                                <lightning:button variant="neutral" label="Yes" title="Yes" onclick="{!c.confirmAccept}" />
+                            </footer>
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+                </aura:if>
+                
+                <aura:if isTrue='{!v.rejectPopUp}'>
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                             aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                        <div class="slds-modal__container" style="min-width:30rem;">
+                            <header class="slds-modal__header">
+                                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Reject
+                                </h2>
+                            </header>
+                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height:50px">
+                                <center>
+                                    <!--Are you sure you want to Cancel this RFQ?-->
+                                    Are you sure you want to Cancel this Project?
+                                </center>
+                            </div>
+                            <footer class="slds-modal__footer">
+                                <lightning:button label="No" title="No" onclick="{!c.cancelSubmit}" />
+                                <lightning:button variant="neutral" label="Yes" title="Yes" onclick="{!c.confirmReject}" />
+                            </footer>
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+                </aura:if>
+                
+                
+                
+            </div>
+            
+        </aura:if> 
+        
+    </aura:if>
+    
+    
+    
+    <aura:if isTrue='{!v.isRFQAccepted}'>
+        <div class="slds-modal__container" style="min-width:30rem; padding: 0px;">
+            
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height:50px; text-align: center;font-weight: bold;background-color: #034803;color: white;">
+                <!--This RFQ has been Awarded to you.-->
+                <!-- commented 28-10 This RFQ has been Accepted by you. Congratulations!-->
+                This Project has been Accepted by you. Congratulations!
+            </div>
+            
+        </div>
+    </aura:if>
+    
+     <aura:if isTrue='{!v.isRFQRejected}'>
+        <div class="slds-modal__container" style="min-width:30rem; padding: 0px;">
+            
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height:50px; text-align: center;font-weight: bold;background-color: red;color: white;">
+                <!--This RFQ has been Awarded to you.-->
+                <!-- commented 28-10 This RFQ has been Rejected by You.-->
+                You have Rejected this RFQ. If you feel this was in error please contact your administrator.
+            </div>
+            
+        </div>
+    </aura:if>
+    <aura:if isTrue='{!v.isRFQRejectedbyanthoervendor}'>
+        <div class="slds-modal__container" style="min-width:30rem; padding: 0px;">
+            
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height:50px; text-align: center;font-weight: bold;background-color: red;color: white;">
+                <!--This RFQ has been Awarded to you.-->
+                <!-- commented 28-10 This RFQ has been Rejected by You.-->
+                This Project has been Rejected.
+            </div>
+            
+        </div>
+    </aura:if>
+    
+    
+    
+    <aura:if isTrue='{!v.isAnotherVendor}'>
+        <div class="slds-modal__container" style="min-width:30rem; padding: 0px;">
+            
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height:50px; text-align: center;font-weight: bold;background-color: red;color: white;">
+               <!-- This RFQ has been Awarded to another Vendor.  Thank you for your interest. -->
+                This Project has been Accepted to another Vendor.  Thank you for your interest.
+            </div>
+            
+        </div>
+    </aura:if>
+    
+    
+    
+    <aura:if isTrue='{!and(v.isSubmitted, !v.IsAwarded )}'>
+        <div class="slds-modal__container" style="min-width:30rem; padding: 0px;">
+            
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height:50px; text-align: center;font-weight: bold;background-color: #034803;color: white;">
+               <!-- RFQ Submitted. -->
+                Project Submitted.
+            </div>
+            
+        </div>
+    </aura:if>
+    
+    
+</aura:component>

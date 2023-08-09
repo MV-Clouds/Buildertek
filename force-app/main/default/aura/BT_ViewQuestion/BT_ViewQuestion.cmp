@@ -1,0 +1,90 @@
+<aura:component controller="BT_QuestionnaireBuilder">
+    <aura:attribute name="question" type="object" access="public" description="Question details" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="fields" type="String[]"
+        default="['buildertek__Additional_Cost__c','buildertek__Instructions__c','buildertek__Color__c']" />
+    <aura:attribute name="ContentDocument" type="List" default='' />
+    <aura:attribute name="isCustomerCommunity" type="Boolean" access="public" default="false" />
+    <aura:attribute name="imageId" type="String" access="public" default="" />
+    <aura:attribute name="optionName" type="String" access="public" default="" />
+    <aura:attribute name="instructions" type="String" access="public" default="" />
+    <aura:attribute name="additionalCost" type="String" access="public" default="0" />
+    <aura:attribute name="color" type="String" access="public" default="" />
+    <aura:attribute name="cost" type="String" access="public" default="0" />
+    <aura:attribute name="hasModalOpen" type="String" default="false" />
+    <aura:attribute name="currentDocumentId" type="String" default="" />
+
+    <div aura:id="questionDetail" class="slds-is-relative" style="min-height:20rem;padding:5px">
+        <c:BT_Spinner />
+        <div class="slds-grid slds-gutters">
+            <div class="slds-col" style="text-align: center;">
+                <aura:if isTrue="{!empty(v.imageId)}">
+                    <img src="{!$Resource.NoImageFound}" width="150" height="150" />
+                    <aura:set attribute="else">
+                        <aura:if isTrue="{!v.isCustomerCommunity}">
+                            <img src="{!'/Customer/sfc/servlet.shepherd/version/download/'+v.imageId}" width="150"
+                                height="150" />
+                            <aura:set attribute="else">
+                                <img src="{!'/sfc/servlet.shepherd/version/download/'+v.imageId}" width="150"
+                                    height="150" />
+                            </aura:set>
+                        </aura:if>
+                    </aura:set>
+                </aura:if>
+            </div>
+            <div class="slds-col">
+                <label class="slds-form-element__label" for="text-input-id-1" id="inline-text-label">Option Name</label>
+                <div>
+                    <lightning:textarea disabled="true" value="{!v.optionName}" />
+                </div>
+            </div>
+        </div>
+
+        <div class="slds-grid slds-gutters">
+            <div class="slds-col">
+                <div>
+                    <lightning:input disabled="true" label="Instructions" value="{!v.instructions}" />
+                </div>
+            </div>
+        </div>
+
+
+        <div class="slds-grid slds-gutters">
+            <div class="slds-col">
+                <lightning:input type="number" label="Additional Cost" disabled="true" value="{!v.additionalCost}"
+                    variant="lable-hidden" class="nolabel" formatter="currency" step="0.01" /> 
+            </div>
+            <div class="slds-col">
+                <label class="slds-form-element__label" for="text-input-id-1" id="inline-text-label">Documents</label>
+                <div>
+                    <aura:if isTrue="{!v.ContentDocument.length>0}">
+                        <aura:iteration items="{!v.ContentDocument}" var="doc">
+                            <a href="javascript: void(0)" onclick="{!c.onShowDocument}"
+                                data-documentId="{!doc.ContentDocumentId}">{!doc.ContentDocument.Title}</a>
+                        </aura:iteration>
+                        <aura:set attribute="else">
+                            <label class="slds-form-element__label" for="text-input-id-1" id="inline-text-label">No
+                                Documents Available.</label>
+                        </aura:set>
+                    </aura:if>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <aura:if isTrue="{!v.hasModalOpen}">
+        <section onclick="{!c.closeModel}" role="dialog" aria-modal="true" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container sldsmodalcontainer">
+                <div class="slds-modal__content slds-p-around_medium slds-text-align_center"
+                    style="background: transparent;">
+                    <div style="width: 55%; margin: 0 auto; text-align: left">
+                        <lightning:fileCard fileId="{!v.currentDocumentId}" />
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    <lightning:overlayLibrary aura:id="overlayLib" />
+    <lightning:notificationsLibrary aura:id="notifLib" />
+</aura:component>

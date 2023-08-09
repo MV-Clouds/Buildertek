@@ -1,0 +1,7 @@
+<aura:event type="COMPONENT" description="Event template">
+    <aura:attribute name="selectedIssue" type="Issue__c" />  
+    <aura:attribute name="LogIssueWrapper" type="Object" />
+    <aura:attribute name="recordIndex" type="Integer" default="-1" />
+    <aura:attribute name="ListName" type="String" default=""/>
+    <aura:attribute name="ValuesProvided" type="Boolean" default="false"/>
+</aura:event>

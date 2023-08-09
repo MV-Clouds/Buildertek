@@ -1,0 +1,20 @@
+<aura:component  controller = "BT_Project_Completed" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global" >
+	<aura:attribute name="projLst" type="Project__c[]"/>  
+     <aura:attribute name="showRecordData" type="Boolean" default="false" />
+    <aura:attribute name="fieldname" type="String"  />
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}" access="global" />
+    <lightning:notificationsLibrary aura:id="notifLib"/>
+	<div aura:id="progressbar">
+    	<center>
+	    	<img alt="Generating new invoice." src="{!$Resource.gearsloading}" style="height:150px !important;"/>
+	    	<br/>
+	     Please don't leave this page until project is completed.
+    	</center> 
+    </div>
+    <!-- <aura:if isTrue="{!v.showRecordData}">-->
+        <force:recordData aura:id="projectRecordCmp"
+                          recordId="{!v.recordId}"
+                          fields="Id,buildertek__Stage__c,buildertek__Actual_Completion_Date__c,buildertek__Project_Completion__c"/>
+ 
+   <!-- </aura:if>-->
+</aura:component>

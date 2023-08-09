@@ -1,0 +1,53 @@
+<aura:component>
+    <aura:attribute name="questionGroup" type="object" access="public" description="Question group details" />
+    <aura:attribute name="selectionId" type="String" />
+    <aura:attribute name="recordViewForm" type="Aura.Component[]"
+        description="Place holder for question group record View Form" />
+    <aura:attribute name="questionDetails" type="Aura.Component[]" description="Place holder for question details" />
+    <aura:attribute name="icone" type="String" default="add"
+        description="This attribute is used to twiste accordion icone" />
+    <aura:attribute name="headerFields" type="List" default="" description="Question group header fields" />
+    <aura:attribute name="section" type="object" access="public" description="Section details" />
+    <aura:attribute name="initReference" type="Aura.Action"
+        description="This attribute is used to update control accordion on record Saved" />
+    <aura:attribute name="callerName" type="String" />
+    <aura:handler event="c:BT_TreeNodeClickEvent" action="{!c.handleTreeNodeClick}" />
+    <aura:method name="initMethod" action="{!v.initReference}" />
+
+
+    <div id="{!'accordion'+globalId}" class="av-control-handle slds-accordion__section slds-is-close">
+        <div class="slds-accordion__summary highlight">
+            <h3 class="av-nodrag slds-text-heading_small slds-accordion__summary-heading">
+                <button aria-expanded="true" class="slds-button slds-accordion__summary-action"
+                    onclick="{!c.twistAccordion}">
+                    <div onclick="{!c.twistAccordion}">
+                        <lightning:icon iconName="{!'utility:'+v.icone}" variant="border-filled" size="large"
+                            onclick="{!c.twistAccordion}" class="{!(v.icone=='dash' ? 'collapseIcon' : 'iconStyle')}" />
+                    </div>
+                    <span class="slds-truncate" style="font-size:0.8rem;color:#000;"
+                        title="{!v.questionGroup.Name}"><b>&nbsp;{!v.questionGroup.Name}</b></span>
+                </button>
+                <div class="{!if(v.callerName == 'builder','accordion_edit','slds-hide')}" style="padding:5px;"><a
+                        href="javascript:void(0);" onclick="{!c.openNewQuestionGroupComponent}">
+                        <lightning:icon iconName="utility:edit" size="x-small" />
+                    </a></div>
+            </h3>
+            <div class="{!if(v.callerName == 'builder','accordion_edit av-control-handle','slds-hide')}"
+                style="padding:5px;padding-left:10px;">
+                <lightning:buttonIcon iconName="utility:move" variant="bare" />
+            </div>
+        </div>
+        <div aria-hidden="false" class="av-nodrag slds-accordion__content" style="cursor: default;">
+            <div style="padding-left:1.4rem;padding-right:10px;margin-top:-10px;">
+                <div aura:id="recordView">{!v.recordViewForm}</div>
+            </div>
+            <div aura:id="questionDetail" style="padding-left:1.4rem;padding-right:10px;"> {!v.questionDetails}</div>
+
+            <div class="{!if(v.callerName == 'builder','av-nodrag','slds-hide')}" style="padding:10px;">
+                <lightning:button variant="brand" iconName="utility:add" iconPosition="left"
+                    onclick="{!c.openNewQuestionComponent}" label="Add Selection Option" />
+            </div>
+        </div>
+    </div>
+    <lightning:overlayLibrary aura:id="overlayLib" />
+</aura:component>

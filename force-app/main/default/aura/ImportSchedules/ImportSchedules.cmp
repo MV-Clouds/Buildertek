@@ -1,0 +1,38 @@
+<aura:component controller="ImportScheduleController" implements="force:lightningQuickAction">
+    <aura:handler event="aura:waiting" action="{!c.waiting}" />
+    <aura:handler event="aura:doneWaiting" action="{!c.doneWaiting}" />
+
+    <div class="slds-box slds-theme_default slds-box_small">
+        <p>
+            <strong>Note: </strong> This import functionality will import Task Name, Dependency, Start Date, Duration
+            and Required Completion Date fields in Schedule Lines.
+        </p>
+    </div>
+    <br />
+
+    <div class="container">
+        <input type="file" aura:id="file" class="file" accept=".csv" id="file-upload-input-01"
+            aria-labelledby="file-selector-primary-label file-selector-secondary-label" />
+        <label class="slds-file-selector__body" for="file-upload-input-01" id="file-selector-secondary-label">
+            <span class="slds-file-selector__button slds-button slds-button_neutral">
+                <lightning:icon iconName="utility:upload" size="small" />
+                &nbsp;Select File
+            </span>
+        </label>
+        &nbsp;&nbsp;
+        <ui:button label="Import Schedule Lines" class="slds-button_brand" press="{!c.save}" />
+
+        <div aura:id="uploading" class="notUploading">
+            <div class="demo-only" style="height: 6rem;">
+                <div role="status" class="slds-spinner slds-spinner_medium">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                     <div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</aura:component>

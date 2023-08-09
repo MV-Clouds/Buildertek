@@ -1,0 +1,161 @@
+<aura:component controller="QuoteLinesController" access="global" >
+	<aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="quoteItem" type="Quote_Item__c"/>
+    <aura:attribute name="baseData" type="object"/>
+    
+    <aura:attribute name="selectedQuote" type="object"/>
+    <aura:attribute name="selectedProduct" type="object"/>
+    <aura:attribute name="selectedGroup" type="object"/>
+    <aura:attribute name="selectedVendor" type="object"/>
+    <aura:attribute name="selectedCostCode" type="object"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <div class="slds-form" role="list">
+        <div class="slds-grid slds-gutters_small">
+            <div class="slds-col slds-has-flexi-truncate" role="listitem">
+                <div class="slds-form-element slds-form-element_edit slds-hint-parent">
+                    <label class="slds-form-element__label" for="assigned-to">Quote Line</label>
+                    <div class="slds-form-element__control">
+                        <input type="text" id="team-name" class="slds-input" placeholder="Quote Line" value="{!v.quoteItem.Name}"/>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="slds-col slds-has-flexi-truncate" role="listitem">
+                <div class="slds-form-element slds-form-element_edit slds-hint-parent">
+                    <label class="slds-form-element__label" for="team-name">Quote</label>
+                    <div class="slds-form-element__control">
+                        <c:CustomLookupComponent sObjectName="buildertek__Quote__c" selectedRecord="{!v.selectedQuote}"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="slds-grid slds-gutters_small">
+            <div class="slds-col slds-has-flexi-truncate" role="listitem">
+                <div class="slds-form-element slds-form-element_edit slds-hint-parent">
+                    <label class="slds-form-element__label" for="team-name">Product</label>
+                    <div class="slds-form-element__control">
+                        <c:CustomLookupComponent sObjectName="Product2" selectedRecord="{!v.selectedProduct}"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="slds-grid slds-gutters_small">
+            <div class="slds-col slds-has-flexi-truncate" role="listitem">
+                <div class="slds-form-element slds-form-element_edit slds-hint-parent">
+                    <label class="slds-form-element__label" for="assigned-to">Quantity</label>
+                    <div class="slds-form-element__control">
+                        <input type="number" id="team-name" class="slds-input" placeholder="Quantity" value="{!v.quoteItem.buildertek__Quantity__c}"/>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="slds-col slds-has-flexi-truncate" role="listitem">
+                <div class="slds-form-element slds-form-element_edit slds-hint-parent">
+                    <label class="slds-form-element__label" for="team-name">Grouping</label>
+                    <div class="slds-form-element__control">
+                        <c:CustomLookupComponent sObjectName="buildertek__Quote_Line_Group__c" selectedRecord="{!v.selectedGroup}"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="slds-grid slds-gutters_small">
+            <div class="slds-col slds-has-flexi-truncate" role="listitem">
+                <div class="slds-form-element slds-form-element_edit slds-hint-parent">
+                    <label class="slds-form-element__label" for="assigned-to">UOM</label>
+                    <div class="slds-form-element__control">
+                        <lightning:select value="{!v.quoteItem.buildertek__UOM__c}" class="slds-truncate" >
+                            <aura:iteration items="{!v.baseData.listUOMs}" var="s">
+                                <option value="{!s}" label="{!s}" selected="true"/>
+                            </aura:iteration>
+                        </lightning:select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="slds-col slds-has-flexi-truncate" role="listitem">
+                <div class="slds-form-element slds-form-element_edit slds-hint-parent">
+                    <label class="slds-form-element__label" for="team-name">Cost Code</label>
+                    <div class="slds-form-element__control">
+                        <c:CustomLookupComponent sObjectName="buildertek__Cost_Codes__c" selectedRecord="{!v.selectedCostCode}"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="slds-grid slds-gutters_small">
+            <div class="slds-col slds-has-flexi-truncate" role="listitem">
+                <div class="slds-form-element slds-form-element_edit slds-hint-parent">
+                    <label class="slds-form-element__label" for="assigned-to">Description</label>
+                    <div class="slds-form-element__control">
+                        <input type="text" id="team-name" class="slds-input" placeholder="Description" value="{!v.quoteItem.buildertek__Description__c}"/>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="slds-col slds-has-flexi-truncate" role="listitem">
+                <div class="slds-form-element slds-form-element_edit slds-hint-parent">
+                    <label class="slds-form-element__label" for="team-name">Pricing Method</label>
+                    <div class="slds-form-element__control">
+                        <lightning:select value="{!v.quoteItem.buildertek__Pricing_Method__c}" class="slds-truncate" >
+                            <aura:iteration items="{!v.baseData.listPricingMethods}" var="s">
+                                <option value="{!s}" label="{!s}" selected="true"/>
+                            </aura:iteration>
+                        </lightning:select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="slds-grid slds-gutters_small">
+            <div class="slds-col slds-has-flexi-truncate" role="listitem">
+                <div class="slds-form-element slds-form-element_edit slds-hint-parent">
+                    <label class="slds-form-element__label" for="team-name">Vendor</label>
+                    <div class="slds-form-element__control">
+                        <c:CustomLookupComponent sObjectName="Account" selectedRecord="{!v.selectedVendor}"/>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="slds-col slds-has-flexi-truncate" role="listitem">
+                <div class="slds-form-element slds-form-element_edit slds-hint-parent">
+                    <label class="slds-form-element__label" for="assigned-to">Notes</label>
+                    <div class="slds-form-element__control">
+                        <input type="text" id="team-name" class="slds-input" placeholder="Notes" value="{!v.quoteItem.buildertek__Notes__c}"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="slds-grid slds-gutters_small">
+            <div class="slds-col slds-has-flexi-truncate" role="listitem">
+                <div class="slds-form-element slds-form-element_edit slds-hint-parent">
+                    <label class="slds-form-element__label" for="assigned-to">Unit Cost</label>
+                    <div class="slds-form-element__control">
+                        <input type="number" id="team-name" class="slds-input" placeholder="Unit Cost" value="{!v.quoteItem.buildertek__Unit_Cost__c}"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="slds-grid slds-gutters_small">
+            <div class="slds-col slds-has-flexi-truncate" role="listitem">
+                <div class="slds-form-element slds-form-element_edit slds-hint-parent">
+                    <label class="slds-form-element__label" for="assigned-to">Unit Price</label>
+                    <div class="slds-form-element__control">
+                        <input type="number" id="team-name" class="slds-input" placeholder="Unit Price" value="{!v.quoteItem.buildertek__Unit_Price__c}"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="slds-align_absolute-center">
+        <button class="slds-button slds-button_brand" onclick="{!c.cancel}">Cancel</button>
+        <button class="slds-button slds-button_brand" onclick="{!c.save}">Save</button>
+    </div>
+</aura:component>

@@ -1,0 +1,8 @@
+.THIS .submitted_table {
+	overflow-x: scroll !important;
+    height: 250px !important;
+}
+
+.THIS .submittedTableCol {
+	width : 150px;
+}

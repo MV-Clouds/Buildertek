@@ -1,0 +1,234 @@
+<aura:component controller="LogIssuesCmpController" access="global">
+    
+    
+    
+    	<lightning:workspaceAPI aura:id="workspace"/>
+	
+    <aura:attribute name="headerText" type="STRING" default="Submitted Issues For Approval"/>
+	
+	<aura:attribute name="listOfSubmittedIssues" type="Object[]" default="[]"/>
+    <aura:attribute name="recordtype" type="string" default=""/>
+	
+	<aura:attribute name="listOfApprovalIssues" type="list" default="[]"/>
+    
+    <aura:attribute name="listOfSubIssues" type="list" default="[]"/>
+    <aura:attribute name="listOfnotSubIssues" type="list" default="[]"/>
+	<aura:attribute name="issueWrapperdata" type="Object" default="{}" />
+	<aura:attribute name="showSpinner" type="Boolean" />
+    <aura:attribute name="componentName" type="string" />
+    <aura:attribute name="submitedtype" type="Integer" />
+    <aura:registerEvent name="SubmitedRedrirect" type="c:SubmitedRedrirect"/>
+	<aura:attribute name="isConsoleNavigation" type="Boolean" default="false"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+	
+    <!--<aura:registerEvent name="refreshIssuesReportedTableEvt" type="c:RefreshIssuesReportedTable"/>
+    -->
+	<!-- START MODAL -->
+    <div >
+        <aura:html tag="style">
+   .slds-modal__container{ 
+     height : auto; width: 150%; max-width: 170vh; 
+   } 
+   .modal-body{ 
+     height : 60vh !important; 
+     width : 170vh !important;
+     max-width: 170vh !important;
+     max-height: 60vh !important; 
+   } 
+   .slds-modal__footer{ 
+     display: inline !important; 
+   }
+</aura:html>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+			
+			<!-- START SPINNER -->
+            <aura:if isTrue="{!v.showSpinner}">
+				<lightning:spinner alternativeText="Loading" size="large" />
+			</aura:if>
+			<!-- END SPINNER -->
+			
+			<div class="slds-modal__container">
+				
+				<header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" class="slds-modal__close"
+										  size="large" variant="bare" alternativeText="Close"
+										  onclick="{! c.closeModal }"/>
+					<h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">
+						{!v.headerText}
+					</h2>
+                </header>
+				
+				<div class="slds-modal__content slds-p-around_medium slds-scrollable" id="modal-content-id-1">
+					<aura:if isTrue="{!not(empty(v.listOfSubIssues))}">
+							
+						<div class="submitted_table">
+                              <div ><b>Issues successfully submitted for processing.</b></div>
+					
+							<table class="slds-table slds-table_bordered slds-table_cell-buffer"> 
+							
+                                <thead>
+									<tr>
+										<th scope="col">
+											<div class="slds-truncate submittedTableCol" title="Name">Name</div>
+										</th>
+										<th scope="col">
+											<div class="slds-truncate submittedTableCol" title="Case ">Issue Status</div>
+										</th>
+										<th scope="col">
+											<div class="slds-truncate submittedTableCol" title="Warranty Determination">Warranty Determination</div>
+										</th>
+										<th scope="col">
+											<div class="slds-truncate submittedTableCol" title="Account Name">Account Name</div>
+										</th>
+										<!--<th scope="col">
+											<div class="slds-truncate submittedTableCol" title="Control Panel">Control Panel</div>
+										</th>
+										<th scope="col">
+											<div class="slds-truncate submittedTableCol" title="Record Type">Record Type</div>
+										</th>-->
+                                        <th scope="col">
+											<div class="slds-truncate submittedTableCol" title=" Product Replacement"> Product Replacement</div>
+										</th>
+                                        <th scope="col">
+											<div class="slds-truncate submittedTableCol" title="Product Return">Product Return</div>
+										</th>
+										<!--<th scope="col">
+											<div class="slds-truncate submittedTableCol" title="Product">Product</div>
+										</th>
+										<th scope="col">
+											<div class="slds-truncate submittedTableCol" title="Requested Delivery Date">Requested Delivery Date</div>
+										</th>-->
+									</tr>
+								</thead>   
+								<tbody>
+									<aura:iteration items="{!v.listOfSubIssues}" var="approvalIssue" indexVar="index">
+										<tr>	
+											<td>
+												<ui:outputText value="{!approvalIssue.Name}"/>
+                                                
+											</td>
+											<td>
+												<ui:outputText value="{!approvalIssue.Issue_Status__c}"/>
+											</td>
+											<td>
+												<ui:outputText value="{!approvalIssue.Warranty_Type__c}"/>
+											</td>
+											<td>
+												<ui:outputText value="{!approvalIssue.Case_Account_Name__c}"/>
+											</td>
+											
+											<td>
+												<ui:outputCheckbox value="{!approvalIssue.Product_Replacement__c}"/>
+											</td>
+                                            <td>
+												<ui:outputCheckbox value="{!approvalIssue.Product_Return__c }"/>
+											</td>
+										</tr>
+									</aura:iteration>
+								</tbody>
+							</table>
+						</div>
+					
+                    </aura:if>
+				</div>
+                
+                
+                
+                <div class="slds-modal__content slds-p-around_medium slds-scrollable" id="modal-content-id-2">
+					<aura:if isTrue="{!not(empty(v.listOfnotSubIssues))}">
+							
+						<div class="submitted_table">
+                             
+                            <div ><b>
+                            Issues not submitted for processing. Please review if "Product Request" or "Product Return" checkboxes need to be checked.     
+                                
+                                <br></br>Please work with Deal Desk Analyst: {!v.issueWrapperdata.caseRec.Opportunity__r.Sales_Ops_Owner__r.Name}  if warranty type is "Undetermined".</b></div>
+                      
+							<table class="slds-table slds-table_bordered slds-table_cell-buffer"> 
+							
+                                <thead>
+									<tr>
+										<th scope="col">
+											<div class="slds-truncate submittedTableCol" title="Name">Name</div>
+										</th>
+										<th scope="col">
+											<div class="slds-truncate submittedTableCol" title="Case ">Issue Status</div>
+										</th>
+										<th scope="col">
+											<div class="slds-truncate submittedTableCol" title="Warranty Determination">Warranty Determination</div>
+										</th>
+										<th scope="col">
+											<div class="slds-truncate submittedTableCol" title="Case Account Name">Account Name</div>
+										</th>
+										<!--<th scope="col">
+											<div class="slds-truncate submittedTableCol" title="Control Panel">Control Panel</div>
+										</th>
+										<th scope="col">
+											<div class="slds-truncate submittedTableCol" title="Record Type">Record Type</div>
+										</th>-->
+                                        <th scope="col">
+											<div class="slds-truncate submittedTableCol" title=" Product Replacement"> Product Replacement</div>
+										</th>
+                                        <th scope="col">
+											<div class="slds-truncate submittedTableCol" title="Product Return">Product Return</div>
+										</th>
+										<!--<th scope="col">
+											<div class="slds-truncate submittedTableCol" title="Product">Product</div>
+										</th>
+										<th scope="col">
+											<div class="slds-truncate submittedTableCol" title="Requested Delivery Date">Requested Delivery Date</div>
+										</th>-->
+									</tr>
+								</thead>   
+								<tbody>
+									<aura:iteration items="{!v.listOfnotSubIssues}" var="approvalIssue" indexVar="index">
+										<tr>	
+											<td>
+												<ui:outputText value="{!approvalIssue.Name}"/>
+                                                
+											</td>
+											<td>
+												<ui:outputText value="{!approvalIssue.Issue_Status__c}"/>
+											</td>
+											<td>
+												<ui:outputText value="{!approvalIssue.Warranty_Type__c}"/>
+											</td>
+											<td>
+												<ui:outputText value="{!approvalIssue.Case_Account_Name__c}"/>
+											</td>
+											
+											<td>
+												<ui:outputCheckbox value="{!approvalIssue.Product_Replacement__c}"/>
+											</td>
+                                            <td>
+												<ui:outputCheckbox value="{!approvalIssue.Product_Return__c }"/>
+											</td>
+										</tr>
+									</aura:iteration>
+								</tbody>
+							</table></div>
+					
+                    </aura:if>
+				</div>
+                
+				
+				<footer class="slds-modal__footer">
+					<lightning:button variant="brand" label="Close" title="Close"
+									  onclick="{! c.closeModal }" />   
+                </footer>
+				
+			</div>
+            
+		</section>
+		
+		<div class="slds-backdrop slds-backdrop_open"></div>
+		
+	</div>
+	<!-- END MODAL -->
+
+    
+    
+	
+</aura:component>

@@ -1,0 +1,176 @@
+<aura:component implements="force:appHostable,lightning:isUrlAddressable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction"
+    access="global" controller="MassAddBudgetItemController">
+
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="budgetLineWrapperList" type="Object" />
+    <aura:attribute name="budgetLineGroups" type="List" />
+    <aura:attribute name="pricebookOptions" type="List" />
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+    <aura:attribute name="vendorList" type="List" />
+    <aura:attribute name="uomOptionList" type="List" />
+    <aura:attribute name="selectedPricebook" type="String" />
+    <aura:attribute name="DefaultproductFamilyList" type="List" />
+    <aura:attribute name="DefaultproductOptionList" type="List" />
+    
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <lightning:workspaceAPI aura:id="workspace" />
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+
+    <div class="slds-modal__content slds-scrollable" style="height:100% !important">
+        <lightning:card aura:id="lightCard" class="slds-card_boundary slds-page-header slds-scrollable" title="Budget Lines">
+            <aura:set attribute="actions">
+                <lightning:button iconName="utility:save" iconPosition="left" onclick="{!c.onMassUpdate}" label="Save" />
+                <lightning:button iconName="utility:add" iconPosition="left" onclick="{!c.onAddClick}" label="Add" />
+                <lightning:button iconName="utility:close" iconPosition="left" onclick="{!c.onCancel}" label="Cancel" />
+            </aura:set>
+        </lightning:card>
+
+        <div class="slds-border_top slds-box slds-box_xx-small" >
+            <div class="slds slds-m-top_medium slds-p-horizontal_medium" >
+                <table class="slds-table slds-table--bordered':'slds-table--bordered'">
+                    <thead>
+                        <tr style="height:35px; !important" class="slds-text-title_caps">
+                            <th scope="col" class="table-Header" style="border-top-left-radius:5px;">
+                                <div class="slds-truncate" title="Pricebook">Pricebook</div>
+                            </th>
+                            <th scope="col" class="table-Header">
+                                <div class="slds-truncate" title="Product Family">Product Family</div>
+                            </th>
+                            <th scope="col" class="table-Header">
+                                <div class="slds-truncate" title="Product">Product</div>
+                            </th>
+                            <th scope="col" class="table-Header">
+                                <div class="slds-truncate" title="Description">Description</div>
+                            </th>
+                            <th scope="col" class="table-Header">
+                                <div class="slds-truncate" title="Group">Group</div>
+                            </th>
+                            <th scope="col" class="table-Header">
+                                <div class="slds-truncate" title="UOM">UOM</div>
+                            </th>
+                            <th scope="col" class="table-Header">
+                                <div class="slds-truncate" title="Vendor">Vendor</div>
+                            </th>
+                            <th scope="col" class="table-Header">
+                                <div class="slds-truncate" title="Quantity">Quantity</div>
+                            </th>
+                            <th scope="col" class="table-Header">
+                                <div class="slds-truncate" title="Unit Cost">Unit Cost</div>
+                            </th>
+                            <th scope="col" class="table-Header">
+                                <span> </span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <aura:iteration items="{!v.budgetLineWrapperList}" var="budgetLineWrapper" indexVar="index">
+                            <tr class="slds-hint-parent">
+                                <td>
+                                    <lightning:select name="{!index}" value="{!budgetLineWrapper.pricebookEntryId}" class="pricebook-class pointer1" onchange="{!c.getFamily}">
+                                        <aura:iteration items="{!v.pricebookOptions}" var="pricebookOption">
+                                            <aura:if isTrue="{!pricebookOption.value == v.selectedPricebook}">
+                                                <option name="{!budgetLineWrapper}" value="{!pricebookOption.value}" selected="true">{!pricebookOption.label}</option>
+                                                <aura:set attribute="else">
+                                                    <option name="{!budgetLineWrapper}" value="{!pricebookOption.value}">{!pricebookOption.label}</option>
+                                                </aura:set>
+                                            </aura:if>
+                                            <!-- <option name="{!budgetLineWrapper}" value="{!pricebookOption.value}">{!pricebookOption.label}</option> -->
+                                        </aura:iteration>
+                                    </lightning:select>
+                                </td>
+                                <td>
+                                    <lightning:select name="{!index}" value="{!budgetLineWrapper.productFamily}" class="family-class pointer1" onchange="{!c.getProduct}">
+                                        <aura:iteration items="{!budgetLineWrapper.productFamilyList}" var="productFamilyOption">
+                                            <option name="{!budgetLineWrapper}" value="{!productFamilyOption.value}">{!productFamilyOption.label}</option>
+                                        </aura:iteration>
+                                    </lightning:select>
+                                </td>
+                                <td>
+                                    <lightning:select name="{!index}" value="{!budgetLineWrapper.productId}" class="product-class pointer1" onchange="{!c.gotProduct}">
+                                        <aura:iteration items="{!budgetLineWrapper.productOptionList}" var="productOption">
+                                            <option name="{!budgetLineWrapper}" value="{!productOption.value}">{!productOption.label}</option>
+                                        </aura:iteration>
+                                    </lightning:select>
+                                </td>
+                                <td>
+                                    <lightning:input name="{!index}" value="{!budgetLineWrapper.BudgetLine.Name}" class="description-class" />
+                                </td>
+                                <td>
+                                    <aura:if isTrue="{!budgetLineWrapper.BudgetLine.buildertek__Product__c != ''}">
+                                        <lightning:select name="{!index}" value="{!budgetLineWrapper.BudgetLine.buildertek__Group__c}" class="grouping-class pointer1">
+                                            <aura:iteration items="{!budgetLineWrapper.GroupingOptions}" var="groupingOption">
+                                                <option name="{!budgetLineWrapper}" value="{!groupingOption.Id}">{!groupingOption.Name}</option>
+                                            </aura:iteration>
+                                        </lightning:select>
+                                    </aura:if>
+                                    <aura:if isTrue="{!budgetLineWrapper.BudgetLine.buildertek__Product__c == ''}">
+                                        <lightning:select name="{!index}" value="{!budgetLineWrapper.BudgetLine.buildertek__Group__c}" class="grouping-class pointer1">
+                                            <aura:iteration items="{!dummy}" var="groupingOption">
+                                                <option name="{!budgetLineWrapper}" value="{!groupingOption.Id}">{!groupingOption.Name}</option>
+                                            </aura:iteration>
+                                        </lightning:select>
+                                    </aura:if>
+                                </td>
+                                <td>
+                                    <!-- <aura:if isTrue="{!budgetLineWrapper.BudgetLine.buildertek__Product__c != ''}"> -->
+                                        <lightning:select name="{!index}" value="{!budgetLineWrapper.BudgetLine.buildertek__UOM__c}" class="uom-class pointer1">
+                                            <aura:iteration items="{!v.uomOptionList}" var="uomOption">
+                                                <option name="{!budgetLineWrapper}" value="{!uomOption.value}">{!uomOption.label}</option>
+                                            </aura:iteration>
+                                        </lightning:select>
+                                    <!-- </aura:if>
+                                    <aura:if isTrue="{!budgetLineWrapper.BudgetLine.buildertek__Product__c == ''}">
+                                        <lightning:select name="{!index}" value="{!budgetLineWrapper.BudgetLine.buildertek__UOM__c}" class="uom-class pointer1">
+                                            <aura:iteration items="{!dummy}" var="uomOption">
+                                                <option name="{!budgetLineWrapper}" value="{!uomOption.Id}">{!uomOption.Name}</option>
+                                            </aura:iteration>
+                                        </lightning:select>
+                                    </aura:if> -->
+                                </td>
+                                <td>
+                                    <!-- <aura:if isTrue="{!budgetLineWrapper.BudgetLine.buildertek__Product__c != ''}"> -->
+                                        <lightning:select name="{!index}" value="{!budgetLineWrapper.BudgetLine.buildertek__Contractor__c}" class="vendor-class pointer1">
+                                        <aura:iteration items="{!v.vendorList}" var="vendorOption">
+                                                <option name="{!budgetLineWrapper}" value="{!vendorOption.value}">{!vendorOption.label}</option>
+                                            </aura:iteration>
+                                        </lightning:select>
+                                    <!-- </aura:if>
+                                    <aura:if isTrue="{!budgetLineWrapper.BudgetLine.buildertek__Product__c == ''}">
+                                        <lightning:select name="{!index}" value="{!budgetLineWrapper.BudgetLine.buildertek__Contractor__c}" class="vendor-class pointer1">
+                                            <aura:iteration items="{!vendorList}" var="vendorOption">
+                                                <option name="{!budgetLineWrapper}" value="{!vendorOption.value}">{!vendorOption.label}</option>
+                                            </aura:iteration>
+                                        </lightning:select>
+                                    </aura:if> -->
+                                    
+                                </td>
+                                <td>
+                                    <lightning:input name="{!index}" value="{!budgetLineWrapper.BudgetLine.buildertek__Quantity__c}" class="quantity-class"  type="number" />
+                                </td>
+                                <td>
+                                    <lightning:input name="{!index}" value="{!budgetLineWrapper.BudgetLine.buildertek__Unit_Price__c}" class="unitCost-class"  type="number" step="0.01" />
+                                </td>
+                                <td>
+                                    <span onclick="{!c.deleteRow}" data-index="{!index}" class="slds-icon_container slds-icon-utility-delete pointer1" title="Delete">
+                                        <lightning:icon iconName="action:close" alternativeText="Delete"
+                                                            class="some-indicator" size="x-small" title="Delete" />
+                                    </span>    
+                                </td>
+                                
+                            </tr>
+                        </aura:iteration>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <aura:if isTrue="{!v.isLoading}">
+        <lightning:spinner alternativeText="Loading" variant="brand" size="large" />
+    </aura:if>
+
+</aura:component>

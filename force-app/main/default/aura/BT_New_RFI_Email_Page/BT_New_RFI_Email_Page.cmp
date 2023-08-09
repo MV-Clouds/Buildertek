@@ -1,0 +1,140 @@
+<aura:component controller = "BT_New_RFI_Controller" 
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global" 
+                >
+ <aura:attribute name="fieldSetValues" type="List"  />
+    
+    <aura:html tag="style">
+        .slds-modal__container {
+        min-width: 60vw;
+        }
+    </aura:html>
+    
+    <aura:attribute name="fileName" type="String" default="No File Selected.." />
+    <aura:attribute name="uploadedFileIds" type="List" default="[]" />
+    <aura:attribute name="rfiId" type="String" access="public" /> 
+    <aura:attribute name="projRecordId" type="String" default="" />
+    <aura:attribute name="rfqRecord" type="RFQ__c"/>
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="contact" type="String"/>
+    <aura:attribute name="parentprojectRecordId" type="String" default="" />
+     <aura:attribute name="contactid" type="String" />
+    <aura:attribute name="userInfo" type="string"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> 
+
+     <force:recordData aura:id="newrfqrecord" layoutType="FULL" recordId="{!v.projRecordId}" fields="buildertek__Project__c"
+                      targetFields="{!v.rfqRecord}" targetError="{!v.newRecordError}" />
+    
+    <!-- <buildertek:bT_New_RFI_Mass/> -->
+    
+    <aura:attribute name="accountList" type="RFI__c[]"/>
+    <aura:attribute name="currentTab" type="Boolean" default="false" />
+    <aura:attribute name="IsSpinner" type="Boolean" default="false" />
+    <aura:attribute name="successmodel" type="Boolean" default="false" />
+    <aura:attribute name="openNewRFIModal" type="Boolean" default="false" />
+    <aura:attribute name="question" type="String" />
+    
+    
+    
+    <aura:if isTrue="{!v.successmodel}">
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open" >
+                <div class="slds-modal__container" >
+                    <!-- Modal/Popup Box LWC header here -->
+                    <header class="slds-modal__header slds-box slds-theme_shade slds-theme_alert-texture slds-theme_success">
+                        <p style="font-size:large;">Created RFI</p> 
+                        
+                    </header>
+                    <!-- Modal/Popup Box LWC body starts here -->
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-14"  >
+                        <p style="font-size:medium;padding:10px;">RFI created successfully</p>
+                    </div>
+                    <!-- Modal/Popup Box LWC footer starts here -->
+                    <footer class="slds-modal__footer">
+                        <lightning:button variant="brand" label="Ok" title="Ok"  onclick="{!c.closesuccessModal}" class="slds-m-left_x-small"></lightning:button>
+                    
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    
+    <aura:if isTrue="{!v.IsSpinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                    <b>Processing, Please Wait</b>
+                </div>
+                
+            </div>
+        </div>
+    </aura:if>
+  <!--  <lightning:button variant="brand" type="submit" name="save" label="Create RFI"  onclick="{!c.newRFIFunction }"/>
+    <aura:if isTrue="{!v.openNewRFIModal}">
+     <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open" >-->
+        <div class="slds-modal__container" >
+            <header class="slds-modal__header">
+                <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeModel }" alternativeText="close"
+                                      variant="bare-inverse" class="slds-modal__close" />
+                <p></p>
+                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New RFI </h2>
+                <p></p>
+            </header>
+            <div class="slds-modal__content " id="modal-content-id-1">
+                <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__RFI__c"
+                                          onsubmit="{!c.handleSubmit}" onsuccess="{!c.onRecordSuccess}">
+                    <div class="slds-scrollable" style="height:100%;width:100%"> 
+                        <lightning:layout multipleRows="true">
+                            <aura:iteration items="{!v.fieldSetValues}" var="field">
+                                <aura:if isTrue="{!field.name =='buildertek__Question__c'}">
+                                    <lightning:layout >
+                                        <!-- <label class="slds-form-element__label,slds-m-left_x-small" >Question</label>-->
+                                        <lightning:layoutItem size="2" padding="around-large" >
+                                            <label class="slds-form-element__label" ><abbr class="slds-required" title="required">* </abbr>Question</label>
+                                        </lightning:layoutItem>
+                                        <lightning:layoutItem size="10" padding="around-small">
+                                            <!-- <div class="" style="width:52rem;">-->
+                                            <!--<lightning:inputRichText  label="" value = "{!v.question}"/>-->
+                                             <lightning:inputField fieldName="{! field.name }"   value = "{!v.question}" required="true" variant="label-hidden" class="nolabel" /> 
+                                        </lightning:layoutItem>
+                                    </lightning:layout>
+                                    <aura:set attribute="else">
+                                        <lightning:layoutItem size="6" padding="around-small"> <!-- mediumDeviceSize="6" -->
+                                            <aura:if  isTrue="{!field.name =='buildertek__Project__c'}">
+                                              <lightning:inputField fieldName="{! field.name }" value = "{!v.parentprojectRecordId}" required="{!field.Required}" /> 
+                                            <aura:set attribute="else">
+                                               <lightning:inputField fieldName="{! field.name }" required="{!field.Required}" /> 
+                                                </aura:set>
+                                                </aura:if>
+                                        </lightning:layoutItem>
+                                    </aura:set>
+                                </aura:if>
+                                 
+                               
+                            </aura:iteration>
+                            
+                            
+                            <lightning:layoutItem size="12" mediumDeviceSize="12" padding="around-large">
+                                <!--<lightning:input aura:id="fileId" onchange="{!c.handleFilesChange}" type="file" name="file" label="Upload Attachment" multiple="true"/>
+                           <div class="slds-text-body_small slds-text-color_error">{!v.fileName} </div>-->
+                                <lightning:input aura:id="fuploader" onchange="{!c.handleFilesChange}" type="file" name="file" label="Upload Attachment" multiple="true"/>
+                                <div class="slds-text-body_small">{!v.fileName} </div>
+                            </lightning:layoutItem>
+                        </lightning:layout>
+                    </div>
+                    <footer class="slds-modal__footer" style = "padding-top: 10px">
+                        <center>
+                            <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{!c.closeModel }" />
+                            <!-- <lightning:button variant="neutral" title="Save &amp; New" label="Save &amp; New"
+                                              onclick="{!c.saveAndNew}" /> -->
+                            <lightning:button variant="neutral" type="submit" name="save" label="Save"  />
+                        </center>
+                    </footer>
+                </lightning:recordEditForm>
+            </div>
+        </div>
+       <!-- </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>-->
+</aura:component>

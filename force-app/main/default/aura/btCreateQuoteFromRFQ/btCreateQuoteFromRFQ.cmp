@@ -1,0 +1,11 @@
+<aura:component implements="force:lightningQuickActionWithoutHeader,force:hasRecordId" controller="CreateQuoteFromRFQ">
+	<aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <lightning:notificationsLibrary aura:id="notifLib"/>
+	<div aura:id="progressbar">
+    	<center>
+	    	<img alt="Cenerating new receivable." src="{!$Resource.gearsloading}" style="height:150px !important;"/>
+	    	<br/>
+	    	Creating New Quote <br/> Please don't leave this page until Quote is created.
+    	</center> 
+    </div>
+</aura:component>

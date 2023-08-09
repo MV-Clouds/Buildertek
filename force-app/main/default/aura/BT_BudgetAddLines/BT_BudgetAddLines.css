@@ -1,0 +1,33 @@
+.THIS lightning-icon.some-indicator {
+    background-color: #e05d5d;
+    width: 2rem;
+    height: 2rem;
+}
+
+.THIS lightning-icon.some-indicator>lightning-primitive-icon>svg>use {
+    fill: white;
+    background-color: #006DCC;
+    width: 2rem;
+    height: 2rem;
+}
+
+.THIS .modal {
+    display: block !important;
+}
+
+.THIS .modal-dialog {
+    overflow-y: initial !important
+}
+
+.THIS .modal-body {
+    height: 80vh;
+    overflow-y: auto;
+}
+.THIS .slds-modal__container{
+	width: 80% !important;      
+	max-width: 80% !important;
+}
+
+.THIS .heightClass{
+    height: 80vh !important;
+}

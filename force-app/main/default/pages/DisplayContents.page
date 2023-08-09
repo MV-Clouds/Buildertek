@@ -1,0 +1,53 @@
+<apex:page controller="DisplayContentsController" title="{!$Label.buildertek__file_control_system_configuration}" >
+    <c:BT_JsAndCssIncludeComponent importJquery="true"
+                              importAppurinUtil="true"
+                              importJQueryLayout="false"
+                              importFancyTree="false"
+                              importJqGrid="false"
+                              importEasyTooltip="true"
+                              importAppurinCss="true"
+                              importCkEditor="false"
+                              importGnattChart="false"
+                              importLightningDesign="true"/>
+                              
+    
+    <style>	
+        header {	
+            padding: 1em;
+            color: black;
+            background-color: #f7f9fb;
+            clear: left;
+            border-radius: 4px;
+            border: 1px solid lightgray;	
+        }
+        img {
+            float: left;
+        }
+        .slds-icon {
+            fill: black !important;
+        }
+    </style>
+    <apex:form >
+        <apex:slds />
+        
+        <apex:outputPanel rendered="{!if(node.Header_Text__c != '',true,false)}">
+            <header>
+                <p style="font-size: 17px;">{!node.buildertek__Header_Text__c}<img src="{!$Resource.Settings_Icon}" style="width:52px;height:52px;margin-left:15px;margin-top:-15px;" />
+                </p>
+            </header>
+            <br/><br/>
+        </apex:outputPanel>
+        <apex:repeat value="{!contentList}" var="con">
+            <div class="slds-box">
+            </div>
+            <p style="margin-bottom:10px;font-size: 15px;" >{!con.buildertek__Description__c}</p> 
+            <apex:outputPanel rendered="{!if(con.Image__c != null,'true','false')}">
+                <apex:outputField value="{!con.Image__c}" />       
+            </apex:outputPanel>
+            <apex:outputPanel rendered="{!if(con.Video_URL__c != null,'true','false')}">
+                <apex:iframe width="75%" height="400" src="{!con.Video_URL__c}" frameborder="0"/> 
+            </apex:outputPanel>
+            <br/><br/><br/><br/>
+        </apex:repeat>
+    </apex:form>                          
+</apex:page>

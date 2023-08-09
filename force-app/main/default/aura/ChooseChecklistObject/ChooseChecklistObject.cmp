@@ -1,0 +1,230 @@
+<aura:component controller="ChooseChecklistControllerClass" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+      <aura:attribute access="PUBLIC" name="manageView" type="Object[]"/>
+    <aura:attribute name="isObjectLabelError" type="boolean" default="false" />
+        <aura:attribute name="isObjectAPIError" type="boolean" default="false" />
+
+    <aura:attribute name="isRelatedToError" type="boolean" default="false" />
+        <aura:attribute name="isShowTable" type="boolean" default="true" />
+    <aura:attribute name="isShowCreatepage" type="boolean" default="false" />
+    <aura:attribute name="selected" type="string" default="" />
+    <aura:attribute name="ObjectLabel" type="string" default="" />
+    <aura:attribute name="results" type="List" />
+        <aura:attribute name="configureId" type="string" default="" />
+        <aura:attribute name="Spinner" type="boolean" default="false"/>
+
+    <aura:attribute name="showButton" type="Boolean" />
+    <aura:attribute name="openDropDown" type="Boolean" default="false" />
+     <aura:attribute name="showConfirmDialog" type="boolean" default="false"/>
+    <aura:attribute name="deleterecord" type="string" default=""/>
+   <aura:method name="sampleMethod" action="{!c.doInit}"/>
+    <div style="background-color: white;margin:-12px;padding:12px;height:90vh">
+    	<div class="slds-page-header" style="background-color: white;">
+        <div class="slds-page-header__row">
+            <div class="slds-page-header__col-title">
+                <div class="slds-media"> 
+                    <div class="slds-media__body">
+                        <div class="slds-page-header__name">
+                            <div class="slds-page-header__name-title">
+                                <h1>
+                                    <span class="slds-page-header__title slds-truncate" title="">Checklist Objects</span>
+                                </h1>
+                            </div>
+                            
+                        </div>        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>    
+     	<aura:if isTrue="{!v.Spinner}">                
+                    <div aura:id="spinnerId" class="slds-spinner_container">
+                        <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                            <span class="slds-assistive-text">Loading</span>
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                        </div>
+                    </div>
+                </aura:if>
+  		<aura:if isTrue="{!v.isShowTable}" >   
+    <div>
+        <div style="margin-top:5px;margin-bottom:5px">
+         <lightning:layout multipleRows="true">
+            <lightning:layoutItem size="6">
+                    <p style="padding-top:8px;padding-left:10px;font-size:1.1rem">Manage Checklist Objects</p>
+             </lightning:layoutItem>
+             <lightning:layoutItem size="6">
+                 <div style="text-align:right;padding-right:10px;padding-top:px">
+                    <lightning:button variant="brand" label="Create CheckList Object" onclick="{! c.createChecklistObject }" />	
+                </div>
+             </lightning:layoutItem>
+             
+         </lightning:layout>
+     </div>
+        <div class="slds">
+            <table data-reactroot="" class="slds-table slds-table_bordered slds-table_cell-buffer">
+                <thead>
+                    <tr class="slds-text-title_caps">
+                        <th scope="col" style="background:var(--lwc-colorBackgroundRowHover,rgb(243, 242, 242))">
+                            <div class="slds-truncate" title="Name"> Name</div>
+                        </th>
+                        <th scope="col" style="background:var(--lwc-colorBackgroundRowHover,rgb(243, 242, 242))">
+                            <div class="slds-truncate" title="Object Name">Object Label</div>
+                        </th>
+                        <th scope="col" style="background:var(--lwc-colorBackgroundRowHover,rgb(243, 242, 242))">
+                            <div class="slds-truncate" title="Created Date">Object API Name</div>
+                        </th>
+                        <th scope="col" style="background:var(--lwc-colorBackgroundRowHover,rgb(243, 242, 242))">
+                            <div class="slds-truncate" title="Created Date"></div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.manageView}" var="view">
+                        <!--<c:displayCheckListConfigRecords view="{!row}"/>-->
+                        <tr>
+                            <th scope="row" data-label="Account Name">
+                                <div class="slds-truncate" ><a href="{!('/'+view.Id)}" target="_blank">{!view.Name}</a></div>
+                            </th>
+                            <td data-label="Object Name">
+                                <div class="slds-truncate" >{!view.buildertek__Object_Label__c}</div>
+                            </td>
+                            
+                            <td data-label="Created date">
+                                <div class="slds-truncate" >{!view.buildertek__Object_API_Name__c}</div>
+                            </td>
+                            
+                            <td data-label="">
+                                <div class="slds-truncate" >
+                                    <button onclick="{!c.callDeleteRecord}" class="slds-button slds-button_icon" title="{!view.Id}">
+                                        <lightning:icon iconName="action:delete" size="xx-small" alternativeText="Delete"/>
+                                        <span class="slds-assistive-text">Delete</span>
+                                    </button>
+                                    
+                                    
+                                </div>
+                            </td>        
+                        </tr>
+                    </aura:iteration>                
+                </tbody>
+            </table>    
+        </div>    
+        
+    </div>
+    </aura:if>   
+    	<!--  create checklist objects start -->
+  		<aura:if isTrue="{!v.isShowCreatepage}" >    
+      
+            	<div class="slds">
+        <div aria-hidden="true" role="dialog" class="slds-modal slds-modal--prompt slds-fade-in-open" aura:id="modaldialogNewQuestion">
+            <div class="slds-modal__container" style="padding: 0rem 0 !important;">
+                <div class="slds-modal__header slds-theme--info" style="backgound:gray">
+                     <button style="background: white;" class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick="{!c.saveConfigureBack}">
+                        <lightning:icon iconName="utility:close" alternativeText="close" size="x-small"  class="buttonclass" />
+                     </button>
+                    <h2 class="slds-text-heading--medium">Checklist Object</h2>
+                </div>
+                
+                <aura:if isTrue="{!v.Spinner}">                
+                    <div aura:id="spinnerId" class="slds-spinner_container">
+                        <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                            <span class="slds-assistive-text">Loading</span>
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                        </div>
+                    </div>
+                </aura:if>
+                
+                
+                <div class="slds-modal__content" style="padding-top: 5px;padding-bottom: 5px;height:280px">
+                    <div class="slds-col slds-size_12-of-12" >
+                        <div class="slds-form-element" style="padding-left: 20px;padding-right: 20px;">
+                            <label class="slds-form-element__label slds-m-left_xx-large" for="myInput" style="font-weight: bold;font-size: 14px;margin-left:0px">Object API Name</label>
+                            <div class="slds-form-element__control" >
+                                <div class="slds-combobox_container">
+                                    <div class="{! v.openDropDown ? 'slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open' : 'slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click'}"
+                                         aria-expanded="true" aria-haspopup="listbox" role="combobox" >
+                                        <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right slds-m-left_xx-large" role="none" style="margin-left: 0px;position=relative;">
+                                            <div class="inputBox">
+                                                <input type="text"
+                                                       class="slds-input slds-combobox__input slds-has-focus slds-combobox__input-value"
+                                                       id="myInput" aria-autocomplete="list" aria-controls="listbox-id-11"
+                                                       autocomplete="no" onkeyup="{!c.searchHandler}" role="textbox" onclick="{!c.searchAll}" placeholder="Please Select"
+                                                       value="{!v.selected}"/>
+                                            </div>
+                                        </div>
+                                        <div id="listbox-id-11" class="dropDownClass slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid"
+                                             role="listbox">
+                                            <ul id="myUL" class="slds-listbox slds-listbox_vertical" role="presentation">
+                                                <aura:iteration items="{!v.results}" var="result">
+                                                    <li role="presentation" class="slds-listbox__item"
+                                                        data-value="{!result.value}" data-label="{!result.label}" onclick="{!c.optionClickHandler}">
+                                                        <div
+                                                             class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small"
+                                                             role="option">
+                                                            <span class="slds-media__body">
+                                                                <span class="slds-truncate" title="All Oobjects">
+                                                                    <span>{!result.label}</span>
+                                                                </span>
+                                                            </span>
+                                                        </div>
+                                                    </li>
+                                                </aura:iteration>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>     
+                    </div>
+                </div>
+               
+                <div class="slds-modal__footer">
+                    <div class="slds-x-small-buttons--horizontal slds-float--right">
+                        <button class="slds-button slds-button--neutral" onclick="{!c.saveConfigureBack}"  >Cancel</button>
+                        <button class="slds-button slds-button--brand" onclick="{!c.saveChecklistObject}" >Save</button>
+                    </div>                
+                </div>
+                
+            </div>
+        </div>
+        
+        <div class="slds-backdrop slds-backdrop--open" aura:id="backdropNewQuestion"></div>
+    </div>    
+    	</aura:if>
+        
+        <aura:if isTrue="{!v.showConfirmDialog}">
+            <!--Modal Box Start-->
+            <div role="dialog" class="slds-modal slds-fade-in-open ">
+                <div class="slds-modal__container">
+                    <!--Modal Box Header Start-->
+                    <header class="slds-modal__header">
+                        <h1 class="slds-text-heading--medium">Confirmation</h1>
+                    </header>
+                    <!--Modal Box Header End-->
+                     
+                    <!--Modal Box Content Start-->
+                    <div class="slds-modal__content slds-p-around--medium">
+                        <center><b>Are you sure you want to delete this item?</b></center>
+                    </div>
+                    <!--Modal Box Content End-->
+                     
+                    <!--Modal Box Button Start-->
+                    <footer class="slds-modal__footer">
+                        <lightning:button name='No' label='No' onclick='{!c.handleConfirmDialogNo}'/>
+                        <lightning:button variant="brand" name='Yes' label='Yes' onclick='{!c.handleConfirmDialogYes}'/>
+                    </footer>
+                    <!--Modal Box Button End-->
+                </div>
+            </div>
+            <div class="slds-backdrop slds-backdrop--open"></div>            
+        </aura:if>
+       
+      
+      
+    
+    
+     	<!--  create checklist objects end -->
+    
+    </div>
+</aura:component>

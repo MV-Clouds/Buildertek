@@ -1,0 +1,225 @@
+<aura:component controller="NewPricingRequestLineDetailsController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global">
+    <aura:attribute name="openProductBox" type="Boolean" default="false" />
+    <aura:attribute name="pricebookName" type="string" />
+    <aura:attribute name="pricebookoptions" type="List" />
+    <aura:attribute name="data1" type="Object"/>
+    <aura:attribute name="columns1" type="List"/>
+    <aura:attribute name="selectedRows" type="List" default=""/>
+    <aura:attribute name="sortedBy" type="String" default="Name"/>
+    <aura:attribute name="sortedDirection" type="String" default="asc"/>
+    <aura:attribute name="filteredData" type="Map"/>
+    <aura:attribute name="listOfSelectedIds" type="List" default="[]"/>
+    <aura:attribute name="StoreIdsOfDatatable" type="List"/>
+    <aura:attribute name="openQuoteLineBox" type="Boolean" default="false" />
+    <aura:attribute name="QuoteLineList" type="List" />
+    <aura:attribute name="quotelineRecords" type="Object"/>
+    <aura:attribute name="data2" type="Object"/>
+    <aura:attribute name="isDisabled" type="Boolean" default="false" />
+    <aura:attribute name="selectedContractor" type="sObject" default="{}" />
+    <aura:attribute name="storePriceBookId" type="String" default=""/>
+     <aura:attribute name="Spinner" type="boolean" default="false" />
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/> 
+    
+    <aura:attribute name="salesPrice" type="string" default="0"/>
+    
+    <aura:html tag="style">
+        .quick-actions-panel {
+        overflow: hidden !important;
+        }
+        <!--  .slds-modal__content{
+        overflow: hidden !important;
+        }  -->
+    </aura:html> 
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:if isTrue="{!v.openProductBox}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open  slds-modal_large">
+            <div class="slds-modal__container increaseheight" style="width:100% !important">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Products</h2>
+                </header>
+                <div class="slds-modal__content" id="modal-content-id-1">
+                    <lightning:layout >
+                        <lightning:layoutItem padding="around-small" size="6">
+                            <!--  <label>Pricebook</label> -->
+                            <div>
+                                <ui:inputSelect value="{! v.pricebookName }" change="{!c.changeEvent1}" class="pricebook-class" aura:id="getPriceBookId" label="PriceBook">
+                                    <aura:iteration var="option" items="{! v.pricebookoptions }">
+                                         <aura:if isTrue="{! option.key != 'None'}">
+                                        <option value="{! option.value }" selected="{!option.value == v.pricebookName}">{! option.key }</option>
+                                        </aura:if>
+                                    </aura:iteration>
+                                </ui:inputSelect>  
+                            </div>
+                        </lightning:layoutItem>
+                        <div class="slds-p-around_medium slds-size_6-of-12" style ="padding-top:30px">
+                            <span>
+                                <lightning:input onchange="{!c.searchTable}" type="search" label="Searh" variant="label-hidden" placeholder="Enter search term" aura:id="SearchBox"/>
+                            </span>
+                        </div>
+                    </lightning:layout> 
+                    
+                    
+                    <br/>
+                    <div style="height: 500px">
+                        <lightning:datatable 
+                                             aura:id="accountDataTable"
+                                             keyField="Id"
+                                             data="{! v.data1 }"
+                                             hideCheckboxColumn="false"
+                                             columns="{! v.columns1 }"
+                                             selectedRows="{! v.selectedRows }"
+                                             onrowselection="{! c.updateSelectedText }"
+                                             onsort="{!c.updateColumnSorting}"
+                                             sortedBy="{!v.sortedBy}"  
+                                             sortedDirection="{!v.sortedDirection}"/>
+                    </div>
+                        <aura:if isTrue="{!v.Spinner}">
+                        <div aura:id="spinnerId" class="slds-spinner_container">
+                            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative"
+                                 role="alert">
+                                <span class="slds-assistive-text">Loading</span>
+                                <div class="slds-spinner__dot-a"></div>
+                                <div class="slds-spinner__dot-b"></div>
+                                <div class="custom-loading-text">
+                                    <b>Processing, Please Wait</b>
+                                </div>
+                            </div>
+                        </div>
+                        </aura:if>
+                </div>
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" aria-label="Cancel and close" onclick="{!c.closeBox}">Cancel</button>
+                    <button class="slds-button slds-button_brand" onclick="{!c.openQuoteLine}">Next</button>
+                </footer>
+            </div>
+        </section>
+        <!--    <div class="slds-backdrop slds-backdrop-open" id="backdrop"></div> -->
+    </aura:if>
+    
+    <aura:if isTrue="{!v.openQuoteLineBox}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open  slds-modal_large" style="min-width:80rem;">
+            <div class="slds-modal__container" style="min-width:75rem; margin-left:-42px;">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Add Pricing Request Line Details</h2>
+                </header>
+                <div class="slds-modal__content" id="modal-content-id-1">
+                    <table aria-multiselectable="true" 
+                           class="slds-card slds-table slds-table_bordered slds-table_fixed-layout slds-table_resizable-cols" role="grid"  >
+                        <thead style = "height: 40px; ">
+                            <tr>       
+                                <th style = "width: 180px">
+                                    <div style="padding-left:12px"> Price Book </div>
+                                </th>
+                                <th style = "width: 180px">
+                                    <div style="padding-left:12px"> Product </div>
+                                </th>
+                                <th style = "width: 180px; padding-left: 10px">
+                                    <p ><span style="color:red">*</span>Description</p>
+                                </th>
+                                <th style = "width: 100px; padding-left: 12px">
+                                    Unit Cost
+                                </th>
+                                <!--  <th style = "width: 100px; padding-left: 10px">
+                                    Sales Price
+                                </th> -->
+                                
+                                <th style = "padding-left: 10px">
+                                    Quantity
+                                </th>
+                                <th style = "padding-left: 10px">
+                                    Markup %
+                                </th>
+                                <th style = "padding-left: 10px">
+                                    Multiplier
+                                </th>
+                                <th style = "padding-left: 10px">
+                                    Sales  Price
+                                </th>
+                                
+                                
+                                <!--  <th style = "padding-left: 10px">
+                                    Vendor
+                                </th> -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:iteration items="{!v.data2}" var="item"
+                                            indexVar="recIndex">
+                                <tr>
+                                    <td title="{!item.buildertek__Size__c}">
+                                        <lightning:input name="input1" label="" value="{!item.buildertek__Size__c}" disabled="true" />
+                                    </td>
+                                    <td title="{!item.Name}">
+                                        <lightning:input name="input1" label="" value="{!item.Name}" disabled="true" />
+                                    </td>
+                                    <td>
+                                        <lightning:input name="input4" label="" value="{!item.buildertek__Description__c}" aura:id="check"/>
+                                    </td>
+                                    <td title="{!item.buildertek__Unit_Price__c}">
+                                        <lightning:input name="{!recIndex}" label="" value="{!item.buildertek__Unit_Price__c}"  disabled="false" formatter="currency" type="number"  onchange="{!c.changeSalesPrice1}"/>      
+                                    </td>
+                                    <td>
+                                        <lightning:input name="{!recIndex}" label="" value="{!item.buildertek__Quantity__c}" type="number"  onchange="{!c.changeSalesPrice2}"/>
+                                    </td>
+                                    <td>
+                                        <lightning:input name="{!recIndex}" type = "number" label="" value="{!item.buildertek__Markup__c}"  onchange="{!c.changeSalesPrice3}"/>
+                                    </td>
+                                    <td>
+                                        <lightning:input name="{!recIndex}" label="" type = "number" value="{!item.buildertek__Multiplier__c}" aura:id="check"  onchange="{!c.changeSalesPrice4}"/>
+                                    </td>
+                                    <td>
+                                        <aura:if isTrue="{!and(item.buildertek__Markup__c != null,item.buildertek__Multiplier__c != null)}">
+                                            <aura:if isTrue="{!and(item.buildertek__Markup__c != 0,item.buildertek__Multiplier__c != 0)}">
+                                                <lightning:input name="{!recIndex}" label="" value="{!(item.buildertek__Quantity__c * item.buildertek__Unit_Price__c)}" formatter="currency" type="number"  maximumFractionDigits ="5" step="0.01" disabled="true"/> 
+                                                <aura:set attribute="else">
+                                                    <aura:if isTrue="{!and(item.buildertek__Markup__c != null,item.buildertek__Multiplier__c == null)}">
+                                                        <lightning:input name="{!recIndex}" label="" value="{!(item.buildertek__Quantity__c * item.buildertek__Unit_Price__c) * ((item.buildertek__Markup__c / 100) + 1)}" formatter="currency" type="number"  maximumFractionDigits ="5" step="0.01" disabled="true"/> 
+                                                    </aura:if> 
+                                                    
+                                                    <aura:if isTrue="{!and(item.buildertek__Markup__c != 0,item.buildertek__Multiplier__c ==  0)}">
+                                                        <lightning:input name="{!recIndex}" label="" value="{!(item.buildertek__Quantity__c * item.buildertek__Unit_Price__c) * ((item.buildertek__Markup__c / 100) + 1)}" formatter="currency" type="number"  maximumFractionDigits ="5" step="0.01" disabled="true"/> 
+                                                    </aura:if>
+
+                                                    
+                                                    <aura:if isTrue="{!and(item.buildertek__Markup__c == null,item.buildertek__Multiplier__c == null)}">
+                                                        <lightning:input name="{!recIndex}" label="" value="{!(item.buildertek__Quantity__c * item.buildertek__Unit_Price__c)}" formatter="currency" type="number"  maximumFractionDigits ="5" step="0.01" disabled="true"/> 
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!and(item.buildertek__Markup__c == 0,item.buildertek__Multiplier__c == 0)}">
+                                                        <lightning:input name="{!recIndex}" label="" value="{!(item.buildertek__Quantity__c * item.buildertek__Unit_Price__c)}" formatter="currency" type="number"  maximumFractionDigits ="5" step="0.01" disabled="true"/> 
+                                                    </aura:if> 
+                                                    
+                                                    
+                                                    
+                                                    <aura:if isTrue="{!and(item.buildertek__Markup__c == null,item.buildertek__Multiplier__c != null)}">
+                                                        <lightning:input name="{!recIndex}" label="" value="{!(item.buildertek__Quantity__c * item.buildertek__Unit_Price__c) * item.buildertek__Multiplier__c}" formatter="currency" type="number"  maximumFractionDigits ="5" step="0.01" disabled="true"/> 
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!and(item.buildertek__Markup__c == 0,item.buildertek__Multiplier__c != 0)}">
+                                                        <lightning:input name="{!recIndex}" label="" value="{!(item.buildertek__Quantity__c * item.buildertek__Unit_Price__c) * item.buildertek__Multiplier__c}" formatter="currency" type="number"  maximumFractionDigits ="5" step="0.01" disabled="true"/> 
+                                                    </aura:if>
+                                                    
+                                                    
+                                                </aura:set>
+                                            </aura:if> 
+                                            <aura:set attribute="else">
+                                                <lightning:input name="{!recIndex}" label="" value="{!(item.uildertek__Quantity__c * item.buildertek__Unit_Price__c)}" formatter="currency" type="number"  maximumFractionDigits ="5" step="0.01" disabled="true"/> 
+                                            </aura:set>
+                                        </aura:if>     
+                                    </td>
+                                    
+                                </tr>
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+                </div>
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" aria-label="Cancel and close" onclick="{!c.closeBox}">Cancel</button> 
+                    <button class="slds-button slds-button_neutral" aria-label="Cancel and close" onclick="{!c.cancelBox}">Back</button>
+                    <button class="slds-button slds-button_brand" onclick="{!c.addQuoteLine}" disabled="{!v.isDisabled}">Save</button>
+                </footer> 
+            </div>
+        </section>
+        <!--   <div class="slds-backdrop slds-backdrop-open" id="backdrop"></div> -->
+    </aura:if>
+</aura:component>

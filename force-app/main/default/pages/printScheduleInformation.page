@@ -1,0 +1,30 @@
+<apex:page docType="html-5.0" sidebar="false" standardStylesheets="false" showHeader="false" applyHtmlTag="true">
+    <html>
+        <apex:stylesheet value="{!URLFOR($Resource.Print_View_Styles)}" />
+		
+		<apex:stylesheet value="{!URLFOR($Resource.Print_View_Fonts)}" />
+		<apex:stylesheet value="{!URLFOR($Resource.Print_View_Font)}" />
+        <head>
+            <style>  
+               @media print{@page {size: landscape}}
+            </style>
+        </head>
+        <body>
+            <center><h3 style="font-family:'Salesforce Sans',Arial,sans-serif;font-size:23px;text-transform:uppercase;">Schedule Information</h3></center>
+            <div width="100%">
+                <c:BT_printParentInformationComponent objName="buildertek__Schedule__c" secName="Schedule Details"
+                                                      fieldName="Name,buildertek__Project__c,buildertek__Description__c,buildertek__End_Date__c,
+                                                                 buildertek__Start_Date__c,buildertek__Total_Duration__c"/>
+            </div><br/><br/>
+            <div width="100%">
+                <c:BT_printLineItemComponent childObjectName="buildertek__Project_Task__c" groupName="false" parentObjectName="buildertek__Schedule__c"
+                                             childObjectFields="Name,buildertek__Dependency__c,
+                                                                buildertek__Start__c,buildertek__Finish__c,buildertek__Phase__c,buildertek__Resource__c,buildertek__Contractor__c,buildertek__Contractor_Resource__c"/>                                        
+            </div>                                         
+                                                        
+            <script>
+              window.print();     
+            </script>
+        </body>
+    </html>
+</apex:page>

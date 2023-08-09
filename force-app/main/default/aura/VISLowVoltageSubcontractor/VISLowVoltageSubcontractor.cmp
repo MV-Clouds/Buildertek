@@ -1,0 +1,1233 @@
+<aura:component controller="VISLOwVoltageSubcontractor_Controller" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:attribute name="acc" type="Account" default="{'sObjectType':'Account'}"/>
+    <aura:attribute name="account" type="Account" default="{'sObjectType':'Account'}"/>
+    <aura:attribute name="project" type="List"/>
+    <aura:attribute name="RecordId" type="String" />
+    <aura:attribute name="projectid1" type="String" />
+    <aura:attribute name="projectid2" type="String" />
+    <aura:attribute name="projectid3" type="String" />
+    
+    <aura:attribute name="value" type="List" default="option1"/>
+    
+    <aura:attribute name="Spinner" type="Boolean" default="false"/>
+    <aura:attribute name="projectNull1" type="Project__c" default="{'sObjectType':'Project__c'}"/>
+    <aura:attribute name="projectNull2" type="Project__c" default="{'sObjectType':'Project__c'}"/>
+    <aura:attribute name="projectNull3" type="Project__c" default="{'sObjectType':'Project__c'}"/>
+    
+    <aura:attribute name="referenceNull1" type="Reference__c" default="{'sObjectType':'Reference__c'}"/>
+    <aura:attribute name="referenceNull2" type="Reference__c" default="{'sObjectType':'Reference__c'}"/>
+    <aura:attribute name="referenceNull3" type="Reference__c" default="{'sObjectType':'Reference__c'}"/>
+    
+    <aura:attribute name="project1" type="Project__c" default="{'sObjectType':'Project__c'}"/>
+    <aura:attribute name="project2" type="Project__c" default="{'sObjectType':'Project__c'}"/>
+    <aura:attribute name="project3" type="Project__c" default="{'sObjectType':'Project__c'}"/>
+    <aura:attribute name="reference1" type="Reference__c" default="{'sObjectType':'Reference__c'}"/>
+    <aura:attribute name="reference2" type="Reference__c" default="{'sObjectType':'Reference__c'}"/>
+    <aura:attribute name="reference3" type="Reference__c" default="{'sObjectType':'Reference__c'}"/>
+    <aura:attribute name="isPreview" type="String" default="" />
+    <aura:attribute name="documentURL" type="String" default="" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="Date" type="Date" />
+    <aura:attribute name="showConfirmDialogBox" type="boolean" default="false"/>
+    <aura:attribute name="isDisabled" type="Boolean" default="false"/>
+    <aura:attribute name="fileName" type="String" access="global"/>
+    <aura:attribute name="message" type="String" access="global"/>
+    <aura:attribute name="isSuccess" type="Boolean" access="global"/>
+    <aura:attribute name="isError" type="Boolean" access="global"/>
+    <aura:attribute name="isNotValid" type="Boolean" access="global" default="false"/>
+    
+    
+    <aura:attribute name="postMessage" type="String" access="global"/>
+    <aura:attribute name="createFile" type="Boolean" access="global"/>
+    <aura:attribute name="uploadFile" type="Boolean" access="global"/>
+    <aura:attribute name="fileData" type="List" access="global"/>
+    <aura:attribute name="showSuccessMessage" type="Boolean" access="global"/>
+    <aura:attribute name="isInputDisabled" type="Boolean" default="false"/>
+    <aura:attribute name="isDataCleared" type="Boolean" default="false"/>
+    <aura:attribute name="companyTypeList" type="List"/>
+    <aura:attribute name="SkillLevelList" type="List"/>
+    <aura:attribute name="SkillLevel2List" type="List"/>
+    
+    
+    <aura:attribute name="check1" type="Boolean" default="false"/>
+    <aura:attribute name="check2" type="Boolean" default="false"/>
+    <aura:attribute name="check3" type="Boolean" default="false"/>
+    <aura:attribute name="check4" type="Boolean" default="false"/>
+    <aura:attribute name="check5" type="Boolean" default="false"/>
+    <aura:attribute name="check6" type="Boolean" default="false"/>
+    <aura:attribute name="check7" type="Boolean" default="false"/>
+    <aura:attribute name="check8" type="Boolean" default="false"/>
+    <aura:attribute name="check9" type="Boolean" default="false"/>
+    <aura:attribute name="isButtonDisabled" type="Boolean" default="true" />
+     <aura:attribute name="isshowError" type="Boolean" default="true" />
+    
+     <aura:attribute name="FileLabelList" type="List" default="[]"/>
+     <aura:attribute name="FileNameList" type="List" />
+     <aura:attribute name="deleteFileName" type="String" />
+    <aura:attribute name="IsCurrencyError" type="Boolean" default="false"/>
+    
+    
+    <aura:attribute name="uploadFileList" type="List" />
+    <aura:method name="doinits"  action="{!c.doInit}"/>
+    
+    
+    
+    
+    <div style="background-color: white;padding-left:20px;"> 
+        
+        
+        
+        
+        <aura:if isTrue="{!v.showSuccessMessage}">
+            <div id="pageTop">
+                <div>
+                    <span>
+                        <img src="{!v.documentURL}" style="height: 30px;width: 125px;"/> 
+                    </span>
+                    <span class="slds-m-top_x-large">
+                        <center>
+                            <b>
+                                <ul>
+                                    <h2 style="font-size: 1.3rem;">
+                                        Thank-You for submitting your information. The team will review your details and be in touch.
+                                    </h2>
+                                </ul>
+                            </b>
+                        </center>
+                        <br/>
+                    </span>
+                    <div class="slds-align_absolute-center slds-m-top_small">
+                        <lightning:button variant="neutral" label="Close" title="Close" onclick="{!c.closePage}" />
+                    </div>
+                </div>
+            </div>
+            
+            <aura:set attribute="else">
+                <div id="pageTop" class="slds-p-around_medium">
+                    <aura:if isTrue="{!v.isSuccess}">
+                        <div class="slds-notify slds-notify_alert slds-alert_success" role="alert" style="background-color:green">
+                            <span class="slds-assistive-text">success</span>
+                            <h2>
+                                {!v.message}
+                            </h2>
+                            <div class="slds-notify__close">
+                                
+                            </div>
+                        </div>
+                    </aura:if>
+                    <aura:if isTrue="{!v.isError}">
+                        <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+                            <span class="slds-assistive-text">error</span>
+                            <h2>
+                                {!v.message}
+                            </h2>
+                            <div class="slds-notify__close">
+                                
+                            </div>
+                        </div>
+                    </aura:if>
+                    <div class="LogoDiv" style="padding-left:10px;">
+                        <img src="{!v.documentURL}" style="height: 30px;width: 125px;"/> 
+                    </div>
+                    <div class="headerDiv slds-align_absolute-center">
+                        <p style="text-align: center;font-size: 17px">
+                            <b>View Installation Services(VIS)<br/>
+                                Subcontractor Pre-Qualification Application<br/>
+                                Trade:  Electrical/Low-Voltage Contractor</b>
+                        </p>  
+                    </div>
+                    <div class="formClass">
+                        <lightning:layout multipleRows="true">
+                            <lightning:layoutItem size="1" padding="around-small">
+                                <div class="inputText" style="position=relative;left:100px;padding-right:0px;padding-top:5px"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Date :</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                                
+                                <lightning:input variant="label-hidden" type="date" name="input1" value="{!v.acc.Contract_date__c}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="8" padding="around-small">
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="0.5" padding="around-small">
+                                <!--<lightning:button variant="base" label="Base" title="Looks like a link"  class="slds-m-left_x-small"/>-->
+                                <aura:if isTrue="{!v.isInputDisabled}">
+                                    <div class="vertical-center">
+                                        
+                                    </div>
+                                    <aura:set attribute="else">
+                                        <div>
+                                            <div class="vertical-center">
+                                                <button onclick="{!c.handleClear }">Clear Form</button>
+                                            </div>
+                                        </div>
+                                    </aura:set>
+                                </aura:if> 
+                                
+                            </lightning:layoutItem>
+                        </lightning:layout>
+                        <lightning:layout multipleRows="true">
+                            <lightning:layoutItem size="4" padding="around-small">
+                                <div class="innertext"><b>General Information</b></div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="8" padding="around-small">
+                            </lightning:layoutItem>
+                        </lightning:layout>
+                        
+                        <lightning:layout multipleRows="true">
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div style="text-align:right"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Company Name :</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                                <div style="">
+                                    <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.acc.Name}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                                </div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="4" padding="around-small">
+                            </lightning:layoutItem>
+                            
+                            
+                            
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div style="text-align:right"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Alternate Name (DBA) :</div>
+                            </lightning:layoutItem>
+                            
+                            <lightning:layoutItem size="5" padding="around-small">
+                                <div style="">
+                                    <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.acc.buildertek__Alternate_Name__c}" disabled="{!v.isInputDisabled}"  aura:id="VISInput" required="{!v.isshowError}"/>
+                                </div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="4" padding="around-small">
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div style="text-align:right;padding-top:8px"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Type of Company :</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                              <!--  <div style="padding-bottom:10px">
+                                    <ui:inputSelect class="slds-select" aura:id="InputSelectSingle" value="{!v.acc.buildertek__Type_of_Company__c}"  disabled="{!v.isInputDisabled}">
+                                        <ui:inputSelectOption text="" label="choose one..."/>
+                                        <aura:iteration items="{!v.companyTypeList}" var="company">
+                                            <ui:inputSelectOption text="{!company}" label="{!company}" value="{!company == v.acc.buildertek__Type_of_Company__c ? 'true' : 'false'}"/>	
+                                        </aura:iteration>
+                                    </ui:inputSelect>
+                                </div>-->
+                                <div style="padding-bottom:10px">
+                              <lightning:select name="mySelect" label="" class="label-hidden" aura:id="VISInput" value="{!v.acc.Company_Type__c}" disabled="{!v.isInputDisabled}" required="true">
+                                 <option value="">Choose one...</option>
+                                 <aura:iteration items="{!v.companyTypeList}" var="company" indexVar="index">
+                                    <option text="{!company}" value="{!company}" selected="{!company == v.acc.Company_Type__c}"></option>/>
+                                </aura:iteration>
+                            </lightning:select>
+                                </div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="4" padding="around-small">
+                                
+                            </lightning:layoutItem>
+                            
+                            
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div style="text-align:right"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Year Established :</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                                <div class="page1">
+                                    <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.acc.buildertek__Year_Established__c}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"  />
+                                </div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="4" padding="around-small">
+                                
+                            </lightning:layoutItem>
+                            
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div style="text-align:right"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Main Office Address:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                                <div class="page1">
+                                    <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.acc.buildertek__Office_Address__c}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                                </div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="4" padding="around-small">
+                                
+                            </lightning:layoutItem>
+                        </lightning:layout>
+                        
+                        <lightning:layout multipleRows="true"> 
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div style="text-align:right;padding-top: 5px;"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>City:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="1" padding="around-small">
+                                <div style="">
+                                    <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.acc.buildertek__City__c}" disabled="{!v.isInputDisabled}"  aura:id="VISInput" required="{!v.isshowError}"/>
+                                </div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="1" padding="around-small">
+                                <div style="text-align:right;padding-top:5px;"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>State:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="1" padding="around-small">
+                                <div style="">
+                                    <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.acc.buildertek__State__c}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                                </div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="1" padding="around-small">
+                                <div style="text-align:right;padding-top: 5px;"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Zip:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="1" padding="around-small">
+                                <div style="">
+                                    <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.acc.buildertek__ZipCode__c}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                                </div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                                
+                            </lightning:layoutItem>
+                            
+                            
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div style="text-align:right"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Main Phone:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                                <div class="page1">
+                                    <lightning:input variant="label-hidden" type="tel" name="input1" value="{!v.acc.Phone}" disabled="{!v.isInputDisabled}" aura:id="mainphone" required="{!v.isshowError}" pattern="[0-9]{10}" onblur="{!c.changeValidation}" title="mainphone"/>
+                                </div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="4" padding="around-small">
+                                
+                            </lightning:layoutItem>
+                            
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div style="text-align:right"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Website:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                                <div class="page1">
+                                    <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.acc.Website}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                                </div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                
+                            </lightning:layoutItem>
+                            
+                        </lightning:layout>
+                        &nbsp;&nbsp;
+                        <hr/>
+                        <lightning:layout multipleRows="true"> 
+                            <lightning:layoutItem size="4" padding="around-small">
+                                <div style="" class="innertext"><b>Contractor License Number(s)</b></div>  
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="8" padding="around-small">
+                                
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div style="text-align:right"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>State:</div>  
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="1" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.acc.Contractor_License_State1__c}" disabled="{!v.isInputDisabled}"  aura:id="VISInput" required="{!v.isshowError}"/>  
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="1" padding="around-small">
+                                <div style="text-align:right"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Number:</div>  
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.acc.Contractor_License_Number1__c	}" disabled="{!v.isInputDisabled}"  aura:id="VISInput" required="{!v.isshowError}"/>  
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="6" padding="around-small">
+                                
+                            </lightning:layoutItem>
+                            
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div style="text-align:right">State:</div>  
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="1" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.acc.Contractor_License_State2__c}" disabled="{!v.isInputDisabled}"/>  
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="1" padding="around-small">
+                                <div style="text-align:right">Number:</div>  
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.acc.Contractor_License_Number2__c}" disabled="{!v.isInputDisabled}" />  
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="6" padding="around-small">
+                                
+                            </lightning:layoutItem>
+                            
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div style="text-align:right">State:</div>  
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="1" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.acc.Contractor_License_State3__c}" disabled="{!v.isInputDisabled}" />  
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="1" padding="around-small">
+                                <div style="text-align:right">Number:</div>  
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.acc.Contractor_License_Number3__c}" disabled="{!v.isInputDisabled}" />  
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="6" padding="around-small">
+                                
+                            </lightning:layoutItem>
+                        </lightning:layout>
+                        
+                        &nbsp;&nbsp; &nbsp;&nbsp;
+                        <lightning:layout multipleRows="true">
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Bid Limit:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                                <!--<ui:inputCurrency aura:id="amount"  class="slds-input" value="{!v.acc.buildertek__Bid_Limit__c}" disabled="{!v.isInputDisabled}" change="{!c.currencyonchange}"/>
+                                <aura:if isTrue="{!v.IsCurrencyError}">
+                                <div>
+                                    <p style="color:rgb(234, 0, 30)">Complete this field</p>
+                                </div>
+                                </aura:if>-->
+                                <lightning:input variant="label-hidden" type="number" name="input1" value="{!v.acc.buildertek__Bid_Limit__c}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                            </lightning:layoutItem>
+                            
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>General Liability Coverage:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                                <lightning:input variant="label-hidden" type="number" name="input1" value="{!v.acc.buildertek__General_Liability_Coverage__c}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                            </lightning:layoutItem>
+                            
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Worker's Compensation Coverage:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                                <lightning:input variant="label-hidden" type="number" name="input1" value="{!v.acc.Worker_Compensation_Coverage__c}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                            </lightning:layoutItem>
+                            
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Number of Employees:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                                <lightning:input variant="label-hidden" type="number" name="input1" value="{!v.acc.buildertek__Number_of_Employees__c}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                            </lightning:layoutItem>
+                            
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Service Area (miles from office):</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                                <lightning:input variant="label-hidden" type="number" name="input1" value="{!v.acc.buildertek__Service_Are__c}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                            </lightning:layoutItem>
+                        </lightning:layout>
+                        <hr/>
+                         <lightning:layout multipleRows="true">
+                            <lightning:layoutItem size="4" padding="around-small">
+                                <div class="innertext"><b>Owner(s) Contact Information</b></div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="8" padding="around-small">
+                                
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Name of Owner #1:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.acc.First_Owner_Name__c}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Email Address:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                                <lightning:input variant="label-hidden" type="email" name="input1" value="{!v.acc.First_Owner_Email_Address__c}" disabled="{!v.isInputDisabled}" aura:id="owner1Email" required="{!v.isshowError}" messageWhenTypeMismatch="Enter a valid email address" onblur="{!c.changeValidation}" title="owner1Email"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Cell Phone:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                                <lightning:input variant="label-hidden" type="tel" name="input1" value="{!v.acc.First_Owner_Cell_Phone__c}" disabled="{!v.isInputDisabled}" aura:id="owner1phone" required="{!v.isshowError}" messageWhenTypeMismatch="Enter a valid Phone Number" pattern="[0-9]{10}" onblur="{!c.changeValidation}" title="owner1phone"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                            </lightning:layoutItem>
+                        </lightning:layout>
+                        &nbsp;&nbsp; &nbsp;&nbsp;
+                        <lightning:layout multipleRows="true">
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText">Name of Owner #2:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.acc.Second_Owner_Name__c}" disabled="{!v.isInputDisabled}" />
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText">Email Address:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                                <lightning:input variant="label-hidden" type="email" name="inputCmp" value="{!v.acc.Second_Owner_Email_Address__c}" disabled="{!v.isInputDisabled}" messageWhenTypeMismatch="Enter a valid email address" aura:id="owner2email" onblur="{!c.changeValidation}" title="owner2email"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText">Cell Phone:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                                <lightning:input variant="label-hidden" type="tel" name="input1" value="{!v.acc.Second_Owner_Cell_Phone__c}" disabled="{!v.isInputDisabled}" aura:id="owner2phone" messageWhenTypeMismatch="Enter a valid phone number" pattern="[0-9]{10}" onblur="{!c.changeValidation}" title="owner2phone"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                            </lightning:layoutItem>
+                        </lightning:layout>
+                        <hr/>
+                        &nbsp;&nbsp; &nbsp;&nbsp;
+                        <!-- second page start-->
+                        <lightning:layout multipleRows="true">
+                            <lightning:layoutItem size="4" padding="around-small">
+                                <div class="innertext"><b>Technical Team</b></div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="8" padding="around-small">
+                                
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"> <abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Name of Technician #1:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.acc.Technician1_Name__c}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"> <abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Email Address:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                                <lightning:input variant="label-hidden" type="email" name="input1" value="{!v.acc.Technician1_Email_Address__c	}" disabled="{!v.isInputDisabled}" aura:id="tech1email" required="{!v.isshowError}" messageWhenTypeMismatch="Enter a valid email address"  onblur="{!c.changeValidation}" title="tech1email"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr> Cell Phone:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                                <lightning:input variant="label-hidden" type="tel" name="input1" value="{!v.acc.Technician1_Cell_Phone__c	}" disabled="{!v.isInputDisabled}" aura:id="teck1phone" required="{!v.isshowError}" pattern="[0-9]{10}"  messageWhenTypeMismatch="Enter a valid phone number"  onblur="{!c.changeValidation}" title="teck1phone"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                            </lightning:layoutItem>
+                                    <lightning:layoutItem size="2" padding="around-small">
+                                        <div class="inputText"> Certifications:</div>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="10" padding="around-small">
+                                        <div class="slds-form-element">
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-checkbox">
+                                                    <lightning:input type="checkbox" name="options" id="checkbox-unique-id-72" value="{!v.acc.Technician1_INSTC__c}" checked="{!v.acc.Technician1_INSTC__c}" disabled="{!v.isInputDisabled}" label="BICSI Installer 2 Copper (INSTC)" />
+                                                </div>
+                                            </div>
+                                        </div><br/>
+                                        <div class="slds-form-element">
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-checkbox">
+                                                    <lightning:input type="checkbox" name="options" id="checkbox-id-72" value="{!v.acc.Technician1_INSTF__c}" checked="{!v.acc.Technician1_INSTF__c}" disabled="{!v.isInputDisabled}" label="BICSI Installer 2, Optical Fiber (INSTF)" />
+                                                </div>
+                                            </div>
+                                        </div><br/>
+                                        <div class="slds-form-element">
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-checkbox">
+                                                    <lightning:input type="checkbox" name="options" id="checkbox-unique-id-73" value="{!v.acc.Technician1_TECH__c}" checked="{!v.acc.Technician1_TECH__c}" disabled="{!v.isInputDisabled}" label="BICSI Technician (TECH)" />
+                                                    
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </lightning:layoutItem>
+                          
+                            <!--<lightning:layoutItem size="7" padding="around-small">
+                                
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                                
+                                
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                            </lightning:layoutItem>-->
+                            
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText">Other:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.acc.Technician1_Other_details__c}" disabled="{!v.isInputDisabled}" />
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr> Skill Level:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                               <!-- <div style="padding-bottom:20px">
+                                    <ui:inputSelect class="slds-select" aura:id="InputSelectSingle" value="{!v.acc.Technician1_Skill_Level__c}" disabled="{!v.isInputDisabled}">
+                                        <ui:inputSelectOption text="" label="choose one..."/>
+                                        <aura:iteration items="{!v.SkillLevelList}" var="level">
+                                            <ui:inputSelectOption text="{!level}" label="{!level}" value="{!level == v.acc.Technician1_Skill_Level__c ? 'true' : 'false'}"/>	
+                                        </aura:iteration>
+                                    </ui:inputSelect>
+                                </div>-->
+                                <div style="padding-bottom:20px">
+                                 	<lightning:select name="mySelect" label="" class="label-hidden" aura:id="VISInput" value="{!v.acc.Technician1_Skill_Level__c}" disabled="{!v.isInputDisabled}" required="true">
+                                 	<option value="">Choose one...</option>
+                                 	<aura:iteration items="{!v.SkillLevelList}" var="company" indexVar="index">
+                                    	<option text="{!company}" value="{!company}" selected="{!company == v.acc.Technician1_Skill_Level__c}"></option>/>
+                                	</aura:iteration>
+                            		</lightning:select>
+                                </div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                            </lightning:layoutItem>
+                        </lightning:layout>
+                        <hr/>
+                        <lightning:layout multipleRows="true">
+                            
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Name of Technician #2:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.acc.Technician2_Name__c}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}" />
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Email Address:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                                <lightning:input variant="label-hidden" type="email" name="input1" value="{!v.acc.Technician2_Email_Address__c}" disabled="{!v.isInputDisabled}" aura:id="tech2email" required="{!v.isshowError}" messageWhenTypeMismatch="Enter a valid email address"  onblur="{!c.changeValidation}" title="tech2email"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"> <abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Cell Phone:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                                <lightning:input variant="label-hidden" type="tel" name="input1" value="{!v.acc.Technician2_Cell_Phone__c}" disabled="{!v.isInputDisabled}" aura:id="tech2phone" required="{!v.isshowError}"  messageWhenTypeMismatch="Enter a valid phone number" pattern="[0-9]{10}"  onblur="{!c.changeValidation}" title="tech2phone"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"> Certifications:</div>
+                                
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="10" padding="around-small">
+                                <div class="slds-form-element">
+                                    <div class="slds-form-element__control">
+                                        <div class="slds-checkbox">
+                                            <lightning:input type="checkbox" name="options" id="checkbox-unique-id-1"  checked="{!v.acc.Technician2_INSTC__c}" disabled="{!v.isInputDisabled}" label="BICSI Installer 2 Copper (INSTC)"/>
+                                        </div>
+                                    </div>
+                                </div><br/>
+                                <div class="slds-form-element">
+                                    <div class="slds-form-element__control">
+                                        <div class="slds-checkbox">
+                                            <lightning:input type="checkbox" name="options" id="checkbox-id-2"  checked="{!v.acc.Technician2_INSTF__c}" disabled="{!v.isInputDisabled}" label="BICSI Installer 2, Optical Fiber (INSTF)"/>
+                                            
+                                        </div>
+                                    </div>
+                                </div><br/>
+                                <div class="slds-form-element">
+                                    <div class="slds-form-element__control">
+                                        <div class="slds-checkbox">
+                                            <lightning:input type="checkbox" name="options" id="checkbox-unique-id-3"  checked="{!v.acc.Technician2_TECH__c}" disabled="{!v.isInputDisabled}" label="BICSI Technician (TECH)"/>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </lightning:layoutItem>
+                            
+                            
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText">Other:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.acc.Technician2_Other_details__c}" disabled="{!v.isInputDisabled}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Skill Level</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                               <!-- <div style="padding-bottom:20px">
+                                    <ui:inputSelect class="slds-select" aura:id="InputSelectSingle" value="{!v.acc.Technician2_Skill_Level__c}" disabled="{!v.isInputDisabled}">
+                                        <ui:inputSelectOption text="" label="choose one..."/>
+                                        <aura:iteration items="{!v.SkillLevel2List}" var="level">
+                                            <ui:inputSelectOption text="{!level}" label="{!level}" value="{!level == v.acc.Technician2_Skill_Level__c ? 'true' : 'false'}"/>	
+                                        </aura:iteration>
+                                    </ui:inputSelect>
+                                </div>-->
+                                <div style="padding-bottom:20px">
+                                <lightning:select name="mySelect" label="" class="label-hidden" aura:id="VISInput" value="{!v.acc.Technician2_Skill_Level__c}" disabled="{!v.isInputDisabled}" required="true">
+                                 	<option value="">Choose one...</option>
+                                 	<aura:iteration items="{!v.SkillLevel2List}" var="company" indexVar="index">
+                                    	<option text="{!company}" value="{!company}" selected="{!company == v.acc.Technician2_Skill_Level__c}"></option>/>
+                                	</aura:iteration>
+                            		</lightning:select>
+                                </div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                            </lightning:layoutItem>
+                        </lightning:layout>
+                        <hr/>
+                        <lightning:layout multipleRows="true">
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Name of Estimator:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.acc.Estimator_Name__c}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Email Address:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                                <lightning:input variant="label-hidden" type="email" name="input1" value="{!v.acc.Estimator_Email_Address__c}" disabled="{!v.isInputDisabled}" aura:id="estimatorEmail" required="{!v.isshowError}" messageWhenTypeMismatch="Enter a valid email address" onblur="{!c.changeValidation}" title="estimatorEmail"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"> <abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Cell Phone:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                                <lightning:input variant="label-hidden" type="tel" name="input1" value="{!v.acc.Estimator_Cell_Phone__c}" disabled="{!v.isInputDisabled}" aura:id="estimatorphone" required="{!v.isshowError}" messageWhenTypeMismatch="Enter a valid phone number" pattern="[0-9]{10}" onblur="{!c.changeValidation}" title="estimatorphone"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Certifications:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.acc.Estimator_Certifications__c}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                            </lightning:layoutItem>
+                        </lightning:layout>
+                        <hr/>
+                            <lightning:layout multipleRows="true">
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Name of Foreman / Superintendent:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.acc.Foreman_Name__c}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="4" padding="around-small">
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Email Address:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                                <lightning:input variant="label-hidden" type="email" name="input1" value="{!v.acc.Foreman_Email_Address__c	}" disabled="{!v.isInputDisabled}" aura:id="ForemanEmail" required="{!v.isshowError}" messageWhenTypeMismatch="Enter a valid email address" onblur="{!c.changeValidation}" title="ForemanEmail"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"> <abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr> Cell Phone:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                                <lightning:input variant="label-hidden" type="tel" name="input1" value="{!v.acc.Foreman_Cell_Phone__c	}" disabled="{!v.isInputDisabled}" aura:id="ForemanPhone" required="{!v.isshowError}" pattern="[0-9]{10}" messageWhenTypeMismatch="Enter a valid phone number" onblur="{!c.changeValidation}" title="ForemanPhone"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"> <abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Certifications:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.acc.Foreman_Certifications__c	}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="5" padding="around-small">
+                            </lightning:layoutItem>
+                        </lightning:layout>
+                        &nbsp;&nbsp; &nbsp;&nbsp;
+                        
+                        <hr/>
+                        <lightning:layout multipleRows="true">
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <div><b class="innertext">References</b></div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="9" padding="around-small">
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <div>Reference #1</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <div>Reference #2</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <div>Reference #3</div>
+                            </lightning:layoutItem>
+                            
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Company Name:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1"  value="{!v.reference1.Company_Name__c}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1"  value="{!v.reference2.Company_Name__c}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1"  value="{!v.reference3.Company_Name__c}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Address:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference1.Address__c	}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference2.Address__c	}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference3.Address__c	}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            
+                            
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>City:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1"  value="{!v.reference1.City__c}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1"  value="{!v.reference2.City__c}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1"  value="{!v.reference3.City__c}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            
+                            
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>State:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference1.State__c}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference2.State__c}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference3.State__c}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            
+                            
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Zip:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference1.Zip__c}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference2.Zip__c}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference3.Zip__c}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Contact Name:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference1.Contact_Name__c}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference2.Contact_Name__c}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference3.Contact_Name__c}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            
+                            
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Email:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="email" name="input1" value="{!v.reference1.Email__c}" disabled="{!v.isInputDisabled}" aura:id="ReferenceEmail1" required="{!v.isshowError}" messageWhenTypeMismatch="Enter a valid email address" onblur="{!c.changeValidation}" title="ReferenceEmail1"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="email" name="input1" value="{!v.reference2.Email__c}" disabled="{!v.isInputDisabled}" aura:id="ReferenceEmail2" required="{!v.isshowError}" messageWhenTypeMismatch="Enter a valid email address" onblur="{!c.changeValidation}" title="ReferenceEmail2"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="email" name="input1" value="{!v.reference3.Email__c}" disabled="{!v.isInputDisabled}" aura:id="ReferenceEmail3" required="{!v.isshowError}" messageWhenTypeMismatch="Enter a valid email address" onblur="{!c.changeValidation}" title="ReferenceEmail3"/>
+                            </lightning:layoutItem>
+                            
+                            
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Cell Phone:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="tel" name="input1" value="{!v.reference1.Cell_Phone__c}" disabled="{!v.isInputDisabled}" aura:id="Referencephone1" required="{!v.isshowError}" pattern="[0-9]{10}" onblur="{!c.changeValidation}" title="Referencephone1"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="tel" name="input1" value="{!v.reference2.Cell_Phone__c}" disabled="{!v.isInputDisabled}" aura:id="Referencephone2" required="{!v.isshowError}" pattern="[0-9]{10}" onblur="{!c.changeValidation}" title="Referencephone2"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="tel" name="input1" value="{!v.reference3.Cell_Phone__c}" disabled="{!v.isInputDisabled}" aura:id="Referencephone3" required="{!v.isshowError}" pattern="[0-9]{10}" onblur="{!c.changeValidation}" title="Referencephone3"/>
+                            </lightning:layoutItem>
+                            
+                        </lightning:layout>
+                        &nbsp;&nbsp; &nbsp;&nbsp;
+                        &nbsp;&nbsp; &nbsp;&nbsp;
+                        <hr/>
+                        <!-- third page start -->
+                        <lightning:layout multipleRows="true">
+                            <lightning:layoutItem size="6" padding="around-small">
+                                <div class="innertext"><b>Past projects installing View Smart Glass or similar:</b></div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="6" padding="around-small">
+                            </lightning:layoutItem>
+                            
+                            <lightning:layoutItem size="3" padding="around-small">
+                                
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <div>PROJECT #1 </div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <div>PROJECT #2 </div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <div>PROJECT #3 </div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small" >
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Project Name :</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project1.Project_Name__c	}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                                
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project2.Project_Name__c	}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                                
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3"  padding="around-small">
+                                
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project3.Project_Name__c	}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                                
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Contractor Name:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project1.Contractor_Name__c	}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project2.Contractor_Name__c	}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project3.Contractor_Name__c	}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Contact Name:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project1.Contact_Name__c	}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project2.Contact_Name__c	}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project3.Contact_Name__c	}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Contact Email:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="email" name="input1" value="{!v.project1.Contact_Email__c}" disabled="{!v.isInputDisabled}" aura:id="ProjectEmail1" required="{!v.isshowError}" messageWhenTypeMismatch="Enter a valid email address"  onblur="{!c.changeValidation}" title="ProjectEmail3"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="email" name="input1" value="{!v.project2.Contact_Email__c}" disabled="{!v.isInputDisabled}" aura:id="ProjectEmail2" required="{!v.isshowError}" messageWhenTypeMismatch="Enter a valid email address"  onblur="{!c.changeValidation}" title="ProjectEmail2"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="email" name="input1" value="{!v.project3.Contact_Email__c	}" disabled="{!v.isInputDisabled}" aura:id="ProjectEmail3" required="{!v.isshowError}" messageWhenTypeMismatch="Enter a valid email address"  onblur="{!c.changeValidation}" title="ProjectEmail3"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Contact Cell:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="tel" name="input1" value="{!v.project1.Contact_Cell__c	}" disabled="{!v.isInputDisabled}" aura:id="projectphone1" required="{!v.isshowError}" pattern="[0-9]{10}" onblur="{!c.changeValidation}" title="projectphone1"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="tel" name="input1" value="{!v.project2.Contact_Cell__c	}" disabled="{!v.isInputDisabled}" aura:id="projectphone2" required="{!v.isshowError}" pattern="[0-9]{10}" onblur="{!c.changeValidation}" title="projectphone2"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="tel" name="input1" value="{!v.project3.Contact_Cell__c	}" disabled="{!v.isInputDisabled}" aura:id="projectphone3" required="{!v.isshowError}" pattern="[0-9]{10}" onblur="{!c.changeValidation}" title="projectphone3"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Contract Value:</div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project1.Contract_Value__c}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project2.Contract_Value__c}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project3.Contract_Value__c}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="2" padding="around-small">
+                                <div class="inputText"><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Date Completed:</div>
+                            </lightning:layoutItem>
+                            
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="Date" name="input1" value="{!v.project1.Date_Completed__c}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="Date" name="input1" value="{!v.project2.Date_Completed__c}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <lightning:input variant="label-hidden" type="Date" name="input1" value="{!v.project3.Date_Completed__c}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            
+                        </lightning:layout>
+                        &nbsp;&nbsp; &nbsp;&nbsp;
+                        &nbsp;&nbsp; &nbsp;&nbsp;
+                        
+                        <lightning:layout multipleRows="true">
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <div class="inputText"><b>Additional Information / Notes:</b></div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="6" padding="around-small">
+                                <lightning:textarea name="input1"  value="{!v.acc.Additional_Information__c}" disabled="{!v.isInputDisabled}"/>
+                                
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                
+                            </lightning:layoutItem>
+                            <!-- <lightning:layoutItem size="6" padding="around-small">
+                 <lightning:textarea name="input1"  value="{!v.acc.Additional_Information__c}" disabled="{!v.isInputDisabled}"/>
+            </lightning:layoutItem>
+              <lightning:layoutItem size="4" padding="around-small">
+              
+            </lightning:layoutItem>-->
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <div class="inputText"><b><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Completed by: </b></div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="6" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.acc.Completed_By__c}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <div class="inputText"><b><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Title: </b></div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="6" padding="around-small">
+                                <lightning:input variant="label-hidden" type="text" name="input1"  value="{!v.acc.Title__c}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                <div class="inputText" style="padding-bottom:5px"><b><abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr>Date: </b></div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="6" >
+                                <aura:if isTrue="{!v.isInputDisabled}">
+                                    <div style="width:450px;position:relative;left:14px;">
+                                        <lightning:input variant="label-hidden" type="Date" name="input1" value="{!v.acc.Completed_Date__c}" disabled="{!v.isInputDisabled}" />
+                                    </div>
+                                    <aura:set attribute="else">
+                                        <div style="width:580px;position:relative;left:14px;">
+                                            <lightning:input variant="label-hidden" type="Date" name="input1" value="{!v.acc.Completed_Date__c}" disabled="{!v.isInputDisabled}" aura:id="VISInput" required="{!v.isshowError}"/>
+                                        </div>
+                                    </aura:set>
+                                </aura:if>
+                                
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="3" padding="around-small">
+                                
+                            </lightning:layoutItem>
+                            
+                        </lightning:layout>
+                                                        <lightning:layout multipleRows="true">
+                            <lightning:layoutItem size="12" padding="slds-p-left_small">
+                                <h2>Add Files</h2>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="12" padding="slds-p-left_small">
+                                <div class="slds-form-element__control">
+                                    <div class="slds-file-selector slds-file-selector_files"> 
+                                        <div class="slds-file-selector__dropzone">
+                                            <input type="file" class="slds-file-selector__input slds-assistive-text" id="file-upload-input-01" onchange="{!c.handleFilesChange}" aria-labelledby="file-selector-primary-label file-selector-secondary-label" disabled="{!v.isInputDisabled}" multiple="true"/>
+                           
+                                            <label class="slds-file-selector__body" for="file-upload-input-01" id="file-selector-secondary-label"> 
+                                                <span class="slds-file-selector__button slds-button slds-button_neutral">
+                                                    Upload Files
+                                                </span>
+                                                <span class="slds-file-selector__text slds-medium-show">or Drop Files</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <!--<div class="slds-text-body_small slds-text-color_success">{!v.fileName} </div>-->
+                                    <div>
+                                    <aura:iteration items="{!v.FileNameList}" var="item" indexVar="indx">
+                                           <!-- <div> <lightning:icon iconName="action:delete" alternativeText="Delete" title="{!item}" size="xx-small" onclick="{!c.handleDelete}"/> </div><br/>-->
+                                          
+                                               <lightning:layout >
+                                                   <lightning:layoutItem  size="2.5" padding="around-small" class="myclass">
+                                                       <div style="width: fit-content;word-break: break-all;">
+                                                       {!item}
+                                                           </div>
+                                                   </lightning:layoutItem>
+                                                   <lightning:layoutItem  size=".5" padding="around-small" class="myclass">
+                                                       <div  onclick="{!c.removeRow}" title="{!indx}" style="padding-top:5px">
+                                                                <lightning:icon iconName="utility:close" class="myUniqueClass" size="xx-small" alternativeText="left" />
+                                                           </div>
+                                                   </lightning:layoutItem>
+                                                   <lightning:layoutItem  size="9" padding="around-small">
+                                                   </lightning:layoutItem>
+                                            </lightning:layout>
+                                        
+                                               
+                                           
+                                          <!--<div style="display:inline-flex;" padding="around-small"><div> {!item} </div> &nbsp;&nbsp;&nbsp;&nbsp;<div  onclick="{!c.removeRow}" title="{!indx}" >
+                                                                <lightning:icon iconName="action:delete" class="arrows" size="x-small" alternativeText="left" />
+                                              </div> </div><br/>-->
+                                        </aura:iteration>
+                                    
+                                    </div>
+                                </div>
+                                <!--div>
+                                    <iframe aura:id="vfFrame" 
+                                            src="https://builderteklightning-developer-edition.na75.force.com/buildertek__CreateFile"
+                                            style="border: none;height: 5px;"/>
+                                </div>-->
+                            </lightning:layoutItem>
+                        </lightning:layout>
+                 <div style="text-align:center">
+Please attach the following documentation with this application:<br></br>
+           
+             <div style="display: inline-block;text-align:left">
+                                <lightning:layout multipleRows="true">
+                                    <lightning:layoutItem size="12" padding="around-small">
+                                        <div class="slds-form-element">
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-checkbox">
+                                                    <lightning:input type="checkbox" name="options" id="checkbox1" value="{!v.check1}" checked="{!v.check1}" disabled="{!v.isInputDisabled}" label="1) Completed W-9" onchange="{!c.checkbox}"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="slds-form-element">
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-checkbox">
+                                                    <lightning:input type="checkbox" name="options" id="checkbox2" value="{!v.check2}" checked="{!v.check2}" disabled="{!v.isInputDisabled}" label="2) Copy of active contractor license(2)" onchange="{!c.checkbox}"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="slds-form-element">
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-checkbox">
+                                                    <lightning:input type="checkbox" name="options" id="checkbox3" value="{!v.check3}" checked="{!v.check3}" disabled="{!v.isInputDisabled}" label="3) Certificate of General Liability Insurance" onchange="{!c.checkbox}"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="slds-form-element__control">
+                                            <div class="slds-checkbox">
+                                                <lightning:input type="checkbox" name="options" id="checkbox4" value="{!v.check4}" checked="{!v.check4}" disabled="{!v.isInputDisabled}" label="4) Certificate of Worker's Compensation Insurance" onchange="{!c.checkbox}"/>
+                                            </div>
+                                        </div>
+                                        <div class="slds-form-element__control">
+                                            <div class="slds-checkbox">
+                                                <lightning:input type="checkbox" name="options" id="checkbox5" value="{!v.check5}" checked="{!v.check5}" disabled="{!v.isInputDisabled}" label="5) Certificate of Insurance(COI)" onchange="{!c.checkbox}"/>
+                                            </div>
+                                        </div>
+                                        <div class="slds-form-element__control">
+                                            <div class="slds-checkbox">
+                                                <lightning:input type="checkbox" name="options" id="checkbox6" value="{!v.check6}" checked="{!v.check6}" disabled="{!v.isInputDisabled}" label="6) Supplier Form" onchange="{!c.checkbox}" />
+                                            </div>
+                                        </div>
+                                         <div class="slds-form-element__control">
+                                            <div class="slds-checkbox">
+                                                <lightning:input type="checkbox" name="options" id="checkbox7" value="{!v.check7}" checked="{!v.check7}" disabled="{!v.isInputDisabled}" label="7) 3-years OSHA 300 logs" onchange="{!c.checkbox}" />
+                                            </div>
+                                        </div>
+                                        <div class="slds-form-element__control">
+                                            <div class="slds-checkbox">
+                                                <lightning:input type="checkbox" name="options" id="checkbox8" value="{!v.check8}" checked="{!v.check8}" disabled="{!v.isInputDisabled}" label="8) 3-years OSHA 300A logs" onchange="{!c.checkbox}" />
+                                            </div>
+                                        </div>
+                                        <div class="slds-form-element__control">
+                                            <div class="slds-checkbox">
+                                                <lightning:input type="checkbox" name="options" id="checkbox9" value="{!v.check9}" checked="{!v.check9}" disabled="{!v.isInputDisabled}" label="9) 3-years EMR scores" onchange="{!c.checkbox}" />
+                                            </div>
+                                        </div>
+                                       
+                                        <br/>
+                                    </lightning:layoutItem>
+                                    
+                                    
+                                </lightning:layout>
+                               
+                            </div>
+         
+        </div>
+                        &nbsp;&nbsp; &nbsp;&nbsp;
+                        
+                       
+                        <div style="text-align:center;font-size:20px"><b>Submit completed application to<br/> 
+              <p style="color:#0394fc">ConstructionContractsAdmin@view.com</p> </b></div> &nbsp;&nbsp; &nbsp;&nbsp;
+                        <aura:if isTrue="{!v.isInputDisabled}">
+                            
+                            
+                            <aura:set attribute="else">
+                                <div style="text-align:center">
+                                    <lightning:button variant="neutral" label="Cancel" title="Cancel" onclick="{!c.closePage}" disabled="{!v.isInputDisabled}"/>
+                                    <lightning:button variant="Brand" label="Submit" title="Baseaction" onclick="{!c.handleClick }" disabled="{!v.isButtonDisabled}"/>
+                                </div>
+                            </aura:set>
+                        </aura:if>
+                        
+        &nbsp;&nbsp; &nbsp;&nbsp;
+                    </div>
+                </div></aura:set>    
+        </aura:if>
+        <aura:if isTrue="{!v.showConfirmDialogBox}">
+            <!--Modal Box Start-->
+            <div role="dialog" class="slds-modal slds-fade-in-open ">
+                <div class="slds-modal__container">
+                    <!--Modal Box Header Start-->
+                    <header class="slds-modal__header">
+                        <h1 class="slds-text-heading--medium">Clear form</h1>
+                    </header>
+                    <!--Modal Box Header End-->
+                    
+                    <!--Modal Box Content Start-->
+                    <div class="slds-modal__content slds-p-around--medium">
+                        <center><b>Are you sure, you want to clear the form?</b></center>
+                    </div>
+                    <!--Modal Box Content End-->
+                    
+                    <!--Modal Box Button Start-->
+                    <footer class="slds-modal__footer">
+                        <lightning:button name='Cancel' label='NO' onclick='{!c.handleConfirmDialogCancel}'/>
+                        <lightning:button variant="brand" name='Ok' label='YES' onclick='{!c.handleConfirmDialogOk}'/>
+                    </footer>
+                    <!--Modal Box Button End-->
+                </div>
+            </div>
+            <div class="slds-backdrop slds-backdrop--open"></div>
+            
+        </aura:if>
+        <aura:if isTrue="{!v.Spinner}">
+            <div aura:id="spinnerId" class="slds-spinner_container">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                    <span class="slds-assistive-text">Loading...</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+            
+        </aura:if>
+        
+        
+        
+    </div>
+</aura:component>

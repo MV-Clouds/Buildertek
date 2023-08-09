@@ -1,0 +1,103 @@
+<aura:component access="global" controller="WorkOrderProducts" implements="force:lightningQuickActionWithoutHeader,force:hasRecordId">
+    <aura:attribute type="Failure_Mode__c[]" name="sObjectData"/>
+    <aura:attribute type="Failure_Mode__c[]" name="sObjectDataFiltered"/>
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="failureComponent" type="String" />
+    <aura:attribute name="selectedRecordList" type="list"/>
+    <aura:attribute name="listOfAllFailureMode" type="list"/> 
+    <aura:attribute name="isAllSelected" type="Boolean" default="false"/>
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}" />
+    
+    <aura:attribute name="Message" type="boolean" default="false" description="use for display no record found message"/>
+    <aura:attribute name="messageShown" type="String" />
+    <aura:attribute name="disableButton" type="Boolean" default="false"/>
+    <aura:attribute name="searchText" type="String" default=""/>
+    <aura:attribute name="spinner" type="boolean" default="FALSE"/>
+    
+    <!--Modal Header-->  
+    <div class="modal-header slds-modal__header slds-size_1-of-1 slds-p-around--x-small slds-align_absolute-center  modal-fixed-header">
+        <aura:if isTrue="{!$Browser.isPhone}">
+            <ui:inputCheckbox aura:id="selectAllId" value="{!v.isAllSelected}"  label=" " text="" change="{!c.selectAllCheckbox}"/>
+        </aura:if>
+        <lightning:button onclick="{!c.saveRecord}" disabled ="{!v.disableButton}" variant="brand" label="Save"/> 
+        <lightning:button onclick="{!c.cancelRecord}" disabled ="{!v.disableButton}" variant="brand" label="Cancel"/> 
+        <div class="slds-p-left_xx-small slds-p-bottom_medium slds-input-has-icon slds-input-has-icon--right">
+            <lightning:buttonIcon iconName="utility:search" variant="bare" onclick="{!c.searchData}" alternativeText="Search" class="slds-input__icon" />
+            <lightning:input type="text" value="{!v.searchText}" 
+                             placeholder="Search" 
+                             onchange="{! c.searchData }"/>
+        </div>
+        <!--loading spinner start-->
+        <aura:if isTrue="{!v.spinner}">
+            <div class="exampleHolder">
+                <lightning:spinner alternativeText="Loading" size="medium" />
+            </div>
+        </aura:if>
+        <!-- Loading spinner end-->          
+    </div>
+    <!-- ERROR MESSAGE IF NOT RECORDS FOUND--> 
+    <aura:if isTrue="{!v.Message}">
+        <div class="slds-notify_container slds-is-relative">
+            <div class="slds-notify slds-notify_toast slds-theme_error" role="alert">
+                <div class="slds-notify__content">
+                    <h2 class="slds-text-heading_small">{!v.messageShown}</h2>
+                </div>
+            </div>
+        </div>
+    </aura:if>
+    <!-- /div -->
+    <div class=" slds slds-modal__content slds-p-around--x-small slds-align_absolute-center slds-size_1-of-1 slds-is-relative">        <table class="slds-table slds-table--bordered slds-table--cell-buffer slds-max-medium-table--stacked-horizontal">       
+        <thead>
+            <tr class="slds-text-heading--label">
+                <th data-label="" >
+                    <div><ui:inputCheckbox aura:id="selectAllId" value="{!v.isAllSelected}"  label="" text="" change="{!c.selectAllCheckbox}"/></div>
+                </th>
+                <th scope="col" class="nobordertop" title="Name">
+                    <div>Name</div>
+                </th>
+                <th scope="col" class="nobordertop" title="FailureMode Component">
+                    <div>FailureMode Component</div>
+                </th>              
+            </tr>
+        </thead>
+        <tbody>
+            <aura:iteration items="{!v.sObjectDataFiltered}" var="failureMode">     
+                <tr>
+                    <td data-label="" title="">
+                        <div>
+                            <ui:inputCheckbox aura:id="checkbox" label="" text="{!failureMode.Id}" change="{!c.onCheck}"/>
+                        </div>
+                    </td>                        
+                    <td data-label="Name" title="Name">
+                        <div class="slds-cell-wrap">{!failureMode.Name}</div>
+                    </td>
+                    <td data-label="Failure COMPONENT" title="Failure COMPONENT">
+                        <div class="slds-cell-wrap">{!failureMode.Failure_Component__c}</div>
+                    </td>
+                </tr>
+            </aura:iteration>
+        </tbody>
+        </table> 
+    </div>
+    <!--Modal Body-->   
+    <div class="modal-header slds-modal__header slds-size_1-of-1 slds-p-around--x-small slds-align_absolute-center  modal-fixed-header">
+        <aura:if isTrue="{!$Browser.isPhone}">
+            <ui:inputCheckbox aura:id="selectAllId" value="{!v.isAllSelected}"  label=" " text="" change="{!c.selectAllCheckbox}"/>
+        </aura:if>
+        <lightning:button onclick="{!c.saveRecord}" disabled ="{!v.disableButton}" variant="brand" label="Save"/> 
+        <lightning:button onclick="{!c.cancelRecord}" disabled ="{!v.disableButton}" variant="brand" label="Cancel"/> 
+        <div class="slds-p-left_xx-small slds-p-bottom_medium slds-input-has-icon slds-input-has-icon--right">
+            <lightning:buttonIcon iconName="utility:search" variant="bare" onclick="{!c.searchData}" alternativeText="Search" class="slds-input__icon" />
+            <lightning:input type="text" value="{!v.searchText}" 
+                             placeholder="Search" 
+                             onchange="{! c.searchData }"/>
+        </div>
+        <!--loading spinner start-->
+        <aura:if isTrue="{!v.spinner}">
+            <div class="exampleHolder">
+                <lightning:spinner alternativeText="Loading" size="medium" />
+            </div>
+        </aura:if>
+        <!-- Loading spinner end-->  
+    </div>
+</aura:component>

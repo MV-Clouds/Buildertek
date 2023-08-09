@@ -1,0 +1,15 @@
+<apex:page standardStylesheets="false" showHeader="false" sidebar="false" >
+     <apex:includeLightning />
+    <div id="lightning" />  
+    <script>
+        $Lightning.use("buildertek:BT_New_RFI_App", function() {
+          $Lightning.createComponent("buildertek:BT_New_RFI_Email_Page",
+ 				{recordId:"{!$CurrentPage.parameters.Id}",
+                contact:"{!$CurrentPage.parameters.Contact}"},                     
+              "lightning",
+              function(cmp) {
+              }
+          );
+        });
+    </script>
+</apex:page>

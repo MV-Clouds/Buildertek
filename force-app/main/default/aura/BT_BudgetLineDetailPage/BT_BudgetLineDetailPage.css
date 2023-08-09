@@ -1,0 +1,42 @@
+/* .THIS .record-container {
+    margin: 0 2rem;
+} */
+
+.THIS .slds-size_1-of-2{
+    width: 48%;
+    margin: 0 1%;
+    margin-top: 20px;
+}
+
+.THIS .bottom-line{
+    border-bottom: solid 1px rgb(229, 229, 229);
+    margin-bottom: 0.3rem;
+}
+
+.THIS .field-container{
+    display: flex;
+}
+
+.THIS .field-container lightning-primitive-icon{
+    /* color: rgb(243, 243, 243); */
+    margin-bottom: 10px;
+}
+.THIS .headingDiv{
+    margin-top: 20px;
+    background: rgb(243, 243, 243);
+    color: #000;
+    font-size: 1rem;
+    padding: 5px 10px;
+}
+.THIS .save{
+    background-color: rgba(236, 235, 234, 0.9);
+    margin: auto;
+    text-align: center;
+    width: 100%;
+    padding: 10px;
+    height: auto;
+}
+
+.THIS .save .saveBtn{
+    padding-left: 10px;
+}

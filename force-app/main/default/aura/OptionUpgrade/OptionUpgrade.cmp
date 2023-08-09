@@ -1,0 +1,90 @@
+<aura:component controller="OptionUpgrade" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global">
+    <!-- <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> -->
+    <aura:attribute name="openOptionBox" type="Boolean" default="false" />
+    <aura:attribute name="Option" type="Question__c" default="{ 'sobjectType': 'Question__c'}" />
+
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
+    <c:BT_Spinner />
+
+    <aura:if isTrue="{!v.openOptionBox}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <aura:html tag="style">
+                .slds-modal__close{display:none; }
+            </aura:html>
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New Option</h2>
+                </header>
+
+                <div class="slds-modal__content slds-p-around_medium " id="modal-content-id-1">
+
+                    <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__Question__c">
+                        <div style="background-color: white;">
+                            <div class="headingDiv"> Information </div>
+                            <div class="slds-grid">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:inputField fieldName="buildertek__Price_Book__c" value="{!v.Option.buildertek__Price_Book__c}" />
+                                    <lightning:inputField fieldName="buildertek__Product__c" value="{!v.Option.buildertek__Product__c}" />
+                                    <lightning:inputField fieldName="Name" value="{!v.Option.Name}" />
+                                    <lightning:inputField fieldName="buildertek__Quantity__c" value="{!v.Option.buildertek__Quantity__c}" />
+                                    <lightning:inputField fieldName="buildertek__Cost__c" value="{!v.Option.buildertek__Cost__c}" />
+                                    <lightning:inputField fieldName="buildertek__Markup__c" value="{!v.Option.buildertek__Markup__c}" />
+                                    <lightning:inputField fieldName="buildertek__Upgrade_Costs__c" value="{!v.Option.buildertek__Upgrade_Costs__c}" />
+                                </div>
+
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:inputField fieldName="buildertek__Question_Group__c" value="{!v.Option.buildertek__Question_Group__c}" />
+                                    <lightning:inputField fieldName="buildertek__Manufacturer__c" value="{!v.Option.buildertek__Manufacturer__c}" />
+                                    <h1 class="checkboxLabel">Selected</h1>
+                                    <lightning:input type="checkbox" aura:id="selectCheck" checked="{!v.Option.buildertek__Selected__c}" />
+                                    <h1 class="checkboxLabel">Default Option</h1>
+                                    <lightning:input type="checkbox" aura:id="optionCheck" checked="{!v.Option.buildertek__Default_Option__c}" />
+
+                                </div>
+
+                            </div>
+
+                            <div class="headingDiv"> Upgrade Details </div>
+                            <div class="slds-grid">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <h1 class="checkboxLabel">Upgrade</h1>
+                                    <lightning:input type="checkbox" aura:id="upgradeCheck" checked="{!v.Option.buildertek__Upgrade__c}" />
+
+                                    <lightning:inputField fieldName="buildertek__Date_Option_Upgraded__c" value="{!v.Option.buildertek__Date_Option_Upgraded__c}" />
+                                </div>
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:inputField fieldName="buildertek__Original_Option__c" value="{!v.Option.buildertek__Original_Option__c}" />
+                                </div>
+                            </div>
+                        </div>
+                    </lightning:recordEditForm>
+                </div>
+
+                <footer class="slds-modal__footer">
+                    <lightning:button label="Cancel" title="Cancel" onclick="{!c.closePopup}" class="myBtn" />
+                    <!-- <lightning:button name='SaveandNew' label='Save &amp; New' onclick='{!c.saveAndNew}' /> -->
+                    <lightning:button variant="brand" label="Create" title="Create" onclick="{!c.createRecord}" />
+                </footer>
+            </div>
+        </section>
+
+        <!-- Question box -->
+        <aura:set attribute="else">
+
+            <div>
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Confirmation</h2>
+                </header>
+
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="text-align: center;font-size:1rem">
+                    Do you want to use the Product library for this Upgrade?
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral" label="No" title="No" onclick="{!c.newOption}" />
+                    <lightning:button variant="brand" label="Yes" title="Yes" onclick="{!c.navigateToOptUpgrade}" />
+                </footer>
+            </div>
+        </aura:set>
+    </aura:if>
+
+</aura:component>

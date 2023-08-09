@@ -1,0 +1,33 @@
+<apex:page controller="BT_RFQConfiguration" sidebar="false" lightningStylesheets="true">
+    <apex:slds />
+    <apex:form >
+        <apex:pageBlock >
+            <apex:outputText escape="false" value="{!settingDescription}">
+            </apex:outputText>
+        </apex:pageBlock>
+        <apex:pageBlock mode="maindetail">
+            <apex:pageMessages />
+            <apex:pageblocksection >
+              <!--  <apex:inputcheckbox value="{!isCreateChangeOrderonOverage}" label="Create Change Order on Overage">
+                </apex:inputcheckbox> -->
+                <apex:inputtext value="{!emailsubject}" label="Email Subject"/>
+                 <apex:inputcheckbox value="{!isUpdatethepricebook}" label="Update Price Book">
+                </apex:inputcheckbox>
+                <apex:inputcheckbox value="{!isCreatePO}" label="Create PO On Vendor Acceptance ">
+                </apex:inputcheckbox>
+                <apex:inputcheckbox value="{!usingcommunities}" label="Using Communities">
+                </apex:inputcheckbox>
+                 <apex:inputcheckbox value="{!isPrequalified}" label="Is Pre Qualified">
+                </apex:inputcheckbox>
+                <apex:inputcheckbox value="{!isCheckPortalUsers}" label="Only RFQ Portal Users">
+                </apex:inputcheckbox>
+                <!-- using product checkbox -->
+                <apex:inputcheckbox value="{!isUsingProduct}" label="Using Product">
+                </apex:inputcheckbox>
+                <center>
+                <apex:commandButton value="Save" id="onCreateChangeOrderonOverage" styleClass="slds-button slds-button_brand" action="{!onCreateChangeOrderonOverage}"></apex:commandButton>
+                </center>
+            </apex:pageblocksection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

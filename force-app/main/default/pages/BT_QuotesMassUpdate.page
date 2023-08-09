@@ -1,0 +1,25 @@
+<apex:page title="Mass Update" controller="MassUpdateQuote" showHeader="false">
+    <apex:slds />
+    <apex:includeLightning />
+    <div id="loading" role="status" class="slds-spinner slds-spinner_large slds-spinner_brand">
+        <span class="slds-assistive-text">Loading...</span>
+        <div class="slds-spinner__dot-a"></div>
+        <div class="slds-spinner__dot-b"></div>
+    </div>
+
+    <div id="LightningCompContainer" />
+    <script>
+        $Lightning.use("buildertek:BT_MassUpdateQuoteApp", function () {
+            $Lightning.createComponent(
+                "buildertek:BT_MassUpdateQuote",
+                {},
+                "LightningCompContainer",
+                function (component) {
+                    component.set("v.recordId", '{!$CurrentPage.parameters.Id}');
+                });
+        });
+        setTimeout(function () {
+            document.getElementById('loading').style.display = 'none';
+        }, 3000);
+    </script>
+</apex:page>

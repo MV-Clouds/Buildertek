@@ -1,0 +1,53 @@
+<aura:component controller="TimecardGeoLocationController"
+    implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader"
+    access="global">
+    <aura:attribute name="latitude" type="decimal" default="" />
+    <aura:attribute name="Spinner" type="Boolean" default="false"/>
+    <aura:attribute name="longitude" type="decimal" default="" />
+    <aura:attribute name="Endtime" type="string" default="Endtime" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="newTimecard" type="Time_Cards__c" default="{ 'sobjectType': 'Time_Cards__c'}"
+        access="public" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+     <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                        <b>Processing, Please Wait</b>
+                    </div>
+            </div>
+        </div>
+    </aura:if>
+
+    <!-- <div class="slds-col modal-header slds-modal__header">
+        <h2 class="title slds-text-heading–medium">End Time</h2>
+    </div>
+
+    <div class="slds-col modal-body  slds-p-around_medium"
+        style="height: 100%; overflow-y: auto !important;background:white">
+
+
+
+        <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__Time_Cards__c">
+            <lightning:layout>
+                <lightning:layoutItem size="12" mediumDeviceSize="12" padding="around-small">
+                    <lightning:inputField aura:id="endtime" fieldName="buildertek__End_Time__c"
+                        value="{!v.newTimecard.buildertek__End_Time__c}" label="End Time" />
+                </lightning:layoutItem>
+
+            </lightning:layout>
+        </lightning:recordEditForm>
+
+    </div>
+
+
+    <div class="slds-col slds-align_absolute-center" style="margin-top:10px;">
+        <lightning:button class="slds-button slds-button_brand" onclick="{!c.submit}" label="Submit" />
+        <lightning:button class="slds-button slds-button_neutral" onclick="{!c.close}" label="Cancel" />
+    </div>
+    <br /><br /> -->
+    <lightning:overlayLibrary aura:id="overlayLib" />  
+</aura:component>

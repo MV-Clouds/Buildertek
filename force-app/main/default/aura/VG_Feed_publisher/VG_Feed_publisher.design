@@ -1,0 +1,3 @@
+<design:component>
+	<design:attribute name="GroupID" label="Group ID"  description="publisher group id" /> 
+</design:component>

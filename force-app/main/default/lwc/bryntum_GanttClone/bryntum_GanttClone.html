@@ -1,0 +1,385 @@
+<template>
+
+  <div class="container" lwc:dom="manual" ondrop={droprow} ondragover={allowDrop}></div>
+  <!---->
+  <div class="container1" lwc:dom="manual"></div>
+
+  <div if:true={isLoaded} class="slds-p-around_x-large">
+    <lightning-spinner alternative-text="Loading" class="spins" size="large" variant="brand"></lightning-spinner>
+  </div>
+  <template if:true={showpopup}>
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+      aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+      <div class="slds-modal__container">
+        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+          <lightning-card title="Upload File" icon-name="custom:custom19">
+            <lightning-file-upload label="Attach file" name="fileUploader" accept={acceptedFormats}
+              record-id={fileTaskId} onuploadfinished={handleUploadFinished} multiple>
+            </lightning-file-upload>
+          </lightning-card>
+        </div>
+        <footer class="slds-modal__footer">
+          <button class="slds-button slds-button_neutral" onclick={closeUploadModal} title="Cancel">Cancel</button>
+          <!-- <button class="slds-button slds-button_brand" onclick={submitDetails} title="OK">OK</button> -->
+        </footer>
+      </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+
+  </template>
+  <template if:true={showEditPopup}>
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-02" aria-modal="true"
+      aria-describedby="modal-content-id-2" class="slds-modal slds-fade-in-open">
+      <div class="slds-modal__container">
+        <header class="slds-modal__header">
+          <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close"
+            onclick={closeEditPopup}>
+            <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse" size="small">
+            </lightning-icon>
+            <span class="slds-assistive-text">Close</span>
+          </button>
+          <h2 if:false={taskRecordId} id="modal-heading-02" class="slds-text-heading_medium slds-hyphenate">New Schedule
+            Item</h2>
+          <h2 if:true={taskRecordId} class="slds-text-heading_medium slds-hyphenate">Edit Record</h2>
+        </header>
+
+        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-2">
+          <!-- <lightning-record-form  object-api-name='Contact' fields={fieldSetNames} -->
+          <!-- <template if:true={taskRecordId}>
+                <lightning-record-edit-form record-id={taskRecordId} object-api-name={objApiName} onerror={handleError} onsubmit={handleSubmit} onsuccess={handleSuccess}>
+                  <lightning-layout multiple-rows>
+                      <lightning-layout-item size="6"  padding="around-small">
+                          <div style="">
+                            <lightning-input-field field-name="Name" autocomplete="off">
+                            </lightning-input-field>
+                          </div>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6"  padding="around-small">
+                          <div>
+                            <lightning-input-field field-name="buildertek__Phase__c">
+                            </lightning-input-field>
+                          </div>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6"  padding="around-small">
+                          <div>
+                            <lightning-input-field field-name="buildertek__Dependency__c" >
+                            </lightning-input-field>
+                          </div>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6"  padding="around-small">
+                          <div>
+                            <lightning-input-field field-name="buildertek__Completion__c" >
+                            </lightning-input-field>
+                          </div>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6"  padding="around-small">
+                          <div>
+                            <lightning-input-field field-name="buildertek__Start__c" autocomplete="off">
+                            </lightning-input-field>
+                          </div>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6"  padding="around-small">
+                          <div>
+                            <lightning-input-field field-name="buildertek__Finish__c" autocomplete="off">
+                            </lightning-input-field>
+                          </div>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6"  padding="around-small">
+                          <div>
+                            <lightning-input-field field-name="buildertek__Duration__c" autocomplete="off">
+                            </lightning-input-field>
+                          </div>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6"  padding="around-small">
+                          <div>
+                            <lightning-input-field field-name="buildertek__Lag__c" autocomplete="off">
+                            </lightning-input-field>
+                          </div>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6"  padding="around-small">
+                          <div>
+                            <lightning-input-field field-name="buildertek__Resource__c" >
+                            </lightning-input-field>
+                          </div>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6"  padding="around-small">
+                          <div>
+                            <lightning-input-field field-name="buildertek__Contractor__c">
+                            </lightning-input-field>
+                          </div>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6"  padding="around-small">
+                          <div>
+                            <lightning-input-field field-name="buildertek__Contractor_Resource__c" >
+                            </lightning-input-field>
+                          </div>
+                        </lightning-layout-item>
+                        
+                      <br />
+                  
+                    </lightning-layout>
+                    <br />
+                    <footer class="slds-modal__footer">
+                      <button class="slds-button slds-button_neutral" variant="neutral" title="Cancel" label="Cancel" onclick={closeEditPopup}>Cancel</button>                                        
+                      <button class="slds-button slds-button_brand" variant="brand" type="submit" name="save" label="Save" onclick={saveeditRecord}>Save</button>
+                    </footer>
+                </lightning-record-edit-form>
+              </template> -->
+          <!-- <template if:false={taskRecordId}>
+                <lightning-record-edit-form record-id={taskRecordId} object-api-name={objApiName} onerror={handleError} onsubmit={handleSubmit} onsuccess={handleSuccess}>
+                  <lightning-layout multiple-rows>
+                      <lightning-layout-item size="6"  padding="around-small">
+                          <div style="">
+                            <lightning-input label="Name" value={newTaskPopupName} onchange={inputChange} autocomplete ="off" >
+                            </lightning-input>
+                          </div>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6"  padding="around-small">
+                          <div>
+                            <lightning-input-field field-name="buildertek__Phase__c" value={taskPhaseVal} >
+                            </lightning-input-field>
+                          </div>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6"  padding="around-small">
+                          <div>
+                            <lightning-input-field field-name="buildertek__Dependency__c" value={predecessorVal}>
+                            </lightning-input-field>
+                          </div>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6"  padding="around-small">
+                          <div>
+                            <lightning-input label="% Completion" value={newTaskCompletion} onchange={inputChange} autocomplete ="off">
+                            </lightning-input>
+                          </div>
+                        </lightning-layout-item>
+                        
+                        <lightning-layout-item size="6"  padding="around-small">
+                          <div>
+                            <lightning-input-field field-name="buildertek__Start__c" value={newTaskStartDate}>
+                            </lightning-input-field>
+                          </div>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6"  padding="around-small">
+                          <div>
+                            <lightning-input-field field-name="buildertek__Finish__c" value={newTaskStartDate}>
+                            </lightning-input-field>
+                          </div>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6"  padding="around-small">
+                          <div>
+                            <lightning-input label="Duration" value={newTaskDuration} autocomplete="off" onchange={inputChange}>
+                            </lightning-input>
+                          </div>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6"  padding="around-small">
+                          <div>
+                            <lightning-input label="Lag" autocomplete="off" value={newTaskLag} onchange={inputChange}>
+                            </lightning-input>
+                          </div>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6"  padding="around-small">
+                          <div>
+                            <lightning-input-field field-name="buildertek__Resource__c" >
+                            </lightning-input-field>
+                          </div>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6"  padding="around-small">
+                          <div>
+                            <lightning-input-field field-name="buildertek__Contractor__c">
+                            </lightning-input-field>
+                          </div>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6"  padding="around-small">
+                          <div>
+                            <lightning-input-field field-name="buildertek__Contractor_Resource__c" >
+                            </lightning-input-field>
+                          </div>
+                        </lightning-layout-item>
+                        
+                        
+                      <br />
+                  
+                    </lightning-layout>
+                    <br />
+                    <footer class="slds-modal__footer">
+                      <button class="slds-button slds-button_neutral" variant="neutral" title="Cancel" label="Cancel" onclick={closeEditPopup}>Cancel</button>                                        
+                      <button class="slds-button slds-button_brand" variant="brand" type="submit" name="save" label="Save" onclick={saveeditRecord}>Save</button>
+                    </footer>
+                </lightning-record-edit-form>
+              </template> -->
+          <!-- if:true={taskRecordId}-->
+          <div if:true={isLoaded} class="slds-p-around_x-large">
+            <lightning-spinner alternative-text="Loading" class="spins" size="large" variant="brand">
+            </lightning-spinner>
+          </div>
+          <lightning-record-edit-form record-id={} object-api-name={objApiName} onerror={handleError}
+            onsubmit={handleSubmit} onsuccess={handleSuccess}>
+            <lightning-layout multiple-rows>
+              <lightning-layout-item size="6" padding="around-small">
+                <div onchange={changeInputVal} data-inputname='Name'>
+                  <lightning-input type="text" label="Name" autocomplete="off" value={newTaskRecordCreate.Name}>
+                  </lightning-input>
+                </div>
+              </lightning-layout-item>
+              <lightning-layout-item size="6" padding="around-small">
+                <div onchange={changeInputVal} data-inputname='buildertek__Phase__c'>
+                  <lightning-input-field field-name="buildertek__Phase__c"
+                    value={newTaskRecordCreate.buildertek__Phase__c}>
+                  </lightning-input-field>
+                </div>
+              </lightning-layout-item>
+              <lightning-layout-item size="6" padding="around-small">
+                <div onchange={changeInputVal} data-inputname='buildertek__Dependency__c'>
+                  <lightning-input-field field-name="buildertek__Dependency__c"
+                    value={newTaskRecordCreate.buildertek__Dependency__c}>
+                  </lightning-input-field>
+                </div>
+              </lightning-layout-item>
+              <lightning-layout-item size="6" padding="around-small">
+                <div onchange={changeInputVal} data-inputname='buildertek__Completion__c'>
+                  <lightning-input type="number" label="% Completion" autocomplete="off"
+                    value={newTaskRecordCreate.buildertek__Completion__c}>
+                  </lightning-input>
+                </div>
+              </lightning-layout-item>
+              <lightning-layout-item size="6" padding="around-small">
+                <div onchange={changeInputVal} data-inputname='buildertek__Start__c'>
+                  <lightning-input type="date" label="Start Date" autocomplete="off"
+                    value={newTaskRecordCreate.buildertek__Start__c}>
+                  </lightning-input>
+                </div>
+              </lightning-layout-item>
+              <lightning-layout-item size="6" padding="around-small">
+                <div onchange={changeInputVal} data-inputname='buildertek__Finish__c'>
+                  <lightning-input type="date" label="End Date" autocomplete="off"
+                    value={newTaskRecordCreate.buildertek__Finish__c}>
+                  </lightning-input>
+                </div>
+              </lightning-layout-item>
+              <lightning-layout-item size="6" padding="around-small">
+                <div onchange={changeInputVal} data-inputname='buildertek__Duration__c'>
+                  <lightning-input type="number" label="Duration" autocomplete="off"
+                    value={newTaskRecordCreate.buildertek__Duration__c}>
+                  </lightning-input>
+                </div>
+              </lightning-layout-item>
+              <lightning-layout-item size="6" padding="around-small">
+                <div onchange={changeInputVal} data-inputname='buildertek__Lag__c'>
+                  <lightning-input type="number" label="Lag" autocomplete="off"
+                    value={newTaskRecordCreate.buildertek__Lag__c}>
+                  </lightning-input>
+                </div>
+              </lightning-layout-item>
+              <lightning-layout-item size="6" padding="around-small">
+                <div onchange={changeInputVal} data-inputname='buildertek__Budget__c'>
+                  <lightning-input type="number" label="Budget" autocomplete="off"
+                    value={newTaskRecordCreate.buildertek__Budget__c}>
+                  </lightning-input>
+                </div>
+              </lightning-layout-item>
+              <lightning-layout-item size="6" padding="around-small">
+                <div onchange={changeInputVal} data-inputname='buildertek__Resource__c'>
+                  <lightning-input-field field-name="buildertek__Resource__c"
+                    value={newTaskRecordCreate.buildertek__Resource__c}>
+                  </lightning-input-field>
+                </div>
+              </lightning-layout-item>
+              <lightning-layout-item size="6" padding="around-small">
+                <div onchange={changeInputVal} data-inputname='buildertek__Contractor__c'>
+                  <lightning-input-field field-name="buildertek__Contractor__c"
+                    value={newTaskRecordCreate.buildertek__Contractor__c}>
+                  </lightning-input-field>
+                </div>
+              </lightning-layout-item>
+              <lightning-layout-item size="6" padding="around-small">
+                <div onchange={changeInputVal} data-inputname='buildertek__Contractor_Resource__c'>
+                  <lightning-input-field field-name="buildertek__Contractor_Resource__c"
+                    value={newTaskRecordCreate.buildertek__Contractor_Resource__c}>
+                  </lightning-input-field>
+                </div>
+              </lightning-layout-item>
+
+              <lightning-layout-item size="6" padding="around-small">
+                <div onchange={changeInputVal} data-inputname='buildertek__Notes__c'>
+                  <lightning-textarea label="Notes" autocomplete="off" value={newTaskRecordCreate.buildertek__Notes__c}>
+                  </lightning-textarea>
+                </div>
+              </lightning-layout-item>
+              <lightning-layout-item size="6" padding="around-small">
+                <div onchange={changeInputVal} data-inputname='buildertek__Add_To_All_Active_Schedules__c'>
+                  <lightning-input type="checkbox" label="Add To All Active Schedules"
+                    value={newTaskRecordCreate.buildertek__Add_To_All_Active_Schedules__c}>
+                  </lightning-input>
+                </div>
+              </lightning-layout-item>
+
+              <br />
+
+            </lightning-layout>
+            <br />
+            <!-- <footer class="slds-modal__footer">
+                      <button class="slds-button slds-button_neutral" variant="neutral" title="Cancel" label="Cancel" onclick={closeEditPopup}>Cancel</button>                                        
+                      <button class="slds-button slds-button_brand" variant="brand" type="submit" name="save" label="Save" onclick={saveeditRecord}>Save</button>
+                    </footer> -->
+          </lightning-record-edit-form>
+
+        </div>
+
+        <div if:true={taskRecordId}>
+          <footer class="slds-modal__footer">
+            <button class="slds-button slds-button_neutral" variant="neutral" title="Cancel" label="Cancel"
+              onclick={closeEditPopup}>Cancel</button>
+            <button class="slds-button slds-button_brand" variant="brand" type="submit" name="save" label="Save"
+              onclick={saveeditRecord}>Save</button>
+
+          </footer>
+        </div>
+        <div if:false={taskRecordId}>
+          <footer class="slds-modal__footer">
+            <button class="slds-button slds-button_neutral" variant="neutral" title="Cancel" label="Cancel"
+              onclick={closeEditPopup}>Cancel</button>
+            <button class="slds-button slds-button_brand" variant="brand" type="submit" name="save" label="Save"
+              onclick={saveeditRecord}>Save1</button>
+            <button class="slds-button slds-button_brand" variant="brand" type="submit" name="saveNew"
+              label="Save and New" onclick={saveeditRecord}>Save and New</button>
+          </footer>
+        </div>
+
+        <!-- <footer class="slds-modal__footer">
+            <button class="slds-button slds-button_neutral" onclick={closeEditPopup} title="Cancel">Cancel</button>
+            <button class="slds-button slds-button_brand" onclick={saveeditRecord} title="Save">Save</button> 
+          </footer> -->
+      </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+
+  </template>
+  <template if:true={showDeletePopup}>
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-03" aria-modal="true"
+      aria-describedby="modal-content-id-3" class="slds-modal slds-fade-in-open">
+      <div class="slds-modal__container">
+        <header class="slds-modal__header">
+          <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close"
+            onclick={closeEditPopup}>
+            <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse" size="small">
+            </lightning-icon>
+            <span class="slds-assistive-text">Close</span>
+          </button>
+          <h2 id="modal-heading-03" class="slds-text-heading_medium slds-hyphenate">Delete Item</h2>
+        </header>
+
+        <div class="slds-text-align_center slds-modal__content slds-p-around_medium" id="modal-content-id-3">
+          Are you sure, do you want to delete?
+        </div>
+        <footer class="slds-modal__footer">
+          <button class="slds-button slds-button_neutral" variant="neutral" title="Cancel" label="Cancel"
+            onclick={closeEditPopup}>Cancel</button>
+          <button class="slds-button slds-button_brand" variant="brand" name="Delete" label="Delete"
+            onclick={deleteRecord}>Delete</button>
+        </footer>
+      </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+  </template>
+
+</template>

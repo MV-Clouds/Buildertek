@@ -1,0 +1,43 @@
+/*.THIS .increaseheight{
+    
+    min-width : 76rem;
+}
+
+.THIS .slds-modal__container{
+    max-width : 80rem !important;
+    width : 100% !important;
+} */
+
+/*.THIS .slds-modal__container{
+   max-width: 52rem !important;
+   width:52% !important;
+}
+.THIS .cuf-content {
+padding: 0 0rem !important;
+}
+.THIS .slds-p-around--medium {
+padding: 0rem !important;
+}
+.THIS .slds-modal__content {
+	height: unset !important;
+	max-height: unset !important;
+	box-shadow: none !important;
+} 
+.THIS .slds-modal__container{
+   max-width: 80rem !important;
+   width:80% !important;
+
+}
+.THIS .scrollable {
+	height: 400px; 
+	overflow-y:auto; 
+} */
+
+.THIS .custom-loading-text {
+    transform: rotate(-90deg);
+    position: absolute;
+    top: -0.5rem;
+    left: 1rem;
+    white-space: nowrap;
+    font-size: 20px;
+}

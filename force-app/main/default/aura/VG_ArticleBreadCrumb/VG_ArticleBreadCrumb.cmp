@@ -1,0 +1,16 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,forceCommunity:availableForAllPageTypes" controller="VG_KnowledgeDataAccess" access="global">
+    <aura:attribute name="ArticleTitle" type="String"/>
+    <aura:attribute name="recordId" type="string"/>
+    <aura:attribute name="myMap" type="object[]" />
+	<aura:attribute name="ArticleCategory" type="Object"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+  
+    <lightning:breadcrumbs  >
+        <lightning:breadcrumb label="Home"  href="" onclick="{!c.navigateToHome}" class="Padding"/> 
+        <lightning:breadcrumb label="Articles"  href="" onclick="{!c.navigateToArticles}" /> 
+        <lightning:breadcrumb label="{!v.ArticleCategory.Name}"  href="{!'/s/topic/'+v.ArticleCategory.Id+'/'+v.ArticleCategory.Name}"/>
+        <lightning:breadcrumb label="{!v.ArticleTitle}"  href="#"/>
+           
+    </lightning:breadcrumbs>
+</aura:component>

@@ -1,0 +1,41 @@
+<aura:component controller="BT_DeleteInspectionsController" implements="flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader" access="global" >
+    <aura:attribute name="inspection" type="Object" />  
+    <aura:attribute name="record" type="Object" />
+    <aura:attribute name="recordError" type="String"/>
+    <aura:attribute name="Spinner" type="boolean" default="false"/>
+   
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth50}"/>
+    <force:recordData aura:id="recordLoader"
+                      recordId="{!v.recordId}"
+                      fields="buildertek__Status__c,Name"
+                      targetRecord="{!v.record}" 
+                      targetFields="{!v.inspection}"
+                      targetError="{!v.recordError}"
+                      recordUpdated="{!c.doInit}"
+                      />
+    <aura:if isTrue="{!v.inspection.buildertek__Status__c == 'Open'}">
+        <div class="slds-modal__header" style="font-size: 1.25rem;font-weight: 300;">
+            Delete Inspection
+        </div>
+        <div class="slds-modal__content slds-p-around--small">
+            <h2><center>Are you sure you want to delete this Inspection</center></h2>
+        </div>
+        <div class="slds-modal__footer">
+            <button class="slds-button slds-button--neutral" onclick="{!c.closeModal}" >Cancel</button>
+            <button class="slds-button slds-button--brand" onclick="{!c.deleteInspection}">Delete</button>
+        </div>
+    </aura:if>
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+           <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+             <span class="slds-assistive-text">Loading</span>
+             <div class="slds-spinner__dot-a"></div>
+             <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+           </div>
+        </div>
+    </aura:if>
+    
+</aura:component>

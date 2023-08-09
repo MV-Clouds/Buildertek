@@ -1,0 +1,73 @@
+<!--**********************************************************************************
+* Copyright (c) 2017-2016, BuilderTek.
+* All rights reserved
+*
+* VisualForce Page: BT_FileDownloadHistory
+* Controller: BT_FileDownloadHistoryController
+* Created by Milan Sanghani: 18/07/2016
+* 
+* - Modifications:
+* - Sagar, 05/01/2016 - Initial Developement
+***********************************************************************************-->
+<apex:page standardController="File__c" extensions="BT_FileDownloadHistoryController" readOnly="true" sidebar="false"  title="{!$Label.buildertek__file_download_history}">
+	<c:BT_JsAndCssIncludeComponent importJquery="true" 
+	                                importAppurinUtil="true"
+	                                importAppurinCss="true"
+	                                importLightningDesign="true"/>
+    
+	<apex:form id="form">
+	    <apex:outputPanel styleClass="slds">
+	        <div class="slds-page-header">
+                <div class="slds-grid">
+                    <div class="slds-col slds-has-flexi-truncate">
+                        <nav class="slds-m-bottom--xx-small" role="navigation">
+                            <ol class="slds-breadcrumb slds-list--horizontal">
+                                <li class="slds-breadcrumb__item slds-text-title--caps"><a href="javascript:void(0);">{!$ObjectType.File__c.labelPlural}</a></li>
+                                <li class="slds-breadcrumb__item slds-text-title--caps"><apex:outputLink styleClass="apPageHeaderLink" target="_blank" value="/{!File__c.Id}" >{!File__c.Name}</apex:outputLink></li>
+                            </ol>
+                        </nav>
+                        <h1 class="slds-page-header__title slds-truncate" title="File Download History">{!$ObjectType.File_Download_History__c.labelPlural}</h1>
+                    </div>
+                    <div class="slds-col slds-no-flex slds-grid slds-align-top">
+                        <div class="slds-button-group">
+                            <apex:commandButton styleClass="slds-button slds-button_neutral" value="Close" action="{!cancel}" rerender="" oncomplete="if(Appurin.lightning.isLightningExperience()){Appurin.lightning.back(true);}"/>
+                        </div>
+                    </div> 
+                </div>
+                 <div class="slds-grid">
+                    <div class="slds-col slds-align-bottom">
+                        <p class="slds-text-body--small">{!fileDownloadHistories.size} {!$Label.buildertek__items} • {!$Label.buildertek__sorted_by} {!$ObjectType.File_Download_History__c.fields.CreatedDate.Label}</p>
+                    </div>
+                </div>
+            </div>
+	    </apex:outputPanel>
+	    <apex:outPutPanel styleClass="slds">
+	        <table class="slds-table slds-table--bordered slds-table--cell-buffer">
+            	<tr class="slds-text-heading--label">
+                	<th scope="col">
+                    	<div class="slds-truncate">{!$ObjectType.File_Download_History__c.fields.Type__c.Label}</div>
+                    </th>
+                	<th scope="col">
+                    	<div class="slds-truncate">{!$ObjectType.File_Download_History__c.fields.DownloadedBy__c.Label}</div>
+                    </th>
+                    <th scope="col">
+                    	<div class="slds-truncate">{!$ObjectType.File_Download_History__c.fields.DownloadedDate__c.Label}</div>
+                    </th>
+                </tr>
+                <apex:repeat value="{!fileDownloadHistories}" var="fileDownloadHistory">
+                	<tr>
+                        <td>
+                            <apex:outputField value="{!fileDownloadHistory.Type__c}" />
+                        </td>
+                        <td>
+                            <apex:outputField value="{!fileDownloadHistory.DownloadedBy__c}" />
+                        </td>
+                        <td>
+                            <apex:outputField value="{!fileDownloadHistory.DownloadedDate__c}" />
+                        </td>
+                    </tr>
+                </apex:repeat>                       
+        	</table>
+	    </apex:outPutPanel>
+	</apex:form>
+</apex:page>

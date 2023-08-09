@@ -1,0 +1,24 @@
+<!--**********************************************************************************
+* Copyright © 2017, BuilderTek.
+* All rights reserved
+*
+* VisualForce Page: BT_FilesTabRedirect
+* Created by Sagar
+
+* - Override the list view for files
+
+* - Modifications:
+* - Sagar - Initial 
+***********************************************************************************-->
+
+<apex:page >
+<script>
+        window.onload = onload;
+        function onload{
+            loadData();
+        }
+</script>
+<apex:form >
+<apex:actionFunction name="loadData" action="{!URLFOR($Action.File__c.List, $ObjectType.File__c)}" />
+</apex:form> 
+</apex:page>

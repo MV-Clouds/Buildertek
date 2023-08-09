@@ -1,0 +1,55 @@
+<apex:page standardController="Template_Footer__c" extensions="QuoteFooterEdit_AC" sidebar="false" standardStyleSheets="true">
+<apex:form id="frm">
+
+<apex:includeScript value="{!URLFOR($Resource.Doc_js, '/js/1.9.1-jquery.min.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.Doc_js, '/js/jquery-1.10.2.min.js')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.Doc_css, '/css/3.0.0-bootstrap.min.css')}"/>
+<apex:includeScript value="{!URLFOR($Resource.Doc_js, '/js/jquery.js')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.Doc_css, '/css/3.3.5-bootstrap.min.css')}"/>
+<apex:includeScript value="{!URLFOR($Resource.Doc_js, '/js/3.3.5-bootstrap.min.js')}"/>
+
+<apex:includescript value="{!URLFOR($Resource.CKEditor, 'ckeditor/ckeditor.js')}" />
+<c:QuotePDF_Styles />
+
+<apex:pageblock id="pb">
+<apex:pagemessages />
+<apex:pageblockButtons >
+<P class="goright">
+<apex:commandButton action="{!Save}" value="Save">
+<apex:commandButton action="{!CancelQuoteFooter}" value="Cancel" immediate="true"/>  
+<script type="text/javascript">
+CKEDITOR.replace( '{!$Component.msgFooter}',
+    {    
+     filebrowserBrowseUrl : '{!$Page.SiteFileBrowser}',   
+     filebrowserImageBrowseUrl: '{!$Page.SiteFileBrowser}'
+     });
+        
+     
+function beforeTextSave() {
+var objEditor = CKEDITOR.instances['{!$Component.msgFooter}'];
+document.getElementById('{!$Component.msgFooter}').value = objEditor.getData();
+}
+</script>
+</apex:commandButton>
+</P>
+</apex:pageblockButtons>
+
+<div class="container">
+    <div class="container-fluid">
+            <div class="row">
+               <div class="col-sm-4">
+                    <label style="float:left;font-size:12px;padding:5px" class="control-label"  for="leadCompany">Description</label>
+                    <apex:inputField styleClass="form-control" value="{!FooterEditInfo.Description__c}" /> 
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                        <apex:inputtextarea id="msgFooter" styleClass="ckeditor" richtext="false" value="{!FooterEditInfo.Template_Footer__c}" /> 
+                </div>
+            </div>
+    </div>
+</div>
+</apex:pageblock>
+</apex:form>
+
+</apex:page>

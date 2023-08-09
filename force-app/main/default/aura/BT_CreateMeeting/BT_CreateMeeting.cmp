@@ -1,0 +1,117 @@
+<aura:component implements="force:hasRecordId,force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable,lightning:actionOverride,force:hasSObjectName" access="global" controller="newPaymentAppOverrideController">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="listOfFields0" type="List" />
+    <aura:attribute name="parentRecordId" type="String" default="" />
+    <aura:attribute name="todayDateTime" type="DateTime" />
+    <aura:attribute name="isLoading" type="Boolean" />
+    <aura:attribute name="listOfFields" type="List" />
+    <aura:attribute name="ismessage" type="boolean" default="false" />
+    <aura:attribute name="isnew" type="boolean" default="true" />
+    <aura:attribute name="timecardRecordId" type="String" default="" />
+    <aura:attribute name="timecardRecordName" type="String" default="" />
+    <aura:attribute name="subject" type="String" />
+    <aura:attribute name="startDate" type="Date" />
+    <aura:attribute name="isDisabled" type="Boolean" default="false" />
+    <aura:attribute name="sobjecttype" type="String" default="{!v.sObjectName}" />
+    <aura:attribute name="parentprojectRecordId" type="String" default="" />
+    <aura:attribute name="parentprojecttaskRecordId" type="String" default="" />
+    <aura:attribute name="parentContactRecordId" type="String" default="" />
+    <aura:attribute name="parentbudgetRecordId" type="String" default="" />
+    <aura:attribute name="parentbudgetlineRecordId" type="String" default="" />
+    <aura:attribute name="RecordTypeId" type="String" default="" />
+    <aura:attribute name="latitude" type="decimal" default="" />
+    <aura:attribute name="longitude" type="decimal" default="" />
+    <aura:attribute name="islocationaccess" type="boolean" default="true" />
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
+    <lightning:workspaceAPI aura:id="workspace" />
+
+    <!-- <ltng:require styles="{!$Resource.ModalPreview62moreMedia}"/>
+    <lightning:workspaceAPI aura:id="workspace" />
+ <aura:if isTrue="{!v.ismessage}">
+      <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+        aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open" style = "height:60rem">
+        <div class="slds-modal__container" >
+            <header class="slds-modal__header">
+                <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeModel }" alternativeText="close"
+                    variant="bare-inverse" class="slds-modal__close" />
+                <p></p>
+                <p></p>
+            </header>
+          
+        
+        <div class="slds-modal__content" id="modal-content-id-1">
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                <p><center style=" font-size: medium ">Your Labor from the Time Card was added to the Budget.</center>
+                </p>
+            </div>
+            <br/>
+        </div>
+            </div>
+        </section>
+    </aura:if>-->
+    <aura:html tag="style">
+        .slds-modal__container { width: 80% !important; max-width: 70rem !important; min-width: 80rem; margin-bottom:3rem !important; margin-top:4rem !important; }
+    </aura:html>
+    <aura:if isTrue="{!v.isnew}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <!--  <div class="slds-scrollable" style="height:80rem;width:72rem">-->
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeModel }" alternativeText="close" variant="bare-inverse" class="slds-modal__close" />
+                    <p></p>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New Meeting</h2>
+                    <p></p>
+                </header>
+                <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__Meeting__c" onsubmit="{!c.handleSubmit}" onsuccess="{!c.onRecordSuccess}" onerror="{!c.handleError}">
+                    <div class="slds-modal__content " id="modal-content-id-1">
+                        <div class="slds-scrollable" style="height:31.5rem;">
+                            <lightning:layout multipleRows="true">
+                                <aura:iteration items="{!v.listOfFields0}" var="field">
+                                    <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                                        <aura:if isTrue="{!field.name =='buildertek__Subject__c'}">
+                                            <lightning:inputField fieldName="{!field.name}" value="{!v.subject}" />
+                                            <aura:set attribute="else">
+                                                <aura:if isTrue="{!field.name =='buildertek__Meeting_Date__c'}">
+                                                    <div class="Pad">
+                                                        <lightning:inputField fieldName="{!field.name}" value="{!v.startDate}" required="true" />
+                                                    </div>
+                                                    <aura:set attribute="else">
+                                                        <aura:if isTrue="{!field.name =='Name'}">
+                                                            <div>Meeting Name</div>
+                                                            <aura:set attribute="else">
+                                                                <lightning:inputField fieldName="{!field.name}" value="" />
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </aura:set>
+                                                </aura:if>
+                                            </aura:set>
+                                        </aura:if>
+                                    </lightning:layoutItem>
+                                </aura:iteration>
+                            </lightning:layout>
+                        </div>
+                    </div>
+                    <footer aura:id="footer" class="slds-modal__footer">
+                        <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{! c.closeModel }" />
+                        <lightning:button variant="neutral" title="Save &amp; New" label="Save &amp; New" onclick="{!c.saveAndNew}" />
+                        <lightning:button variant="brand" type="submit" name="save" label="Save" disabled="{!v.isDisabled}" />
+                    </footer>
+                </lightning:recordEditForm>
+            </div>
+        </section>
+
+    </aura:if>
+
+    <aura:if isTrue="{!v.isLoading}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                    <b>Processing, Please Wait</b>
+                </div>
+            </div>
+        </div>
+    </aura:if>
+</aura:component>

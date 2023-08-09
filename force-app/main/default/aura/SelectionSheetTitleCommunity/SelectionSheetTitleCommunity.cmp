@@ -1,0 +1,44 @@
+<aura:component implements="forceCommunity:availableForAllPageTypes,force:lightningQuickAction,force:hasRecordId" controller="BT_QuestionnaireBuilder" access="global">
+    <aura:attribute name="recordId" type="string" />
+    <aura:attribute name="recordName" type="string" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <div class="slds-col--padded comm-content-header comm-layout-column" data-aura-rendered-by="113:2;a">
+        <div data-region-name="header" data-item-id="3fef1592-67e2-4261-9ced-15f6e48d047d" data-aura-rendered-by="109:2;a">
+            <div class="ui-widget" data-item-id="243ebf01-97c9-42cd-8a32-ee8074bfae3f" data-priority="" data-aura-rendered-by="106:2;a">
+                <header role="banner" data-aura-rendered-by="5:166;a" class="forceHighlightsPanel forceCommunityRecordHeadline" data-aura-class="forceHighlightsPanel forceCommunityRecordHeadline">
+                    <div class="spinnerWrapper hideSpinner hideEl forceComponentSpinner" data-aura-rendered-by="8:166;a" data-aura-class="forceComponentSpinner">
+                        <div class="indicator  hideEl forceInlineSpinner" aria-hidden="true" role="alert" data-aura-rendered-by="11:166;a" data-aura-class="forceInlineSpinner">
+                        </div>
+                    </div>
+                    <div class="slds-page-header slds-page-header_record-home forceHighlightsStencilDesktop forceRecordLayout" data-aura-rendered-by="36:300;a" data-aura-class="forceHighlightsStencilDesktop forceRecordLayout" style="height: 68px; left: 13px; right: 13px; padding-left: 16px; padding-right: 16px; border-radius: 4px;">
+                        <div class="slds-grid primaryFieldRow" data-aura-rendered-by="37:300;a">
+                            <div class="slds-grid slds-col slds-has-flexi-truncate" data-aura-rendered-by="38:300;a">
+                                <div class="profilePicWrapper slds-media slds-no-space" data-aura-rendered-by="39:300;a">
+                                    <div class="slds-media__figure slds-icon forceEntityIcon" style="background-color: #bdd25f" data-aura-rendered-by="43:300;a" data-aura-class="forceEntityIcon"><span data-aura-rendered-by="46:300;a" class="uiImage" data-aura-class="uiImage"><img data-aura-rendered-by="44:300;a" src="https://buildertekcom-developer-edition.na75.force.com/img/icon/t4v35/custom/custom29_120.png" class="icon " alt="" title=""/></span></div>
+                                </div>
+                                <div class="slds-media__body" data-aura-rendered-by="47:300;a">
+                                    <h1 data-aura-rendered-by="48:300;a">
+                                        <div class="entityNameTitle slds-line-height_reset" data-aura-rendered-by="49:300;a">Selection Sheet</div>
+                                        <div class="slds-page-header__title slds-m-right--small slds-align-middle fade-text" data-aura-rendered-by="51:300;a" title="a1Q1K000004OIswUAG">
+                                            <div class="outputLookupContainer forceOutputLookupWithPreview" data-aura-rendered-by="7:300;a" data-aura-class="forceOutputLookupWithPreview">
+                                                <a class=" textUnderline outputLookupLink slds-truncate outputLookupLink-a1Q1K000004OIswUAG-8:300;a forceOutputLookup" data-ownerid="8:300;a" data-refid="recordId" data-recordid="a1Q1K000004OIswUAG" data-special-link="true" data-navigable="true" href="/Customer/s/project/a1Q1K000004OIswUAG/the-villa-at-grand-station" target="_blank" rel="noreferrer" title="" data-aura-rendered-by="19:300;a" data-aura-class="forceOutputLookup">
+                                                    {!v.recordName} 
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </h1>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        <ul class="slds-hide" role="list" data-aura-rendered-by="55:300;a" style="transform: translate3d(0px, 0px, 0px); visibility: hidden;">
+                            <!--render facet: 56:300;a-->
+                        </ul>
+                    </div>
+                    <div class="slds-hide forceHighlightsStencilDesktop forceRecordLayout" data-aura-rendered-by="57:300;a" data-aura-class="forceHighlightsStencilDesktop forceRecordLayout"></div>
+                </header>
+                <!--render facet: 27:166;a-->
+            </div>
+        </div>
+    </div>
+</aura:component>

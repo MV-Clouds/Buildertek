@@ -1,0 +1,110 @@
+.THIS .slds-lookup{
+    position:unset;
+}
+.THIS .resultBg{
+    padding-bottom:0px; 
+    width: 22%;
+}
+.THIS .articleHeader{
+    padding-bottom:0px ;
+    font-family:Gotham-Bold;
+    font-size:16px;
+}
+.THIS .viewallLink{
+    text-decoration:none;
+    color:#F05F4D;
+    font-family:gotham-medium;
+    font-size:14px;
+}
+.THIS .bottomBorderArticle{
+    
+    border-bottom:1px solid #dae1e6;
+}
+.THIS.mobileArticledirectory{
+    height:441px;
+    box-shadow: 1px 1px 1px 2px rgba(0,0,0,0.14);
+    border-radius: 4px;
+    transition: 0.3s;
+    background-color: white;
+    margin: 1%;
+}
+.THIS .slds-lookup__menu{
+    width: 21%;
+}
+.THIS .uiInput {
+    padding-left: 30px;
+}
+.THIS .slds-input-has-icon--right .slds-input__icon {
+    left: .4rem;
+    right: 0px;
+}
+@media screen and (max-width: 768px) {
+    .THIS .slds-lookup__menu{
+        width: 78%;
+    }
+    
+}
+@media screen and (max-width: 760px) {
+    .THIS .leftpadding{
+        padding-left: 11px !important; 
+    }
+    .THIS .resultBg{
+        position: fixed;
+        padding-bottom:0px; 
+        width: 87%;
+    }
+    .THIS .uiInput {
+        background-color: transparent;
+    }
+    .THIS.mobileArticledirectory{
+        height: 80px;
+        background-color: transparent;
+        margin: 1%;
+    }
+    .THIS .articleHeader{
+        color: white;
+        margin-left:-2%!IMPORTANT;
+        padding-bottom:0px ;
+        font-family:Gotham-Book;
+        font-size:14px;
+    }
+    .THIS .mobilebgArticle{
+        background-color: transparent;
+    }
+    .THIS .bottomBorderArticle{
+        padding-left:7px;
+        border-bottom:unset;
+    }
+    .THIS .topPadding{
+        padding-top:0px;
+    }
+    .THIS .viewallLink{
+        test-decoration:none;
+      	color:#F05F4D !important;
+        font-family:gotham-medium;
+        font-size:14px !important;
+        padding:0px !important;
+    }
+}
+
+@media only screen 
+    and (min-device-width: 768px) 
+    and (max-device-width: 1024px) 
+    and (orientation: portrait) 
+    and (-webkit-min-device-pixel-ratio: 2) {
+    
+    .THIS.mobilePeopledirectory{
+        height: 520px!important;
+    }
+    
+    
+}
+/*@media screen and (max-width: 768px) {
+
+.THIS .mobileQuicklink{
+display:none;
+}
+.THIS.mobilePeopledirectory{
+display:none;
+}
+}*/

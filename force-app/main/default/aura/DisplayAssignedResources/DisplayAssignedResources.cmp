@@ -1,0 +1,57 @@
+<aura:component controller="AssignedResourcesHelper" implements="flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute type="sObject[]" name="sObjectData"/>
+    <aura:attribute type="sObject[]" name="filteredRecord"/>
+    
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}" />
+    <aura:attribute name="loadComponent" type="Boolean" default="false"/>
+    <aura:attribute name="showInMobile" type="Boolean" default="false"/>
+    <aura:attribute name="emptyList" type="Boolean" default="false"/>
+    
+    <aura:attribute name="rowsDisplayed" type="String" default="4"/>
+    <aura:attribute name="displayAll" type="Boolean" default="false"/>
+    <aura:attribute name="wraaperValue" type="Object[]" default=""/>
+    <aura:attribute name="headerTitle" type="Aura.Component[]">
+        <h2><b>Assigned Resources ({!v.sObjectData.length})</b></h2>
+    </aura:attribute>
+    <aura:attribute name="mobileHeaderTitle" type="Aura.Component[]">
+        <h2>Assigned Resources ({!v.sObjectData.length})</h2>
+    </aura:attribute>
+    <aura:If isTrue="{!$Browser.isPhone}">
+        <!-- start of code for phone/mobile device -->
+        <lightning:card class="slds-card__header-title slds-truncate" 
+                        iconName="standard:service_resource" 
+                        title ="{!v.mobileHeaderTitle}"/>
+        <c:GenericTable sObjectData="{!v.sObjectData}" 
+                        wraaperValue="{!v.wraaperValue}"
+                        />
+        <!-- end of code for phone/mobile device -->
+        <aura:set attribute="else">
+            <lightning:card class="slds-card__header-title slds-truncate slds-m-right--xx-small slds-card_boundary" 
+                            iconName="standard:service_resource" 
+                            title ="{!v.headerTitle}"/>
+            <aura:If isTrue="{!v.displayAll}">
+                <c:GenericTable sObjectData="{!v.sObjectData}" 
+                                wraaperValue="{!v.wraaperValue}"
+                                />
+                <lightning:card footer ="">
+                    <aura:set attribute="footer">
+                        <a href="javascript:void(0)" onclick="{!c.viewLessRecord}">View Less</a>
+                    </aura:set>   
+                </lightning:card>                
+                <aura:set  attribute="else">
+                    <aura:If isTrue="{!!v.emptyList}">
+                        <c:GenericTable sObjectData="{!v.filteredRecord}" 
+                                        wraaperValue="{!v.wraaperValue}"
+                                        />
+                        <lightning:card footer ="">
+                            <aura:set attribute="footer">
+                                <a href="javascript:void(0)" onclick="{!c.viewAllRecord}">View All </a>
+                            </aura:set>   
+                        </lightning:card>
+                    </aura:If>
+                </aura:set>
+            </aura:If>
+        </aura:set>
+    </aura:If>                    
+</aura:component>

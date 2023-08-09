@@ -1,0 +1,1096 @@
+<aura:component controller="PreQualObject_MSAFormController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+	<aura:attribute name="isDisabled" type="Boolean" />
+    <aura:attribute name="isSuccess" type="Boolean" />
+    <aura:attribute name="Message" type="string" />
+    <aura:attribute name="isError" type="Boolean" />
+    <aura:attribute name="iscontractor" type="Boolean" />
+    <aura:attribute name="isSignature" type="Boolean" />
+    <aura:attribute name="isCompanySignature" type="Boolean" />
+    
+     <lightning:workspaceAPI aura:id="workspace"/>
+    <aura:attribute name="Contractor" type="String" />
+     <lightning:notificationsLibrary aura:id="notifLib"/>
+    
+    <aura:attribute name="ContendVersionId" type="String"/>
+    <aura:attribute name="URLstring" type="String" />
+    <aura:attribute name="Name" type="String" />
+    <aura:attribute name="Address" type="String" />
+    <aura:attribute name="Citystate" type="String" />
+    <aura:attribute name="State" type="String" />
+    <aura:attribute name="Zip" type="String" />
+    <aura:attribute name="Phone" type="String" />
+    <aura:attribute name="Fax" type="String" />
+    <aura:attribute name="ContractorLicense" type="String" />
+    <aura:attribute name="FederalTaxID" type="String" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="resendMSA" type="boolean" default="false"/>
+    <aura:attribute name="disable" type="boolean" default="false"/>
+    <aura:attribute name="ContactId" type="String" />
+    
+    <aura:attribute name="subContractorBy" type="String" />
+    <aura:attribute name="subContractorprintedName" type="String" />
+    <aura:attribute name="subContractorVendorName" type="String" />
+    <aura:attribute name="subContractorDate" type="Date" />
+    
+    <aura:attribute name="day" type="string"/>
+    <aura:attribute name="month" type="string"/>
+     <aura:attribute name="Year" type="string"/>
+    
+    
+    <aura:attribute name="ContractorBy" type="String" />
+    <aura:attribute name="ContractorprintedName" type="String" />
+    <aura:attribute name="ContractorDate" type="Date" />
+    <aura:attribute name="msaSettings" type="MSA_Settings__c" default="{'sObjectType' : 'buildertek__MSA_Settings__c'}"/>    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="Spinner" type="Boolean" default="false"/>
+    
+    <aura:attribute name="SignatureName" type="string" />
+    <aura:attribute name="parentId" type="string" />
+    <aura:attribute name="fileimageId" type="string" />
+
+    
+   
+    <div class="slds-scrollable_y" style="height: 90vh;background-color: white">
+        <div id="pageTop" class="slds-p-around_medium">
+            <aura:if isTrue="{!v.isError}">
+                
+                <div id="pageTop">
+                    <div>
+                        
+                        <span class="slds-m-top_x-large">
+                            <center>
+                                <b>
+                                    <ul>
+                                        <h2 style="font-size: 1.3rem;border-style: solid;border-color: red;background-color: red;color: white;}">
+                                            {!v.Message}
+                                        </h2>
+                                    </ul>
+                                </b>
+                            </center>
+                            <br/>
+                        </span>
+                        <div class="slds-align_absolute-center slds-m-top_small" >
+                            <lightning:button variant="neutral" label="Close" title="Close" onclick="{!c.closePage}" />
+                        </div>
+                    </div>
+                </div>
+            </aura:if>
+            <aura:if isTrue="{!!v.isError}">
+                <aura:if isTrue="{!v.isSuccess}">
+                    
+                    <div id="pageTop">
+                        <div>
+                            
+                            <span class="slds-m-top_x-large">
+                                <center>
+                                    <b>
+                                        <ul>
+                                            <h2 style="font-size: 1.3rem;">
+                                                {!v.Message}
+                                            </h2>
+                                        </ul>
+                                    </b>
+                                </center>
+                                <br/>
+                            </span>
+                            <div class="slds-align_absolute-center slds-m-top_small" >
+                                <lightning:button variant="neutral" label="Close" title="Close" onclick="{!c.closePage}" />
+                            </div>
+                        </div>
+                    </div>
+                </aura:if>
+                <aura:if isTrue="{!!v.isSuccess}">
+                    <h5 style="font-size: 25px; text-align:center">{!v.msaSettings.buildertek__Company_Full_Name__c}<br/>
+                        Master Subcontract Agreement</h5> <br/>
+                    <p style="width:100%">
+                        This Master Subcontract Agreement (“Agreement”), between {!v.msaSettings.buildertek__Company_Full_Name__c} and the Subcontractor identified 
+                        below, is effective as of this <ui:inputText value="{!v.day}" class="day"  disabled="{!v.disable}"/> day of <ui:inputText value="{!v.month}" class="month" disabled="{!v.disable}"/>, 20 <ui:inputText value="{!v.Year}" class="Year" disabled="{!v.disable}"/>
+                    </p>
+                    <lightning:layout>
+                        <lightning:layoutItem padding="around-small" size="6">
+                            <p>CONTRACTOR:</p>
+                            <p><b>{!v.msaSettings.buildertek__Company_Full_Name__c} </b></p>
+                            <p>{!v.msaSettings.buildertek__Street__c},</p>
+                            <p>{!v.msaSettings.buildertek__City__c}, {!v.msaSettings.buildertek__State__c}&nbsp;{!v.msaSettings.buildertek__Zipcode__c}</p>
+                            <p> Phone: {!v.msaSettings.buildertek__Phone__c}</p>
+                            <p>Fax: {!v.msaSettings.buildertek__Fax__c}</p>
+                        </lightning:layoutItem>
+                        
+                        <lightning:layoutItem padding="around-small" size="6">
+                            
+                            <p>SUBCONTRACTOR:</p>
+                            <p><lightning:input name="input1"  value="{!v.Name}" label="Name" disabled="{!v.disable}"/></p>
+                            <lightning:input name="input1" value="{!v.Address}" label="Address" disabled="{!v.disable}"/>
+                            <lightning:layout>
+                                
+                                <lightning:layoutItem padding="around-small" size="4" class="layoutItem">
+                                    <lightning:input name="input1"  value="{!v.Citystate}" label="City" disabled="{!v.disable}"/>
+                                </lightning:layoutItem>
+                                
+                                <lightning:layoutItem padding="around-small" size="4" class="layoutItem2">
+                                    <lightning:input name="input1" value="{!v.State}" label="State" disabled="{!v.disable}"/>
+                                </lightning:layoutItem>
+                                
+                                <lightning:layoutItem padding="around-small" size="4" class="layoutItem2">
+                                    <lightning:input name="input1" value="{!v.Zip}" label="Zip" disabled="{!v.disable}"/>
+                                </lightning:layoutItem>
+                                
+                            </lightning:layout>
+                            <lightning:input name="input1" value="{!v.Phone}" label="Phone" disabled="{!v.disable}"/>
+                            <lightning:input name="input1" value="{!v.Fax}" label="Fax" disabled="{!v.disable}"/>
+                            <lightning:input name="input1" value="{!v.ContractorLicense}" label="Contractor License#" disabled="{!v.disable}"/>
+                            <lightning:input name="input1" value="{!v.FederalTaxID}" label="Federal Tax ID#" disabled="{!v.disable}"/>
+                            
+                        </lightning:layoutItem>
+                    </lightning:layout>
+                    
+                    <lightning:layout >       
+                        <lightning:layoutItem padding="around-small" size="12">
+                            <p>
+                                The intent of this Master Subcontract Agreement (“Agreement”) is to establish the terms of an 
+                                ongoing relationship between {!v.msaSettings.buildertek__Company_Full_Name__c} (“{!v.msaSettings.buildertek__Company_Name__c}”) and the Subcontractor identified above 
+                                (“SUBCONTRACTOR”), under which {!v.msaSettings.buildertek__Company_Name__c} may, from time to time, authorize SUBCONTRACTOR to perform 
+                                work for {!v.msaSettings.buildertek__Company_Name__c} under various projects subject to these agreed terms and conditions. By using a master 
+                                agreement, {!v.msaSettings.buildertek__Company_Name__c} can maintain an approved list of subcontractors and offer work or contracts to those 
+                                subcontractors included on such approved list.
+                            </p>  
+                        </lightning:layoutItem></lightning:layout>
+                    <lightning:layout > 
+                        <lightning:layoutItem padding="around-small" size="12">
+                            <p>
+                                {!v.msaSettings.buildertek__Company_Name__c} and SUBCONTRACTOR enter into this Agreement understanding that:
+                            </p>
+                        </lightning:layoutItem>
+                    </lightning:layout>
+                    <lightning:layout > 
+                        <lightning:layoutItem padding="around-small" size="12">
+                            
+                            <p>
+                                (A) The Agreement sets forth the terms and conditions under which {!v.msaSettings.buildertek__Company_Name__c} and SUBCONTRACTOR 
+                                will perform work on future projects, unless both parties agree otherwise in writing. 
+                            </p>
+                        </lightning:layoutItem>
+                    </lightning:layout>
+                    <lightning:layout > 
+                        <lightning:layoutItem padding="around-small" size="12">
+                            <p>
+                                (B) This Agreement does NOT require: (1) {!v.msaSettings.buildertek__Company_Name__c} to hire SUBCONTRACTOR; or (2) 
+                                SUBCONTRACTOR to work for {!v.msaSettings.buildertek__Company_Name__c} on any specific project. Neither party will be liable to the other if one does 
+                                not wish to work with the other on any particular project.
+                            </p>
+                        </lightning:layoutItem>
+                    </lightning:layout>
+                    <lightning:layout > 
+                        <lightning:layoutItem padding="around-small" size="12">
+                            <p>
+                                (C) If {!v.msaSettings.buildertek__Company_Name__c} requests SUBCONTRACTOR to perform work on a project, {!v.msaSettings.buildertek__Company_Name__c} will authorize the work 
+                                by sending SUBCONTRACTOR a work order (“Work Order”), which may be in the form of an e-mail, fax, or 
+                                letter confirming the work authorized. A Work Order will be deemed accepted upon SUBCONTRACTOR’s 
+                                written execution thereof. If SUBCONTRACTOR elects not to perform the work SUBCONTRACTOR agreesthat, 
+                                to allow {!v.msaSettings.buildertek__Company_Name__c} to quickly find another subcontractor, SUBCONTRACTOR will notify {!v.msaSettings.buildertek__Company_Name__c} of SUBCONTRACTOR’s
+                                rejection of such Work Order in writing (e-mail is acceptable) within five (5) calendar days after receiving the 
+                                Work Order. Failure of SUBCONTRACTOR to provide, within five (5) calendar days, either an executed Work 
+                                Order or notice of rejection of such Work Order, may, at the sole discretion of {!v.msaSettings.buildertek__Company_Name__c}, be deemed a rejection 
+                                by SUBCONTRACTOR of such Work Order.
+                            </p>
+                        </lightning:layoutItem>
+                    </lightning:layout>
+                    <lightning:layout >     
+                        <lightning:layoutItem padding="around-small" size="12">
+                            <p>
+                                (D) This Agreement will be effective once signed by both parties and will continue for a period of 
+                                one-year, automatically renewing for additional one-year periods until either party terminates it. Either party may terminate this Agreement by giving the other party twenty (20) days written notice. Such termination 
+                                will not cancel or otherwise affect any rights or duties relating to any pre-existing Work Order.
+                            </p>
+                        </lightning:layoutItem>
+                    </lightning:layout>
+                    <lightning:layout > 
+                        <lightning:layoutItem padding="around-small" size="12">
+                            <p>
+                                (E) By executing this Agreement, SUBCONTRACTOR represents and warrants (i) that it has the 
+                                capability to perform the work skillfully and efficiently; and (ii) that it has received a copy and agrees to the 
+                                Standard Terms and Conditions of Master Subcontract Agreement, which is incorporated by reference herein. 
+                            </p>  
+                        </lightning:layoutItem>
+                    </lightning:layout> 
+                    <lightning:layout >
+                        <lightning:layoutItem padding="around-small" size="12">
+                            <p>
+                                Agreed to by authorized representatives of {!v.msaSettings.buildertek__Company_Name__c} and the SUBCONTRACTOR on the date set forth below:
+                            </p>
+                        </lightning:layoutItem>
+                    </lightning:layout>
+                    <lightning:layout >
+                        <lightning:layoutItem padding="around-small" size="6">
+                            <p><u><b>SUBCONTRACTOR:</b></u></p>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem padding="around-small" size="6">
+                            <b><u>CONTRACTOR:</u></b><br/>{!v.msaSettings.buildertek__Company_Name__c}, INC
+                        </lightning:layoutItem>
+                    </lightning:layout>
+                    
+                    <lightning:layout >
+                        <lightning:layoutItem padding="around-small" size="6">
+                            <lightning:input name="input1"  value="{!v.subContractorBy}" label="By" disabled="{!v.disable}"/>
+                        </lightning:layoutItem>
+                        
+                        <aura:if isTrue="{!v.disable}">
+                            <lightning:layoutItem padding="around-small" size="6">
+                                <lightning:input name="input1"  value="{!v.ContractorBy}" label="By" disabled="false"/>
+                            </lightning:layoutItem>
+                            <aura:set attribute="else">
+                                <lightning:layoutItem padding="around-small" size="6">
+                                    <lightning:input name="input1"  value="{!v.ContractorBy}" label="By" disabled="true"/>
+                                </lightning:layoutItem>
+                            </aura:set>
+                        </aura:if>
+                        
+                    </lightning:layout>
+                    
+                    
+                    
+                    
+                    
+                    <lightning:layout >
+                        <lightning:layoutItem padding="around-small" size="6">
+                            <lightning:input name="input1" value="{!v.subContractorprintedName}" label="Printed Name and Title" disabled="{!v.disable}"/>
+                            
+                        </lightning:layoutItem>
+                        
+                        <aura:if isTrue="{!v.disable}">
+                            <lightning:layoutItem padding="around-small" size="6">
+                                <lightning:input name="input1" value="{!v.ContractorprintedName}" label="Printed Name and Title" disabled="false"/>
+                            </lightning:layoutItem>
+                            <aura:set attribute="else">
+                                <lightning:layoutItem padding="around-small" size="6">
+                                    <lightning:input name="input1" value="{!v.ContractorprintedName}" label="Printed Name and Title" disabled="true"/>
+                                </lightning:layoutItem>
+                            </aura:set>
+                        </aura:if>
+                        
+                    </lightning:layout>
+                    
+                    
+                    
+                    <lightning:layout >
+                        <lightning:layoutItem padding="around-small" size="6">
+                            <lightning:input name="input1" value="{!v.subContractorVendorName}" label="Vendor Name(Company Name)" disabled="{!v.disable}"/>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem padding="around-small" size="6">
+                        </lightning:layoutItem>
+                    </lightning:layout>
+                    
+                    <lightning:layout MultipleRows="true">
+                        <lightning:layoutItem padding="around-small" size="6">
+                            <lightning:input type="date" name="input1"  value="{!v.subContractorDate}" label="Date" disabled="{!v.disable}"/>
+                            
+                        </lightning:layoutItem>
+                        <aura:if isTrue="{!v.disable}">
+                            <lightning:layoutItem padding="around-small" size="6">
+                                <lightning:input type="date" name="input1"  value="{!v.ContractorDate}" label="Date" disabled="false"/>
+                            </lightning:layoutItem>
+                            <aura:set attribute="else">
+                                <lightning:layoutItem padding="around-small" size="6">
+                                    <lightning:input type="date" name="input1"  value="{!v.ContractorDate}" label="Date" disabled="true"/>
+                                </lightning:layoutItem>
+                            </aura:set>
+                        </aura:if>
+                        
+                        
+                    </lightning:layout>
+                    <lightning:layout>
+                        <aura:if isTrue="{!v.disable}">
+                            <lightning:layoutItem padding="around-small" size="6">
+                                <div><label>Signature</label></div>
+                                <!--<img src="https://builderteklightning-developer-edition.na75.force.com//servlet/servlet.FileDownload?file=0681K00000lSiPyQAK" style="height: 30px;width: 125px;" data-aura-rendered-by="258:0"/>-->
+                                <!-- <img src='/sfc/servlet.shepherd/version/renditionDownload?rendition=THUMB720BY480&amp;versionId=0681K00000lSiQmQAK' />-->
+                                <img src="{!v.URLstring}"/>
+                                
+                            </lightning:layoutItem>
+                            <aura:set attribute="else">
+                                
+                                <lightning:layoutItem padding="around-small" size="6">
+                                    
+                                    <div
+                                         class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1">
+                                        
+                                        <div class="">
+                                            <div><label>Signature</label></div>
+                                            <div class="slds-form-element__control">
+                                                <div id="signature-pad">
+                                                    
+                                                    <canvas
+                                                            style="border:1px solid lightgray;width:100%;height:100%;margin-top:10px;"
+                                                            id="divsign" required= "true"></canvas>
+                                                    <aura:if isTrue="{!v.isSignature}">
+                                                        <div style="color:red;">
+                                                            Signature  Required
+                                                        </div>
+                                                    </aura:if>
+                                                    
+                                                    <div style="float:right;margin-right:18px;"><a href="#"
+                                                                                                   style="text-decoration:none;" id="btnClear">Clear Signature</a></div>
+                                                </div>
+                                                
+                                                <ltng:require
+                                                              scripts="/resource/buildertek__SignaturePad,/resource/buildertek__SignApp" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </lightning:layoutItem>
+                                
+                            </aura:set>
+                        </aura:if>
+                        <aura:if isTrue="{!v.disable}">
+                            <lightning:layoutItem padding="around-small" size="6">
+                                
+                                <div
+                                     class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1">
+                                    
+                                    <div class="">
+                                        <div><label>Company Signature</label></div>
+                                        <div class="slds-form-element__control">
+                                            <div id="signature-pad">
+                                                <canvas
+                                                        style="border:1px solid lightgray;width:100%;height:100%;margin-top:10px;"
+                                                        id="ownersign" required="true"></canvas>
+                                                <aura:if isTrue="{!v.isCompanySignature}">
+                                                    <div style="color:red;">
+                                                        Signature  Required
+                                                    </div></aura:if>
+                                                <div style="float:right;margin-right:18px;"><a href="#"
+                                                                                               style="text-decoration:none;" id="btnClear">Clear Signature</a></div>
+                                            </div>
+                                            <ltng:require
+                                                          scripts="/resource/buildertek__SignaturePad,/resource/buildertek__SignApp" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </lightning:layoutItem>
+                            
+                        </aura:if>
+                    </lightning:layout>
+                    
+                    
+                    <p style="text-align:center"><br/><br/>
+                        STANDARD TERMS AND CONDITIONS OF<br/> 
+                        MASTER SUBCONTRACT AGREEMENT
+                    </p>
+                    <tr>
+                        <td style="padding-right:30px">
+                            <b>1. GENERAL APPLICABILITY: </b>
+                            The following Standard Terms and Conditions of 
+                            the Master Subcontract Agreement (“Standard 
+                            Terms and Conditions”) will control and govern any 
+                            and all performance of services and/or supply of 
+                            material and equipment by SUBCONTRACTOR for 
+                            {!v.msaSettings.buildertek__Company_Name__c}. <br/><br/>
+                            
+                            <b>2. THE SUBCONTRACT DOCUMENTS: </b>
+                            The documents that form the Agreement (the 
+                            “Subcontract Documents”) consist of:
+                            i. The executed Master Services Agreement
+                            ii. These Standard Terms and Conditions, 
+                            including all Bid Packages, Exhibits and 
+                            Attachments;
+                            iii. The applicable Work Order (form provided 
+                            as Attachment A hereto); 
+                            iv. {!v.msaSettings.buildertek__Company_Name__c}’s Code of Conduct;
+                            v. The Prime Contract, as defined herein, 
+                            (including all documents incorporated by 
+                            reference therein); and
+                            vi. Any modifications to this Agreement, as 
+                            permitted by the Standard Terms and 
+                            Conditions. <br/><br/>
+                            
+                            <b>3. THE WORK:</b> 
+                            3.1 SUBCONTRACTOR will at all times supply 
+                            adequate tools, appliances and equipment, a 
+                            sufficient number of properly skilled workers, and 
+                            a sufficient amount of materials and supplies of 
+                            proper quality to prosecute its work (“Work”)
+                            efficiently and promptly. SUBCONTRACTOR will 
+                            timely and promptly pay for all such labor, 
+                            equipment, materials, and services referred to in 
+                            this Agreement, including anything reasonably 
+                            required or inferable in order (i) to furnish a 
+                            complete, code-compliant and functional
+                            installation and finished work product and (ii) to 
+                            comply with the requirements of this Agreement 
+                            and applicable law.
+                            3.2 SUBCONTRACTOR certifies that it is fully 
+                            familiar with all of the terms of the Subcontract 
+                            Documents, the location of the job site at which
+                        </td>
+                        <td style="padding-left:30px">
+                            the Work in question is to be performed, and the 
+                            conditions under which the Work is to be 
+                            performed and that it enters into this Agreement 
+                            based upon its reasonable investigation of all such 
+                            matters and is not relying on any opinions or 
+                            representations of {!v.msaSettings.buildertek__Company_Name__c}. This Agreement 
+                            represents the entire and integrated agreement 
+                            between the parties and supersedes all other 
+                            negotiations, representations, proposals, 
+                            stipulations, or agreements, either written or oral, 
+                            including, without limitation, SUBCONTRACTOR’s
+                            bid form or proposal. All prior or contemporaneous 
+                            agreements to be included in this Agreement are 
+                            expressly identified herein. No agent or 
+                            representative of either party has authority to 
+                            make, and the parties will not be bound by or liable 
+                            for, any statement, representation, promise, or 
+                            agreement not set forth herein. <br/><br/>
+                            
+                            3.3 The Prime Contract Documents are 
+                            incorporated in this Agreement by reference, and 
+                            SUBCONTRACTOR and its lower tier subcontractors 
+                            and suppliers will be and are bound by the Prime 
+                            Contract Documents insofar as they relate in any 
+                            way, directly or indirectly, to any work covered by 
+                            this Agreement. Nothing in this Agreement will be 
+                            construed as creating a contractual or third party 
+                            beneficiary relationship between the 
+                            SUBCONTRACTOR, and/or any of its lower tier 
+                            subcontractors and suppliers, and the Owner 
+                            (“OWNER”).<br/><br/> 
+                            4. FLOW DOWN RELATIONSHIP: 
+                            SUBCONTRACTOR agrees to be bound to {!v.msaSettings.buildertek__Company_Name__c} in 
+                            the same manner and to the same extent that 
+                            {!v.msaSettings.buildertek__Company_Name__c} is bound to OWNER under the Prime 
+                            Contract Documents (the "Prime Contract") to the 
+                            extent of the work provided for in the Work in 
+                            question and this Agreement. SUBCONTRACTOR
+                            also agrees that where the Prime Contract 
+                            references the "Contractor," and the work in 
+                            question pertains to SUBCONTRACTOR’s Work, 
+                            then such Prime Contract clause or specification 
+                            will be interpreted to apply to SUBCONTRACTOR  
+                            
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding-right:30px">
+                            
+                            
+                            instead of {!v.msaSettings.buildertek__Company_Name__c}, but these Master Terms and 
+                            Conditions will govern any inconsistent provision of 
+                            the Prime Contract. SUBCONTRACTOR
+                            acknowledges that it has read the Prime Contract 
+                            and all plans and specifications, is familiar with 
+                            them, and agrees to comply with and perform all 
+                            provisions thereof in any way applicable to 
+                            SUBCONTRACTOR.<br/><br/> 
+                            <b>5. SUBCONTRACTOR’S OBLIGATIONS: </b>
+                            5.1 Independent Contractor: SUBCONTRACTOR 
+                            shall be deemed to be an independent contractor, 
+                            with the authority and right to direct and control 
+                            all of the details of the work. Any suggestions, 
+                            advice or directions given by {!v.msaSettings.buildertek__Company_Name__c} or its employees 
+                            to SUBCONTRACTOR or its employees shall in no 
+                            way establish or be evidence of an intent to create 
+                            a master/servant or principal/agent relationship 
+                            between {!v.msaSettings.buildertek__Company_Name__c} and SUBCONTRACTOR.<br/><br/>
+                            
+                            5.2 Supervision: SUBCONTRACTOR will personally 
+                            supervise the Work or have a competent 
+                            foreperson or superintendent satisfactory to {!v.msaSettings.buildertek__Company_Name__c}
+                            on site at all times during SUBCONTRACTOR’s
+                            performance with authority to act for 
+                            SUBCONTRACTOR. <br/><br/>
+                            5.3 Compliance with direction and continued 
+                            performance: In the event of a dispute, 
+                            SUBCONTRACTOR will comply with {!v.msaSettings.buildertek__Company_Name__c}’s written 
+                            directives and will continue its performance, in 
+                            accordance with Section 12.<br/><br/>
+                            
+                            5.4 Scheduling and other information: 
+                            SUBCONTRACTOR at {!v.msaSettings.buildertek__Company_Name__c}’s request and at the 
+                            time specified in such request will submit to {!v.msaSettings.buildertek__Company_Name__c}
+                            progress, procurement and labor-hour completion 
+                            schedules, satisfactory in form and content to 
+                            {!v.msaSettings.buildertek__Company_Name__c}, and upon {!v.msaSettings.buildertek__Company_Name__c}’s acceptance of the 
+                            schedules will prosecute the work in accordance 
+                            therewith. <br/><br/>
+                            
+                            5.5 Permits, licenses and inspections: 
+                            SUBCONTRACTOR will obtain and pay for all 
+                            permits, licenses, and inspections necessary 
+                            because of or otherwise related to its Work.<br/><br/> 
+                            <b>6. THE SUBCONTRACT SUM:</b></td>
+                        <td style="padding-left:30px">
+                            
+                            {!v.msaSettings.buildertek__Company_Name__c} will pay the SUBCONTRACTOR in current 
+                            funds for the proper performance and completion 
+                            of the Work for the amount established for each 
+                            project on the terms described below.<br/><br/>
+                            <b>7. PRICE AND PAYMENT: </b>
+                            7.1 Unless the Prime Contract provides otherwise, 
+                            {!v.msaSettings.buildertek__Company_Name__c} will pay SUBCONTRACTOR for approved work 
+                            performed, that is accurately reflected in an 
+                            invoice or payment application delivered to {!v.msaSettings.buildertek__Company_Name__c}
+                            no later than the tenth (10th) day of the month 
+                            following the month the labor was performed, or 
+                            equipment or materials furnished that is reflected 
+                            in the invoice or payment application.<br/><br/>
+                            7.2 For invoices or payment applications submitted 
+                            as provided in Section 7.1, and subject to the Prime 
+                            Contract’s payment provisions, {!v.msaSettings.buildertek__Company_Name__c} will issue 
+                            payment to SUBCONTRACTOR for all approved 
+                            work, {!v.msaSettings.buildertek__Company_Name__c} will pay to SUBCONTRACTOR the 
+                            amount paid to {!v.msaSettings.buildertek__Company_Name__c} for SUBCONTRACTOR’s work, 
+                            materials or equipment, less any set-offs or 
+                            retainage as provided for in the Subcontract 
+                            Documents or applicable law, within ten (10) days 
+                            of {!v.msaSettings.buildertek__Company_Name__c}’s receipt of payment by the OWNER.<br/><br/>
+                            7.3 Notwithstanding any other term of this 
+                            Agreement, {!v.msaSettings.buildertek__Company_Name__c} shall be permitted a reasonable 
+                            time to pursue remedies and collect from OWNER
+                            or other persons for progress payments, final 
+                            payments or other payments on account of 
+                            SUBCONTRACTOR’s Work or claims, before 
+                            payment shall become due to SUBCONTRACTOR.
+                            What is “reasonable time” shall be decided based 
+                            upon all relevant circumstances, but shall in no 
+                            event be less than the amount of time needed to 
+                            pursue to conclusion (including collection) 
+                            available remedies against OWNER, insurers, other 
+                            subcontractors, or any other party responsible for 
+                            payment.<br/><br/> 
+                            7.4 SUBCONTRACTOR agrees to provide, if 
+                            required by {!v.msaSettings.buildertek__Company_Name__c}, in a form satisfactory to {!v.msaSettings.buildertek__Company_Name__c}, a 
+                            release of claim or lien for payments, and it is 
+                            agreed that if such release is required no payments 
+                            will be due or made, except at {!v.msaSettings.buildertek__Company_Name__c}'s option, until 
+                            the release is furnished. 
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding-right:30px">
+                            
+                            7.5 The retained percentage to be deducted by 
+                            {!v.msaSettings.buildertek__Company_Name__c} from each progress payment to the 
+                            SUBCONTRACTOR will be the same percentage of 
+                            retainage as OWNER has deducted from its 
+                            progress payment to {!v.msaSettings.buildertek__Company_Name__c}.<br/><br/>
+                            
+                            7.6 {!v.msaSettings.buildertek__Company_Name__c} will be entitled to deduct as a set-off to 
+                            any money due SUBCONTRACTOR any amount 
+                            which SUBCONTRACTOR or any of its affiliates 
+                            owes {!v.msaSettings.buildertek__Company_Name__c} arising out of this Agreement, any Work 
+                            Order or otherwise.<br/><br/> 
+                            <b>8. INSURANCE AND BONDS: </b>
+                            8.1 SUBCONTRACTOR agrees that it will purchase 
+                            and maintain the types of insurance coverage and 
+                            limits as set forth in the Work Order and in Exhibit 
+                            1. <br/><br/>
+                            {!v.msaSettings.buildertek__Company_Name__c} and the OWNER must be listed as a 
+                            certificate holder and additional insured and 
+                            SUBCONTRACTOR will comply with all other 
+                            requirements of Exhibit 1. 
+                            8.2 {!v.msaSettings.buildertek__Company_Name__c} is required to keep on file copies of 
+                            Certificates of Liability insurance on all trade 
+                            contractors. <u>Please note that SUBCONTRACTOR
+                            will not be permitted to commence its work until 
+                            {!v.msaSettings.buildertek__Company_Name__c} has current insurance certificates from 
+                            SUBCONTRACTOR on file in the office. Any 
+                            construction schedule delays or costs resulting 
+                            from SUBCONTRACTOR’s non-compliance with this 
+                            requirement will be the sole responsibility of 
+                            SUBCONTRACTOR.</u><br/><br/>
+                            8.3 {!v.msaSettings.buildertek__Company_Name__c} will have the right to require the 
+                            SUBCONTRACTOR to furnish bonds covering 
+                            faithful performance of the Agreement and 
+                            payment of obligations arising thereunder as 
+                            stipulated in the Subcontract Documents. 
+                            <b>9. SUBCONTRACT TIME:</b> 
+                            9.1 TIME IS OF THE ESSENCE. The overall project 
+                            completion date is set for individual projects. 
+                            SUBCONTRACTOR agrees to meet or better the 
+                            durations established in {!v.msaSettings.buildertek__Company_Name__c}’s schedule.<br/><br/>
+                            
+                            9.2 SUBCONTRACTOR agrees to commence the 
+                            Work when notified by {!v.msaSettings.buildertek__Company_Name__c} and to diligently 
+                            perform and coordinate the Work with the other 
+                            work being performed on the Project, under the 
+                        </td>
+                        
+                        <td style="padding-left:30px">
+                            Project Schedules that may be issued from time to 
+                            time. SUBCONTRACTOR agrees to cooperate and 
+                            participate in the development of schedules so as 
+                            not to delay, impede, hinder, or interfere with the 
+                            progress or completion of any part of the work on 
+                            the Project. If SUBCONTRACTOR fails to maintain 
+                            its part of {!v.msaSettings.buildertek__Company_Name__c}’s schedule, SUBCONTRACTOR will, 
+                            without additional compensation, accelerate the 
+                            Work as {!v.msaSettings.buildertek__Company_Name__c} may direct. {!v.msaSettings.buildertek__Company_Name__c} will have the right 
+                            to decide the sequence and priority of 
+                            SUBCONTRACTOR’s Work as compared with other 
+                            work.<br/><br/>
+                            
+                            9.3 SUBCONTRACTOR acknowledges that it may
+                            have to perform Work in areas occupied by other 
+                            forces and that it will have to perform its Work in a 
+                            sequence or manner to accommodate and 
+                            facilitate the progress of the work as a whole, 
+                            rather than in the manner most efficient or 
+                            desirable for the SUBCONTRACTOR.<br/><br/>
+                            
+                            <b>10. INDEMNITY:</b> 
+                            10.1 To the fullest extent permitted by law, 
+                            SUBCONTRACTOR agrees to hold harmless, defend 
+                            and indemnify {!v.msaSettings.buildertek__Company_Name__c} and its parents, affiliates, and 
+                            subsidiaries, and OWNER, and the agents, 
+                            employees, representatives, officers and directors 
+                            of each of them, from and against all claims, costs, 
+                            losses, damages, and expenses (including 
+                            attorney's fees) (collectively "Claims") arising out 
+                            of or resulting from performance of 
+                            SUBCONTRACTOR’s Work, or SUBCONTRACTOR’s 
+                            default in performance of its Work, under any 
+                            project entered into under this Agreement.<br/><br/>
+                            
+                            10.2 To the fullest extent permitted by law, the 
+                            Subcontractor shall indemnify and hold harmless 
+                            {!v.msaSettings.buildertek__Company_Name__c} and its parents, affiliates, and subsidiaries, 
+                            and OWNER, and the agents, employees, 
+                            representatives, officers and directors of each of 
+                            them from and against claims, damages, losses, 
+                            and expenses, including but not limited to 
+                            attorney’s fees, arising out of or resulting from 
+                            SUBCONTRACTOR’s failure to follow and comply 
+                            with any and all applicable safety requirements 
+                            promulgated by any government authority, as well 
+                            as any safety and health programs published by 
+                            {!v.msaSettings.buildertek__Company_Name__c} or OWNER.
+                        </td>
+                    </tr> 
+                    <tr>
+                        <td style="padding-right:30px">
+                            10.3 SUBCONTRACTOR’s indemnity obligations 
+                            arise regardless of whether SUBCONTACTOR is 
+                            negligent or whether the negligence or delays of 
+                            others, including {!v.msaSettings.buildertek__Company_Name__c}, are contributory and/or 
+                            concurrent, but in no event will 
+                            SUBCONTRACTOR’s indemnity obligations under 
+                            this Agreement require SUBCONTRACTOR to 
+                            indemnify {!v.msaSettings.buildertek__Company_Name__c} for Claims caused by {!v.msaSettings.buildertek__Company_Name__c}’s sole 
+                            negligence or willful misconduct, or against liability 
+                            for damages arising out of bodily injury to persons 
+                            or damage to property to the extent proximately 
+                            caused by or resulting from the negligence of 
+                            {!v.msaSettings.buildertek__Company_Name__c}.<br/><br/>
+                            <b>11. ADDITIONAL WORK POLICY:</b> 
+                            11.1 Changes may occur during the course of the 
+                            project. {!v.msaSettings.buildertek__Company_Name__c} may order extra or additional work, 
+                            deletions, deductions, or other modifications to 
+                            the Work. Such changes will be effective only upon 
+                            issuance of a written Change Order signed by 
+                            {!v.msaSettings.buildertek__Company_Name__c}. SUBCONTRACTOR will not deviate from the 
+                            plans and specifications except on written order 
+                            from {!v.msaSettings.buildertek__Company_Name__c}. SUBCONTRACTOR will be responsible 
+                            for any damage, inconvenience, or increase of 
+                            costs arising directly or indirectly from failure of 
+                            SUBCONTRACTOR to observe the same.<br/><br/> 
+                            11.2 If SUBCONTRACTOR believes it has been 
+                            caused to perform additional work, or that its 
+                            progress has been delayed by an event, condition 
+                            or directive (an “event”) outside of 
+                            SUBCONTRACTOR’s control, SUBCONTRACTOR will
+                            immediately, but no later than ten (10) days after 
+                            the occurrence of the event, notify {!v.msaSettings.buildertek__Company_Name__c} of the 
+                            event and its impact on SUBCONTRACTOR’s costs 
+                            or progress. SUBCONTRACTOR further agrees that 
+                            the notice required herein is material to this 
+                            Agreement, as well as {!v.msaSettings.buildertek__Company_Name__c}’s ability to protect its 
+                            interests and mitigate its costs. Accordingly, and 
+                            notwithstanding Section 21 to this Agreement, 
+                            SUBCONTRACTOR agrees that any claim or request 
+                            for additional money or time is waived if 
+                            SUBCONTRACTOR fails to issue notice as provided 
+                            for in this Section 11.2.<br/><br/>
+                            <b>12. DISPUTES AND REMEDIES:</b></td>
+                        
+                        <td style="padding-left:30px">
+                            
+                            12.1 SUBCONTRACTOR agrees to meet with {!v.msaSettings.buildertek__Company_Name__c}
+                            to resolve any disputes or claims upon request. 
+                            Unless the parties mutually agree otherwise in 
+                            writing, if the parties are not able to resolve the 
+                            dispute at such meeting, SUBCONTRACTOR and 
+                            {!v.msaSettings.buildertek__Company_Name__c} agree to arbitrate the dispute in accordance 
+                            with the then-current Construction Industry 
+                            Arbitration Rules of the American Arbitration 
+                            Association. A demand for arbitration must assert 
+                            all arbitrable claims the asserting party is aware of. 
+                            The arbitration hearing shall be held in Santa Clara 
+                            County, California. Notwithstanding the foregoing, 
+                            if {!v.msaSettings.buildertek__Company_Name__c} becomes involved in a court proceeding 
+                            instituted by a third party, or chooses to file an 
+                            action in court against a third party related to, 
+                            SUBCONTRACTOR’s Work or a Claim arising from or 
+                            related to SUBCONTRACTOR’s Work, 
+                            SUBCONTRACTOR agrees to forego and waive this 
+                            arbitration provision and participate in any such 
+                            court proceeding if requested by {!v.msaSettings.buildertek__Company_Name__c}.<br/><br/> 
+                            12.2 SUBCONTRACTOR agrees that it must 
+                            continue to perform its Work during any dispute, 
+                            unless otherwise expressly agreed in writing by 
+                            {!v.msaSettings.buildertek__Company_Name__c}. {!v.msaSettings.buildertek__Company_Name__c} agrees that it will continue to pay 
+                            SUBCONTRACTOR all undisputed amounts in 
+                            accordance with this Agreement while any dispute 
+                            is pending.<br/><br/>
+                            <b>13. CLEAN-UP: </b>
+                            SUBCONTRACTOR must at its own cost do its own 
+                            clean-up and remove from the site all debris 
+                            resulting from SUBCONTRACTOR’s Work. If 
+                            SUBCONTRACTOR fails to comply with this 
+                            obligation SUBCONTRACTOR agrees that {!v.msaSettings.buildertek__Company_Name__c} can 
+                            perform said clean-up work and back charge 
+                            SUBCONTRACTOR for all costs incurred.<br/><br/> 
+                            <b>14. SAFETY:</b>
+                            14.1 {!v.msaSettings.buildertek__Company_Name__c} is dedicated to the safety, well-being, 
+                            and professional working environment of everyone 
+                            involved in {!v.msaSettings.buildertek__Company_Name__c} projects. This means that all 
+                            OSHA regulations must be followed on {!v.msaSettings.buildertek__Company_Name__c}
+                            jobsites. This includes but is not limited to: work 
+                            boots, long pants, shirts, and hard hats to be worn 
+                            by everyone at all times while on the job when 
+                            appropriate. SUBCONTRACTOR agrees that all 
+                            persons on the job are there ready to work, free
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding-right:30px">
+                            
+                            from influences of alcohol and drugs, dressed 
+                            professionally, and treat other trades people with 
+                            respect and professionalism. SUBCONTRACTOR
+                            agrees that SUBCONTRACTOR will reimburse {!v.msaSettings.buildertek__Company_Name__c}
+                            for all OSHA and other fines and penalties {!v.msaSettings.buildertek__Company_Name__c}
+                            incurs that arise out of SUBCONTRACTOR’s
+                            performance of SUBCONTRACTOR’s Work.<br/><br/>
+                            14.2 SUBCONTRACTOR will protect its Work and 
+                            materials. SUBCONTRACTOR assumes the risk of all 
+                            loss or damage to its Work, materials and 
+                            equipment until final completion and acceptance 
+                            of the Project by OWNER. If SUBCONTRACTOR 
+                            installs items provided by others or performs Work 
+                            in areas to be constructed or prepared by others, 
+                            SUBCONTRACTOR will carefully inspect and will 
+                            accept, at the time of delivery or first access, the 
+                            items so provided and the work by others. Failure 
+                            to conduct an inspection or to give notice of any 
+                            discrepancies or problems will be deemed to 
+                            constitute acceptance by SUBCONTRACTOR of the 
+                            items or work of others. Loss or damage due to acts 
+                            of SUBCONTRACTOR will be charged to 
+                            SUBCONTRACTOR. SUBCONTRACTOR is 
+                            responsible for all damages or losses it causes to 
+                            others or to work, equipment or property of 
+                            others. <br/><br/>
+                            <b>15. PROJECT CONDUCT: </b>
+                            <u>15.1 SUBCONTRACTOR agrees that it has read and 
+                                will fully comply with {!v.msaSettings.buildertek__Company_Name__c}’s Code of Conduct, 
+                                which is attached to this Agreement.</u> 
+                            SUBCONTRACTOR agrees that due to the high-end 
+                            nature of {!v.msaSettings.buildertek__Company_Name__c}'s customers, {!v.msaSettings.buildertek__Company_Name__c} will have the 
+                            absolute right to require that SUBCONTRACTOR 
+                            remove or replace any employee from the work 
+                            site.<br/><br/>
+                            15.2 SUBCONTRACTOR at all times will furnish to 
+                            {!v.msaSettings.buildertek__Company_Name__c}, OWNER, and any representatives of them, 
+                            safe and ample facilities for inspecting materials 
+                            and Work at the site of construction, shops, 
+                            factories, yards or any other places of business of 
+                            SUBCONTRACTOR, its subcontractors or suppliers, 
+                            wherever materials under this Agreement may be 
+                            in the course of preparation, processing, 
+                            manufacture, painting or treatment. 
+                            SUBCONTRACTOR will furnish {!v.msaSettings.buildertek__Company_Name__c}, as often as 
+                        </td>
+                        <td style="padding-left:30px">
+                            {!v.msaSettings.buildertek__Company_Name__c} requires, full reports of the progress of the 
+                            Work at any place materials may be in the course 
+                            of construction, treatment or manufacture. Such 
+                            reports will show the progress of such 
+                            construction, treatment and manufacture in such 
+                            detail as may be required by {!v.msaSettings.buildertek__Company_Name__c}, including but 
+                            not limited to, any plans, drawings or diagrams in 
+                            the course of preparation. <br/><br/>
+                            <b>16. TERMINATION OF WORK ORDER </b>
+                            16.1 If the SUBCONTRACTOR fails or neglects to 
+                            carry out the Work in accordance with the 
+                            Subcontract Documents, is deemed unacceptable 
+                            by OWNER for any reason, or otherwise fails to 
+                            perform in accordance with this Agreement, {!v.msaSettings.buildertek__Company_Name__c}
+                            may terminate SUBCONTRACTOR’s right to 
+                            proceed or continue under any Work Order by 
+                            giving three (3) days’ written notice. 
+                            SUBCONTRACTOR will remain liable for all costs to 
+                            complete and any damages and expenses incurred 
+                            by {!v.msaSettings.buildertek__Company_Name__c}, which may result from the default or
+                            breach. If the unpaid balance of the Work Order 
+                            Sum exceeds the expense of finishing 
+                            SUBCONTRACTOR's Work plus other damages 
+                            incurred by {!v.msaSettings.buildertek__Company_Name__c}, such excess will be paid to 
+                            SUBCONTRACTOR. If the expense or damage 
+                            exceeds such unpaid balance, SUBCONTRACTOR 
+                            must pay the difference to {!v.msaSettings.buildertek__Company_Name__c}.<br/><br/> 
+                            16.2 A wrongful termination of a Work Order for 
+                            default under this Agreement will be treated as a 
+                            termination for convenience. Settlement of the 
+                            Work Order must be accomplished in accordance 
+                            with the provisions of the Termination for 
+                            Convenience clause in the Prime Contract; 
+                            otherwise, the SUBCONTRACTOR will be paid for all 
+                            Work completed and materials delivered and 
+                            stored at the Project site as of the date of 
+                            termination based on a percentage of completion.<br/><br/> 
+                            16.3 Neither a Termination for Default nor
+                            Termination for Convenience of any ongoing 
+                            project will terminate either party's respective 
+                            rights or duties regarding other projects, Work 
+                            Orders, or this Agreement.<br/><br/>
+                            <b>17. LIEN CLAIMS:</b> 
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding-right:30px">
+                            SUBCONTRACTOR agrees that it will promptly 
+                            remove or bond off any and all liens arising out of 
+                            its Work except to the extent such lien is caused by 
+                            {!v.msaSettings.buildertek__Company_Name__c} payment defaults. If SUBCONTRACTOR fails 
+                            to promptly remove or bond off any lien, {!v.msaSettings.buildertek__Company_Name__c}
+                            reserves the right to remove or bond off the lien, 
+                            and SUBCONTRACTOR agrees to reimburse or 
+                            indemnify {!v.msaSettings.buildertek__Company_Name__c} for all costs incurred by {!v.msaSettings.buildertek__Company_Name__c}, 
+                            including attorney’s fees. Further, if such lien is 
+                            arbitrated or litigated, SUBCONTRACTOR agrees to 
+                            pay all {!v.msaSettings.buildertek__Company_Name__c} reasonable attorney’s fees and any 
+                            amounts to satisfy a resulting settlement, 
+                            judgment, or award.<br/><br/>
+                            <b>18. ASSIGNMENT:</b> 
+                            No assignment is allowed without {!v.msaSettings.buildertek__Company_Name__c}’s written 
+                            approval.<br/><br/> 
+                            <b>19. MODIFICATIONS/CHANGES IN WRITING:</b> 
+                            No modifications, additions or changes may be 
+                            made to the Agreement except in written form 
+                            signed by both {!v.msaSettings.buildertek__Company_Name__c} and SUBCONTRACTOR.<br/><br/> 
+                            <b>20. WARRANTY: </b>
+                            SUBCONTRACTOR guarantees and warrants its 
+                            Work against all deficiencies and defects in 
+                            materials or workmanship, and further warrants 
+                            that all materials and equipment will be of new and 
+                            good quality unless the Contract Documents 
+                            require otherwise. SUBCONTRACTOR agrees to 
+                            indemnify {!v.msaSettings.buildertek__Company_Name__c} for all claims, costs, losses or 
+                            damages, including attorney’s fees, arising out of 
+                            any breach of the Warranty provided for herein, 
+                            which obligation shall survive termination of the 
+                            Agreement.<br/><br/> 
+                            <b>21. NO WAIVER: </b>
+                            If either party fails to require the other to perform 
+                            any term of this Agreement, that failure does not 
+                            prevent the party from later enforcing that term. If 
+                            either party waives the other's breach of a term, 
+                            that waiver is not treated as a continuing waiver, or 
+                            as waiving a later breach of that term.<br/><br/>
+                            
+                            <b>22. SEVERABILITY: </b>
+                            If any part of this Agreement is for any reason 
+                            found to be invalid, void, or unenforceable, all 
+                            other parts nevertheless remain valid, legal, and   
+                            
+                        </td>
+                        <td style="padding-left:30px">
+                            
+                            enforceable. {!v.msaSettings.buildertek__Company_Name__c} and SUBCONTRACTOR agree 
+                            that this Agreement will then be reformed to 
+                            replace the invalid, void, or unenforceable part 
+                            with a valid and legal provision that comes as close 
+                            as possible to expressing the intention of the plain 
+                            language of the stricken part.<br/><br/>
+                            
+                            <b>23. COMPLIANCE WITH LAWS AND SAFTEY 
+                                REQUIREMENTS: </b>
+                            23.1 SUBCONTRACTOR represents and warrants 
+                            that it is in compliance with all Federal, State, and 
+                            local laws, regulations or orders, as amended or 
+                            supplemented, including but not limited to any and 
+                            all contractor licensing laws or regulations, 
+                            (collectively “Laws”) and will perform the Work 
+                            under compliance with such Laws. The Work under 
+                            this Agreement will be performed in strict 
+                            compliance with all Federal, State, or local laws 
+                            regarding labor and discrimination in employment 
+                            as well as all requirements of the Subcontract 
+                            Documents.<br/><br/>
+                            23.2 This Agreement will be governed by the law of 
+                            the place where the Work is to be performed, 
+                            excluding that jurisdiction’s choice of law rules. 
+                            Subject to Section 12, SUBCONTRACTOR consents
+                            to personal jurisdiction in any action brought in any 
+                            court, federal or state, within such jurisdiction, 
+                            having personal and subject matter jurisdiction 
+                            arising under this Agreement, and with respect to 
+                            any such claim irrevocably waives, to the fullest 
+                            extent permitted by law, any claim, or any 
+                            objection it may now or hereafter have, that venue 
+                            is not proper with respect to any such suit, action, 
+                            or proceeding brought in such court, including any 
+                            claim that such suit, action, or proceeding brought 
+                            in such court has been brought in an inconvenient 
+                            forum and any claim that a party is not subject to 
+                            personal jurisdiction or service of process in such 
+                            forum. <br/><br/>
+                            <b>24. TRADE SECRETS: </b>
+                            SUBCONTRACTOR acknowledges that {!v.msaSettings.buildertek__Company_Name__c} 
+                            products and software contain valuable trade 
+                            secrets owned by {!v.msaSettings.buildertek__Company_Name__c}. SUBCONTRACTOR shall 
+                            not, directly or through third parties, reverse 
+                            engineer, duplicate, translate, modify, printout, 
+                            disassemble, decipher, decompile, attempt to derive source code, algorithms, specifications, 
+                            architectures, structures or other elements, or 
+                            otherwise tamper with any {!v.msaSettings.buildertek__Company_Name__c} product or any 
+                            firmware, circuit board, software or other 
+                            component or item provided with same, or 
+                            otherwise attempt to discover any {!v.msaSettings.buildertek__Company_Name__c} 
+                            intellectual property or trade secrets contained in 
+                            any such items. {!v.msaSettings.buildertek__Company_Name__c} retains sole and exclusive 
+                            ownership of all intellectual property rights in and 
+                            to its products and all derivative works thereof 
+                            (whether developed by {!v.msaSettings.buildertek__Company_Name__c}, SUBCONTRACTOR or 
+                            a third party).        
+                        </td>
+                    </tr>
+                    
+                    <h1 style="text-align:center;font-size:20px">CODE OF CONDUCT</h1>
+                    <p>
+                        The following Code of Conduct applies without exception to all subcontractors and specialty trade 
+                        subcontractors performing work for {!v.msaSettings.buildertek__Company_Name__c}. By entering into any subcontract or Work Order with {!v.msaSettings.buildertek__Company_Name__c}, you 
+                        agree to comply with the following and agree that failing to comply with any provision of this Code of 
+                        Conduct is grounds for removal of the offending person(s) from the Project and could be grounds for 
+                        terminating your Work Order or Master Subcontract Agreement.
+                    </p>
+                    <p>
+                        1. Personal Protective Equipment is required by {!v.msaSettings.buildertek__Company_Name__c} Superintendent.<br/>
+                        2. Proper attire is required always.<br/> 
+                        3. Smoking is not permitted on jobsites. Smoking must take place off property.<br/>
+                        4. Housekeeping is an organizational priority. A dirty job reflects a lack of professionalism and is generally 
+                        unsafe; tradespersons will be responsible for cleaning up for themselves. {!v.msaSettings.buildertek__Company_Name__c} may back charge subcontractors 
+                        $50/hr for cleaning up subcontractor debris.<br/>
+                        5. Radios and speakers are a privilege; they will not be allowed if they become a nuisance.<br/> 
+                        6. Proper safety equipment, safe behavior, and well-maintained equipment are expected of all {!v.msaSettings.buildertek__Company_Name__c} 
+                        subcontractors. {!v.msaSettings.buildertek__Company_Name__c} has oversight responsibility of all aspects of the job; therefore, any unsafe behavior, 
+                        unsafe equipment, or unsafe conditions attributed to any aspect of the Subcontractor’s work must be 
+                        corrected by Subcontractor at its sole expense before work may commence.<br/>
+                        7. Proper language and behavior is a must; no foul or loud language, no horseplay of any kind, and no 
+                        racial, derogatory, sexually explicit, or otherwise obnoxious behavior or language will be allowed.<br/>
+                        8. Respect for the property of the customer, other trade people, and the jobsite in general is required. 
+                        Do not use the customer’s or other’s tools without permission and inform the proper person when property 
+                        is damaged.<br/><br/> 
+                        9. Drugs and alcohol have no place on the jobsite. Any person believed to be under the influence will be 
+                        asked to leave the jobsite. This determination is at the discretion of the job superintendent and/or {!v.msaSettings.buildertek__Company_Name__c} 
+                        personnel.
+                    </p>
+                    
+                    <h1 style="text-align:center;font-size:18px">
+                        <b >Exhibit 1</b>
+                    </h1>
+                    <p style="text-align:center;">
+                        <i style="text-align:center">Subcontractor’s Minimum Insurance Requirements</i><br/><br/>
+                        
+                    </p>
+                    <p>
+                        Subject to any insurance requirements provided in the Work Order or separately in writing for a specific 
+                        project, or any requirements included in the Prime Contract, the minimum insurance requirements for the 
+                        Subcontractor are as follows:
+                    </p>
+                    <u>Commercial General Liability (CGL)</u>
+                    <p>
+                        • &nbsp;&nbsp;&nbsp;Insurance Carrier with A.M. Best Rating of at least A-<br/>
+                        •   &nbsp;&nbsp;&nbsp; Standard ISO form or equivalent with no modifications limiting coverage for Contractual damage to 
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;work performed or to residential construction including earth movement and XCU<br/>
+                        • &nbsp;&nbsp;&nbsp;$__1,000,000__Each Occurrence/. $_2,000,000_General Aggregate/$_2,000,000___ 
+                        Products/Completed &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ops<br/>
+                        • &nbsp;&nbsp;&nbsp;CGL will include aggregate per project (GC2503)<br/>
+                        • &nbsp;&nbsp;&nbsp;CGL will apply as primary and non-contributory with respect to any other insurance which covers the 
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;additional insured<br/>
+                        • &nbsp;&nbsp;&nbsp;CGL will include the contractor and owner as additional insured using ISO forms CG2010 (10/01) and 
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CG2037 (10/01) or a substitute form that includes completed operations coverage<br/>
+                        • &nbsp;&nbsp;&nbsp;CGL will include a Waiver of Subrogation Endorsement (CG2404A) in favor of the contractor and owner<br/>
+                        • &nbsp;&nbsp;&nbsp;Subcontractor will maintain CGL insurance for at least 3 years after final acceptance of the work
+                    </p><br/>
+                    <u>Automobile Liability</u><br/>
+                    <p>
+                        • &nbsp;&nbsp;&nbsp;$__1,000,000___ Combined Single Limit
+                    </p>
+                    <u>Umbrella/Excess Liability</u>
+                    <p>
+                        •  &nbsp;&nbsp;&nbsp;$___1,000,000______Each Occurrence
+                    </p>
+                    <u>Workers Compensation</u>
+                    <p>
+                        • &nbsp;&nbsp;&nbsp;Subcontractor will maintain workers compensation coverage meeting the requirements of applicable 
+                        law<br/><br/>
+                        <b>To the extent commercially available to Subcontractor from its current insurance company, insurance policies 
+                            required hereunder will contain a provision that the insurance company or its designee must give Contractor 
+                            and Owner written notice transmitted in paper or electronic format: (a) thirty (30) days before coverage is 
+                            non-renewed by the insurance company and (b) within ten (10) business days after cancelation of coverage 
+                            by the insurance company. Prior to commencing the Work, Subcontractor will furnish Contractor with 
+                            certificates of insurance evidencing the above requirements. Certificates will be provided thereafter upon 
+                            written request of Contractor. </b><br/>
+                        <b>he Subcontractor will be responsible for the deductible amounts or coinsurance payments unless the Owner, 
+                            Contractor or its subcontractors, suppliers, and sub-subcontractors are the sole cause of the damage, in which 
+                            case the party causing the damage will be responsible for the deductible amounts or coinsurance payments. </b>
+                        
+                    </p><br/>
+                    <p>
+                        
+                    </p>  
+                    
+                    
+                    <aura:if isTrue="{!v.isSignature}">
+                        
+                        <aura:if isTrue="{!v.isSignature}">
+                                                        <div style="color:red; padding-left:590px; padding-bottom:15px">
+                                                            Signature is  Required
+                                                        </div>
+                                                    </aura:if>
+                        
+                        <div style="text-align:center"> 
+                            <lightning:button variant="brand" label="Submit" onclick="{! c.getuploadSignature }" disabled="{!v.isDisabled}"/> 
+                        </div>
+                        <aura:set attribute="else">
+                             <aura:if isTrue="{!v.isCompanySignature}">
+                                                        <div style="color:red; padding-left:590px; padding-bottom:15px">
+                                                            Signature is  Required
+                                                        </div>
+                                                    </aura:if>
+                            <div style="text-align:center"> 
+                                <lightning:button variant="brand" label="Submit" onclick="{! c.getuploadSignature }" disabled="{!v.isDisabled}"/> 
+                            </div>
+                        </aura:set>
+                    </aura:if> 
+                    
+
+                </aura:if>
+            </aura:if>
+        </div>
+        <aura:if isTrue="{!v.Spinner}">
+            <div aura:id="spinnerId" class="slds-spinner_container">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                    <div class="custom-loading-text">
+                        <b>Processing, Please Wait</b>
+                    </div>
+                </div>
+            </div>
+        </aura:if>
+    </div>
+
+</aura:component>

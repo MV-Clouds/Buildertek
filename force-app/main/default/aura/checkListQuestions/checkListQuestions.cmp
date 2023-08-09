@@ -1,0 +1,416 @@
+<aura:component controller="checkListQuestionsCtrl" 
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:method name="doinits"  action="{!c.doInit}"/>
+    <aura:attribute name="options" type="List"/>
+    <aura:attribute name="Questions" type="List"/>
+    <aura:attribute name="selectedEmailField" type="String"/>
+    <aura:attribute name="sublist" type="String"/> 
+    <aura:attribute name="message" type="boolean" default="false"/>
+    <aura:attribute name="selectedToContact" type="sObject[]" default="[]"/>
+    
+    <aura:attribute name="DynamiccheckListName" type="string" />
+    <aura:attribute name="recordId" type="string" />
+    <aura:attribute name="recepientName" type="String" default=""/>
+    <aura:attribute name="showchecklist" type="boolean" default="false"/>
+    <aura:attribute name="SelectCheckList" type="String[]" default=""/>
+    <aura:attribute name="SuccessMessage" type="boolean" default="false"/>
+    <aura:attribute name="Spinner" type="boolean" default="false"/> 
+    <aura:attribute name="Email" type="String" default=""/>
+    <aura:attribute name="TextField" type="String" default=""/>
+    <aura:attribute name="subject" type="String" default=""/>
+    <aura:attribute name="Url" type="String" default=""/>
+    <aura:attribute name="imgUrl" type="String" default=""/>
+    <aura:attribute name="siteUrl" type="String" default=""/>
+    <aura:attribute name="EmailFieldList" type="List"/>
+    <aura:attribute name="selectedFieldValue" type="string" />
+    <aura:attribute name="CurrentObject" type="string" />
+    
+    
+    <aura:attribute name="checklistName" type="String" default=""/>
+    
+    <aura:attribute name="ObjectAPIName" type="string" default=""/>
+    <aura:attribute name="parents" type="string" default="" />
+    <aura:attribute name="ObjectLabelName" type="string" />
+    <aura:attribute name="CurrentObjLabelName" type="string" />
+    <aura:attribute name="InitialObjectFields" type="List" />
+    <aura:attribute name="FirstLevelObjectFields" type="List" />
+    <aura:attribute name="SecondLevelObjectFields" type="List" />
+    <aura:attribute name="ThirdLevelObjectFields" type="List" />
+    <aura:attribute name="FinalLevelObjectFields" type="List" />
+    <aura:attribute name="FirstLevSelectedFieldDetails" type="string" />
+    <aura:attribute name="SecondLevSelectedFieldDetails" type="string" />
+    <aura:attribute name="ThirdLevSelectedFieldDetails" type="string" />
+    <aura:attribute name="FinalLevSelectedFieldDetails" type="string" />
+    <aura:attribute name="FirstLevField" type="string" />
+    <aura:attribute name="SecondLevField" type="string" />
+    <aura:attribute name="ThirdLevField" type="string" />
+    <aura:attribute name="FinalLevField" type="string" />
+    <aura:attribute name="ShowLevel1" type="boolean" default="false" />
+    <aura:attribute name="ShowLevel2" type="boolean" default="false" />
+    <aura:attribute name="ShowLevel3" type="boolean" default="false" />
+    <aura:attribute name="ShowLevel4" type="boolean" default="false" />
+    <aura:attribute name="isManualEmailAddRow" type="boolean" default="false" />
+    
+    <aura:attribute name="ToCcBccPicklistVal" type="string" default = "To" />
+    <aura:attribute name="TextRefPicklistVal" type="string" default = "Text" />
+    <aura:attribute name="selectedValue" type="string" />
+    <aura:attribute name="SecondSelectedValue" type="string" />
+    <aura:attribute name="ThirdSelectedValue" type="string" />
+    <aura:attribute name="FourthSelectedValue" type="string" />
+    <aura:attribute name="toEmailListExist" type="boolean" default="false" />
+    <aura:attribute name="manualEmailAddress" type="string" />
+    <aura:attribute name="SaveButtonDisabled" type="boolean" default="true" />
+    <aura:attribute name="AddRowButtonDisabled" type="boolean" default="true" />    
+    <aura:attribute name="breadcrumbCollection" type="Object"/>
+    <aura:attribute name="AddRowTemporaryList" type="List"/>
+    <aura:attribute name="AddRowButtonClicked" type="boolean" default="false" />
+    
+    <aura:attribute name="isReference" type="boolean" default="true" />
+    <aura:attribute name = "accList" type ="list"></aura:attribute>
+    
+    <aura:attribute name="IsParent" type="boolean" default="false" />
+    <aura:attribute name="SelectedparentObject" type="string" /> 
+    
+    <aura:attribute name="SelectedContactId" type="string"/>
+    <aura:attribute name="SelectedContactEmail" type="string"/>
+    <aura:handler name="sampleComponentEvent" event="c:SampleComponentEvent" action="{!c.handleComponentEvent}"/>
+    <aura:attribute name="EmailString" type="String" default=""/>
+    
+    
+     <aura:attribute name="isButtonDisabled" type="boolean" default="true" />
+    
+    
+    <aura:attribute name="IsselectOptionScreen" type="boolean" default="false"/>
+    <aura:attribute name="IssendEmailScreen" type="boolean" default="false"/>
+    <aura:attribute name="IsImpersonScreen" type="boolean" default="false"/>
+    <aura:attribute name="selectoptions" type="string[]" default="[
+                                                                  {'label': 'Email Checklist', 'value': 'option1'},
+                                                                  {'label': 'Create and Complete Checklist', 'value': 'option2'},
+                                                                  ]"/>
+    <aura:attribute name="checkBoxValue" type="string" default=""/>
+    <aura:attribute name="value" type="string" default=""/>
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/>
+    <aura:if isTrue="{!v.IsselectOptionScreen}">
+        <div class="slds-modal__content ">
+            <div class="slds slds-scope">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeEditPopup1 }" alternativeText="close"
+                                          variant="bare-inverse" class="slds-modal__close" />
+                    
+                    
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Please Select an option</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="height:100%">
+                    <lightning:radioGroup aura:id="test" name="testName" 
+                                          options="{! v.selectoptions }" value="{!v.value}"
+                                          onchange="{! c.handleChangeButtonGroup }"/> 
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="Neutral" class="slds-button" label="Cancel" onclick="{!c.closeEditPopup1}"/>
+                    
+                    <lightning:button  label="Next" variant="Neutral"  onclick="{!c.isNext}"/>
+                </footer>
+            </div>
+        </div>
+        <!--<div class="slds-backdrop slds-backdrop_open"></div>-->
+        
+        
+    </aura:if>
+    
+    
+    
+    <!--  <aura:html tag="style">
+     .slds-modal__container {
+            margin: 0 auto;
+            width: 75%;
+            max-width: 60rem;
+            min-width: 20rem;
+         
+        }
+ </aura:html> -->
+    <aura:html tag="style">
+        .quick-actions-panel {
+        overflow: hidden !important;
+        }
+        .slds-modal__content{
+        overflow: hidden !important;
+        
+        
+        }
+        
+    </aura:html> 
+    
+    
+    
+    
+    <aura:if isTrue="{!v.IssendEmailScreen}"> 
+        <!--<div class="slds-scrollable" >-->
+        <aura:if isTrue="{!v.Spinner}">                
+            <div aura:id="spinnerId" class="slds-spinner_container">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </aura:if>
+        
+        
+        
+        
+        <div class="slds-modal__content ">
+            <div class="slds slds-scope">
+                <header class="slds-modal__header" style = "border:1px solid lightgray;
+                                                            background:white;text-align:center;
+                                                            background-color: gray; 
+                                                            color: white">
+                    <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeEditPopup1 }" alternativeText="close"
+                                          variant="bare-inverse" class="slds-modal__close" />
+                    
+                    
+                    <h2 class="slds-text-heading--medium">Send Checklist</h2>
+                </header>
+                <div class="slds-modal__contents slds-p-around_medium slds-scrollable_y" id="modal-content-id-1" >
+                    <div class="slds-scrollable_y" style="" >
+                        <div style="margin-right: 0.8rem; margin-left:0.8rem;" >
+                            <lightning:select name="checklistId" label="Select Checklist" aura:id="checklistId" value="{!v.selectedValue}" onchange="{!c.onChangevalue}">
+                                <option text="--Choose one--" value="" />
+                                <aura:iteration items="{!v.options}" var="option">
+                                    <option text="{!option.Name}" value="{!option.Id}" selected="{!option.id}"/>
+                                </aura:iteration>
+                            </lightning:select>
+                        </div>
+                        <aura:if isTrue= "{!v.message}">
+                            <div class="slds-text-body_medium" style="color:red; margin-right: 0.8rem; margin-left:0.8rem;" > Please Add Checklist Questions</div>
+                        </aura:if>
+                        
+                        <lightning:layout  multipleRows="true">
+                            
+                            <lightning:layoutItem padding="around-small" size ="4">
+                                <div style="padding-top:-1rem;  width:300px">
+                                    <!--<c:BT_MultiSelectLookup objectAPIName="contact" IconName="standard:contact" label="To"
+                                                lstSelectedRecords="{!v.selectedToContact}" />-->
+                                    <c:SingleSelect_Lookup objectName="Contact" fieldName="Name" label="Contact" iconName="standard:contact" placeholder="" />
+                                    
+                                </div>
+                            </lightning:layoutItem>
+                            
+                            <lightning:layoutItem padding="around-small" size ="4">
+                                <div style="margin-top: 0px;  width:300px">
+                                    <lightning:input name="input2" label="Enter Email Address" value="{!v.Email}"/>
+                                </div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem padding="around-small" size ="4">
+                                <aura:if isTrue= "{!v.isReference}">
+                                    
+                                    <aura:if isTrue= "{!v.ShowLevel1}">
+                                        <div class="slds-grid slds-m-bottom_x-small">
+                                            <div class="slds-col ">
+                                                <lightning:select name="colorId" aura:id="initialSelect" onchange ="{!c.FirstLevelSelectChange}" value="{!v.selectedFieldValue}" label="Select Field">
+                                                    <option value="">--None--</option>
+                                                    <aura:iteration items="{!v.InitialObjectFields}" var="option">
+                                                        <option text="{!option.Label}" value="{!option.APIName+'-'+option.LookUpAPIName+'-'+option.Label}"/>
+                                                    </aura:iteration>
+                                                </lightning:select>
+                                            </div>
+                                        </div>
+                                        
+                                    </aura:if>
+                                    <aura:if isTrue= "{!v.ShowLevel2}">
+                                        <div class="slds-grid slds-m-bottom_x-small" >
+                                            <div class="slds-col ">
+                                                <!-- <div class="slds-col slds-size_1-of-2 slds-m-right_x-small slds-m-top_xx-small">
+                                       <div class="slds-form-element" style="width:360px  ">
+                                            <div class="slds-form-element__control slds-grow" style="width:74%">-->
+                                                <lightning:select name="colorId"  aura:id="secondSelect" onchange ="{!c.GetSecLevelSelectedField}" value="{!v.selectedFieldValue}" label="Select Field">
+                                                    <option value="">--None--</option>
+                                                    <aura:iteration items="{!v.FirstLevelObjectFields}" var="option">
+                                                        <option text="{!option.Label}" value="{!option.APIName}"/>
+                                                    </aura:iteration>
+                                                </lightning:select>
+                                            </div>
+                                        </div>
+                                        <!-- </div>
+                                </div>-->
+                                    </aura:if>
+                                    
+                                    <lightning:breadcrumbs>
+                                        <aura:iteration items="{! v.breadcrumbCollection }" var="breadcrumb">
+                                            <div style="margin-top: -5px; padding-left:1rem">
+                                                <lightning:breadcrumb label="{! breadcrumb.label }" onclick="{! c.navigateTo }" name="{!breadcrumb.level}"/>
+                                            </div>
+                                        </aura:iteration>
+                                        <aura:if isTrue= "{!v.ShowLevel2}">
+                                            <lightning:icon iconName="utility:close" alternativeText="Close" title="Close" size="xx-small" onclick="{!c.first}"/> 
+                                        </aura:if>
+                                        <!--   <lightning:icon iconName="Utility:close" alternativeText="close" title="close"  onclick="{!c.handleDeleteRecord}" /> -->
+                                        
+                                    </lightning:breadcrumbs> 
+                                    
+                                    
+                                </aura:if>
+                            </lightning:layoutItem>
+                        </lightning:layout>
+                        <div class="slds-form-element" style="margin-right: 0.8rem; margin-left:0.8rem;">
+                            <label class="slds-form-element__label" for="CC">Subject</label>
+                            <div class="slds-form-element__control">
+                                
+                                <ui:inputText class="slds-input" aura:id="subject"  value="{!v.subject}" placeholder="Subject"/>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-right: 0.8rem; margin-left:0.8rem;" >
+                            <b style="font-weight: 500;font-size: 0.9rem;">Note:</b> You will need to include the {URL} text in the body of the email in order for your customers to see the Checklist link.
+                        </div>
+                        <div style="white-space:pre; margin-right: 0.8rem; margin-left:0.8rem;"><!-- padding-top: 5px;padding-bottom: 5px; -->
+                            <!--<lightning:textarea name="Text" value="{!v.TextField}" label="Text" />-->                                                 
+                            <lightning:inputRichText aura:id="richtextarea" value="{!v.TextField}" placeholder="" />                                 
+                        </div>
+                    </div>
+                </div>
+                
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral" label="Cancel" title="Cancel" onclick="{! c.cancel }" />
+                    <lightning:button variant="brand" label="Send" title="Send" onclick="{! c.sendchecklists }" />
+                </footer>
+                
+            </div>
+        </div>
+        
+    </aura:if>
+    
+    <aura:if isTrue="{!v.IsImpersonScreen}">
+        
+        
+        <aura:html tag="style">
+            .slds-modal__container {
+            min-width: 70vw;
+            }
+            .slds-modal__header--empty{
+            dispaly:none !important;
+            }
+            .slds-scrollable {
+            overflow: hidden !important;  
+            }
+            
+            
+        </aura:html>
+        <aura:if isTrue="{!v.Spinner}">                
+            <div aura:id="spinnerId" class="slds-spinner_container">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </aura:if>
+        <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/>
+        <div class="slds-modal__content ">
+            <div class="slds slds-scope">
+                <header class="slds-modal__header"  style = "border:1px solid lightgray;
+                                                             background:white;text-align:center;
+                                                             background-color: gray; 
+                                                             color: white">
+                    <lightning:buttonIcon iconName="utility:close" onclick="{! c.cancel }" alternativeText="close"
+                                          variant="bare-inverse" class="slds-modal__close" />
+                    
+                    
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Save Checklist</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="height:100%">
+                    <div style="min-height:250px;height:30rem;" class="slds-scrollable--y">
+                        <lightning:layout multipleRows="true">
+                            <lightning:layoutitem size="2"></lightning:layoutitem>
+                            <lightning:layoutitem size="8">
+                                <div class="Borders" >
+                                    <aura:if isTrue="{!v.Spinner}">                
+                                        <div aura:id="spinnerId" class="slds-spinner_container">
+                                            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                                                <span class="slds-assistive-text">Loading</span>
+                                                <div class="slds-spinner__dot-a"></div>
+                                                <div class="slds-spinner__dot-b"></div>
+                                            </div>
+                                        </div>
+                                    </aura:if>
+                                    <aura:if isTrue="{!v.SuccessMessage}">
+                                        <div class="slds-col slds-size_12-of-12 slds-var-p-around_small" style="background:red;color: white;font-weight: bold;;z-index: 100;top: 0px;font-size:18px;padding:20px">
+                                            Checklist Submitted Successfully
+                                        </div>
+                                        
+                                        <!--<div class="slds-align_absolute-center slds-m-top_small">
+                          <lightning:button variant="neutral" label="Close" title="Close" onclick="{!c.closePage}" />
+                        </div> -->
+                                    </aura:if>
+                                    <aura:if isTrue="{!!v.SuccessMessage}">
+                                        <div style="margin-right: 0.8rem; margin-left:0.8rem;padding-bottom:6px" >
+                                            <lightning:select name="checklistId" label="Select Checklist" aura:id="checklistId" value="{!v.selectedValue}" onchange="{!c.onChangevalue}">
+                                                <option text="--Choose one--" value="" />
+                                                <aura:iteration items="{!v.options}" var="option">
+                                                    <option text="{!option.Name}" value="{!option.Id}" selected="{!option.id}"/>
+                                                </aura:iteration>
+                                            </lightning:select>
+                                        </div>
+                                        
+                                        <div style="width: 100%;text-align: center;margin-bottom: 20px;">
+                                            <img src="{!v.imgUrl}" id="logoImg" style="width:60%;"/>
+                                        </div>
+                                        
+                                        <aura:if isTrue="{!v.showchecklist}">
+                                         <!--   <div style="width:549px">
+                                                <lightning:input name="ChecklistName" label="Checklist Name" value="{!v.DynamiccheckListName}" required="true"/>
+                                            </div> -->
+                                            <aura:iteration items="{!v.Questions}" var="Group">
+                                                <!-- <lightning:input name="input2" label="Name" value="{!v.selectedValue}" required="true"/>-->
+                                                <div style="background: #e2e2e2;padding: 10px;border-radius: 5px;font-weight: 600;font-size: 15px;margin-top:10px;margin-bottom:10px">
+                                                    <aura:if isTrue="{!and(Group.GroupName != '',Group.GroupName != null)}">
+                                                        {!Group.GroupName}
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!or(Group.GroupName == '',Group.GroupName == null)}">
+                                                        No Grouping 
+                                                    </aura:if>
+                                                </div>
+                                                <aura:iteration items="{!Group.QuestionsInnerclasslist}" var="Question">
+                                                    <aura:if isTrue="{!Question.QuestionType == 'Text Response'}">
+                                                        <label class="slds-form-element__label"><b>{!Question.QuestionName}</b></label> 
+                                                        <lightning:input name="input2" variant="label-hidden" value="{!Question.QuestionValue}" style="width:80%"/>
+                                                    </aura:if> 
+                                                    <aura:if isTrue="{!Question.QuestionType == 'Single Select Answer'}">
+                                                        <lightning:radioGroup name="{!Question.QuestionId}"
+                                                                              label="{!Question.QuestionName}"
+                                                                              options="{! Question.QuestionOptions }"
+                                                                              value="{! Question.QuestionValue }"
+                                                                              type="radio"
+                                                                              />
+                                                        
+                                                    </aura:if> 
+                                                    <aura:if isTrue="{!Question.QuestionType == 'Multi Select Answer'}">
+                                                        <lightning:checkboxGroup name="{!Question.QuestionId}"
+                                                                                 label="{!Question.QuestionName}"
+                                                                                 options="{! Question.QuestionOptions }"
+                                                                                 value=""
+                                                                                 onchange = "{!c.getcheckboxlist}"
+                                                                                 />
+                                                    </aura:if> 
+                                                </aura:iteration>
+                                            </aura:iteration>
+                                        </aura:if>
+                                    </aura:if>
+                                </div>
+                            </lightning:layoutitem>
+                            <lightning:layoutitem size="2"></lightning:layoutitem>
+                        </lightning:layout>
+                        
+                    </div>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral" label="Cancel" title="Cancel" onclick="{! c.cancel }" />
+                       <aura:if isTrue="{!v.isButtonDisabled}">
+                    <lightning:button variant="brand" label="Save" title="Save" onclick="{! c.handleClick }" />
+                    </aura:if>
+                </footer>
+            </div>
+        </div>
+        
+    </aura:if>
+</aura:component>

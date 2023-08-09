@@ -1,0 +1,27 @@
+<aura:component  access="global" implements="forceCommunity:availableForAllPageTypes,force:appHostable,flexipage:availableForAllPageTypes">
+    <aura:attribute name="title" type="string" default=" " />
+    <aura:attribute name="text" type="string" default=" " />
+    <aura:attribute name="primaryTextBG" type="String"/>
+    <aura:attribute name="SecondaryBgColor" type="String"/>    
+    
+    <div class="slds-card slds-p-around--xx-small slds-grid slds-grid--vertical missionCaroselBG" style="{!'margin:10px;background-color:#'+v.SecondaryBgColor+';padding:0px;background-position: center center;/*text-align: center;*/background-size: 100%;border-radius: 0px;'}">
+        <div class="slds-card__header slds-col" style="{! 'background: #'+v.primaryTextBG+';color: white;margin-top: 3%; font-family: Gotham-Book; padding-top: 0px;'}">
+            <div class="slds-media slds-media--center">
+                <div class="slds-media__body" >
+                    
+                    <h2 class="slds-truncate color-text-default titlestyle" >{!v.title}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="slds-card__body slds-has-flexi-truncate slds-p-horizontal--small mobileCardBody" style="">
+            <div class="slds-p-top--x-small">
+                <p class="slds-text-body--small textstyle slds-text-longform" style="">
+                    <!--<lightning:formattedText  value="{!v.text}" escape="false"/>-->
+                    <ui:outputRichText value="{!v.text}"/>
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    
+</aura:component>

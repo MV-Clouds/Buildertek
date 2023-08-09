@@ -1,0 +1,22 @@
+<apex:page >
+    <c:QuoteSummary />
+    <!-- <table style="width: 100%;text-align: left;border-spacing: 0;">
+        <tr>
+            <th colspan="1" style="width:29%">Service</th>
+            <th colspan="1" style="width:35%">Description</th>
+            <th colspan="1" style="width:12%">Price</th>
+            <th colspan="1" style="width:12%">Qty</th>
+            <th colspan="1" style="width:12%">Total</th>
+        </tr>
+        
+        <apex:repeat value="{!QuoteLineRecordList}" var="QuoteLineRecord">
+            <tr>
+                <td colspan="1" style="width:29%; font-size: 14px; padding: 5px 15px 5px 0px; color:white; text-align: left; border-bottom: 1px solid #ccc; background-color: rgb(27 82 151);"></td>
+                <td colspan="1" style="width:29%; font-size: 14px; padding: 5px 15px 5px 0px; color:white; text-align: left; border-bottom: 1px solid #ccc; background-color: rgb(27 82 151);">{!QuoteLineRecord.buildertek__Description__c}</td>
+                <td colspan="1" style="width:29%; font-size: 14px; padding: 5px 15px 5px 0px; color:white; text-align: left; border-bottom: 1px solid #ccc; background-color: rgb(27 82 151);">{!QuoteLineRecord.buildertek__Quantity__c}</td>
+                <td colspan="1" style="width:29%; font-size: 14px; padding: 5px 15px 5px 0px; color:white; text-align: left; border-bottom: 1px solid #ccc; background-color: rgb(27 82 151);">{!QuoteLineRecord.buildertek__Unit_Cost__c}</td>
+                <td colspan="1" style="width:29%; font-size: 14px; padding: 5px 15px 5px 0px; color:white; text-align: left; border-bottom: 1px solid #ccc; background-color: rgb(27 82 151);">{!QuoteLineRecord.buildertek__Total_Cost__c}</td>
+            </tr>
+        </apex:repeat>
+    </table>     -->
+</apex:page>

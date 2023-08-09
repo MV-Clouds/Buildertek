@@ -1,0 +1,23 @@
+<aura:component  implements="forceCommunity:layout" description="Custom Page Layout for dynamic page" access="global">
+	<aura:attribute name="Row1" type="Aura.Component[]" required="false" ></aura:attribute>
+    <aura:attribute name="Row2Col1" type="Aura.Component[]" required="false"></aura:attribute>
+    <aura:attribute name="Row2Col2" type="Aura.Component[]" required="false"></aura:attribute>
+    
+    <div class="container">
+        <lightning:layout multipleRows="true">
+            <lightning:layoutItem  padding="around-x-small" size="12" mediumDeviceSize="12" >
+                <div>{!v.Row1}</div>
+            </lightning:layoutItem>
+        </lightning:layout>
+        <div class="mainContentAreaDiv"> 
+        <lightning:layout multipleRows="true">
+            <lightning:layoutItem   size="12" mediumDeviceSize="4" padding="around-x-small">
+                <div class="custom-layout-box">{!v.Row2Col1}</div>
+            </lightning:layoutItem>
+            <lightning:layoutItem   size="12" mediumDeviceSize="8" padding="around-x-small">
+                <div class="custom-layout-box">{!v.Row2Col2}</div>
+            </lightning:layoutItem>
+        </lightning:layout>
+        </div>
+    </div>
+</aura:component>

@@ -1,0 +1,67 @@
+.THIS .notUploading {
+  visibility: hidden;
+}
+.THIS .uploading {
+  visibility: visible;
+  display: inline-block;
+  margin-top: 10px;
+}
+.THIS .small-spinner {
+  height: 20px;
+  width: 20px;
+}
+.THIS .file {
+  margin-bottom: 5px;
+  display: block;
+}
+.THIS .slds-scope .THIS .slds-file-selector_images,
+.THIS .slds-scope .THIS .slds-file-selector--images {
+  display: -webkit-box !important;
+}
+.THIS .slds-scope .THIS .slds-file-selector__dropzone {
+  padding: 0.125rem;
+  border: none !important;
+  border-radius: 0.25rem;
+}
+.THIS
+  .slds-scope
+  .THIS
+  .slds-file-selector_images
+  .THIS
+  .slds-file-selector__dropzone,
+.THIS
+  .slds-scope
+  .THIS
+  .slds-file-selector--images
+  .THIS
+  .slds-file-selector__dropzone {
+  display: -webkit-box !important;
+  padding-top: 2em;
+}
+
+.THIS .spinnerLoadingText{
+    transform: rotate(-90deg);
+    position: absolute;
+    top: -1.5rem;
+    left: -1rem;
+    white-space: nowrap;
+}
+.THIS .custom-loading-text {
+    transform: rotate(-90deg);
+    position: absolute;
+    top: -0.5rem;
+    left: 1rem;
+    white-space: nowrap;
+    font-size: 20px;
+}
+
+.THIS .quick-actions-panel{
+    display:none !important;
+}
+/*.THIS .slds-file-selector__body{
+    padding-left:2rem; 
+}*/
+
+.THIS .scroll{
+    display:none;
+}

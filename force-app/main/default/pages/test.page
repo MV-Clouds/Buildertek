@@ -1,0 +1,4 @@
+<apex:page controller="testcontroller"   showheader="false" >
+        {!teststring}
+
+</apex:page>

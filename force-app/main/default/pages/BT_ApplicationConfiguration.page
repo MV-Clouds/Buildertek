@@ -1,0 +1,424 @@
+<!--**********************************************************************************
+* Copyright © 2017-2017, BuilderTek.
+* All rights reserved
+*
+* VisualForce Page: BT_ApplicationConfiguration
+* Created by Sagar
+
+* - System configuration
+
+* - Modifications:
+* - Sagar - Initial 
+***********************************************************************************-->
+<apex:page controller="BT_ApplicationConfigurationController" title="{!$Label.buildertek__File_Control_System_Configuration}"  >
+    <c:BT_JsAndCssIncludeComponent importJquery="true"
+                              importAppurinUtil="true"
+                              importJQueryLayout="false"
+                              importFancyTree="false"
+                              importJqGrid="false"
+                              importEasyTooltip="true"
+                              importAppurinCss="true"
+                              importCkEditor="false"
+                              importGnattChart="false"
+                              importLightningDesign="true"/>
+    <script>
+    window.onload = onload;
+        function onload{
+            loadData();
+        }
+        
+        var twistyLightningSectionStatus = {};
+        j$(document).ready(function() {
+            easyToolTipForAll();
+            
+        });
+        
+        function easyToolTipForAll() {
+            j$('.apHelpText').easyTooltip({width: '200px', isLightning:true, isFormatted:true});
+            return false;
+        }
+        
+        function defaultRadioChange(element){
+            var mapBucketDiv = 'mapAWSBucketsGrid';
+            j$(element).parent().find("input[type='checkbox']").attr('checked',j$(element).val()?'checked':'').change();
+            j$("div[id$='"+mapBucketDiv+"']").find("input[id$='selectRadio']").each(function(i){
+                 if(j$(this).attr('id') != j$(element).attr('id') && j$(this).attr('checked')){
+                    j$(this).attr('checked',false);
+                 }
+            });
+            return false;
+        }
+        
+        function defaultCheckBoxChange(element){
+            var mapBucketDiv = 'mapAWSBucketsGrid';
+            j$("div[id$='"+mapBucketDiv+"']").find("input[id$='inputCheckBox']").each(function(i){
+                 if(j$(this).attr('id') != j$(element).attr('id') && j$(this).attr('checked') == 'checked'){
+                    j$(this).removeAttr('checked');
+                 }
+            });
+        }
+        
+        function activeCheckBoxChange(element){
+            if(j$(element).attr('checked') == 'checked'){
+                j$(element).parent().parent().find("textarea").removeAttr('disabled');
+                j$(element).parent().parent().find("input[id$='selectRadio']").removeAttr('disabled');
+            } else{
+                j$(element).parent().parent().find("textarea").attr('disabled', 'disabled');
+                j$(element).parent().parent().find("input[id$='selectRadio']").removeAttr('checked').attr('disabled', 'disabled');
+                j$(element).parent().parent().find("input[id$='inputCheckBox']").removeAttr('checked');
+            }
+            setDefaultBucket();
+        }
+        
+        function setDefaultBucket(){
+            var mapBucketDiv = 'mapAWSBucketsGrid';
+            var isDefaultSetted = false;
+            j$("div[id$='"+mapBucketDiv+"']").find("input[id$='inputCheckBox']").each(function(i){
+                if(j$(this).attr('checked') == 'checked'){
+                    isDefaultSetted = true;
+                    return false;
+                }
+            });
+            if(!isDefaultSetted){
+                j$("div[id$='"+mapBucketDiv+"']").find("input[id$='isActive']").each(function(i){
+                    if(j$(this).attr('checked') == 'checked'){
+                        j$(this).parent().parent().find("input[type=radio]").attr('checked', 'checked').change();
+                        return false;
+                    }
+                });
+            }
+        }
+    </script>
+              
+    <apex:actionStatus id="splashStatus" onstart="startSplash();" onstop="endSplash(); " />
+    <div class="slds">
+        <div id="splashDiv" class="apInitiallyDivDisplayNone" style="z-index:9998;">
+            <div class="slds-spinner_container apLightningSpinnerContainer">
+                <div role="status" class="slds-spinner slds-spinner--medium slds-spinner--brand">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <apex:outputPanel rendered="{!isError}">
+        <apex:pagemessages id="pageLoadErrorMessage"/>
+        <script>
+            Appurin.lightning.createLightningPageMessage({'classicPageMessageId' : '{!$Component.pageLoadErrorMessage}'});   
+        </script>
+    </apex:outputPanel>
+    
+    <apex:form style="" id="form" rendered="{!!isError}">
+        <apex:actionFunction name="loadData" action="{!init}" />
+        <apex:outputPanel layout="block" styleClass="slds">
+            <apex:outputPanel id="newBucketPopup" rendered="{!isShowNewBucket}" layout="block" style="z-index:8552;">
+                <div class="apModal" style="z-index:8551;">
+                    <div class="apModalContainer">
+                        <div class="apModalHeader">
+                            <button id="newBucketCloseButton" class="slds-button slds-modal__close slds-button--icon-inverse" onClick="j$('input[id$=\'newBucketCancelButton\']').click(); return false;" title="Close">
+                                <c:BT_LightningSvg parentId="newBucketCloseButton" styleClass="slds-button__icon slds-button__icon--large" path="/assets/icons/utility-sprite/svg/symbols.svg#close"/>
+                            </button>
+                            <h2 class="apModalHeading" id="newBucketPopupHeader">New Bucket</h2>
+                        </div>
+                        <div class="apModalContent">
+                            <div class="apNotifyContainer" style="position: relative; text-align:left;">
+                                <div class="slds-panel__section">
+                                    <apex:outputPanel rendered="{!AND(strInvalidBucketName != null, strInvalidBucketName != '')}">
+                                        <apex:pageMessage severity="ERROR" id="invalidBucketErrorMessage" strength="1" summary="{!strInvalidBucketName}"/>
+                                        <script>
+                                            Appurin.lightning.createLightningPageMessage({'classicPageMessageId' : '{!$Component.invalidBucketErrorMessage}'});   
+                                        </script>
+                                    </apex:outputPanel>
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element">
+                                        <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                            <abbr class="slds-required" title="required">*</abbr><apex:outputLabel value="{!$ObjectType.Folder__c.fields.Bucket_Name__c.Label}"></apex:outputLabel>
+                                        </apex:outputPanel>
+                                        <c:BT_LightningHelpText rendered="{!$Label.buildertek__New_Bucket_Name_Helptext != null}" helptext="{!$Label.buildertek__New_Bucket_Name_Helptext}"/>
+                                        <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                            <apex:inputField id="newBucketNameField" styleClass="slds-input" required="true" value="{!newBucketFolder.Name}"/>
+                                        </apex:outputPanel>
+                                    </apex:outputPanel>
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element">
+                                        <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                            <apex:outputLabel value="{!$ObjectType.Folder__c.fields.Description__c.Label}"></apex:outputLabel>
+                                        </apex:outputPanel>
+                                        <c:BT_LightningHelpText rendered="{!$ObjectType.Folder__c.fields.Description__c.InlineHelpText != null}" helptext="{!$ObjectType.Folder__c.fields.Description__c.InlineHelpText}"/>
+                                        <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                            <apex:inputField id="newBucketDescriptionField" styleClass="slds-input" value="{!newBucketFolder.Description__c}"/>
+                                        </apex:outputPanel>
+                                    </apex:outputPanel>
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element" rendered="false">
+                                        <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                            <apex:outputLabel title="{!$ObjectType.Folder__c.fields.Default__c.inlineHelpText}" value="{!$ObjectType.Folder__c.fields.Default__c.label}"></apex:outputLabel>
+                                        </apex:outputPanel>
+                                        <c:BT_LightningHelpText rendered="{!$ObjectType.Folder__c.fields.Default__c.inlineHelpText != null}" helptext="{!$ObjectType.Folder__c.fields.Default__c.inlineHelpText}"/>
+                                        <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                            <apex:outputPanel styleClass="slds-checkbox">
+                                                <apex:inputCheckbox value="{!newBucketFolder.Default__c}" id="defaultBucketField"/>
+                                                <apex:outputlabel styleClass="slds-checkbox__label" for="defaultBucketField">
+                                                    <apex:outputPanel styleClass="slds-checkbox--faux"></apex:outputPanel>
+                                                    <apex:outputPanel styleClass="slds-form-element__label"></apex:outputPanel>
+                                                </apex:outputlabel>
+                                            </apex:outputPanel>
+                                        </apex:outputPanel>
+                                    </apex:outputPanel>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="apModalFooter">
+                            <apex:commandButton value="{!$Label.buildertek__Cancel}" id="newBucketCancelButton" styleClass="slds-button slds-button--neutral" onClick="Appurin.lightning.hideModalPopup({'modalPopupId':'{!$Component.newBucketPopup}'});" action="{!hideNewBucket}"  immediate="true" status="splashStatus" reRender="form" onComplete="easyToolTipForAll();"/>
+                            <apex:commandButton value="{!$Label.buildertek__Create}" styleClass="slds-button slds-button--brand" onClick="Appurin.lightning.hideModalPopup({'modalPopupId':'{!$Component.newBucketPopup}'});" action="{!createNewBucket}" status="splashStatus" reRender="form" onComplete="easyToolTipForAll();"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-backdrop slds-backdrop--open" style="z-index: 5881;"></div>
+                <script>
+                    Appurin.lightning.createModalPopup({modalPopupId : '{!$Component.newBucketPopup}', isAlertPrompt : false});
+                </script>
+            </apex:outputPanel>
+            <apex:outputPanel id="mapBucketPopup" rendered="{!isShowMapBucket}" layout="block" style="z-index:8552;">
+                <div class="apModal" style="z-index:8551;">
+                    <div class="apModalContainer">
+                        <div class="apModalHeader">
+                            <button id="mapBucketCloseButton"  class="slds-button slds-modal__close slds-button--icon-inverse" onClick="j$('input[id$=\'mapBucketCancelButton\']').click(); return false;" title="Close">
+                                <c:BT_LightningSvg parentId="mapBucketCloseButton" styleClass="slds-button__icon slds-button__icon--large" path="/assets/icons/utility-sprite/svg/symbols.svg#close"/>
+                            </button>
+                            <h2 class="apModalHeading" id="mapBucketPopupHeader">{!$Label.buildertek__Link_Amazon_Buckets}</h2>
+                        </div>
+                        <div class="apModalContent">
+                            <div class="apNotifyContainer" style="position: relative; text-align:left;">
+                                <div class="slds-panel__section">
+                                    <apex:outputPanel >
+                                        <apex:pageMessages id="mapBucketErrorMessage"/>
+                                        <script>
+                                            Appurin.lightning.createLightningPageMessage({'classicPageMessageId' : '{!$Component.mapBucketErrorMessage}'});   
+                                        </script>
+                                    </apex:outputPanel>
+                                    <apex:outputLabel value="{!$Label.buildertek__No_Bucket_On_Amazon_Message}" rendered="{!OR(bucketsToMap == null, bucketsToMap.size == 0)}"/>
+                                    <apex:outputPanel layout="block" id="mapAWSBucketsGrid" rendered="{!AND(bucketsToMap != null, bucketsToMap.size > 0)}">
+                                        <table class="slds-table slds-table--bordered slds-no-row-hover slds-table--cell-buffer">
+                                            <thead>
+                                                <tr class="slds-text-title--caps">
+                                                    <th scope="col"></th>
+                                                    <th scope="col">
+                                                        <div class="slds-truncate">{!$ObjectType.Folder__c.fields.Bucket_Name__c.Label}</div>
+                                                    </th>
+                                                    <th scope="col">
+                                                        <div class="slds-truncate">{!$ObjectType.Folder__c.fields.Description__c.Label}</div>
+                                                    </th>
+                                                    <th scope="col">
+                                                        <div class="slds-truncate">
+                                                            <apex:outputLabel value="{!$ObjectType.Folder__c.fields.Default__c.Label}"/>
+                                                            <c:BT_LightningHelpText rendered="{!$ObjectType.Folder__c.fields.Default__c.InlineHelpText != null}" helptext="{!$ObjectType.Folder__c.fields.Default__c.InlineHelpText}"/>
+                                                        </div>
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <apex:repeat value="{!bucketsToMap}" var="bucket">
+                                                    <tr class="slds-hint-parent">
+                                                        <td>
+                                                            <apex:inputCheckbox onChange="return activeCheckBoxChange(this);" id="isActive" value="{!bucket.isSelected}"/>
+                                                        </td>
+                                                        <td>
+                                                            <div class="slds-truncate"><apex:outputLabel value="{!bucket.name}"/></div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="slds-truncate" id="{!JSENCODE(bucket.name)}_description">
+                                                                <apex:inputField styleClass="slds-input" style="height:30px;" value="{!bucket.folder.Description__c}" id="description" />
+                                                                <script>if({!!bucket.isSelected}){j$("#{!JSENCODE(bucket.name)}_description").find("textarea").attr('disabled', 'disabled');}</script>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <input type="radio" id="{!JSENCODE(bucket.name)}_selectRadio" onChange="return defaultRadioChange(this);"/>
+                                                            <script>if({!bucket.isDefault}){j$("#{!JSENCODE(bucket.name)}_selectRadio").attr('checked', 'checked');};if({!!bucket.isSelected}){j$("#{!JSENCODE(bucket.name)}_selectRadio").attr('disabled', 'disabled');}</script>
+                                                            <apex:inputCheckbox style="display:none;" id="inputCheckBox" value="{!bucket.isDefault}" onChange="return defaultCheckBoxChange(this);"/>
+                                                        </td>
+                                                    </tr>
+                                                </apex:repeat>
+                                            </tbody>
+                                        </table>
+                                        <script>
+                                            setDefaultBucket();
+                                        </script>
+                                    </apex:outputPanel>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="apModalFooter">
+                            <apex:commandButton value="{!$Label.buildertek__Cancel}" id="mapBucketCancelButton" styleClass="slds-button slds-button--neutral" onClick="Appurin.lightning.hideModalPopup({'modalPopupId':'{!$Component.mapBucketPopup}'});" action="{!hideMapBucket}" status="splashStatus" reRender="form" onComplete="easyToolTipForAll();"/>
+                            <apex:commandButton value="{!$Label.buildertek__Save}" rendered="{!bucketsToMap.size > 0}" styleClass="slds-button slds-button--brand" onClick="Appurin.lightning.hideModalPopup({'modalPopupId':'{!$Component.mapBucketPopup}'});" action="{!mapBuckets}" status="splashStatus" reRender="form" onComplete="easyToolTipForAll();"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-backdrop slds-backdrop--open" style="z-index: 5881;"></div>
+                <script>
+                    Appurin.lightning.createModalPopup({modalPopupId : '{!$Component.mapBucketPopup}', isAlertPrompt : false});
+                </script>
+            </apex:outputPanel>
+            <apex:outputPanel id="applicationConfigurationPanel" layout="block"  styleClass="slds-grid" style="background:#f4f6f9;">
+                <div class="slds-panel slds-grid slds-grid--vertical slds-nowrap">
+                    <div class="slds-form--stacked slds-grow slds-scrollable--y">
+                        <apex:outputPanel layout="block"  styleClass="slds-panel__section slds-has-divider--bottom">
+                            <div class="slds-media">
+                                <div class="slds-media__body">
+                                    <p class="slds-truncate slds-text-heading--small" title="{!$Label.buildertek__System_Configuration}">{!$Label.buildertek__System_Configuration}</p>
+                                    <p class="slds-truncate slds-text-body--small">{!$Label.buildertek__System_Configuration_Description}</p>
+                                </div>
+                                <div class="slds-m-top--small" style="float:right;">
+                                    <apex:commandButton styleClass="slds-button slds-button--neutral" value="{!$Label.buildertek__Reset_to_System_Default_Button}" action="{!Initialize}" status="splashStatus" rerender="form" onComplete="easyToolTipForAll();"/>
+                                    <apex:commandButton styleClass="slds-button slds-button--brand" action="{!save}" value="{!$Label.buildertek__Save}" status="splashStatus" rerender="form" onComplete="easyToolTipForAll();"/>
+                                    
+                                </div>
+                            </div>
+                        </apex:outputPanel>
+                        <apex:outputPanel >
+                            <apex:outputPanel >
+                                <apex:pagemessages id="errorMessages"/>
+                                <script>
+                                    Appurin.lightning.createLightningPageMessage({'classicPageMessageId' : '{!$Component.errorMessages}'});   
+                                </script>
+                            </apex:outputPanel>
+                            <apex:outputPanel layout="block" styleClass="slds-panel__section">
+                                <apex:repeat value="{!appData}" var="appConfig">
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element">
+                                        <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                            <apex:outputLabel title="{!appConfig.name}" value="{!appConfig.name}"></apex:outputLabel>
+                                            <c:BT_LightningHelpText rendered="{!appConfig.description != null}" helptext="{!appConfig.description}"/>
+                                        </apex:outputPanel>
+                                        <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                            <apex:selectList rendered="{!appConfig.displayLayout == 'Radio'}" value="{!appConfig.configuredValue}" size="1" styleClass="slds-select">
+                                                <apex:selectOptions value="{!radioOptions}"></apex:selectOptions>
+                                            </apex:selectList>
+                                            <apex:inputText styleClass="slds-input" value="{!appConfig.configuredValue}" rendered="{!appConfig.displayLayout == 'Simple Text'}">
+                                            </apex:inputText>
+                                            <apex:inputSecret redisplay="true" styleClass="slds-input" value="{!appConfig.configuredValue}" rendered="{!appConfig.displayLayout == 'Secret Text'}">
+                                            </apex:inputSecret>
+                                        </apex:outputPanel>
+                                    </apex:outputPanel>
+                                </apex:repeat>
+                            </apex:outputPanel>
+                        </apex:outputPanel>
+                    </div>
+                </div>
+            </apex:outputPanel>
+            <apex:outputPanel id="bucketBlock" layout="block"  styleClass="slds-grid" style="background:#f4f6f9;">
+                <div class="slds-panel slds-grid slds-grid--vertical slds-nowrap">
+                    <div class="slds-form--stacked slds-grow slds-scrollable--y" style=" padding:10px;">      
+                        <div class="slds-card">
+                            <div class="slds-card__header slds-grid">
+                                <header class="slds-media slds-media--center slds-has-flexi-truncate">
+                                    <div class="slds-media__figure">
+                                        <span id="sectionHeaderFolderIcon" class="slds-icon_container slds-icon-standard-contact" title="{!$Label.Bucket_Section_Header}">
+                                            <c:BT_LightningSvg parentId="sectionHeaderFolderIcon" styleClass="slds-icon slds-icon--small" path="/assets/icons/standard-sprite/svg/symbols.svg#folder"/>
+                                        </span>
+                                    </div>
+                                    <div class="slds-media__body">
+                                        <h2>
+                                            <a href="javascript:void(0);" class="slds-card__header-link slds-truncate">
+                                                <span class="slds-text-heading--small">Buckets</span>
+                                                <apex:outputLabel styleClass="slds-text-heading--small" rendered="{!configuredBuckets.size > 0}" value=" ({!configuredBuckets.size})"/>
+                                            </a>
+                                        </h2>
+                                    </div>
+                                </header>
+                                <div class="slds-no-flex">
+                                	 <apex:commandButton id="mapBucketButton" value="Link Buckets"
+                                            styleClass="slds-button slds-button--neutral" 
+                                            title="{!$Label.buildertek__Link_Bucket_Helptext}" 
+                                            disabled="{! !isAmazonCredentialProvided}"
+                                            action="{!showMapBucket}"
+                                            status="splashStatus"
+                                            rerender="form"
+                                            onComplete="easyToolTipForAll();">
+                                    </apex:commandButton>
+                                    <apex:commandButton id="newBucketButton" value="New Bucket"
+                                            styleClass="slds-button slds-button--brand" 
+                                            title="{!$Label.buildertek__New_Bucket_Helptext}" 
+                                            disabled="{! !isAmazonCredentialProvided}"
+                                            action="{!showNewBucket}"
+                                            status="splashStatus"
+                                            rerender="form"
+                                            onComplete="easyToolTipForAll();">
+                                    </apex:commandButton>
+                                </div>
+                            </div>
+                            <div class="slds-card__body">
+                                <apex:outputPanel layout="block" rendered="{!configuredBuckets.size == 0}">
+                                    <table class="slds-table slds-table--bordered slds-no-row-hover slds-table--cell-buffer">
+                                        <tbody>
+                                            <tr class="slds-hint-parent">
+                                                <td scope="row">
+                                                    <div class="slds-truncate">{!$Label.buildertek__No_Bucket_Linked_Message}</div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </apex:outputPanel>
+                                <apex:outputPanel layout="block" rendered="{!configuredBuckets.size > 0}">
+                                    <table class="slds-table slds-table--bordered slds-no-row-hover slds-table--cell-buffer">
+                                        <thead>
+                                            <tr class="slds-text-title--caps">
+                                                <th scope="col">
+                                                    <div class="slds-truncate">{!$ObjectType.Folder__c.fields.Bucket_Name__c.Label}</div>
+                                                </th>
+                                                <th scope="col">
+                                                    <div class="slds-truncate">{!$ObjectType.Folder__c.fields.Description__c.Label}</div>
+                                                </th>
+                                                <th scope="col">
+                                                    <div class="slds-truncate">
+                                                        <apex:outputLabel value="{!$ObjectType.Folder__c.fields.Default__c.Label}"/>
+                                                        <c:BT_LightningHelpText rendered="{!$ObjectType.Folder__c.fields.Default__c.InlineHelpText != null}" helptext="{!$ObjectType.Folder__c.fields.Default__c.InlineHelpText}"/>
+                                                    </div>
+                                                </th>
+                                                <th scope="col">
+                                                    <div class="slds-truncate">{!$Label.buildertek__Action}</div>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <apex:repeat value="{!configuredBuckets}" var="bucket">
+                                                <tr class="slds-hint-parent">
+                                                    <th scope="row">
+                                                        <div class="slds-truncate"><a target="_blank" href="/{!bucket.id}"><apex:outputLabel value="{!bucket.name}"/></a></div>
+                                                    </th>
+                                                    <td>
+                                                        <div class="slds-truncate">{!bucket.folder.Description__c}</div>
+                                                    </td>
+                                                    <td>
+                                                        <apex:outputPanel layout="block" rendered="{!bucket.isDefault}" styleclass="slds-truncate">
+                                                            <span class="slds-checkbox">
+                                                                <input type="checkbox" disabled="true" name="options" id="checkbox-default" checked="checked" />
+                                                                <label class="slds-checkbox__label" for="checkbox-default">
+                                                                    <span class="slds-checkbox--faux"></span>
+                                                                </label>
+                                                            </span>
+                                                        </apex:outputPanel>
+                                                    </td>
+                                                    <td>
+                                                       <apex:commandButton styleClass="apLightningButtonIcon" 
+                                                                    image="{!URLFOR($Resource.SLDS, 'assets/icons/utility/close_60.png')}" 
+                                                                    title="{!$Label.buildertek__Hide_Bucket_In_File_Explorer_Helptext}" 
+                                                                    id="deleteBucketButton"
+                                                                    reRender="bucketBlock" 
+                                                                    action="{!removeBucketMap}"
+                                                                    status="splashStatus"
+                                                                    onComplete="easyToolTipForAll();">
+                                                            <apex:param name="bucketToRemoveMap" value="{!bucket.id}"></apex:param>
+                                                        </apex:commandButton>
+                                                    </td>
+                                                </tr>
+                                            </apex:repeat>
+                                        </tbody>
+                                    </table>
+                                </apex:outputPanel>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </apex:outputPanel>
+        </apex:outputPanel>
+    </apex:form>
+</apex:page>

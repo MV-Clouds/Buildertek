@@ -1,0 +1,73 @@
+<aura:component controller="ImportMasterPackagelines" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global" >
+    
+    <aura:attribute name="isModalOpen" type="boolean" default="false"/>
+    <aura:attribute name="PackageName" type="String"/>
+    <aura:attribute name="Type" type="String"/>
+    <aura:attribute name="selectedValue" type="String"/>
+    
+    <aura:attribute name="Spinner" type="Boolean" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/> 
+    <aura:attribute name="isPopOpen" type="boolean" default="false"/>
+    <aura:attribute name="listPackage" type="Package__c[]"/>
+    <aura:attribute name="packageTakeOffList" type="object" />
+    <aura:attribute name="listOfSelectedIds" type="List" default="[]"/>
+    <aura:attribute name="mycolumns" type="List"/>
+    <aura:attribute name="PickListValuesList" type="List"/>
+    
+    <aura:attribute name="CreatedRecordId" type="String" default = "{!v.recordId}"/>
+    <ltng:require styles="{!$Resource.ModalWidthCSS}"/>
+    
+    
+    
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+            
+            <div class="slds-modal__header" style="font-size:17px;">
+                
+                Import Package
+            </div>
+            <div class="slds-modal__content slds-p-left--small slds-p-right--small">
+                  <aura:if isTrue="{!v.Spinner}">
+    
+            <div aura:id="spinnerId" class="slds-spinner_container">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                    <div class="custom-loading-text">
+                        <b>Processing, Please Wait</b>
+                    </div>
+                </div>
+            </div>
+     
+    </aura:if> 
+                <div style="min-height: 10rem;
+                            background: white;
+                            height: 25rem;">   
+                    <lightning:datatable data="{! v.listPackage }"
+                                         columns="{! v.mycolumns }"
+                                         keyField="Id"
+                                         selectedRows="{! v.selectedRows }"
+                                         onrowselection="{! c.getSeletedPAIds }"
+                                         /> 
+                </div>
+            </div>
+            <div class="slds-modal__footer">
+                <button class="slds-button slds-button--neutral" onclick="{!c.closePopup}">Cancel</button>
+                <button class="slds-button slds-button--brand" onclick="{!c.importTakeoffLinesFromPackage}">Import Package</button>
+            </div> 
+            
+            
+            
+        </div>
+        
+    </section>
+    
+    
+  
+    
+    
+    
+    
+    
+</aura:component>

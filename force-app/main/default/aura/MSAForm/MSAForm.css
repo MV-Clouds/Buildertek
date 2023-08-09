@@ -1,0 +1,26 @@
+.THIS .layoutItem{
+    padding-left : 0px;
+   
+}
+.THIS .layoutItem2{
+    
+    padding-right : 0px;
+}
+.THIS .custom-loading-text {
+    transform: rotate(-90deg);
+    position: absolute;
+    top: -0.5rem;
+    left: 1rem;
+    white-space: nowrap;
+    font-size: 20px;
+}
+.THIS .day {
+   width: 5%; border: none; 
+    border-bottom: 1px solid gray;
+    text-align:center;
+}
+.THIS .month {
+   width: 8%; border: none; 
+    border-bottom: 1px solid gray;
+    text-align:center;
+}

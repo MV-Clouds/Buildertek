@@ -1,0 +1,45 @@
+<aura:component controller="VG_ContentService" implements="forceCommunity:availableForAllPageTypes,force:appHostable,flexipage:availableForAllPageTypes,forceCommunity:themeLayout" access="global">
+    
+	<aura:attribute name="cardContent" type="Object[]" />
+	<aura:attribute name="numOfCards" type="String" access="global" default="3"/>
+	<aura:attribute name="cardType" type="String" access="global" default="big"/>
+	<aura:attribute name="autoplay" type="String" access="global" default="true"/>
+	<aura:attribute name="autoplaySpeed" type="String" access="global" default="10000"/>
+     <aura:attribute name="iconFillColor" type="String" access="global" default="#FFFFFF"/>
+    <aura:attribute name="setCallback" type="Object" access="private" />
+    <aura:attribute name="componentName" type="String" access="global" default="Announcements"/>
+    <aura:attribute name="includePreview" type="Boolean" default="false" />
+    <aura:attribute name="siteName" type="String" default="Landing Page" />
+    
+    <ltng:require styles="{!join(',',
+                                $Resource.carousel + '/carousel/slick/slick.css',
+                                $Resource.carousel + '/carousel/slick/slick-theme.css')}"
+                      scripts="{!join(',',
+                                $Resource.carousel + '/carousel/jquery/jquery.js',
+                               $Resource.carousel + '/carousel/slick/slick.min.js')}"/>
+            
+	<!-- Handlers -->
+    <aura:handler event="c:SlickJSLoaded" action="{!c.JSLoaded}"/>
+        
+    <!-- Main Markup -->
+    <div id="cardCarousel1" class="slds-m-horizontal--large carousel" style="margin: 0px;">                  
+        
+        <aura:iteration items="{!v.cardContent}" var="card">
+            <c:VG_AnnouncementCard title="{!card.content.Primary_Text__c}"
+                       subTitle="{!card.content.Secondary_Text__c}"
+                       announcementText="{!card.content.Secondary_Summary__c}"
+                       text="{!card.content.Primary_Summary__c}"
+                       actionURL="{!card.content.Action_URL__c}"
+                       actionBgColor="{!card.content.Action_BgColor__c}"
+                       bgImage="{!(and(not(empty(card.content.ContentDocumentLinks.records)),card.content.ContentDocumentLinks.records[0] != null))? card.content.ContentDocumentLinks.records[0].ContentDocument.LatestPublishedVersionId:''}"
+                       actionLabel="{!card.content.Action_Label__c}"
+                       type="Announcement"
+                       BGColor="{!empty(card.content.Primary_BgColor__c)?'44B4C8':card.content.Primary_BgColor__c}"
+                       FGColor="{!empty(card.content.Primary_FgColor__c)?'FFFFFF':card.content.Primary_FgColor__c}"
+                       Gradient="{!empty(card.content.Background_Gradient__c)?'to bottom, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.22) 54%, rgba(23, 23, 23, 0) 100%':card.content.Background_Gradient__c}"            
+                       />
+          
+        </aura:iteration>
+    </div>
+
+</aura:component>

@@ -1,0 +1,30 @@
+<aura:component controller="VG_ContentService"  implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global" >
+
+
+	<aura:attribute name="MissionStatementmdt" type="Mission_Statement__mdt" access="global" />  
+	<aura:attribute name="autoplay" type="String" access="global" default="true"/>
+	<aura:attribute name="autoplaySpeed" type="String" access="global" default="20000"/>
+	<aura:attribute name="numOfCards" type="String" access="global" default="3"/>
+	<aura:attribute name="cardType" type="String" access="global" default="small"/>
+    <aura:attribute name="iconFillColor" type="String" access="global" default="#FFFFFF"/>
+
+	<aura:handler name="init" action="{!c.doInit}" value="{!this}" />
+
+	<div  class="maincontainer"   >
+	   <div  class="subcontainer"  >
+			<div class="containerMission" >
+				<h3 class=" missionheader" >{!v.MissionStatementmdt.Mission_Heading__c}</h3>
+				<h1 class=" missionbigheader" >{!v.MissionStatementmdt.Heading_1__c} </h1>
+				<h1 class=" missionbigheader" >{!v.MissionStatementmdt.Heading_2__c}</h1>
+				<p class=" missiontext" style="margin-bottom:2%;" >
+				   {!v.MissionStatementmdt.Primary_Text__c}
+				</p>
+				
+				<p class=" missiontext" >   {!v.MissionStatementmdt.secondary_text__c}  </p>
+			</div>
+			<div class="containercarousel"  ><c:VG_MissionCardCarousel autoplay="{!v.autoplay}" autoplaySpeed="{!v.autoplaySpeed}"/></div>
+		</div>
+		
+	</div>   
+
+</aura:component>

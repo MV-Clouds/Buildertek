@@ -1,0 +1,10 @@
+<apex:page controller="DisplayQuoteImagesController" showheader="false" sidebar="false">
+    <apex:slds />
+    <apex:form >
+        <div class="slds slds-m-top_xx-large">
+            <center>
+               <apex:image url="{!imageURL}" height="1100" width="1150"  /> 
+            </center>
+        </div>
+    </apex:form>    
+</apex:page>

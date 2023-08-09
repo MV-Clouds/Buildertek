@@ -1,0 +1,26 @@
+<aura:component controller="VG_ContentService" implements="forceCommunity:availableForAllPageTypes,force:appHostable,flexipage:availableForAllPageTypes" access="global">
+   
+
+    <aura:attribute name="cardContent" type="Object" />
+    <aura:attribute name="setCallback" type="Object" access="private" />
+    <aura:attribute name="componentName" type="String" access="global" default="Announcements"/>
+    <aura:attribute name="bgImage" type="String" access="global"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <div class="bg-img" style="{!' height: auto;background:'+ ' url('+v.bgImage+') no-repeat;background-position: center;background-size: cover;margin-top:0px'}">
+        <div class="container">
+            <c:VG_NavBar/>
+        </div>
+        <header class="banner-content"> 
+            <h1 class="feature-header">Your Window to Wellness</h1> 
+            <div> 
+                <p>View Dynamic Glass results in happier, healthier, more productive occupants.</p> 
+                <lightning:button label="Read More" class="button"/> 
+            </div> 
+        </header>
+        
+    </div>
+    
+    
+    
+    
+</aura:component>

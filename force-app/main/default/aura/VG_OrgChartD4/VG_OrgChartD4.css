@@ -1,0 +1,80 @@
+.THIS#body {
+    overflow: hidden;
+  cursor: move;
+  height:500px;
+  width:100%;
+  background-color:#fff;
+  border:1px solid white;
+  margin: 0px 0px 10px 0px;
+}
+.THIS svg{
+        margin-left: 11%;
+    border: 1px solid #eaeaea;
+}
+.THIS .node {
+   cursor:default;
+}
+
+.THIS .node text {
+    font: 11.5px sans-serif;
+    fill: #FFFFFF;
+}
+
+.THIS .node .title {
+    font: 9px sans-serif;
+    fill: #CCC;
+}
+
+.THIS .node .children {
+    font: 20px sans-serif;
+    fill: #AAA;
+}
+
+.THIS .node rect {
+
+}
+
+.THIS .link {
+  fill: none;
+  stroke: #CCC;
+  stroke-width: 1.5;
+}
+
+.THIS .tooltip {
+    pointer-events:none;
+    opacity:0;
+    transition: opacity 0.3s;
+}
+
+.THIS g.tooltip rect {
+    fill: #2574a9;
+}
+
+.THIS .tooltip-name {
+    font: 13px sans-serif;
+    font-weight: bold;
+}
+
+.THIS .tooltip-title {
+    font: 11.25px sans-serif;
+}
+
+.THIS .tooltip-telephone {
+    font: 11px sans-serif;
+}
+
+.THIS .tooltip-emailaddress {
+    font: 11px sans-serif;
+}
+
+.THIS .tooltip-action {
+    fill: #FFF;
+}
+
+@media screen and (max-width: 760px) {
+   .THIS svg{
+        width:300px;
+        margin-left: -1%;
+    border: 1px solid #eaeaea;
+}
+}

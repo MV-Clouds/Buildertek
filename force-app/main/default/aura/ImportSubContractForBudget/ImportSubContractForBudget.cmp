@@ -1,0 +1,205 @@
+<aura:component controller="ImportSubContractorForBudgetController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global" >
+    <aura:attribute name="masterBudgetsList" type="object" />
+    <aura:attribute name="Spinner" type="Boolean" />
+    <aura:attribute name="selectedobjInfo" type="list"   />
+    <aura:attribute name="fieldSetValues" type="List"/>
+    <aura:attribute name="LabelList" type="List"/>
+    <aura:attribute name="newRecordList" type="List"/>
+    <!-- Attribute Declration For Pagination -->
+    <aura:attribute name="PaginationList" type="Object"/>
+    <aura:attribute name="startPage" type="Integer" />
+    <aura:attribute name="endPage" type="Integer" />
+    <aura:attribute name="totalRecords" type="Integer"/>
+    <aura:attribute name="pageSize" type="Integer" default="15"/>
+    <!-- Attribute Declration For Pagination End-->
+    <!-- Attribute Declration For Search Functionality-->
+    <aura:attribute name="searchResult" type="List"/>
+    <aura:attribute name="searchKeyword" type="String" />
+    <aura:attribute name="searchResult1" type="List" />
+    <aura:attribute name="searchKeyword1" type="String" />
+    <aura:attribute name="searchResult2" type="List" />
+    <aura:attribute name="searchKeyword2" type="String" />
+    <!-- Attribute Declration For Search Functionality-->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> 
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/> 
+    <!-- <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open slds-modal_large">
+  <div class="slds-modal__container" style="min-width:85rem;"> -->
+    <div class="slds-modal__header" style="font-size:17px;">
+        Import Master Sub-Contracts
+    </div>
+    <lightning:layout multipleRows="true">
+        <lightning:layoutItem padding="around-large" size="4">
+            <lightning:input value="{!v.searchKeyword1}"
+                             placeholder="Vendor"
+                             aura:id="searchKey1"
+                             name="searchField"
+                             class="pointer"
+                             text = "hai"
+                             type  = "search"
+                             autocomplete="false"
+                             onchange="{! c.searchKeyChange1 }"/>
+        </lightning:layoutItem>
+        <lightning:layoutItem padding="around-large" size="4">
+            <lightning:input value="{!v.searchKeyword2}"
+                             placeholder="Community"
+                             aura:id="searchKey2"
+                             name="searchField"
+                             class="pointer"
+                             text = "hai"
+                             type  = "search"
+                             autocomplete="false"
+                             onchange="{! c.searchKeyChange2 }"/>
+        </lightning:layoutItem>
+        <lightning:layoutItem padding="around-large" size="4">
+            <lightning:input value="{!v.searchKeyword}"
+                             placeholder="Cost Code"
+                             aura:id="searchKey"
+                             name="searchField"
+                             class="pointer"
+                             text = "hai"
+                             type  = "search"
+                             autocomplete="false"
+                             onchange="{! c.searchKeyChange }"/>
+        </lightning:layoutItem>
+    </lightning:layout>
+    <div class="slds-modal__content slds-p-around_medium scrollable" id="modal-content-id-1">
+        <div class="slds slds-scope">
+            <table class="slds-table slds-table_bordered slds-table_fixed-layout" role="grid">
+             <!--   <thead>
+                    <tr>
+                        <th  style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-left-radius:5px;vertical-align: top;line-height: 2;width: 30px !important;"> 
+                            <ui:inputCheckbox aura:id="checkContractors" change="{!c.selectAll}" />		
+                        </th>
+                        <aura:iteration items="{!v.fieldSetValues}" var="field">
+                            <th style="background-color:rgba(27, 82, 151, 1.0);  color:white;white-space: pre-wrap;" class="slds-truncate"><span>{!field.label}</span></th> 
+                        </aura:iteration>
+                    </tr>
+                </thead>
+                <tbody>   
+                    <aura:iteration items="{!v.newRecordList}" var="rec">
+                        <tr>
+                            <td> 
+                                <ui:inputCheckbox aura:id="checkContractor" value="false"  text="{!rec.Id}" change="{!c.handleCheck}" />
+                            </td> 
+                            <aura:iteration items="{!v.LabelList}" var="apiName">
+                                <aura:if isTrue="{!apiName != 'Id'}">
+                                    <td role="gridcell" class="slds-truncate">
+                                        <aura:if isTrue="{!apiName == 'Name'}">
+                                            <a href="javascript:void()"  id = "{!rec.Id}" onclick="{!c.NavToSovRec}"><c:childOfImportSubContractBudget Record="{!rec}" ApiName="{!apiName}"/></a>
+                                            <aura:set attribute="else">
+                                                <c:childOfImportSubContractBudget Record="{!rec}" ApiName="{!apiName}"/>
+                                            </aura:set>
+                                        </aura:if>
+                                    </td>
+                                </aura:if>
+                            </aura:iteration>
+                        </tr>
+                    </aura:iteration>
+                </tbody> -->
+                   <thead>
+                    <tr class="slds-text">
+                        <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-left-radius:5px;vertical-align: top;line-height: 2;width: 30px !important;">
+                            <ui:inputCheckbox aura:id="checkContractors" change="{!c.selectAll}" />		
+                        </th>
+                        <th  style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;width:155px">
+                            Contractor Name
+                        </th>
+                        
+                        <th  style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;width:155px">
+                            Vendor
+                        </th>
+                        <th  style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;width:155px">
+                            Cost code
+                        </th>
+                        <th  style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;width:115px">
+                            Community
+                        </th>
+                        
+                        <th  style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                            Original contract 
+                            <br/>amount
+                        </th>
+                        <th  style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;width:150px;">
+                            Signed contract 
+                             <br/>date
+                        </th>
+                         <th  style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                            Contract End Date
+                        </th>
+                    </tr>
+                </thead> 
+                <tbody>
+                    <aura:iteration items="{!v.PaginationList}" var="rec">
+                        <tr class="slds-hint-parent">
+                            <aura:if isTrue="{!rec.budgetRecord != null}">
+                                <td> 
+                                    <ui:inputCheckbox aura:id="checkContractor" value="{rec.budgetCheck}"  text="{!rec.budgetRecord.Id}" change="{!c.handleCheck}" />
+                                </td> 
+                                <td role="gridcell">
+                                    <a href="javascript:void()"  id = "{!rec.budgetRecord.Id}" onclick="{!c.NavToSovRec}"> <ui:outputText value="{!rec.budgetRecord.Name}" /> </a>
+                                  <!--   <a href="{!'/lightning/r/buildertek__Contract__c/'+rec.budgetRecord.Name+'/view'}">
+                                 <ui:outputText value="{!rec.budgetRecord.Name}" /> 
+                                    </a> -->
+                                </td>
+                                <td role="gridcell">
+                                    <ui:outputText value="{!rec.budgetRecord.buildertek__Vendor__r.Name}" />  
+                                </td>
+                                <td role="gridcell">
+                                    <ui:outputText value="{!rec.budgetRecord.buildertek__Cost_Code__r.Name}"  />
+                                </td>
+                                <td role="gridcell">
+                                    <ui:outputText value="{!rec.budgetRecord.buildertek__Community__r.Name}" />  
+                                </td> 
+                                
+                                <td role="gridcell">
+                                    <lightning:formattedNumber value="{!rec.budgetRecord.buildertek__Contract_Amount__c}" currencyCode="USD" style="currency" currencyDisplayAs="code"/>
+                                    
+                                </td>
+                                <td role="gridcell">
+                                    <ui:outputText value="{!rec.budgetRecord.buildertek__Signed_Contract_Date__c}" />  
+                                </td>
+                                
+                                 <td role="gridcell">
+                                    <ui:outputText value="{!rec.budgetRecord.buildertek__Contract_End_Date__c}"/>
+                                    
+                                </td>
+                               <aura:set attribute="else">
+                                    <div Style="text-align : center; font-size: 1.2rem;"> There is No Master Sub-Contracts  </div>
+                                </aura:set>
+                            </aura:if>
+                        </tr>
+                    </aura:iteration>
+                </tbody> 
+            </table>
+            <br/>
+        </div> 
+        <aura:if isTrue="{!v.Spinner}">
+            <div aura:id="spinnerId" class="slds-spinner_container">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                    <div class="custom-loading-text">
+                        <b>Processing, Please Wait</b>
+                    </div>
+                </div>
+            </div>
+        </aura:if>
+    </div>
+    <div class="slds-modal__footer">
+        <lightning:button label="Previous" disabled="{!v.startPage == 0}"  
+                          onclick="{!c.previous}" variant="brand"
+                          iconName='utility:back' iconPosition='left' class = 'slds-float_left'/>
+        &nbsp; &nbsp; &nbsp;
+        
+        
+        <lightning:button label="Next" disabled="{!v.endPage >= v.totalRecords}" 
+                          onclick="{!c.next}" variant="brand"
+                          iconName='utility:forward' iconPosition='left' class = 'slds-float_left' />
+        
+        <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}" >Cancel</button>
+        <button class="slds-button slds-button--brand" onclick="{!c.importBudget}" disabled="{!v.isdisabled}"> Import Master Sub-Contracts</button>
+    </div>	
+    <!--  </div>
+    </section> -->
+</aura:component>

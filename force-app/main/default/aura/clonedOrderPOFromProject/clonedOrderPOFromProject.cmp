@@ -1,0 +1,54 @@
+<aura:component controller="ClonedOrderPOFromProjectController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="listOfFields" type="List" />
+    <aura:attribute name="HeaderList" type="List" />
+    
+    <aura:attribute name="PaginationList" type="Object"/>
+    
+    
+      <aura:html tag="style">
+        .slds-modal__container {
+        width: 80% !important;
+          max-width : 85rem;
+        }
+    </aura:html>
+    
+    <div class="modal-container slds-modal__container ">
+            <table class="slds-table slds-table_bordered slds-table_fixed-layout " role="grid">
+                <thead>
+                      <th  style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                        <ui:inputCheckbox aura:id="checkContractors" change="{!c.selectAll}" />		
+                        </th>
+                    <aura:iteration items="{!v.HeaderList}" var="field">
+                        <th  style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                           {!field.label}
+                        </th>
+                        
+                    </aura:iteration>
+                </thead>
+                <tbody class = "slds-scrollable">
+                    <aura:iteration items="{!v.listOfFields}" var="rec">
+                        <tr class="slds-hint-parent">
+                            <td> 
+                                <lightning:input aura:id="checkContractor" type="checkbox" checked="false" name="{!rec.Id}" onchange="{!c.handleCheck}"/>
+                            </td>
+                            <aura:iteration items="{!v.HeaderList}" var="field">
+                          
+                                <td>
+                                    <div class="slds-truncate">
+                                        <c:childOfclonedOrderPOFromProject apiName="{!field}" Record="{!rec}" />
+                                    </div>
+                                </td> 
+                               
+                            </aura:iteration>
+                        </tr>
+                        
+                    </aura:iteration>
+                </tbody>
+            </table>
+    </div>
+    
+    
+    
+</aura:component>

@@ -1,0 +1,5 @@
+<apex:page standardController="pba__Listing__c" sidebar="false" showHeader="false" >
+<div style="text-align: center">
+<apex:image id="theImage" value="{!pba__Listing__c.pba__Property__r.pba__Main_Website_Image__c}"  style="max-height:285px;max-width:100%"/>
+</div>
+</apex:page>

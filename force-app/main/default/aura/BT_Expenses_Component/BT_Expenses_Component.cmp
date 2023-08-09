@@ -1,0 +1,917 @@
+<!--
+  @description       : 
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 07-19-2023
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<aura:component implements="force:hasRecordId,force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable,lightning:actionOverride,force:hasSObjectName,force:appHostable" access="global" controller="BT_Expenses_ComponentController">
+
+    <aura:attribute name="projectsOptions" type="List" />
+    <aura:attribute name="selectedProjectId" type="Id" />
+    <aura:attribute name="expenses" type="List" />
+    <aura:attribute name="tableDataList" type="List" />
+    <aura:attribute name="Spinner" type="Boolean" default="false" />
+    <aura:attribute name="SelectExp" type="Boolean" default="false" />
+    <aura:attribute name="SelectBLines" type="Boolean" default="false" />
+    <aura:attribute name="budgetsOptions" type="List" />
+    <aura:attribute name="selectedBudgetId" type="Id" />
+    <aura:attribute name="selectedBudgetName" type="String" />
+    <aura:attribute name="selectedExpenses" type="List" />
+    <aura:attribute name="budgetLinesOptions" type="List" />
+    <aura:attribute name="transactionTypeOptions" type="List" />
+    <aura:attribute name="selectedTransactionType" type="String" />
+    <aura:attribute name="SelectNone" type="Boolean" default="true" />
+    <aura:attribute name="SelectInv" type="Boolean" default="false" />
+    <aura:attribute name="SelectCO" type="Boolean" default="false" />
+    <aura:attribute name="SelectPO" type="Boolean" default="false" />
+    <aura:attribute name="SelectTC" type="Boolean" default="false" />
+    <aura:attribute name="timeCards" type="List" />
+    <aura:attribute name="Page1" type="Boolean" default="true" />
+    <aura:attribute name="Page2" type="Boolean" default="false" />
+    <aura:attribute name="checkedAll" type="Boolean" default="false" />
+    <aura:attribute name="selectedTimeCards" type="List" />
+    <aura:attribute name="selectedCOs" type="List" />
+
+    <aura:attribute name="TimeCardP2" type="Boolean" default="false" />
+    <aura:attribute name="invoices" type="List" />
+    <aura:attribute name="changeOrder" type="List" />
+
+    <aura:attribute name="InvoiceP2" type="Boolean" default="false" />
+    <aura:attribute name="coPage2" type="Boolean" default="false" />
+
+    <aura:attribute name="selectedInvoices" type="List" />
+    <aura:attribute name="purchaseOrders" type="List" />
+    <aura:attribute name="PurchaseOrderP2" type="Boolean" default="false" />
+    <aura:attribute name="selectedPurchaseOrders" type="List" />
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="projectId" type="Id" />
+
+
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <ltng:require styles="{!$Resource.ModalPreviewCSS}" />
+
+
+    <lightning:workspaceAPI aura:id="workspace" />
+
+        <!-- <aura:html tag="style">
+            .slds-modal__container {
+                width:80% !important;      
+                max-width: 80% !important;   
+                overflow: hidden !important;
+            }
+            .slds-modal__content {
+                overflow: hidden !important;
+            }
+            .slds-modal__close{
+                display:block !important;    
+            }
+        </aura:html> -->
+
+        <aura:html tag="style">  
+            .slds-modal__container {
+                width:70% !important;      
+                max-width: 70% !important;    
+                height: 550px !important;
+                top:20% !important;
+                padding: 0 0rem !important;
+                padding-bottom : 2% !important;
+            }
+            .slds-modal__content {
+                padding: 0 0rem !important;
+                height:97% !important;
+                max-height:97% !important;
+            }
+            .cuf-content {
+                padding: 0 0rem !important;
+            }
+            .slds-p-around--medium {
+                padding: 0rem !important;
+            }         
+            .slds-modal__header .slds-modal__close{
+                right : 0;
+            }
+            #pageTop {
+                padding: 0 0rem !important;
+            }
+        </aura:html>  
+    <div class="slds-modal__content">
+        <div class="slds slds-scope">
+            <header class="slds-modal__header">
+                <div class="" id="header" style="font-size:17px;">
+                    Mass Transaction
+                </div>
+            </header>    
+            <div class=" slds-p-around_medium slds-scrollable--y" id="pageTop" style="height:auto;overflow-y:auto">
+                <div class="slds-modal__content slds-p-around_small slds-scrollable_y" style="width:100%;height:100%;">
+                    <div class="slds-scrollable_y" >
+                        <aura:if isTrue="{!v.Spinner}">
+                            <div aura:id="spinnerId" class="slds-spinner_container">
+                                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                                    <span class="slds-assistive-text">Loading</span>
+                                    <div class="slds-spinner__dot-a"></div>
+                                    <div class="slds-spinner__dot-b"></div>
+                                </div>
+                            </div>
+                        </aura:if>   
+                        
+                        <!-- <lightning:card> -->
+                            <aura:if isTrue="{!v.Page1}">
+                                <aura:if isTrue="{!v.recordId == null}">
+                                    <lightning:layout>
+                                        <lightning:layoutItem padding="around-small" size="6">
+                                            <label class="slds-form-element__label slds-size_6-of-12">Project</label>
+                                            <div>
+                                                <ui:inputSelect aura:id="selectedProject" value="{!v.selectedProjectId}" change="{!c.changeProject}">
+                                                    <aura:iteration items="{!v.projectsOptions}" var="option" >
+                                                        <option value="{!option.Id}" selected="{!option.Id == v.selectedProjectId}">{!option.Name}</option>
+                                                    </aura:iteration>
+                                                </ui:inputSelect>
+                                            </div>
+                                        </lightning:layoutItem>
+                                        <!-- <lightning:layoutItem padding="around-small" size="6">
+                                            <label class="slds-form-element__label slds-size_6-of-12"> </label>
+                                            <div style="text-align: right;">
+                                            <lightning:button label="Add to Budget Line Item" variant="brand" onclick="{!c.page2}" />
+                                            </div>
+                                        </lightning:layoutItem> -->
+                                    </lightning:layout>
+                                </aura:if>
+                                <lightning:layout>
+                                    <lightning:layoutItem padding="around-small" size="6">
+                                        <label class="slds-form-element__label slds-size_6-of-12">Transaction Type</label>
+                                        <div>
+                                            <ui:inputSelect aura:id="selectedTransactionType" value="{!v.selectedTransactionType}" change="{!c.changeTransactionType}">
+                                                <aura:iteration items="{!v.transactionTypeOptions}" var="option" >
+                                                    <option value="{!option.value}" selected="{!option.value == v.selectedTransactionType}">{!option.label}</option>
+                                                </aura:iteration>
+                                            </ui:inputSelect>
+                                        </div>
+                                    </lightning:layoutItem>
+                                    <!-- <lightning:layoutItem padding="around-small" size="6">
+                                        <label class="slds-form-element__label slds-size_6-of-12"> </label>
+                                        <div style="text-align: right;">
+                                        <lightning:button label="Add to Budget Line Item" variant="brand" onclick="{!c.page2}" />
+                                        </div>
+                                    </lightning:layoutItem> -->
+                                </lightning:layout>
+                            </aura:if>
+
+                            <div class="addScroll">
+                    
+                            <aura:if isTrue="{!v.SelectExp}">            
+                                <br />                
+                                <table class="slds-table slds-table_cell-buffer slds-table_bordered" aria-label="Example default base table of Opportunities">
+                                    <thead>
+                                        <tr class="slds-line-height_reset">
+                                            <th class="slds-text-align_right slds-cell_action-mode" scope="col" style="width:3.25rem;">
+                                                <lightning:input type="checkbox" name="checkAll" onchange="{!c.checkAll}" checked="{!v.checkedAll}" />
+                                            </th>
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title="Product Family">Expense Name</div>
+                                            </th>
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title="Product Name">Description</div>
+                                            </th>
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title="Product Code">Cost Code</div>
+                                            </th>
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title="Product Description">Expense Total</div>
+                                            </th>
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title="Product Code">Vendor</div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!v.tableDataList}" var="exp">
+                                            <tr class="slds-hint-parent">
+                                                <td class="slds-text-align_right slds-cell_action-mode" role="gridcell">
+                                                    <div class="slds-checkbox">
+                                                    <lightning:input type="checkbox" name="input1" checked="{!exp.selected}" id="{!exp.Id}" onchange="{!c.checkboxChange}" />
+                                                    </div>
+                                                </td>
+                                                <td data-label="Name" scope="row">
+                                                    <div class="slds-truncate" title='{!exp.Name}'>
+                                                        {!exp.Name}
+                                                    </div>
+                                                </td>
+                                                <td data-label="Expense Description">
+                                                    <div class="slds-truncate" title='{!exp.buildertek__Description__c}'>
+                                                        {!exp.buildertek__Description__c}
+                                                    </div>
+                                                </td>
+                                                <td data-label="CostCode">
+                                                    <div class="slds-truncate" title='{!exp.buildertek__Cost_Code__c}'>
+                                                        {!exp.buildertek__Cost_Code__r.Name}
+                                                    </div>
+                                                </td>
+                                                <td data-label="Expense Total">
+                                                    <div class="slds-truncate" title='{!exp.buildertek__Total_Expense__c}'>
+                                                        <lightning:formattedNumber value="{!exp.buildertek__Total_Expense__c}" style="currency"/>
+                                                    </div>
+                                                </td>
+                                                <td data-label="Vendor">
+                                                    <div class="slds-truncate" title='{!exp.buildertek__Vendor__c}'>
+                                                        {!exp.buildertek__Vendor__c}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </aura:iteration>
+                                    </tbody>
+                                    <aura:if isTrue="{!empty(v.tableDataList)}">
+                                        <td colspan="6" rowspan="10" style="text-align: center; line-height: 10rem; font-size: 18px; ">
+                                            No Data Found
+                                        </td>
+                                    </aura:if>
+                                </table>
+                    
+                            </aura:if>
+                    
+                            <aura:if isTrue="{!v.SelectTC}">
+                                <br />
+                                <table class="slds-table slds-table_cell-buffer slds-table_bordered" aria-label="Example default base table of Opportunities">
+                                    <thead>
+                                        <tr class="slds-line-height_reset">
+                                            <th class="slds-text-align_right slds-cell_action-mode" scope="col" style="width:3.25rem;">
+                                                <lightning:input type="checkbox" name="checkAll" onchange="{!c.checkAll}" checked="{!v.checkedAll}" />
+                                            </th>
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title="Time Card Number">Time Card Number</div>
+                                            </th>
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title="Resource">Resource</div>
+                                            </th>
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title="Total Hours Clocked">Total Hours Clocked</div>
+                                            </th>
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title="Daily Expense">Daily Expense</div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!v.tableDataList}" var="tc">
+                                            <tr class="slds-hint-parent">
+                                                <td class="slds-text-align_right slds-cell_action-mode" role="gridcell">
+                                                    <div class="slds-checkbox">
+                                                    <lightning:input type="checkbox" name="input1" checked="{!tc.selected}" id="{!tc.Id}" onchange="{!c.checkboxChange}" />
+                                                    </div>
+                                                </td>
+                                                <td data-label="Name" scope="row">
+                                                    <div class="slds-truncate" title='{!tc.Name}'>
+                                                        {!tc.Name}
+                                                    </div>
+                                                </td>
+                                                <td data-label="Resource Name">
+                                                    <div class="slds-truncate" title='{!tc.buildertek__Resource__c}'>
+                                                        {!tc.buildertek__Resource__r.Name}
+                                                    </div>
+                                                </td>
+                                                <td data-label="Total Hours Clocked">
+                                                    <div class="slds-truncate" title='{!tc.buildertek__Hours_Worked__c}'>
+                                                        {!tc.buildertek__Hours_Worked__c}
+                                                    </div>
+                                                </td>
+                                                <td data-label="Daily Expense">
+                                                    <div class="slds-truncate" title='{!tc.buildertek__Daily_Expense__c}'>
+                                                        <lightning:formattedNumber value="{!tc.buildertek__Daily_Expense__c}" style="currency"/>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </aura:iteration>
+                                    </tbody>
+                                    <aura:if isTrue="{!empty(v.tableDataList)}">
+                                        <td colspan="5" style="text-align: center; line-height: 10rem; font-size: 18px; ">
+                                            No Data Found
+                                        </td>
+                                    </aura:if>
+                                </table>    
+                            </aura:if>
+                    
+                            <aura:if isTrue="{!v.SelectInv}">
+                                <br />
+                                <table class="slds-table slds-table_cell-buffer slds-table_bordered" aria-label="Example default base table of Opportunities">
+                                    <thead>
+                                        <tr class="slds-line-height_reset">
+                                            <th class="slds-text-align_right slds-cell_action-mode" scope="col" style="width:3.25rem;">
+                                                <lightning:input type="checkbox" name="checkAll" onchange="{!c.checkAll}" checked="{!v.checkedAll}" />
+                                            </th>
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title="Invoice Number">Invoice Number</div>
+                                            </th>
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title="Description">Description</div>
+                                            </th>
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title="Cost Code">Cost Code</div>
+                                            </th>
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title="Remaining Balance">Remaining Balance</div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!v.tableDataList}" var="tc">
+                                            <tr class="slds-hint-parent">
+                                                <td class="slds-text-align_right slds-cell_action-mode" role="gridcell">
+                                                    <div class="slds-checkbox">
+                                                    <lightning:input type="checkbox" name="input1" checked="{!tc.selected}" id="{!tc.Id}" onchange="{!c.checkboxChange}" />
+                                                    </div>
+                                                </td>
+                                                <td data-label="Name" scope="row">
+                                                    <div class="slds-truncate" title='{!tc.buildertek__Auto_Number__c}'>
+                                                        {!tc.buildertek__Auto_Number__c}
+                                                    </div>
+                                                </td>
+                                                <td data-label="Resource Name">
+                                                    <div class="slds-truncate" title='{!tc.buildertek__Description__c}'>
+                                                        {!tc.buildertek__Description__c}
+                                                    </div>
+                                                </td>
+                                                <td data-label="Total Hours Clocked">
+                                                    <div class="slds-truncate" title='{!tc.buildertek__Cost_Code__c}'>
+                                                        {!tc.buildertek__Cost_Code__c}
+                                                    </div>
+                                                </td>
+                                                <td data-label="Daily Expense">
+                                                    <div class="slds-truncate" title='{!tc.buildertek__Net_Amount__c}'>
+                                                        <lightning:formattedNumber value="{!tc.buildertek__Net_Amount__c}" style="currency"/>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </aura:iteration>
+                                    </tbody>
+                                    <aura:if isTrue="{!empty(v.tableDataList)}">
+                                        <td colspan="5" style="text-align: center; line-height: 10rem; font-size: 18px; ">
+                                            No Data Found
+                                        </td>
+                                    </aura:if>
+                                </table> 
+                            </aura:if>
+
+                            <aura:if isTrue="{!v.SelectCO}">
+                                <br />
+                                <table class="slds-table slds-table_cell-buffer slds-table_bordered" aria-label="Example default base table of Opportunities">
+                                    <thead>
+                                        <tr class="slds-line-height_reset">
+                                            <th class="slds-text-align_right slds-cell_action-mode" scope="col" style="width:3.25rem;">
+                                                <lightning:input type="checkbox" name="checkAll" onchange="{!c.checkAll}" checked="{!v.checkedAll}" />
+                                            </th>
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title="Change Order">Change Order</div>
+                                            </th>
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title="Date Approved">Date Approved</div>
+                                            </th>
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title="Total Amount Tax">Total Amount Tax</div>
+                                            </th>
+                                            <!-- <th class="" scope="col">
+                                                <div class="slds-truncate" title="Remaining Balance">Remaining Balance</div>
+                                            </th> -->
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!v.tableDataList}" var="tc">
+                                            <tr class="slds-hint-parent">
+                                                <td class="slds-text-align_right slds-cell_action-mode" role="gridcell">
+                                                    <div class="slds-checkbox">
+                                                    <lightning:input type="checkbox" name="input1" checked="{!tc.selected}" id="{!tc.Id}" onchange="{!c.checkboxChange}" />
+                                                    </div>
+                                                </td>
+                                                <td data-label="CO Number" scope="row">
+                                                    <div class="slds-truncate" title='{!tc.buildertek__CO_Number__c}'>
+                                                        {!tc.buildertek__CO_Number__c}
+                                                    </div>
+                                                </td>
+                                                <td data-label="Date Approved">
+                                                    <div class="slds-truncate" title='{!tc.buildertek__Date_Approved__c}'>
+                                                        <!-- {!tc.buildertek__Date_Approved__c} -->
+                                                        <lightning:formattedDateTime value="{!tc.buildertek__Date_Approved__c}" year="numeric" month="numeric" day="numeric" hour="2-digit" minute="2-digit" />
+                                                    </div>
+                                                </td>
+                                                <td data-label="Total Amount Tax">
+                                                    <div class="slds-truncate" title='{!tc.buildertek__Total_Amount_Tax__c}'>
+                                                        {!tc.buildertek__Total_Amount_Tax__c}
+                                                    </div>
+                                                </td>
+                                                <!-- <td data-label="Daily Expense">
+                                                    <div class="slds-truncate" title='{!tc.buildertek__Net_Amount__c}'>
+                                                        <lightning:formattedNumber value="{!tc.buildertek__Net_Amount__c}" style="currency"/>
+                                                    </div>
+                                                </td> -->
+                                            </tr>
+                                        </aura:iteration>
+                                    </tbody>
+                                    <aura:if isTrue="{!empty(v.tableDataList)}">
+                                        <td colspan="5" style="text-align: center; line-height: 10rem; font-size: 18px; ">
+                                            No Data Found
+                                        </td>
+                                    </aura:if>
+                                </table> 
+                            </aura:if>
+
+                    
+                            <aura:if isTrue="{!v.SelectPO}">
+                                <br />
+                                <table class="slds-table slds-table_cell-buffer slds-table_bordered" aria-label="Example default base table of Opportunities">
+                                    <thead>
+                                        <tr class="slds-line-height_reset">
+                                            <th class="slds-text-align_right slds-cell_action-mode" scope="col" style="width:3.25rem;">
+                                                <lightning:input type="checkbox" name="checkAll" onchange="{!c.checkAll}" checked="{!v.checkedAll}" />
+                                            </th>
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title="PO Number">PO Number</div>
+                                            </th>
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title="Type">Type</div>
+                                            </th>
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title="Cost Code">Cost Code</div>
+                                            </th>
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title="Vendor">Vendor</div>
+                                            </th>
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title="PO Balance">PO Balance</div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!v.tableDataList}" var="tc">
+                                            <tr class="slds-hint-parent">
+                                                <td class="slds-text-align_right slds-cell_action-mode" role="gridcell">
+                                                    <div class="slds-checkbox">
+                                                    <lightning:input type="checkbox" name="input1" checked="{!tc.selected}" id="{!tc.Id}" onchange="{!c.checkboxChange}" />
+                                                    </div>
+                                                </td>
+                                                <td data-label="Name" scope="row">
+                                                    <div class="slds-truncate" title='{!tc.Name}'>
+                                                        {!tc.Name}
+                                                    </div>
+                                                </td>
+                                                <td data-label="Resource Name">
+                                                    <div class="slds-truncate" title='{!tc.buildertek__Type__c}'>
+                                                        {!tc.buildertek__Type__c}
+                                                    </div>
+                                                </td>
+                                                <td data-label="Total Hours Clocked">
+                                                    <div class="slds-truncate" title='{!tc.buildertek__Cost_Code__c}'>
+                                                        {!tc.buildertek__Cost_Code__c}
+                                                    </div>
+                                                </td>
+                                                <td data-label="Total Hours Clocked">
+                                                    <div class="slds-truncate" title='{!tc.buildertek__Vendor__c}'>
+                                                        {!tc.buildertek__Vendor__r.Name}
+                                                    </div>
+                                                </td>
+                                                <td data-label="Daily Expense">
+                                                    <div class="slds-truncate" title='{!tc.buildertek__PO_Balance__c}'>
+                                                        <lightning:formattedNumber value="{!tc.buildertek__PO_Balance__c}" style="currency"/>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </aura:iteration>
+                                    </tbody>
+                                    <aura:if isTrue="{!empty(v.tableDataList)}">
+                                        <td colspan="6" style="text-align: center; line-height: 10rem; font-size: 18px; ">
+                                            No Data Found
+                                        </td>
+                                    </aura:if>
+                                </table> 
+                            </aura:if>
+
+                        `   </div>
+                    
+                            <aura:if isTrue="{!v.Page2}">
+                                <lightning:layout>
+                                    <lightning:layoutItem padding="around-small" size="6">
+                                        <label class="slds-form-element__label slds-size_6-of-12">Budget</label>
+                                        <div>
+                                            <ui:inputSelect aura:id="selectedBudget" value="{!v.selectedBudgetId}" change="{!c.changeBudget}">
+                                                <!-- <aura:if isTrue="{!v.budgetsOptions.length > 1}">
+                                                </aura:if> -->
+                                                <option value="" selected="true">Select a Budget</option>
+                                                <aura:iteration items="{!v.budgetsOptions}" var="option" >
+                                                    <option value="{!option.Id}" selected="{!option.Id == v.selectedBudgetId}">{!option.Name}</option>
+                                                </aura:iteration>
+                                            </ui:inputSelect>
+                                        </div>
+                                    </lightning:layoutItem>
+                                    <!-- <lightning:layoutItem padding="around-small" size="6">
+                                        <label class="slds-form-element__label slds-size_6-of-12"> </label>
+                                        <div class="btnSet">
+                                        <lightning:button label="Save" variant="brand" onclick="{!c.save}" />
+                                        <lightning:button label="Back" variant="brand" onclick="{!c.backtoPage1}" />
+                                        </div>
+                                        
+                                    </lightning:layoutItem> -->
+                                    
+                                </lightning:layout>
+                    
+                                <aura:if isTrue="{!v.SelectBLines}">
+                                    <table class="slds-table slds-table_cell-buffer slds-table_bordered" aria-label="Example default base table of Opportunities">
+                                        <thead>
+                                            <tr class="slds-line-height_reset">
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate" title="Product Family">Expense Name</div>
+                                                </th>
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate" title="Product Name">Description</div>
+                                                </th>
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate" title="Product Code">Cost Code</div>
+                                                </th>
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate" title="Product Description">Expense Total</div>
+                                                </th>
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate" title="Product Code">Vendor</div>
+                                                </th>
+                                                <!-- <th class="" scope="col">
+                                                    <div class="slds-truncate" title="Product Code">Budget</div>
+                                                </th> -->
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate" title="Product Code">Budget Line</div>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <aura:iteration items="{!v.selectedExpenses}" var="exp">
+                                                <tr class="slds-hint-parent">
+                                                    <td data-label="Name" scope="row">
+                                                        <div class="slds-truncate" title='{!exp.Name}'>
+                                                            {!exp.Name}
+                                                        </div>
+                                                    </td>
+                                                    <td data-label="Expense Description">
+                                                        <div class="slds-truncate" title='{!exp.buildertek__Description__c}'>
+                                                            {!exp.buildertek__Description__c}
+                                                        </div>
+                                                    </td>
+                                                    <td data-label="Budget">
+                                                       <div class="slds-truncate" title='{!exp.buildertek__Cost_Code__c}'>
+                                                           {!exp.buildertek__Cost_Code__r.Name}                            
+                                                       </div>
+                                                    </td>
+                                                    <td data-label="Expense Total">
+                                                        <div class="slds-truncate" title='{!exp.buildertek__Total_Expense__c}'>
+                                                            <lightning:formattedNumber value="{!exp.buildertek__Total_Expense__c}" style="currency"/>
+                                                        </div>
+                                                    </td>
+                                                    <td data-label="Vendor">
+                                                        <div class="slds-truncate" title='{!exp.buildertek__Vendor__c}'>
+                                                            {!exp.buildertek__Vendor__c}
+                                                        </div>
+                                                    </td>
+                                                    <!-- <td data-label="Budget">
+                                                        <div class="slds-truncate" title='{!exp.buildertek__Budget__c}'>
+                                                            {!v.selectedBudgetName}
+                                                        </div>
+                                                     </td> -->
+                                                    <td data-label="Budget Line">
+                                                        <div class="slds-truncate" title='{!exp.buildertek__Budget_Line__c}'>
+                                                            <ui:inputSelect aura:id="selectedBudgetLine" value="{!exp.buildertek__Budget_Line__c}" change="{!c.changeBudgetLine}">
+                                                                <option value="" selected="{!exp.buildertek__Budget_Line__c == ''}">Create a new Budget Line</option>
+                                                                <aura:iteration items="{!v.budgetLinesOptions}" var="option" >
+                                                                    <option value="{!option.Id}" selected="{!option.Id == exp.buildertek__Budget_Line__c}">{!option.Name}</option>
+                                                                </aura:iteration>
+                                                            </ui:inputSelect>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </aura:iteration>
+                                        </tbody>
+                                    </table>
+                                </aura:if>
+                    
+                                <aura:if isTrue="{!v.TimeCardP2}">
+                                    <table class="slds-table slds-table_cell-buffer slds-table_bordered" aria-label="Example default base table of Opportunities">
+                                        <thead>
+                                            <tr class="slds-line-height_reset">
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate" title="Time Card Number">Time Card Number</div>
+                                                </th>
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate" title="Resource">Resource</div>
+                                                </th>
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate" title="Total Hours Clocked">Total Hours Clocked</div>
+                                                </th>
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate" title="Daily Expense">Daily Expense</div>
+                                                </th>
+                                                <!-- <th class="" scope="col">
+                                                    <div class="slds-truncate" title="Product Code">Budget</div>
+                                                </th> -->
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate" title="Product Code">Budget Line</div>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <aura:iteration items="{!v.selectedTimeCards}" var="tc">
+                                                <tr class="slds-hint-parent">
+                                                    <td data-label="Name" scope="row">
+                                                        <div class="slds-truncate" title='{!tc.Name}'>
+                                                            {!tc.Name}
+                                                        </div>
+                                                    </td>
+                                                    <td data-label="Resource Name">
+                                                        <div class="slds-truncate" title='{!tc.buildertek__Resource__r}'>
+                                                            {!tc.buildertek__Resource__r.Name}
+                                                        </div>
+                                                    </td>
+                                                    <td data-label="Total Hours Clocked">
+                                                        <div class="slds-truncate" title='{!tc.buildertek__Hours_Worked__c}'>
+                                                            {!tc.buildertek__Hours_Worked__c}
+                                                        </div>
+                                                    </td>
+                                                    <!-- <td data-label="Daily Expense">
+                                                       <div class="slds-truncate" title='{!tc.buildertek__Daily_Expense__c}'>
+                                                           {!tc.buildertek__Daily_Expense__c}                            
+                                                       </div>
+                                                    </td> -->
+                                                    <td data-label="Daily Expense">
+                                                        <div class="slds-truncate" title='{!tc.buildertek__Daily_Expense__c}'>
+                                                            <lightning:formattedNumber value="{!tc.buildertek__Daily_Expense__c}" style="currency"/>
+                                                        </div>
+                                                    </td>
+                                                    <!-- <td data-label="Budget">
+                                                        <div class="slds-truncate" title='{!exp.buildertek__Budget__c}'>
+                                                            {!v.selectedBudgetName}
+                                                        </div>
+                                                     </td> -->
+                                                    <td data-label="Budget Line">
+                                                        <div class="slds-truncate" title='{!tc.buildertek__Budget_Line__c}'>
+                                                            <ui:inputSelect aura:id="selectedBudgetLine" value="{!tc.buildertek__Budget_Line__c}" change="{!c.changeBudgetLine}">
+                                                                <option value="" selected="{!tc.buildertek__Budget_Line__c == ''}">Create a new Budget Line</option>
+                                                                <aura:iteration items="{!v.budgetLinesOptions}" var="option" >
+                                                                    <option value="{!option.Id}" selected="{!option.Id == tc.buildertek__Budget_Line__c}">{!option.Name}</option>
+                                                                </aura:iteration>
+                                                            </ui:inputSelect>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </aura:iteration>
+                                        </tbody>
+                                    </table>
+                                </aura:if>
+                    
+                                <aura:if isTrue="{!v.InvoiceP2}">
+                                    <table class="slds-table slds-table_cell-buffer slds-table_bordered" aria-label="Example default base table of Opportunities">
+                                        <thead>
+                                            <tr class="slds-line-height_reset">
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate" title="Invoice Number">Invoice Number</div>
+                                                </th>
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate" title="Description">Description</div>
+                                                </th>
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate" title="Cost Code">Cost Code</div>
+                                                </th>
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate" title="Remaining Balance">Remaining Balance</div>
+                                                </th>
+                                                <!-- <th class="" scope="col">
+                                                    <div class="slds-truncate" title="Product Code">Budget</div>
+                                                </th> -->
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate" title="Product Code">Budget Line</div>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <aura:iteration items="{!v.selectedInvoices}" var="tc">
+                                                <tr class="slds-hint-parent">
+                                                    <td data-label="Name" scope="row">
+                                                        <div class="slds-truncate" title='{!tc.buildertek__Auto_Number__c}'>
+                                                            {!tc.buildertek__Auto_Number__c}
+                                                        </div>
+                                                    </td>
+                                                    <td data-label="Description">
+                                                        <div class="slds-truncate" title='{!tc.buildertek__Description__c}'>
+                                                            {!tc.buildertek__Description__c}
+                                                        </div>
+                                                    </td>
+                                                    <td data-label="Cost Code">
+                                                        <div class="slds-truncate" title='{!tc.buildertek__Cost_Code__c}'>
+                                                            {!tc.buildertek__Cost_Code__c}
+                                                        </div>
+                                                    </td>
+                                                    <!-- <td data-label="Daily Expense">
+                                                       <div class="slds-truncate" title='{!tc.buildertek__Daily_Expense__c}'>
+                                                           {!tc.buildertek__Daily_Expense__c}                            
+                                                       </div>
+                                                    </td> -->
+                                                    <td data-label="Remaining Balance">
+                                                        <div class="slds-truncate" title='{!tc.buildertek__Net_Amount__c}'>
+                                                            <lightning:formattedNumber value="{!tc.buildertek__Net_Amount__c}" style="currency"/>
+                                                        </div>
+                                                    </td>
+                                                    <!-- <td data-label="Budget">
+                                                        <div class="slds-truncate" title='{!exp.buildertek__Budget__c}'>
+                                                            {!v.selectedBudgetName}
+                                                        </div>
+                                                     </td> -->
+                                                    <td data-label="Budget Line">
+                                                        <div class="slds-truncate" title='{!tc.buildertek__Budget_Line__c}'>
+                                                            <ui:inputSelect aura:id="selectedBudgetLine" value="{!tc.buildertek__Budget_Line__c}" change="{!c.changeBudgetLine}">
+                                                                <option value="" selected="{!tc.buildertek__Budget_Line__c == ''}">Create a new Budget Line</option>
+                                                                <aura:iteration items="{!v.budgetLinesOptions}" var="option" >
+                                                                    <option value="{!option.Id}" selected="{!option.Id == tc.buildertek__Budget_Line__c}">{!option.Name}</option>
+                                                                </aura:iteration>
+                                                            </ui:inputSelect>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </aura:iteration>
+                                        </tbody>
+                                    </table>
+                                </aura:if>
+                    
+
+                                <aura:if isTrue="{!v.coPage2}">
+                                    <table class="slds-table slds-table_cell-buffer slds-table_bordered" aria-label="Example default base table of Opportunities">
+                                        <thead>
+                                            <tr class="slds-line-height_reset">
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate" title="Change Order">Change Order</div>
+                                                </th>
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate" title="Date Approved">Date Approved</div>
+                                                </th>
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate" title="Total Amount Tax">Total Amount Tax </div>
+                                                </th>
+                                                <!-- <th class="" scope="col">
+                                                    <div class="slds-truncate" title="Remaining Balance">Remaining Balance</div>
+                                                </th> -->
+                                                <!-- <th class="" scope="col">
+                                                    <div class="slds-truncate" title="Product Code">Budget</div>
+                                                </th> -->
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate" title="Product Code">Budget Line</div>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <aura:iteration items="{!v.selectedCOs}" var="tc">
+                                                <tr class="slds-hint-parent">
+                                                    <td data-label="Name" scope="row">
+                                                        <div class="slds-truncate" title='{!tc.buildertek__CO_Number__c}'>
+                                                            {!tc.buildertek__CO_Number__c}
+                                                        </div>
+                                                    </td>
+                                                    <td data-label="Description">
+                                                        <div class="slds-truncate" title='{!tc.buildertek__Date_Approved__c}'>
+                                                            <!-- {!tc.buildertek__Date_Approved__c} -->
+                                                            <lightning:formattedDateTime value="{!tc.buildertek__Date_Approved__c}" year="numeric" month="numeric" day="numeric" hour="2-digit" minute="2-digit" />
+                                                        </div>
+                                                    </td>
+                                                    <td data-label="Total Cost">
+                                                        <div class="slds-truncate" title='{!tc.buildertek__Total_Amount_Tax__c}'>
+                                                            {!tc.buildertek__Total_Amount_Tax__c}
+                                                        </div>
+                                                    </td>
+                                                    <!-- <td data-label="Daily Expense">
+                                                       <div class="slds-truncate" title='{!tc.buildertek__Daily_Expense__c}'>
+                                                           {!tc.buildertek__Daily_Expense__c}                            
+                                                       </div>
+                                                    </td> -->
+                                                    <!-- <td data-label="Remaining Balance">
+                                                        <div class="slds-truncate" title='{!tc.buildertek__Net_Amount__c}'>
+                                                            <lightning:formattedNumber value="{!tc.buildertek__Net_Amount__c}" style="currency"/>
+                                                        </div>
+                                                    </td> -->
+                                                    <!-- <td data-label="Budget">
+                                                        <div class="slds-truncate" title='{!exp.buildertek__Budget__c}'>
+                                                            {!v.selectedBudgetName}
+                                                        </div>
+                                                     </td> -->
+                                                    <td data-label="Budget Line">
+                                                        <div class="slds-truncate" title='{!tc.buildertek__Budget_Line__c}'>
+                                                            <ui:inputSelect aura:id="selectedBudgetLine" value="{!tc.buildertek__Budget_Line__c}" change="{!c.changeBudgetLine}">
+                                                                <option value="" selected="{!tc.buildertek__Budget_Line__c == ''}">Create a new Budget Line</option>
+                                                                <aura:iteration items="{!v.budgetLinesOptions}" var="option" >
+                                                                    <option value="{!option.Id}" selected="{!option.Id == tc.buildertek__Budget_Line__c}">{!option.Name}</option>
+                                                                </aura:iteration>
+                                                            </ui:inputSelect>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </aura:iteration>
+                                        </tbody>
+                                    </table>
+                                </aura:if>
+                                <aura:if isTrue="{!v.PurchaseOrderP2}">
+                                    <table class="slds-table slds-table_cell-buffer slds-table_bordered" aria-label="Example default base table of Opportunities">
+                                        <thead>
+                                            <tr class="slds-line-height_reset">
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate" title="Invoice Number">PO Number</div>
+                                                </th>
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate" title="Description">Type</div>
+                                                </th>
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate" title="Cost Code">Cost Code</div>
+                                                </th>
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate" title="Vendor">Vendor</div>
+                                                </th>
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate" title="PO Balance">PO Balance</div>
+                                                </th>
+                                                <!-- <th class="" scope="col">
+                                                    <div class="slds-truncate" title="Product Code">Budget</div>
+                                                </th> -->
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate" title="Product Code">Budget Line</div>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <aura:iteration items="{!v.selectedPurchaseOrders}" var="tc">
+                                                <tr class="slds-hint-parent">
+                                                    <td data-label="Name" scope="row">
+                                                        <div class="slds-truncate" title='{!tc.Name}'>
+                                                            {!tc.Name}
+                                                        </div>
+                                                    </td>
+                                                    <td data-label="Description">
+                                                        <div class="slds-truncate" title='{!tc.buildertek__Type__c}'>
+                                                            {!tc.buildertek__Type__c}
+                                                        </div>
+                                                    </td>
+                                                    <td data-label="Cost Code">
+                                                        <div class="slds-truncate" title='{!tc.buildertek__Cost_Code__c}'>
+                                                            {!tc.buildertek__Cost_Code__c}
+                                                        </div>
+                                                    </td>
+                                                    <td data-label="Cost Code">
+                                                        <div class="slds-truncate" title='{!tc.buildertek__Vendor__r}'>
+                                                            {!tc.buildertek__Vendor__r.Name}
+                                                        </div>
+                                                    </td>
+                                                    <!-- <td data-label="Daily Expense">
+                                                       <div class="slds-truncate" title='{!tc.buildertek__Daily_Expense__c}'>
+                                                           {!tc.buildertek__Daily_Expense__c}                            
+                                                       </div>
+                                                    </td> -->
+                                                    <td data-label="Remaining Balance">
+                                                        <div class="slds-truncate" title='{!tc.buildertek__PO_Balance__c}'>
+                                                            <lightning:formattedNumber value="{!tc.buildertek__PO_Balance__c}" style="currency"/>
+                                                        </div>
+                                                    </td>
+                                                    <!-- <td data-label="Budget">
+                                                        <div class="slds-truncate" title='{!exp.buildertek__Budget__c}'>
+                                                            {!v.selectedBudgetName}
+                                                        </div>
+                                                     </td> -->
+                                                    <td data-label="Budget Line">
+                                                        <div class="slds-truncate" title='{!tc.buildertek__Budget_Line__c}'>
+                                                            <ui:inputSelect aura:id="selectedBudgetLine" value="{!tc.buildertek__Budget_Line__c}" change="{!c.changeBudgetLine}">
+                                                                <option value="" selected="{!tc.buildertek__Budget_Line__c == ''}">Create a new Budget Line</option>
+                                                                <aura:iteration items="{!v.budgetLinesOptions}" var="option" >
+                                                                    <option value="{!option.Id}" selected="{!option.Id == tc.buildertek__Budget_Line__c}">{!option.Name}</option>
+                                                                </aura:iteration>
+                                                            </ui:inputSelect>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </aura:iteration>
+                                        </tbody>
+                                    </table>
+                                </aura:if>
+                                
+                            </aura:if>
+                    
+                        <!-- </lightning:card> -->
+                        
+                    </div>
+                </div>
+            </div>
+            <footer role="contentinfo" class="slds-docked-form-footer fixedFooter" style="display:block;text-align:right;padding-right:5px;">
+                <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}">Cancel</button>
+
+                <aura:if isTrue="{!v.Page1}">
+                    <!-- <button class="slds-button slds-buttonneutral" onclick="{!c.closeModel}">Cancel</button> -->
+                    <button class="slds-button slds-button--brand" onclick="{!c.page2}">Next</button>
+                </aura:if>
+                <aura:if isTrue="{!v.Page2}">
+                    <button class="slds-button slds-button--neutral" onclick="{!c.backtoPage1}">Previous</button>
+                    <button class="slds-button slds-button--brand" onclick="{!c.save}">Save</button>
+                </aura:if>
+
+            </footer>
+        </div>
+    </div>
+
+
+</aura:component>

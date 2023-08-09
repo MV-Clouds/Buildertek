@@ -1,0 +1,107 @@
+<aura:component controller="MasterBudgetItemDAO" implements="force:hasRecordId,force:lightningQuickActionWithoutHeader,lightning:actionOverride" access="global">
+    <aura:attribute name="parentRecordId" type="String"/>
+    <aura:attribute name="isOpen" type="boolean" default="false"/>
+    <aura:attribute name="Spinner" type="boolean" default="false"/>
+    <aura:attribute name="IsConsole" type="boolean" default="false" />
+    <aura:attribute name="AppName" type="String" default="" />
+    <aura:attribute name="selectedCostCode" type="sObject"/>
+    <aura:attribute name="selectedTradeType" type="sObject"/>
+    <aura:attribute name="selectedAccount" type="sObject"/> 
+    <aura:attribute name="selectedMasterBudget" type="sObject"/>
+    <aura:attribute name="selectedGroup" type="sObject"/>
+    <aura:attribute name="selectedLookUpRecord" type="string" />
+    <aura:attribute name="pricebookoptions" type="List"/>
+    <aura:attribute name="pricebookName" type="string"/>
+    <aura:attribute name="productId" type="string"/>
+    <aura:attribute name="productName" type="string"/>
+    <aura:attribute name="clearLookupValue" type="Aura.Action" />
+    <aura:attribute name="newBudgetItem" type="Master_Budget_Line__c" default="{ 'sobjectType': 'Master_Budget_Line__c'}" access="global"/>
+    <aura:handler name="oSelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.handleComponentEvent}"/>
+	<aura:handler name="SelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.handleComponentEvents}"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+   
+    <ltng:require styles="{!$Resource.ModalPreview62moreMedia}"/>
+    <lightning:notificationsLibrary aura:id="notifLib"/>
+    <lightning:workspaceAPI aura:id="workspace"/>
+   <!-- <div class="slds-m-around_small">-->
+        <!--<aura:if isTrue="{!v.IsConsole}" >-->
+            <aura:if isTrue="{!v.isOpen}"> 
+                <!--<section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">-->
+                    <div class="consoleModal slds-modal__container">
+                        <div class="consoleModalContent slds-modal__content slds-p-around_small" id="modal-content-id-1">
+                            <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New Master Budget Line</h2>
+                            <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__Master_Budget_Line__c">
+                            	<lightning:layout multipleRows="true" >
+                            		<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                            		    <label>Product</label>
+                            			<c:BT_LightningLookup aura:id="productId" objectAPIName="Product2" IconName="standard:product" selectedRecord="{!v.selectedLookUpRecord}" parentId="{! v.pricebookName }"/>
+                            		</lightning:layoutItem>
+                            		<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                            		    <label>Master Budget</label>
+                            		    <c:customLookup aura:id="MBId" objectAPIName="buildertek__Master_Budget__c" IconName="custom:custom18" selectedRecord="{!v.selectedMasterBudget}" />	
+                            		    <div aura:id="errorId" style="display: none;">
+                            		        <h2>Complete this field</h2>    
+                            		    </div>
+                            		</lightning:layoutItem>
+                            		<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                            		    <lightning:input aura:id="NameId" type="text" value="{!v.newBudgetItem.buildertek__Budget_Item_Name__c}" label="Budget Item Name" autocomplete="off"/>
+                            		</lightning:layoutItem>
+                            		<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small"> 
+                            		    <label>Group</label> 
+                            		    <c:customLookup aura:id="groupId" objectAPIName="buildertek__Budget_Line_Group__c" IconName="custom:custom18" selectedRecord="{!v.selectedGroup}" />	
+                            		</lightning:layoutItem>
+                            		<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                            			<lightning:input aura:id="quantityId" type="number" value="{!v.newBudgetItem.buildertek__Quantity__c}" label="Quantity" autocomplete="off"/>
+                            		</lightning:layoutItem>
+                            		<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                            		    <label>Trade Type</label>
+                            		    <c:customLookup aura:id="tradeTypeId" objectAPIName="buildertek__Trade_Type__c" IconName="custom:custom5" selectedRecord="{!v.selectedTradeType}" />
+                            		</lightning:layoutItem>
+                            		<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                            			<lightning:input type="number" formatter="currency" aura:id="unitPriceId" value="{!v.newBudgetItem.buildertek__Unit_Price__c}" label="Unit Price" autocomplete="off" step="0.01"/>
+                            		</lightning:layoutItem>
+                            		<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                            		    <label>Contractor</label>
+                            			<c:customLookup aura:id="accountId" objectAPIName="Account" IconName="standard:account" selectedRecord="{!v.selectedAccount}" />
+                            		</lightning:layoutItem>
+                            		<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                            		    <label>Cost Code</label>
+                            		    <c:customLookup aura:id="costCodeId" objectAPIName="buildertek__Cost_Codes__c" IconName="custom:custom18" selectedRecord="{!v.selectedCostCode}" />	
+                            		</lightning:layoutItem>
+                            	</lightning:layout>
+                        	</lightning:recordEditForm>
+                        </div>
+                        
+                        <aura:if isTrue="{!v.Spinner}">
+                            <div aura:id="spinnerId" class="slds-spinner_container">
+                               <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                                 <span class="slds-assistive-text">Loading</span>
+                                 <div class="slds-spinner__dot-a"></div>
+                                 <div class="slds-spinner__dot-b"></div>
+                                    <div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+                
+                               </div>
+                            </div>
+                         </aura:if>
+                         <div class="Console">
+                            <lightning:button variant="neutral" 
+                                              label="Cancel"
+                                              title="Cancel"
+                                              onclick="{! c.closeModel }"/>
+                            <lightning:button variant="neutral" 
+                                              label="Save &amp; New"
+                                              title="Save &amp; New"
+                                              onclick="{!c.saveAndNew}"/>                  
+                            <lightning:button variant="brand" 
+                                              label="Save"
+                                              title="Save"
+                                              onclick="{!c.save}"/>
+                        </div>
+                    </div>
+                <!--</section>-->
+            </aura:if>    
+        <!--</aura:if>-->
+    <!--</div>-->
+</aura:component>

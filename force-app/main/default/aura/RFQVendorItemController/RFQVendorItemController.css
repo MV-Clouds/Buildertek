@@ -1,0 +1,8 @@
+.THIS .comments-icn{ 
+     --sds-c-icon-color-foreground-default: rgba(1, 118, 211, 1); 
+    cursor: pointer;
+}
+
+.THIS .pointer{
+    cursor: pointer;
+}

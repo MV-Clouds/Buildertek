@@ -1,0 +1,104 @@
+<aura:component implements="force:hasRecordId,force:lightningQuickActionWithoutHeader,lightning:actionOverride"
+    access="global" controller="AssociateWarrantyController">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="parentRecordId" type="String" default="" />
+    <aura:attribute name="newwarrantyId" type="String" default="" />
+    <aura:attribute name="isLoading" type="Boolean" />
+    <aura:attribute name="isProjectFieldExist" type="Boolean" default ="false"/>
+    <aura:attribute name="listOfFields" type="List" />
+    <aura:attribute name="budgetId" type="String" />
+    <aura:attribute name="typevalue" type="String" />
+    <aura:attribute name="parentobjectName" type="String" />
+    <aura:attribute name="warrantyList" type="list" />
+    <aura:attribute name="isWarranty" type="Boolean" default = "false"/>
+    <aura:attribute name="isnewwarranty" type="Boolean" default = "false"/>
+    <aura:attribute name="value" type="String" />
+    <aura:attribute name="effectiveDate" type="Date" />
+    <aura:attribute name="nextwarranty" type="String" />
+    <aura:attribute name="lagValue" type="Integer" />
+    <lightning:workspaceAPI aura:id="workspace" />
+    
+    <aura:if isTrue="{!v.isWarranty}">
+        <aura:if isTrue="{!if(v.warrantyList.length > 0,true,false)}">
+            <article class="slds-card"> 
+            <div class="slds-page-header slds-p-bottom_x-small"> 
+                <div class="slds-media">
+                    <div class="slds-media__body">
+                        <h4 style="text-align:justify" class="slds-truncate slds-align-middle">
+                       <!-- <h3 class="slds-page-header__title slds-truncate slds-align-middle" > -->
+                          <p>  <b>Please select a Warranty from the list below if you want to associate other Warranties.</b></p></h4>
+                    </div>
+                </div> 
+            </div>
+        </article>
+            <br/>
+            <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table slds-scrollable">
+                <thead>
+                    <tr class="slds-line-height_reset" style="text-align: center">
+                        <th style="white-space: pre-wrap;"></th>
+                        <th style="white-space: pre-wrap;"><b>Name</b></th>
+                        <th style="white-space: pre-wrap;width:20%; "><b>Description</b></th>
+                        <th style="white-space: pre-wrap;"><b>Effective Date</b></th> 
+                        <th style="white-space: pre-wrap;"><b>Due Date</b></th> 
+                        <th style="white-space: pre-wrap;"><b>Lag Value</b></th> 
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.warrantyList}" var="wrap" >
+                        <tr class="slds-hint-parent" >
+                            <td><!--<input id="{!'radio-'+warrantyRec.Id}" value="{!warrantyRec.Id}" name="options" type="radio"
+                                       onchange="{!c.optionSelected}"/>-->
+                                <ui:inputRadio aura:id="radio" name="select" label="" value="{!wrap.selectedWarranty}" />
+                            </td>
+                            <td>
+                                <a href="{!'/lightning/r/buildertek__Warranty__c/'+wrap.WarrantyRec.Id+'/view'}" target="_blank" >{!wrap.WarrantyRec.Name}</a>
+                            </td>
+                            <td>
+                                <div class ="slds-line-clamp_small">
+                                    {!wrap.WarrantyRec.buildertek__Description__c}
+                                </div>
+                            </td>
+                            <td>
+                                {!wrap.WarrantyRec.buildertek__Effective_Date__c}
+                            </td>
+                            <td>
+                                {!wrap.WarrantyRec.buildertek__Due_Date__c}
+                            </td>
+                            <td>
+                                <lightning:input value="{!wrap.LagValue}" aura:id="lagvalueid" />
+                            </td> 
+                        </tr>
+                    </aura:iteration>
+                </tbody>
+            </table>
+            <div class="slds-col modal-footer slds-modal__footer slds-buttoncustom" >
+            <lightning:button onclick="{!c.CloseModel}" variant="neutral">No</lightning:button> 
+            <lightning:button onclick="{!c.SaveModel}" variant="brand">Yes</lightning:button>
+        </div>
+       <aura:set attribute="else">
+                    <div class="slds-box">
+                        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                            <div class="slds-media__body">
+                                <h2 class="slds-card__header-title">
+                                    <span>No records found</span>
+                                </h2>
+                            </div>
+                        </header>
+                    </div>
+                </aura:set>
+        </aura:if>
+    </aura:if>
+    <aura:if isTrue="{!v.isLoading}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+            </div>
+        </div>
+    </aura:if>
+    <lightning:notificationsLibrary aura:id="notifLib" />  
+</aura:component>

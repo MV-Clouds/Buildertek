@@ -1,0 +1,239 @@
+<!--**********************************************************************************
+* Copyright © 2017-2017, BuilderTek.
+* All rights reserved
+*
+* VisualForce Component: BT_JsAndCssIncludeComponent
+* Created by Sagar: 19/09/2017
+*
+* - Include JS and CSS files.
+*
+* - Modifications:
+* - Sagar, 19/12/2017 – Initial Development
+***********************************************************************************-->
+<apex:component >
+    <apex:attribute name="importJquery"
+        description="Assign true if you dont want to import jquery files"
+        type="Boolean" default="false" />
+    <apex:attribute name="importAppurinUtil"
+        description="Assign true if you dont want to import Aruvio util file"
+        type="Boolean" default="false" />
+    <apex:attribute name="importJQueryLayout"
+        description="Assign true if you dont want to import jquery layout files"
+        type="Boolean" default="false" />   
+    <apex:attribute name="importFancyTree"
+        description="Assign true if you dont want to import fancytree files"
+        type="Boolean" default="false" />
+    <apex:attribute name="importJqGrid"
+        description="Assign true if you dont want to import jQGrid files"
+        type="Boolean" default="false" />
+    <apex:attribute name="importEasyTooltip"
+        description="Assign true if you dont want to import easy tooltip files"
+        type="Boolean" default="false" />
+    <apex:attribute name="importAppurinCss"
+        description="Assign true if you dont want to import Aruvio Css file"
+        type="Boolean" default="false" />
+    <apex:attribute name="importCkEditor"
+        description="Assign true if you dont want to import CkEditor files"
+        type="Boolean" default="false" />
+    <apex:attribute name="importLightningDesign"
+        description="Assign true if you dont want to import Lightning Design System files"
+        type="Boolean" default="false" />
+    <apex:attribute name="importGnattChart"
+        description="Assign true if you dont want to import Gnatt chart files"
+        type="Boolean" default="false" /> 
+    <apex:attribute name="importAutoComplete"
+		description="Assign true if you want to import Auto Complete componenet files"
+		type="Boolean" default="false" />	      
+        
+    <!-- jQuery Stuff -->
+    <apex:outputPanel rendered="{!importJquery}">
+        <apex:stylesheet value="{!URLFOR($Resource.Jquery, 'jquery/css/ui-smoothness/jquery-ui.min.css')}" />
+        <!-- 
+        <apex:includeScript value="{!$Resource.buildertek__Jquery}/jquery/js/jquery-2.2.4.min.js"></apex:includeScript>
+        <apex:includeScript value="{!$Resource.buildertek__Jquery}/jquery/js/jquery-migrate-1.3.0.min.js"></apex:includeScript>
+        <apex:includeScript value="{!$Resource.buildertek__Jquery}/jquery/js/jquery-ui-1.11.4.min.js"></apex:includeScript>
+        -->
+		<apex:includeScript value="{!$Resource.Jquery}/jquery/js/jquery-3.2.1.min.js" />
+		<apex:includeScript value="{!$Resource.Jquery}/jquery/js/jquery-migrate-1.4.1.min.js" />
+		<apex:includeScript value="{!$Resource.Jquery}/jquery/js/jquery-ui-1.12.1.min.js" />
+        <script type="text/javascript">
+            var j$ = jQuery.noConflict();
+        </script>
+    </apex:outputPanel>
+    
+    <!-- AppurinUtil Js -->
+    <apex:outputPanel rendered="{!importAppurinUtil}">
+        <apex:includeScript value="{!$Resource.BT_ResourceUtils}/appurin-util.min.js"></apex:includeScript>
+    </apex:outputPanel>
+    
+    <!-- jQuery Layout -->
+    <apex:outputPanel rendered="{!importJQueryLayout}">
+        <apex:stylesheet value="{!URLFOR($Resource.Jquery, '/jquery/jlayout/complex.min.css')}" />
+        <apex:includeScript value="{!$Resource.Jquery}/jquery/jlayout/jquery.layout.min.js"></apex:includeScript>
+        <apex:includeScript value="{!$Resource.BT_ResourceUtils}/appurin-twopanelayout.min.js"></apex:includeScript>
+    </apex:outputPanel>
+    
+    <!-- Fancytree -->
+    <apex:outputPanel rendered="{!importFancyTree}">
+        <apex:stylesheet value="{!URLFOR($Resource.Jquery, 'jquery/fancytree/skin-win8/ui.fancytree.min.css')}" />
+        <apex:includeScript value="{!$Resource.Jquery}/jquery/fancytree/jquery.fancytree.min.js"></apex:includeScript>
+        <apex:includeScript value="{!$Resource.Jquery}/jquery/fancytree/jquery.fancytree.childcounter.min.js"></apex:includeScript>
+        <apex:includeScript value="{!$Resource.Jquery}/jquery/fancytree/jquery.fancytree.table.min.js"></apex:includeScript>
+        <apex:includeScript value="{!$Resource.Jquery}/jquery/fancytree/jquery.fancytree.filter.min.js"></apex:includeScript>
+        <apex:includeScript value="{!$Resource.Jquery}/jquery/fancytree/jquery.fancytree.persist.min.js"></apex:includeScript>
+        <apex:includeScript value="{!$Resource.BT_ResourceUtils}/appurin-fancytree.min.js"></apex:includeScript>
+        <style>
+            #easyTooltip{
+                display: none;   
+            }
+            #easyTooltipLightning{
+                display: none;   
+            }
+        </style>
+    </apex:outputPanel>
+    
+    <!-- Jqgrid -->
+    <apex:outputPanel rendered="{!importJqGrid}">
+        <apex:stylesheet value="{!URLFOR($Resource.Jquery, 'jquery/css/ui-smoothness/jqgrid-ui-custom.min.css')}" />
+        <apex:includeScript value="{!$Resource.Jquery}/jquery/jqgrid/grid.locale-en.min.js"></apex:includeScript>
+        <apex:includeScript value="{!$Resource.Jquery}/jquery/jqgrid/jquery.jqGrid.min.js"></apex:includeScript>
+    </apex:outputPanel>
+    
+    <!-- EasyTooltip -->
+    <apex:outputPanel rendered="{!importEasyTooltip}">
+        <apex:includeScript value="{!$Resource.Jquery}/jquery/easytooltip/easyTooltip.min.js"></apex:includeScript>
+        <style>
+        	.slds-nubbin--left-top:after {
+            	margin-top: -.9rem !important;
+            }
+            .slds-nubbin--left-top:before {
+            	margin-top: -.9rem !important;
+            }
+        </style>
+    </apex:outputPanel>
+    
+    <!-- Appurin Css -->
+    <apex:outputPanel rendered="{!importAppurinCss}">
+        <apex:stylesheet value="{!URLFOR($Resource.BT_ResourceUtils, 'resources/css/appurin.min.css')}" />  
+    </apex:outputPanel>
+    
+    <!-- CKEditor -->
+    <apex:outputPanel rendered="{!importCkEditor}">
+        <apex:includescript value="{!URLFOR($Resource.BT_CkEditor,'ckeditor/ckeditor.js')}" />
+    </apex:outputPanel>
+    
+    <!-- Lightning Design System css and js-->
+    <apex:outputPanel rendered="{!importLightningDesign}">
+        <apex:stylesheet value="{!URLFOR($Resource.SLDS, 'assets/styles/salesforce-lightning-design-system-vf.min.css')}" />
+        <apex:slds />
+        <apex:includeScript value="/lightning/lightning.out.js" />
+        <apex:includeScript value="{!$Resource.BT_ResourceUtils}/appurin-lightning.min.js" />
+        <apex:stylesheet value="{!URLFOR($Resource.BT_ResourceUtils, 'resources/css/appurin-lightning.min.css')}" />
+        <script type="text/javascript">
+            // set salesforce ui theme
+            Appurin.lightning.setUITheme('{!$User.UIThemeDisplayed}');
+            Appurin.lightning.setSLDSPath('{!URLFOR($Resource.SLDS,'')}');
+        </script>
+        <style>
+            .fancytree-container{
+                font-family: "Salesforce Sans", Arial, sans-serif !important;
+            }
+            .slds-section__content{
+                padding: .75rem !important;
+            }
+            .slds-spinner_container{
+                z-index: 9002;
+            }
+        </style>
+    </apex:outputPanel>
+    
+    <!-- Gnatt chart -->
+    <apex:outputPanel rendered="{!importGnattChart}">
+    	<!-- <apex:slds /> -->
+        <script src="{!$Resource.buildertek__BTGanttChart}/codebase/dhtmlxgantt.js" type="text/javascript" charset="utf-8"></script>
+        <script src="{!$Resource.buildertek__BTGanttChart}/codebase/ext/dhtmlxgantt_auto_scheduling.js" type="text/javascript" charset="utf-8"></script>
+        
+		<!-- 
+		<script src="{!$Resource.buildertek__BTGanttChart}/codebase/ext/dhtmlxgantt_quick_info.js" type="text/javascript" charset="utf-8"></script>
+		-->
+		 <script src="{!$Resource.buildertek__BTGanttChart}/codebase/ext/dhtmlxgantt_tooltip.js" type="text/javascript" charset="utf-8"></script> 
+		<script src="{!$Resource.buildertek__BTGanttChart}/codebase/ext/dhtmlxgantt_critical_path.js" type="text/javascript" charset="utf-8"></script>
+		<script src="{!$Resource.buildertek__BTGanttChart}/codebase/ext/dhtmlxgantt_fullscreen.js" type="text/javascript" charset="utf-8"></script>
+		
+		<script src="{!$Resource.buildertek__BTGanttChart}/codebase/locale/locale.js" type="text/javascript" charset="utf-8"></script>
+		 
+		<!-- <link rel="stylesheet" href="{!$Resource.buildertek__BTGanttChart}/codebase/skins/dhtmlxgantt_material.css" type="text/css" title="no title" charset="utf-8"/> -->
+		 <link rel="stylesheet" href="{!$Resource.buildertek__BTGanttChart}/codebase/dhtmlxgantt.css" type="text/css" title="no title" charset="utf-8"/>
+		
+		<script src="{!$Resource.buildertek__BTGanttChart}/codebase/ext/dhtmlxgantt_marker.js"></script>
+		<script type="text/javascript" src="{!$Resource.buildertek__BTGanttChart}/samples/common/testdata.js"></script>
+		<script type="text/javascript" src="{!$Resource.moment}"></script>
+		
+		<style type="text/css">
+			html, body{
+				background: #fff;
+				font-family: arial;
+				height:100%;
+				padding:0px;
+				margin:0px;
+				overflow: hidden;
+			}
+			.header{
+				height: 50px;
+				text-align: center;
+				line-height: 50px;
+			}
+			.main-content{
+				height:430px;
+				//width:1449px;
+				//height: calc(100vh - 50px);
+			}
+			
+			body .bPageBlock {
+	            background-color: #FFF !important;
+	        }
+	        
+	        .dateFormat {
+	        	float: right;
+	        }
+	        .datePicker {
+	        	z-index: 9999;
+	        }
+	        
+	        .gantt_container {
+			    font-family: unset !important;
+		    }
+		</style>
+    </apex:outputPanel>
+    
+    <!-- Auto Complete -->
+	<apex:outputPanel rendered="{!importAutoComplete}">
+		<apex:includeScript value="{!URLFOR($Resource.Jquery, 'jquery/autocomplete/select2-3.4.2/select2.min.js')}"/>
+    	<apex:stylesheet value="{!URLFOR($Resource.Jquery, 'jquery/autocomplete/select2-3.4.2/select2.min.css')}"/>
+    </apex:outputPanel>
+    
+    <script type="text/javascript">
+        //Appurin.setDebug(false);
+        function easyTooltipWithClassWidthAndOffset(className, width, xoffset, yoffset){
+            var selector = '.' + className;
+            j$(selector).easyTooltip({width: width, xOffset: xoffset, yOffset: yoffset});
+        }
+    </script>
+    <style>
+        .ui-widget-header{
+            background-color: #007fcc !important;
+            background-image: none;
+            border: 0px !important;
+        }
+        .ui-jqgrid tr.ui-row-ltr td {
+            border-right: none;
+        }
+        .ui-jqgrid tr.jqgrow{
+            cursor:pointer;
+        }
+        .ui-jqgrid tr.jqgroup td{background-color:#007fcc;!important;}
+        .ui-jqgrid .ui-jqgrid-view {font-size:12px !important;}
+        .ui-jqgrid .ui-jqgrid-toppager { height:30px !important;}
+        .ui-jqgrid .ui-jqgrid-toppager .ui-pg-div>span { margin: 0 5px; font-size: 20px; }
+    </style>
+</apex:component>

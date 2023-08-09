@@ -1,0 +1,27 @@
+<aura:component access="public">
+    <aura:attribute name="responseTypeArray" type="Object[]"/>
+    
+    <lightning:accordion aura:id="accordion" allowMultipleSectionsOpen="true">
+        <aura:iteration items="{!v.responseTypeArray}" var="row" indexVar="index">
+            <lightning:buttonIcon iconName="utility:delete" variant="bare" name="{!index}" onclick="{!c.deleteAttributeType}" alternativeText="delete" />
+            <lightning:accordionSection name="{!row.Name}" label="{!row.Name}">
+                <lightning:layoutItem flexibility="auto" padding="around-small" size="6" class="custom-box">
+                    <lightning:combobox aura:id="responsetype" name="general" label="Attribute Type" options="{! v.responsetypeOptions }" value="{!row.buildertek__Drop_Down_Value__c}" onchange="{! c.responsetype }" disabled="true"/>
+                    <lightning:inputField aura:id="buildertek__choice_template__c" fieldName="buildertek__Choice_Template__c" class="slds-p-top_small slds-hide"/>
+                </lightning:layoutItem>
+                
+                <lightning:layoutItem aura:id="NewSelectionChoices" size="12" padding="around-small">
+                    <aura:iteration items="{!row.Ids}" var="item">
+                        <lightning:layout>
+                            <lightning:layoutItem padding="around-small">
+                                <lightning:buttonIcon iconName="utility:delete" variant="bare" name="{!item.Id}" onclick="{!c.deleteAttributeItem}" alternativeText="delete" />
+                                <lightning:input value="{!item.Name}" disabled="true"/>
+                            </lightning:layoutItem>
+                        </lightning:layout>
+                    </aura:iteration>
+                </lightning:layoutItem>
+            </lightning:accordionSection>
+        </aura:iteration>
+    </lightning:accordion>
+    
+</aura:component>

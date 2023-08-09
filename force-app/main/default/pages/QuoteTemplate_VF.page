@@ -1,0 +1,114 @@
+<apex:page standardController="Quote_Template__c" extensions="QuoteTemplate_AC" sidebar="false" standardStyleSheets="true">
+<apex:form id="frm">
+
+<apex:includeScript value="{!URLFOR($Resource.Doc_js, '/js/1.9.1-jquery.min.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.Doc_js, '/js/jquery-1.10.2.min.js')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.Doc_css, '/css/3.0.0-bootstrap.min.css')}"/>
+<apex:includeScript value="{!URLFOR($Resource.Doc_js, '/js/jquery.js')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.Doc_css, '/css/3.3.5-bootstrap.min.css')}"/>
+<apex:includeScript value="{!URLFOR($Resource.Doc_js, '/js/3.3.5-bootstrap.min.js')}"/>
+
+
+
+<apex:includescript value="{!URLFOR($Resource.CKEditor, 'ckeditor/ckeditor.js')}" />
+<c:QuotePDF_Styles />
+
+       
+<apex:pageblock id="pb">
+<apex:pagemessages />
+
+<apex:pageblockButtons >
+<!-- 
+<apex:commandButton action="{!Add}"  value="Add Page" /> 
+-->
+<P class="goright">
+<apex:commandButton action="{!Save}" value="Save" style="font-size: 13px;">
+<apex:commandButton action="{!doCancel}" value="Cancel" immediate="true" style="font-size: 13px;"/>  
+<script type="text/javascript">
+CKEDITOR.replace( '{!$Component.msgHeader}',
+    {    
+     filebrowserBrowseUrl : '{!$Page.SiteFileBrowser}',   
+     filebrowserImageBrowseUrl: '{!$Page.SiteFileBrowser}'
+     //filebrowserImageUploadUrl: '{!$Page.FileUpload_VF}'       
+    });
+CKEDITOR.replace( '{!$Component.msgBody}',
+    {    
+     filebrowserBrowseUrl : '{!$Page.SiteFileBrowser}',   
+     filebrowserImageBrowseUrl: '{!$Page.SiteFileBrowser}'
+     //filebrowserImageUploadUrl: '{!$Page.FileUpload_VF}'       
+    });
+CKEDITOR.replace( '{!$Component.msgFooter}',
+    {    
+     filebrowserBrowseUrl : '{!$Page.SiteFileBrowser}',   
+     filebrowserImageBrowseUrl: '{!$Page.SiteFileBrowser}'
+     //filebrowserImageUploadUrl: '{!$Page.FileUpload_VF}'       
+    });        
+     
+function beforeTextSave() {
+var objEditor = CKEDITOR.instances['{!$Component.msgHeader}'];
+document.getElementById('{!$Component.msgHeader}').value = objEditor.getData();
+
+var objEditor = CKEDITOR.instances['{!$Component.msgBody}'];
+document.getElementById('{!$Component.msgBody}').value = objEditor.getData();
+
+var objEditor = CKEDITOR.instances['{!$Component.msgFooter}'];
+document.getElementById('{!$Component.msgFooter}').value = objEditor.getData();
+}
+</script>
+</apex:commandButton>
+</P>
+</apex:pageblockButtons>
+
+<div class="container">
+    <div class="container-fluid">
+        <apex:outputPanel > 
+            <div class="row">
+               <div class="col-sm-4">
+                    <label style="float:left;font-size:12px;padding:5px" class="control-label"  for="leadCompany">Template Header</label>
+                    <apex:inputField styleClass="form-control" value="{!quoteInfo.Template_Header__c}" /> 
+                </div>
+                <div class="col-sm-4">
+                    <label style="float:left;font-size:12px;padding:5px" class="control-label"  for="leadCompany">Template Footer</label>
+                    <apex:inputField styleClass="form-control" value="{!quoteInfo.Template_Footer__c}" />
+                </div>
+                <div class="col-sm-4">
+                    <label style="float:left;font-size:12px;padding:5px" class="control-label"  for="leadCompany">Font Style</label>
+                    <apex:inputField styleClass="form-control" value="{!quoteInfo.Font_Family__c}"/>
+                </div>          
+            </div>          
+            <div class="row">
+               <div class="col-sm-4">
+                    <label style="float:left;font-size:12px;padding:5px" class="control-label"  for="leadCompany">Description</label>
+                    <apex:inputField styleClass="form-control" value="{!quoteInfo.Description__c}" /> 
+                </div>
+               <div class="col-sm-4">
+                    <label style="float:left;font-size:12px;padding:5px" class="control-label"  for="leadCompany">Template Format</label>
+                    <apex:inputField styleClass="form-control" value="{!quoteInfo.Template_Format__c}" /> 
+                </div>  
+            <div class="col-sm-4">
+                <label style="float:left;font-size:12px;padding:5px" class="control-label"  for="leadCompany">Show Page Number</label><br/><br/>
+                <label><apex:inputField style="border:0 px !important;width:1.6em;height:1.6em" value="{!quoteInfo.Show_Page_Number__c}" /></label>
+            </div>  
+            
+            <!--<div class="col-sm-3">-->
+            <!--    <label style="float:left;font-size:12px;padding:5px" class="control-label"  for="leadCompany">Show Invoice Shipment</label><br/><br/>-->
+            <!--    <label><apex:inputField style="border:0 px !important;width:1.6em;height:1.6em" value="{!quoteInfo.Show_Invoice_Shipment__c}" /></label>-->
+            <!--</div>   -->
+                        
+            </div>  
+            <div class="row">
+                <div class="col-sm-12">
+                        <apex:inputtextarea id="msgBody" styleClass="ckeditor" richtext="false" value="{!quoteInfo.Template_Body__c}" /> 
+                        <!-- 
+                        <apex:inputField styleClass="form-control" value="{!e1.PageList.QuoteTemplate_Page__c}"/>
+                        -->   
+                </div>
+            </div> 
+        </apex:outputPanel>
+        
+   
+   </div>
+</div>
+</apex:pageblock>
+</apex:form>
+</apex:page>

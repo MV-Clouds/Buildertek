@@ -1,0 +1,8 @@
+<aura:component controller="DocuSignWarrantyAcceptanceLetter" implements="force:lightningQuickActionWithoutHeader,force:hasRecordId" access="global" >   
+    <ltng:require scripts="/apex/dsfs__DocuSign_JavaScript" />
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="opportunity" type="Opportunity" />
+
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}" />
+	<p>Docusign page is loading.....</p>
+</aura:component>

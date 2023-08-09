@@ -1,0 +1,15 @@
+<apex:page showChat="false" showHeader="false" sidebar="false" applyBodyTag="false" applyHtmlTag="false">
+<html>
+    <head>
+        <title>Closing Popup</title>
+        <script>
+            function closeWindow() {
+                window.close();
+            }
+        </script>       
+    </head>
+    <body onload="closeWindow()">
+       
+    </body>
+</html>
+</apex:page>

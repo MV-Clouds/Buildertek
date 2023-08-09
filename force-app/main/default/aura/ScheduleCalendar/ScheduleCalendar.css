@@ -1,0 +1,345 @@
+.THIS body{overflow-x: hidden;}
+.THIS a:hover {
+	text-decoration: none;
+}
+
+.THIS a:focus {
+	outline: none;
+	outline-offset: 0;
+	text-decoration: none;
+}
+
+.THIS .dropNewEvent{
+  
+  font-size: 13px;
+}
+.THIS .popoverTitleCalendar{
+  width: 100%;
+  height: 100%;
+  padding: 15px 15px;
+ 
+  font-size: 13px;
+  border-radius: 5px 5px 0 0;
+}
+.THIS .popoverInfoCalendar i{
+  font-size: 14px;
+    margin-right: 10px;
+    line-height: inherit;
+    color: #d3d4da;
+}
+.THIS .popoverInfoCalendar p{
+  margin-bottom: 1px;
+}
+.THIS .popoverDescCalendar{
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #E3E3E3;
+  overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+.THIS .popover-title {
+    background: transparent;
+    font-weight: 600;
+    padding: 0 !important;
+    border: none;
+}
+.THIS .popover-content {
+    padding: 15px 15px;
+  
+    font-size: 13px;
+}
+.THIS .inputModal{
+  width: 65%;
+  margin-bottom: 10px;
+}
+.THIS #contextMenu {
+  position: absolute;
+  display:none;
+  z-index: 2;
+}
+.THIS #contextMenu .dropdown-menu{
+  border: none;
+}
+.THIS .opacityWeekend{
+  background-color: #f4f4fb !important;
+}
+.THIS .fc-avatar-image{
+    top: 4px;
+    left: 20px;
+    height: 28px;
+    width: 28px;
+    border-radius: 50%;
+    position: absolute;
+    z-index: 2;
+}
+.THIS .fc-avatar-image img{
+  height: 28px;
+  width: 28px;
+  border-radius: 50%;
+}
+.THIS .fc-avatar-image:before{
+    content: none !important;
+}
+.THIS .fc-day-header{
+  text-transform: uppercase;
+  font-size: 13px;
+  font-weight: 500;
+  color: #fff;
+  background-color: #3a8ed8;
+  padding: 11px 0px !important;
+  text-decoration: none;
+}
+.THIS .fc-day-header a{
+  text-decoration: none !important;
+  color: #fff;
+}
+.THIS .fc-center h2{
+   text-transform: uppercase;
+  font-size: 18px;
+  font-weight: 500;
+  color: #505363;
+  line-height: 32px;
+}
+.THIS .fc-agenda-view .fc-day-grid .fc-row .fc-content-skeleton {
+    padding-bottom: 1em;
+    padding-top: 1em;
+}
+.THIS .fc-day{position: relative;
+  transition: all 0.2s linear;
+}
+
+.THIS .fc-day:hover{
+  background:#EEF7FF;
+  cursor: pointer;
+  transition: all 0.2s linear;
+}
+.THIS .fc-highlight {
+    background: #EEF7FF;
+    opacity: 0.7;
+}
+.THIS .fc-time-grid-event.fc-short .fc-time:before {
+    content: attr(data-start);
+    display: none;
+}
+.THIS .fc-time-grid-event.fc-short .fc-time span {
+    display: inline-block;
+}
+.THIS .fc-time-grid-event.fc-short .fc-avatar-image {
+    display: none;
+    transition: all 0.3s linear;
+}
+
+.THIS .fc-time-grid-event.fc-short .fc-content {
+    padding: 4px 20px 10px 22px !important;
+}
+.THIS .fc-time-grid-event .fc-avatar-image{
+    top: 9px;
+}
+.THIS .fc-event-vert {
+  min-height: 22px;
+}
+.THIS .fc .fc-axis {
+    vertical-align: middle;
+    padding: 0 4px;
+    white-space: nowrap;
+    font-size: 10px;
+    color: #505362;
+    text-transform: uppercase;
+    text-align: center !important;
+    background-color: #fafafa;
+}
+.THIS .fc-unthemed .fc-event .fc-content {
+    padding: 10px 20px 10px 22px;
+    font-family: 'Roboto', sans-serif;
+    margin-left: -1px;
+    height: 100%;
+}
+.THIS .fc-event{
+    border: none !important;
+}
+.THIS .fc-day-grid-event .fc-time {
+    font-weight: 700;
+      text-transform: uppercase;
+}
+.THIS .fc-unthemed .fc-day-grid td:not(.fc-axis).fc-event-container {
+    padding: 0.2rem 0.5rem;
+}
+.THIS .colorAppointment :before {
+    
+    content: none;
+   
+}
+
+
+.THIS select.filter{
+  width: 500px !important;
+}
+
+.THIS .popover  {
+    background: #fff !important;
+    color: #2E2F34;
+  border: none;
+  margin-bottom: 10px;
+}
+
+/*popover header*/
+.THIS .popover-title{
+    background: #F7F7FC;
+    font-weight: 600;
+    padding: 15px 15px 11px ;
+    border: none;
+}
+
+/*popover arrows*/
+.THIS .popover.top .arrow:after {
+  border-top-color: #fff;
+}
+
+.THIS .popover.right .arrow:after {
+  border-right-color: #fff;
+}
+
+.THIS .popover.bottom .arrow:after {
+  border-bottom-color: #fff;
+}
+
+.THIS .popover.left .arrow:after {
+  border-left-color: #fff;
+}
+
+.THIS .popover.bottom .arrow:after {
+  border-bottom-color: #fff;
+}
+.THIS .material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;  /* Preferred icon size */
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+
+  /* Support for all WebKit browsers. */
+  -webkit-font-smoothing: antialiased;
+  /* Support for Safari and Chrome. */
+  text-rendering: optimizeLegibility;
+
+  /* Support for Firefox. */
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Support for IE. */
+  font-feature-settings: 'liga';
+}
+.THIS .fc-icon-print::before{
+  font-family: 'Material Icons';
+  content: "\e8ad";
+  font-size: 24px;
+}
+.THIS .fc-printButton-button{
+ display: none;
+}
+.THIS .fc-unthemed .fc-content{
+    
+}
+
+ .THIS .fc button .fc-icon{color: #337ab7;}
+ .THIS .fc-state-default{box-shadow: none;background-image: none;background: #fff;}
+ .THIS .fc-toolbar .fc-left{display: none;}
+ .THIS .panel-default{margin-bottom: 0;border: none;box-shadow: none;}
+ .THIS .con-box{float: left;
+    width: 60%;
+    position: absolute;
+    left: 40px;
+    top: 84px;}
+    .THIS label{font-size: 13px;}
+    .THIS .con-box .col{display: inline-block;vertical-align: middle;margin-right: 20px;}
+    .THIS .con-box .col:last-of-type{margin-right: 0;}
+    .THIS .col .input-group{display: inline-block;
+    width: 150px;}
+    .THIS .select2-container--default .select2-selection--single{border: 1px solid #e6e6e6;}
+    .THIS .fc-toolbar.fc-header-toolbar {
+		margin-bottom: 10px;
+        padding-top: 0px;
+	}
+    .THIS .fc-center{padding-left: 130px;}
+    .THIS .select2-container .select2-selection--single{height: 2.1em;}
+    .THIS .fc-toolbar button:focus {
+    z-index: 5;
+    border-color: #1b5297 !important;
+    outline: #1b5297;
+    background: #1b5297;
+    color: #fff;
+    text-shadow: none;
+}
+.THIS .fc-day-top{position: relative;}
+.THIS .btn-click{color: #1b5297;
+    z-index: 99999;
+    position: absolute;
+    right: 25px;
+    top: 4px;
+    font-size: 15px;
+    display: inline-block !important;}
+.THIS .btn-click:hover{color: #1b5297;;}
+.THIS .fc-day-top.fc-other-month{opacity: 1;}
+.THIS td{text-align: center;}
+.THIS .fc-toolbar .fc-right h2{font-size: 15px;}
+.THIS .fc-toolbar .fc-right {font-size: 13px;}
+
+/*.fc-row .fc-content-skeleton, .fc-row .fc-highlight-skeleton{z-index: -1 !important}*/
+.THIS .fc-day{cursor: default;}
+.THIS .modal-title{display: inline-block;}
+
+.THIS .modal-content .modal-header button:focus{outline: none;}
+.THIS .fc-right .fc-prev-button{
+    background-color: rgb(0, 91, 171);
+    background-image: none;
+}
+
+.THIS .fc-right .fc-next-button{
+    background-color: rgb(0, 95, 178);
+    background-image: none;
+}
+.THIS .fc-prevYear-button{
+	background-color: rgb(0, 95, 178);
+    background-image: none;    
+}
+.THIS .fc-nextYear-button{
+	background-color: rgb(0, 95, 178);
+    background-image: none;    
+}
+.THIS .fc-month-button{
+    background-color: rgb(0, 95, 178);
+    color: white;
+}
+.THIS .fc-agendaWeek-button{
+    background-color: rgb(0, 95, 178);
+    color: white;
+}
+.THIS .fc button .fc-icon{
+    color: white;
+}
+.THIS .fc-time-grid-container {
+    display: none;
+}
+.THIS .fc-time-grid {
+    display: none;
+}
+.THIS .custom-loading-text {
+    transform: rotate(-90deg);
+    position: absolute;
+    top: -0.5rem;
+    left: 1rem;
+    white-space: nowrap;
+    font-size: 20px;
+}
+.THIS  .slds-spinner_container  {
+    z-index: 10000;
+  position: fixed;
+    
+}

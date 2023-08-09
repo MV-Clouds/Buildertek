@@ -1,0 +1,32 @@
+<aura:component controller="VG_ContentService" implements="forceCommunity:availableForAllPageTypes,force:appHostable,flexipage:availableForAllPageTypes" access="global">
+    
+    <aura:attribute name="cardContent" type="Object[]" />
+    <aura:attribute name="numOfCards" type="String" access="global" default="3"/>
+    <aura:attribute name="cardType" type="String" access="global" default="small"/>
+    <aura:attribute name="autoplay" type="String" access="global" default="true"/>
+    <aura:attribute name="autoplaySpeed" type="String" access="global" default="20000"/>
+    <aura:attribute name="iconFillColor" type="String" access="global" default="#FFFFFF"/>
+    <aura:attribute name="setCallback" type="Object" access="private" />
+    <aura:attribute name="componentName" type="String" access="global" default="MissonStatement"/>
+    <style>
+        .icn svg{ fill: {!v.iconFillColor}; }
+    </style>
+    
+    <ltng:require styles="{!join(',',
+                          $Resource.carousel + '/carousel/slick/slick.css',
+                          $Resource.carousel + '/carousel/slick/slick-theme.css')}"
+                  scripts="{!join(',',
+                           $Resource.carousel + '/carousel/jquery/jquery.js',
+                           $Resource.carousel + '/carousel/slick/slick.min.js')}"
+                  afterScriptsLoaded="{!c.doInit}"/>
+    
+    <div id="cardCarousel" class="slds-m-horizontal--large carousel" style="margin-bottom:0px;color:white;margin-right: 1%;">
+        <aura:iteration items="{!v.cardContent}" var="card">
+            <c:VG_MissionCard title="{!card.content.Primary_Text__c}"
+                              text="{!card.content.Secondary_Summary_Detail__c}"
+                              primaryTextBG="{!card.content.Primary_BgColor__c}" 
+                              SecondaryBgColor="{!card.content.Secondary_BgColor__c}"
+                              />
+        </aura:iteration>
+    </div>
+</aura:component>

@@ -1,0 +1,102 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,lightning:isUrlAddressable,force:lightningQuickAction,forceCommunity:layout"
+                access="global" controller="NewPricingRequestController">
+    
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="listOfFields" type="List" />
+    <aura:attribute name="parentRecordId" type="String" default="" />
+    <aura:attribute name="parentaccountRecordId" type="String" default="" />
+    <aura:attribute name="isLoading" type="Boolean" />
+    <aura:attribute name="isdisabled" type="Boolean" default="false"/>
+     <aura:attribute name="PRName" type="String" />
+    <aura:attribute name="PaginationList" type="Object"/>
+    <aura:attribute name="startPage" type="Integer" />
+    <aura:attribute name="endPage" type="Integer"/>
+    <aura:attribute name="totalRecords" type="Integer"/>
+    <aura:attribute name="pageSize" type="Integer" default="20"/>
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/> 
+    <aura:attribute name="masterquotesList" type="object" />
+    <lightning:workspaceAPI aura:id="workspace"/>
+    <header class="slds-modal__header" style=" text-align:left;height:60px; background:rgb(240, 240, 240);">
+        <span >
+            <lightning:icon iconName="custom:custom8" size="medium"/>
+        </span>
+        <span style = "text-align:left; padding;">
+            <span style="font-weight: 900; padding-left : 8px; font-size:18px"><a href="javascript:void()"  onclick="{!c.NavToSovRec}">{!v.PRName}</a>   </span>
+        </span>
+    </header>
+      <div class="slds-modal__content slds-p-around--large">
+        <div class="slds slds-scope">
+            <table class="slds-table slds-table_bordered slds-table_fixed-layout" role="grid">
+                <thead>
+                    <tr class="slds-text-title_caps">
+                        <th scope="col" style="background-color:rgba(240, 240, 240); border-top-left-radius:5px;vertical-align: top;line-height: 2;width: 30px !important;">
+                            <ui:inputCheckbox aura:id="checkContractors" change="{!c.selectAll}" />		
+                        </th>
+                        <th  style="background-color:rgba(240, 240, 240); vertical-align: top;line-height: 2;">
+                            Title
+                        </th>
+                        <th  style="background-color:rgba(240, 240, 240); vertical-align: top;line-height: 2;">
+                            Project
+                        </th>
+                        <th  style="background-color:rgba(240, 240, 240); vertical-align: top;line-height: 2;border-top-right-radius: 5px">
+                            Type
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.PaginationList}" var="rec">
+                        <tr class="slds-hint-parent">
+                            <aura:if isTrue="{!rec.quoteRecord != null}">
+                                    <td> 
+                                        <ui:inputCheckbox aura:id="checkContractor" value="{rec.budgetCheck}" text="{!rec.quoteRecord.Id}" change="{!c.handleCheck}" />
+                                        <!--    <lightning:input aura:id="quoteselection" type="checkbox" value="{!rec.quoteCheck}" text="{!rec.quoteRecord.Id}" onclick="{!c.uncheckAll}" style="cursor: pointer !important;"/>-->
+                                    </td> 
+                                    <td role="gridcell">
+                                        <ui:outputText value="{!rec.quoteRecord.Name}" />  
+                                    </td>
+                                    <td role="gridcell">
+                                        <ui:outputText value="{!rec.quoteRecord.buildertek__Project__r.Name}" />  
+                                    </td>
+                                    <td role="gridcell">
+                                        <ui:outputText value="{!rec.quoteRecord.buildertek__Type__c}" />  
+                                    </td>   
+                            </aura:if>
+                        </tr>
+                    </aura:iteration>
+                </tbody>
+            </table>
+            <br/>
+            
+        </div> 
+    </div>
+    <div class="slds-modal__footer">
+        <!-- <lightning:buttonGroup >-->
+
+                 <lightning:button label="Previous" disabled="{!v.startPage == 0}"  
+                                  onclick="{!c.previous}" variant="brand"
+                                  iconName='utility:back' iconPosition='left' class = 'slds-float_left'/>
+                 &nbsp; &nbsp; &nbsp;
+                <lightning:button label="Next" disabled="{!v.endPage >= v.totalRecords}" 
+                                  onclick="{!c.next}" variant="brand"
+                                  iconName='utility:forward' iconPosition='left' class = 'slds-float_left' />
+          
+           <!-- </lightning:buttonGroup>-->
+       
+        <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}" >Cancel</button>
+        <button class="slds-button slds-button--brand" onclick="{!c.importQuote}" disabled="{!v.isdisabled}">Import Pricing Requests</button>
+    </div>
+    
+    <aura:if isTrue="{!v.isLoading}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+            </div>
+        </div>
+    </aura:if>
+    <lightning:notificationsLibrary aura:id="notifLib" />  
+</aura:component>

@@ -1,0 +1,1081 @@
+<aura:component controller="PreQualFormController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+
+    <aura:attribute name="accountRecord" type="Account" default="{'sobjectType': 'Account', 'NumberOfEmployees': 0}" />
+    <aura:attribute name="preQualRecord" type="Pre_Qual__c" default="{'sobjectType': 'Pre_Qual__c', 'NumberOfEmployees': 0}" />
+    <aura:attribute name="Spinner" type="Boolean" default="false" />
+    <aura:attribute name="isDisabled" type="Boolean" default="false" />
+    <aura:attribute name="isPreview" type="String" default="" />
+    <aura:attribute name="isInputDisabled" type="Boolean" default="false" />
+    <aura:attribute name="RecordId" type="String" default="" />
+    <aura:attribute name="documentURL" type="String" default="" />
+    <aura:attribute name="fileName" type="String" access="global" />
+    <aura:attribute name="message" type="String" access="global" />
+    <aura:attribute name="isSuccess" type="Boolean" access="global" />
+    <aura:attribute name="isError" type="Boolean" access="global" />
+    <aura:attribute name="postMessage" type="String" access="global" />
+    <aura:attribute name="createFile" type="Boolean" access="global" />
+    <aura:attribute name="uploadFile" type="Boolean" access="global" />
+    <aura:attribute name="fileData" type="List" access="global" />
+    <aura:attribute name="showSuccessMessage" type="Boolean" access="global" />
+    <aura:attribute name="currFileIndex" type="Integer" default="0" />
+
+    <aura:attribute name="removeFileName" type="String" />
+    <aura:attribute name="removefiledataList" type="List" default="[]" />
+    <aura:attribute name="FileLabelList" type="List" default="[]" />
+    <aura:attribute name="FileNameList" type="List" />
+    <aura:attribute name="deleteFileName" type="String" />
+    <aura:attribute name="companyTypeList" type="List" />
+
+    <!-- Meta Data -->
+    <aura:attribute name="Header" type="String" />
+    <aura:attribute name="Header1" type="String" />
+    <aura:attribute name="Header2" type="String" />
+    <aura:attribute name="stylesData" type="String" />
+
+    <aura:attribute name="reference1" type="References__c" default="{'sObjectType':'buildertek__References__c'}" />
+    <aura:attribute name="reference2" type="References__c" default="{'sObjectType':'buildertek__References__c'}" />
+    <aura:attribute name="reference3" type="References__c" default="{'sObjectType':'buildertek__References__c'}" />
+
+    <aura:attribute name="project1" type="Past_Project__c" default="{'sObjectType':'buildertek__Past_Project__c'}" />
+    <aura:attribute name="project2" type="Past_Project__c" default="{'sObjectType':'buildertek__Past_Project__c'}" />
+    <aura:attribute name="project3" type="Past_Project__c" default="{'sObjectType':'buildertek__Past_Project__c'}" />
+
+    <aura:attribute name="isrequired" type="Boolean" access="global" />
+
+    <aura:attribute name="uploadFileList" type="List" />
+
+
+
+    <aura:attribute name="isMultiplePreQual" type="Boolean" access="global" default="false" />
+
+
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <div class="slds-hide">
+        <iframe aura:id="vfFrame" src="/apex/buildertek__UploadFile_VF"></iframe>
+    </div>
+
+    <aura:if isTrue="{!v.isMultiplePreQual}">
+        <div class="slds-scrollable_y">
+            <aura:if isTrue="{!v.showSuccessMessage}">
+                <div id="pageTop">
+                    <div>
+                        <span>
+                        <img src="{!v.documentURL}" style="{!v.stylesData}"/> 
+                    </span>
+                        <span class="slds-m-top_x-large">
+                        <center>
+                            <b>
+                                <ul>
+                                    <h2 style="font-size: 1.3rem;">
+                                        Thank-You for submitting your information. The team will review your details and be in touch.
+                                    </h2>
+                                </ul>
+                            </b>
+                        </center>
+                        <br/>
+                    </span>
+                        <div class="slds-align_absolute-center slds-m-top_small">
+                            <lightning:button variant="neutral" label="Close" title="Close" onclick="{!c.closePage}" />
+                        </div>
+                    </div>
+                </div>
+                <aura:set attribute="else">
+                    <div id="pageTop" class="slds-p-around_medium">
+                        <aura:if isTrue="{!v.isSuccess}">
+                            <div class="slds-notify slds-notify_alert slds-alert_success" role="alert" style="background-color:green">
+                                <span class="slds-assistive-text">success</span>
+                                <h2>
+                                    {!v.message}
+                                </h2>
+                                <div class="slds-notify__close">
+
+                                </div>
+                            </div>
+                        </aura:if>
+                        <aura:if isTrue="{!v.isError}">
+                            <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+                                <span class="slds-assistive-text">error</span>
+                                <h2>
+                                    {!v.message}
+                                </h2>
+                                <div class="slds-notify__close">
+
+                                </div>
+                            </div>
+
+                        </aura:if>
+                        <div class="LogoDiv">
+                            <img src="{!v.documentURL}" style="{!v.stylesData}" />
+                        </div>
+                        <div class="headerDiv slds-align_absolute-center">
+                            <p style="text-align: center;font-size: 17px">
+                                {!v.Header}<br/> {!v.Header1}
+                                <br/> {!v.Header2}
+
+
+                            </p>
+                        </div>
+                        <div class="formClass">
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem size="12" padding="around-small">
+                                    <h2>General Information</h2>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:input type="text" label="Company Name" value="{!v.preQualRecord.buildertek__Company_Name__c}" disabled="{!v.isInputDisabled}" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:input type="text" label="Alternate Name (DBA)" value="{!v.preQualRecord.buildertek__Alternate_Name__c}" disabled="{!v.isInputDisabled}" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:input type="text" label="Type of Company" value="{!v.preQualRecord.buildertek__Typeof_Company__c}" disabled="{!v.isInputDisabled}" />
+                                    <!--<div style="padding-bottom:10px">
+                              <lightning:select name="mySelect" label="" class="label-hidden" aura:id="myinput" value="{!v.preQualRecord.buildertek__Type_of_Company__c}" disabled="{!v.isInputDisabled}">
+                                 <option value="">Choose one...</option>
+                                 <aura:iteration items="{!v.companyTypeList}" var="company" indexVar="index">
+                                    <option text="{!company}" value="{!company}" selected="{!company == v.preQualRecord.buildertek__Type_of_Company__c}"></option>/>
+                                </aura:iteration>
+                            </lightning:select>
+                                </div>-->
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:input type="number" label="Year Established" value="{!v.preQualRecord.buildertek__Year_Established__c}" disabled="{!v.isInputDisabled}" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:input type="text" label="Main Office Address" value="{!v.preQualRecord.buildertek__Office_Address__c}" disabled="{!v.isInputDisabled}" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:input type="text" label="City" value="{!v.preQualRecord.buildertek__City__c}" disabled="{!v.isInputDisabled}" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:input type="text" label="State" value="{!v.preQualRecord.buildertek__State__c}" disabled="{!v.isInputDisabled}" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:input type="text" label="Zip" value="{!v.preQualRecord.buildertek__Zip_Code__c}" disabled="{!v.isInputDisabled}" />
+                                </lightning:layoutItem>
+                            </lightning:layout>
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem size="12" padding="around-small">
+                                    <h2>Contractor License Numbers</h2>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6">
+                                    <lightning:layout>
+                                        <lightning:layoutItem size="1" padding="around-small">
+                                            <label class="slds-form-element__label">State:</label>
+                                        </lightning:layoutItem>
+                                        <lightning:layoutItem size="5" padding="around-small">
+                                            <lightning:input type="text" label="" variant="label-hidden" value="{!v.preQualRecord.buildertek__State1__c}" disabled="{!v.isInputDisabled}" />
+                                        </lightning:layoutItem>
+                                        <lightning:layoutItem size="1" padding="around-small">
+                                            <label class="slds-form-element__label">Number:</label>
+                                        </lightning:layoutItem>
+                                        <lightning:layoutItem size="5" padding="around-small">
+                                            <lightning:input type="text" label="" variant="label-hidden" value="{!v.preQualRecord.buildertek__Vendor_License__c}" disabled="{!v.isInputDisabled}" />
+                                        </lightning:layoutItem>
+                                    </lightning:layout>
+
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6">
+                                    <lightning:layout>
+                                        <lightning:layoutItem size="1" padding="around-small">
+                                            <label class="slds-form-element__label">State:</label>
+                                        </lightning:layoutItem>
+                                        <lightning:layoutItem size="5" padding="around-small">
+                                            <lightning:input type="text" label="" variant="label-hidden" value="{!v.preQualRecord.buildertek__State2__c}" disabled="{!v.isInputDisabled}" />
+                                        </lightning:layoutItem>
+                                        <lightning:layoutItem size="1" padding="around-small">
+                                            <label class="slds-form-element__label">Number:</label>
+                                        </lightning:layoutItem>
+                                        <lightning:layoutItem size="5" padding="around-small">
+                                            <lightning:input type="text" label="" variant="label-hidden" value="{!v.preQualRecord.buildertek__Vendor_License_Number__c}" disabled="{!v.isInputDisabled}" />
+                                        </lightning:layoutItem>
+                                    </lightning:layout>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6">
+                                    <lightning:layout>
+                                        <lightning:layoutItem size="1" padding="around-small">
+                                            <label class="slds-form-element__label">State:</label>
+                                        </lightning:layoutItem>
+                                        <lightning:layoutItem size="5" padding="around-small">
+                                            <lightning:input type="text" label="" variant="label-hidden" value="{!v.preQualRecord.buildertek__State3__c}" disabled="{!v.isInputDisabled}" />
+                                        </lightning:layoutItem>
+                                        <lightning:layoutItem size="1" padding="around-small">
+                                            <label class="slds-form-element__label">Number:</label>
+                                        </lightning:layoutItem>
+                                        <lightning:layoutItem size="5" padding="around-small">
+                                            <lightning:input type="text" label="" variant="label-hidden" value="{!v.preQualRecord.buildertek__Vendor_License_Number_3__c}" disabled="{!v.isInputDisabled}" />
+                                        </lightning:layoutItem>
+                                    </lightning:layout>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:input type="number" formatter="currency" step="0.01" label="Bid Limit" value="{!v.preQualRecord.buildertek__Bid_Limit__c}" disabled="{!v.isInputDisabled}" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:input type="number" formatter="currency" step="0.01" label="General Liability Coverage" value="{!v.preQualRecord.buildertek__General_Liability_Coverage__c}" disabled="{!v.isInputDisabled}" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:input type="number" formatter="currency" step="0.01" label="Worker's Compensation Coverage" value="{!v.preQualRecord.buildertek__Workers_Compensation_Limit__c}" disabled="{!v.isInputDisabled}" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:input type="number" label="Number of Employees" value="{!v.preQualRecord.buildertek__Number_of_Employees__c}" disabled="{!v.isInputDisabled}" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:input type="number" label="Service Area (miles from office)" value="{!v.preQualRecord.buildertek__Service_Are__c}" disabled="{!v.isInputDisabled}" />
+                                </lightning:layoutItem>
+                            </lightning:layout>
+                            <!-- References Object Data -->
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <div><b class="innertext">References</b></div>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="9" padding="around-small">
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <div>Reference #1<abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr></div>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <div>Reference #2<abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr></div>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <div>Reference #3<abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr></div>
+                                </lightning:layoutItem>
+
+                                <lightning:layoutItem size="2" padding="around-small">
+                                    <div class="inputText">Company Name:</div>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference1.buildertek__Company_Name__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference2.buildertek__Company_Name__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference3.buildertek__Company_Name__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" />
+                                </lightning:layoutItem>
+
+                                <lightning:layoutItem size="2" padding="around-small">
+                                    <div class="inputText">Address:</div>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference1.buildertek__Address__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference2.buildertek__Address__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference3.buildertek__Address__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" />
+                                </lightning:layoutItem>
+
+
+                                <lightning:layoutItem size="2" padding="around-small">
+                                    <div class="inputText">City:</div>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference1.buildertek__City__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference2.buildertek__City__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference3.buildertek__City__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" />
+                                </lightning:layoutItem>
+
+
+                                <lightning:layoutItem size="2" padding="around-small">
+                                    <div class="inputText">State:</div>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference1.buildertek__State__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference2.buildertek__State__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference3.buildertek__State__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" />
+                                </lightning:layoutItem>
+
+
+                                <lightning:layoutItem size="2" padding="around-small">
+                                    <div class="inputText">Zip:</div>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference1.buildertek__Zip__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference2.buildertek__Zip__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference3.buildertek__Zip__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" />
+                                </lightning:layoutItem>
+
+                                <lightning:layoutItem size="2" padding="around-small">
+                                    <div class="inputText">Contact Name:</div>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference1.buildertek__Contact_Name__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference2.buildertek__Contact_Name__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference3.buildertek__Contact_Name__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" />
+                                </lightning:layoutItem>
+
+
+                                <lightning:layoutItem size="2" padding="around-small">
+                                    <div class="inputText">Email:</div>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <lightning:input variant="label-hidden" type="email" name="input1" value="{!v.reference1.buildertek__Email__c}" disabled="{!v.isInputDisabled}" aura:id="ReferenceEmail1" messageWhenTypeMismatch="Enter a valid email address" onblur="{!c.changeValidation}"
+                                        title="ReferenceEmail1" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <lightning:input variant="label-hidden" type="email" name="input1" value="{!v.reference2.buildertek__Email__c}" disabled="{!v.isInputDisabled}" aura:id="ReferenceEmail2" messageWhenTypeMismatch="Enter a valid email address" onblur="{!c.changeValidation}"
+                                        title="ReferenceEmail2" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <lightning:input variant="label-hidden" type="email" name="input1" value="{!v.reference3.buildertek__Email__c}" disabled="{!v.isInputDisabled}" aura:id="ReferenceEmail3" messageWhenTypeMismatch="Enter a valid email address" onblur="{!c.changeValidation}"
+                                        title="ReferenceEmail3" />
+                                </lightning:layoutItem>
+
+
+                                <lightning:layoutItem size="2" padding="around-small">
+                                    <div class="inputText">Cell Phone:</div>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <lightning:input variant="label-hidden" type="tel" name="input1" value="{!v.reference1.buildertek__Cell_Phone__c}" disabled="{!v.isInputDisabled}" aura:id="Referencephone1" pattern="[0-9]{10}" onblur="{!c.changeValidation}" title="Referencephone1" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <lightning:input variant="label-hidden" type="tel" name="input1" value="{!v.reference2.buildertek__Cell_Phone__c}" disabled="{!v.isInputDisabled}" aura:id="Referencephone2" pattern="[0-9]{10}" onblur="{!c.changeValidation}" title="Referencephone2" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <lightning:input variant="label-hidden" type="tel" name="input1" value="{!v.reference3.buildertek__Cell_Phone__c}" disabled="{!v.isInputDisabled}" aura:id="Referencephone3" pattern="[0-9]{10}" onblur="{!c.changeValidation}" title="Referencephone3" />
+                                </lightning:layoutItem>
+
+                            </lightning:layout>
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <div><b class="innertext">Projects</b></div>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="9" padding="around-small">
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                </lightning:layoutItem>
+
+
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <div>PROJECT #1 </div>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <div>PROJECT #2 </div>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <div>PROJECT #3 </div>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="2" padding="around-small">
+                                    <div class="inputText">Project Name :</div>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+
+                                    <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project1.buildertek__Project_Name__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" required="true" />
+
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+
+                                    <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project2.buildertek__Project_Name__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" required="true" />
+
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+
+                                    <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project3.buildertek__Project_Name__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" required="true" />
+
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="2" padding="around-small">
+                                    <div class="inputText">Contractor Name:</div>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project1.buildertek__Contractor_Name__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" required="true" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project2.buildertek__Contractor_Name__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" required="true" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project3.buildertek__Contractor_Name__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" required="true" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="2" padding="around-small">
+                                    <div class="inputText">Contact Name:</div>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project1.buildertek__Contact_Name__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" required="true" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project2.buildertek__Contact_Name__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" required="true" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project3.buildertek__Contact_Name__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" required="true" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="2" padding="around-small">
+                                    <div class="inputText">Contact Email:</div>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <lightning:input variant="label-hidden" type="email" name="input1" value="{!v.project1.buildertek__Contact_Email__c}" disabled="{!v.isInputDisabled}" aura:id="ProjectEmail1" required="true" messageWhenTypeMismatch="Enter a valid email address" onblur="{!c.changeValidation}"
+                                        title="ProjectEmail1" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <lightning:input variant="label-hidden" type="email" name="input1" value="{!v.project2.buildertek__Contact_Email__c}" disabled="{!v.isInputDisabled}" aura:id="ProjectEmail2" required="true" messageWhenTypeMismatch="Enter a valid email address" onblur="{!c.changeValidation}"
+                                        title="ProjectEmail2" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <lightning:input variant="label-hidden" type="email" name="input1" value="{!v.project3.buildertek__Contact_Email__c	}" disabled="{!v.isInputDisabled}" aura:id="ProjectEmail3" required="true" messageWhenTypeMismatch="Enter a valid email address" onblur="{!c.changeValidation}"
+                                        title="ProjectEmail3" />
+                                </lightning:layoutItem>
+
+
+                                <lightning:layoutItem size="2" padding="around-small">
+                                    <div class="inputText">Date Completed:</div>
+                                </lightning:layoutItem>
+
+                                <lightning:layoutItem size="3" padding="around-small">
+
+                                    <lightning:input variant="label-hidden" type="Date" name="input1" value="{!v.project1.buildertek__Date_Completed__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" required="true" />
+
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <lightning:input variant="label-hidden" type="Date" name="input1" value="{!v.project2.buildertek__Date_Completed__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" required="true" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <lightning:input variant="label-hidden" type="Date" name="input1" value="{!v.project3.buildertek__Date_Completed__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" required="true" />
+                                </lightning:layoutItem>
+
+                                <lightning:layoutItem size="2" padding="around-small">
+                                    <div class="inputText">Contact Cell:</div>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <lightning:input variant="label-hidden" type="tel" name="input1" value="{!v.project1.buildertek__Cell_Phone__c}" disabled="{!v.isInputDisabled}" aura:id="projectphone1" required="true" pattern="[0-9]{10}" onblur="{!c.changeValidation}" title="projectphone1"
+                                    />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <lightning:input variant="label-hidden" type="tel" name="input1" value="{!v.project2.buildertek__Cell_Phone__c}" disabled="{!v.isInputDisabled}" aura:id="projectphone2" required="true" pattern="[0-9]{10}" onblur="{!c.changeValidation}" title="projectphone2"
+                                    />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <lightning:input variant="label-hidden" type="tel" name="input1" value="{!v.project3.buildertek__Cell_Phone__c}" disabled="{!v.isInputDisabled}" aura:id="projectphone3" required="true" pattern="[0-9]{10}" onblur="{!c.changeValidation}" title="projectphone3"
+                                    />
+                                </lightning:layoutItem>
+
+                                <lightning:layoutItem size="2" padding="around-small">
+                                    <div class="inputText">Contract Value:</div>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project1.buildertek__Contract_Value__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" required="true" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project2.buildertek__Contract_Value__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" required="true" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project3.buildertek__Contract_Value__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" required="true" />
+                                </lightning:layoutItem>
+
+                            </lightning:layout>
+
+
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem size="12" padding="slds-p-left_small">
+                                    <h2>Add Files</h2>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="12" padding="slds-p-left_small">
+                                    <div class="slds-form-element__control">
+                                        <div class="slds-file-selector slds-file-selector_files">
+                                            <div class="slds-file-selector__dropzone">
+                                                <input type="file" class="slds-file-selector__input slds-assistive-text" id="file-upload-input-01" onchange="{!c.handleFilesChange}" aria-labelledby="file-selector-primary-label file-selector-secondary-label" multiple="true" disabled="{!v.isInputDisabled}"
+                                                />
+                                                <label class="slds-file-selector__body" for="file-upload-input-01" id="file-selector-secondary-label"> 
+                                                <span class="slds-file-selector__button slds-button slds-button_neutral">
+                                                    Upload Files
+                                                </span>
+                                                <span class="slds-file-selector__text slds-medium-show">or Drop Files</span>
+                                            </label>
+                                            </div>
+                                        </div>&nbsp;
+                                        <!--<div class="slds-text-body_small slds-text-color_success">{!v.fileName} </div>-->
+                                        <div>
+                                            <aura:iteration items="{!v.FileNameList}" var="item" indexVar="indx">
+                                                <!-- <div> <lightning:icon iconName="action:delete" alternativeText="Delete" title="{!item}" size="xx-small" onclick="{!c.handleDelete}"/> </div><br/>-->
+
+                                                <lightning:layout>
+                                                    <lightning:layoutItem size="2.5" padding="around-small" class="myclass">
+                                                        <div>
+                                                            {!item}
+                                                        </div>
+                                                    </lightning:layoutItem>
+                                                    <lightning:layoutItem size=".5" padding="around-small" class="myclass">
+                                                        <div onclick="{!c.removeRow}" title="{!indx}" style="padding-top:5px">
+                                                            <lightning:icon iconName="utility:close" class="myUniqueClass" size="xx-small" alternativeText="left" />
+                                                        </div>
+                                                    </lightning:layoutItem>
+                                                    <lightning:layoutItem size="9" padding="around-small">
+                                                    </lightning:layoutItem>
+                                                </lightning:layout>
+
+
+
+                                                <!--<div style="display:inline-flex;" padding="around-small"><div> {!item} </div> &nbsp;&nbsp;&nbsp;&nbsp;<div  onclick="{!c.removeRow}" title="{!indx}" >
+                                                                <lightning:icon iconName="action:delete" class="arrows" size="x-small" alternativeText="left" />
+                                              </div> </div><br/>-->
+                                            </aura:iteration>
+
+                                        </div>
+                                    </div>
+                                    <!--Lightning File Upload Start-->
+                                    <!--<lightning:fileUpload label="Lightning File Upload"
+                                                        name="fileUploader"
+                                                        multiple="true"
+                                                        recordId="{!v.RecordId}"
+                                                        onuploadfinished="{!c.handleUploadFinished}" />-->
+                                    <!--Lightning File Upload End -->
+                                    <!--div>
+                                    <iframe aura:id="vfFrame" 
+                                            src="https://builderteklightning-developer-edition.na75.force.com/buildertek__CreateFile"
+                                            style="border: none;height: 5px;"/>
+                                </div>-->
+                                </lightning:layoutItem>
+                            </lightning:layout>
+
+
+
+
+
+
+                            <div class="slds-align_absolute-center slds-m-top_small">
+                                <aura:if isTrue="{!!v.isInputDisabled}">
+                                    <lightning:button variant="neutral" label="Cancel" title="Cancel" onclick="{!c.closePage}" />&nbsp;&nbsp;
+                                    <lightning:button variant="brand" label="Submit" title="Save" onclick="{!c.savemultiple}" disabled="{!v.isDisabled}" />
+                                </aura:if>
+                            </div>
+                        </div>
+                    </div>
+                </aura:set>
+            </aura:if>
+            <aura:if isTrue="{!v.Spinner}">
+                <div aura:id="spinnerId" class="slds-spinner_container">
+                    <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                        <span class="slds-assistive-text">Loading</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                        <div class="custom-loading-text">
+                            <b>Processing, Please Wait</b>
+                        </div>
+                    </div>
+                </div>
+            </aura:if>
+        </div>
+        <aura:set attribute="else">
+            <div class="slds-scrollable_y">
+                <aura:if isTrue="{!v.showSuccessMessage}">
+                    <div id="pageTop">
+                        <div>
+                            <span>
+                        <img src="{!v.documentURL}" style="{!v.stylesData}"/> 
+                    </span>
+                            <span class="slds-m-top_x-large">
+                        <center>
+                            <b>
+                                <ul>
+                                    <h2 style="font-size: 1.3rem;">
+                                        Thank-You for submitting your information. The team will review your details and be in touch.
+                                    </h2>
+                                </ul>
+                            </b>
+                        </center>
+                        <br/>
+                    </span>
+                            <div class="slds-align_absolute-center slds-m-top_small">
+                                <lightning:button variant="neutral" label="Close" title="Close" onclick="{!c.closePage}" />
+                            </div>
+                        </div>
+                    </div>
+                    <aura:set attribute="else">
+                        <div id="pageTop" class="slds-p-around_medium">
+                            <aura:if isTrue="{!v.isSuccess}">
+                                <div class="slds-notify slds-notify_alert slds-alert_success" role="alert" style="background-color:green">
+                                    <span class="slds-assistive-text">success</span>
+                                    <h2>
+                                        {!v.message}
+                                    </h2>
+                                    <div class="slds-notify__close">
+
+                                    </div>
+                                </div>
+                            </aura:if>
+                            <aura:if isTrue="{!v.isError}">
+                                <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+                                    <span class="slds-assistive-text">error</span>
+                                    <h2>
+                                        {!v.message}
+                                    </h2>
+                                    <div class="slds-notify__close">
+
+                                    </div>
+                                </div>
+                            </aura:if>
+                            <div class="LogoDiv">
+                                <img src="{!v.documentURL}" style="{!v.stylesData}" />
+                            </div>
+                            <div class="headerDiv slds-align_absolute-center">
+                                <p style="text-align: center;font-size: 17px">
+                                    {!v.Header}<br/> {!v.Header1}
+                                    <br/> {!v.Header2}
+                                </p>
+                            </div>
+                            <div class="formClass">
+                                <lightning:layout multipleRows="true">
+                                    <lightning:layoutItem size="12" padding="around-small">
+                                        <h2>General Information</h2>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="6" padding="around-small">
+                                        <lightning:input type="text" label="Company Name" value="{!v.accountRecord.Name}" disabled="{!v.isInputDisabled}" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="6" padding="around-small">
+                                        <lightning:input type="text" label="Alternate Name (DBA)" value="{!v.accountRecord.buildertek__Alternate_Name__c}" disabled="{!v.isInputDisabled}" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="6" padding="around-small">
+                                        <lightning:input type="text" label="Type of Company" value="{!v.accountRecord.buildertek__Type_of_Company__c}" disabled="{!v.isInputDisabled}" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="6" padding="around-small">
+                                        <lightning:input type="number" label="Year Established" value="{!v.accountRecord.buildertek__Year_Established__c}" disabled="{!v.isInputDisabled}" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="6" padding="around-small">
+                                        <lightning:input type="text" label="Main Office Address" value="{!v.accountRecord.buildertek__Office_Address__c}" disabled="{!v.isInputDisabled}" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="6" padding="around-small">
+                                        <lightning:input type="text" label="City" value="{!v.accountRecord.buildertek__City__c}" disabled="{!v.isInputDisabled}" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="6" padding="around-small">
+                                        <lightning:input type="text" label="State" value="{!v.accountRecord.buildertek__State__c}" disabled="{!v.isInputDisabled}" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="6" padding="around-small">
+                                        <lightning:input type="text" label="Zip" value="{!v.accountRecord.buildertek__ZipCode__c}" disabled="{!v.isInputDisabled}" />
+                                    </lightning:layoutItem>
+                                </lightning:layout>
+                                <lightning:layout multipleRows="true">
+                                    <lightning:layoutItem size="12" padding="around-small">
+                                        <h2>Contractor License Numbers</h2>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="6">
+                                        <lightning:layout>
+                                            <lightning:layoutItem size="1" padding="around-small">
+                                                <label class="slds-form-element__label">State:</label>
+                                            </lightning:layoutItem>
+                                            <lightning:layoutItem size="5" padding="around-small">
+                                                <lightning:input type="text" label="" variant="label-hidden" value="{!v.accountRecord.buildertek__State1__c}" disabled="{!v.isInputDisabled}" />
+                                            </lightning:layoutItem>
+                                            <lightning:layoutItem size="1" padding="around-small">
+                                                <label class="slds-form-element__label">Number:</label>
+                                            </lightning:layoutItem>
+                                            <lightning:layoutItem size="5" padding="around-small">
+                                                <lightning:input type="text" label="" variant="label-hidden" value="{!v.accountRecord.buildertek__Vendor_License__c}" disabled="{!v.isInputDisabled}" />
+                                            </lightning:layoutItem>
+                                        </lightning:layout>
+
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="6">
+                                        <lightning:layout>
+                                            <lightning:layoutItem size="1" padding="around-small">
+                                                <label class="slds-form-element__label">State:</label>
+                                            </lightning:layoutItem>
+                                            <lightning:layoutItem size="5" padding="around-small">
+                                                <lightning:input type="text" label="" variant="label-hidden" value="{!v.accountRecord.buildertek__State2__c}" disabled="{!v.isInputDisabled}" />
+                                            </lightning:layoutItem>
+                                            <lightning:layoutItem size="1" padding="around-small">
+                                                <label class="slds-form-element__label">Number:</label>
+                                            </lightning:layoutItem>
+                                            <lightning:layoutItem size="5" padding="around-small">
+                                                <lightning:input type="text" label="" variant="label-hidden" value="{!v.accountRecord.buildertek__Vendor_License_Number__c}" disabled="{!v.isInputDisabled}" />
+                                            </lightning:layoutItem>
+                                        </lightning:layout>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="6">
+                                        <lightning:layout>
+                                            <lightning:layoutItem size="1" padding="around-small">
+                                                <label class="slds-form-element__label">State:</label>
+                                            </lightning:layoutItem>
+                                            <lightning:layoutItem size="5" padding="around-small">
+                                                <lightning:input type="text" label="" variant="label-hidden" value="{!v.accountRecord.buildertek__State3__c}" disabled="{!v.isInputDisabled}" />
+                                            </lightning:layoutItem>
+                                            <lightning:layoutItem size="1" padding="around-small">
+                                                <label class="slds-form-element__label">Number:</label>
+                                            </lightning:layoutItem>
+                                            <lightning:layoutItem size="5" padding="around-small">
+                                                <lightning:input type="text" label="" variant="label-hidden" value="{!v.accountRecord.buildertek__Vendor_License_Number_3__c}" disabled="{!v.isInputDisabled}" />
+                                            </lightning:layoutItem>
+                                        </lightning:layout>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="6" padding="around-small">
+                                        <lightning:input type="number" formatter="currency" step="0.01" label="Bid Limit" value="{!v.accountRecord.buildertek__Bid_Limit__c}" disabled="{!v.isInputDisabled}" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="6" padding="around-small">
+                                        <lightning:input type="number" formatter="currency" step="0.01" label="General Liability Coverage" value="{!v.accountRecord.buildertek__General_Liability_Coverage__c}" disabled="{!v.isInputDisabled}" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="6" padding="around-small">
+                                        <lightning:input type="number" formatter="currency" step="0.01" label="Worker's Compensation Coverage" value="{!v.accountRecord.buildertek__Workers_Compensation_Limit__c}" disabled="{!v.isInputDisabled}" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="6" padding="around-small">
+                                        <lightning:input type="number" label="Number of Employees" value="{!v.accountRecord.buildertek__Number_of_Employees__c}" disabled="{!v.isInputDisabled}" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="6" padding="around-small">
+                                        <lightning:input type="number" label="Service Area (miles from office)" value="{!v.accountRecord.buildertek__Service_Are__c}" disabled="{!v.isInputDisabled}" />
+                                    </lightning:layoutItem>
+                                </lightning:layout>
+                                <!-- Reference data -->
+                                <lightning:layout multipleRows="true">
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <div><b class="innertext">References</b></div>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="9" padding="around-small">
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <div>Reference #1<abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr></div>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <div>Reference #2<abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr></div>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <div>Reference #3<abbr lightning-groupedcombobox_groupedcombobox="" title="required" class="slds-required">*</abbr></div>
+                                    </lightning:layoutItem>
+
+                                    <lightning:layoutItem size="2" padding="around-small">
+                                        <div class="inputText">Company Name:</div>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference1.buildertek__Company_Name__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference2.buildertek__Company_Name__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference3.buildertek__Company_Name__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" />
+                                    </lightning:layoutItem>
+
+                                    <lightning:layoutItem size="2" padding="around-small">
+                                        <div class="inputText">Address:</div>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference1.buildertek__Address__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference2.buildertek__Address__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference3.buildertek__Address__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" />
+                                    </lightning:layoutItem>
+
+
+                                    <lightning:layoutItem size="2" padding="around-small">
+                                        <div class="inputText">City:</div>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference1.buildertek__City__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference2.buildertek__City__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference3.buildertek__City__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" />
+                                    </lightning:layoutItem>
+
+
+                                    <lightning:layoutItem size="2" padding="around-small">
+                                        <div class="inputText">State:</div>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference1.buildertek__State__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference2.buildertek__State__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference3.buildertek__State__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" />
+                                    </lightning:layoutItem>
+
+
+                                    <lightning:layoutItem size="2" padding="around-small">
+                                        <div class="inputText">Zip:</div>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference1.buildertek__Zip__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference2.buildertek__Zip__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference3.buildertek__Zip__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" />
+                                    </lightning:layoutItem>
+
+                                    <lightning:layoutItem size="2" padding="around-small">
+                                        <div class="inputText">Contact Name:</div>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference1.buildertek__Contact_Name__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference2.buildertek__Contact_Name__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.reference3.buildertek__Contact_Name__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" />
+                                    </lightning:layoutItem>
+
+
+                                    <lightning:layoutItem size="2" padding="around-small">
+                                        <div class="inputText">Email:</div>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <lightning:input variant="label-hidden" type="email" name="input1" value="{!v.reference1.buildertek__Email__c}" disabled="{!v.isInputDisabled}" aura:id="ReferenceEmail1" messageWhenTypeMismatch="Enter a valid email address" onblur="{!c.changeValidation}"
+                                            title="ReferenceEmail1" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <lightning:input variant="label-hidden" type="email" name="input1" value="{!v.reference2.buildertek__Email__c}" disabled="{!v.isInputDisabled}" aura:id="ReferenceEmail2" messageWhenTypeMismatch="Enter a valid email address" onblur="{!c.changeValidation}"
+                                            title="ReferenceEmail2" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <lightning:input variant="label-hidden" type="email" name="input1" value="{!v.reference3.buildertek__Email__c}" disabled="{!v.isInputDisabled}" aura:id="ReferenceEmail3" messageWhenTypeMismatch="Enter a valid email address" onblur="{!c.changeValidation}"
+                                            title="ReferenceEmail3" />
+                                    </lightning:layoutItem>
+
+
+                                    <lightning:layoutItem size="2" padding="around-small">
+                                        <div class="inputText">Cell Phone:</div>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <lightning:input variant="label-hidden" type="tel" name="input1" value="{!v.reference1.buildertek__Cell_Phone__c}" disabled="{!v.isInputDisabled}" aura:id="Referencephone1" pattern="[0-9]{10}" onblur="{!c.changeValidation}" title="Referencephone1" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <lightning:input variant="label-hidden" type="tel" name="input1" value="{!v.reference2.buildertek__Cell_Phone__c}" disabled="{!v.isInputDisabled}" aura:id="Referencephone2" pattern="[0-9]{10}" onblur="{!c.changeValidation}" title="Referencephone2" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <lightning:input variant="label-hidden" type="tel" name="input1" value="{!v.reference3.buildertek__Cell_Phone__c}" disabled="{!v.isInputDisabled}" aura:id="Referencephone3" pattern="[0-9]{10}" onblur="{!c.changeValidation}" title="Referencephone3" />
+                                    </lightning:layoutItem>
+
+                                </lightning:layout>
+                                <!-- Past Project Data -->
+
+                                <lightning:layout multipleRows="true">
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <div><b class="innertext">Projects</b></div>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="9" padding="around-small">
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                    </lightning:layoutItem>
+
+
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <div>PROJECT #1 </div>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <div>PROJECT #2 </div>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <div>PROJECT #3 </div>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="2" padding="around-small">
+                                        <div class="inputText">Project Name :</div>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+
+                                        <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project1.buildertek__Project_Name__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" required="true" />
+
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+
+                                        <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project2.buildertek__Project_Name__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" required="true" />
+
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+
+                                        <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project3.buildertek__Project_Name__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" required="true" />
+
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="2" padding="around-small">
+                                        <div class="inputText">Contractor Name:</div>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project1.buildertek__Contractor_Name__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" required="true" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project2.buildertek__Contractor_Name__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" required="true" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project3.buildertek__Contractor_Name__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" required="true" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="2" padding="around-small">
+                                        <div class="inputText">Contact Name:</div>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project1.buildertek__Contact_Name__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" required="true" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project2.buildertek__Contact_Name__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" required="true" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project3.buildertek__Contact_Name__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" required="true" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="2" padding="around-small">
+                                        <div class="inputText">Contact Email:</div>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <lightning:input variant="label-hidden" type="email" name="input1" value="{!v.project1.buildertek__Contact_Email__c}" disabled="{!v.isInputDisabled}" aura:id="ProjectEmail1" required="true" messageWhenTypeMismatch="Enter a valid email address" onblur="{!c.changeValidation}"
+                                            title="ProjectEmail1" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <lightning:input variant="label-hidden" type="email" name="input1" value="{!v.project2.buildertek__Contact_Email__c}" disabled="{!v.isInputDisabled}" aura:id="ProjectEmail2" required="true" messageWhenTypeMismatch="Enter a valid email address" onblur="{!c.changeValidation}"
+                                            title="ProjectEmail2" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <lightning:input variant="label-hidden" type="email" name="input1" value="{!v.project3.buildertek__Contact_Email__c	}" disabled="{!v.isInputDisabled}" aura:id="ProjectEmail3" required="true" messageWhenTypeMismatch="Enter a valid email address" onblur="{!c.changeValidation}"
+                                            title="ProjectEmail3" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="2" padding="around-small">
+                                        <div class="inputText">Contact Cell:</div>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <lightning:input variant="label-hidden" type="tel" name="input1" value="{!v.project1.buildertek__Cell_Phone__c}" disabled="{!v.isInputDisabled}" aura:id="projectphone1" required="true" pattern="[0-9]{10}" onblur="{!c.changeValidation}" title="projectphone1"
+                                        />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <lightning:input variant="label-hidden" type="tel" name="input1" value="{!v.project2.buildertek__Cell_Phone__c}" disabled="{!v.isInputDisabled}" aura:id="projectphone2" required="true" pattern="[0-9]{10}" onblur="{!c.changeValidation}" title="projectphone2"
+                                        />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <lightning:input variant="label-hidden" type="tel" name="input1" value="{!v.project3.buildertek__Cell_Phone__c}" disabled="{!v.isInputDisabled}" aura:id="projectphone3" required="true" pattern="[0-9]{10}" onblur="{!c.changeValidation}" title="projectphone3"
+                                        />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="2" padding="around-small">
+                                        <div class="inputText">Contract Value:</div>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project1.buildertek__Contract_Value__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" required="true" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project2.buildertek__Contract_Value__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" required="true" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <lightning:input variant="label-hidden" type="text" name="input1" value="{!v.project3.buildertek__Contract_Value__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" required="true" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="2" padding="around-small">
+                                        <div class="inputText">Date Completed:</div>
+                                    </lightning:layoutItem>
+
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <lightning:input variant="label-hidden" type="Date" name="input1" value="{!v.project1.buildertek__Date_Completed__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" required="true" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <lightning:input variant="label-hidden" type="Date" name="input1" value="{!v.project2.buildertek__Date_Completed__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" required="true" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3" padding="around-small">
+                                        <lightning:input variant="label-hidden" type="Date" name="input1" value="{!v.project3.buildertek__Date_Completed__c}" disabled="{!v.isInputDisabled}" aura:id="myinput" required="true" />
+                                    </lightning:layoutItem>
+
+                                </lightning:layout>
+
+
+
+
+
+
+                                <lightning:layout multipleRows="true">
+                                    <lightning:layoutItem size="12" padding="slds-p-left_small">
+                                        <h2>Add Files</h2>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="12" padding="slds-p-left_small">
+                                        <div class="slds-form-element__control">
+                                            <div class="slds-file-selector slds-file-selector_files">
+                                                <div class="slds-file-selector__dropzone">
+                                                    <input type="file" class="slds-file-selector__input slds-assistive-text" id="file-upload-input-01" onchange="{!c.handleFilesChange}" aria-labelledby="file-selector-primary-label file-selector-secondary-label" multiple="true" disabled="{!v.isInputDisabled}"
+                                                    />
+                                                    <label class="slds-file-selector__body" for="file-upload-input-01" id="file-selector-secondary-label"> 
+                                                <span class="slds-file-selector__button slds-button slds-button_neutral">
+                                                    Upload Files
+                                                </span>
+                                                <span class="slds-file-selector__text slds-medium-show">or Drop Files</span>
+                                            </label>
+                                                </div>
+                                            </div>&nbsp;
+                                            <!--<div class="slds-text-body_small slds-text-color_success">{!v.fileName} </div>-->
+                                            <div>
+                                                <aura:iteration items="{!v.FileNameList}" var="item" indexVar="indx">
+                                                    <!-- <div> <lightning:icon iconName="action:delete" alternativeText="Delete" title="{!item}" size="xx-small" onclick="{!c.handleDelete}"/> </div><br/>-->
+
+                                                    <lightning:layout>
+                                                        <lightning:layoutItem size="2.5" padding="around-small" class="myclass">
+                                                            <div>
+                                                                {!item}
+                                                            </div>
+                                                        </lightning:layoutItem>
+                                                        <lightning:layoutItem size=".5" padding="around-small" class="myclass">
+                                                            <div onclick="{!c.removeRow}" title="{!indx}" style="padding-top:5px">
+                                                                <lightning:icon iconName="utility:close" class="myUniqueClass" size="xx-small" alternativeText="left" />
+                                                            </div>
+                                                        </lightning:layoutItem>
+                                                        <lightning:layoutItem size="9" padding="around-small">
+                                                        </lightning:layoutItem>
+                                                    </lightning:layout>
+
+
+
+                                                    <!--<div style="display:inline-flex;" padding="around-small"><div> {!item} </div> &nbsp;&nbsp;&nbsp;&nbsp;<div  onclick="{!c.removeRow}" title="{!indx}" >
+                                                                <lightning:icon iconName="action:delete" class="arrows" size="x-small" alternativeText="left" />
+                                              </div> </div><br/>-->
+                                                </aura:iteration>
+
+                                            </div>
+                                        </div>
+                                        <!--Lightning File Upload Start-->
+                                        <!--<lightning:fileUpload label="Lightning File Upload"
+                                                        name="fileUploader"
+                                                        multiple="true"
+                                                        recordId="{!v.RecordId}"
+                                                        onuploadfinished="{!c.handleUploadFinished}" />-->
+                                        <!--Lightning File Upload End -->
+                                        <!--div>
+                                    <iframe aura:id="vfFrame" 
+                                            src="https://builderteklightning-developer-edition.na75.force.com/buildertek__CreateFile"
+                                            style="border: none;height: 5px;"/>
+                                </div>-->
+                                    </lightning:layoutItem>
+                                </lightning:layout>
+
+
+                                <div class="slds-align_absolute-center slds-m-top_small">
+                                    <aura:if isTrue="{!!v.isInputDisabled}">
+                                        <lightning:button variant="neutral" label="Cancel" title="Cancel" onclick="{!c.closePage}" />&nbsp;&nbsp;
+                                        <lightning:button variant="brand" label="Submit" title="Save" onclick="{!c.save}" disabled="{!v.isDisabled}" />
+                                    </aura:if>
+                                </div>
+                            </div>
+                        </div>
+                    </aura:set>
+                </aura:if>
+                <aura:if isTrue="{!v.Spinner}">
+                    <div aura:id="spinnerId" class="slds-spinner_container">
+                        <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                            <span class="slds-assistive-text">Loading</span>
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                            <div class="custom-loading-text">
+                                <b>Processing, Please Wait</b>
+                            </div>
+                        </div>
+                    </div>
+                </aura:if>
+            </div>
+        </aura:set>
+
+    </aura:if>
+
+</aura:component>

@@ -1,0 +1,29 @@
+<aura:component controller="ChooseBTChecklist">
+    <aura:attribute access="PUBLIC" name="view" type="Object"/>    
+    <tr>
+        <th scope="row" data-label="Account Name">
+            <div class="slds-truncate" ><a href="javascript:void(0);">{!v.view.Name}</a></div>
+        </th>
+        <td data-label="Object Name">
+            <div class="slds-truncate" >{!v.view.buildertek__Object_Name__c}</div>
+        </td>
+        
+        <td data-label="Created date">
+            <div class="slds-truncate" >{!v.view.CreatedDate}</div>
+        </td>
+        
+        <td data-label="">
+            <div class="slds-truncate" >
+                <button onclick="{!c.callUpdateRecord}" class="slds-button slds-button_icon" title="Edit Record">
+                    <lightning:icon iconName="action:edit" size="xx-small" alternativeText="Edit"/>
+                    <span class="slds-assistive-text">Edit</span>
+                </button>
+                <button onclick="{!c.callDeleteRecord}" class="slds-button slds-button_icon" title="Delete Record">
+                    <lightning:icon iconName="action:delete" size="xx-small" alternativeText="Delete"/>
+                    <span class="slds-assistive-text">Delete</span>
+                </button>
+                
+            </div>
+        </td>        
+    </tr>
+</aura:component>

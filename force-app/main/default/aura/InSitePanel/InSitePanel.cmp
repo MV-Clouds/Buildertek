@@ -1,0 +1,81 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId" controller="InSitePanelController" access="global">
+	<lightning:overlayLibrary aura:id="overlayLib"/>
+	<ltng:require styles="{!$Resource.insite + '/insite/datatables/datatables.min.css'}" afterScriptsLoaded="{!c.init}"/>
+
+	<aura:attribute name="dataHasNotLoaded" type="Boolean" default="true"/>
+	<aura:attribute name="emptyData" type="Boolean" default="false"/>
+	<aura:attribute name="recordId" type="Id"/>
+	<aura:attribute name="disableExpandable" type="Boolean" default="false"/>
+
+	<aura:attribute name="userId" type="Integer" default="0"/>
+	<aura:attribute name="fullName" type="String" default=""/>
+	<aura:attribute name="userRating" type="Double" default="0"/>
+	<aura:attribute name="projectId" type="String" default="" />
+
+	<aura:attribute name="overviewData" type="Map" default="{'rating':5,'status':'Cold','dates':{'registration':'19th August, 2019','firstVisit':'19th August, 2019','lastActive':'19th August, 2019'},'activity':{'totalVisits':35,'registrationSource':'Online','initialLeadSource':'RealEstate.com.au','devices':[{'iconName':'utility:desktop','type':'Desktop','count':5},{'iconName':'utility:phone_portrait','type':'Mobile','count':12}]}}"/>
+	<aura:attribute name="notesData" type="Object[]" default="[]"/>
+	<aura:attribute name="lotEngagement" type="Object[]" default="[{ 'label': 'Series1', 'data': 10 }, { 'label': 'Series3', 'data': 90 }, { 'label': 'Series4', 'data': 70 }, { 'label': 'Series5', 'data': 80 }, { 'label': 'Series6', 'data': 110 }]"/>
+	<aura:attribute name="packageEngagement" type="Object[]" default="[{ 'label': 'Series1', 'data': 10 }, { 'label': 'Series3', 'data': 90 }, { 'label': 'Series4', 'data': 70 }, { 'label': 'Series5', 'data': 80 }, { 'label': 'Series6', 'data': 110 }]"/>
+	<aura:attribute name="downloadEngagement" type="Object[]" default="[{'type': 'Download', 'label': 'Test Label', 'count': 123},{'type': 'Download', 'label': 'Test Label', 'count': 123},{'type': 'Download', 'label': 'Test Label', 'count': 123},{'type': 'Download', 'label': 'Test Label', 'count': 123}]"/>
+	<aura:attribute name="journey" type="Object[]" default="[{'date':'28th November, 2019','source':'Direct','device':'Personal Computer','weight':0.5},{'date':'28th November, 2019','source':'Direct','device':'Personal Computer','weight':1},{'date':'28th November, 2019','source':'Direct','device':'Personal Computer','weight':1.5},{'date':'28th November, 2019','source':'Direct','device':'Personal Computer','weight':2},{'date':'28th November, 2019','source':'Direct','device':'Personal Computer','weight':2.5},{'date':'28th November, 2019','source':'Direct','device':'Personal Computer','weight':3},{'date':'28th November, 2019','source':'Direct','device':'Personal Computer','weight':3.5},{'date':'28th November, 2019','source':'Direct','device':'Personal Computer','weight':4},{'date':'28th November, 2019','source':'Direct','device':'Personal Computer','weight':4.5},{'date':'28th November, 2019','source':'Direct','device':'Personal Computer','weight':5}]"/>
+
+	<aura:handler name="onSessionRowClicked" event="c:onSessionRowClicked" value="{!this}" action="{!c.handleSessionClicked}"/>
+
+	<lightning:card class="slds-is-relative">
+		<aura:set attribute="title">InSite Logic Data</aura:set>
+		<div class="slds-is-absolute" style="top: 8px; right: 18px; width: 60px;">
+			<img src="{!$Resource.insite + '/insite/imgs/powered_by_insite.png'}" alt=""/>
+		</div>
+		<div class="slds-col slds-grid slds-size_1-of-1 slds-p-horizontal_small slds-m-vertical_medium">
+			<div class="slds-col slds-size_1-of-1">
+				<span class="slds-text-heading_medium" style="display: inline-flex;">{!v.fullName}</span>&nbsp;&nbsp;
+				<span style="display: inline-flex; width: 150px; margin: auto 0;">
+					<c:InSiteStarRating rating="{!v.userRating}" isModalView="{!v.disableExpandable}"/>
+				</span>
+			</div>
+		</div>
+		<aura:if isTrue="{!v.dataHasNotLoaded}">
+			<div style="width: 100%;">
+				<lightning:spinner class="slds-align_absolute-center" alternativeText="Loading" size="large"/>
+			</div>
+			<aura:set attribute="else">
+				<aura:if isTrue="{!v.emptyData}">
+					<div class="slds-p-horizontal_small">
+						<ui:message title="No InSite Data Available" severity="warning" closable="false">
+							Could not locate this lead within InSite. Ensure you have correctly entered leads email
+							address and that this project has been added to your InSite account and try again.
+						</ui:message>
+					</div>
+					<aura:set attribute="else">
+						<lightning:tabset selectedTabId="one">
+							<lightning:tab label="Overview" id="one">
+								<c:InSitePanelOverviewTab overviewData="{!v.overviewData}"/>
+							</lightning:tab>
+
+							<lightning:tab label="Notes" id="four">
+								<c:InSitePanelNotesTab notes="{!v.notesData}" userId="{!v.userId}" projectId="{!v.projectId}"/>
+							</lightning:tab>
+
+							<lightning:tab label="Engagement" id="two" onactive="{!c.handleSelect}">
+								<c:InSitePanelEngagementTab lotEngagement="{!v.lotEngagement}" packageEngagement="{!v.packageEngagement}" downloadEngagement="{!v.downloadEngagement}"/>
+							</lightning:tab>
+
+							<lightning:tab label="Journey" id="three" onactive="{!c.handleSelect}">
+								<c:InSitePanelJourneyTab journey="{!v.journey}"/>
+							</lightning:tab>
+						</lightning:tabset>
+					</aura:set>
+				</aura:if>
+
+			</aura:set>
+		</aura:if>
+
+		<div class="slds-p-horizontal_small">
+			<div class="slds-grid">
+				<div class="slds-col">
+					<lightning:button class="slds-button_stretch override-insite-bg" label="Open InSite" variant="brand" onclick="{!c.openInSite}"/>
+				</div>
+			</div>
+		</div>
+	</lightning:card>
+</aura:component>

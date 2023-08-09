@@ -1,0 +1,7 @@
+<apex:page controller="ChangeOrderInvoiceController" sidebar="false" renderAs="pdf" docType="html-5.0" applyHtmlTag="false"
+    applyBodyTag="false" showHeader="false" standardStylesheets="false">
+
+    <apex:form id="frmid">
+        <apex:outputText value="{!templateBody}" escape="false" />
+    </apex:form>
+</apex:page>

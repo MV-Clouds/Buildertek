@@ -1,0 +1,63 @@
+.THIS {
+    position: relative;
+    z-index: 1;
+}
+
+@media screen and (min-width:1366px) {
+    .THIS .mainContentArea{
+        margin-left:96px;
+        margin-right:96px;
+    }
+    .THIS .MissionStatement{
+        margin-left:96px;
+        margin-right:96px;
+        padding-top:40px;
+        padding-bottom:10px;
+    }
+}
+
+@media screen and (max-width:1365px) {
+    
+    .THIS .mainContentArea{
+        margin-left:16px;
+        margin-right:16px;
+        
+    }
+    .THIS .feedbackArea{
+        margin-left:16px;
+        margin-right:16px;
+        padding-top:10px;
+        padding-bottom:5px;
+    }
+}
+
+@media only screen and (min-width:320px) and (max-width:768px)  {
+    .THIS.homecardsarea{  
+        margin-left:10%;
+        margin-right:10%;
+    }
+} 
+
+@media only screen and (min-width:769px) and (max-width:1365px) {
+    .THIS.homecardsarea{
+        margin-left:15%;
+        margin-right:15%;
+    }
+}  
+
+@media screen and (min-width:1366px) {
+    .THIS.homecardsarea{
+        margin-left:15%;
+        margin-right:15%;
+    }
+}
+
+.THIS .mainContentArea{ 
+    padding-left: 1%;
+    padding-right: 1%;
+    
+    padding-top:-10px;
+    vertical-align: top;
+    margin:0px;outline:none;  
+    background-color: #F5F4F4;
+}

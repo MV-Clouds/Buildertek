@@ -1,0 +1,26 @@
+<aura:component implements="force:hasRecordId,force:lightningQuickActionWithoutHeader" controller="ChangeOrderDAO" access="global">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <lightning:notificationsLibrary aura:id="notifLib"/>
+  <!--  <div aura:id="progressbar">
+        <center>
+            <img alt="Cenerating new receivable." src="{!$Resource.gearsloading}" style="height:150px !important;"/>
+            <br/>
+            Creating New Invoice <br/> Please don't leave this page until Invoice is created.
+        </center>  
+    </div> -->
+    
+     <div aura:id="spinnerId" class="slds-spinner_container" style="position:fixed;">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                    <aura:if isTrue="{!v.showMessage}">
+                        <!--<b>Importing Schedule Lines... </b>-->
+                        <b>Processing, Please Wait</b>
+                    </aura:if>
+                </div>
+            </div>
+        </div>
+    
+</aura:component>

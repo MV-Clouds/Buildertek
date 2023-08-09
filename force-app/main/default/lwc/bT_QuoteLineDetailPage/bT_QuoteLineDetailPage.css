@@ -1,0 +1,56 @@
+.slds-border_bottom{
+    display: flex !important;
+}
+
+.bottom_line{
+    border-bottom: solid 1px rgb(229, 229, 229);
+    padding-bottom: 8px;
+    margin-bottom: 0.3rem;
+    margin-right: 0.3rem;
+}
+
+.field_cont{
+    display: flex;
+}
+
+.editKey{
+    margin-top: auto;
+    padding-bottom: 10px;
+}
+
+.slds-button{
+    fill: #e51313 !important;
+}
+
+.half{
+    width: 50%;
+}
+
+.header{
+    background-color: #f3f2f2;
+    height: 3%;
+}
+
+.header h1{
+    background: rgb(243, 243, 243);
+    color: #000;
+    font-size: 1rem;
+    padding: 5px 10px;
+}
+
+.save{
+    background-color: rgba(236, 235, 234, 0.9);
+    margin: auto;
+    text-align: center;
+    width: 100%;
+    padding: 10px;
+    height: auto;
+}
+
+.save .saveBtn{
+    padding-left: 10px;
+}
+
+.container{
+    display: flex;
+}

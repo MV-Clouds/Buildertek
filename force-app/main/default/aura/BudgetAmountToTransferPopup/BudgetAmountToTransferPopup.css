@@ -1,0 +1,7 @@
+.THIS {}
+
+.THIS .slds-form-element__label {
+    margin-top: 0px;
+    /* display : none;
+        visibility : hidden;*/
+}

@@ -1,0 +1,35 @@
+.THIS .uiModal--medium .modal-container {
+    width: 80% !important;
+    max-width: 1000px !important;
+    min-width: 600px !important;
+}
+
+.THIS.slds-modal__container{
+    width: 80% !important;
+    max-width: 1000px !important;
+    min-width: 600px !important;
+}
+
+.THIS .fileUpload lightning-input{
+    display: inline-flex!important;
+}
+
+.THIS .slds-file-selector__text{
+    display:none!important;
+}
+
+.THIS .slds-file-selector__button{
+    display:contents!important;
+}
+
+.THIS .inputWithoutLable label{
+    display:none !important;
+}
+
+.THIS .accordionSection section{
+    padding:0px;
+}
+
+.THIS .w-17rem{
+    width:17rem;
+}

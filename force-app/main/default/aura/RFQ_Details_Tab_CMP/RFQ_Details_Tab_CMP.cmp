@@ -1,0 +1,226 @@
+<aura:component  controller="RFQToAccountClass" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}" access="global" /> 
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="rfqRecordDetails" type="sObject[]" />
+    <aura:attribute name="multicurrency" type="Boolean"/>
+    <aura:attribute name="currencycode" type="String"/>
+    <table class="slds-table">
+        <tbody>
+            <aura:iteration items="{!v.rfqRecordDetails}" var="item">  
+                <tr style="padding-top:20px;">
+                   <!-- <td style="width:50px;top:10px;color:black;">
+                        Vendor Account
+                    </td>  
+                    <td style="width:100px;top:10px;padding-left:0px;" class="slds-border_bottom">
+                       {!item.buildertek__RFQ__r.Name} : {!item.buildertek__Vendor__r.Name}
+                       
+                    </td>-->
+                    <td style="width:50px;padding-left:20px;top:10px;color:black;">
+                        RFQ Name
+                    </td>   
+                    <td style="width:100px;top:10px;padding-left:0px;" class="slds-border_bottom">
+                        
+                        {!item.buildertek__RFQ__r.Name}
+                    </td>
+                    <td style="width:50px;padding-left:20px;top:10px;color:black;">
+                        RFQ #
+                    </td>   
+                    <td style="width:100px;top:10px;padding-left:0px;" class="slds-border_bottom">
+                        
+                        {!item.buildertek__RFQ__r.buildertek__Auto_Number__c}
+                    </td>
+                   
+                </tr> 
+                <tr >
+                    <td style="width:150px;top:10px;color:black; padding-left: 1.2rem;" >
+                       Status
+                    </td>   
+                    <td style="width:250px;padding-left:0px;top:10px;" class="slds-border_bottom" >
+                            {!item.buildertek__Status__c}
+                    </td>
+                    <!-- <td style="width:50px;padding-left:20px;top:10px;color:black;">
+                        RFQ Name
+                    </td>   
+                    <td style="width:100px;top:10px;padding-left:0px;" class="slds-border_bottom">
+                        
+                        {!item.buildertek__RFQ__r.Name}
+                    </td>-->
+                     <td style="width:150px;top:10px;color:black; padding-left: 1.1rem;" >
+                       Quote Amount
+                    </td>   
+                    <td style="width:250px;top:10px;padding-left:0px;"  class="slds-border_bottom">
+                          <aura:if isTrue='{!v.multicurrency}'>	
+                            <!--<lightning:formattedNumber value="{!item.buildertek__Quote_Amount__c}" style="currency" 
+                                                       currencyCode="{!item.CurrencyIsoCode}" currencyDisplayAs="code"/>-->
+                              <lightning:formattedNumber value="{!item.buildertek__Vendor_Quote_Amount__c}" style="currency" 
+                                                       currencyCode="{!item.CurrencyIsoCode}" currencyDisplayAs="code"/>
+                        </aura:if>
+                        <aura:if isTrue='{!!v.multicurrency}'>
+                            <!--<lightning:formattedNumber value="{!item.buildertek__Quote_Amount__c}" style="currency" 
+                                                       currencyCode="{!v.currencycode}" currencyDisplayAs="code"/>-->
+                            <lightning:formattedNumber value="{!item.buildertek__Vendor_Quote_Amount__c}" style="currency" 
+                                                       currencyCode="{!v.currencycode}" currencyDisplayAs="code"/>
+                            
+                        </aura:if>
+                        <!--<lightning:formattedNumber value="{!item.buildertek__Quote_Amount__c}" style="currency" 
+                                                       currencyCode="USD" currencyDisplayAs="code"/>-->
+                    </td>
+                </tr> 
+                <tr >
+                    
+                     <td style="width:150px;padding-left:20px;top:10px;color:black;" >
+                       RFQ Due Date
+                    </td>   
+                    <td style="width:250px;padding-left:0px;top:10px;"  class="slds-border_bottom">
+                         <lightning:formattedDateTime aura:id="dt"
+                                     value="{!item.buildertek__Due_Date__c}"
+                                     month="numeric"
+                                     day="numeric"
+                                     year="numeric"
+                                     />
+                          <!--<ui:outputDate value="{!item.buildertek__Due_Date__c}" format="MM/DD/YYYY"/>-->
+                    </td>
+                    <td style="width:150px;top:10px;color:black;padding-left: 1.1rem;">
+                         Estimated Work Rollup (Days)
+                    </td>   
+                    <td style="width:250px;top:10px;padding-left:0px;"  class="slds-border_bottom">
+                        {!item.buildertek__Vendor_Estimated_Work_Rollup__c}
+                    </td>
+                     <!--<td style="width:150px;top:10px;color:black;padding-left: 1.1rem;">
+                         Notes
+                    </td>   
+                    <td style="width:250px;top:10px;padding-left:0px;"  class="slds-border_bottom">
+                        {!item.buildertek__Notes__c}
+                    </td>-->
+                    
+                </tr>
+                <tr >
+                   
+                   
+                    <td style="width:150px;padding-left:20px;top:10px;color:black;" >
+                       Submitted Date
+                    </td>   
+                    <td style="width:250px;padding-left:0px;top:10px;"  class="slds-border_bottom">
+                         <lightning:formattedDateTime aura:id="dt"
+                                     value="{!item.buildertek__Submitted_Date__c}"
+                                     month="numeric"
+                                     day="numeric"
+                                     year="numeric"
+                                     />
+                          <!--<ui:outputDate value="{!item.buildertek__Submitted_Date__c}" format="MM/DD/YYYY"/>-->
+                      <!--  <lightning:formattedDateTime value="{!item.buildertek__Submitted_Date__c}" year="numeric" month="numeric" day="numeric" hour="2-digit"
+                                 minute="2-digit"  hour12="true"/>-->
+                        
+                    </td>
+                    <td style="width:150px;top:10px;color:black;padding-left: 1.1rem;">
+                         Notes
+                    </td>   
+                    <td style="width:250px;top:10px;padding-left:0px;"  class="slds-border_bottom">
+                        {!item.buildertek__Notes__c}
+                    </td>
+                   <!--<td style="width:150px;top:10px;color:black;padding-left: 1.1rem;" >
+                      Open RFI's
+                    </td>   
+                    <td style="width:250px;padding-left:0px;top:10px;"  class="slds-border_bottom">
+                          {!item.buildertek__Open_RFI__c}
+                    </td>-->
+                    
+                     
+                </tr>
+                <tr >
+                    <!--<td style="width:150px;top:10px;color:black;">
+                         Contact
+                    </td>   
+                    <td style="width:250px;top:10px;padding-left:0px;"  class="slds-border_bottom">
+                        {!item.buildertek__Contact__r.Name}
+                    </td>-->
+
+                    <td style="width:150px;padding-left:20px;top:10px;color:black;" >
+                       Awarded Date
+                    </td>   
+                     <td style="width:250px;padding-left:0px;top:10px;"  class="slds-border_bottom">
+                          <lightning:formattedDateTime aura:id="dt"
+                                     value="{!item.buildertek__Awarded_Date__c}"
+                                     month="numeric"
+                                     day="numeric"
+                                     year="numeric"
+                                    />
+                         <!--<ui:outputDate value="{!item.buildertek__Awarded_Date__c}" format="DD/MM/YYYY"/>-->
+                    </td>
+                    <td style="width:150px;top:10px;color:black;padding-left: 1.1rem;" >
+                      Open RFI's
+                    </td>   
+                    <td style="width:250px;padding-left:0px;top:10px;"  class="slds-border_bottom">
+                          {!item.buildertek__Open_RFI__c}
+                    </td>
+                     <!--<td style="width:150px;padding-left:10px;top:10px;color:black;padding-left: 1.1rem;">
+                         Accepted Date
+                    </td>   
+                    <td style="width:250px;padding-left:0px;top:10px;"  class="slds-border_bottom">
+                         <lightning:formattedDateTime aura:id="dt"
+                                     value="{!item.buildertek__Accepted_Date__c}"
+                                     month="numeric"
+                                     day="numeric"
+                                     year="numeric"
+                                     />
+                    </td>-->
+                    <!--<ui:outputDate value="{!item.buildertek__Accepted_Date__c}" format="MM/DD/YYYY"/>--> 
+                </tr>
+                <tr >
+                     <!--<td style="width:150px;top:10px;color:black;">
+                         Notes
+                    </td>   
+                    <td style="width:250px;top:10px;padding-left:0px;"  class="slds-border_bottom">
+                        {!item.buildertek__Notes__c}
+                    </td>-->
+                     
+                   
+                   <td style="width:150px;padding-left:20px;top:10px;color:black;" >
+                       Rejected Date
+                    </td>   
+                    <td style="width:250px;padding-left:0px;top:10px;"  class="slds-border_bottom">
+                        <lightning:formattedDateTime aura:id="dt"
+                                     value="{!item.buildertek__Rejected_Date__c}"
+                                     month="numeric"
+                                     day="numeric"
+                                     year="numeric"
+                                     />
+                        <!-- <ui:outputDate value="{!item.buildertek__Rejected_Date__c}" format="MM/DD/YYYY"/>-->
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:150px;padding-left:10px;top:10px;color:black;padding-left: 1.1rem;">
+                         Accepted Date
+                    </td>   
+                    <td style="width:250px;padding-left:0px;top:10px;"  class="slds-border_bottom">
+                         <lightning:formattedDateTime aura:id="dt"
+                                     value="{!item.buildertek__Accepted_Date__c}"
+                                     month="numeric"
+                                     day="numeric"
+                                     year="numeric"
+                                     />
+                   </td>
+                <!--<td style="width:150px;top:10px;color:black;" >
+                       Quote Amount
+                    </td>   
+                    <td style="width:250px;top:10px;padding-left:0px;"  class="slds-border_bottom">
+                           <lightning:formattedNumber value="{!item.buildertek__Quote_Amount__c}" style="currency" currencyCode="USD" currencyDisplayAs="code"/>
+                    </td>-->
+                   
+                     
+                    
+				</tr>
+                <tr>
+                <!--<td style="width:150px;top:10px;color:black;" >
+                      Open RFI's
+                    </td>   
+                    <td style="width:250px;padding-left:0px;top:10px;"  class="slds-border_bottom">
+                          {!item.buildertek__Open_RFI__c}
+                    </td>-->
+				</tr>
+                
+            </aura:iteration>
+            
+        </tbody>
+    </table>
+</aura:component>

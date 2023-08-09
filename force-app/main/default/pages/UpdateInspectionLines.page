@@ -1,0 +1,105 @@
+<apex:page standardController="Inspection_Line__c" recordSetVar="inslines" extensions="UpdateInspectionLineController">
+
+    <apex:includeScript value="/lightning/lightning.out.js" />
+    <apex:slds />
+
+    <html>
+
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta charset="UTF-8" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+            crossorigin="anonymous" />
+        <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+            crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+            crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+            crossorigin="anonymous"></script>
+        <style>
+            .cmt .cke .cke_inner .cke_contents {
+                height: 5rem !important;
+            }
+            .inspcls .lookupInput input {
+                height: 33px;
+                border: 1px solid #CED4DA;
+            }
+            .datecls .dateInput input {
+                height: 33px;
+                border: 1px solid #CED4DA;
+            }
+        </style>
+    </head>
+
+    <body>
+        <apex:form id="formId">
+            <apex:pageMessages />
+
+            <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped">
+                <tr class="slds-line-height_reset">
+                    <th class="slds-text-title_caps" style="border:1px solid lightgrey;font-weight:700;">ISL#</th>
+                    <th class="slds-text-title_caps" style="border:1px solid lightgrey;font-weight:700;">Description</th>
+                    <th class="slds-text-title_caps" style="border:1px solid lightgrey;font-weight:700;">Status</th>
+                    <th class="slds-text-title_caps" style="border:1px solid lightgrey;font-weight:700;">Inspected By</th>
+                    <th class="slds-text-title_caps" style="border:1px solid lightgrey;font-weight:700;">Date Inspected</th>
+                    <th class="slds-text-title_caps" style="border:1px solid lightgrey;font-weight:700;">Comments</th>
+                </tr>
+                <apex:repeat value="{!inslines}" var="ins">
+                    <tr>
+                        <td style="border:1px solid lightgrey">
+                            <div class="slds-truncate form-group">
+                                <apex:inputField value="{!ins.Inspection_Item__c}" />
+                                <!--For Inspection Item-->
+                            </div>
+                        </td>
+                        <td style="border:1px solid lightgrey">
+                            <div class="slds-truncate form-group">
+                                <apex:inputField styleClass="form-control" value="{!ins.Description__c}" />
+                                <!--For Description-->
+                            </div>
+                        </td>
+                        <td style="border:1px solid lightgrey">
+                            <div class="slds-truncate form-group">
+                                <apex:inputField styleClass="form-control" value="{!ins.Status__c}" />
+                                <!--For Status-->
+                            </div>
+                        </td>
+                        <td style="border:1px solid lightgrey">
+                            <div class="slds-truncate form-group inspcls">
+                                <apex:inputField value="{!ins.Inspected_By__c}">
+                                    <!--For Inspector-->
+                                </apex:inputField>
+
+                            </div>
+                        </td>
+                        <td style="border:1px solid lightgrey">
+                            <div class="slds-truncate form-group datecls">
+                                <apex:inputField value="{!ins.Date_Inspected__c}" />
+                                <!--For Inspected Date-->
+                            </div>
+                        </td>
+                        <td style="border:1px solid lightgrey">
+                            <div class="slds-truncate form-group cmt">
+                                <apex:inputField value="{!ins.Comments__c}" />
+                                <!--For Comments-->
+                            </div>
+                        </td>
+                    </tr>
+                </apex:repeat>
+            </table>
+
+
+            <div class="slds-float_right slds-m-right_large">
+                <apex:commandButton styleClass="slds-m-top_medium slds-button slds-button_brand" value="Save" action="{!save}" />
+                <apex:commandButton styleClass="slds-m-top_medium slds-button slds-button_neutral" value="Back" action="{!redirectURL}" />
+            </div>
+        </apex:form>
+    </body>
+
+    </html>
+
+    <apex:includeLightning />
+
+    <div id="lightning" />
+
+</apex:page>

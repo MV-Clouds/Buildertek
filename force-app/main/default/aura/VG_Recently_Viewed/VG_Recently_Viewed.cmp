@@ -1,0 +1,27 @@
+<aura:component controller="VG_UserDataService" access="global" implements="forceCommunity:availableForAllPageTypes,force:appHostable,flexipage:availableForAllPageTypes"  >
+ 
+<aura:attribute name="recentlyViewedList" type="Object[]" />
+<aura:handler name="init" action="{!c.doInit}" value="{!this}" />
+<aura:attribute name="maxNoRows" type="Integer" default="4"/>
+
+<div>
+         <h2 class="slds-truncate slds-text-heading--small slds-p-bottom--small" style="padding-top: 4%;padding-left: 6%; font-family:Gotham-Medium;font-size:16px;padding-bottom: 4%;font-weight:700" ><b>Recently Searched</b></h2>
+ 
+<aura:if isTrue="{! and(v.recentlyViewedList != null , v.recentlyViewedList.length > 0)}"> 
+    
+<aura:iteration var="recentlyVieweditem" items="{!v.recentlyViewedList}" indexVar="i">
+             <div class="slds-media slds-media--center innerdiv" style=" margin-left: 6%;padding-bottom: 2%;">
+                      <img src="{!recentlyVieweditem.record.SmallPhotoUrl}" class="img_icon" style="border-radius: 50%;"/>&nbsp;&nbsp;
+                 <div class="slds-media__body" style="    margin-left: 2%;"> 
+                     <ui:outputURL  label="{!recentlyVieweditem.record.FirstName +'&nbsp;'+ recentlyVieweditem.record.LastName}" class="item-title-link" value="{! '/s'+recentlyVieweditem.userData.Url__c}" />
+        
+                    <!-- <a class="item-title-link" data-url="{!recentlyVieweditem.userData.Url__c}" href="{! 'profile/'+}" onclick="{!c.goToURL}">
+                             <h1 class="img_fontfirst" >{!recentlyVieweditem.record.FirstName}&nbsp;{!recentlyVieweditem.record.LastName}</h1></a> -->
+                     <h1  class="img_fontsecond" >{!(empty(recentlyVieweditem.record.Title)?'':recentlyVieweditem.record.Title+',')} &nbsp;<span class="slds-truncate">{!recentlyVieweditem.record.Employee_Department__c}</span></h1>
+                     </div><br/><br/><br/>
+                 </div>
+                    
+      </aura:iteration>
+</aura:if>
+      </div>
+</aura:component>

@@ -1,0 +1,111 @@
+<aura:component controller="BT_SettingsController" implements="force:appHostable,lightning:actionOverride,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global">
+   <!-- <aura:attribute name="record" type="Object" />-->
+    <aura:attribute name="isUsers" type="Boolean" />
+    <aura:attribute name="isAccounts" type="Boolean" />
+    <aura:attribute name="isProducts" type="Boolean" />
+    <aura:attribute name="isPageLayouts" type="Boolean" />
+    <aura:attribute name="isHomePage" type="Boolean" />
+    <aura:attribute name="isAccountsEnabled" type="Boolean" />
+    <aura:attribute name="isProductsEnabled" type="Boolean" />
+    <aura:attribute name="isPageLayoutsEnabled" type="Boolean" />
+    <aura:attribute name="displayMenuList" type="list"/>
+    <aura:attribute name="displayMenuContentList" type="list"/> 
+    <!--<aura:attribute name="NoteswrapperList" type="FileDataController.InnerClass[]"/>-->
+    <aura:attribute name="Spinner" type="Boolean" default="false"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <div class="slds" style="background: white;">
+        <div class="slds-grid slds-wrap">
+        	<div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--12-of-12 slds-large-size--12-of-12 slds-p-around_medium">
+        		<div class="slds-grid slds-wrap">
+        			<div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--3-of-12 slds-large-size--3-of-12">
+        			    <div class="slds-box" style="background:#ddd;border-radius: 0rem;"> 
+        				    <img src="{!$Resource.Company_Logo}" height="100" width="150"/>
+        				</div>
+        			</div>
+        			<div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--9-of-12 slds-large-size--9-of-12">
+        			    <div class="slds-box" style="background:#ddd;border-radius: 0rem;"> 
+        				    <h2><b>BuilderTek Settings</b></h2>
+        				</div>
+        			</div>
+        		</div>    
+        	</div>
+        </div> 
+        <div class="slds-grid slds-wrap">
+            <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--12-of-12 slds-large-size--12-of-12 slds-p-around_medium">
+                <div class="slds-grid slds-wrap">
+                    <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--3-of-12 slds-large-size--3-of-12">
+                        <div class="slds-box"> 
+                            <div class="no-padding">
+                                <div class="list-group">
+                                    <lightning:accordion>
+                                    	<aura:iteration items="{!v.displayMenuList}" var="rec">
+                                    		<lightning:accordionSection name="{!rec.menu.Name}" label="{!rec.menu.Name}"> 
+                                    		    <aura:set attribute="body">
+                                    		        <aura:iteration items="{!rec.menu.buildertek__Menu_Contents__r}" var="row"> 
+                                    		            <div class="slds-p-around_x-small">
+                                    		                <a id="{!row.Id}" href="" onclick="{!c.showUsers}">{!row.buildertek__Heading__c}</a>    
+                                    		            </div>
+                                    		        </aura:iteration>
+                                                </aura:set>	
+                                    		</lightning:accordionSection>
+                                    	</aura:iteration>
+                                    </lightning:accordion>
+                                </div>
+                            </div>  
+                        </div>     
+                    </div>
+                    <aura:iteration items="{!v.displayMenuContentList}" var="row">
+                        <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--9-of-12 slds-large-size--9-of-12">
+                             <div class="{!if(v.isHomePage == true, 'slds-show','slds-hide')}">
+                                 <p style="border-bottom: 3px solid #3b53a0; margin-bottom:10px;color: #3b53a0; font-size: 15px;" ><b>Home</b></p>  
+                                 <div class="slds-box" style="background:#d4ecf7;border-color: #51b1e1;color: #1e7eae;">
+                                    <p style="color: #1e7eae;">Welcome to BuilderTek!</p><br/>
+                                    <p style="color: #1e7eae;">Please select the left navigation to select your desired area of configuration.</p>    
+                                 </div>
+                             </div>
+                             <div class="{!if(v.isUsers == true, 'slds-show','slds-hide')}">
+                                 <p style="border-bottom: 3px solid #3b53a0; margin-bottom:10px;color: #3b53a0; font-size: 15px;" ><b>{!row.menuContent.buildertek__Heading__c}</b></p>
+                                 <div class="slds-box">
+                                    <ui:outputText value="{!row.menuContent.buildertek__URL__c}" class="outputClass"/>  
+                                   <!-- <iframe src="{!row.menuContent.buildertek__URL__c}" width="100%" height="500px;" frameBorder="0" target="_parent"/>      -->
+                                 </div>
+                             </div>
+                             <div class="{!if(v.isAccounts == true, 'slds-show','slds-hide')}">
+                                 <p style="border-bottom: 3px solid #3b53a0; margin-bottom:10px;color: #3b53a0; font-size: 15px;" ><b>Creating New Accounts and Contacts</b></p>
+                                 <div class="slds-box">
+                                    <img src="{!$Resource.New_Account}"/>      
+                                 </div>
+                             </div>
+                             <div class="{!if(v.isProducts == true, 'slds-show','slds-hide')}">
+                                 <p style="border-bottom: 3px solid #3b53a0; margin-bottom:10px;color: #3b53a0; font-size: 15px;" ><b>Import Products</b></p>
+                                 <div class="slds-box">
+                                    <img src="{!$Resource.Import_Products}"/>      
+                                 </div>
+                             </div>
+                             <div class="{!if(v.isPageLayouts == true, 'slds-show','slds-hide')}">
+                                 <p style="border-bottom: 3px solid #3b53a0; margin-bottom:10px;color: #3b53a0; font-size: 15px;" ><b>Modify Page Layouts</b></p>
+                                 <div class="slds-box">
+                                    <img src="{!$Resource.Modify_Page_Layouts}"/>      
+                                 </div>
+                             </div>
+                        </div>
+                    </aura:iteration>
+                </div>    
+            </div>
+        </div> 
+    </div>
+    
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container" style="position: fixed;">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+            </div>
+        </div>
+    </aura:if>
+</aura:component>

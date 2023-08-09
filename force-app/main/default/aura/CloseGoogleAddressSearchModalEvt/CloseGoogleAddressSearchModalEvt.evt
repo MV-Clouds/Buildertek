@@ -1,0 +1,17 @@
+<!--
+	@ PURPOSE : FIRES FROM GoogleAddressSearchCmp WHENEVER THE MODAL IS CLOSED.
+	@ Name    : CloseGoogleAddressSearchModalEvt.xml
+-->
+<aura:event type="Component" description="FIRES FROM GoogleAddressSearchCmp WHENEVER THE MODAL IS CLOSED.">
+	
+	<aura:attribute name="recordIndex" type="Integer" default="-1" required="false"/>
+	
+	<aura:attribute name="listName" type="String" default="" required="false"/>
+	
+	<aura:attribute name="fieldName" type="String" default="" required="false"/>
+	
+    <aura:attribute name="objectName" type="String" default="" required="false"/> 
+                          
+	<aura:attribute name="recordIssue" type="Object" default="{}" required="true"/>
+	
+</aura:event>

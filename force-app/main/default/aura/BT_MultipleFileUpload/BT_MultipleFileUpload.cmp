@@ -1,0 +1,57 @@
+<aura:component access="global" controller="MultipleFileUploadController"
+    implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:lightningQuickActionWithoutHeader">
+
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute access="public" name="showUploadFile" type="boolean" default="false" />
+    <aura:attribute access="public" name="accept" type="List"
+        default="['.jpg', '.jpeg', '.docx', '.pdf', '.ppt', '.pptx', '.xls', '.xlsx', '.gif','.png', '.csv']" />
+    <aura:attribute access="public" name="multiple" type="Boolean" default="true" />
+    <aura:attribute access="public" name="disabled" type="Boolean" default="false" />
+    <aura:attribute access="public" name="uploadedFiles" type="List" default="" />
+    <aura:attribute access="public" name="sObjectAttachedFiles" type="List" default="[]" />
+    <aura:attribute access="public" name="sObjectName" type="String" default="" />
+    <aura:attribute access="public" name="sObjectId" type="String" default="" />
+
+
+    <lightning:navigation aura:id="navService" />
+    <aura:handler name="init" value="{!this}" action="{!c.getExistingFiles}" />
+
+    <aura:html tag="style">
+        .slds-modal__content{
+        height:unset !important;
+        max-height:unset !important;
+        }
+        .slds-modal__container{
+        max-width: 80% !important;
+        min-width: 80% !important;
+        width: 80% !important;
+        }
+        .slds-p-around--medium{
+            padding: 0;
+        }
+        .cuf-content{
+            padding: 0 !important;
+        }
+    </aura:html>
+
+    <div class="modal-header slds-modal__header slds-size_1-of-1">
+        <h4 class="slds-text-heading--medium">Upload Files</h4>
+    </div>
+
+    <lightning:fileUpload name="fileUploader" multiple="{!v.multiple}" accept="{!v.accept}" disabled="{!v.disabled}"
+        recordId="{!v.sObjectId}" onuploadfinished="{!c.handleUploadFinished}" />
+    <div style="width:100% !important;justify-content: center !important;">
+        <lightning:layout multipleRows="true">
+            <aura:iteration items="{!v.sObjectAttachedFiles}" var="file">
+                <lightning:layoutItem padding="around-small">
+                    <lightning:fileCard fileId="{!file.Id}" description="{!file.Title}" />
+                </lightning:layoutItem>
+            </aura:iteration>
+        </lightning:layout>
+    </div>
+
+    <div class="modal-footer slds-modal__footer">
+        <lightning:button label="Cancel" variant="neutral" onclick="{!c.handleCancelUpload}" />
+        <lightning:button label="Save" variant="brand" onclick="{!c.handleSaveClick}" />
+    </div>
+</aura:component>

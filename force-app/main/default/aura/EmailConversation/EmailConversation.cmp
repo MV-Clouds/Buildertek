@@ -1,0 +1,159 @@
+<aura:component controller="EmailConversationCntl"
+    implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction"
+    access="global">
+    <!-- Handle component initialization in a client-side controller -->
+    <aura:handler event="c:EventCloseModelPopup" action="{!c.handleEventCloseModelPopup}" />
+    <aura:attribute name="overlayPanel" type="Aura.Component[]" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="EmailMsgs" type="EmailMessage[]" />
+    <aura:attribute name="AllEmailMsgs" type="List" />
+    <aura:attribute name="showEmail" type="Boolean" default="false" />
+    <aura:attribute name="Spinner" type="Boolean" />
+    <aura:attribute name="lineItemId" type="String" />
+    <aura:attribute name="rfiNumber" type="String" />
+    <aura:attribute name="recordName" type="String" />
+    <aura:attribute name="refreshGridAction" type="Aura.Action" default="{!c.refreshList}" />
+    <aura:attribute name="openList" type="List" />
+    <aura:handler event="force:refreshView" action="{!c.refreshList}" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+
+    <aura:if isTrue="{!not(empty(v.AllEmailMsgs))}">
+        <div class="slds-scrollable_y" style="height:auto;max-height: 100%; width:100%">
+            <!-- Iterate over the list of contacts and display them -->
+       
+            <aura:iteration var="oneMsg" items="{!v.AllEmailMsgs}">
+                <lightning:accordion allowMultipleSectionsOpen="true" onsectiontoggle=""
+                    activeSectionName="{!oneMsg.Month}">
+                    <lightning:accordionSection name="{!oneMsg.Month}" label="{!oneMsg.heading}">
+                        <aura:set attribute="body">
+                            <aura:iteration items="{!oneMsg.emMessageList}" var="rec">
+                                <li>
+                                    <div class="slds-timeline__item_expandable slds-timeline__item_email slds-is-open">
+                                        <span class="slds-assistive-text">email</span>
+                                        <div class="slds-media">
+                                            <div class="slds-media__figure">
+                                                <span data-id="{!rec.Id}" onclick="{!c.showFullEmail}">
+                                                    <lightning:icon iconName="utility:chevronright" />
+                                                </span>
+                                                <div class="slds-icon_container slds-icon-standard-email slds-timeline__icon"
+                                                    title="email">
+                                                    <lightning:icon iconName="standard:email" />
+                                                </div>
+                                            </div>
+                                            <div class="slds-media__body">
+                                                <div class="slds-grid slds-grid_align-spread slds-timeline__trigger">
+                                                    <div
+                                                        class="slds-grid slds-grid_vertical-align-center slds-truncate_container_75 slds-no-space">
+                                                        <h3 class="slds-truncate" title="Subject">
+                                                            <a href="javascript:void(0);" data-id="{!rec.Id}"
+                                                                onclick="{!c.openRecordPage}">
+                                                                <aura:if isTrue="{!v.rfiNumber}">
+                                                                    <strong>{!rec.Subject}</strong>
+                                                                    <!--RFI - {!v.rfiNumber} -->
+                                                                    <aura:set attribute="else">
+                                                                        <strong>{!rec.Subject} </strong>
+                                                                    </aura:set>
+                                                                </aura:if>
+                                                            </a>
+                                                        </h3>
+                                                        <div class="slds-no-flex">
+                                                            <span class="slds-icon_container slds-icon-utility-groups"
+                                                                title="Group email">
+                                                                <span class="slds-assistive-text">Group email</span>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="slds-timeline__actions slds-timeline__actions_inline">
+                                                        <p class="slds-timeline__date">
+                                                            <lightning:formattedDateTime value="{!rec.MessageDate}"
+                                                                hour="2-digit" minute="2-digit" />&nbsp;|&nbsp;
+                                                            <lightning:formattedDateTime value="{!rec.MessageDate}" />
+                                                            &nbsp;&nbsp;
+                                                            <lightning:buttonMenu aura:id="menu" alternativeText="Show menu"
+                                                                onselect="{! c.handleSelect }" menuAlignment="right">
+                                                                <lightning:menuItem aura:id="menuItems" label="Delete"
+                                                                    value="{!rec.Id}" />
+                                                            </lightning:buttonMenu>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <p class="slds-m-horizontal_xx-small">
+                                                    <aura:if isTrue="{!and(rec.IsOpened,rec.IsTracked)}">
+                                                        {!rec.lastOpenTime}
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!and(rec.IsOpened,not(rec.IsTracked))}">
+                                                        Unopened
+                                                    </aura:if>
+                                                </p>
+                                                <p class="slds-m-horizontal_xx-small"><a
+                                                        href="javascript:void(0);">{!rec.FromAddress}</a> sent an email to
+                                                    <a href="javascript:void(0);">{!rec.ToAddress}</a>
+                                                </p>
+                                                <aura:iteration items="{!v.openList}" var="opt">
+                                                    <aura:if isTrue="{!opt == rec.Id}">
+                                                        <article
+                                                            class="slds-box slds-timeline__item_details slds-theme_shade slds-m-top_x-small slds-m-horizontal_xx-small slds-p-around_medium"
+                                                            id="email-item-narrow" aria-hidden="false">
+                                                            <ul class="slds-list_horizontal slds-wrap">
+                                                                <li
+                                                                    class="slds-grid slds-grid--vertical slds-size_4-of-12 slds-p-bottom_small">
+                                                                    <span class="slds-text-title slds-p-bottom_x-small">From
+                                                                        Address</span>
+                                                                    <span class="slds-text-body_medium slds-truncate"><a
+                                                                            href="javascript:void(0);">{!rec.FromAddress}</a></span>
+                                                                </li>
+                                                                <li
+                                                                    class="slds-grid slds-grid--vertical slds-size_4-of-12 slds-p-bottom_small">
+                                                                    <span
+                                                                        class="slds-text-title slds-p-bottom_x-small">Subject</span>
+                                                                    <span class="slds-text-body_medium slds-truncate"><a
+                                                                            href="javascript:void(0);">{!rec.Subject}</a></span>
+                                                                </li>
+
+                                                                <li
+                                                                    class="slds-grid slds-grid--vertical slds-size_4-of-12 slds-p-bottom_small">
+                                                                    <span class="slds-text-title slds-p-bottom_x-small">To
+                                                                        Address</span>
+                                                                    <span class="slds-text-body_medium slds-truncate"><a
+                                                                            href="javascript:void(0);">{!rec.ToAddress}</a></span>
+                                                                </li>
+
+
+                                                            </ul>
+                                                            <div>
+                                                                <span class="slds-text-title">Text Body</span>
+                                                                <p class="slds-p-top_x-small">
+                                                                    <aura:unescapedHtml value="{!rec.HtmlBody}" />
+                                                                </p>
+                                                            </div>
+                                                            <br />
+                                                            <lightning:button name="modal" label="Reply" aura:id="{!rec.Id}"
+                                                                value="{!rec.Id}" onclick="{!c.replyEmailmsg}" />
+                                                        </article>
+                                                    </aura:if>
+                                                </aura:iteration>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </aura:iteration>
+                        </aura:set>
+                    </lightning:accordionSection>
+                </lightning:accordion>
+            </aura:iteration>
+            <!-- Iteration End -->
+            <aura:if isTrue="{!v.Spinner}">
+                <div aura:id="spinnerId" class="slds-spinner_container">
+                    <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                        <span class="slds-assistive-text">Loading</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                         <div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+                    </div>
+                </div>
+            </aura:if>
+        </div>
+    </aura:if>
+</aura:component>

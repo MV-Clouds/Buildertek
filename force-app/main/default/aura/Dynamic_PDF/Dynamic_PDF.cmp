@@ -1,0 +1,6 @@
+<aura:component controller="PreviewBillingsController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global">
+    <aura:attribute name="BaseURL" type="String"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+	<iframe class="BT_GanttChart" src="{!v.BaseURL+'/apex/Quote_PreviewPDF_Clone_VF?Id=' + v.recordId }" width="100%" height="500px" frameBorder="0"/>
+</aura:component>

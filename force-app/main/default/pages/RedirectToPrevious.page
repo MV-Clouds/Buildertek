@@ -1,0 +1,51 @@
+<apex:page docType="html-5.0" sidebar="false" standardStylesheets="false" showHeader="false" applyHtmlTag="true">
+   
+    <apex:includeScript value="{!URLFOR($Resource.supportconsole_js)}"/>
+    
+
+    <script>
+        var recordId = '{!JSENCODE($CurrentPage.parameters.recordId)}';
+        var projectId = '{!JSENCODE($CurrentPage.parameters.projectId)}';
+        
+        window.onload = function(){
+            goback();    
+        }
+        function goback(){
+			sforce.one.back(true);
+			sforce.console.getEnclosingTabId(closeSubtab, true);
+			testRefreshSubtabById();
+		}
+		
+        var closeSubtab = function closeSubtab(result) {
+            //Now that we have the tab ID, we can close it
+            var tabId = result.id;
+            sforce.console.closeTab(tabId, true);
+        };
+        
+        
+         function testRefreshSubtabById() {
+            //Set the name of the tab by using the openSubtab method
+            //This value is for example purposes only
+            var subtabId = 'ctab0';
+            //sforce.console.refreshSubtabById('ctab0_7', true, refreshSuccess);
+            sforce.console.refreshSubtabById(subtabId, true, refreshSuccess);
+            
+            
+        }
+        var subtabTab = function subtabTab(result) {
+            //Now that we have the tab ID, we can close it
+            var tabId = result.id;
+            //alert(tabId);
+            return tabId;
+        };
+    
+        var refreshSuccess = function refreshSuccess(result) {
+            //Report whether refreshing the subtab was successful
+            if (result.success == true) {
+                //alert('Subtab refreshed successfully');
+            } else {
+                //alert('Subtab did not refresh');
+            }
+        };
+    </script>
+</apex:page>

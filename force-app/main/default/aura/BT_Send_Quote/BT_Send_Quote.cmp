@@ -1,0 +1,52 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader" controller="QuoteDAO" access="global" >
+	
+	<aura:attribute name="recordId" type="string" access="public"/>
+	<aura:attribute name="record" type="Object" access="public"/>
+    <aura:attribute name="quote" type="Quote__c" default="{ 'sobjectType': 'Quote__c' }" access="public"/>
+    <aura:attribute name="recordError" type="String" access="public"/>
+	
+	<aura:attribute name="quoteTemplateoptions" type="List" />
+    <aura:attribute name="selectedTemplateId" type="String" />
+    
+    
+	<force:recordData aura:id="recordEditor"
+						layoutType="FULL"
+						recordId="{!v.recordId}"
+						targetError="{!v.recordError}"
+						targetRecord="{!v.record}"
+						targetFields="{!v.quote}"
+						fields="Id, buildertek__Primary_Contact__c, buildertek__Email_Body__c, buildertek__Email_Subject__c"
+						mode="EDIT" 
+						recordUpdated="{!c.recordUpdated}"/>
+	
+	
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+	
+	<!-- aura waiting/doneWaiting hendler  -->
+    <aura:handler event="aura:waiting" action="{!c.showSpinner}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/> 
+    
+	<div class="c-container">
+	  <div class="slds-text-heading_medium slds-text-align_center">Send Quote</div>
+	  <div class="slds-has-divider--top slds-m-vertical--large">
+	  		<lightning:spinner variant="brand" size="medium" aura:id="BTSpinner" class="slds-hide slds-is-relative"/>
+       	 	<lightning:layout multipleRows="true">
+       	 		<lightning:layoutItem padding="around-small" size="12">
+				    <lightning:select name="Template" label="Select Template" aura:id="quoteTemplateId" value="{!v.selectedTemplateId}">
+				        <aura:iteration items="{!v.quoteTemplateoptions}" var="template">
+				            <option value="{!template.Id}">{!template.Name}</option>
+				        </aura:iteration>
+				    </lightning:select>
+				    <lightning:recordEditForm recordId="{!v.recordId}" objectApiName="buildertek__Quote__c" onsuccess="{!c.sendQuoteEmail}">
+				        <lightning:messages />
+				        <lightning:inputField fieldName="buildertek__Primary_Contact__c" />
+				        <lightning:inputField fieldName="buildertek__Email_Subject__c" />
+				        <lightning:inputField fieldName="buildertek__Email_Body__c"/>
+				        <lightning:button class="slds-m-top_small" variant="brand" type="submit" name="update" label="Send Email" />
+				    </lightning:recordEditForm>
+			    </lightning:layoutItem>
+	        </lightning:layout>
+      </div>
+    </div>
+</aura:component>

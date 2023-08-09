@@ -1,0 +1,18 @@
+<apex:page >
+   <html>
+    <body>
+    <apex:includeLightning />
+    <div  id="compContainer" />
+    <apex:param assignTo="{!rId}" value="{!$CurrentPage.parameters.id}"/>    
+    <script>     
+        $Lightning.use("c:CreateSignedChangeApp", function() {
+            $Lightning.createComponent("c:CreateChangeOrderFromProject",
+            { recordId : '{!$CurrentPage.parameters.id}' },             
+                "compContainer",
+                function(cmp) {
+            });
+    });
+    </script>
+  </body>
+  </html>
+</apex:page>

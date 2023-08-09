@@ -1,0 +1,44 @@
+.THIS {
+}
+
+.THIS .custom-loading-text {
+    transform: rotate(-90deg);
+    position: absolute;
+    top: -0.5rem;
+    left: 1rem;
+    white-space: nowrap;
+    font-size: 20px;
+}
+
+.THIS .slds-modal__container{
+    max-width: 90%;
+    width: 80%;
+}
+
+
+.THIS .slds-icon-utility-arrowdown svg{
+    fill: #1b5297;
+}
+
+.THIS .slds-icon-utility-arrowup svg{
+    fill: #1b5297;
+}
+
+.THIS .slds-modal__content{
+    overflow : hidden;
+}
+.THIS .slds-resizable__divider{
+   z-index : 1 !important;
+}
+.THIS .cardCss {
+    background: var(--lwc-pageHeaderColorBackground, rgb(243, 242, 242));
+    padding-top: 15px!important;
+    padding-bottom: 15px;
+    margin-right: auto;
+    margin-left: auto;
+}
+        
+        
+.THIS .inputFieldWidth {
+    width:30%;
+}

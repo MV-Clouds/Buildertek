@@ -1,0 +1,80 @@
+<apex:page standardController="Change_Order__c" recordSetVar="objects" extensions="SendChangeOrderPDF" >
+    <apex:form >
+        <apex:actionfunction name="callfromJS"  action="{!cancel}" />
+    </apex:form>
+    <apex:param name="CasesSelectedRecs" value="{!caseids}" />
+    <!-- <apex:param name="pId" value="{!parentId}" /> -->
+        <apex:includeLightning />
+        <div  id="lightning" />
+        <script>
+    var app = "{!app}"
+    console.log('App : ',app);
+    var error;
+    var object = {!caseids}
+    var parentId =  "{!parentId}"
+    if(object != undefined && app != 'noApp'){
+        $Lightning.use("buildertek:BT_EmailChangeOrderapp", function() {
+            $Lightning.createComponent("buildertek:BT_EmailChangeOrder",
+                                       {
+                                           records : object,
+                                           parentRecordId : parentId
+                                       },
+
+                                       "lightning",
+                                       function(component) {
+                                            
+
+                                       }
+                                      );
+        });
+    }
+      else{
+          callfromJS();
+           if(app == 'noApp'){
+              sforce.one.showToast({
+                        
+                        "title": "",
+                        
+                        "message": "Please Select Only  Customer Approved Change Orders",
+                        
+                        "type": "error" //supported types are error, success, info, warning
+                        
+                    });
+                    
+                // sforce.one.navigateToURL("/lightning/r/buildertek__Project__c/"+"{!parentId}"+"/related/buildertek__Change_Orders__r/view");
+               //window.open("/lightning/r/buildertek__Project__c/"+"{!parentId}"+"/related/buildertek__Change_Orders__r/view","_self");
+           }
+           else{ 
+          sforce.one.showToast({
+                        
+                        "title": "",
+                        
+                        "message": "Please Select At least one Change Orders",
+                        
+                        "type": "error" //supported types are error, success, info, warning
+                        
+                    });
+                   // sforce.one.navigateToURL('/apex/BT_EmailChangeOrderVf?id=' + '{!parentId}');
+                   // window.close.location.href('/apex/BT_EmailChangeOrderVf?id=' + '{!parentId}');
+                   // sforce.console.getEnclosingTabId(closeSubtab);
+               // windows.close()
+               //  }
+                // sforce.one.navigateToURL("/lightning/r/buildertek__Project__c/"+"{!parentId}"+"/related/buildertek__Change_Orders__r/view");
+               // windows.close():
+               //  window.open("/lightning/r/buildertek__Project__c/"+"{!parentId}"+"/related/buildertek__Change_Orders__r/view","_self");
+               }
+        debugger;
+          //sforce.one.navigateToURL("/lightning/r/buildertek__Project__c/"+"{!parentId}"+"/related/buildertek__Change_Orders__r/view");
+          // window.close.location.href('/apex/BT_EmailChangeOrderVf?id=' + '{!parentId}');
+        // window.close();
+        // windows.close.location.href="/{!$CurrentPage.parameters.id}";
+        // window.open("/lightning/r/buildertek__Project__c/"+"{!parentId}"+"/related/buildertek__Change_Orders__r/view","_self");
+        //   window.location.href = "/lightning/r/buildertek__Project__c/"+"{!parentId}"+"/related/buildertek__Change_Orders__r/view";
+        //https://btservice360-dev-ed.lightning.force.com/lightning/r/a1Q1K000006ylVpUAI/related/buildertek__Change_Orders__r/view
+        //  closeWin();
+        } 
+        </script>
+
+    
+    
+</apex:page>

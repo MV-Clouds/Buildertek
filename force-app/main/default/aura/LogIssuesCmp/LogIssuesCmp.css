@@ -1,0 +1,135 @@
+.THIS .lite_mock_id{
+    display: flex;
+}
+
+.THIS .mt5{
+    margin-top: 5px;
+}
+
+.THIS .pl0{
+    padding-left: 0px !important;
+}
+
+.THIS .pb3{
+    padding-bottom: 3px !important;
+}
+.THIS .pt5{
+    padding-top: 5px !important;
+}
+
+.THIS .pl5{
+    padding-left: 5px !important;
+}
+.THIS .pl10{
+    padding-left: 10px !important;
+}
+
+.THIS .pl15{
+    padding-left: 15px !important;
+}
+
+.THIS .label_hide label{
+    display: none;
+}
+
+.THIS .header_infos .slds-card__header.slds-grid {
+    padding: 0px 0px 0px 10px !important;
+    margin: 0px !important;
+}
+
+.THIS .header_infos .slds-card__body {
+    margin-top: 0px !important;
+    margin-bottom: 0px !important;
+    margin-left: 5px;
+}
+
+.THIS .header_infos .slds-p-around_medium {
+    padding: 10px 0px 5px 5px !important;
+}
+
+.THIS .slds-scope .slds-input {
+    width:100px !important;
+}
+
+.THIS .qty_fld .slds-input{
+    padding: 0px 0px 0px 5px !important;
+    
+}
+.THIS .slds-dropdown { max-width : fit-content !important; }
+
+.THIS .slds-dropdown_fluid { width: auto !important; }
+
+.THIS .igu_table {
+    overflow-x: scroll !important;
+    padding-bottom: 150px;
+    max-height: 500px !important;
+}
+
+.THIS .css_table {
+    overflow-x: scroll !important;
+   padding-bottom: 30px;
+}
+.THIS .iguTableCol {
+	width : 170px;
+}
+
+.THIS .inline_issue_type .slds-form-element__control{
+    display: inline-flex !important;
+}
+
+.THIS .header_info .slds-p-around_small{
+    padding: 0px 0px 0px 5px !important;
+    /*width: 13% !important;*/
+}
+.THIS .mb0{
+    margin-bottom: 0px !important;
+}
+
+.THIS table td{
+    padding: 2px 2px 2px 8px !important;
+    
+}
+
+.THIS table td .slds-p-around_small{
+    padding: 0px !important;
+}
+
+.THIS .req_del_date{
+    width: 73% !important;
+}
+
+.THIS .pb50{
+    padding-bottom: 50px;
+}
+
+.THIS .issue_calendar .slds-datepicker{
+    top: 0px !important;
+}
+.THIS .issue_email{
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    -webkit-hyphens: auto;
+    -ms-hyphens: auto;
+    hyphens: auto;
+}
+
+.THIS th{
+    background: #e4e4e2 !important;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    -webkit-hyphens: auto;
+    -ms-hyphens: auto;
+    hyphens: auto; 
+    
+}
+
+
+@media (min-width: 48em){
+.THIS .slds-modal__container {    
+    max-width: 50rem !important;
+}
+}

@@ -1,0 +1,32 @@
+<aura:component controller="BudgetDAO">
+	<ltng:require styles="{!$Resource.BT_ResourceUtils + '/resources/css/btmodal.css'}"/>
+	<aura:attribute name="newBi" type="Budget_Item__c" default="{ 'sobjectType': 'Budget_Item__c' }"/>
+	<aura:attribute name="newBiItems" type="Budget_Item__c[]" />
+	<aura:attribute name="recordId" type="String" default="XXX"/>
+	<aura:attribute name="cancelCallback" type="object" access="public"/>
+    <aura:attribute name="saveCallback" type="object" access="public"/>
+    <!-- <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> --> 
+    
+    <aura:method name="createProductTable" action="{! c.doInit}" />
+    
+   	<c:BT_Message aura:id="infoMessage" type="info" Message="{!$Label.c.Budget_Product_Select_info_message}"/>
+    <div class="c-container">
+        <lightning:layout pullToBoundary="medium">
+            <lightning:layoutItem flexibility="auto" padding="horizontal-medium" size="6">
+                <button class="slds-button slds-button_brand" style="float: right;" onclick="{!c.addSelectedProduct}">Add Selected Product(s)</button>
+	       		<br/>
+	       		<br/>
+	       		<div aura:id="productpicker"/>
+            </lightning:layoutItem>
+            <lightning:layoutItem flexibility="auto" padding="horizontal-medium" size="6">
+                <c:BT_Edit_Budget_Items _items="{!v.newBiItems}" saveCallback="{!v.saveCallback}" cancelCallback="{!c.close}"/>
+            </lightning:layoutItem>
+        </lightning:layout>
+     </div>
+     
+     <div aura:id="footer" style="display:none">
+	     <button class="slds-button slds-button_brand" onclick="{!c.close}">Cancel</button>
+     </div>
+     
+     <lightning:notificationsLibrary aura:id="notifLib"/>
+</aura:component>

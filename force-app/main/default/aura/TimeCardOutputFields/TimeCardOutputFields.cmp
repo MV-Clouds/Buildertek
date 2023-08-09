@@ -1,0 +1,21 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" 
+                access="global" controller = "TimeCardOutputFieldclass">
+     <aura:handler name="init" action="{!c.doInit}" value="{!this}" access="global" />
+    <!-- <aura:attribute name="activeSections" type="List" default="['Fields']" />
+    <aura:attribute name="activeSectionsMessage" type="String" default="" />-->
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="istimecard" type="Boolean" default="false" />
+    <aura:attribute name="fields" type="String[]" default="['buildertek__Daily_Expense__c','buildertek__Regular_Hourly_Rate__c','buildertek__Overtime_Hourly_Rate__c','buildertek__Standard_Expense__c','buildertek__Overtime_Expense__c']" />
+    <aura:if isTrue="{!v.istimecard}">
+        <div class="slds-var-p-*_xxx-large" style="padding-left:15px">
+            <div class="slds-has-flexi-truncate" style="width:102%">
+                <lightning:recordForm recordId="{!v.recordId}" 
+                                      objectApiName="buildertek__Time_Cards__c"
+                                      layout-type="full"
+                                      mode="readonly"
+                                      columns="2"        
+                                      fields="{!v.fields}" />
+            </div>
+        </div>
+    </aura:if>
+</aura:component>

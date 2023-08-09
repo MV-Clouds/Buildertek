@@ -1,0 +1,428 @@
+<aura:component implements="force:hasRecordId,force:lightningQuickAction,flexipage:availableForAllPageTypes" 
+                controller="TrunkStockRequestController" access="global">
+    
+    <aura:attribute name="getProducts" type="Product2[]" default="[]"/>
+    <aura:attribute name="serResRecId" type="String" />
+    <aura:attribute name="newPreSelf" type="Boolean" default="false" />
+    <aura:attribute name="getServiceRes" type="ServiceResource" default=""/>
+    <aura:attribute name="trunkLocation" type="String" />
+    <aura:attribute name="Spinner" type="boolean" default="false"/>
+    
+    
+    <aura:attribute name="showModalBox" type="boolean" default="false"/>
+    <aura:attribute name="searchKey" type="string" default=""/>
+    <aura:attribute name="placeholder" type="string" default="Search..." />
+    <aura:attribute name="AddressList" type="String[]"/>
+    <aura:attribute name="addressDetailsStreet1" type="String"/>
+    <aura:attribute name="addressDetailsStreet2" type="String"/>
+    <aura:attribute name="addressDetailsPostalCode" type="String"/>
+    <aura:attribute name="addressDetailsState" type="String"/>
+    <aura:attribute name="addressDetailsCountry" type="String"/>
+    <aura:attribute name="addressDetailsCity" type="String"/>
+    <aura:attribute name="serResRecordId" type="String" />
+    <aura:attribute name="requestedDate" type="Date" />
+    <aura:attribute name="shippingName" type="String" />
+    <aura:attribute name="shippingPhone" type="String" />
+    <aura:attribute name="partRequestList" type="ProductRequest[]"/>
+    <aura:attribute name="productSelectTrunk" type="object" />
+    <aura:attribute name="productId" type="String[]" />
+    <lightning:workspaceAPI aura:id="workspace"/>
+    
+    <!-- Event -->
+    <!--
+ <aura:handler event="aura:waiting" action="{!c.showSpinner}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/> 
+
+    <aura:handler name="productSelectedTrunk" action="{!c.handleComponentEvent}" event="c:ProductSelectTrunk"/> -->
+    <aura:handler event="aura:waiting" action="{!c.showSpinner}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>
+    <aura:handler name="productRecordSelectEvt" action="{!c.handleProductSelectEvt}" 
+                  event="c:CloseProductModalEvt"/>
+    
+    <!-- attributes -->
+    <aura:attribute name="data" type="Object"/>
+    <aura:attribute name="columns" type="List"/>
+    <aura:attribute name="newFSESelf" type="Boolean" default="false" />
+    <aura:attribute name="location" type="string" default=""/>
+    <aura:attribute name="predictions" type="List" default="" />
+    
+    <aura:attribute name="objectName" 	type="string" default="Location" required="true" />
+    <aura:attribute name="fieldName" 	type="string" default="Name" required="true" />
+    <aura:attribute name="value" 		type="String" default="" description="To pre-populate a value" />
+    <aura:attribute name="valueAddress" 	type="String" default="" description="To pre-populate a value" />
+    <aura:attribute name="recordCount" 	type="string" default="5" description="Records visible at once"/>
+    <aura:attribute name="iconName" 	type="string" default="standard:drafts" description="complete icon name eg. standard:account" />
+    <aura:attribute name="label" 		type="string" default="Trunk Location" description="Label will be displayed above input Box" />
+    <!--  <aura:attribute name="placeholder" 	type="string" default=" Search..." description="placeholder for input Box" /> -->
+    
+    <!-- Internal Use Attributes -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="searchString"   type="string" access="private" default="" description="String to search"/>
+    <aura:attribute name="selectedRecord" type="Object" access="private" default="" description="selected Record Details" />
+    <aura:attribute name="selectedRecordAddress" type="Object" access="private" default="" description="selected Record Details" />
+    <aura:attribute name="recordsList" 	  type="List"   access="private" description="List of Records having data" />
+    <aura:attribute name="message" 		  type="String" access="private" default="" />
+    <!--
+    <aura:handler name="init" value="{! this }" action="{! c.init }"/>    
+    -->
+    <div class="slds-p-top_small">
+        <div class="slds-grid">
+            <div class="slds-col">
+                <span>
+                    <!--     <aura:if isTrue="{!!v.newFSESelf}" > -->
+                    
+                    <div style="font-size:16px;font-weight:normal;margin-left:20px">
+                        
+                        <div>
+                             <span class="slds-form-element__label">Trunk Location</span>
+                            
+                            <!-- Trunk Location Starts 
+                            <aura:if isTrue="{! !v.newPreSelf}" > -->
+                                <div class="slds-combobox_container">
+                                <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open" aura:id="resultsDiv" aria-expanded="true" aria-haspopup="listbox" role="combobox">
+                                    <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+                                        <div aura:id="lookup-pill" class="{! 'slds-pill-container ' + if(v.selectedRecord == '','slds-hide','') }">
+                                            <!-- Selected Value Pill -->
+                                            <lightning:pill class="fullWidth" label="{!v.selectedRecord.label}" name="{!v.selectedRecord.value}" onremove="{! c.removeItem }">
+                                                <aura:set attribute="media">
+                                                    <lightning:icon iconName="{!v.iconName}" size="x-small" alternativeText="icon"/>
+                                                </aura:set>
+                                            </lightning:pill>
+                                        </div>
+                                        <div aura:id="lookupField" class="{! if(v.selectedRecord == '','slds-show','slds-hide') }">
+                                            <!-- Icon, Search Bar, Search Icon -->
+                                            <!-- <lightning:icon class="slds-combobox__input-entity-icon" iconName="{!v.iconName}" size="small" alternativeText="icon"/> -->
+                                            <!-- <lightning:input aura:id="inputLookup" class="inputBox" placeholder="{!v.placeholder}" onblur="{!c.blurEvent}" onclick="{!c.showRecords}" 
+                                                             	onkeyup="{!c.searchRecords}" value="{!v.getServiceRes.Location.Name}" autoComplete="off" variant="label-hidden" 
+                                                             	id="combobox-id-1" /> -->
+                                            <lightning:input aura:id="inputLookup" class="inputBox"   
+                                                             value="{!v.getServiceRes.Location.Name}" autoComplete="off" variant="label-hidden" 
+                                                             id="combobox-id-1" readonly="true"/>
+                                            <!--
+                                            <lightning:icon class="slds-input__icon" iconName="utility:search" size="x-small" alternativeText="search"/> -->
+                                            <lightning:spinner class="slds-hide" aura:id="Spinner" alternativeText="Loading" size="small" variant="brand"/>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Dropdown List -->
+                                 <aura:if isTrue="{!v.recordsList.length > 0}">
+                                    <div id="listbox-id-1" class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid" style="{! 'max-height:' + (8 + (v.recordCount * 40)) + 'px' }">
+                                        <ul class="slds-listbox slds-listbox_vertical recordListBox" role="presentation">
+                                            <aura:if isTrue="{!empty(v.message)}" >
+                                                <!-- To display Drop down List -->
+                                                <aura:iteration items="{!v.recordsList}" var="rec" >
+                                                    <li id="{!rec.value}" class="slds-listbox__item eachItem" onmousedown="{!c.selectItem}">
+                                                        <div class="slds-media slds-listbox__option_entity">
+                                                            <!-- <lightning:icon iconName="{!v.iconName}" size="small" alternativeText="icon" /> -->
+                                                            <span class="verticalAlign slds-truncate">{!rec.label}</span>
+                                                        </div>
+                                                    </li>
+                                                </aura:iteration>
+                                                <!-- To display Error Message -->
+                                                <aura:set attribute="else">
+                                                    <li class="slds-listbox__item">
+                                                        <span class="slds-media slds-listbox__option_entity">{!v.message}</span>
+                                                    </li>
+                                                </aura:set>
+                                            </aura:if>
+                                        </ul>
+                                    </div>
+                                    </aura:if>
+                                </div>
+                            </div>
+                          <!--  </aura:if>
+                             Trunk Location Ends -->
+                        </div>
+                        
+                    </div>
+                    <!--    </aura:if> -->
+                    
+                </span>
+            </div>
+            
+            <!-- Requested Date Starts -->
+            <div class="slds-col" style="font-size:16px;font-weight:normal;margin-left:20px">
+               
+                    <div class="slds-form-element__label"> 
+                       
+                        <lightning:input type="date" name="input1"  label= "Request Date" value="{!v.requestedDate}"/>
+                           
+                    </div>
+               
+            </div>
+            <div class="slds-col" style="font-size:16px;font-weight:normal;margin-left:20px">
+               
+                    <div class="slds-form-element__label"> 
+                       
+                        <lightning:input type="text" name="input1"  label= "Shipping Contact Name" value="{!v.shippingName}"/>
+                           
+                    </div>
+               
+            </div>
+            <div class="slds-col" style="font-size:16px;font-weight:normal;margin-left:20px">
+               
+                    <div class="slds-form-element__label"> 
+                       
+                        <lightning:input type="tel" name="input1"  label= "Shipping Contact Phone" value="{!v.shippingPhone}"/>
+                           
+                    </div>
+               
+            </div>
+            <!-- Requested Date Ends -->
+            
+            <!-- Delivery Address Starts -->
+            <div class="slds-col" style="font-size:16px;font-weight:normal;margin-left:20px">
+                <span>
+                    
+                    <div style="font-size:18px;font-weight:normal;margin-left:20px" class="slds-m-left_medium">
+                        <lightning:input label="Delivery Address" onclick="{!c.OpenModal}" type="search" class="slds-lookup__search-input" placeholder="Search Address"  />   
+                    </div>
+                 <!--   <lightning:layout>
+                        <lightning:layoutItem padding="around-small" size="3"> -->
+                            <div class="slds-m-left_medium">
+                                <aura:if isTrue="{!not(or(empty(v.addressDetailsStreet1),v.addressDetailsStreet1 == 'undefined'))}">
+                                    <!--{!v.addressDetailsStreet1}-->
+                                    <lightning:input name="input1" value="{!v.addressDetailsStreet1}" />
+                                </aura:if>
+                                <aura:if isTrue="{!not(or(empty(v.addressDetailsStreet2),v.addressDetailsStreet2 == 'undefined'))}">
+                                    {!v.addressDetailsStreet2}
+                                    
+                                    <br/>
+                                </aura:if>
+                                <aura:if isTrue="{!not(empty(v.addressDetailsCity))}">
+                                    {!v.addressDetailsCity}
+                                    <br/>
+                                </aura:if>
+                                <aura:if isTrue="{!not(empty(v.addressDetailsState))}">
+                                    {!v.addressDetailsState}
+                                    <br/>
+                                </aura:if>
+                                <aura:if isTrue="{!not(empty(v.addressDetailsPostalCode))}">
+                                    {!v.addressDetailsPostalCode}
+                                    <br/>
+                                </aura:if>
+                                <aura:if isTrue="{!not(empty(v.addressDetailsCountry))}">
+                                    {!v.addressDetailsCountry}
+                                    <br/>
+                                </aura:if>
+                                <!--
+                        <div class="slds-col slds-size_9-of-12 slds-m-top_x-small">
+                            <lightning:textarea name="Street" label="Street" class="StreetCs" value="{!v.addressDetailsStreet}"/>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12 slds-m-top_x-small">
+                            <lightning:input name="City" label="City" value="{!v.addressDetailsCity}"/>
+                        </div>
+                        <div class="slds-col slds-size_3-of-12 slds-m-left_xxx-small slds-m-top_x-small">
+                            <lightning:input name="State" label="State/Province" value="{!v.addressDetailsState}"/>
+                        </div> 
+                        <div class="slds-col slds-size_6-of-12 slds-m-top_x-small">
+                            <lightning:input name="Zip/Postal Code" label="Zip/Postal Code" value="{!v.addressDetailsPostalCode}"/>
+                        </div>
+                        <div class="slds-col slds-size_3-of-12 slds-m-left_xxx-small slds-m-top_x-small">
+                            <lightning:input name="Country" label="Country" value="{!v.addressDetailsCountry}"/>
+                        </div> -->
+                            </div>
+                 <!--       </lightning:layoutItem>
+                    </lightning:layout> -->
+                    
+                </span>
+            </div>
+            <!-- Delivery Address Ends -->
+        </div>
+        <br/>
+        <br/>
+        <!-- Modal box starts -->
+        <aura:if isTrue="{!v.showModalBox}">
+            <div class="" style="font-size:16px;font-weight:normal;margin-left:20px">
+                <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header">
+                            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+                            <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate"><b>Address Search</b></h2>
+                        </header>
+                        
+                        <div class="">
+                            <div class="slds-size_12-of-12 slds-form-element__control slds-input-has-icon slds-input-has-icon_right slds-input-has-icon_group-right">
+                                <lightning:ButtonIcon size="medium" iconName="utility:close"  onclick="{!c.clear}" class="slds-m-right_xx-large slds-input__icon slds-input__icon_right" variant="bare"/>
+                                <lightning:input name="searchKey"
+                                                 class="slds-p-bottom_large slds-input slds-combobox__input"
+                                                 value="{!v.searchKey}"
+                                                 onkeyup ="{!c.keyPressController}"
+                                                 placeholder="Enter address.."/> 
+                            </div>
+                            <!-- list of address display -->
+                            <aura:if isTrue="{!not(empty(v.AddressList))}">
+                                <div class="Address-listbox" role="listbox">
+                                    <ul aura:id="Address-listbox" class="slds-listbox slds-listbox_vertical slds-dropdown slds-dropdown_fluid" role="presentation">
+                                        <aura:iteration items="{!v.AddressList}" var="addList">
+                                            <li role="presentation"
+                                                onclick="{!c.selectOption}"
+                                                data-value="{!addList.place_id}"
+                                                class="slds-listbox__item">
+                                                <span id="listbox-option-unique-id-01"
+                                                      class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta"
+                                                      role="option">
+                                                    <span class="slds-media__body slds-m-left_xx-small slds-m-bottom_xx-small">
+                                                        <div class="slds-grid slds-m-bottom_small">
+                                                            <div class="slds-col slds-size_1-of-10"> 
+                                                                <lightning:ButtonIcon size="medium" iconName="utility:checkin" class="slds-input__icon" variant="bare"/></div>
+                                                            <div class="slds-m-left_medium slds-col slds-size_8-of-10"> 
+                                                                <span class="slds-listbox__option-text slds-listbox__option-text_entity"><b>{!addList.main_text}</b></span>
+                                                                <span class="slds-listbox__option-text slds-listbox__option-text_entity slds-m-top_xxx-small">{!addList.secondary_text}</span></div>
+                                                            <div class="slds-col slds-size_1-of-10"></div>
+                                                        </div>
+                                                    </span>
+                                                </span>
+                                            </li>
+                                        </aura:iteration>
+                                    </ul>
+                                </div>
+                            </aura:if>
+                        </div>
+                        <footer class="slds-modal__footer">
+                            <lightning:button variant="brand" label="Cancel" title="Cancel" onclick="{!c.closeModal}" />
+                        </footer>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </div>
+            <!-- Modal box ends here -->
+        </aura:if>
+        <aura:if isTrue="{!v.Spinner}">
+            <div aura:id="spinnerId" class="slds-spinner_container">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </aura:if>
+        <!--
+        <center><ui:spinner aura:id="spinner"/></center> -->
+        <div class="slds">
+            <div class="slds-section slds-is-open">
+                
+                <h3 class="slds-section__title">
+                    <button class="slds-button slds-section__title-action">
+                        
+                            <span class="slds-truncate" title="Trunk">Trunk Part Request</span>
+                            
+                    </button>
+                </h3>
+                
+            </div>
+            <div class="slds-m-around--xx-medium">
+                <!--
+                <div class="slds-float_right slds-p-bottom_small">
+                    <h3 class="slds-page-header__title">Add Row 
+                        <lightning:buttonIcon iconName="utility:add"  size="large" variant="bare" alternativeText="Add" onclick="{!c.addRow}"/>
+                    </h3>
+                </div> -->
+                <h1 style="text-align:right;font-size:20px;" class="slds-p-right_small">Add Row 
+                                <lightning:buttonIcon iconName="utility:add"  size="large" variant="bare" alternativeText="Add" onclick="{!c.addRow}"/>
+                </h1>
+                <div class="container-fluid">        
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer"> 
+                        <thead>
+                            <tr class="slds-text-title_caps">
+                                <th scope="col">
+                                    <div class="slds-truncate">  </div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Product Name">Product</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Quantity">Quantity</div>
+                                </th>
+                                <!--
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Comments">Comments</div>
+                                </th>
+                                -->
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Action">Action</div>
+                                </th>
+                            </tr>
+                        </thead>   
+                        <tbody>      
+                            <aura:iteration items="{!v.partRequestList}" var="prl" indexVar="index">
+                                
+                                <tr>
+                                    <td> 
+                                       <!-- {!index + 1} -->
+                                    </td>
+                                    
+                                    <!-- <c:LookUp /> <input  class="slds-input" onkeyup="{!c.openProductLookupModal}"
+                                               value=""/>                                         <lightning:input id="{!index}" aura:id="enter-search" type="search" name="search" onkeyup="{!c.openProductLookupModal}" value="{!prl.Product__c}" />
+ -->
+                                    <td>
+                                        <!--
+                                        <div onkeyup="{! c.openProductLookupModal }">
+                                            <lightning:input id="{!index}"
+                                                             aura:id="enter-search"
+                                                             name="enter-search"
+                                                             label=""
+                                                             type="search"
+                                                             value="{!prl.Product__c}"
+                                                             />
+                                        </div> -->
+                                        <div class="slds-p-top_medium">
+                                            <input id="{!index}"  class="slds-lookup__search-input slds-input" onkeyup="{!c.openProductLookupModal}"
+                                                   value="{!prl.Name}" placeholder="Search Product... " required="true" />
+                                        </div>
+                                        
+                                        <!--
+                                        <span class="slds-icon_container slds-icon-utility-search slds-input__icon slds-input__icon_right iconheight">
+                                            <lightning:icon class="slds-icon slds-icon slds-icon_small slds-icon-text-default"
+                                                            iconName="utility:search" size="x-small"
+                                                            alternativeText="icon" />
+                                        </span>   -->
+                                    </td>                
+                                    <td> 
+                                        <div>
+                                        	<lightning:input name="Quan"  type="number"  maxlength="10"  value="{!prl.Quantity__c}"/>
+                                        </div>
+                                        
+                                        <!--
+                                        <span class="slds-icon_container slds-icon-utility-search slds-input__icon slds-input__icon_right iconheight">
+                                            <lightning:icon class="slds-icon slds-icon slds-icon_small slds-icon-text-default"                                                            
+                                                            alternativeText="icon" />
+                                        </span> -->
+                                    </td>
+                                    <!--
+                                    <td>
+                                        <div>
+                                           <lightning:input name="Desc" type="text" maxlength="100"  value="{!prl.Description}" />
+                                       </div>
+                                        
+                                        <span class="slds-icon_container slds-icon-utility-search slds-input__icon slds-input__icon_right iconheight">
+                                            <lightning:icon class="slds-icon slds-icon slds-icon_small slds-icon-text-default"                                                            
+                                                            alternativeText="icon" />
+                                        </span> 
+                                    </td>-->
+                                    
+                                    <td>
+                                        <a onclick="{!c.removeRow}" data-record="{!index}">
+                                            <lightning:icon iconName="utility:delete" size="small" alternativeText="Delete"/>
+                                            <span class="slds-assistive-text">Delete</span>
+                                        </a>
+                                    </td> 
+                                </tr>
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+                    <div class="slds-align_absolute-center slds-p-top_small">
+                        <lightning:button variant="brand" label="Submit for Part Request" title="Part Request" onclick="{! c.submitForOrderCreation }" />
+                        <lightning:button variant="brand" label="Cancel" title="Cancel" onclick="{! c.cancelPartRequest }" />
+                    </div> 
+                </div>
+            </div>
+            
+             
+        </div>
+       
+    </div>
+    <div aura:id="showProductLookupModal"/>
+</aura:component>

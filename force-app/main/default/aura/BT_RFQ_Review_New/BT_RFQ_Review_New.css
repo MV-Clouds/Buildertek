@@ -1,0 +1,48 @@
+.THIS .page-right {
+    background: #fff;
+    height:100%;
+}
+
+.THIS .page-left {
+    background: rgb(243, 242, 242);
+    
+}
+
+.THIS .selectedVendor {
+	background: #fff;
+}
+
+ .THIS .slds-grid_align-end{
+  justify-content: unset !important;
+ }
+ 
+ .THIS .success {
+ 	color: rgb(255, 255, 255);
+    background-color: rgb(4, 132, 75);
+ }
+.THIS .slds-button-group .slds-button+.slds-button {
+    box-shadow: inset 1px 0px 0px white;
+}
+
+.THIS .Awarded {
+    background-color: rgb(4, 132, 75) !important;
+    color: white !important;
+}
+.THIS .Accepted {
+    background-color: rgb(4, 132, 75) !important;
+    color: white !important;
+}
+.THIS .slds-icon-action-approval{
+    background-color: rgb(4, 132, 75) !important; 
+}
+.THIS .slds-resizable__divider{
+    background: transparent !important;
+}
+.THIS .slds-resizable__handle{
+    background: transparent !important;
+}
+
+.THIS .slds-float_left{
+    float:right !important;
+    margin-left : 5px !important;
+}

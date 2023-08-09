@@ -1,0 +1,88 @@
+.THIS .slds-lookup{
+    position:unset;
+}
+ .THIS .mobileSearch{
+        width:21% !important;
+    }
+ .THIS .viewAllpeople{
+    test-decoration:none;
+   	color:#F05F4D !important;
+    font-family:gotham-medium;
+    font-size:14px;
+}
+.THIS .mobileheader{
+    padding-bottom:0px ;
+    font-family:Gotham-Bold;
+    font-size:16px
+}
+.THIS .borderbottom{
+    border-bottom:1px solid #dae1e6;
+}
+
+.THIS .slds-lookup__menu{
+    width: 40%;
+}
+.THIS .uiInput {
+     padding-left: 30px;
+}
+.THIS .slds-input-has-icon--right .slds-input__icon {
+    left: .4rem;
+    right: 0px;
+}
+@media screen and (max-width: 760px) {
+    .THIS .slds-lookup__menu{
+    width: 78%;
+}
+
+}
+@media screen and (max-width: 760px) {
+    .THIS .uiInput {
+      background-color: transparent;
+}
+    .THIS .mobileSearch{
+            position: fixed;
+         
+        width:87% !important;
+    }
+    .THIS .mobileBg{
+        background-color: transparent;
+    }
+   
+    .THIS .borderbottom{
+            padding-right: 5.5% !important; ;
+    border-bottom:unset;
+}
+    .THIS .mobileheader{
+        
+        padding-bottom: 0px !important;
+        font-family: gotham-book!important;
+        padding-top: 3%;
+        padding-right: 5%;
+        padding-left: 3%;
+        
+        font-size:14px;
+        font-family:gotham-medium !important;
+}
+    .THIS .empbgcolor{
+       color:white;
+    padding: 0px;
+    padding-bottom: 0px;
+   
+    }
+     .THIS .viewAllpeople{
+        padding:0px !important;
+    test-decoration:none;
+    	color:#F05F4D !important;
+    font-family:gotham-medium !important;
+    font-size:14px !important;
+}
+    .THIS.mobilePeopledirectory{
+        height: 100px !important;
+    }
+  /*  .THIS .mobileQuicklink{
+          display:none;
+    }
+   .THIS.mobilePeopledirectory{
+        display:none;
+    }*/
+}

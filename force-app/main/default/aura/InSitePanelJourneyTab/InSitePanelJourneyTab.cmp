@@ -1,0 +1,33 @@
+<aura:component controller="InSitePanelController">
+	<lightning:overlayLibrary aura:id="overlayLib"/>
+	<aura:registerEvent name="onSessionRowClicked" type="c:onSessionRowClicked"/>
+	<aura:attribute name="journey" type="Object[]"/>
+
+	<div class="slds-p-around_x-small" style="width: 100%;">
+		<h3 class="slds-text-heading_small">User Journey</h3>
+	</div>
+	<div style="max-height: 450px; overflow-y: scroll;">
+		<table apex:id="journeyTable" class="display slds-p-horizontal_x-small dataTable no-footer">
+			<thead>
+			<tr>
+				<th class="sorting_disabled center" style="width: 25%;">Session Date</th>
+				<th class="sorting_disabled center" style="width: 28%;">Session Source</th>
+				<th class="sorting_disabled center" style="width: 25%;">Device</th>
+				<th class="sorting_disabled center" style="width: 22%;">Weight</th>
+			</tr>
+			</thead>
+			<tbody>
+			<aura:iteration items="{!v.journey}" var="j">
+				<tr class="{!_index % 2 == 0 ? 'even' : 'odd'}" data-session-id="{!j.id}" data-sku="{!j.sku}" onclick="{!c.handleRowClick}">
+					<td class="center">{!j.date}</td>
+					<td class="center" style="max-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{!j.source}</td>
+					<td class="center">{!j.device}</td>
+					<td class="center" style="padding: 6px 16px;">
+						<c:InSiteStarRating rating="{!j.weight}"/>
+					</td>
+				</tr>
+			</aura:iteration>
+			</tbody>
+		</table>
+	</div>
+</aura:component>

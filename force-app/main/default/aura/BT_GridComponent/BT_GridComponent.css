@@ -1,0 +1,283 @@
+.THIS .pointer{
+	
+	cursor: pointer;
+}
+
+.THIS .groups {
+    width: 100%;
+}
+
+.THIS .ui-widget.ui-widget-content{
+	border: none;
+}
+.THIS .ui-widget {
+    font-family: unset !important;
+}
+.THIS .btgroupsummryTitle{
+	font-size:12px;
+	padding: 10px;
+}
+
+.THIS .btgroupsummry{
+	
+	color: rgb(22, 50, 92);
+	font-weight: 400;
+}
+
+
+.THIS .clearsearchclass{
+    font-size: 20px;
+}
+
+.THIS .clearsearchclass:hover{
+	text-decoration: none;
+}
+
+.THIS .ui-icon-circle-minus{
+   background: transparent url('/resource/SLDS/assets/icons/utility/chevrondown_60.png') no-repeat !important;
+   background-size: 16px !important;
+   margin-left: 10px !important;
+   margin-right: 10px;
+ }
+.THIS .ui-icon-circle-plus{
+   background: transparent url('/resource/SLDS/assets/icons/utility/chevronright_60.png') no-repeat !important;
+   background-size: 16px !important;
+   margin-left: 10px !important;
+   margin-right: 10px;
+ }
+
+.THIS .groupingButton {
+    list-style-type: none !important;
+    margin: 0.4% 0.6% !important;
+    background-color: #fff;
+    border: 1px solid #d8dde6;
+    border-radius: 0.25rem;
+    display: inline-block;
+    line-height: 1.5;
+    padding: 0.25rem;
+    vertical-align: middle;
+    cursor: default;
+}
+.THIS .actionIconContainer{
+    margin:5px 5px 0px 0px;
+}
+.THIS .ui-jqgrid tr.jqgrow td.gridactions{
+    position: absolute;
+    padding: 3px !important;
+    overflow: visible;
+    min-width: 30px;
+}
+
+
+.THIS .ui-jqgrid .ui-jqgrid-hdiv .ui-search-toolbar input {
+	margin: 0px 0 0 0 !important;
+	padding: 2px !important;
+}
+
+.THIS .jqSLDS *, .THIS .jqSLDS *::before,.THIS .jqSLDS *::after {
+    box-sizing: content-box !important;
+    /*font-size: 12px !important;*/
+}
+.THIS .ui-jqgrid tr.jqgfirstrow td {
+    border-right-color: transparent !important;
+}
+.THIS .ui-jqgrid tr.jqgroup td{
+    padding: 10px;
+    border-top: 1px solid #dddbda !important;
+    border-bottom-style: none !important;
+    border-right: none !important;
+	height: 40px !important;
+    
+}
+
+/* this css is used to override summury row UI*/
+.THIS .ui-jqgrid .ui-jqgrid-bdiv tr.ui-row-ltr>td{
+    border-right-style: none !important;
+    font-size:12px !important;
+    border-bottom: none;
+    padding: 0px 5px 0 5px;
+}
+
+.THIS .ui-widget-content {
+    background: #ffffff !important;
+}
+.THIS .ui-widget-header{
+    background: #e8e8e8 none repeat scroll 0 0 !important;
+    border: 1px solid #b8b8b8 !important;
+    color: #000000 !important;
+    font-weight: bold !important;
+}
+.THIS .ui-widget-header a  {
+    color: #000000 !important;
+}
+.THIS .ui-jqgrid-btable {
+    background-color: white !important;
+    
+}
+
+.THIS .s-ico .ui-jqgrid-disablePointerEvents {
+	/*visibility: hidden;*/
+}
+
+.THIS .ui-jqgrid-htable {
+    background-color: rgb(250, 250, 249) !important;
+    color: rgb(81, 79, 77);
+    font-size: .75rem !important;
+    line-height: 1.25 !important;
+    text-transform: uppercase !important;
+    letter-spacing: .0625rem !important;
+    padding-bottom: 10px;
+    padding-top: 4px;
+    width: auto !important;
+}
+.THIS .ui-state-default,.THIS .ui-widget-content .ui-state-default,.THIS .ui-widget-header .ui-state-default {
+    background: none !important;
+    border: none !important;
+    color: #54698d !important;
+}
+.THIS .ui-button.ui-widget.ui-state-default.ui-corner-all.ui-button-text-only {
+    border: 1px solid !important;
+}
+
+/* fix layout is causing an issue in lightning experience so set it to auto */
+/*.THIS .ui-jqgrid .ui-jqgrid-btable{
+    table-layout: auto !important;
+}
+.THIS .frozen-bdiv .ui-jqgrid-btable{
+	table-layout: fixed !important;
+}*/
+
+.THIS .ui-jqgrid .ui-jqgrid-htable th div {
+    height: auto !important;
+    white-space: normal !important;
+    font-weight: normal;
+}
+
+.THIS .slds-hint-parent:hover {
+    background-color: rgb(250, 250, 249) !important;
+}
+.THIS .ui-jqgrid-labels {
+    
+    /*font-size: 12px !important;*/
+    letter-spacing: 0.0625em !important;
+    line-height: 1.25 !important;
+    
+}
+.THIS .ui-th-column,.THIS .ui-jqgrid .ui-jqgrid-htable th.ui-th-column {
+    border-top: 1px solid #d8dde6 !important;
+    font-family: "Salesforce Sans",Arial,sans-serif !important;
+    text-align: left !important;
+    font-weight: lighter !important;
+    cursor: pointer !important;
+    background: none !important;
+    border: none !important;
+}
+.THIS .ui-jqgrid-htable th div{
+    /*padding: 10px 10px 0px 10px;*/
+    padding-top:5px;
+    padding-left:5px;
+}
+.THIS .ui-search-toolbar th div{
+    margin:0px;
+}
+.THIS .avBlueLink {
+    text-decoration: none!important;
+    color: rgb(0, 112, 210);
+}
+.THIS .ui-th-column,.THIS .ui-jqgrid .ui-jqgrid-htable th.ui-th-column:hover {
+    background-color: rgb(250, 250, 249)  !important;
+    color: #0070d2 !important;
+}
+.THIS #ui-datepicker-div {
+    background-color: #ffffff !important;
+}
+.THIS .ui-jqgrid tr.jqgrow td {
+    background: none !important;
+    border-top: 1px solid #dddbda !important;
+    border-bottom-style: none;
+    white-space: normal !important;
+    padding: 9.5px;
+    border-collapse: separate;
+    color: #54698d !important;
+    padding-left: 5px;
+    font-size: 12px;
+    height: 40px !important;
+}
+.THIS .ui-state-hover,.THIS .ui-widget-content .ui-state-hover,.THIS .ui-widget-header .ui-state-hover,.THIS .ui-state-focus,.THIS .ui-widget-content .ui-state-focus,.THIS .ui-widget-header .ui-state-focus {
+    background: rgb(250, 250, 249) !important;
+    border: none !important;
+    color: none !important;
+    font-weight: none !important;
+}
+.THIS .ui-state-highlight,.THIS .ui-widget-content .ui-state-highlight,.THIS .ui-widget-header .ui-state-highlight {
+    background: rgb(250, 250, 249) !important;
+    border: none !important;
+    color: initial !important;
+}
+.THIS .avJqGridDynamicLink{
+    color: #015ba7 !important;
+}
+.THIS .avJqGridDynamicLink:hover{
+    color: #015ba7 !important;
+    text-decoration: underline !important;
+}
+.THIS .avDisablePointer{
+    pointer-events: none;
+}
+.THIS .ui-pager-control .ui-jqgrid-pg-right{
+    text-align: left;
+    padding-left: 1.0em !important;
+}
+.THIS .ui-jqgrid tr.jqgrow>td {
+    text-align:left;
+}
+.THIS .ui-jqgrid .ui-th-column .cbox {
+    margin-left: -6px !important;
+}
+/*Grouping CSS, Class ends with "ghead_x" */
+.THIS tr[class$="ghead_0"]{
+    font-size: 12px;
+    background: rgb(236, 235, 234) !important;
+    box-shadow: rgb(0, 112, 210) 4px 0 0 inset;
+}
+.THIS tr[class$="ghead_0"]>td {
+    white-space: normal !important;
+}
+.THIS tr[class$="ghead_0"]>td>a {
+}
+
+.THIS tr[class$="ghead_1"]{
+    background-color: rgb(240, 248, 254) !important;
+    font-size: 12px;
+}
+.THIS tr[class$="ghead_1"]>td {
+}
+.THIS tr[class$="ghead_1"]>td>a {
+}
+
+.THIS tr[class$="ghead_2"]{
+    background-color: rgb(240, 248, 255) !important;
+    font-size: 12px;
+}
+.THIS tr[class$="ghead_2"]>td {
+}
+.THIS tr[class$="ghead_2"]>td>a {
+}
+.THIS .ui-icon-asc{
+    margin-left: 1px;
+} 
+.THIS .slds-page-header {
+    border-bottom: none !important;
+}
+.THIS .ui-jqgrid .ui-jqgrid-pager{
+    height: 40px!important;
+    padding-top: 10px;
+    border-top: 1px solid #dddbda !important;
+    background: #ffffff !important;
+}
+.THIS .avPaginationButtonImg{
+    height : 100%;
+    width : 100%;
+    padding-top: 0px !important; 
+    padding-bottom: 0px !important; 
+}

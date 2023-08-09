@@ -1,0 +1,31 @@
+<apex:page title="Import Master Warranty Items" standardStylesheets="false" showHeader="false">
+	<apex:slds />
+	<apex:includeLightning />
+	<div class="slds-scope">
+		<div id="loading" role="status" class="slds-spinner slds-spinner_large slds-spinner_brand">
+			<span class="slds-assistive-text">Loading...</span>
+			<div class="slds-spinner__dot-a"></div>
+			<div class="slds-spinner__dot-b"></div>
+		</div>
+		<div id="LightningCompContainer" class="" style="overflow:auto" />
+	</div>
+	<script>
+		$Lightning.use("buildertek:BT_ImportMasterWarrentyItemsApp", function () {
+			$Lightning.createComponent(
+				"buildertek:BT_ImportMasterWarrentyItems",
+				{},
+				"LightningCompContainer",
+				function (component) {
+					component.set("v.recordId", '{!$CurrentPage.parameters.Id}');
+				});
+		});
+		setTimeout(function () {
+			document.getElementById('loading').style.display = 'none';
+		}, 3000);
+	</script>
+	<style>
+		.slds-template_iframe {
+			width: 50% !important;
+		}
+	</style>
+</apex:page>

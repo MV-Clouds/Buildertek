@@ -1,0 +1,13 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+    
+	<aura:attribute name="objectAPI" type="String" access="global" default="buildertek__Master_Budget__c"/>
+	<aura:attribute name="recordId" type="String" access="global"/>
+	<aura:attribute name="modalPromise" type="Aura.Action"/>
+    <lightning:overlayLibrary aura:id="overlay"/>
+	<c:BT_Spinner/>
+	<lightning:buttonGroup class="slds-float_right">
+	    <lightning:button name="Add" label="New" onclick="{!c.addNewMBLine}"/>
+	</lightning:buttonGroup>
+    <br/>
+    <br/>
+</aura:component>

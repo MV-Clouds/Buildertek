@@ -1,0 +1,176 @@
+<aura:component controller ="RFQVendorItemController" implements="flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global" >
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="rfqtovendorId" type="Id" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="RFQVendorLineList" type="RFQ_To_Vendor__c[]"/>
+    <aura:attribute name="data" type="list"/>
+    <aura:attribute name="columns" type="List"/>
+     <aura:attribute name="currentUserList" type="Id"/>  
+    <aura:attribute name="UpdatedList" type="RFQ_To_Vendor__c[]"/>
+    <aura:attribute name="submitted" type="boolean"/>
+    <aura:attribute name="iseditable" type="boolean" default="false"/>
+    <aura:attribute name="islistview" type="boolean" default="false"/>
+    <aura:attribute name="showPopup" type="Boolean" default="false" />
+    <aura:attribute name="modalPromise" type="Aura.Action"/>
+    <aura:attribute name="selectedFiles" type="sObject[]" default="[]"/>
+    <lightning:overlayLibrary aura:id="overlay"/>
+    
+    <aura:attribute name="files" type="List"/>
+    <aura:attribute name="Isfiles" type="Boolean" default="false" />
+    <aura:attribute name="Isnofiles" type="Boolean" default="false" />
+    <aura:attribute name="rfqfiles" type="List"/>
+    <aura:attribute name="Isrfqfiles" type="Boolean" default="false" />
+    <aura:attribute name="Isnorfqfiles" type="Boolean" default="false" />
+    <aura:attribute name="rfqrecordId" type="String" default="" />
+    <aura:attribute name="multicurrency" type="Boolean"/>
+    <aura:attribute name="currencycode" type="String"/>
+     <aura:attribute name="Ispinned" type="Boolean" default="false" />
+     <aura:attribute name="Ispin" type="Boolean" default="false" />
+    
+    <aura:attribute name="isOnchange" type="Boolean" default="true" />
+    
+      <aura:attribute name="listViewMap" type="Map"/>
+    <aura:attribute name="listviewName" type="String"/>
+    <aura:attribute name="selectedListViewName" type="String" />
+  <aura:attribute name="Vendorlist" type="List" />      
+
+  <aura:attribute name="loaded" type="Boolean" default="false" />
+    
+      <aura:attribute name="searchResult" type="List" description="use for store and display account list return from server"/>
+   <aura:attribute name="searchKeyword" type="String" description="use for store user search input"/>
+     <aura:attribute name="fnamefilter" type="String" default=""/>  
+   <aura:attribute name="lnamefilter" type="String" default=""/>  
+      <aura:attribute name="now" type="Object"/>
+    <aura:html tag="style">
+        .slds-modal__container .cls{
+        width:90% !important;      
+        max-width: 90% !important;    
+        
+        }
+        .slds-modal__content {
+        //overflow: hidden !important;
+        }
+    </aura:html>
+    
+    <div class="">
+        <!-- <div class="slds-page-header"> -->
+           <!-- <div class="slds-page-header"> -->
+                <div class="slds-page-header__row" style="padding-bottom:1rem">
+                    <!-- <div class="slds-page-header__col-title"> -->
+                        <div class="slds-media">
+                            <aura:if isTrue="{!v.loaded}">
+                                <div class="demo-only">
+                                    <div class="slds-spinner_container">
+                                        <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
+                                            <span class="slds-assistive-text">Loading</span>
+                                            <div class="slds-spinner__dot-a"></div>
+                                            <div class="slds-spinner__dot-b"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </aura:if>
+                            <div class="slds-media__figure">
+                                <lightning:icon iconName='custom:custom27' alternativeText='All' size='medium' title='custom3'/>
+                            </div>
+                            <div class="slds-media__body">
+                                <div class="slds-page-header__name">
+                                    <div class="slds-page-header__name-title">
+                                        <h1>
+                                            <span>RFQ</span>
+                                            <aura:if isTrue="{!v.islistview}">
+                                            <span class="slds-page-header__title slds-truncate"  style="width:130px;font-size:1rem;">  
+                                                <lightning:select aura:id="industryPicklist"   value="{!v.listviewName}"  name="industryPicklist"  required="false" onchange="{!c.handleListViewChange}">
+                                                 <!-- <option value="">None</option> -->
+                                                 <aura:iteration items="{!v.listViewMap}" var="ind" indexVar="key">
+                                                     <option text="{!ind.value}" value="{!ind.key}" selected="{!v.listviewName == ind.key}"/>
+                                                 </aura:iteration>
+                                             </lightning:select>
+                                            </span>
+                                            </aura:if>
+                                        </h1>
+                                    </div>
+                                     <div>
+                                         <div class="form-group">
+                                             
+                                         </div>
+                                    </div>                                    
+                                </div>
+                                <!--<aura:if isTrue="{!v.isOnchange}">
+                                <lightning:listView aura:id="listViewAccounts"
+                                                    objectApiName="buildertek__RFQ_To_Vendor__c"
+                                                    listName="{!v.listviewName}"
+                                                    rows="5"
+                                                    showSearchBar="true"
+                                                    showActionBar="false"
+                                                    enableInlineEdit="false"
+                                                    showRowLevelActions="false"
+                                                    /> 
+                                    
+                                </aura:if>-->
+                                
+                                
+                                
+                            </div>
+                        </div>
+                    <aura:if isTrue="{!v.Ispin}">
+                     <lightning:icon iconName="utility:pin" alternativeText="pin" title="pin" size = "x-small" style = "padding-top:2.5rem; cursor: pointer;" onclick="{! c.handleClick }" />
+                    </aura:if>
+                        <aura:if isTrue="{!v.Ispinned}">
+                    <lightning:icon iconName="utility:pinned" alternativeText="pinned" title="To unpin, pin another list view" size = "x-small" style = "padding-top:2.5rem; cursor: pointer;" class="comments-icn" />
+                    </aura:if>
+                   <!-- </div> -->
+                    <div class="slds-page-header__col-actions">
+                        <div class="slds-page-header__controls">
+                            <div class="slds-page-header__control">
+                                <ul class="slds-button-group-list">
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <!-- </div> -->
+         <div class="slds-size_11-of-12">
+          <p class="slds-p-horizontal_medium" style ="padding-left:0rem;">
+            {!v.RFQVendorLineList.length } items • Updated
+               <lightning:relativeDateTime value="{! v.now }"/>
+        
+        </p><br />
+        </div>
+          <div class="slds-size_1-of-12">
+         <div class="slds-text-longform  slds-input-has-icon slds-input-has-icon_left-right" style = "width: 15rem; margin-left:73.5rem; margin-top:-4.5rem; ">
+             <lightning:input value="{!v.searchKeyword}"
+                              placeholder="search this list..."
+                              aura:id="searchKey"
+                              name="searchField"
+                              class="pointer"
+                              text = "hai"
+                              type  = "search"
+                              onchange="{! c.searchKeyChange }"/>
+                            <!-- fieldLevelHelp="Help text goes here"/>-->
+        </div>
+        </div>
+
+        
+        <br/>
+          <!--  <div class="slds-border_top">-->
+            <div class="full-width slds-scrollable_y">        
+                <aura:if isTrue="{!not(empty(!v.RFQVendorLineList))}">
+                  
+                    <lightning:datatable aura:id="itemsTable"   data="{!v.RFQVendorLineList }" 
+                                         columns="{!v.columns }" 
+                                         keyField="Id"                         
+                                         hideCheckboxColumn="true"
+                                         onsave="{! c.onSave }" 
+                                         style="width:655px;"
+                                         /> 
+                  
+                    <!-- draftValues= "{!v.UpdatedList}" onrowaction="{!c.viewRecord}" -->
+                    <aura:set attribute="else">
+                        <div Style="text-align : center"> " There are no related RFQ To Vendor " </div>
+                    </aura:set>
+                </aura:if>
+            </div>
+        </div>
+       <!-- </div>
+    </div>  -->  
+</aura:component>

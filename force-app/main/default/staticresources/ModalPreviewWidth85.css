@@ -1,0 +1,24 @@
+.slds-modal__container{
+   max-width: 85% !important;
+   width:90% !important;
+}
+.cuf-content {
+padding: 0 0rem !important;
+}
+.slds-p-around--medium {
+padding: 0rem !important;
+}
+.slds-modal__content {
+	height: unset !important;
+	max-height: unset !important;
+	box-shadow: none !important;
+} 
+.slds-modal__container{
+   max-width: 85% !important;
+   width: 90% !important;
+
+}
+.scrollable {
+	height: 400px; 
+	overflow-y:auto; 
+}

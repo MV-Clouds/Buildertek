@@ -1,0 +1,17 @@
+<aura:component controller="Product_Files" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global">
+
+    <force:recordData aura:id="forceRecordCmp" recordId="{!v.recordId}" fields="Id, Name" targetRecord="{!v.record}" targetFields="{!v.invoice}" targetError="{!v.error}" />
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <aura:attribute name="contentDocsList" type="List" />
+
+    <lightning:card title="Option Images">
+        <div class="slds-m-around_medium" style="display: flex; overflow: auto;">
+            <aura:iteration items="{!v.contentDocsList}" var="item">
+                <div class="slds-m-horizontal_x-small">
+                    <lightning:fileCard fileId="{!item}" />
+                </div>
+            </aura:iteration>
+        </div>
+    </lightning:card>
+
+</aura:component>

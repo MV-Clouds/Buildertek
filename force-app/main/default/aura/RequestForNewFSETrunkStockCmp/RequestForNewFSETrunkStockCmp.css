@@ -1,0 +1,64 @@
+.THIS {
+    background-color: white;
+    /* Full height */
+    height: 100%;
+    
+    /* Center and scale the image nicely */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.THIS .parts_table {
+    overflow-x: scroll !important;
+    padding-bottom: 100px;
+    height: 400px !important;
+}
+
+
+.THIS .centerDisplay {
+    padding-left: 23%;
+}
+
+.THIS .verticalAlign {
+	cursor: pointer;
+	margin: 6px 0px 0px 6px!important;
+}
+.THIS .fullWidth {
+	width: 60% !important;
+}
+.THIS .recordListBox {
+	margin-top:0px !important;
+	overflow-y: scroll;
+}
+.THIS .inputBox input {
+	padding-left: 10px;
+    width: 70% !important;
+    
+}
+.THIS .eachItem:hover {
+    background-color: #EEE;
+    cursor: pointer;
+}
+.THIS .inputIcon {
+	z-index: 99;
+    padding: 2px 0;
+}
+
+.THIS .tableAuto {
+	table-layout: auto;
+  	width: 100%; 
+}
+
+/* For Scrolling */
+.THIS ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+.THIS ::-webkit-scrollbar-track {
+   display: none !important;
+}
+.THIS ::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: rgba(0,0,0,0.4);
+}

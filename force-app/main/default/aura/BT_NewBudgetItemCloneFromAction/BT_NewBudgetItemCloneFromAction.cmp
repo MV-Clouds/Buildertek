@@ -1,0 +1,10 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader" access="global" >
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="isbudget" type="Boolean" default = "true"/>
+    <aura:attribute name="fromWhereBudgetIsOpen" type="string" />
+
+
+    
+    
+    
+</aura:component>

@@ -1,0 +1,35 @@
+@media only screen and (max-width: 1980px) and (min-width: 1780px) {
+    .THIS.BT_GanttChart {
+        height: 765px !important;
+    }
+}
+
+@media only screen and (max-width: 1779px) and (min-width: 1580px) {
+    .THIS.BT_GanttChart {
+        height: 660px !important;
+    }
+}
+
+@media only screen and (max-width: 1579px) and (min-width: 1370px) {
+    .THIS.BT_GanttChart {
+        height: 570px !important;
+    }
+}
+
+@media only screen and (max-width: 1366px) and (min-width: 1280px) {
+    .THIS.BT_GanttChart {
+        height: 500px !important;
+    }
+}
+
+@media only screen and (max-width: 1279px) and (min-width: 1180px) {
+    .THIS.BT_GanttChart {
+        height: 440px !important;
+    }
+}
+
+@media only screen and (max-width: 1179px) and (min-width: 1080px) {
+    .THIS .BT_GanttChart {
+        height: 380px !important;
+    }
+}

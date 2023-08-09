@@ -1,0 +1,17 @@
+<aura:component >
+	<aura:handler event="c:BT_SpinnerEvent" action="{!c.spinner}"/>
+    <div>
+        <div aura:id="BTSpinner" class="slds-spinner_container slds-is-fixed slds-hide" style="position:fixed;z-index:100000">
+            <!-- <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand"> -->
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="status">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                 <div class="custom-loading-text">
+                     <!--<b>Retrieving Data Please Wait.</b>-->
+                     <b>Processing, Please Wait</b>
+                 </div>
+                 </div>
+                </div>
+            </div>
+</aura:component>

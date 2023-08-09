@@ -1,0 +1,218 @@
+<!--
+	@ PURPOSE : 1. DISPLAYS QUALITY ANANLYSIS FIELDS FOR IGU.
+				2. FIRES COMPONENT EVENT WHEN POP-UP MODAL IS CLOSED WITH DETAILS PROVIDED.
+	@ Name    : QualityAnalysisCmp.xml
+-->
+<aura:component controller="IssueManagementCtrl" access="global">
+    
+	<aura:attribute name="recordIndex" type="Integer" default="-1" required="true"/>
+	
+	<aura:attribute name="listName" type="String" default="" required="true"/>
+	<aura:attribute name="fromComponent" type="String" default="" />
+	<aura:attribute name="recordIssue" type="Object" default="{}" required="true"/>
+	
+	<aura:attribute name="showSpinner" type="Boolean" />
+	
+	<aura:attribute name="headerText" type="String" default="Quality Analysis"/>
+	
+	<aura:registerEvent name="qualityAnalysisModalEvt" type="c:CloseQualityAnalysisModalEvt"/>
+	
+	<!-- START MODAL -->
+    <div style="height: 800px; width:auto;">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+				 
+			<!-- START SPINNER -->
+			<aura:if isTrue="{!v.showSpinner}">
+				<lightning:spinner alternativeText="Loading" size="large" />
+			</aura:if>
+			<!-- END SPINNER -->
+			
+            <div class="slds-modal__container">
+                
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" class="slds-modal__close"
+										  size="large" variant="bare" alternativeText="Close"
+										  onclick="{! c.closeModal }"/>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">
+						{!v.headerText}
+					</h2>
+                </header>
+				<aura:if isTrue="{!v.fromComponent==''}">
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+					
+					<div class="slds-grid slds-wrap">
+					
+					  <div class="slds-col slds-size_1-of-2">
+						<lightning:select name="Replaced SWC?" label="Replaced SWC?"
+										  value="{!v.recordIssue.Replaced_SWC__c}" required="true">
+							<option value="">Select</option>
+							<option value="Yes">Yes</option>
+							<option value="No">No</option>
+						</lightning:select>
+					  </div>
+					  
+					  <div class="slds-col slds-size_1-of-2">
+						<lightning:select name="Lite Damaged?" label="Lite Damaged?"
+										  value="{!v.recordIssue.Lite_Damaged__c}" required="true">
+							<option value="">Select</option>
+							<option value="Inboard">Inboard</option>
+							<option value="Outboard">Outboard</option>
+							<option value="Both">Both</option>
+							<option value="Unknown">Unknown</option>
+						</lightning:select>
+					  </div>
+					  
+					  <div class="slds-col slds-size_1-of-2">
+						<lightning:select name="Replaced WC?" label="Replaced WC?"
+										  value="{!v.recordIssue.Replaced_WC__c}" required="true">
+							<option value="">Select</option>
+							<option value="Yes">Yes</option>
+							<option value="No">No</option>
+						</lightning:select>
+					  </div>
+					  
+					  <div class="slds-col slds-size_1-of-2">
+						<lightning:select name="Visible BB Damage?" label="Visible BB Damage?"
+										  value="{!v.recordIssue.Visible_BB_Damage__c}" required="true">
+							<option value="">Select</option>
+							<option value="Yes">Yes</option>
+							<option value="No">No</option>
+						</lightning:select>
+					  </div>
+					  
+					  <div class="slds-col slds-size_1-of-2">
+						<lightning:select name="Replaced IGU Cable?" label="Replaced IGU Cable?"
+										  value="{!v.recordIssue.Replaced_IGU_Cable__c}" required="true">
+							<option value="">Select</option>
+							<option value="Yes">Yes</option>
+							<option value="No">No</option>
+						</lightning:select>
+					  </div>
+					  
+					  <div class="slds-col slds-size_1-of-2">
+						<lightning:select name="Reflection Color Observed" label="Reflection Color Observed"
+										  value="{!v.recordIssue.Reflection_Color_Observed__c}" required="true">
+							<option value="">Select</option>
+							<option value="Pink">Pink</option>
+							<option value="Green">Green</option>
+							<option value="Other">Other</option>
+						</lightning:select>
+					  </div>
+					  
+					  <div class="slds-col slds-size_1-of-2">
+						<lightning:select name="Reflection Color Degree" label="Reflection Color Degree"
+										  value="{!v.recordIssue.Reflection_Color_Degree__c}" required="true">
+							<option value="">Select</option>
+							<option value="1">1</option>
+							<option value="2">2</option>
+							<option value="3">3</option>
+							<option value="4">4</option>
+						</lightning:select>
+					  </div>
+					  
+					</div>
+					
+                </div>
+                </aura:if>
+                <aura:if isTrue="{!v.fromComponent=='LogIssues'}">
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+					
+					<div class="slds-grid slds-wrap">
+					
+					  <div class="slds-col slds-size_1-of-2">
+						<lightning:select name="Replaced SWC?" label="Replaced SWC?"
+										  value="{!v.recordIssue.Replaced_SWC}" required="true">
+							<option value="">Select</option>
+							<option value="Yes">Yes</option>
+							<option value="No">No</option>
+						</lightning:select>
+					  </div>
+					  
+					  <div class="slds-col slds-size_1-of-2">
+						<lightning:select name="Lite Damaged?" label="Lite Damaged?"
+										  value="{!v.recordIssue.Lite_Damaged}" required="true">
+							<option value="">Select</option>
+							<option value="Inboard">Inboard</option>
+							<option value="Outboard">Outboard</option>
+							<option value="Both">Both</option>
+							<option value="Unknown">Unknown</option>
+						</lightning:select>
+					  </div>
+					  
+					  <div class="slds-col slds-size_1-of-2">
+						<lightning:select name="Replaced WC?" label="Replaced WC?"
+										  value="{!v.recordIssue.Replaced_WC}" required="true">
+							<option value="">Select</option>
+							<option value="Yes">Yes</option>
+							<option value="No">No</option>
+						</lightning:select>
+					  </div>
+					  
+					  <div class="slds-col slds-size_1-of-2">
+						<lightning:select name="Visible BB Damage?" label="Visible BB Damage?"
+										  value="{!v.recordIssue.Visible_BB_Damage}" required="true">
+							<option value="">Select</option>
+							<option value="Yes">Yes</option>
+							<option value="No">No</option>
+						</lightning:select>
+					  </div>
+					  
+					  <div class="slds-col slds-size_1-of-2">
+						<lightning:select name="Replaced IGU Cable?" label="Replaced IGU Cable?"
+										  value="{!v.recordIssue.Replaced_IGU_Cable}" required="true">
+							<option value="">Select</option>
+							<option value="Yes">Yes</option>
+							<option value="No">No</option>
+						</lightning:select>
+					  </div>
+					  
+					  <div class="slds-col slds-size_1-of-2">
+						<lightning:select name="Reflection Color Observed" label="Reflection Color Observed"
+										  value="{!v.recordIssue.Reflection_Color_Observed}" required="true">
+							<option value="">Select</option>
+							<option value="Pink">Pink</option>
+							<option value="Green">Green</option>
+							<option value="Other">Other</option>
+						</lightning:select>
+					  </div>
+					  
+					  <div class="slds-col slds-size_1-of-2">
+						<lightning:select name="Reflection Color Degree" label="Reflection Color Degree"
+										  value="{!v.recordIssue.Reflection_Color_Degree}" required="true">
+							<option value="">Select</option>
+							<option value="1">1</option>
+							<option value="2">2</option>
+							<option value="3">3</option>
+							<option value="4">4</option>
+						</lightning:select>
+					  </div>
+					  
+					</div>
+					
+                </div>
+                </aura:if>
+
+               <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral"
+                                      label="Cancel"
+                                      title="Cancel"
+                                      onclick="{!c.closeModal}"/>
+                   
+                    <lightning:button variant="brand"
+                                      label="OK"
+                                      title="OK"
+                                      onclick="{!c.save}"/>
+                  
+                </footer>
+				
+            </div>
+			
+        </section>
+		
+        <div class="slds-backdrop slds-backdrop_open"></div>
+		
+    </div>
+    <!-- END MODAL -->
+	
+</aura:component>

@@ -1,0 +1,111 @@
+<!-- Author : Nitin (MV Clouds) -->
+<!-- Date : 31-Oct-2022 -->
+<!-- Description : Used for importing Punch Line from Master -->
+
+<aura:component controller="ImportMasterPunchLine"
+    implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader"
+    access="global">
+    <aura:attribute name="masterPunchList" type="object" />
+    <aura:attribute name="Spinner" type="Boolean" />
+    <aura:attribute name="masterPLCheckMap" type="Map[]" />
+    <aura:attribute name="allcheckVal" type="Boolean" />
+
+    <!-- Attribute Declration For Pagination -->
+
+    <aura:attribute name="PaginationList" type="Object" />
+    <aura:attribute name="startPage" type="Integer" />
+    <aura:attribute name="endPage" type="Integer" />
+    <aura:attribute name="totalRecords" type="Integer" />
+    <aura:attribute name="pageSize" type="Integer" default="10" />
+
+    <!-- Attribute Declration For Pagination End-->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <!-- Import Master Punch Line Modal Start -->
+
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
+    <!-- Modal header -->
+    <div class="slds-modal__header mdl-hdr-txt">
+        Import Master Punch List
+    </div>
+
+    <!-- Modal Body -->
+    <div class="slds-modal__content slds-p-around--large">
+        <!-- spinner start -->
+        <aura:if isTrue="{!v.Spinner}">
+            <div aura:id="spinnerId" class="slds-spinner_container">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                    <div class="custom-loading-text">
+                        <b>Processing, Please Wait</b>
+                    </div>
+                </div>
+            </div>
+        </aura:if>
+        <!-- spinner End -->
+        <div class="slds slds-scope">
+            <table class="slds-table slds-table_bordered slds-table_fixed-layout" role="grid">
+                <thead>
+                    <tr class="slds-text-title_caps">
+                        <th scope="col" class="top-row-hdr top-row-sa-col">
+                            <!-- <ui:inputCheckbox aura:id="checkContractors" change="{!c.selectAll}" />		 -->
+                            <!-- <ui:inputCheckbox aura:id="selectAllCheckBox" value="{!allcheckVal}"
+                                change="{!c.selectAll}" /> -->
+                            <ui:inputCheckbox aura:id="selectAllCheckBox" value="{!v.allcheckVal}"
+                                change="{!c.selectAll}" />
+                        </th>
+                        <th class="top-row-hdr">
+                            Description
+                        </th>
+                        <th class="top-row-hdr">
+                            Project
+                        </th>
+                        <th class="top-row-hdr">
+                            Type
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.PaginationList}" var="rec">
+                        <tr class="slds-hint-parent">
+                            <td style="width:50px;">
+                                <ui:inputCheckbox text="{!rec.Id}" value="{!rec.checkVal}" change="{!c.handleCheck}" />
+                            </td>
+                            <td role="gridcell">
+                                <ui:outputText value="{!rec.buildertek__Description__c}" />
+                            </td>
+                            <td role="gridcell">
+                                <ui:outputText value="{!rec.buildertek__Project__r.Name}" />
+                            </td>
+                            <td role="gridcell">
+                                <ui:outputText value="{!rec.buildertek__Type__c}" />
+                            </td>
+                        </tr>
+                    </aura:iteration>
+                </tbody>
+            </table>
+            <br />
+            <lightning:buttonGroup>
+                <lightning:button label="Previous" disabled="{!v.startPage == 0}" onclick="{!c.previous}"
+                    variant="brand" iconName='utility:back' />
+                &nbsp; &nbsp; &nbsp;
+                <lightning:button label="Next" disabled="{!v.endPage >= v.totalRecords}" onclick="{!c.next}"
+                    variant="brand" iconName='utility:forward' iconPosition='right' />
+            </lightning:buttonGroup>
+        </div>
+    </div>
+
+
+
+
+    <!-- Modal Footer -->
+    <div class="slds-modal__footer">
+        <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}">Cancel</button>
+        <button class="slds-button slds-button--brand" onclick="{!c.importMasterPL}">Import Master PL</button>
+    </div>
+
+    <!-- Import Master Punch Line Modal End -->
+
+</aura:component>

@@ -1,0 +1,4 @@
+<aura:event type="APPLICATION" description="Event template">
+    <aura:attribute name="nodeData" type="Object"/>
+    <aura:attribute name="actionType" type="String"/>
+</aura:event>

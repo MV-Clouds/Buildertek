@@ -1,0 +1,4 @@
+<aura:component implements="force:hasRecordId,lightning:actionOverride,lightning:isUrlAddressable"  description="NewObjectAction" controller="ShipmentFormComponentcontlr">
+	 <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <div>{!v.recordId}</div>
+</aura:component>

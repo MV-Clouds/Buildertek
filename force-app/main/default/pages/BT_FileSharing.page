@@ -1,0 +1,226 @@
+<!--**********************************************************************************
+* Copyright © 2017 - 2017, BuilderTek.
+* All rights reserved
+*
+* VisualForce Page: BT_FileSharing
+* Created by Sagar - 21/2/2017
+
+* - Allow to file sharing.
+
+* - Modifications:
+* - Sagar, 21/2/2017 - Initial
+***********************************************************************************-->
+<apex:page standardController="File__c" extensions="BT_FileSharingController" sidebar="false"  title="{!$Label.buildertek__file_sharing}">
+    <c:BT_JsAndCssIncludeComponent importJquery="true"
+                              importAppurinUtil="true"
+                              importJQueryLayout="false"
+                              importFancyTree="false"
+                              importJqGrid="false"
+                              importEasyTooltip="true"
+                              importAppurinCss="true"
+                              importCkEditor="false"
+                              importGnattChart="false"
+                              importLightningDesign="true"/>
+    
+	<script>
+        var twistyLightningSectionStatus = {};
+        j$(document).ready(function() {
+			easyToolTipForAll();
+			
+		});
+		
+		j$(document).click(function (e){
+		    j$(".slds-is-open").each( function(){
+		        if(j$(this).has(e.target).length === 0){
+    		        j$(this).removeClass('slds-is-open');
+		        }
+		    });
+    	});
+    	
+        function easyToolTipForAll() {
+            j$('.apHelpText').easyTooltip({width: '200px', isLightning:true, isFormatted:true});
+            return false;
+        }
+    </script>
+    
+	<apex:actionStatus id="splashStatus" onstart="startSplash();" onstop="endSplash(); " />
+	<div class="slds">
+        <div id="splashDiv" class="apInitiallyDivDisplayNone" style="z-index:9998;">
+            <div class="slds-spinner_container apLightningSpinnerContainer">
+                <div role="status" class="slds-spinner slds-spinner--medium slds-spinner--brand">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <apex:outputPanel rendered="{!isError}">
+        <apex:pagemessages id="pageLoadErrorMessage"/>
+        <script>
+            Appurin.lightning.createLightningPageMessage({'classicPageMessageId' : '{!$Component.pageLoadErrorMessage}'});   
+        </script>
+    </apex:outputPanel>
+    
+	<apex:form id="form" rendered="{!!isError}">
+	    <apex:actionFunction name="deleteFileAccessControl" action="{!deleteAccessControl}" status="splashStatus" reRender="form">
+	        <apex:param name="accessControlId" value=""/>
+	    </apex:actionFunction>
+	    <apex:outputPanel styleClass="slds">
+	        <div class="slds-page-header">
+                <div class="slds-grid">
+                    <div class="slds-col slds-has-flexi-truncate">
+                        <nav class="slds-m-bottom--xx-small" role="navigation">
+                            <ol class="slds-breadcrumb slds-list--horizontal">
+                                <li class="slds-breadcrumb__item slds-text-title--caps"><a href="javascript:void(0);">{!$ObjectType.File__c.labelPlural}</a></li>
+                                <li class="slds-breadcrumb__item slds-text-title--caps"><apex:outputLink styleClass="apPageHeaderLink" target="_blank" value="/{!File__c.Id}" >{!File__c.Name}</apex:outputLink></li>
+                            </ol>
+                        </nav>
+                        <h1 class="slds-page-header__title slds-truncate" title="File Download History">{!$ObjectType.File_Access_Control__c.labelPlural}</h1>
+                    </div>
+                    <div class="slds-col slds-no-flex slds-grid slds-align-top">
+                        <div class="slds-button-group">
+                            <apex:commandButton rendered="{!isShowFileSharingList}" styleClass="slds-button slds-button_neutral" value="{!$Label.buildertek__new}" action="{!addFileAccessControls}" status="splashStatus" oncomplete="easyToolTipForAll();" reRender="form"/>
+                            <apex:commandButton rendered="{!!isShowFileSharingList}" styleClass="slds-button slds-button_neutral" value="{!$Label.buildertek__save}" action="{!saveFileAccessControls}" status="splashStatus" oncomplete="easyToolTipForAll();" reRender="form"/>
+                            <apex:commandButton styleClass="slds-button slds-button_neutral" value="{!$Label.buildertek__cancel}" action="{!cancel}" rerender="" oncomplete="if(Appurin.lightning.isLightningExperience()){Appurin.lightning.back(true);}"/>
+                        </div>
+                    </div> 
+                </div>
+                 <div class="slds-grid">
+                    <div class="slds-col slds-align-bottom">
+                        <p class="slds-text-body--small">{!fileAccessControls.size} {!$Label.buildertek__items} • {!$Label.buildertek__sorted_by} {!$ObjectType.File_Download_History__c.fields.CreatedDate.Label}</p>
+                    </div>
+                </div>
+            </div>
+	    </apex:outputPanel>
+	    <apex:outputPanel >
+            <apex:pagemessages id="errorMessages"/>
+            <script>
+                Appurin.lightning.createLightningPageMessage({'classicPageMessageId' : '{!$Component.errorMessages}'});   
+            </script>
+        </apex:outputPanel>
+	    <apex:outputPanel styleClass="slds" rendered="{!isShowFileSharingList}">
+	        <apex:panelGroup rendered="{!fileAccessControls.size > 0}">
+    	        <table class="slds-table slds-table--bordered slds-table--cell-buffer">
+                	<tr class="slds-text-heading--label">
+                    	<th scope="col">
+                        	<div class="slds-truncate">{!$ObjectType.File_Access_Control__c.fields.Grantee__c.Label}</div>
+                        </th>
+                    	<th scope="col">
+                        	<div class="slds-truncate">{!$ObjectType.File_Access_Control__c.fields.Download__c.Label}</div>
+                        </th>
+                        <th scope="col">
+                        	<div class="slds-truncate">{!$ObjectType.File_Access_Control__c.fields.View__c.Label}</div>
+                        </th>
+                        <th><div class="slds-truncate">{!$Label.buildertek__action}</div></th>
+                    </tr>
+                    <apex:repeat value="{!fileAccessControls}" var="fileAccessControl">
+                    	<tr>
+                            <td>
+                                <apex:outputField value="{!fileAccessControl.Grantee__c}" />
+                            </td>
+                            <td>
+                                <apex:outputField value="{!fileAccessControl.Download__c}" />
+                            </td>
+                            <td>
+                                <apex:outputField value="{!fileAccessControl.View__c}" />
+                            </td>
+                            <td>
+                                <apex:panelGroup >
+                                 	<div id="lightningMenu{!fileAccessControl.Id}" class="slds-dropdown-trigger slds-dropdown-trigger--click slds-button--last">
+								        <button id="dropDown{!fileAccessControl.Id}" class="slds-button slds-button--icon-border-filled" style="width:1.5em; height: 1.5em;" onClick="Appurin.lightning.showLightningMenu(this); return false;" aria-haspopup="true">
+                                            <c:BT_LightningSvg parentId="dropDown{!fileAccessControl.Id}" styleClass="slds-button__icon--small" path="/assets/icons/utility-sprite/svg/symbols.svg#down"/>
+                                            <span class="slds-assistive-text"><apex:outputText value="Show More"/></span>
+                                        </button>
+								        <apex:outputPanel layout="block" styleClass="slds-dropdown slds-dropdown--right">
+                                            <ul class="slds-dropdown__list" role="menu">
+                                                <apex:panelGroup rendered="true">
+                                                    <li class="slds-dropdown__item" onClick="Appurin.lightning.hideLightningMenu(this);" role="presentation">
+                                                        <apex:outputLink onClick="deleteFileAccessControl('{!fileAccessControl.Id}'); return false;">
+                                                            <span class="slds-truncate">
+                                                                <apex:outputText value="{!$Label.buildertek__delete}"/>
+                                                            </span>
+                                                        </apex:outputLink>
+                                                    </li>
+                                                </apex:panelGroup>
+                                            </ul>
+                                        </apex:outputPanel>
+                                    </div>
+                                </apex:panelGroup>
+                            </td>
+                        </tr>
+                    </apex:repeat>                       
+            	</table>
+        	</apex:panelGroup>
+        	<apex:outputPanel layout="block" rendered="{!fileAccessControls.size == 0}" style="padding-top: 20px;">
+                <center><apex:outputLabel value="{!$Label.buildertek__folder_is_empty}"/></center>
+            </apex:outputPanel>
+	    </apex:outputPanel>
+	    <apex:outputPanel styleClass="slds" rendered="{!!isShowFileSharingList}">
+            <apex:outPutPanel layout="block" id="addFileAccessControlsSection" styleClass="slds-section slds-is-open">
+                <h3 class="slds-section__title">
+                    <apex:outputPanel id="addGranteesSectionHeader" layout="block" styleclass="slds-button slds-section__title-action">
+                        <c:BT_LightningSvg parentId="addGranteesSectionHeader" parentType="div" styleClass="slds-section__title-action-icon slds-button__icon slds-button__icon--left" path="/assets/icons/utility-sprite/svg/symbols.svg#switch"/>
+                        <label class="avLightningFormElementLabel">{!$ObjectType.File_Access_Control__c.fields.Grantee__c.Label}</label>
+                        <c:BT_LightningHelpText rendered="{!$ObjectType.File_Access_Control__c.fields.Grantee__c.inlineHelpText != null}" helptext="{!$ObjectType.File_Access_Control__c.fields.Grantee__c.inlineHelpText}"/>
+                    </apex:outputPanel>
+                </h3>
+                <apex:outPutPanel layout="block" styleClass="slds-section__content">
+                    <apex:outputPanel layout="block" styleClass="slds-grid">
+                        <apex:outputPanel layout="block" style="padding-left:0px;" styleClass="slds-p-horizontal--medium">
+                            <apex:outputPanel layout="block" styleClass="slds-form-element">
+                                <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                    <apex:outputLabel value="{!$Label.buildertek__available} {!$Label.buildertek__grantees}"></apex:outputLabel>
+                                </apex:outputPanel>
+                                <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                    <apex:selectList styleClass="slds-select" style="width:200px; height: 200px;" multiselect="true" size="7"
+                                            value="{!leftSelectedGrantees}">
+                                        <apex:selectOptions value="{!leftAvailableGrantees}"></apex:selectOptions>
+                                    </apex:selectList>
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                        </apex:outputPanel>
+                        <apex:outputPanel layout="block" styleClass="slds-grid slds-grid--vertical-align-center">
+                            <apex:outputPanel layout="block" style="display: table;">
+                                <apex:commandButton style="display: table-row; width:20px; height:20px;" image="{!URLFOR($Resource.SLDS, 'assets/icons/utility/right_60.png')}" action="{!movingGranteesToRight}" status="splashStatus" onComplete="easyToolTipForAll();" reRender="addFileAccessControlsSection"/>
+                                <br/>
+                                <apex:commandButton style="display: table-row; width:20px; height:20px;" image="{!URLFOR($Resource.SLDS, 'assets/icons/utility/left_60.png')}" action="{!movingGranteesToLeft}" status="splashStatus" onComplete="easyToolTipForAll();" reRender="addFileAccessControlsSection"/>
+                            </apex:outputPanel>
+                        </apex:outputPanel>   
+                        <apex:outputPanel layout="block" styleClass="slds-p-horizontal--medium">
+                            <apex:outputPanel layout="block" styleClass="slds-form-element">
+                                <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                    <apex:outputLabel value="{!$Label.buildertek__selected} {!$Label.buildertek__grantees}"></apex:outputLabel>
+                                </apex:outputPanel>
+                                <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                     <apex:selectList styleClass="slds-select" style="width:200px; height: 200px;" multiselect="true" size="7"
+                                            value="{!rightSelectedGrantees}">
+                                        <apex:selectOptions value="{!rightAvailableGrantees}"></apex:selectOptions>
+                                    </apex:selectList>
+                                </apex:outputPanel>
+                            </apex:outputPanel> 
+                        </apex:outputPanel>
+                    </apex:outputPanel>
+                    <apex:outputPanel layout="block" styleClass="slds-grid slds-grid--pull-padded-medium">
+                        <apex:outputPanel layout="block" styleClass="slds-col slds-p-horizontal--medium slds-size--1-of-2">
+                            <apex:outputPanel layout="block" styleClass="slds-form-element">
+                                <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                    <apex:outputLabel title="" value="{!$Label.buildertek__access_level}"></apex:outputLabel>
+                                </apex:outputPanel>
+                                <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                    <apex:selectList style="max-width:25%;" value="{!selectedAccessLevel}" size="1" styleClass="slds-select">
+        								<apex:selectOptions value="{!accessLevelOptions}"></apex:selectOptions>
+        							</apex:selectList>
+    							</apex:outputPanel>
+							</apex:outputPanel>
+						</apex:outputPanel>
+					</apex:outputPanel>
+                </apex:outPutPanel>
+                <script>
+				    Appurin.lightning.createLightningSection('{!$Component.addFileAccessControlsSection}');
+				</script>
+            </apex:outPutPanel>
+	    </apex:outputPanel>
+	</apex:form>
+</apex:page>

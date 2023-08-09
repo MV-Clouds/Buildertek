@@ -1,0 +1,23 @@
+.THIS.mdl-hdr-txt {
+    font-size: 18px;
+}
+
+.THIS .top-row-hdr {
+    background-color:rgba(27, 82, 151, 1.0);
+    color: white;
+    vertical-align: top;
+    line-height: 2;
+}
+
+.THIS .top-row-sa-col {
+    padding: 8px;
+}
+/* for Spinner */
+.THIS .custom-loading-text {
+    transform: rotate(-90deg);
+    position: absolute;
+    top: -0.5rem;
+    left: 1rem;
+    white-space: nowrap;
+    font-size: 20px;
+}

@@ -1,0 +1,428 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:lightningQuickActionWithoutHeader,force:hasRecordId,force:appHostable"  access="global" controller="UpdateDates_Controller" >
+    
+    <ltng:require styles="{!$Resource.Model_Width_Expand + '/main.css'}"/>
+    <aura:handler name="init" value="{!this }" action="{!c.init }"/>
+    <aura:attribute type="Boolean"		name="sortAsc" />
+    <aura:attribute type="Boolean"		name="isAllSections" default="true" />
+    <aura:attribute type="Boolean"		name="isEditSection" default="false" />
+    <aura:attribute type="Boolean"		name="isNonEditSection" default="false" />
+    <aura:attribute type="Boolean"		name="isUpdatedSection" default="false" />
+    <aura:attribute type="Boolean"		name="DisplayPageBlock" default="false" />
+    <aura:attribute type="Boolean"		name="isFilterWindow" default="false" />
+    <aura:attribute type="Boolean"		name="isEditWindow" default="false" />	
+    <aura:attribute type="Boolean"		name="isSKU" default="true" />
+    <aura:attribute type="Boolean"		name="isQuantity" default="true" />
+    <aura:attribute type="Boolean"		name="hasError" default="false" />
+    <aura:attribute type="Boolean"		name="isProductDescription" default="true" />
+    <aura:attribute type="Boolean"		name="isCustomerReferenceDesc" default="true" />
+    <aura:attribute type="Boolean"		name="isCustomerReferenceId" default="true" />
+    <aura:attribute type="Boolean"		name="isStatus" default="true" />
+    
+    <aura:attribute name="GenreList" type="List" default="[]" description="Genre Picklist Values"/>
+    <aura:attribute name="selectedGenreList" type="List" default="[]" description="Selected Genre Picklist Values"/>
+    
+    
+    
+    <aura:attribute type="String"       name="validationErrorMsg"  default=""/>
+    <aura:attribute type="String"       name="sortField"  default="Product SKU"/>
+    <aura:attribute type="String"       name="actionsortField" />
+    <aura:attribute type="String"       name="QUeryInfo" />
+    <aura:attribute type="String"       name="recordId" />
+    
+     <aura:attribute name="msoptions" type="List" default="[{ label: 'English', value: 'en' }, { label: 'German', value: 'de' },{ label: 'Spanish', value: 'es' },{ label: 'French', value: 'fr' },{ label: 'Italian', value: 'it' },{ label: 'Japanese', value: 'ja' }]"/>
+    
+    
+    <aura:attribute name="fieldsList" type="List" default="[
+                                                           { label: 'Product SKU', value: 'true' },{ label: 'Quantity', value: 'Quantity' }{ label: 'Status', value: 'Status' },{ label: '	
+                                                           Product Description', value: '	
+                                                           Product Description' },{ label: '	
+                                                           Customer Reference Description', value: '	
+                                                           Customer Reference Description' },{ label: '	
+                                                           Customer Reference Id', value: '	
+                                                           Customer Reference Id' }]"/>
+    <aura:attribute name="selectedFields" type="List" default="[{ label: 'Product SKU', value: 'true' },{ label: 'Quantity', value: 'Quantity' },]"/>
+    
+    
+    <aura:attribute name="options" type="List" default="[
+                                                        {'label': 'Request Date update', 'value': 'Request Date update'},
+                                                        {'label': 'Scheduled Ship Date update', 'value': 'Scheduled Ship Date update'}
+                                                        ]"/>
+    <aura:attribute name="value" type="List" default=""/>
+    <aura:attribute name="UpdatedIds" type="List" default="[]"/>
+    <aura:attribute name="selectedCount" type="Integer" default="0"/>
+    <aura:attribute name="fieldsMap" type="Map" default="{ 'Product_SKU':true,'Quantity':true,'Status':true,'Product_Description':true,'Customer_Reference_Description':true,'Customer_Reference_Id':true,'Status':true}" />
+    <aura:attribute type="Boolean"		name="isError"  />
+    <aura:attribute type="Boolean"		name="isSuccess"  />
+    <aura:attribute type="Boolean"		name="isWarning"  />
+    <aura:attribute type="String"       name="message"  />
+    
+    <aura:attribute name="mapWrapperOld" type="Map" default="{}" />
+    <aura:attribute name="mapUpdatedOEL" type="Map" default="{}" />
+    <aura:attribute name="isContinue" type="Boolean" default="false"/>
+    <aura:attribute name="requestDateUpdateCheck" type="Boolean" default="false"/>
+    <aura:attribute name="scheduledDateUpdateCheck" type="Boolean" default="false"/>
+    <aura:attribute name="isAll" type="Boolean" default="false"/>
+    <aura:attribute name="oelLines" type="Object[]" default="[]"/>
+    
+    <aura:attribute name="updateDatesWrapper" type="Object"/>
+    
+    <aura:attribute name="activeSections" type="List" default="['AppyUpdate']" />
+    <aura:attribute name="activeSectionsMessage" type="String" default="All" />
+    
+    
+    <aura:attribute name="releaseNames" type="Object[]"/>
+    
+    <aura:attribute name="productSKU" type="Object[]"/>
+    <aura:attribute name="referenceIds" type="Object[]"/>
+    <aura:attribute name="listWrapper" type="Object[]"/>
+    <aura:attribute name="listWrapperNonEditable" type="Object[]"/>
+    <aura:attribute name="updatedlistWrapper" type="Object[]"/>
+    <aura:attribute name="ScheduleShipDateChangeReasons" type="String[]"/>
+    
+    <aura:attribute name="RequestDateChangeReasons" type="String[]"/>
+    
+    
+    
+    <aura:attribute name="oel1" type="Order_Entry_Line__c" default="{}"/>
+    <aura:attribute name="listOEL" type="Order_Entry_Line__c[]" default="[]"/>
+    
+    <aura:attribute name="listForSave" type="Order_Entry_Line__c[]" default="[]"/>
+    <aura:attribute name="listOfIdsForSave" type="String[]" default="[]"/>
+    <aura:attribute name="processHeaders" type="String[]" default="[]"/>
+    <aura:attribute name="enableShipDate" type="Boolean" default="false"/>
+    
+    <aura:attribute name="enableRequestDate" type="Boolean" default="false"/>
+    <aura:attribute name="enablePage" type="Boolean" default="false"/>
+    <aura:attribute name="showSpinner" type="Boolean" default="false"/>
+    <aura:attribute name="selectedName" type="String" default=""/>
+    <aura:attribute name="selectedReferenceId" type="String" default=""/>
+    <aura:attribute name="selectedSKU" type="String" default=""/>
+    <!--File import attributes-->
+    <aura:attribute name="jsonFileText"  type="String"  /> 
+    <aura:attribute name="fileName" type="String" default="No File Selected.." />
+    <aura:attribute name="TableContent" type="String"  description=" Show the Result class"/>
+    <aura:attribute name="TargetFileName" type="String"  description="Name of the file"/>
+    <aura:attribute name="tableheaders" type="Object[]" />
+    <aura:attribute name="fileContentData" type="String"/>
+    <!-- It will display 100 records . Change for your requirement-->
+    <aura:attribute name="NumOfRecords" type="Integer" default="100"/> 
+    <aura:attribute name="showMain" type="Boolean" default="true"/>
+    <aura:attribute name="shippedDate" type="date" />
+    <aura:attribute name="shippedDateReason" type="string" />
+    <aura:attribute name="shippedDateCmnt" type="string" />
+    <aura:attribute name="requestDate" type="date" />
+    <aura:attribute name="requestDateReason" type="string" />
+    <aura:attribute name="requestDateCmnt" type="string" />
+    
+   
+    <div>
+        <aura:if isTrue="{!v.showSpinner}">
+            <lightning:spinner variant="brand"/>
+        </aura:if>
+        
+        <div class="slds-page-header">
+            <div class="slds-page-header__row">
+                <div class="slds-page-header__col-title">
+                    <div class="slds-media">
+                        <div class="slds-media__figure">
+                            <lightning:icon iconName="custom:custom55" alternativeText="Ordering" />
+                            
+                        </div>
+                        <div class="slds-media__body">
+                            <div class="slds-page-header__name">
+                                <div class="slds-page-header__name-title">
+                                    <h1>
+                                        <span>View Sections</span>
+                                        <span class="slds-page-header__title slds-truncate" title="All">All</span>
+                                    </h1>
+                                </div>
+                                <div class="slds-page-header__name-switcher">
+                                    <div class="slds-dropdown-trigger slds-dropdown-trigger_click">
+                                        <lightning:buttonMenu alternativeText="Show menu" onselect="{! c.handleSelectSections }">
+                                            <lightning:menuItem aura:id="menuItemSections" value="All" label="All" checked="true" />
+                                            <lightning:menuItem aura:id="menuItemSections" value="Edit Section" label="Edit Section" checked="false" />
+                                            <lightning:menuItem aura:id="menuItemSections" value="Non Editable Section" label="Non Editable Section" checked="false" />
+                                            <lightning:menuItem aura:id="menuItemSections" value="Updated Section" label="Updated Section" checked="false" />
+                                        </lightning:buttonMenu>                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-page-header__col-actions">
+                    <div class="slds-page-header__controls">
+                        <div class="slds-page-header__control">
+                            <ul class="slds-button-group-list">                                
+                                <li >       
+                                    <lightning:buttonMenu aura:id="menu" label="Update Dates" alternativeText="Show menu" onselect="{! c.handleSelect }" >                                        
+                                        <lightning:menuItem  value="Update Dates &amp; Continue" label="Update Dates &amp; Continue" aura:id="menuItems">
+                                            <aura:set attribute="body">
+                                            <lightning:button variant="brand" label="Update Dates &amp; Continue" title="Update Dates &amp; Continue"  onclick="{!c.updateandContinue}" /> 
+                                            </aura:set>
+                                        </lightning:menuItem>
+                                        <lightning:menuItem  aura:id="menuItems"  value="Update Dates &amp; Finish" label="Update Dates &amp; Finish">
+                                            <aura:set attribute="body">
+                                                <lightning:button variant="brand" label="Update Dates &amp; Finish" title="Update Dates &amp; Finish" onclick="{!c.updateandContinue}" />
+                                            </aura:set>
+                                        </lightning:menuItem>                                        
+                                    </lightning:buttonMenu>
+                                    &nbsp;                        
+                                    <lightning:buttonIcon   variant="border-filled" iconName="utility:filterList" aura:id="filterScreen"  title="filterScreen"   onclick="{! c.filterscreenAction }" alternativeText="Apply Filter" size="large" name="filterScreen" /> 
+                                    <lightning:buttonIcon  iconName="utility:refresh" variant="border-filled" onclick="{!c.ResetFilter }" alternativeText="Reset Filter" size="large"/>
+                                	<button class="slds-button slds-button_neutral" onclick="{!c.Cancel}" alternativeText="Cancel" size="large">Cancel</button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>          
+        </div>
+        <aura:if isTrue="{!v.isError}">
+            <center>
+                <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert" style="width:auto;min-width:30%;border-radius:20px;font-size: medium;">
+                    <span class="slds-assistive-text">error</span>                
+                    <lightning:icon iconName="utility:error" alternativeText="error" class="whitefill"/>                
+                    <h2> {!v.message}</h2>&nbsp;&nbsp; 
+                    <div class="slds-notify__close">
+                        <lightning:buttonIcon size="large" iconName="utility:close" variant="bare" onclick="{! c.closeError}" alternativeText="Close window." class=" slds-button_icon-inverse"/>                    
+                    </div>
+                </div>
+            </center>
+        </aura:if>
+        <aura:if isTrue="{!v.isSuccess}">
+            <center>
+                <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_success" role="alert" style="width:auto;min-width:30%;border-radius:20px;font-size: medium;">
+                    <span class="slds-assistive-text">error</span>                    
+                    <lightning:icon iconName="utility:success" alternativeText="success" class="whitefill"/>                    
+                    <h2> {!v.message}</h2>&nbsp; &nbsp; 
+                    <div class="slds-notify__close">
+                        <lightning:buttonIcon size="large" iconName="utility:close" variant="bare" onclick="{! c.closeError}" alternativeText="Close window." class=" slds-button_icon-inverse"/>
+                        
+                    </div>
+                </div>
+            </center>              
+        </aura:if>
+        <aura:if isTrue="{!or(v.isAllSections,v.isEditSection)}">
+            <lightning:card  class="slds-m-top_small slds-text-title--caps">
+                <aura:set attribute="title">
+                    <div class="CardHeader"> Edit Section</div> 
+               </aura:set>
+                <lightning:accordion allowMultipleSectionsOpen="true" onsectiontoggle="{! c.handleSectionToggle }"
+                                     activeSectionName="{! v.activeSections }" >
+                    <lightning:accordionSection name="AppyUpdate" label="Mass Update">                        
+                        <aura:set attribute="body">
+                            <div class="slds-page-header__row" style="border-top: 1px solid rgb(221, 219, 218);padding: 4px;">                                
+                                <div class="slds-page-header__col-controls">
+                                    <div class="slds-page-header__controls"> 
+                                        <div class="slds-page-header__control">
+                                            <ul class="slds-button-group-list">                                               
+                                                <li>  
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="slds-box" style="border: 1px solid rgb(217, 219, 221);">
+                                <lightning:layout multipleRows="true">
+                                    <aura:if isTrue="{!v.enableShipDate}">                               
+                                        <lightning:layoutItem size="12" smallDeviceSize="3" mediumDeviceSize="3" largeDeviceSize="3" padding="around-small">
+                                            <div class="custom-box">
+                                                <lightning:input value="{!v.shippedDate}" label="Scheduled Ship Date" type="date" /></div>
+                                        </lightning:layoutItem>
+                                        <lightning:layoutItem size="12" mediumDeviceSize="3" largeDeviceSize="3" padding="around-small">
+                                            <div class="custom-box">
+                                                <lightning:select class="slds-m-left_medium" name="select" value="{!v.shippedDateReason}" label="Schedule Ship Date Change Reason"   >
+                                                    <aura:iteration items="{!v.ScheduleShipDateChangeReasons}" var="val">
+                                                        <option value="{!val}"> {!val}</option>
+                                                    </aura:iteration>
+                                                </lightning:select> 
+                                                <div class="{!and(v.enableShipDate,v.shippedDateReason=='Other')?'custom-box':'slds-hide'}">                                                     
+                                                    <lightning:input value="{!v.shippedDateCmnt}" type="text" label="Comments" style=" width: 322px;margin-left: 16px;"/>
+                                                </div>
+                                            </div>                                         
+                                        </lightning:layoutItem>
+                                    </aura:if>
+                                    <aura:if isTrue="{!v.enableRequestDate}"> 
+                                        
+                                        <lightning:layoutItem size="12" mediumDeviceSize="3" largeDeviceSize="3" padding="around-small">
+                                            <div class="custom-box"><lightning:input value="{!v.requestDate}" type="date" label="Request Date"/></div>
+                                        </lightning:layoutItem>
+                                        <lightning:layoutItem size="12" mediumDeviceSize="3" largeDeviceSize="3" padding="around-small">
+                                            <div class="custom-box">
+                                                <lightning:select class="slds-m-left_medium" name="select" value="{!v.requestDateReason}" label="Request Date Change Reason"  >
+                                                    <aura:iteration items="{!v.RequestDateChangeReasons}" var="val">
+                                                        <option value="{!val}"> {!val}</option>
+                                                    </aura:iteration>                                                    
+                                                </lightning:select>   
+                                                <div class="{!and(v.enableRequestDate,v.requestDateReason=='Other')?'custom-box':'slds-hide'}">                                                    
+                                                    <lightning:input value="{!v.requestDateCmnt}" type="text" label="Comments" style=" width: 322px;margin-left: 16px;"/>
+                                                </div>
+                                            </div>
+                                        </lightning:layoutItem>
+                                        
+                                    </aura:if>
+                                    <aura:if isTrue="{!or(and(v.enableShipDate,v.oel1.Schedule_Ship_Date_Change_Reason__c=='Other'),and(v.enableRequestDate,v.oel1.Request_Date_Change_Reason__c=='Other'))}">
+                                        <aura:if isTrue="{!and(v.enableShipDate,v.oel1.Schedule_Ship_Date_Change_Reason__c=='Other')}">                                            
+                                            <lightning:layoutItem size="12" mediumDeviceSize="3" largeDeviceSize="3" padding="around-small">
+                                                <div class="custom-box">
+                                                    <lightning:input value="{!v.oel1.Schedule_Ship_Date_Change_Comments__c}" label="Schedule Ship Date Change Comments"   />
+                                                </div>
+                                            </lightning:layoutItem>
+                                        </aura:if>
+                                        <aura:if isTrue="{!and(v.enableRequestDate,v.oel1.Request_Date_Change_Reason__c=='Other')}">                                            
+                                            <lightning:layoutItem size="12" mediumDeviceSize="3" largeDeviceSize="3" padding="around-small">
+                                                <div class="custom-box">                                                    
+                                                    <lightning:input class="slds-m-left_medium" value="{!v.oel1.Request_Date_Change_Comments__c}" label="Request Date Change Reason Comments" />  
+                                                </div>
+                                            </lightning:layoutItem>
+                                        </aura:if>
+                                    </aura:if>
+                                </lightning:layout>
+                            </div>   
+                        </aura:set>
+                    </lightning:accordionSection>
+                </lightning:accordion>
+                <div>                    
+                    <div class="slds-page-header__col-meta">
+                        <p class="slds-m-left_small slds-m-top_small slds-m-bottom_x-small slds-page-header__meta-text">{!v.selectedCount} items Selected to Update</p>
+                    </div>
+                    <c:DataTable_cmp isCheckbox="true" listWrapper="{!v.updateDatesWrapper.editableOELs}" cardTitle="Edit Section" selectedCount="{!v.selectedCount}" isAll="{!v.isAll}" columnsInfo="[{ label: 'Product SKU', name: 'SKU__c',type:'STRING' },{ label: 'Quantity', name: 'Quantity__c' ,type:'STRING'},{ label: 'Release Name', name: 'Order_Entry_Release__r.Release_Name__c' ,type:'STRING'},{ label: 'Request Date', name: 'Request_Date__c' ,type:'DATE'},{ label: 'Request Date Change Reason', name: 'Request_Date_Change_Reason__c' ,type:'STRING'},{ label: 'Schedule Ship Date', name: 'Scheduled_Ship_Date__c' ,type:'DATE'},{ label: 'Schedule Ship Date Change Reason', name: 'Schedule_Ship_Date_Change_Reason__c' ,type:'STRING'},{ label: 'Status', name: 'Status__c',type:'STRING' },{ label: 'Product Description', name: 'Product_Description__c',type:'STRING' },{ label: 'Customer Reference Description', name: 'Customer_Reference_Description__c',type:'STRING' },{ label: 'Customer Reference Id', name: 'Reference_ID__c',type:'STRING' }]" />
+                </div>
+                
+            </lightning:card>
+        </aura:if>
+        <aura:if isTrue="{!or(v.isAllSections,v.isNonEditSection)}">
+            <lightning:card  class="slds-m-top_small slds-text-title--caps">
+                <aura:set attribute="title">
+                    <div class="CardHeader"> Non Editable Section</div> 
+                </aura:set>                
+                
+                <div>
+                    <c:DataTable_cmp isCheckbox="false" listWrapper="{!v.updateDatesWrapper.nonEditableOELs}" cardTitle="Non Editable Section" selectedCount="{!v.selectedCount}" isAll="{!v.isAll}" columnsInfo="[{ label: 'Product SKU', name: 'SKU__c',type:'STRING' },{ label: 'Quantity', name: 'Quantity__c' ,type:'STRING'},{ label: 'Release Name', name: 'Order_Entry_Release__r.Release_Name__c' ,type:'STRING'},{ label: 'Request Date', name: 'Request_Date__c' ,type:'DATE'},{ label: 'Request Date Change Reason', name: 'Request_Date_Change_Reason__c' ,type:'STRING'},{ label: 'Schedule Ship Date', name: 'Scheduled_Ship_Date__c' ,type:'DATE'},{ label: 'Schedule Ship Date Change Reason', name: 'Schedule_Ship_Date_Change_Reason__c' ,type:'STRING'},{ label: 'Status', name: 'Status__c',type:'STRING' },{ label: 'Product Description', name: 'Product_Description__c',type:'STRING' },{ label: 'Customer Reference Description', name: 'Customer_Reference_Description__c',type:'STRING' },{ label: 'Customer Reference Id', name: 'Reference_ID__c',type:'STRING' }]" />
+                </div>                
+            </lightning:card>
+        </aura:if> 
+        <aura:if isTrue="{!or(v.isAllSections,v.isUpdatedSection)}">      
+            <lightning:card  class="slds-m-top_small slds-text-title--caps">
+                <aura:set attribute="title">
+                    <div class="CardHeader"> Updated Section</div>                  
+                </aura:set>                
+                 <div>
+                    <c:DataTable_cmp isCheckbox="false" listWrapper="{!v.updateDatesWrapper.updateTableOELs}" cardTitle="Non Editable Section" selectedCount="{!v.selectedCount}" isAll="{!v.isAll}" columnsInfo="[{ label: 'Product SKU', name: 'SKU__c',type:'STRING' },{ label: 'Quantity', name: 'Quantity__c' ,type:'STRING'},{ label: 'Release Name', name: 'Order_Entry_Release__r.Release_Name__c' ,type:'STRING'},{ label: 'Request Date', name: 'Request_Date__c' ,type:'DATE'},{ label: 'Request Date Change Reason', name: 'Request_Date_Change_Reason__c' ,type:'STRING'},{ label: 'Schedule Ship Date', name: 'Scheduled_Ship_Date__c' ,type:'DATE'},{ label: 'Schedule Ship Date Change Reason', name: 'Schedule_Ship_Date_Change_Reason__c' ,type:'STRING'},{ label: 'Status', name: 'Status__c',type:'STRING' },{ label: 'Product Description', name: 'Product_Description__c',type:'STRING' },{ label: 'Customer Reference Description', name: 'Customer_Reference_Description__c',type:'STRING' },{ label: 'Customer Reference Id', name: 'Reference_ID__c',type:'STRING' }]" />
+                </div>   
+                
+            </lightning:card>
+        </aura:if>    
+        <div class="demo-only">
+            <section role="dialog" tabindex="-1" aura:id="Filters" aria-labelledby="FiltersHeader" aria-modal="true" aria-describedby="FiltersContent" class="slds-modal slds-fade-in-hide slds-modal_meduim">
+                <div class="slds-modal__container" style="{!v.isFilterWindow?'width: 40% !important;':'width: 65% !important;'}">
+                    <header class="slds-modal__header ModelHeader">
+                        <lightning:buttonIcon size="large" iconName="utility:close" variant="bare" onclick="{! c.closeModel}" alternativeText="Close window." class="slds-modal__close slds-button_icon-inverse"/>
+                        <h2 id="FiltersHeader" class="slds-text-heading_medium slds-hyphenate">
+                            <aura:if isTrue="{!v.isFilterWindow}"> 
+                                <lightning:Icon iconName="utility:filterList"  alternativeText="Settings"  size="small"  /> 
+                            </aura:if>
+                            <aura:if isTrue="{!v.isEditWindow}">
+                                <lightning:Icon iconName="utility:edit"    alternativeText="Settings"  size="small"  />
+                            </aura:if>
+                            &nbsp;{!v.isFilterWindow?'Filter Records based on Header':'Edit Section'}
+                        </h2>
+                    </header>
+                    <div class="{!v.isFilterWindow?'slds-modal__content slds-p-around_large':'slds-modal__content slds-p-around_medium'}" id="FiltersContent" style="{!v.isFilterWindow?'height:75% !important':'height:50% !important'}">
+                        <aura:if isTrue="{!v.isFilterWindow}">
+                            <lightning:layout multipleRows="true">
+                                <aura:if isTrue="{!v.enablePage}">
+                                    <lightning:layoutItem size="12" smallDeviceSize="12" mediumDeviceSize="12" largeDeviceSize="12" padding="around-x_small">
+                                        <div class="custom-box"> 
+                                            <lightning:select  name="select" value="{!v.updateDatesWrapper.selectedName}" label="Order Entry Release Name :" disabled="{!v.updateDatesWrapper.updateTableOELs != null}" aura:id="pickRelease" onchange="{!c.oERChanges}"> <!-- onchange="{!c.FilteredData}"> -->
+                                                <aura:iteration items="{!v.releaseNames}" var="release">
+                                                    <option value="{!release.Id}" text="{!release.Name}" ></option>
+                                                </aura:iteration>
+                                            </lightning:select>
+                                        </div>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="12" smallDeviceSize="12" mediumDeviceSize="12" largeDeviceSize="12" padding="around-x_small">
+                                        <div class="custom-box"> 
+                                            <lightning:select name="select" value="{!v.selectedReferenceId}" label="Customer Reference :" onchange="{!c.cutomerRefChange}"> <!-- onchange="{!c.FilteredData}">-->
+                                                <aura:iteration items="{!v.referenceIds}" var="reference">
+                                                    <option value="{!reference.Id}" text="{!reference.Name}" ><!--selected="{!v.selectedName==release.Id}"--></option>
+                                                </aura:iteration>
+                                            </lightning:select>
+                                        </div>
+                                    </lightning:layoutItem>
+                                    
+                                   <!-- <lightning:layoutItem size="12" smallDeviceSize="12" mediumDeviceSize="12" largeDeviceSize="12" padding="around-x_small">
+                                        <div class="custom-box"> 
+                                         <lightning:dualListbox aura:id="selectGenre"
+                                                                   name="Genre"
+                                                                   label="Customer Reference Multi Select"
+                                                                   sourceLabel="Available Customer Reference"
+                                                                   selectedLabel="Selected Customer Reference"
+                                                                 options="{!v.GenreList}"
+                                                                 value="{!v.selectedGenreList}" 
+                                                                 onchange="{!c.handleGenreChange}"/>
+                                            
+                                        </div>
+                                    </lightning:layoutItem>-->
+                                    
+                                    
+                                    <lightning:layoutItem size="12" smallDeviceSize="12" mediumDeviceSize="12" largeDeviceSize="12" padding="around-x_small">
+                                        <div class="custom-box">
+                                            <lightning:select name="select" value="{!v.selectedSKU}" label="Product SKU :" onchange="{!c.skuChange}">  <!-- onchange="{!c.FilteredData}">-->
+                                                <aura:iteration items="{!v.productSKU}" var="sku">
+                                                    <option value="{!sku.Id}" text="{!sku.Name}" ><!--selected="{!v.selectedName==release.Id}"--></option>
+                                                </aura:iteration>
+                                            </lightning:select>
+                                        </div>
+                                    </lightning:layoutItem>
+                                </aura:if>
+                                <aura:if isTrue="{!or(v.enableShipDate,v.enableRequestDate)}">
+                                    <lightning:layoutItem size="12" smallDeviceSize="12" mediumDeviceSize="12" largeDeviceSize="12" padding="around-small">
+                                        <div class="custom-box">	
+                                            <b>Dates Filter Group</b>
+                                            <aura:if isTrue="{!v.enableShipDate}">								
+                                                <lightning:input name="scheduledDateUpdateCheck" label="Scheduled Ship Date update" type="checkbox" checked="{!v.updateDatesWrapper.shipDateChecked}" />
+                                            </aura:if>
+                                            <aura:if isTrue="{!v.enableRequestDate}">
+                                                <lightning:input name="requestDateUpdateCheck" label="Request Date update" type="checkbox" checked="{!v.updateDatesWrapper.requestDateChecked}"  />
+                                            </aura:if>
+                                        </div>
+                                    </lightning:layoutItem>
+                                </aura:if>
+                            </lightning:layout>                            
+                        </aura:if>
+                        <div class="slds-m-top_medium slds-required">
+                            {!v.validationErrorMsg}
+                        </div>
+                    </div>
+                    <footer class="slds-modal__footer">  
+                        <button class="slds-button slds-button_neutral" onclick="{!c.ApplyFilter}">Apply Filters</button>
+                    </footer>
+                </div>
+            </section>
+        </div>
+        
+        <div class="demo-only">
+            <section role="dialog" tabindex="-1" aura:id="errorModel" aria-labelledby="errorModelHeader" aria-modal="true" aria-describedby="errorModelContent" class="slds-modal slds-fade-in-hide slds-modal_meduim">
+                <div class="slds-modal__container" style="  width: 10% !important;height:auto;">
+                    <header class="slds-modal__header ModelHeader" style="padding:0.3rem">
+                        <lightning:buttonIcon size="large" iconName="utility:close" variant="bare" onclick="{! c.closeModel}" alternativeText="Close window." class="slds-modal__close slds-button_icon-inverse"/>
+                        <h2 id="errorModelHeader" class="slds-text-heading_medium slds-hyphenate"> Error</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="errorModelContent" style="height:auto !important;min-height: fit-content;">
+                        <center>{!v.message}<br/><br/>                            
+                            <lightning:button variant="brand" label="Confirm" title="Confirm" onclick="{! c.approvedDatesJS }" /> 
+                            <lightning:button   label="Cancel" title="Cancel" onclick="{! c.closeModel }" />                            
+                        </center>
+                    </div>                    
+                </div>
+            </section>
+        </div>  
+        
+        <div class="slds-backdrop slds-backdrop--hide" aura:id="backdrop"></div>
+        
+    </div>
+</aura:component>

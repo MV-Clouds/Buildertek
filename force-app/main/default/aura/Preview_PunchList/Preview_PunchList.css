@@ -1,0 +1,81 @@
+.THIS .custom-loading-text {
+    transform: rotate(-90deg);
+    position: absolute;
+    top: -0.5rem;
+    left: 1rem;
+    white-space: nowrap;
+    font-size: 20px;
+}
+
+.THIS .scrollable {
+    height: auto;
+}
+
+
+/* .THIS.changeMe {
+    height: 43.3rem !important;
+    overflow-y: scroll;
+} */
+
+
+/* @media only screen and (max-width: 1400px) {
+    .THIS.changeMe {
+        height: 28rem !important;
+    }
+} */
+
+
+/* Extra small devices (phones, 600px and down) */
+
+@media only screen and (max-width: 600px) {
+    .THIS .fixedFooter {
+        bottom: 3.5rem;
+    }
+}
+
+
+/* Small devices (portrait tablets and large phones, 600px and up) */
+
+@media only screen and (min-width: 600px) {
+    .THIS .fixedFooter {
+        bottom: 3.5rem;
+    }
+}
+
+
+/* Medium devices (landscape tablets, 768px and up) */
+
+@media only screen and (min-width: 768px) {
+    .THIS .fixedFooter {
+        bottom: 3.5rem;
+    }
+}
+
+
+/* Large devices (laptops/desktops, 992px and up) */
+
+@media only screen and (min-width: 992px) {
+    .THIS .fixedFooter {
+        bottom: 3.6rem;
+    }
+}
+
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+
+@media only screen and (min-width: 1200px) {
+    .THIS .fixedFooter {
+        bottom: 4.4rem;
+    }
+}
+
+
+/* @media only screen and (min-width: 1200px) {
+    .THIS .fixedFooter {
+        bottom: 12rem;
+    }
+}  */
+
+.THIS .test {
+    bottom: 12rem !important;
+}

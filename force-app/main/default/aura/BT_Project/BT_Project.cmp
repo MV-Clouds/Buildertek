@@ -1,0 +1,65 @@
+<aura:component
+    implements="force:appHostable,force:lightningQuickAction,flexipage:availableForRecordHome,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes"
+    access="global" controller="Projects">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="BaseURL" type="String" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="listOfRecords" type="List" default="[]" />
+
+    <lightning:card aura:id="lightCard" class="slds-card_boundary" title="Project">
+        <div class="slds-grid">
+            <!-- List Of Projects And Schedules -->
+            <div class="slds-col slds-scrollable" style="height:40rem;width:20%">
+                <div class="slds-m-left_large">
+                    <aura:iteration items="{!v.listOfRecords}" var="project" indexVar="index">
+                        <lightning:card>
+                            <span data-index="{!index}" data-schedule="{!project.Id}"
+                                data-status="{!project.buildertek__Is_Expanded__c}" onclick="{!c.onExpandCollapse}">
+                                <aura:if isTrue="{!project.buildertek__Is_Expanded__c}">
+                                    <lightning:buttonIcon iconName="utility:dash" size="xx-small"
+                                        alternativeText="Collapse" title="Collapse" />
+                                </aura:if>
+                                <aura:if isTrue="{!!project.buildertek__Is_Expanded__c}">
+                                    <lightning:buttonIcon iconName="utility:add" size="xx-small"
+                                        alternativeText="Expand" title="Expand" />
+                                </aura:if>
+                            </span>
+                            <span class="slds-m-left_small"> {!project.Name} </span>
+                        </lightning:card>
+                        <aura:if isTrue="{!project.buildertek__Is_Expanded__c}">
+                            <aura:if isTrue="{!project.buildertek__Schedules__r}">
+                                <aura:iteration items="{!project.buildertek__Schedules__r}" var='schedule'>
+                                    <lightning:card>
+                                        <div class='slds-m-left_large'>
+                                            <span data-schedule="{!schedule.Id}" onclick="{!c.openSchedule}">
+                                                <ui:outputURL class='slds-m-left_large' label="{!schedule.Name}" />
+                                                <br />
+                                            </span>
+                                        </div>
+                                    </lightning:card>
+                                </aura:iteration>
+                            </aura:if>
+                            <aura:if isTrue="{!!project.buildertek__Schedules__r}">
+                                <div class="slds-m-left_large">
+                                    <span class='slds-m-left_large'>
+                                        No Schedules
+                                    </span>
+                                </div>
+                            </aura:if>
+
+                        </aura:if>
+                    </aura:iteration>
+                </div>
+            </div>
+
+            <!-- Gantt Chart -->
+            <div class="slds-scrollable_none slds-col" style="height:40rem;width:80%">
+                <aura:if isTrue="{!v.recordId}">
+                    <iframe class="BT_GanttChart"
+                        src="{!v.BaseURL+'/apex/buildertek__BT_Task_Manager?Id=' + v.recordId }" width="100%"
+                        height="900px" frameBorder="0" />
+                </aura:if>
+            </div>
+        </div>
+    </lightning:card>
+</aura:component>

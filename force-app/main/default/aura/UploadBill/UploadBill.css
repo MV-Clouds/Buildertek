@@ -1,0 +1,25 @@
+.THIS {
+}
+
+.THIS .contentbox{
+    border-left: 1px solid rgb(221, 219, 218);  
+    border-right: 1px solid rgb(221, 219, 218);  
+    border-bottom: 1px solid rgb(221, 219, 218);  
+    border-top: 1px solid rgb(221, 219, 218);
+ }
+
+ .THIS .header{
+    border-radius: 0px; 
+    border-right: 0px;
+    border-left: 0px;
+    border-top: 0px;  
+    box-shadow: 0 0px 0px 0 rgba(0, 0, 0, 0.1);
+ }
+.THIS .custom-loading-text {
+    transform: rotate(-90deg);
+    position: absolute;
+    top: -0.5rem;
+    left: 1rem;
+    white-space: nowrap;
+    font-size: 20px;
+}

@@ -1,0 +1,48 @@
+<apex:page docType="html-5.0" sidebar="false" standardStylesheets="false" showHeader="false" applyHtmlTag="true">
+	<html>
+		<apex:stylesheet value="{!URLFOR($Resource.Print_View_Styles)}" />
+		
+		<apex:stylesheet value="{!URLFOR($Resource.Print_View_Fonts)}" />
+		<apex:stylesheet value="{!URLFOR($Resource.Print_View_Font)}" />
+		<head>
+			<style>  
+
+			   @media print{@page {size: landscape}}
+			</style>
+		</head>
+		<body>
+		    <center><h3 style="font-family:'Salesforce Sans',Arial,sans-serif;font-size:23px;text-transform:uppercase;">Budget Information</h3></center>
+			<div width="100%">
+				<c:BT_printParentInformationComponent objName="buildertek__Budget__c" secName="Budget Details"
+													fieldName="buildertek__Project__c,Name,buildertek__Original_Budget__c,buildertek__Type__c"/>
+			</div><br/><br/>
+			<div width="100%">
+				<c:BT_printParentInformationComponent objName="buildertek__Budget__c" secName="Payables"
+													fieldName="buildertek__Pending_CO__c,buildertek__Approved_CO__c,buildertek__Total_CO__c"/>	 							   
+			</div><br/><br/>
+			<div width="100%">
+				<c:BT_printParentInformationComponent objName="buildertek__Budget__c" secName="Receivables" 
+													fieldName="buildertek__Committed_Costs__c,buildertek__Direct_Costs__c,buildertek__Pending_Cost_Changes__c,buildertek__Projected_Costs__c"/>
+			</div><br/><br/>	
+		    <div width="100%">										
+				<c:BT_printLineItemComponent childObjectName="buildertek__Budget_Item__c" 
+				                            parentObjectName="buildertek__Budget__c" 
+				                            groupName="true" groupObj="buildertek__Budget_Line_Group__c" 
+				                            groupObjs="buildertek__Quote_Line_Group__c"
+											childObjectFields="buildertek__Product_Name__c,buildertek__Quantity__c,
+																buildertek__Unit_Price__c,buildertek__Original_Budget__c,
+																buildertek__Revised_Budget__c,buildertek__Projected_Costs__c,
+																buildertek__Total_Costs__c,buildertek__Approved_CO__c"
+											sumOfFields="buildertek__Unit_Price__c,
+            											buildertek__Original_Budget__c,buildertek__Budget_Modification__c,
+            											buildertek__Revised_Budget__c,buildertek__Projected_Costs__c,
+            											buildertek__Total_Costs__c,buildertek__Pending_CO__c,
+            											buildertek__Approved_CO__c,buildertek__Total_CO__c,
+            											buildertek__Profit_Loss__c" />																				
+			</div>											
+			<script>
+			  window.print();     
+			</script>
+		</body>
+	</html>
+</apex:page>

@@ -1,0 +1,169 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction"
+access="global" controller="BT_BudgetLineDetailPage" >
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> 
+	<aura:attribute name="BudgetLine" type="Budget_Item__c" default="{ 'sobjectType': 'Budget_Item__c'}" />
+    <aura:attribute name="viewMode" type="Boolean" default="true" />
+    <div style="background-color: white; padding-bottom: 2rem;">
+        <aura:if isTrue="{!!empty(v.BudgetLine.Id)}">
+            <aura:if isTrue="{!v.viewMode}">
+                <lightning:recordViewForm recordId="{!v.BudgetLine.Id}" objectApiName="buildertek__Budget_Item__c">
+                    <div class="slds-grid ">
+                        <div class="slds-col slds-size_1-of-2">
+                            <div class="field-container">
+                                <lightning:outputField class="bottom-line" fieldName="buildertek__Product__c" />
+                                <lightning:buttonIcon iconName="utility:edit" size="small" variant="bare" onclick="{!c.editRecord}" />
+                            </div>
+                            <div class="field-container">
+                                <lightning:outputField class="bottom-line" fieldName="buildertek__Product_Name__c" />
+                            </div>
+                            <div class="field-container">
+                                <lightning:outputField class="bottom-line" fieldName="Name" />
+                                <lightning:buttonIcon iconName="utility:edit" size="small" variant="bare" onclick="{!c.editRecord}" />
+                            </div>
+                            <div class="field-container">
+                                <lightning:outputField class="bottom-line" fieldName="buildertek__Group__c" />
+                                <lightning:buttonIcon iconName="utility:edit" size="small" variant="bare" onclick="{!c.editRecord}" />
+                            </div>
+                            <div class="field-container">
+                                <lightning:outputField class="bottom-line" fieldName="buildertek__Quantity__c" />
+                                <lightning:buttonIcon iconName="utility:edit" size="small" variant="bare" onclick="{!c.editRecord}" />
+                            </div>
+                            <div class="field-container">
+                                <lightning:outputField class="bottom-line" fieldName="buildertek__Unit_Price__c" />
+                                <lightning:buttonIcon iconName="utility:edit" size="small" variant="bare" onclick="{!c.editRecord}" />
+                            </div>
+                            <div class="field-container">
+                                <lightning:outputField class="bottom-line" fieldName="buildertek__UOM__c" />
+                                <lightning:buttonIcon iconName="utility:edit" size="small" variant="bare" onclick="{!c.editRecord}" />
+                            </div>
+                            <div class="field-container">
+                                <lightning:outputField class="bottom-line" fieldName="buildertek__Original_Budget__c" />
+                            </div>
+                            <div class="field-container">
+                                <lightning:outputField class="bottom-line" fieldName="buildertek__Committed_Costs__c" />
+                            </div>
+                            <div class="field-container">
+                                <lightning:outputField class="bottom-line" fieldName="buildertek__Additional_Costs__c" />
+                            </div>
+                            <div class="field-container">
+                                <lightning:outputField class="bottom-line" fieldName="buildertek__Labor__c" />
+                                <lightning:buttonIcon iconName="utility:edit" size="small" variant="bare" onclick="{!c.editRecord}" />  
+                            </div>
+                            <div class="field-container">
+                                <lightning:outputField class="bottom-line" fieldName="buildertek__Invoice_total__c" />
+                                <lightning:buttonIcon iconName="utility:edit" size="small" variant="bare" onclick="{!c.editRecord}" />
+                            </div>
+                            <div class="field-container">
+                                <lightning:outputField class="bottom-line" fieldName="buildertek__Approved_CO__c" />
+                            </div>
+                            <div class="field-container">
+                                <lightning:outputField class="bottom-line" fieldName="buildertek__Total_Costs__c" />
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <div class="field-container">
+                                <lightning:outputField class="bottom-line" fieldName="buildertek__Budget__c" />
+                            </div>
+                            <div class="field-container">
+                                <lightning:outputField class="bottom-line" fieldName="buildertek__Contractor__c" />
+                                <lightning:buttonIcon iconName="utility:edit" size="small" variant="bare" onclick="{!c.editRecord}" />
+                            </div>
+                            <div class="field-container">
+                                <lightning:outputField class="bottom-line" fieldName="buildertek__Cost_Code__c" />
+                                <lightning:buttonIcon iconName="utility:edit" size="small" variant="bare" onclick="{!c.editRecord}" />
+                            </div>
+                            <div class="field-container">
+                                <lightning:outputField class="bottom-line" fieldName="buildertek__Profit_Loss__c" />
+                            </div>
+                            <div class="field-container">
+                                <lightning:outputField class="bottom-line" fieldName="buildertek__Complete__c" />
+                                <lightning:buttonIcon iconName="utility:edit" size="small" variant="bare" onclick="{!c.editRecord}" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="headingDiv "> Revenue </div>
+                    <div class="slds-grid ">
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning:outputField class="bottom-line" fieldName="buildertek__Total_Sales_Price__c" />
+                            <lightning:outputField class="bottom-line" fieldName="buildertek__Gross_Profit__c" />
+                            <lightning:outputField class="bottom-line" fieldName="buildertek__Gross_Profit_Margin__c" />
+                            <lightning:outputField class="bottom-line" fieldName="buildertek__Gross_Profit_Percemtage__c" />
+                        </div>
+                    </div>
+                </lightning:recordViewForm>
+                <div class="headingDiv "> Update Information </div>
+                <lightning:recordViewForm recordId="{!v.BudgetLine.Id}" objectApiName="buildertek__Budget_Item__c">
+                    <div class="slds-grid ">
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning:outputField class="bottom-line" fieldName="CreatedById" />
+                            <lightning:outputField class="bottom-line" fieldName="LastModifiedDate" />         
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning:outputField class="bottom-line" fieldName="LastModifiedById" />
+                            <lightning:outputField class="bottom-line" fieldName="CreatedDate" />
+                        </div>
+                    </div>
+                </lightning:recordViewForm> 
+                <aura:set attribute="else">
+                    <lightning:recordEditForm recordId="{!v.BudgetLine.Id}" objectApiName="buildertek__Budget_Item__c">
+                        <div class="slds-grid ">
+                            <div class="slds-col slds-size_1-of-2">
+                                <lightning:inputField fieldName="buildertek__Product__c" value="{!v.BudgetLine.buildertek__Product__c}" onchange="{!c.editProductName}" />
+                                <lightning:inputField fieldName="buildertek__Product_Name__c"  value="{!v.BudgetLine.buildertek__Product_Name__c}"/>
+                                <lightning:inputField fieldName="Name" value="{!v.BudgetLine.Name}" />
+                                <lightning:inputField fieldName="buildertek__Group__c" value="{!v.BudgetLine.buildertek__Group__c}" />
+                                <lightning:inputField fieldName="buildertek__Quantity__c" value="{!v.BudgetLine.buildertek__Quantity__c}" />
+                                <lightning:inputField fieldName="buildertek__Unit_Price__c" value="{!v.BudgetLine.buildertek__Unit_Price__c}" />
+                                <lightning:inputField fieldName="buildertek__UOM__c" value="{!v.BudgetLine.buildertek__UOM__c}" />
+                                <lightning:outputField fieldName="buildertek__Original_Budget__c"/>
+                                <lightning:outputField fieldName="buildertek__Committed_Costs__c"  />
+                                <lightning:outputField fieldName="buildertek__Additional_Costs__c"  />
+                                <lightning:inputField fieldName="buildertek__Labor__c" value="{!v.BudgetLine.buildertek__Labor__c}"/>
+                                <lightning:inputField fieldName="buildertek__Invoice_total__c" value="{!v.BudgetLine.buildertek__Invoice_total__c}" />
+                                <lightning:outputField  fieldName="buildertek__Approved_CO__c"  />
+                                <lightning:outputField  fieldName="buildertek__Total_Costs__c"  />
+
+                            </div>
+                            <div class="slds-col slds-size_1-of-2">
+                                <lightning:outputField fieldName="buildertek__Budget__c"  />
+                                <lightning:inputField fieldName="buildertek__Contractor__c" value="{!v.BudgetLine.buildertek__Contractor__c}"/> 
+                                <lightning:inputField fieldName="buildertek__Cost_Code__c" value="{!v.BudgetLine.buildertek__Cost_Code__c}" />
+                                <lightning:outputField fieldName="buildertek__Profit_Loss__c" />
+                                <lightning:inputField fieldName="buildertek__Complete__c" value="{!v.BudgetLine.buildertek__Complete__c}" />
+                            </div>
+                        </div>
+                    </lightning:recordEditForm>
+                    <lightning:recordViewForm recordId="{!v.BudgetLine.Id}" objectApiName="buildertek__Budget_Item__c">
+                        <div class="headingDiv "> Revenue </div>
+                        <div class="slds-grid ">
+                            <div class="slds-col slds-size_1-of-2">
+                                <lightning:outputField class="bottom-line" fieldName="buildertek__Total_Sales_Price__c" />
+                                <lightning:outputField class="bottom-line" fieldName="buildertek__Gross_Profit__c" />
+                                <lightning:outputField class="bottom-line" fieldName="buildertek__Gross_Profit_Margin__c" />
+                                <lightning:outputField class="bottom-line" fieldName="buildertek__Gross_Profit_Percemtage__c" />
+                            </div>
+                        </div>
+                    </lightning:recordViewForm>
+                    <lightning:recordViewForm recordId="{!v.BudgetLine.Id}" objectApiName="buildertek__Budget_Item__c">
+                        <div class="headingDiv "> Update Information </div>
+                        <div class="slds-grid ">
+                            <div class="slds-col slds-size_1-of-2">
+                                <lightning:outputField class="bottom-line" fieldName="CreatedById" />
+                                <lightning:outputField class="bottom-line" fieldName="LastModifiedDate" />
+                            </div>
+                            <div class="slds-col slds-size_1-of-2">
+                                <lightning:outputField class="bottom-line" fieldName="LastModifiedById" />
+                                <lightning:outputField class="bottom-line" fieldName="CreatedDate" />
+                            </div>
+                        </div>
+                    </lightning:recordViewForm> 
+                    <div class="save" >
+                        <lightning:button label="Cancel" title="Cancel" onclick="{!c.leaveEditForm}" class="slds-m-left_x-small"/>
+                        <lightning:button variant="brand" label="Save" title="Save" onclick="{!c.saveRecord}" class="saveBtn"/>
+                    </div>
+                </aura:set> 
+            </aura:if>
+        </aura:if>
+    </div>
+</aura:component>

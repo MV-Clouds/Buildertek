@@ -1,0 +1,5 @@
+<apex:component controller="DisplayImageController" access="global">
+   
+    <img src="{!siteUrl}/servlet/servlet.ImageServer?id={!documentId}&oid={!orgId}" width="{!width}" height="{!height}" alt="bt_logo.png" border="0" style="height: auto; background: transparent; font-family: sans-serif; font-size: 15px; line-height: 15px; color: #555555;"/>    
+
+</apex:component>

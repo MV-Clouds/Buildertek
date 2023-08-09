@@ -1,0 +1,37 @@
+.THIS {
+}
+
+.THIS .custom-loading-text {
+    transform: rotate(-90deg);
+    position: absolute;
+    top: -0.5rem;
+    left: 1rem;
+    white-space: nowrap;
+    font-size: 20px;
+}
+
+
+.THIS .slds-form-element.lable-style label{
+   font-weight: bold;
+}
+
+.THIS .customDataTable table tbody tr:last-child * {
+    font-weight: bold;
+    cursor: default;
+    text-decoration: none;
+    color: black;
+    
+}
+
+.THIS .customDataTable table tbody tr:last-child th{
+    pointer-events: none;
+}
+.THIS .customDataTable table tbody tr:last-child .slds-checkbox{
+    
+     /*visibility: hidden;*/
+    display: none;
+}
+
+.THIS .customDataTable table tr:last-child 	td:first-child span{
+    visibility: hidden;
+}

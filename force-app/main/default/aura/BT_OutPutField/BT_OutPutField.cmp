@@ -1,0 +1,36 @@
+<aura:component >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+	<aura:attribute name="record" type="Object" description="Record detail with field values."/>
+    <aura:attribute name="field" type="String" description="API name of the field."/>
+    <aura:attribute name="type" type="String" default="TEXT" description="Type of the field."/>
+    <aura:attribute name="value" type="String" description="Value of the field."/>
+    <aura:attribute name="label" type="String" description="label of the field."/>
+    {!v.label}<br/>
+    
+    <aura:if isTrue="{!v.type == 'CURRENCY'}">
+        
+        <ui:outputCurrency aura:id="curr" value="{!v.value}" format="$##,##,###,###.00"/>
+
+    </aura:if >
+    <aura:if isTrue="{!or(v.type == 'STRING', v.type == 'TEXTAREA', v.type == 'PICKLIST', v.type == 'MULTISELECT', v.type == 'PERCENT', v.type == 'BOOLEAN')}">
+    	<lightning:formattedRichText value="{!v.value}"/>
+    </aura:if>
+    <aura:if isTrue="{!v.type == 'DATE'}">
+        <ui:outputDate value="{!v.value}"/>
+    </aura:if>
+    <aura:if isTrue="{!v.type == 'DATETIME'}">
+        <ui:outputDateTime value="{!v.value}"/>
+    </aura:if>
+    <aura:if isTrue="{!v.type == 'EMAIL'}">
+        <lightning:formattedEmail value="{!v.value}"/>
+    </aura:if>
+    <aura:if isTrue="{!v.type == 'PHONE'}">
+        <lightning:formattedPhone value="{!v.value}"/>
+    </aura:if>
+    <aura:if isTrue="{!v.type == 'URL'}">
+        <lightning:formattedUrl value="{!v.value}"/>
+    </aura:if>
+    <aura:if isTrue="{!or(v.type == 'INTEGER', v.type == 'DOUBLE')}">
+        <lightning:formattedNumber value="{!v.value}"/>
+    </aura:if>
+</aura:component>

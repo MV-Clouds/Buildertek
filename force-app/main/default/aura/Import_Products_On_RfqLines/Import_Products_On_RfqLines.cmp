@@ -1,0 +1,345 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader" controller="ImportProductsOnRfqLines" access="global" >
+    <aura:attribute name="recordId" type="string" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="rfqRecordList" type="Product2[]" />
+    <aura:attribute name="listOfSelectedRFQIds" type="List" default="[]"/>
+    <aura:attribute name="PageNumber" type="integer" default="1" />
+    <aura:attribute name="TotalPages" type="integer" default="0" />
+    <aura:attribute name="TotalRecords" type="integer" default="0" />
+    <aura:attribute name="RecordStart" type="integer" default="0" />
+    <aura:attribute name="RecordEnd" type="integer" default="0" />
+    <aura:attribute name="mainObjectId" type="String" />
+    <aura:attribute name="onCancel" type="Object"/>
+    <aura:attribute name="Spinner" type="Boolean" /> 
+    <aura:attribute name="showMessage" type="Boolean" default="false" />
+    <aura:attribute name="rfqtradeType" type="String" default="" />
+    
+     <aura:handler name="oSelectedRecordEvent" event="c:selectedsObjectRecordEvent" action="{!c.handleComponentEvent}"/>
+    <aura:handler name="oSelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.handleComponentEvent}" />
+    <aura:attribute name="searchProductTypeFilter" type="String" default="" />
+    <aura:attribute name="searchTradeTypeFilter" type="String" default="" />
+    <aura:attribute name="searchProductFamilyFilter" type="String" default="" />
+    <aura:attribute name="searchProductFilter" type="String" default="" />
+    <aura:attribute name="searchCategoryFilter" type="String" default="" />
+    <aura:attribute name="searchPriceBookFilter" type="String" default="" />
+    <aura:attribute name="searchVendorFilter" type="String" default="" />
+    
+    <aura:handler name="change" value="{!v.searchProductFamilyFilter}" action="{!c.doRfqSearch}" />
+    <aura:handler name="change" value="{!v.searchProductFilter}" action="{!c.doRfqSearch}" />
+    <aura:handler name="change" value="{!v.searchCategoryFilter}" action="{!c.doRfqSearch}" />
+     <aura:handler name="change" value="{!v.searchProductTypeFilter}" action="{!c.doRfqSearch}" />
+    <aura:handler name="change" value="{!v.searchTradeTypeFilter}" action="{!c.doRfqSearch}" />
+    <aura:handler name="change" value="{!v.searchPriceBookFilter}" action="{!c.doRfqSearch}" />
+    <aura:handler name="change" value="{!v.searchVendorFilter}" action="{!c.doRfqSearch}" />
+    
+    
+    <aura:attribute name="pricebookName" type="string" />
+    <aura:attribute name="productfamily" type="string" />
+    <aura:attribute name="productfamilyoptions" type="List" />
+    <aura:attribute name="listofproductfamily" type="List" />
+    <aura:attribute name="pricebookoptions" type="List" />
+    
+    <aura:attribute name="rfqCategoryList" type="List" />
+    <aura:attribute name="rfqproducttypeList" type="List" />
+    <aura:attribute name="rfqtradetypeList" type="List" />
+    <aura:attribute name="rfqvendorList" type="List" />
+
+    <aura:attribute name="startPage" type="Integer" />
+    <aura:attribute name="endPage" type="Integer"/>
+    <aura:attribute name="pageSize" type="integer" default="20" />
+    <aura:attribute name="PaginationList" type="list"/> 
+    <aura:attribute name="totalRecordsCount" type="Integer"/>
+    <aura:attribute name="currentPage" type="integer" default="1"/>
+    <aura:attribute name="allSelectedIds" type="List" default="[]" />
+    
+    <aura:attribute name="pbList"  type="Pricebook2[]" />
+    <lightning:workspaceAPI aura:id="workspace"/>
+    
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/>
+    
+  <aura:html tag="style">
+        .slds-modal__content{
+   			 overflow-y: none !important;
+     overflow: hidden !important;
+		}
+        .slds-modal__container{
+            max-width: 80rem !important;
+            width:90% !important;
+        }
+    </aura:html> 
+
+       <div class="slds-modal__header" style="padding-top:0px">
+            <div class="searchCointainer" style="padding-top:1px">             
+                <div class="selectStyle">
+                    <lightning:select name="pricebooks" label=""  aura:id="searchPriceBook" value="{!v.searchPriceBookFilter}" onchange="{!c.changeEvent}">
+                        <aura:iteration items="{!v.pbList}" var="temp">
+                            <option selected="{!temp.value == v.searchPriceBookFilter}" value="{!temp.value}">{!temp.key}</option>
+                        </aura:iteration>
+                    </lightning:select> 
+                </div>
+              
+                <div style="width: 14%; display: inline-block; padding: 0% 2% 0% 0%;">
+                    <lightning:select name="pricebooks" label=""  aura:id="searchPriceBook" value="{!v.searchProductFamilyFilter}" >
+						<option text="None" value=""/>                       
+                        <aura:iteration var="option" items="{!v.listofproductfamily}">
+                            <option value="{!option.productfamilyvalues}"> 
+                                {!option.productfamilyvalues}</option>
+                        </aura:iteration>
+                    </lightning:select>
+                </div>
+                   
+                <div style="width: 14%; display: inline-block; padding: 0% 2% 0% 0%;">
+                    
+                     <c:BT_LightningLookup aura:id="productId" objectAPIName="Product2"
+                                                                          IconName="standard:product" selectedRecord="{!v.searchProductFilter}"
+                                                                          parentId="{!v.searchPriceBookFilter }" prodctfamly="{!v.searchProductFamilyFilter}" /> 
+            
+                </div>
+                <div style="width: 14%; display: inline-block; padding: 0% 2% 0% 0%;position:relative;"  >
+                    <lightning:input style=" display: inline-block; padding: 0% 2% 0% 0%;" autocomplete="off" aura:id="searchCategory_1" name="enter-search"  type="search"  placeholder="Category"  value="{!v.searchCategoryFilter}" onclick="{!c.showDropDownCategory}" onblur ="{!c.hideDropDownCategory}"/>
+                    <ul aura:id="searchCategoryRes_1" style="min-height:40px;margin-top:0px !important;position: absolute;" class="Filterdropdown_1 slds-listbox slds-listbox_vertical slds-dropdown slds-dropdown_fluid slds-lookup__menu slds" role="listbox">
+                        <lightning:spinner class="slds-hide" variant="brand" size="small" aura:id="mySpinner"/>
+                        <aura:iteration items="{!v.rfqCategoryList}" var="singleRec">
+                            <li role="presentation" class="slds-listbox__item" onclick="{!c.selectRecordOption}" aura:id="searchCategoryResOption" style="text-align: left;">
+                                <div class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small slds-media slds-listbox__option slds-listbox__option_entity slds-media_center" role="option">
+                                    <span class="slds-media__figure slds-listbox__option-icon ">
+                                        <lightning:icon iconName="custom:custom79" size="small" alternativeText="Approved" title="Approved" />
+                                    </span>
+                                    <span class="slds-media__body">
+                                        <span class="slds-truncate" title="All Opportunities">
+                                            <span>{!singleRec}</span>
+                                        </span>
+                                    </span>
+                                </div>
+                            </li>
+                        </aura:iteration>
+                    </ul> 
+                </div>
+                <div style="width: 14%; display: inline-block; padding: 0% 2% 0% 0%; position:relative;" >
+                    <lightning:input style=" display: inline-block; padding: 0% 2% 0% 0%;" autocomplete="off" aura:id="searchCategory_2" name="enter-search" type="search" placeholder="Product Type" value="{!v.searchProductTypeFilter}"  onclick="{!c.showDropDownCategory}"  onblur ="{!c.hideDropDownCategory}"/>
+                    <ul aura:id="searchCategoryRes_2" style="min-height:40px;margin-top:0px !important;position: absolute;" class="slds-listbox slds-listbox_vertical slds-dropdown slds-dropdown_fluid slds-lookup__menu slds" role="listbox">
+                        <lightning:spinner class="slds-hide" variant="brand" size="small" aura:id="mySpinner"/>
+                        <aura:iteration items="{!v.rfqproducttypeList}" var="singleRec">
+                            <li role="presentation" class="slds-listbox__item" onclick="{!c.selectRecordOptionforproducttype}" style="text-align: left;">
+                                <div class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small slds-media slds-listbox__option slds-listbox__option_entity slds-media_center" role="option">
+                                    <span class="slds-media__figure slds-listbox__option-icon ">
+                                        <lightning:icon iconName="custom:custom70" size="small" alternativeText="Approved" title="Approved" />
+                                    </span>
+                                    <span class="slds-media__body">
+                                        <span class="slds-truncate" title="All Opportunities">
+                                            <span>{!singleRec}</span>
+                                        </span>
+                                    </span>
+                                </div>
+                            </li>
+                        </aura:iteration>
+                    </ul> 
+                </div>
+                <div style="width: 14%; display: inline-block; padding: 0% 2% 0% 0%; position:relative;">
+					<lightning:input   style=" display: inline-block; padding: 0% 2% 0% 0%;"  autocomplete="off"  aura:id="searchCategory_3" name="enter-search" type="search"  placeholder="Trade Type"   value="{!v.searchTradeTypeFilter}"  onclick="{!c.showDropDownCategory}" onblur ="{!c.hideDropDownCategory}"/>
+                    <ul aura:id="searchCategoryRes_3" style="min-height:40px;margin-top:0px !important;position: absolute;" class="slds-listbox slds-listbox_vertical slds-dropdown slds-dropdown_fluid slds-lookup__menu slds" role="listbox">
+                        <lightning:spinner class="slds-hide" variant="brand" size="small" aura:id="mySpinner"/>
+                        <aura:iteration items="{!v.rfqtradetypeList}" var="singleRec">
+                            <li role="presentation" class="slds-listbox__item" onclick="{!c.selectRecordOptionfortradetype}" style="text-align: left;">
+                                <div class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small slds-media slds-listbox__option slds-listbox__option_entity slds-media_center" role="option">
+                                    <span class="slds-media__figure slds-listbox__option-icon ">
+                                        <lightning:icon iconName="custom:custom67" size="small" alternativeText="Approved" title="Approved" />
+                                    </span>
+                                    <span class="slds-media__body">
+                                        <span class="slds-truncate" title="All Opportunities">
+                                            <span>{!singleRec}</span>
+                                        </span>
+                                    </span>
+                                </div>
+                            </li>
+                        </aura:iteration>
+                    </ul> 
+                </div>
+                <div style="width: 14%; display: inline-block; padding: 0% 2% 0% 0%; position:relative;">
+                    <lightning:input  style=" display: inline-block; padding: 0% 2% 0% 0%;" autocomplete="off"   aura:id="searchCategory_4" name="enter-search" type="search" placeholder="Vendor"  value="{!v.searchVendorFilter}" onclick="{!c.showDropDownCategory}"  onblur ="{!c.hideDropDownCategory}" />
+                    <ul aura:id="searchCategoryRes_4" style="min-height:40px;margin-top:0px !important;position: absolute;" class="slds-listbox slds-listbox_vertical slds-dropdown slds-dropdown_fluid slds-lookup__menu slds" role="listbox">
+                        <lightning:spinner class="slds-hide" variant="brand" size="small" aura:id="mySpinner"/>
+                        <aura:iteration items="{!v.rfqvendorList}" var="singleRec">
+                            <li role="presentation" class="slds-listbox__item" onclick="{!c.selectRecordOptionforvendor}" style="text-align: left;">
+                                <div class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small slds-media slds-listbox__option slds-listbox__option_entity slds-media_center" role="option">
+                                    <span class="slds-media__figure slds-listbox__option-icon ">
+                                        <lightning:icon iconName="custom:custom21" size="small" alternativeText="Approved" title="Approved" />
+                                    </span>
+                                    <span class="slds-media__body">
+                                        <span class="slds-truncate" title="All Opportunities">
+                                            <span>{!singleRec}</span>
+                                        </span>
+                                    </span>
+                                </div>
+                            </li>
+                        </aura:iteration>
+                    </ul> 
+                    
+                </div>
+        </div>
+    </div> 
+    
+   
+    <div class="slds-modal__content" style="padding-top:0px; padding-bottom:0px;">
+        <div class="slds-scrollable" style="height:20rem;" >
+            <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                <thead>
+                    <tr class="slds-text-heading--label">
+                        <th class="slds-is-sortable" scope="col" width="5px">
+                            <div class="slds-form-element">
+                                <div class="slds-form-element__control">
+                                    <label class="slds-checkbox" style="width:10px;">
+                                        <ui:inputCheckbox  change="{!c.selectAllRfq}"  aura:id="selectAllRFQ" />
+                                        <span class="slds-checkbox--faux"  style="top:-2px;"></span>
+                                        <span  class="slds-form-element__label text"></span>
+                                    </label>
+                                </div>
+                            </div>                        
+                        </th>
+                        <th scope="col" >
+                            <div class="slds-truncate" title="Product Family">
+                                Product Family
+                            </div>
+                        </th>
+                        <th scope="col" >
+                            <div class="slds-truncate" title="Product Name">
+                                Product Name
+                            </div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Category">
+                                Category
+                            </div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Product Type" >
+                                Product Type
+                            </div>
+                        </th>
+                        <th  scope="col" >
+                            <div class="slds-truncate" title="Trade Type">
+                                Trade Type
+                            </div>
+                        </th>
+                        <th  scope="col" >
+                            <div class="slds-truncate" title="Vendor">
+                                Vendor
+                            </div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="SKU">
+                                SKU
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.PaginationList}" var="item" indexVar="index">
+                        <tr>
+                            <td>
+                                <div class="slds-form-element">
+                                    <div class="slds-form-element__control">
+                                        <label class="slds-checkbox" style="width:10px;">
+                                            <ui:inputCheckbox text="{!item.product.Id}"   value="{!item.isChecked}"  change="{!c.selectRfq}"  aura:id="checkid"/>
+                                            <span class="slds-checkbox--faux"  style="top:-2px;"></span>
+                                            <span  class="slds-form-element__label text"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </td>
+                             <td>
+                                <div class="slds-truncate" title="{!item.product.Family}" >
+                                    {!item.product.Family}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate" title="{!item.product.Name}" style="white-space: pre-wrap;">
+                                    {!item.product.Name}
+                                </div>
+                            </td>
+                          <td>
+                                <aura:if isTrue="{!item.product.buildertek__Category__r != undefined}">
+                                    <div class="slds-truncate" title="{!item.product.buildertek__Category__r.Name}" >
+                                        {!item.product.buildertek__Category__r.Name}
+                                    </div>
+                                    <aura:set attribute="else">
+                                        <div class="slds-truncate" title="">
+                                            
+                                        </div>
+                                    </aura:set>
+                                </aura:if>
+                                
+                            </td>
+                            
+                            <td>
+                               
+                                <aura:if isTrue="{!item.product.buildertek__Product_Type__r != undefined}">
+                                    <div class="slds-truncate" title="{!item.product.buildertek__Product_Type__r.Name}" >
+                                        {!item.product.buildertek__Product_Type__r.Name}
+                                    </div>
+                                    <aura:set attribute="else">
+                                        <div class="slds-truncate" title="">
+                                            
+                                        </div>
+                                    </aura:set>
+                                </aura:if>
+                                
+                            </td>
+                            <td>
+                                <aura:if isTrue="{!item.product.buildertek__Trade_Type__r != undefined}">
+                                    <div class="slds-truncate" title="{!item.product.buildertek__Trade_Type__r.Name}" >
+                                        {!item.product.buildertek__Trade_Type__r.Name}
+                                    </div>
+                                    <aura:set attribute="else">
+                                        <div class="slds-truncate" title="" >
+                                            
+                                        </div>
+                                    </aura:set>
+                                </aura:if>
+                            </td> 
+                            <td>
+                                <div class="slds-truncate" title="{!item.product.buildertek__Vendor__r}" >
+                                    {!item.product.buildertek__Vendor__r.Name}
+                                </div>
+                            </td>
+                            
+                            <td>
+                                <div class="slds-truncate" title="{!item.product.StockKeepingUnit}" >
+                                    {!item.product.StockKeepingUnit}
+                                </div>
+                            </td>
+                            
+                        </tr>
+                    </aura:iteration>
+                </tbody>
+            </table>
+     </div>
+     <aura:if isTrue="{!v.Spinner}">
+                <div aura:id="spinnerId" class="slds-spinner_container" style="position:fixed;">
+                    <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                        <span class="slds-assistive-text">Loading</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                        <div class="custom-loading-text">
+                            <aura:if isTrue="{!v.showMessage}">
+                               <!-- <b>Creating RFQ Lines</b>-->
+                                <b>Processing, Please Wait</b>
+                            </aura:if>
+                        </div>
+                    </div>
+                </div>
+            </aura:if>
+      
+    </div>
+   
+    <!-- <footer> -->
+    <div class="slds-modal__footer">
+        <lightning:button disabled="{!v.startPage == 0}"  name="previous" variant="brand" aura:id="prevPage" label="Prev" onclick="{!c.navigation}"  class="slds-float_left"/>
+        <lightning:button disabled="{!(v.endPage + 1) >= v.totalRecordsCount}" aura:id="nextPage" variant="brand" name="next"  label="Next" onclick="{!c.navigation}" class="slds-float_left"/>
+        <lightning:button variant="neutral"  label="Cancel"   onclick="{!c.closeModal}" />
+        
+        <lightning:button aura:id="nextPage" variant="brand" label="Add RFQ Lines" onclick="{!c.addToRfqLines}" />
+        
+    </div> 
+    <!-- </footer> -->
+</aura:component>

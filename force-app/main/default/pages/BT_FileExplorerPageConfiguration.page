@@ -1,0 +1,414 @@
+<!--**********************************************************************************
+* Copyright © 2017-2016, BuilderTek.
+* All rights reserved
+*
+* VisualForce Page: BT_FileExplorerPageConfiguration
+* Created by Sagar
+
+* - File explorer page configration
+
+* - Modifications:
+* - Sagar - Initial 
+***********************************************************************************-->
+<apex:page controller="BT_FileExplorerPageConfigController" title="{!$Label.buildertek__File_Explorer_Configuration}"  >
+<c:BT_JsAndCssIncludeComponent importJquery="true"
+                              importAppurinUtil="true"
+                              importJQueryLayout="false"
+                              importFancyTree="false"
+                              importJqGrid="false"
+                              importEasyTooltip="true"
+                              importAppurinCss="true"
+                              importCkEditor="false"
+                              importGnattChart="false"
+                              importLightningDesign="true"/>
+                              
+    <script>
+        var twistyLightningSectionStatus = {};
+        j$(document).ready(function() {
+			easyToolTipForAll();
+			
+		});
+		
+        function easyToolTipForAll() {
+            j$('.apHelpText').easyTooltip({width: '200px', isLightning:true, isFormatted:true});
+            return false;
+        }
+        
+         window.onload = onload;
+        function onload{
+            loadData();
+        }
+    </script>
+                              
+    <apex:actionStatus id="splashStatus" onstart="startSplash();" onstop="endSplash(); " />
+	<div class="slds">
+        <div id="splashDiv" class="apInitiallyDivDisplayNone" style="z-index:9998;">
+            <div class="slds-spinner_container apLightningSpinnerContainer">
+                <div role="status" class="slds-spinner slds-spinner--medium slds-spinner--brand">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <apex:outputPanel rendered="{!isError}">
+        <apex:pagemessages id="pageLoadErrorMessage"/>
+        <script>
+            Appurin.lightning.createLightningPageMessage({'classicPageMessageId' : '{!$Component.pageLoadErrorMessage}'});   
+        </script>
+    </apex:outputPanel>
+    
+    <apex:form style="" id="form" rendered="{!!isError}">
+        <apex:actionFunction name="loadData" action="{!init}" />
+        <apex:outputPanel layout="block" styleClass="slds">
+    		<div class="apPageHeader" id="PageHeader">
+    			<div class="apPageHeaderMedia">
+    	          	<div id="pageHeaderMedia" class="apPageHeaderMediaFigure">
+    	          	    <c:BT_LightningSvg parentId="pageHeaderMedia" styleClass="apLightningPageHeaderIcon slds-button__icon" path="/assets/icons/utility-sprite/svg/symbols.svg#settings"/>
+    	            </div>
+    	            <div class="apPageHeaderMediaBody">
+    	                <p class="slds-text-title--caps slds-line-height--reset">{!$Label.Configuration}</p>
+    					<div class="apPageHeaderTitle" title="{!$Label.File_Explorer_Configuration_Subtitle}">{!$Label.File_Explorer_Configuration_Subtitle}</div>
+    	              	<div class="apPageHeaderInfo">
+    	              		<label>{!$Label.File_Explorer_Configuration_Page_Description}</label>
+    	              	</div>
+              		</div>
+    	            <div style="float:right;" class="apPageHeaderMediaButtons">
+    	                <apex:commandButton styleClass="slds-button slds-button--neutral" value="{!$Label.buildertek__Reset_to_System_Default_Button}" action="{!initialize}" onComplete="easyToolTipForAll();" reRender="fielExplorerConfigurationPanel" status="splashStatus"/>
+    	                <apex:commandButton styleClass="slds-button slds-button--brand" value="{!$Label.buildertek__Save}" action="{!Save}" status="splashStatus" onComplete="easyToolTipForAll();" reRender="fielExplorerConfigurationPanel"/>
+    	            </div>
+    	           <script>
+    	           		Appurin.lightning.createPageHeader('PageHeader');
+    	           </script>
+    	        </div>
+            </div>
+	    </apex:outputPanel>
+	    <apex:outPutPanel layout="block" styleClass="slds" id="fielExplorerConfigurationPanel">
+	        
+	        <apex:outputPanel >
+                <apex:pagemessages id="errorMessages"/>
+                <script>
+                    Appurin.lightning.createLightningPageMessage({'classicPageMessageId' : '{!$Component.errorMessages}'});   
+                </script>
+            </apex:outputPanel>
+            
+	        <apex:outputPanel layout="block">
+                <apex:outPutPanel layout="block" styleClass="slds-section slds-is-open" id="configurationTypeSection">
+                    <h3 class="slds-section__title">
+                        <apex:outputPanel id="typeSectionHeader" layout="block" styleclass="slds-button slds-section__title-action">
+                            <c:BT_LightningSvg parentId="typeSectionHeader"  parentType="div" styleClass="slds-section__title-action-icon slds-button__icon slds-button__icon--left" path="/assets/icons/utility-sprite/svg/symbols.svg#switch"/>
+                            <label class="avLightningFormElementLabel">Type</label>
+                            <c:BT_LightningHelpText rendered="{!$Label.buildertek__File_Explorer_Name_Helptext != null}" helptext="{!$Label.buildertek__File_Explorer_Name_Helptext}"/>
+                        </apex:outputPanel>
+                    </h3>
+                    <apex:outPutPanel layout="block" styleClass="slds-section__content">
+    					<apex:outputPanel layout="block" styleClass="slds-form-element">
+    						<apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+    							<apex:outputLabel title="Type" value="Type"></apex:outputLabel>
+    						</apex:outputPanel>
+    						<apex:outputPanel layout="block" styleClass="slds-form-element__control">
+    							<apex:selectList style="max-width:25%;" value="{!selectedConfigurationType}" size="1" styleClass="slds-select">
+    								<apex:selectOptions value="{!configurations}"></apex:selectOptions>
+    								<apex:actionSupport event="onchange" status="splashStatus" action="{!refreshOnConfigurationChange}" onComplete="easyToolTipForAll();" reRender="fielExplorerConfigurationPanel"/>                                    
+    							</apex:selectList>
+    						</apex:outputPanel>
+    					</apex:outputPanel>
+    				</apex:outputPanel>
+    				<script>
+    				    Appurin.lightning.createLightningSection('{!$Component.configurationTypeSection}');
+    				</script>
+                </apex:outputPanel>
+            </apex:outputPanel>
+            <apex:outputPanel layout="block">
+                <apex:outPutPanel layout="block"  id="pageConfigurationSection" styleClass="slds-section slds-is-open">
+                    <h3 class="slds-section__title">
+                        <apex:outputPanel id="pageConfigSectionHeader" layout="block" styleclass="slds-button slds-section__title-action">
+                            <c:BT_LightningSvg parentId="pageConfigSectionHeader"  parentType="div" styleClass="slds-section__title-action-icon slds-button__icon slds-button__icon--left" path="/assets/icons/utility-sprite/svg/symbols.svg#switch"/>
+                            <label class="avLightningFormElementLabel">{!$Label.buildertek__Page_Layout}</label>
+                        </apex:outputPanel>
+                    </h3>
+                    <apex:outputPanel layout="block" styleClass="slds-section__content">
+                        <apex:outputPanel layout="block" styleClass="slds-grid slds-grid--pull-padded-medium">
+                            <apex:outputPanel layout="block" styleClass="slds-col slds-p-horizontal--medium slds-size--1-of-2">
+                                <apex:outputPanel layout="block" styleClass="slds-form-element">
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                        <apex:outputLabel title="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Show_Header__c.inlineHelpText}" value="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Show_Header__c.label}"></apex:outputLabel>
+                                    </apex:outputPanel>
+                                    <c:BT_LightningHelpText rendered="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Show_Header__c.inlineHelpText != null}" helptext="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Show_Header__c.inlineHelpText}"/>
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                        <apex:outputPanel styleClass="slds-checkbox" rendered="{!CONTAINS(selectedConfigurationType,'__c')}">
+                                            <apex:inputCheckbox disabled="true" value="{!edConfiguration.Show_Header__c}" id="showHeaderDisabledField"/>
+                                            <apex:outputlabel styleClass="slds-checkbox__label" for="showHeaderDisabledField">
+                                                <apex:outputPanel styleClass="slds-checkbox--faux"></apex:outputPanel>
+                                                <apex:outputPanel styleClass="slds-form-element__label"></apex:outputPanel>
+                                            </apex:outputlabel>
+                                        </apex:outputPanel>
+                                        <apex:outputPanel styleClass="slds-checkbox" rendered="{!!CONTAINS(selectedConfigurationType,'__c')}">
+                                            <apex:inputField value="{!edConfiguration.Show_Header__c}" id="showHeaderField"/>
+                                            <apex:outputlabel styleClass="slds-checkbox__label" for="showHeaderField">
+                                                <apex:outputPanel styleClass="slds-checkbox--faux"></apex:outputPanel>
+                                                <apex:outputPanel styleClass="slds-form-element__label"></apex:outputPanel>
+                                            </apex:outputlabel>
+                                        </apex:outputPanel>
+                                    </apex:outputPanel>
+                                </apex:outputPanel> 
+                            </apex:outputPanel>
+                            <apex:outputPanel layout="block" styleClass="slds-col slds-p-horizontal--medium slds-size--1-of-2">
+                                <apex:outputPanel layout="block" styleClass="slds-form-element">
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                        <apex:outputLabel title="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Show_Hierarchical_File_UI__c.inlineHelpText}" value="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Show_Hierarchical_File_UI__c.label}"></apex:outputLabel>
+                                    </apex:outputPanel>
+                                    <c:BT_LightningHelpText rendered="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Show_Hierarchical_File_UI__c.inlineHelpText != null}" helptext="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Show_Hierarchical_File_UI__c.inlineHelpText}"/>
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                        <apex:outputPanel styleClass="slds-checkbox" rendered="{!CONTAINS(selectedConfigurationType,'__c')}">
+                                            <apex:inputCheckbox disabled="true" value="{!edConfiguration.Show_Hierarchical_File_UI__c}" id="showHierarchicalFileUIDisabledField"/>
+                                            <apex:outputlabel styleClass="slds-checkbox__label" for="showHierarchicalFileUIDisabledField">
+                                                <apex:outputPanel styleClass="slds-checkbox--faux"></apex:outputPanel>
+                                                <apex:outputPanel styleClass="slds-form-element__label"></apex:outputPanel>
+                                            </apex:outputlabel>
+                                        </apex:outputPanel>
+                                        <apex:outputPanel styleClass="slds-checkbox"  rendered="{!!CONTAINS(selectedConfigurationType,'__c')}">
+                                            <apex:inputField value="{!edConfiguration.Show_Hierarchical_File_UI__c}" id="showHierarchicalFileUIField"/>
+                                            <apex:outputlabel styleClass="slds-checkbox__label" for="showHierarchicalFileUIField">
+                                                <apex:outputPanel styleClass="slds-checkbox--faux"></apex:outputPanel>
+                                                <apex:outputPanel styleClass="slds-form-element__label"></apex:outputPanel>
+                                            </apex:outputlabel>
+                                        </apex:outputPanel>
+                                    </apex:outputPanel>
+                                </apex:outputPanel> 
+                            </apex:outputPanel>
+                        </apex:outputPanel>
+                        <apex:outputPanel layout="block" styleClass="slds-grid slds-grid--pull-padded-medium">
+                            <apex:outputPanel layout="block" styleClass="slds-col slds-p-horizontal--medium slds-size--1-of-2">
+                                <apex:outputPanel layout="block" styleClass="slds-form-element">
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                        <apex:outputLabel title="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Enable_Mass_Actions__c.inlineHelpText}" value="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Enable_Mass_Actions__c.label}"></apex:outputLabel>
+                                    </apex:outputPanel>
+                                    <c:BT_LightningHelpText rendered="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Enable_Mass_Actions__c.inlineHelpText != null}" helptext="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Enable_Mass_Actions__c.inlineHelpText}"/>
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                        <apex:outputPanel styleClass="slds-checkbox">
+                                            <apex:inputField value="{!edConfiguration.Enable_Mass_Actions__c}" id="enableMassActionField"/>
+                                            <apex:outputlabel styleClass="slds-checkbox__label" for="enableMassActionField">
+                                                <apex:outputPanel styleClass="slds-checkbox--faux"></apex:outputPanel>
+                                                <apex:outputPanel styleClass="slds-form-element__label"></apex:outputPanel>
+                                            </apex:outputlabel>
+                                        </apex:outputPanel>
+                                    </apex:outputPanel>
+                                </apex:outputPanel> 
+                            </apex:outputPanel>
+                            <apex:outputPanel layout="block" styleClass="slds-col slds-p-horizontal--medium slds-size--1-of-2">
+                                <apex:outputPanel layout="block" styleClass="slds-form-element">
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                        <apex:outputLabel title="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Show_Breadcrumb__c.inlineHelpText}" value="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Show_Breadcrumb__c.label}"></apex:outputLabel>
+                                    </apex:outputPanel>
+                                    <c:BT_LightningHelpText rendered="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Show_Breadcrumb__c.inlineHelpText != null}" helptext="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Show_Breadcrumb__c.inlineHelpText}"/>
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                        <apex:outputPanel styleClass="slds-checkbox">
+                                            <apex:inputField value="{!edConfiguration.Show_Breadcrumb__c}" id="showBreadcrumbField"/>
+                                            <apex:outputlabel styleClass="slds-checkbox__label" for="showBreadcrumbField">
+                                                <apex:outputPanel styleClass="slds-checkbox--faux"></apex:outputPanel>
+                                                <apex:outputPanel styleClass="slds-form-element__label"></apex:outputPanel>
+                                            </apex:outputlabel>
+                                        </apex:outputPanel>
+                                    </apex:outputPanel>
+                                </apex:outputPanel> 
+                            </apex:outputPanel>
+                        </apex:outputPanel>
+                        <apex:outputPanel layout="block" styleClass="slds-grid slds-grid--pull-padded-medium">
+                            <apex:outputPanel layout="block" styleClass="slds-col slds-p-horizontal--medium slds-size--1-of-2">
+                                <apex:outputPanel layout="block" styleClass="slds-form-element">
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                        <apex:outputLabel title="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Show_Extension_Icon__c.inlineHelpText}" value="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Show_Extension_Icon__c.label}"></apex:outputLabel>
+                                    </apex:outputPanel>
+                                    <c:BT_LightningHelpText rendered="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Show_Extension_Icon__c.inlineHelpText != null}" helptext="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Show_Extension_Icon__c.inlineHelpText}"/>
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                        <apex:outputPanel styleClass="slds-checkbox">
+                                            <apex:inputField value="{!edConfiguration.Show_Extension_Icon__c}" id="showExtensionIconField"/>
+                                            <apex:outputlabel styleClass="slds-checkbox__label" for="showExtensionIconField">
+                                                <apex:outputPanel styleClass="slds-checkbox--faux"></apex:outputPanel>
+                                                <apex:outputPanel styleClass="slds-form-element__label"></apex:outputPanel>
+                                            </apex:outputlabel>
+                                        </apex:outputPanel>
+                                    </apex:outputPanel>
+                                </apex:outputPanel> 
+                            </apex:outputPanel>
+                            <apex:outputPanel layout="block" styleClass="slds-col slds-p-horizontal--medium slds-size--1-of-2">
+                                <apex:outputPanel layout="block" styleClass="slds-form-element">
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                        <apex:outputLabel title="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Static_Resource_Name__c.inlineHelpText}" value="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Static_Resource_Name__c.label}"></apex:outputLabel>
+                                    </apex:outputPanel>
+                                    <c:BT_LightningHelpText rendered="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Static_Resource_Name__c.inlineHelpText != null}" helptext="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Static_Resource_Name__c.inlineHelpText}"/>
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                        <apex:inputField styleClass="slds-input" value="{!edConfiguration.Static_Resource_Name__c}"/>
+                                    </apex:outputPanel>
+                                </apex:outputPanel> 
+                            </apex:outputPanel>
+                        </apex:outputPanel>
+                        <apex:outputPanel layout="block" styleClass="slds-grid slds-grid--pull-padded-medium">
+                            <apex:outputPanel layout="block" styleClass="slds-col slds-p-horizontal--medium slds-size--1-of-2">
+                                <apex:outputPanel layout="block" styleClass="slds-form-element">
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                        <apex:outputLabel title="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Show_Related_Files_Folders__c.inlineHelpText}" value="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Show_Related_Files_Folders__c.label}"></apex:outputLabel>
+                                    </apex:outputPanel>
+                                    <c:BT_LightningHelpText rendered="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Show_Related_Files_Folders__c.inlineHelpText != null}" helptext="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Show_Related_Files_Folders__c.inlineHelpText}"/>
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__control" >
+                                        <apex:outputPanel styleClass="slds-checkbox" rendered="{!CONTAINS(selectedConfigurationType,'__c')}">
+                                            <apex:inputCheckBox disabled="true" id="showRelatedFilesDisabledField"/>
+                                            <apex:outputlabel styleClass="slds-checkbox__label" for="showRelatedFilesDisabledField">
+                                                <apex:outputPanel styleClass="slds-checkbox--faux"></apex:outputPanel>
+                                                <apex:outputPanel styleClass="slds-form-element__label"></apex:outputPanel>
+                                            </apex:outputlabel>
+                                        </apex:outputPanel>
+                                        <apex:outputPanel styleClass="slds-checkbox"  rendered="{!!CONTAINS(selectedConfigurationType,'__c')}">
+                                            <apex:inputField value="{!edConfiguration.Show_Related_Files_Folders__c}" id="showRelatedFilesField"/>
+                                            <apex:outputlabel styleClass="slds-checkbox__label" for="showRelatedFilesField">
+                                                <apex:outputPanel styleClass="slds-checkbox--faux"></apex:outputPanel>
+                                                <apex:outputPanel styleClass="slds-form-element__label"></apex:outputPanel>
+                                            </apex:outputlabel>
+                                        </apex:outputPanel>
+                                    </apex:outputPanel>
+                                </apex:outputPanel> 
+                            </apex:outputPanel>
+                            <apex:outputPanel layout="block" styleClass="slds-col slds-p-horizontal--medium slds-size--1-of-2">
+                                <apex:outputPanel layout="block" styleClass="slds-form-element">
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                        <apex:outputLabel title="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Home_Folder__c.inlineHelpText}" value="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Home_Folder__c.label}"></apex:outputLabel>
+                                    </apex:outputPanel>
+                                    <c:BT_LightningHelpText rendered="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Home_Folder__c.inlineHelpText != null}" helptext="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Home_Folder__c.inlineHelpText}"/>
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                        <apex:inputField styleClass="slds-input" value="{!edConfiguration.Home_Folder__c}"/>
+                                    </apex:outputPanel>
+                                </apex:outputPanel> 
+                            </apex:outputPanel>
+                        </apex:outputPanel>
+                    </apex:outputPanel>
+                    <script>
+    				    Appurin.lightning.createLightningSection('{!$Component.pageConfigurationSection}');
+    				</script>
+                </apex:outputPanel>
+            </apex:outputPanel>
+            <apex:outputPanel layout="block">
+                <apex:outPutPanel layout="block"  id="searchConfigurationSection" styleClass="slds-section slds-is-open">
+                    <h3 class="slds-section__title">
+                        <apex:outputPanel id="searchConfigSectionHeader" layout="block" styleclass="slds-button slds-section__title-action">
+                            <c:BT_LightningSvg parentId="searchConfigSectionHeader"  parentType="div" styleClass="slds-section__title-action-icon slds-button__icon slds-button__icon--left" path="/assets/icons/utility-sprite/svg/symbols.svg#switch"/>
+                            <label class="avLightningFormElementLabel">{!$Label.buildertek__Search_Configuration}</label>
+                        </apex:outputPanel>
+                    </h3>
+                    <apex:outputPanel layout="block" styleClass="slds-section__content">
+                        <apex:outputPanel layout="block" styleClass="slds-grid slds-grid--pull-padded-medium">
+                            <apex:outputPanel layout="block" styleClass="slds-col slds-p-horizontal--medium slds-size--1-of-2">
+                                <apex:outputPanel layout="block" styleClass="slds-form-element">
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                        <apex:outputLabel title="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Enable_Search__c.inlineHelpText}" value="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Enable_Search__c.label}"></apex:outputLabel>
+                                    </apex:outputPanel>
+                                    <c:BT_LightningHelpText rendered="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Enable_Search__c.inlineHelpText != null}" helptext="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Enable_Search__c.inlineHelpText}"/>
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                        <apex:outputPanel styleClass="slds-checkbox">
+                                            <apex:inputField value="{!edConfiguration.Enable_Search__c}" id="enableSerchField"/>
+                                            <apex:outputlabel styleClass="slds-checkbox__label" for="enableSerchField">
+                                                <apex:outputPanel styleClass="slds-checkbox--faux"></apex:outputPanel>
+                                                <apex:outputPanel styleClass="slds-form-element__label"></apex:outputPanel>
+                                            </apex:outputlabel>
+                                        </apex:outputPanel>
+                                    </apex:outputPanel>
+                                </apex:outputPanel> 
+                            </apex:outputPanel> 
+                            <apex:outputPanel layout="block" styleClass="slds-col slds-p-horizontal--medium slds-size--1-of-2">
+                                <apex:outputPanel layout="block" styleClass="slds-form-element">
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                        <apex:outputLabel title="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Page_Size__c.inlineHelpText}" value="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Page_Size__c.label}"></apex:outputLabel>
+                                    </apex:outputPanel>
+                                    <c:BT_LightningHelpText rendered="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Page_Size__c.inlineHelpText != null}" helptext="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Page_Size__c.inlineHelpText}"/>
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                        <apex:inputField styleClass="slds-input" value="{!edConfiguration.Page_Size__c}"/>
+                                    </apex:outputPanel>
+                                </apex:outputPanel> 
+                            </apex:outputPanel>
+                        </apex:outputPanel>
+                        <apex:outputPanel layout="block" styleClass="slds-grid slds-grid--pull-padded-medium">
+                            <apex:outputPanel layout="block" styleClass="slds-col slds-p-horizontal--medium slds-size--1-of-2">
+                                <apex:outputPanel layout="block" styleClass="slds-form-element">
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                        <apex:outputLabel title="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Max_Search_Records__c.inlineHelpText}" value="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Max_Search_Records__c.label}"></apex:outputLabel>
+                                    </apex:outputPanel>
+                                    <c:BT_LightningHelpText rendered="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Max_Search_Records__c.inlineHelpText != null}" helptext="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Max_Search_Records__c.inlineHelpText}"/>
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                        <apex:inputField styleClass="slds-input" value="{!edConfiguration.Max_Search_Records__c}"/>
+                                    </apex:outputPanel>
+                                </apex:outputPanel> 
+                            </apex:outputPanel>
+                            <apex:outputPanel layout="block" styleClass="slds-col slds-p-horizontal--medium slds-size--1-of-2">
+                                <apex:outputPanel layout="block" styleClass="slds-form-element">
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                        <apex:outputLabel title="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Max_Sub_Folders_Files_Count__c.inlineHelpText}" value="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Max_Sub_Folders_Files_Count__c.label}"></apex:outputLabel>
+                                    </apex:outputPanel>
+                                    <c:BT_LightningHelpText rendered="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Max_Sub_Folders_Files_Count__c.inlineHelpText != null}" helptext="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.Max_Sub_Folders_Files_Count__c.inlineHelpText}"/>
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                        <apex:inputField styleClass="slds-input" value="{!edConfiguration.Max_Sub_Folders_Files_Count__c}"/>
+                                    </apex:outputPanel>
+                                </apex:outputPanel> 
+                            </apex:outputPanel>
+                        </apex:outputPanel>
+                    </apex:outputPanel>
+                    <script>
+    				    Appurin.lightning.createLightningSection('{!$Component.searchConfigurationSection}');
+    				</script>
+                </apex:outputPanel>
+            </apex:outputPanel>
+            <apex:outputPanel layout="block">
+                <apex:outPutPanel layout="block" id="fileDetailFieldsConfigurationSection" styleClass="slds-section slds-is-open">
+                    <h3 class="slds-section__title">
+                        <apex:outputPanel id="fileFieldsSectionHeader" layout="block" styleclass="slds-button slds-section__title-action">
+                            <c:BT_LightningSvg parentId="fileFieldsSectionHeader" parentType="div" styleClass="slds-section__title-action-icon slds-button__icon slds-button__icon--left" path="/assets/icons/utility-sprite/svg/symbols.svg#switch"/>
+                            <label class="avLightningFormElementLabel">{!$ObjectType.File_Explorer_Page_Configuration__c.Fields.File_Detail_Fields__c.label}</label>
+                            <c:BT_LightningHelpText rendered="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.File_Detail_Fields__c.inlineHelpText != null}" helptext="{!$ObjectType.File_Explorer_Page_Configuration__c.fields.File_Detail_Fields__c.inlineHelpText}"/>
+                        </apex:outputPanel>
+                    </h3>
+                    <apex:outPutPanel layout="block" styleClass="slds-section__content">
+                        <apex:outputPanel layout="block" styleClass="slds-grid">
+                            <apex:outputPanel layout="block" style="padding-left:0px;" styleClass="slds-p-horizontal--medium">
+                                <apex:outputPanel layout="block" styleClass="slds-form-element">
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                        <apex:outputLabel value="{!$Label.buildertek__Available} {!$Label.buildertek__Fields}"></apex:outputLabel>
+                                    </apex:outputPanel>
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                        <apex:selectList styleClass="selectListStyle slds-select" style="width:200px; height: 200px;" multiselect="true" size="7"
+                                                value="{!leftSelectedFields}">
+                                            <apex:selectOptions value="{!leftAvailableFields}"></apex:selectOptions>
+                                        </apex:selectList>
+                                    </apex:outputPanel>
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                            <apex:outputPanel layout="block" styleClass="slds-grid slds-grid--vertical-align-center">
+                                <apex:outputPanel layout="block" style="display: table;">
+                                    <apex:commandButton style="display: table-row; width:20px; height:20px;" image="{!URLFOR($Resource.SLDS, 'assets/icons/utility/right_60.png')}" action="{!movingFieldsToRight}" onComplete="easyToolTipForAll();" reRender="fileDetailFieldsConfigurationSection"/>
+                                    <br/>
+                                    <apex:commandButton style="display: table-row; width:20px; height:20px;" image="{!URLFOR($Resource.SLDS, 'assets/icons/utility/left_60.png')}" action="{!movingFieldsToLeft}" onComplete="easyToolTipForAll();" reRender="fileDetailFieldsConfigurationSection"/>
+                                </apex:outputPanel>
+                            </apex:outputPanel>   
+                            <apex:outputPanel layout="block" styleClass="slds-p-horizontal--medium">
+                                <apex:outputPanel layout="block" styleClass="slds-form-element">
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                        <apex:outputLabel value="{!$Label.buildertek__Selected} {!$Label.buildertek__Fields}"></apex:outputLabel>
+                                    </apex:outputPanel>
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                         <apex:selectList styleClass="selectListStyle slds-select" style="width:200px; height: 200px;" multiselect="true" size="7"
+                                                value="{!rightSelectedFields}">
+                                            <apex:selectOptions value="{!rightAvailableFields}"></apex:selectOptions>
+                                        </apex:selectList>
+                                    </apex:outputPanel>
+                                </apex:outputPanel> 
+                            </apex:outputPanel>
+                        </apex:outputPanel>
+                    </apex:outputPanel>
+                    <script>
+    				    Appurin.lightning.createLightningSection('{!$Component.fileDetailFieldsConfigurationSection}');
+    				</script>
+                </apex:outputPanel>
+            </apex:outputPanel>
+	    </apex:outPutPanel>  
+    </apex:form> 
+</apex:page>

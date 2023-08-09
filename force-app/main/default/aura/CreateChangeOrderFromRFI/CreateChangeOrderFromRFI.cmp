@@ -1,0 +1,109 @@
+<aura:component controller="CreateChangeOrderFromRFI" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global">
+    
+	<aura:attribute name="changeOrder" type="Change_Order__c" default="{ 'sobjectType':'Change_Order__c'
+                                                                              }" access="global"/>
+    <aura:attribute name="record" type="Object"/>
+    
+    <aura:attribute name="Object" type="string"/>
+    <aura:attribute name="Fields" type="string"/>
+    <aura:attribute name="objInfo" type="sObject" default="{sobjectType : 'sObject'}" />
+    <aura:attribute name="group" type="object" access="public" description="Group details"/>
+	<aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <aura:method name="refreshData" action="{!c.init}"></aura:method>
+    <aura:attribute name="groupFilter" type="string" />
+    <aura:attribute name="options" type="List"/>
+    <aura:attribute name="typeOptions" type="List"/>
+    <aura:attribute name="selectedValue" type="String"/>
+    <aura:attribute name="selectedAccountValue" type="String"/>
+    <aura:attribute name="selectedProjectValue" type="String"/>
+    <aura:attribute name="projectId" type="String"/>
+    <aura:attribute name="RFIName" type="String"/>
+   <ltng:require styles="{!$Resource.ModalPreviewContent}"/>
+    <div class="slds-modal__header" style="font-size:17px;margin-bottom:15px">
+        New Change Order
+    </div>
+    <div class="slds-modal__content slds-p-around_medium">
+        <div class="slds-grid slds-grid_pull-padded-medium" style="margin-bottom: 15px;">
+            <div class="slds-col slds-p-horizontal_medium slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--6-of-12">
+                <span>
+                    <label >Change Order Name</label>
+                    <ui:inputText value="{!v.RFIName}"/>
+                </span>
+            </div>
+            <div class="slds-col slds-p-horizontal_medium slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--6-of-12">
+                <span>
+                    <label >Period</label>
+                    <c:BT_LightningLookup objectAPIName="buildertek__Accounting_Period__c" IconName="standard:AccountingPeriod" selectedRecord="{!v.selectedValue}"/>
+                </span>
+            </div>
+        </div>
+        <div class="slds-grid slds-grid_pull-padded-medium" >
+            <div class="slds-col slds-p-horizontal_medium slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--6-of-12">
+                <span>
+                     <label >Status</label>
+                     <ui:inputSelect value="{! v.changeOrder.buildertek__Status__c }" aura:id="statusId">
+                        <aura:iteration var="option" items="{! v.options }">
+                            <option value="{! option.value }" >{! option.label }</option>
+                        </aura:iteration>
+                     </ui:inputSelect>
+                </span>
+            </div>
+            <div class="slds-col slds-p-horizontal_medium slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--6-of-12">
+                <span>
+                    <label>Customer Account</label>
+                    <c:BT_LightningLookup objectAPIName="Account" IconName="standard:Account" selectedRecord="{!v.selectedAccountValue}"/>
+                </span>
+            </div>
+        </div>
+        <div class="slds-grid slds-grid_pull-padded-medium" >
+            <div class="slds-col slds-p-horizontal_medium slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--6-of-12">
+                <span>
+                     <label >Tax Rate %</label>
+                    <ui:inputText  value="{!v.changeOrder.buildertek__Tax_Rate__c}" />
+                </span>
+            </div>
+            <div class="slds-col slds-p-horizontal_medium slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--6-of-12">
+                <span>
+                    <label>Schedule Impact in Days</label>
+                    <ui:inputText  value="{!v.changeOrder.buildertek__Schedule_Impact_in_Days__c}" />
+                </span>
+            </div>
+        </div>
+        <div class="slds-grid slds-grid_pull-padded-medium" style="margin-bottom: 15px;">
+            <div class="slds-col slds-p-horizontal_medium slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--6-of-12">
+                <span>
+                    <label >Date Created</label>
+    			    <ui:inputDate class="slds-input" value="{!v.changeOrder.buildertek__Date_Created__c}" displayDatePicker="true"/>
+                </span>
+            </div>
+            <div class="slds-col slds-p-horizontal_medium slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--6-of-12">
+                <span>
+                    <label >Date Approved</label>
+    			    <ui:inputDateTime class="slds-input" value="{!v.changeOrder.buildertek__Date_Approved__c}" displayDatePicker="true"/>
+                </span>
+            </div>
+        </div>
+        <div class="slds-grid slds-grid_pull-padded-medium" >
+            <div class="slds-col slds-p-horizontal_medium slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--6-of-12">
+                <span>
+                    <label>Type</label>
+                    <ui:inputSelect value="{! v.changeOrder.buildertek__Type__c }" aura:id="typeId">
+                        <aura:iteration var="option" items="{! v.options }">
+                            <option value="{! option.value }" >{! option.label }</option>
+                        </aura:iteration>
+                    </ui:inputSelect>
+                </span>
+            </div>
+            <div class="slds-col slds-p-horizontal_medium slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--6-of-12">
+                <span>
+                    <label>Details</label>
+                    <ui:inputText  value="{!v.changeOrder.buildertek__Details__c}" />
+                </span>
+            </div>
+        </div> 
+    </div>
+    <div class="slds-modal__footer" style="margin-top:15px">
+        <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}" >Cancel</button>
+        <button class="slds-button slds-button--brand" onclick="{!c.createChangeOrder}">Save</button>
+    </div>
+</aura:component>

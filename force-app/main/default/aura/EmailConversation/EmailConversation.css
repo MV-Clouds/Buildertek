@@ -1,0 +1,49 @@
+.THIS {
+    background-color:white;
+}
+.THIS .slds-icon-text-default {
+    fill: grey;
+    height: 20px;
+    cursor: pointer;
+}
+.THIS.sendemail {
+    background-color: rgba(0, 68, 135, 1.0);
+    border-color: rgba(0, 68, 135, 1.0);
+    color: rgb(255, 255, 255);
+    width: 393px;
+}
+.THIS li {
+    list-style-type: none;
+}
+.THIS.toggle {
+    display: none;
+}
+.THIS .slds-button_icon-border{
+    height: 22px;
+    width: 22px;
+}
+.THIS .slds-truncate {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: bold;
+    font-size: 14px;
+    text-decoration: none;
+}
+.THIS .slds-accordion__summary-action{
+    display: inline-flex;
+    flex-grow: 1;
+    align-items: center;
+    min-width: 0;
+    height: 30px;
+    background: rgb(243, 242, 242);
+}
+.THIS .custom-loading-text {
+    transform: rotate(-90deg);
+    position: absolute;
+    top: -0.5rem;
+    left: 1rem;
+    white-space: nowrap;
+    font-size: 20px;
+}

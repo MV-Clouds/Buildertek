@@ -1,0 +1,4 @@
+<design:component>
+	<design:attribute name="targetObject" label="Target Object" />
+    <design:attribute name="explorerConfig" label="Explorer Config" />
+</design:component>

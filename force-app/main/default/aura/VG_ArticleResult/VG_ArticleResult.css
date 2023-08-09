@@ -1,0 +1,8 @@
+.THIS {
+}
+@media screen and (max-width: 760px) {
+    .THIS .articleResult{
+        padding: 2px !important;
+        color:black !important;
+    }
+}

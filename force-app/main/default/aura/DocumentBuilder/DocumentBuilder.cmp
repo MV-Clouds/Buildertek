@@ -1,0 +1,16 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" access="global" >
+	<aura:attribute name="recordId" type="string" default=""/>
+	<aura:attribute name="objectAPI" type="string" default="" access="global"/>
+	<aura:attribute name="title" type="string" default="" access="global"/>
+	<aura:attribute name="foldername" type="string" default="" access="global"/>
+	<aura:attribute name="pdfFileName" type="string" default="" access="global"/>
+	<aura:attribute name="Style" type="string" default="" access="global"/>
+    <aura:attribute name="modalPromise" type="Aura.Action"/>
+    
+    <div style="{!v.Style}">
+    	<lightning:button variant="brand" label="{!v.title}" onclick="{! c.SendEmail}" />
+    </div>
+    
+    <lightning:overlayLibrary aura:id="overlayLib"/>
+    <lightning:notificationsLibrary aura:id="notifLib"/>
+</aura:component>

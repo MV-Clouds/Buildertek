@@ -1,0 +1,15 @@
+.THIS {
+}
+@media(max-width:700px){
+    .THIS .responsiveHide{
+        display : none !important;
+    }
+}
+.THIS .sidebar {
+    display: none;
+} 
+@media(min-width: 1024px)  {
+    .THIS .sidebar {
+         display: block;
+    }
+}

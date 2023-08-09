@@ -1,0 +1,211 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction"
+                controller="BOMLineSettingsController" access="global">
+    
+    <aura:attribute name="dualListboxTakeOffFieldsOptions" type="List" default="[]"/>
+    <aura:attribute name="dualListboxTakeOffFieldsOptionsSelected" type="string" />        
+    <aura:attribute name="TakeOffFieldsSelectedValues" type="list" default="[]"/>   
+    
+    <!-- product -->
+    <aura:attribute name="dualListboxProductFieldsOptions" type="List" default="[]"/>
+    <aura:attribute name="dualListboxProductFieldsOptionsSelected" type="string" />        
+    <aura:attribute name="ProductFieldsSelectedValues" type="list" default="[]"/>   
+    
+    <!-- BOM Line -->
+    <aura:attribute name="dualListboxBOMLineFieldsOptions" type="List" default="[]"/>
+    <aura:attribute name="dualListboxBOMLineFieldsOptionsSelected" type="string" />        
+    <aura:attribute name="BOMLineFieldsSelectedValues" type="list" default="[]"/>   
+    
+    
+    <!-- takeoff filter -->
+    <aura:attribute name="dualListboxTakeOffFilterFieldsOptions" type="List" default="[]"/>
+    <aura:attribute name="dualListboxTakeOffFilterFieldsOptionsSelected" type="string" />        
+    <aura:attribute name="TakeOffFilterFieldsSelectedValues" type="list" default="[]"/>   
+    
+    <!-- product filter -->
+    <aura:attribute name="dualListboxProductFilterFieldsOptions" type="List" default="[]"/>
+    <aura:attribute name="dualListboxProductFilterFieldsOptionsSelected" type="string" />        
+    <aura:attribute name="ProductFieldsFilterSelectedValues" type="list" default="[]"/>   
+    
+    <!-- BOM Line filter-->
+    <aura:attribute name="dualListboxBOMLineFilterFieldsOptions" type="List" default="[]"/>
+    <aura:attribute name="dualListboxBOMLineFilterFieldsOptionsSelected" type="string" />        
+    <aura:attribute name="BOMLineFilterFieldsSelectedValues" type="list" default="[]"/>   
+    
+    
+    <aura:attribute name="SettingsSpinner" type="Boolean" default="false" />
+    <aura:attribute name="isSettingsOpen" type="Boolean" default="false" />    
+    <aura:attribute name="isSettingsSaved" type="Boolean" default="false" />    
+    
+    <aura:handler name="init" value="{!this}" action="{!c.openSettingsModel}"/>
+    <aura:if isTrue="{!v.isSettingsSaved}">
+        <div class="slds-notify slds-notify_alert slds-theme_alert-texture" role="alert" style="padding-top:20px;padding-bottom:20px;">
+            <h2  style="font-size:15px;font-weight:600">Settings saved successfully!
+            </h2>                
+        </div>     
+    </aura:if>
+    
+    <div>
+        <aura:if isTrue="{!v.isSettingsOpen}">
+            <h3 class="slds-section__title" style=" background: #c1c1c1; padding: 0.3rem;">
+                <span class="slds-truncate" title="Field Section">Field Section</span>
+            </h3>
+            <!-- <div style="width:50%;display:inline-block;">
+                <lightning:tabset>                          
+                    <lightning:tab label="TakeOff Line Fields">
+                        
+                        <div style="width:75%; margin:0 auto;">
+                            
+                            <lightning:dualListbox name="dualListboxCaseFields"
+                                                   label= "Select TakeOff Line Fields"
+                                                   sourceLabel="Available"
+                                                   selectedLabel="Selected"
+                                                   fieldLevelHelp="Select your preferred TakeOff Line Fields"
+                                                   options="{!v.dualListboxTakeOffFieldsOptions}"
+                                                   value="{!v.TakeOffFieldsSelectedValues}"
+                                                   onchange="{! c.handleTakeOffFieldsChange }"/>
+                        </div>                                 
+                        
+                    </lightning:tab>                    
+                </lightning:tabset>                
+            </div>  --> 
+            <!--<div style="width:50%;display:inline-block;">
+                <lightning:tabset>                
+                    <lightning:tab label="Product Fields">
+                        
+                        <div style="width:75%; margin:0 auto;">
+                            
+                            <lightning:dualListbox name="dualListboxCaseFields"
+                                                   label= "Select Product Fields"
+                                                   sourceLabel="Available"
+                                                   selectedLabel="Selected"
+                                                   fieldLevelHelp="Select your preferred Product Fields"
+                                                   options="{!v.dualListboxProductFieldsOptions}"
+                                                   value="{!v.ProductFieldsSelectedValues}"
+                                                   onchange="{! c.handleProductFieldsChange }"/>
+                        </div>                                 
+                        
+                    </lightning:tab>
+                    
+                    
+                </lightning:tabset>  
+                
+            </div> --> 
+            <div style="width:100%;">
+                
+                <lightning:tabset>                          
+                    
+                    <lightning:tab label="BOM Line Fields">
+                        
+                        <div style="width:75%; margin:0 auto;">
+                            
+                            <lightning:dualListbox name="dualListboxCaseFields"
+                                                   label= "Select BOM Line Fields"
+                                                   sourceLabel="Available"
+                                                   selectedLabel="Selected"
+                                                   fieldLevelHelp="Select your preferred BOM Line Fields"
+                                                   options="{!v.dualListboxBOMLineFieldsOptions}"
+                                                   value="{!v.BOMLineFieldsSelectedValues}"
+                                                   onchange="{! c.handleBOMLineFieldsChange }"/>
+                        </div>                                 
+                        
+                    </lightning:tab>
+                    
+                    
+                </lightning:tabset>  
+                
+            </div>
+            
+            <br/>
+            <br/>
+            <h3 class="slds-section__title" style=" background: #c1c1c1;padding: 0.3rem;">
+                <span class="slds-truncate" title="Filter Section" >Filter Section</span>
+            </h3>
+             <!-- <div style="width:50%;display:inline-block;">
+                <lightning:tabset>                          
+                    <lightning:tab label="TakeOff Line Filters">
+                        
+                        <div style="width:75%; margin:0 auto;">
+                            
+                            <lightning:dualListbox name="dualListboxCaseFields"
+                                                   label= "Select TakeOff Line Filters"
+                                                   sourceLabel="Available"
+                                                   selectedLabel="Selected"
+                                                   options="{!v.dualListboxTakeOffFilterFieldsOptions}"
+                                                   value="{!v.TakeOffFilterFieldsSelectedValues}"
+                                                   onchange="{! c.handleTakeOffFilterFieldsChange }"/>
+                        </div>                                 
+                        
+                    </lightning:tab>                    
+                    
+                </lightning:tabset>  
+                
+            </div> 
+            <div style="width:50%;display:inline-block;">
+                
+                <lightning:tabset>                          
+                    <lightning:tab label="Product Filters">
+                        
+                        <div style="width:75%; margin:0 auto;">
+                            
+                            <lightning:dualListbox name="dualListboxCaseFields"
+                                                   label= "Select Product Filters"
+                                                   sourceLabel="Available"
+                                                   selectedLabel="Selected"
+                                                   options="{!v.dualListboxProductFilterFieldsOptions}"
+                                                   value="{!v.ProductFieldsFilterSelectedValues}"
+                                                   onchange="{! c.handleProductFilterFieldsChange }"/>
+                        </div>                                 
+                        
+                    </lightning:tab>                    
+                    
+                </lightning:tabset>  
+                
+            </div> -->
+            <div style="width:100%;">
+                
+                <!-- tabset start--> 
+                <lightning:tabset>                          
+                    
+                    <!-- tabset CASE FIELDS-->
+                    <lightning:tab label="BOM Line Filters">
+                        
+                        <div style="width:75%; margin:0 auto;">
+                            
+                            <lightning:dualListbox name="dualListboxCaseFields"
+                                                   label= "Select BOM Line Filters"
+                                                   sourceLabel="Available"
+                                                   selectedLabel="Selected"
+                                                   options="{!v.dualListboxBOMLineFilterFieldsOptions}"
+                                                   value="{!v.BOMLineFilterFieldsSelectedValues}"
+                                                   onchange="{! c.handleBOMLineFilterFieldsChange }"/>
+                        </div>                                 
+                        
+                    </lightning:tab>
+                    <!-- End tabset CASE FIELDS-->                                                                                 
+                    
+                    
+                </lightning:tabset>  
+                <!-- End tabset start-->                     
+                
+            </div>
+            
+            
+            <footer class="slds-modal__footer slds-align_absolute-center" style="background: #c1c1c1;">
+                <lightning:button variant="neutral" 
+                                  label="Cancel"
+                                  title="Cancel"
+                                  onclick="{! c.closeSettingsModel }"/>
+                
+                <lightning:button variant="brand" 
+                                  label="Save"
+                                  title="Save"
+                                  onclick="{!c.saveSettings}"/>
+            </footer>
+            
+            
+        </aura:if>
+        
+    </div>
+    
+    
+</aura:component>

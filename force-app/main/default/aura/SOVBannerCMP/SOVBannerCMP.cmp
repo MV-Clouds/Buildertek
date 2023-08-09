@@ -1,0 +1,36 @@
+<aura:component controller="SOVSheetController" 
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+<aura:attribute name="recordId" type="string" default='a4n1K0000011L2tQAE' />
+    <aura:attribute name="sovList" type="List" />
+     <aura:handler name="init" value="{!this}" action="{!c.doinit}" />
+    <div class="slds-grid slds-grid_vertical" style="width:60%;">
+         <aura:iteration items="{!v.sovList}" var="sov">
+            
+  <div class="slds-col">
+    <span>&nbsp;<img src="https://btservice360-dev-ed.my.salesforce.com/img/icon/t4v35/custom/custom5_120.png;" style="background:#9fdb66;width:30px;height:30px;margin-top:10px;"/><b> Schedule of Values</b>
+      
+      </span>
+      
+  </div>
+  <div class="slds-col">
+    <span style="margin-left:40px;position: absolute;top: 30px;">{!sov.Name}</span>
+  </div>
+   <br/>
+<div class="slds-grid" style="margin-left:40px;">
+<div class="slds-col">
+    <span><b>Project</b></span><br/>
+    <span>{!sov.buildertek__Project__r.Name}</span>
+  </div>
+    <div class="slds-col">
+    <span><b>Status</b></span><br/>
+    <span>{!sov.buildertek__Status__c}</span>
+  </div>
+    <div class="slds-col">
+    <span><b>Total Costs</b></span><br/>
+    <span>{!sov.buildertek__Total_Costs__c}</span>
+  </div>
+ </div>
+  </aura:iteration>  
+    
+  </div>    
+</aura:component>

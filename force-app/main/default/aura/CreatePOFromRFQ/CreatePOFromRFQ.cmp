@@ -1,0 +1,13 @@
+<aura:component controller="CreatePOFromRFQ" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global">
+    
+	<aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <lightning:notificationsLibrary aura:id="notifLib"/>
+	<div aura:id="progressbar">
+    	<center>
+	    	<img alt="Cenerating new receivable." src="{!$Resource.gearsloading}" style="height:150px !important;"/>
+	    	<br/>
+	    	Creating New PO <br/> Please don't leave this page until PO is created.
+    	</center> 
+    </div>
+    
+</aura:component>

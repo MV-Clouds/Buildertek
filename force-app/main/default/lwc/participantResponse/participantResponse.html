@@ -1,0 +1,15 @@
+<template>
+    
+    <h1>
+        Are you willing to attend the course!
+        <lightning-combobox 
+        name="ParticipantResponse" 
+        options={YesNoOptions}
+        onchange={addParticipantChangeHandler}
+        value={response}
+        style="width:100px">
+        </lightning-combobox>
+    </h1>
+
+
+</template>

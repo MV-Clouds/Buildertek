@@ -1,0 +1,36 @@
+<apex:page renderAs="pdf" language="te" action="{!methodone}" title="Testpage" Controller="DownloadPDF_CO" applyBodyTag="false" showHeader="false" sidebar="false" applyHtmlTag="false">
+	<html>
+        <head>
+             <title>Case</title>
+               <style type = "text/css" media="print">
+               @page:first {  margin: 0.2in;margin-top: {!HeaderFirstmargin};margin-bottom: {!FooterFirstmargin}; size: {!height};} 
+                @page { margin: 0.2in;margin-top: {!Headermargin};margin-bottom: {!Footermargin}; size: {!height}; }
+                 @page {
+                   @top-center {
+                   content: element(header);
+                   }
+                   @bottom-left {
+                   content: element(footer);
+                   }
+                   }
+                   div.header {
+                   display: block;
+                   padding: 3px;
+                   position: running(header);
+                   }
+                   div.footer {
+                   padding: 3px;
+                   position: running(footer);
+                   }
+                   
+                   td{
+                    height :auto !important;
+                   }
+                   
+            </style>
+        </head>  
+        <body>                 
+                  <apex:outputtext value="{!output}" escape="false" />  
+        </body>
+    </html>   
+</apex:page>

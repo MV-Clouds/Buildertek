@@ -1,0 +1,137 @@
+<aura:component controller="BT_EditExtendedCostController"
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader"
+                access="global">
+    
+    <!--Attributes-->
+    <!-- <aura:attribute type="object" name="objectList"/>   -->
+    <aura:attribute type="String" name="fieldAPIName" />
+    <!-- <aura:attribute type="List" name="fieldValues"  /> -->
+    <aura:attribute type="String" name="recordIdToRedirect" />
+    <aura:attribute name="parent" type="Aura.Component" />
+    <aura:attribute name="tableData" type="List" default="[]" />
+    <aura:attribute type="String" name="parentId" />
+    <aura:attribute type="String" name="totalCost" />
+    <aura:attribute type="String" name="totalProposalAmount" />
+    <aura:attribute type="String" name="installCost" />
+    <aura:attribute type="String" name="formulaNameToShow" />
+    <aura:attribute type="String" name="formulaTextToShow" />
+    <aura:attribute name="isLoading" type="Boolean" default="false" /> 
+    <aura:attribute type="object" name="bomRecord" />
+    <aura:attribute name="typeMap" type="Map"/>
+    <!-- <aura:attribute name="rateEditMode" type="boolean" default="false" />
+    <aura:attribute name="showErrorClass" type="boolean" default="false"/> -->
+    <!--Aura Handlers-->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="showSaveCancelBtn" type="boolean" default="false" />
+    
+    <aura:method name="showToast" action="{!c.showToastMessage}" access="public">
+        <aura:attribute name="toastMessage" type="String" default="" />
+    </aura:method>
+    
+    
+    <!-- 
+<div>
+    <aura:if isTrue="{!and(v.fieldValues != null,v.fieldValues.length > 0)}">
+        <aura:iteration items="{!v.fieldValues}" var="fieldValue" indexVar="apiindex">
+            <div class="slds-form_horizontal slds-form slds-grid slds-wrap">
+                <lightning:input class="slds-size_1-of-1" type="number" name="{!fieldValue.label}"
+                    label="{!fieldValue.label}" value="{!fieldValue.value}" formatter="currency" step="0.01" />
+            </div>
+        </aura:iteration>
+        <div class="slds-align_absolute-center slds-p-vertical_medium">
+            <lightning:button variant="brand" label="Save" title="Save" onclick="{!c.handleSave}" />
+            <lightning:button variant="neutral" label="Close" title="Close" onclick="{!c.handleClose}" />
+        </div>
+    </aura:if>
+</div> -->
+    
+    <div>
+        <aura:if isTrue="{!and(v.tableData != null,and(v.tableData != undefined,v.tableData.length > 0))}">
+
+                <div class="slds-scrollable slds-border_left slds-border_right slds-is-relative"
+                    style="max-height: calc(100vh - 270px);">
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                        <thead>
+                            <tr class="slds-text-title--caps">
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Id">Sl.No</div>
+                                </th>
+                                <aura:iteration start="0" end="1" items="{!v.tableData}" var="singleList" indexVar="rowIndex">
+                                    <aura:iteration start="2" items="{!singleList}" var="rowData" indexVar="dataIndex">
+                                        <!-- <aura:if isTrue="{!rowData.label != 'Id'}"> -->
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="{!rowData.label}">{!rowData.label}</div>
+                                        </th>
+                                        <!-- </aura:if> -->
+                                    </aura:iteration>
+                                </aura:iteration>
+                
+                            </tr>
+                        </thead>
+                
+                        <tbody>
+                            <aura:iteration items="{!v.tableData}" var="singleList" indexVar="rowIndex">
+                                <c:BT_TableInlineEditCmp singleList="{!singleList}" rowNumberNumber="{!rowIndex + 1}"
+                                    showSaveCancelBtn="{!v.showSaveCancelBtn}" fieldNameToOperate="{!v.fieldAPIName}"
+                                    proposalAmount="{!v.totalProposalAmount}" wholeTableData="{!v.tableData}" billOfMaterialId="{!v.parentId}"
+                                    parent="{!this}" installCostAmount="{!v.installCost}"/>
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+                </div>
+
+            
+            <aura:if isTrue="{!and(v.formulaNameToShow != null,v.formulaTextToShow != null)}">
+                <div class="slds-text-align_left" style="padding-bottom: 10px;
+                padding-top: 10px;
+                margin-right: auto;
+                max-width: max-content;
+                color: blue;">
+                    <p>
+                        <b>{!v.formulaNameToShow}<br/>{!v.formulaTextToShow}</b>
+                    </p>
+                </div>
+            </aura:if>
+            <div class="slds-text-align_center slds-p-top_medium slds-border_top">
+                <aura:if isTrue="{!v.showSaveCancelBtn}">
+                    <lightning:button class="slds-m-right_medium" variant="brand" label="Save" title="Save" onclick="{!c.handleSave}"/>
+                </aura:if>
+                <lightning:button variant="neutral" label="Close" title="Close" onclick="{!c.handleClose}" />
+            </div>
+            <aura:set attribute="else">
+                <aura:if isTrue="{!and(v.bomRecord != undefined,v.bomRecord != null)}">
+                    <!-- Called a method (OCIPChange) as a part of CAES-86 3rd issue -->
+                    <lightning:input type="checkbox" label="OCIP/CCIP Required" name="ocip_required" checked="{!v.bomRecord.buildertek__OCIP_CCIP_Required__c}" onchange="{!c.OCIPChange}" ></lightning:input>
+                    <aura:if isTrue="{!v.bomRecord.buildertek__OCIP_CCIP_Required__c}">
+                        <lightning:select aura:id="bomTypePicklist" value="{!v.bomRecord.buildertek__Type__c}" 
+                            name="bomTypePicklist" label="Type">
+                            <aura:iteration items="{!v.typeMap}" var="ind" indexVar="key">
+                                <option text="{!ind.value}" value="{!ind.key}" selected="{!ind.key==v.bomRecord.buildertek__Type__c}" />
+                            </aura:iteration>
+                        </lightning:select>
+                    </aura:if>
+                    <aura:set attribute="else">
+                        <div class="slds-align_absolute-center slds-p-vertical_medium">
+                            No Records Found
+                        </div>
+                    </aura:set>
+                    <div class="slds-text-align_center slds-p-top_medium slds-border_top">
+                        <aura:if isTrue="{!v.showSaveCancelBtn}">
+                            <lightning:button class="slds-m-right_medium" variant="brand" label="Save" title="Save" onclick="{!c.handleSave}"/>
+                        </aura:if>
+                        <lightning:button variant="neutral" label="Close" title="Close" onclick="{!c.handleClose}" />
+                    </div>
+                </aura:if>
+                <!-- <div class="slds-align_absolute-center slds-p-vertical_medium">
+                    No Records Found
+                </div> -->
+                <!-- <aura:if isTrue="{!v.isLoading}">
+                    <lightning:spinner alternativeText="Loading" variant="brand" size="large" />
+                </aura:if> -->
+            </aura:set>
+        </aura:if>
+        <aura:if isTrue="{!v.isLoading}">
+            <lightning:spinner alternativeText="Loading" variant="brand" size="large" />
+        </aura:if>
+    </div>
+</aura:component>

@@ -1,0 +1,15 @@
+<aura:component controller="ContinuationDetailsController"  implements="force:appHostable,flexipage:availableForAllPageTypes,lightning:isUrlAddressable,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable,forceCommunity:availableForAllPageTypes,forceCommunity:layout" access="global" >
+    <aura:attribute name="recordId" type="String" />
+	<aura:html tag="style">
+        .slds-modal__content {
+        display:none;
+        }   
+        .modal-container.slds-modal__container{
+        display:none;
+        }
+    </aura:html>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <lightning:workspaceAPI aura:id="workspace" />
+    <lightning:navigation aura:id="navService"/>
+    <aura:attribute name="commUserId" type="Contact" />
+</aura:component>

@@ -1,0 +1,223 @@
+@media (min-width: 768px) and (max-width: 979px) {
+   .THIS .tableheight {
+    height:180px;
+  } 
+}
+ @media (min-width: 980px) and (max-width: 1199px) {
+   .THIS .tableheight {
+    height:200px;
+}
+}
+
+ @media (min-width: 1200px) and (max-width: 1366px){
+	  .THIS .tableheight {
+        height:260px;   
+    }
+	}
+@media (min-width: 1367px) and (max-width: 1440px) {
+    .THIS .tableheight {
+        height:300px;   
+    }
+}
+@media (min-width: 1441px) and (max-width: 1680px) {
+	  .THIS .tableheight {
+        height:350px;   
+    }
+	}
+@media (min-width: 1681px) and (max-width: 1800px) {
+	  .THIS .tableheight {
+        height:400px;   
+    }
+	}
+.THIS .col {
+    background-color: #ffffff;
+    margin:20px;
+    height:200px; 
+    color:#000000;
+    border-radius:8px;
+}
+.THIS .col1{
+    background-color:#EEE;
+    
+}
+.THIS .bodyStyle{
+    font: normal 16px/1.5 'Roboto', sans-serif;
+  padding: 0px 0 20px 0;
+    margin:0 0 25px 0;
+    background-color:white;
+    border-radius:8px;
+}
+.THIS .chart-skills{
+     margin: 0 auto;
+  padding: 0;
+  list-style-type: none;
+}
+.THIS .chart-skills *::before {
+  box-sizing: border-box;
+}
+.THIS  .chart-skills::before {
+  box-sizing: border-box;
+}
+.THIS .chart-skills {
+  position: relative;
+  width: 200px;
+  height: 100px;
+  overflow: hidden;
+}
+.THIS .chart-skills::before {
+  content: '';
+    position:absolute;
+  width: inherit;
+  height: inherit;
+  border: 35px solid rgba(211, 211, 211, .3);
+  border-bottom: none;
+  border-top-left-radius: 175px;
+  border-top-right-radius: 175px;
+}
+
+.THIS .chart-skills::after {
+  content: attr(data-coverage);
+  position:absolute;
+  left: 50%;
+  bottom: 10px;
+  transform: translateX(-50%);
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: cadetblue;
+}
+
+.THIS .chart-skills li {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: inherit;
+  height: inherit;
+  border: 35px solid;
+  border-top: none;
+  border-bottom-left-radius: 175px;
+  border-bottom-right-radius: 175px;
+  transform-origin: 50% 0;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  animation-fill-mode: forwards;
+  animation-duration: .4s;
+  animation-timing-function: linear;
+}
+
+.THIS .chart-skills li:nth-child(1) {
+  z-index: 4;
+  border-color: #009EDB;
+  transform:rotate(0deg);
+}
+
+.THIS .chart-skills li:nth-child(2) {
+  z-index: 3;
+  border-color: #eeeeee;
+  animation-name: rotate-two;
+    transform:rotate(180deg);
+  animation-delay: .4s;
+}
+.THIS .chart-skills span {
+  position: absolute;
+  font-size: .65rem;
+  backface-visibility: hidden;
+  animation: fade-in .4s linear forwards;
+}
+
+.THIS .chart-skills li:nth-child(1) span {
+  transform: rotate(0deg);
+    margin: -40px 0 0 -35px;
+}
+
+.THIS .chart-skills li:nth-child(2) span {
+  transform: rotate(-180deg);
+}
+.THIS .indicator{
+    margin-top: 3px;
+    width:15px;
+    background:#eee;
+    height:15px;
+}
+/* half-dount chart css End*/
+/* bar chart css start*/
+.THIS .barChart{
+  margin: 0;
+  background-color: #eee;
+  display: flex;
+  justify-content: center;
+}
+.THIS .barChart *{
+     box-sizing: border-box;
+}
+.THIS .chart {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(100, 1fr);
+  grid-column-gap: 15px;
+  height: 60vh;
+  width: 70vw;
+  padding: 5px 10px;
+}
+.THIS .bar {
+    margin: 0;
+  	padding: 0;
+  	border-radius: 5px 5px 0 0;
+  	transition: all .6s ease;
+  	grid-row-end: 102;
+    cursor: pointer;
+    background-color: rgba(27, 82, 151, 1);
+    grid-row-start: 100;
+}
+.THIS .bar1 {
+    margin: 0;
+  	padding: 0;
+  	border-radius: 5px 5px 0 0;
+  	transition: all .6s ease;
+  	grid-row-end: 102;
+    cursor: pointer;
+    background-color: rgba(27, 82, 151, 1);
+    grid-row-start: 25;
+}
+.THIS .bar2 {
+    margin: 0;
+  	padding: 0;
+  	border-radius: 5px 5px 0 0;
+  	transition: all .6s ease;
+  	grid-row-end: 102;
+    cursor: pointer;
+    background-color: rgba(27, 82, 151, 1);
+    grid-row-start: 60;
+}
+.THIS .bar3 {
+    margin: 0;
+  	padding: 0;
+  	border-radius: 5px 5px 0 0;
+  	transition: all .6s ease;
+  	grid-row-end: 102;
+    cursor: pointer;
+    background-color: rgba(27, 82, 151, 1);
+    grid-row-start: 30;
+}
+.THIS .bar4 {
+    margin: 0;
+  	padding: 0;
+  	border-radius: 5px 5px 0 0;
+  	transition: all .6s ease;
+  	grid-row-end: 102;
+    cursor: pointer;
+    background-color: rgba(27, 82, 151, 1);
+    grid-row-start: 90;
+}
+.THIS .colStyle{
+    margin:5px 0px 0px 5px;
+}
+.THIS .childRow{
+    margin:5px 0px 0px 5px;
+        text-align: center;
+}
+.THIS .childRowData{
+    text-align: center;
+    FONT-WEIGHT: 500;
+    margin-left:5px;
+}
+/* bar chart css end*/

@@ -1,0 +1,62 @@
+<aura:component controller="CertificationTemplateController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+	<!-- Create attribute to store lookup value as a sObject--> 
+  <aura:attribute name="selectedLookUpRecord" type="sObject" default="{}"/>
+
+    
+ <!--Attributes-->
+    <aura:attribute name="showConfirmDialog" type="boolean" default="false"/>
+    <aura:attribute name="callUpdate" type="boolean" default="false"/>
+    <aura:attribute name="certificatename" type="string" default="false"/>
+    
+    <!--Component Start-->
+    <div class="slds-m-around_xx-large">         
+        <aura:if isTrue="{!v.showConfirmDialog}">
+            <!--Modal Box Start-->
+            <div role="dialog" class="slds-modal slds-fade-in-open " >
+                <div class="slds-modal__container"  style="width:100%;"> 
+                    <!--Modal Box Header Start-->
+                    <header class="slds-modal__header" >
+                        <h1 class="slds-text-heading--medium">Confirmation</h1>
+                    </header>
+                    <!--Modal Box Header End-->
+                     
+                    <!--Modal Box Content Start-->
+                    <div class="slds-modal__content slds-p-around--medium"  style="height:200px; margin-top:25px;"> 
+                        <br/>
+                        <br/>
+                        <br/>
+                        <center>Are you sure you want to update certification template with : <b>{!v.certificatename} ?</b></center>
+                    </div>
+                    <!--Modal Box Content End-->
+                     
+                    <!--Modal Box Button Start-->
+                    <footer class="slds-modal__footer"  style="height:80px;">
+                        <lightning:button name='No' label='No' onclick='{!c.handleConfirmDialogNo}'/>
+                        <lightning:button variant="brand" name='Yes' label='Yes' onclick='{!c.handleConfirmDialogYes}'/>
+                    </footer>
+                    <!--Modal Box Button End-->
+                </div>
+            </div>
+            
+        </aura:if>
+    </div>
+    
+     
+    <!--Component End-->    
+    
+    
+    
+    
+  <c:CertificationCustomLookup objectAPIName="account" IconName="standard:account" selectedRecord="{!v.selectedLookUpRecord}" label="Certification Template"/>
+    
+    <br/>
+    <br/>
+    
+    
+    
+   <lightning:button variant="brand"
+                          label="Update"
+                          title="Update"
+                          onclick="{!c.Update }"/>  
+    
+</aura:component>

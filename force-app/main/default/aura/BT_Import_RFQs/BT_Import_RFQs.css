@@ -1,0 +1,18 @@
+.THIS .next-prev_button {
+    float: left;
+}
+
+.THIS table,
+.THIS th,
+.THIS td {
+    padding: 5px !important;
+    border-collapse: collapse;
+}
+
+@media (min-width: 48em) {
+    .THIS .slds-modal__container {
+        margin: 0 auto;
+        max-width: 80rem !important;
+        width:80% !important;
+    }
+}

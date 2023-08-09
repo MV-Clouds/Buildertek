@@ -1,0 +1,35 @@
+<aura:component controller="VG_SearchService">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="articles" type="Object[]" access="PRIVATE" />
+    <div class="slds-p-top_medium slds-p-bottom-medium slds-p-left_medium slds-p-right_medium mobileViewArticle">
+        <h2 class="slds-truncate slds-text-heading--small slds-p-bottom--small" ><span style="font-weight: 700;">Trending Articles</span></h2>
+        
+        <ul class="slds-has-dividers_bottom" style="margin-top:-4%">
+            <aura:if isTrue="{!empty(v.articles)}">
+                There are no Trending articles.
+                <aura:set attribute="else">
+                    <aura:iteration items="{!v.articles}" var="article">
+                        <li class="slds-item slds-p-vertical--x-small">
+                            <div class="slds-tile">
+                                <div class="slds-grid">
+                                    <div class="slds-size--5-of-6 slds-truncate" style="font-family:Gotham-Book;font-size:14px;" title="{!article.title}">
+                                        <!--<a  style="font-weight: 600;
+                               color: #4a4a4a;" data-recId="{!article.knowledgeArticleId}" onclick="{!c.navigate}">{!article.title}</a><br/>-->
+                                        <!--<ui:outputURL target="_top" value="{! 'https://fullhouse-myview.cs25.force.com/s/article/'+article.knowledgeArticleId}" class="articlestle" label="{!article.title}" />-->  
+                                        <a target="_top" href="{! $Label.c.VG_Baseurl+'article/'+article.knowledgeArticleId}" class="articlestle"><aura:unescapedHtml value="{!article.title}"/></a>
+                                    </div>
+                                </div>
+                                <div class="slds-tile__detail slds-text-body_small">
+                                    <ul class="slds-list--horizontal slds-wrap slds-has-dividers_right">
+                                        <li class="slds-item"><lightning:formattedDateTime value="{!article.lastPublishedDate}" year="numeric" month="numeric" day="numeric"  hour="2-digit" minute="2-digit" /></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+                        
+                    </aura:iteration>
+                </aura:set>
+            </aura:if>
+        </ul>
+    </div>
+</aura:component>

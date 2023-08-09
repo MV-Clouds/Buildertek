@@ -1,0 +1,4 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes"
+    access="global" Controller="QuoteDAO">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+</aura:component>

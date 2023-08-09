@@ -1,0 +1,392 @@
+<aura:component controller="UploadBillHandler" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" access="global" >
+    <aura:attribute name="fileId" type="List" />	
+    <aura:attribute name="readResults" type="List" />
+    <aura:attribute name="pageResults" type="List" />
+    <aura:attribute name="currentStep" type="string"/>
+    <aura:attribute name="invoiceFields" type="List" />
+    <aura:attribute name="invoiceLineFields" type="List" />
+    <aura:attribute name="tableData" type="List" />
+    <aura:attribute name="fieldsData" type="List" />
+    <aura:attribute name="isNewMap" type="boolean" />
+    <aura:attribute name="isExistingMap" type="boolean" />
+    <aura:attribute name="existingTableData" type="List" />
+    <aura:attribute name="existingFieldsData" type="List" />
+    <aura:attribute name="showSubmit" type="boolean" />
+    <aura:attribute name="showSavePopup" type="boolean" />
+    <aura:attribute name="Spinner" type="boolean" />
+    <aura:attribute name="ShowTabs" type="boolean" />
+    <aura:attribute name="FieldMappingName" type="String" />
+    <aura:attribute name="fieldMappingsList" type="List" />
+    <aura:attribute name="selectedFieldMapping" type="String" />
+    <aura:attribute name="showJSON" type="Boolean" />
+    <aura:attribute name="jsonObject" type="Object" />
+    <aura:attribute name="jsonData" type="String" />
+    <aura:attribute name="BaseURL" type="string" />
+    <aura:attribute name="pdfHeight" type="String" />
+    <ltng:require styles="{!$Resource.ModalPreviewCSS}"/>
+    <ltng:require scripts="{!$Resource.RenderJSON}"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <div class="slds">
+        <div class="slds-page-header slds-page-header_record-home">
+            <div class="slds-page-header__row">
+                <div class="slds-page-header__col-title">
+                    <div class="slds-media">
+                        <div class="slds-media__figure">
+                            <span class="slds-icon_container">
+                            </span>
+                        </div>
+                        <div class="slds-media__body slds-align_absolute-center">
+                            <div class="slds-page-header__name">
+                                <div class="slds-page-header__name-title">
+                                    <h1>
+                                        <span class="slds-text-heading_small">
+                                            Field Mapping
+                                        </span>	
+                                    </h1>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <lightning:notificationsLibrary aura:id="notifLib"/>
+        <div class="slds-modal__content slds-p-around--large">
+            <aura:if isTrue="{!v.Spinner}">
+                <div aura:id="spinnerId" class="slds-spinner_container">
+                   <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                     <span class="slds-assistive-text">Loading</span>
+                     <div class="slds-spinner__dot-a"></div>
+                     <div class="slds-spinner__dot-b"></div>
+                       <div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+                   </div>
+                </div>
+             </aura:if>
+            <div class="contentbox">
+                <aura:if isTrue="{!v.currentStep == '1'}">
+                	<div class="slds-p-around_medium">
+                        <lightning:button variant="brand" 
+                                      label="Create New Field Mapping"
+                                      title="Create New Field Mapping"
+                                      onclick="{! c.showNewMap }"/>
+                        <lightning:button variant="brand" 
+                                      label="Use Existing Field Mapping"
+                                      title="Use Existing Field Mapping"
+                                          onclick="{! c.showExistingMap }"/>
+                        <lightning:button variant="brand" 
+                                      label="View JSON"
+                                      title="View JSON"
+                                          onclick="{! c.viewJSON }"/><br/><br/>
+                    </div>    
+                </aura:if>
+                <aura:if isTrue="{!v.currentStep == '3'}">
+                    <aura:if isTrue="{!v.showJSON}">
+                        <div class="slds-scrollable slds-p-around_medium" style="height:55vh;">
+                            <lightning:formattedText value="{!v.jsonData}" />
+                        </div>
+                    </aura:if>
+                </aura:if>
+                <aura:if isTrue="{!v.currentStep == '2'}">
+                    <div class="slds-p-around_medium" style="width: 100%;display:inline-flex; height:100%; ">
+                        <div style="width: 50%;">
+                            <aura:if isTrue="{!v.isNewMap}">
+                                <lightning:tabset>
+                                    <lightning:tab label="Invoice Mapping">
+                                        <aura:if isTrue="{!v.fieldsData.length > 0}">
+                                            <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal">
+                                                <tbody>
+                                                    <aura:iteration items="{!v.fieldsData}" var="item">
+                                                        <tr>
+                                                            <td>
+                                                                {!item.label}:
+                                                                <lightning:input type="text" value="{!item.value}" variant="label-hidden" onchange="{!c.changeFieldValue}"/>
+                                                            </td>
+                                                            <td>
+                                                                <lightning:select name="select1" label="" value="{!item.mappingField}">
+                                                                    <option value="">choose one</option>
+                                                                    <aura:iteration items="{!v.invoiceFields}" var="row">
+                                                                        <option value="{!row.fieldName}">{!row.fieldLabel}</option>
+                                                                    </aura:iteration>
+                                                                </lightning:select>
+                                                                <!--<ui:inputSelect class="slds-select" value="{!item.mappingField}">
+                                                                    <ui:inputSelectOption text="" label="Choose One" />
+                                                                    <aura:iteration items="{!v.invoiceFields}" var="row">
+                                                                        <ui:inputSelectOption text="{!row.fieldName}" label="{!row.fieldLabel}"/>
+                                                                    </aura:iteration>
+                                                                </ui:inputSelect> -->    
+                                                            </td>
+                                                        </tr>
+                                                    </aura:iteration>    
+                                                </tbody>
+                                            </table> 
+                                        </aura:if>
+                                    </lightning:tab>
+                                    <lightning:tab label="Invoice Lines Mapping">
+                                        <aura:if isTrue="{!v.tableData.length > 0}"> 
+                                            <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal">
+                                                <tbody>
+                                                    <aura:iteration items="{!v.tableData}" var="row">
+                                                        <tr>
+                                                            <aura:if isTrue="{!and(row.label != '', row.label != null)}">
+                                                                <td>
+                                                                    {!row.label}
+                                                                </td>
+                                                                <td>
+                                                                    <!--<lightning:select name="select1" label="" value="{!row.mappingField}">
+                                                                        <option value="">choose one</option>
+                                                                        <aura:iteration items="{!v.invoiceLineFields}" var="item">
+                                                                            <option value="{!item.fieldName}">{!item.fieldLabel}</option>
+                                                                        </aura:iteration>
+                                                                    </lightning:select>-->
+                                                                    <ui:inputSelect class="slds-select" value="{!row.mappingField}">
+                                                                        <ui:inputSelectOption text="" label="Choose One" />
+                                                                        <aura:iteration items="{!v.invoiceLineFields}" var="item">
+                                                                            <ui:inputSelectOption text="{!item.fieldName}" label="{!item.fieldLabel}"/>
+                                                                        </aura:iteration>
+                                                                    </ui:inputSelect>   
+                                                                </td>
+                                                            </aura:if>
+                                                        </tr>
+                                                    </aura:iteration>
+                                                </tbody>
+                                            </table>
+                                        </aura:if>
+                                    </lightning:tab>
+                                </lightning:tabset>
+                            </aura:if>
+                            <aura:if isTrue="{!v.isExistingMap}">
+                                <aura:if isTrue="{!v.fieldMappingsList.length == 1}">
+                                    <lightning:tabset>
+                                        <lightning:tab label="Invoice Mapping">
+                                            <aura:if isTrue="{!v.existingFieldsData.length > 0}">
+                                                <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal">
+                                                    <tbody>
+                                                        <aura:iteration items="{!v.existingFieldsData}" var="item">
+                                                            <tr>
+                                                                <aura:if isTrue="{!item.buildertek__Mapping_Field__c == ''}">
+                                                                    <td width="5%">
+                                                                        <img src="{!$Resource.Exclamation_Symbol}" title="" style="height: 35px;width: 15px;"/>
+                                                                    </td>
+                                                                    <aura:set attribute="else">
+                                                                        <td width="5%">
+                                                                            
+                                                                        </td>
+                                                                    </aura:set>
+                                                                </aura:if>
+                                                                <td>
+                                                                    {!item.buildertek__Field_Name__c}:
+                                                                    <lightning:input type="text" value="{!item.buildertek__Field_Value__c}" variant="label-hidden"/>
+                                                                </td>
+                                                                <td>
+                                                                   <lightning:select name="select1" label="" value="{!item.buildertek__Mapping_Field__c}">
+                                                                        <option value="">choose one</option>
+                                                                        <aura:iteration items="{!v.invoiceFields}" var="row">
+                                                                            <option value="{!row.fieldName}">{!row.fieldLabel}</option>
+                                                                        </aura:iteration>
+                                                                    </lightning:select> 
+                                                                    <!--<ui:inputSelect class="slds-select" value="{!item.buildertek__Mapping_Field__c}">
+                                                                        <ui:inputSelectOption text="" label="Choose One" />
+                                                                        <aura:iteration items="{!v.invoiceFields}" var="row">
+                                                                            <ui:inputSelectOption text="{!row.fieldName}" label="{!row.fieldLabel}" value="{!row.fieldName == item.buildertek__Mapping_Field__c ? 'true' : 'false'}"/>
+                                                                        </aura:iteration>
+                                                                    </ui:inputSelect> -->    
+                                                                </td>
+                                                            </tr>
+                                                        </aura:iteration>    
+                                                    </tbody>
+                                                </table> 
+                                            </aura:if> 
+                                        </lightning:tab>
+                                        <lightning:tab label="Invoice Lines Mapping">
+                                        	<aura:if isTrue="{!v.existingTableData.length > 0}">
+                                                <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal">
+                                                    <tbody>
+                                                        <aura:iteration items="{!v.existingTableData}" var="item">
+                                                            <tr>
+                                                                <aura:if isTrue="{!item.buildertek__Mapping_Field__c == ''}">
+                                                                    <td width="5%">
+                                                                        <img src="{!$Resource.Exclamation_Symbol}" title="" style="width: 15px;height: 30px"/>
+                                                                    </td>
+                                                                    <aura:set attribute="else">
+                                                                        <td width="5%">
+                                                                            
+                                                                        </td>
+                                                                    </aura:set>
+                                                                </aura:if>
+                                                                
+                                                                <td>
+                                                                    {!item.buildertek__Field_Name__c}
+                                                                </td>
+                                                                <td>
+                                                                    <!--<lightning:select name="select1" label="" value="{!item.buildertek__Mapping_Field__c}">
+                                                                        <option value="">choose one</option>
+                                                                        <aura:iteration items="{!v.invoiceLineFields}" var="row">
+                                                                            <option value="{!row.fieldName}">{!row.fieldLabel}</option>
+                                                                        </aura:iteration>
+                                                                    </lightning:select>-->
+                                                                    <ui:inputSelect class="slds-select" value="{!item.buildertek__Mapping_Field__c}">
+                                                                        <ui:inputSelectOption text="" label="Choose One" />
+                                                                        <aura:iteration items="{!v.invoiceLineFields}" var="row">
+                                                                            <ui:inputSelectOption text="{!row.fieldName}" label="{!row.fieldLabel}" value="{!row.fieldName == item.buildertek__Mapping_Field__c ? 'true' : 'false'}"/>
+                                                                        </aura:iteration>
+                                                                    </ui:inputSelect>   
+                                                                </td>
+                                                            </tr>
+                                                        </aura:iteration>    
+                                                    </tbody>
+                                                </table> 
+                                            </aura:if>     
+                                        </lightning:tab>
+                                    </lightning:tabset>
+                                </aura:if>
+                                <aura:if isTrue="{!v.fieldMappingsList.length > 1}">
+                                    <ui:inputSelect class="slds-select" value="{!v.selectedFieldMapping}" change="{!c.onSelectChange}">
+                                        <ui:inputSelectOption text="" label="choose one"/> 
+                                        <aura:iteration items="{!v.fieldMappingsList}" var="map">
+                                            <ui:inputSelectOption text="{!map.Id}" label="{!map.Name}"/>    
+                                        </aura:iteration>
+                                    </ui:inputSelect>
+                                    <aura:if isTrue="{!v.ShowTabs}">
+                                        <lightning:tabset>
+                                        	<lightning:tab label="Invoice Mapping">
+                                                <aura:if isTrue="{!v.existingFieldsData.length > 0}">
+                                                    <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal">
+                                                        <tbody>
+                                                            <aura:iteration items="{!v.existingFieldsData}" var="item">
+                                                                <tr>
+                                                                    <aura:if isTrue="{!item.buildertek__Mapping_Field__c == ''}">
+                                                                        <td width="5%">
+                                                                            <img src="{!$Resource.Exclamation_Symbol}" title="" style="height: 35px;width: 15px;"/>
+                                                                        </td>
+                                                                        <aura:set attribute="else">
+                                                                            <td width="5%">
+                                                                                
+                                                                            </td>
+                                                                        </aura:set>
+                                                                    </aura:if>
+                                                                    <td>
+                                                                        {!item.buildertek__Field_Name__c}: 
+                                                                        <lightning:input type="text" value="{!item.buildertek__Field_Value__c}" variant="label-hidden"/>
+                                                                    </td>
+                                                                    <td>
+                                                                        <lightning:select name="select1" label="" value="{!item.buildertek__Mapping_Field__c}">
+                                                                            <option value="">choose one</option>
+                                                                            <aura:iteration items="{!v.invoiceFields}" var="row">
+                                                                                <option value="{!row.fieldName}">{!row.fieldLabel}</option>
+                                                                            </aura:iteration>
+                                                                        </lightning:select>
+                                                                        <!--<ui:inputSelect class="slds-select" value="{!item.buildertek__Mapping_Field__c}">
+                                                                            <ui:inputSelectOption text="" label="Choose One" />
+                                                                            <aura:iteration items="{!v.invoiceFields}" var="row">
+                                                                                <ui:inputSelectOption text="{!row.fieldName}" label="{!row.fieldLabel}" value="{!row.fieldName == item.buildertek__Mapping_Field__c ? 'true' : 'false'}"/>
+                                                                            </aura:iteration>
+                                                                        </ui:inputSelect> -->    
+                                                                    </td>
+                                                                </tr>
+                                                            </aura:iteration>    
+                                                        </tbody>
+                                                    </table> 
+                                                </aura:if>  
+                                            </lightning:tab>
+                                            <lightning:tab label="Invoice Lines Mapping">
+												<aura:if isTrue="{!v.existingTableData.length > 0}">
+                                                    <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal">
+                                                        <tbody>
+                                                            <aura:iteration items="{!v.existingTableData}" var="item">
+                                                                <tr>
+                                                                    <aura:if isTrue="{!item.buildertek__Mapping_Field__c == ''}">
+                                                                        <td width="5%">
+                                                                            <img src="{!$Resource.Exclamation_Symbol}" title="" style="height: 30px;width: 15px;"/>
+                                                                        </td>
+                                                                        <aura:set attribute="else">
+                                                                            <td width="5%">
+                                                                                
+                                                                            </td>
+                                                                        </aura:set>
+                                                                    </aura:if>
+                                                                    <td>
+                                                                         {!item.buildertek__Field_Name__c}
+                                                                    </td>
+                                                                    <td>
+                                                                        <!--<lightning:select name="select1" label="" value="{!item.buildertek__Mapping_Field__c}">
+                                                                            <option value="">choose one</option>
+                                                                            <aura:iteration items="{!v.invoiceLineFields}" var="row">
+                                                                                <option value="{!row.fieldName}">{!row.fieldLabel}</option>
+                                                                            </aura:iteration>
+                                                                        </lightning:select>-->
+                                                                        <ui:inputSelect class="slds-select" value="{!item.buildertek__Mapping_Field__c}">
+                                                                            <ui:inputSelectOption text="" label="Choose One" />
+                                                                            <aura:iteration items="{!v.invoiceLineFields}" var="row">
+                                                                                <ui:inputSelectOption text="{!row.fieldName}" label="{!row.fieldLabel}" value="{!row.fieldName == item.buildertek__Mapping_Field__c ? 'true' : 'false'}"/>
+                                                                            </aura:iteration>
+                                                                        </ui:inputSelect>   
+                                                                    </td>
+                                                                </tr>
+                                                            </aura:iteration>    
+                                                        </tbody>
+                                                    </table> 
+                                                </aura:if>                                                
+                                            </lightning:tab>
+                                        </lightning:tabset>
+                                    </aura:if>
+                                </aura:if>
+                            </aura:if>
+                        </div>
+                        <div class="slds-p-around_small" style="width: 50%;">
+                            <div class="slds-scrollable pdfContainer" style="height:100vh;width:100%">
+                                <c:pdfViewer fileId="{!v.fileId[0]}"/>
+                            </div>
+                        </div> 
+                    </div>
+                </aura:if>
+                <aura:if isTrue="{!v.showSavePopup}">
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                        <div class="slds-modal__container">
+                            <header class="slds-modal__header">
+                                <lightning:buttonIcon iconName="utility:close"
+                                                      onclick="{! c.closeSavePopup }"
+                                                      alternativeText="close"
+                                                      variant="bare-inverse"
+                                                      class="slds-modal__close"/>
+                                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Save Field Mapping</h2>
+                            </header>
+                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                                <lightning:input type="text" value="{!v.FieldMappingName}" label="Field Mapping Name" required="true"/>    
+                            </div>
+                            <footer class="slds-modal__footer">
+                                <lightning:button variant="neutral" 
+                                                  label="Cancel"
+                                                  title="Cancel"
+                                                  onclick="{! c.closeSavePopup }"/>
+                                <lightning:button variant="brand" 
+                                                  label="Save"
+                                                  title="Save"
+                                                  onclick="{! c.saveMapping }"/>
+                            </footer>
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+                </aura:if>
+                <div class="slds-p-around_small slds-align_absolute-center">
+                	<lightning:button disabled="{!v.currentStep == '1' ? 'disabled' : '' }"
+                                      variant="neutral" 
+                                      label="Back"
+                                      title="Back"
+                                      onclick="{! c.moveBack }"/>
+                    <aura:if isTrue="{!v.currentStep == '2'}">
+                        <lightning:button variant="brand" 
+                                          label="Save Mapping"
+                                          title="Save Mapping"
+                                          onclick="{! c.finish }"/>
+                        <lightning:button variant="brand" 
+                                          label="Submit"
+                                          title="Submit"
+                                          onclick="{! c.submit }"/>
+                    </aura:if>     
+                </div>
+            </div>
+        </div>
+    </div>
+</aura:component>

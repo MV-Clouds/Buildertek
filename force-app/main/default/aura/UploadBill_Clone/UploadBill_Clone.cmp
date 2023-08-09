@@ -1,0 +1,41 @@
+<aura:component controller="UploadBillHandler" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >  
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>  
+    <aura:attribute name="files" type="ContentDocument[]"/>  
+    <aura:attribute name="recordId" type="string" />  
+    <aura:attribute name="accept" type="List" default="['.jpg', '.jpeg','.PNG','.pdf','.csv','.xlsx']"/>  
+    <aura:attribute name="multiple" type="Boolean" default="true"/>      
+    <aura:attribute name="Spinner" type="boolean" default="false"/>
+    <aura:attribute name="documentIds" type="list"/>  
+    <aura:attribute name="currentStep" type="string" default="1"/>
+    <ltng:require styles="{!$Resource.ModalPreviewCSS}"/>
+    <div class="slds">  
+        <lightning:notificationsLibrary aura:id="notifLib"/>
+        <div class="slds-modal__content slds-p-around--large">
+            <aura:if isTrue="{!v.Spinner}">
+                <div aura:id="spinnerId" class="slds-spinner_container">
+                   <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                     <span class="slds-assistive-text">Loading</span>
+                     <div class="slds-spinner__dot-a"></div>
+                     <div class="slds-spinner__dot-b"></div>
+                       <div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+                   </div>
+                </div>
+             </aura:if>
+            <div class="contentbox">
+                <aura:if isTrue="{!v.currentStep == '1'}">
+                    <div class="slds-grid">  
+                        <div style="width:100%">  
+                            <center>
+                                <lightning:fileUpload label="" multiple="false"   
+                                                      recordId="{!v.recordId}" 
+                                                      onuploadfinished="{!c.UploadFinished}" />  
+                            </center>
+                        </div>  
+                    </div><br/> 
+                </aura:if>
+          	</div>
+    	</div>
+    </div>  
+ </aura:component>

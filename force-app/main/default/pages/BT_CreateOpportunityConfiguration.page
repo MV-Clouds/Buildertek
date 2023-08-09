@@ -1,0 +1,13 @@
+<apex:page controller="BT_OpportunityConfiguration" sidebar="false" lightningStylesheets="true">
+    <apex:slds />
+    <apex:form >
+        <apex:pageBlock mode="maindetail">
+            <apex:pageMessages />
+            <apex:pageblocksection >
+                <apex:inputcheckbox value="{!AssigntoExistingProjectonClosedWon}" label="Assign to Existing Project on Closed Won?">
+                </apex:inputcheckbox>
+                <apex:commandButton value="Save" id="onOpportunityOverage" styleClass="slds-button slds-button_brand" action="{!onOpportunityOverage}"></apex:commandButton>
+            </apex:pageblocksection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

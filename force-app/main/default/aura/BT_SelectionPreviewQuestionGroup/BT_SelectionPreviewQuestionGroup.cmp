@@ -1,0 +1,71 @@
+<aura:component controller="BT_QuestionnaireBuilder">
+    <aura:attribute name="st" type="object" description="Selection type details" access="public" />
+    <aura:attribute name="typeHeaderFields" type="List" description="List of all catagorys" />
+    <aura:attribute name="optionHeaderFields" type="List" description="List of all catagorys" />
+    <aura:attribute name="overlayLib" type="String" description="Used to show force data service error" />
+    <aura:attribute name="requiredReload" type="Boolean" default="false" />
+    <aura:attribute name="selectionCatagory" type="object" />
+    <aura:attribute name="errorMessage" type="String" default="" />
+    <aura:attribute name="projectName" type="string" />
+    <aura:attribute name="selectionId" type="string" />
+    <aura:attribute name="baseURLs" type="string" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler name="change" value="{!v.requiredReload}" action="{!c.onChangerequiredReload}" />
+    <aura:handler name="componentEventFired" event="c:errorMessageEvent" action="{!c.handleErrorMessage}" />
+    <div id="{!'accordion'+v.st.selectionType.Id}" class="slds-accordion__section slds-is-open ">
+        <div style="background: rgb(243, 242, 242);padding-left: 5px;margin-top: 10px;">
+            <h3 class="av-nodrag slds-text-heading_small slds-accordion__summary-heading" style="padding: 5px;">
+                <button style="cursor: default;" aria-expanded="true" class="slds-button slds-accordion__summary-action"
+                    data-selected-id="{!v.st.selectionType.Id}" onclick="{!c.twistAccordion}">
+                    <div onclick="{!c.twistAccordion}" data-selected-id="{!v.st.selectionType.Id}">
+                        <lightning:icon iconName="standard:entitlement" alternativeText="entitlement" size="small" />
+                    </div>
+                    <span class="slds-truncate" style="font-size: 1rem;color:#000;"
+                        title="{!v.st.selectionType.buildertek__Title__c}"><b>&nbsp;{!v.st.selectionType.buildertek__Title__c}</b></span>
+                </button>
+                <button type="button" class="slds-button slds-button_brand" data-selection-id="{!v.st.selectionType.Id}"
+                    onclick="{!c.printRecords}" style="float:right;">Print</button>
+                <aura:if isTrue="{!!v.st.selectionType.buildertek__Locked__c}">
+                    <button type="button" class="slds-button slds-button_brand" onclick="{!c.submitRecordModal}"
+                        style="float:right;">Submit</button>
+                    <aura:set attribute="else">
+                        <lightning:icon iconName="utility:lock" alternativeText="locked" size="small" />
+                    </aura:set>
+                </aura:if>
+            </h3>
+        </div>
+        <div class="slds-accordion__content highlight">
+            <div class="slds-box" style="border-radius: 0 !important;">
+                <div class="slds-grid">
+                    <div class="slds-col slds-has-flexi-truncate">
+                        <lightning:layout multipleRows="true">
+                            <aura:iteration items="{!v.typeHeaderFields}" var="tHeader">
+                                <lightning:layoutItem flexibility="auto" size="12" smallDeviceSize="6"
+                                    mediumDeviceSize="5" largeDeviceSize="6" padding="around-small" class="">
+                                    <c:BT_OutPutField record="{!v.st.selectionType}" field="{!tHeader.fieldPath}"
+                                        type="{!tHeader.dataType}" label="{!tHeader.fieldlabel}" />
+                                </lightning:layoutItem>
+                            </aura:iteration>
+                        </lightning:layout>
+                    </div>
+                </div>
+                <div aria-hidden="false" style="cursor: default;">
+                    <div style="padding-right:10px;">
+                        <c:BT_QuestionPreview projectName="{!v.projectName}" selectionId="{!v.selectionId}"
+                            requiredReload="{!v.requiredReload}" questions="{!v.st.selectionOptions}"
+                            questionGroupId="{!v.st.selectionType.Id}" autoload="false"
+                            isLocked="{!v.st.selectionType.buildertek__Locked__c}"
+                            isOptionSaved="{!v.st.selectionType.buildertek__Is_Saved_Items__c}"
+                            isChangeOrder="{!v.selectionCatagory.buildertek__Create_Change_Order_on_Overage__c}"
+                            readOnly="{!v.st.selectionType.buildertek__Tested__c}" isResponse="true" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <lightning:notificationsLibrary aura:id="notifLib" />
+
+    <lightning:overlayLibrary aura:id="overlayLib" />
+    <lightning:navigation aura:id="navService" />
+</aura:component>

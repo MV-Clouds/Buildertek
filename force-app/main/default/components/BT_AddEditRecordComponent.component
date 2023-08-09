@@ -1,0 +1,283 @@
+<apex:component controller="BT_AddEditRecordComponentController" allowDML="true">
+
+	{!initialize}
+
+	<apex:attribute name="objectAPIName" type="String" assignTo="{!objectAPI}" description="This Attribute will specify that for which sObject we need to run this component."
+	/>
+	<apex:attribute name="fieldsetName" type="String" assignTo="{!fieldSet}" description="This attribute will specify the field set name and it will used to show that set of fields of that field set in UI."
+	/>
+	<apex:attribute name="recordId" type="Id" assignTo="{!existingRecordId}" description="This attribute will specify which record we need to open in edit mode. If the record id is not specify then system will create new record."
+	/>
+	<apex:attribute name="recordType" type="String" assignTo="{!recordTypeName}" description="This Attribute will specify that for which sObject we need to run this component."
+	/>
+	<apex:attribute name="saveCallBack" type="Object" description="This is the save call back function" />
+	<apex:attribute name="cancelCallBack" type="Object" description="This is the cancel call back function" />
+	<apex:attribute name="headerStyle" type="String" description="This is the header style" />
+	<apex:attribute name="whereConditionForAutoLookup" type="String" description="This is the header style" />
+	<apex:attribute name="defaultSobject" type="sObject" assignTo="{!defaultRecord}" description="This is the header style" />
+	<style>
+		.list-column .avFields {
+			float: left;
+			width: 50%;
+			padding: 5px;
+			padding-bottom: 20px;
+		}
+
+		.list-column .lookupInput a {
+			display: none !important;
+		}
+
+		.list-column {
+			padding: 15px;
+		}
+
+		.tooltip {
+			position: relative;
+			float: right;
+			height: 0;
+		}
+
+		.tooltip .slds-popover {
+			position: absolute;
+			display: none;
+			left: 35px;
+			top: 0;
+			transform: translateY(-50%);
+			margin-top: 10px;
+		}
+
+		.tooltip:hover .slds-popover {
+			display: block;
+		}
+
+		.btauto .slds-select {
+			background-color: unset !important;
+			color: unset !important;
+			border: unset !important;
+			border-radius: unset !important;
+			width: unset !important;
+			transition: unset !important;
+
+		}
+	</style>
+	<script>
+
+		console.log('Fields::', '{!Fields}');
+		// CKEditor configuration
+		j$(document).ready(function () {
+			CKEDITOR.config.forcePasteAsPlainText = true;
+			CKEDITOR.config.height = 150;
+			CKEDITOR.config.toolbarCanCollapse = true;
+			CKEDITOR.config.enterMode = CKEDITOR.ENTER_BR;
+			CKEDITOR.config.autoParagraph = false;
+		});
+
+		// Reload CKEditor
+		function reloadCKEditor(instanceName) {
+			CKEDITOR.replace(instanceName);
+		}
+
+		// Assign rich textarea value to its original
+		// textarea(From CKEditor Rich TextArea).
+		function assignRichTextToValue() {
+			debugger;
+			for (name in CKEDITOR.instances) {
+				var richTextValue = CKEDITOR.instances[name].getData();
+				richTextValue = richTextValue.replace(/<\!--[\s\S]*?-->/g, '');
+				richTextValue = richTextValue.replace(/\\/g, '\\\\');
+				var richTextAreaElement = document.getElementById(name);
+				if (richTextAreaElement != null) {
+					richTextAreaElement.value = richTextValue;
+				}
+			}
+		}
+
+		function getEndDate(fieldAPI) {
+            //alert(fieldAPI);
+            if (fieldAPI == 'buildertek__Start__c' ) { //|| fieldAPI == 'buildertek__Duration__c'
+				//alert(fieldAPI);
+				getEndData();
+			}
+		}
+
+    function getEndFromDuration(fieldAPI,value){
+        	if(fieldAPI == 'buildertek__Duration__c') {
+            	getEndData();
+            }
+        }
+	</script>
+	<html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<apex:actionfunction name="saveRecord" action="{!saveRecord}" oncomplete="if({!saveSuccess}){!saveCallBack}('{!saveRecordJSON}','{!recordId}');"
+	 rerender="recordDetail" />
+
+	<apex:actionfunction name="getEndData" action="{!getEndData}" status="splashStatus" rerender="recordDetail" />
+
+	<apex:actionStatus id="splashStatus" onstart="startSplash();" onstop="endSplash();" />
+
+	<!-- Processing Div 
+		 <div class="slds-scope slds">
+		       <div id="splashDiv" class="apInitiallyDivDisplayNone" style="z-index:9999;">
+		           <div class="apdisableBackPage" style="z-index:9999;"></div>
+		           <div class="apsplashDiv">
+		               <center>
+		                   <div class="slds-spinner--medium">
+		                       <img src="{!URLFOR($Asset.SLDS,'/assets/images/spinners/slds_spinner_brand.gif')}" alt="Loading..." />
+		                   </div>
+		               </center>
+		           </div>
+		       </div>
+		   </div>
+		-->
+	<!--  Component Header -->
+	<div class="slds-page-header" style="display:{!headerStyle}">
+		<div class="slds-grid">
+			<div class="slds-col">
+				<div class="slds-media">
+					<div class="slds-media__figure">
+						<span class="slds-icon_container slds-icon-action-edit">
+							<svg class="slds-icon slds-icon_small" aria-hidden="true">
+								<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Asset.SLDS,'/assets/icons/action-sprite/svg/symbols.svg#edit')}"></use>
+							</svg>
+							<span class="slds-assistive-text">Edit</span>
+						</span>
+					</div>
+					<div class="slds-media__body">
+						<h1 class="slds-page-header__title slds-truncate slds-align-middle" title="Edit: {!recordObject['Name']}">Edit: {!recordObject['Name']}</h1>
+					</div>
+				</div>
+			</div>
+			<div class="slds-col slds-no-flex slds-grid slds-align-top">
+				<div class="slds-button-group" role="group">
+					<button class="slds-button slds-button_neutral" onclick="{!cancelCallBack}(); return false;">Cancel</button>
+					<button class="slds-button slds-button_brand" onclick="assignRichTextToValue();saveRecord(); return false;">Save</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Fields from field set -->
+	
+	<apex:outputpanel id="recordDetail" styleclass="list-column" layout="block">
+		<apex:repeat value="{!Fields}" var="objField">
+			<div class="form-element__group">
+				<div class="slds-form-element__row">
+					<div class="slds-form-element avFields">
+						<apex:outputPanel rendered="{!If(objField.Type != 'reference' && objField.Type != 'boolean', true, false)}">
+							<apex:outputLabel styleClass="slds-form-element__label required ">
+								<span class="required" style="display:{!if(objField.Required,'','none')}">*</span> {!objField.label}
+
+								<!--  Tool tip -->
+								<apex:outputPanel styleClass="tooltip" rendered="{!if(ISBLANK($ObjectType[objectAPIName].fields[objField].inlineHelpText) == false,true,false)}">
+									<div class="slds-form-element">
+										<div class="slds-form-element__icon slds-align-middle">
+											&nbsp;
+											<button class="slds-button slds-button slds-button--icon" aria-describedby="help" title="Help" onclick="return false;">
+												<svg class="slds-button__icon" aria-hidden="true">
+													<use xlink:href="{!URLFOR($Asset.SLDS,'/assets/icons/utility-sprite/svg/symbols.svg#info')}"></use>
+												</svg>
+												<span class="slds-assistive-text">Help</span>
+											</button>
+										</div>
+									</div>
+									<div class="slds-popover slds-popover--tooltip slds-nubbin--left" role="tooltip" id="help" style="width: 250px;">
+										<div class="slds-popover__body">{!$ObjectType[objectAPIName].fields[objField].inlineHelpText}</div>
+									</div>
+								</apex:outputPanel>
+							</apex:outputLabel>
+							<apex:outputPanel rendered="{!if($ObjectType[objectAPIName].fields[objField].Updateable == true,true,false)}">
+								<apex:inputField value="{!recordObject[objField.FieldPath]}" html-autocomplete="off" required="{!objField.Required}" styleClass="slds-form-element__control slds-input"
+												 rendered="{!If(objField.Type == 'textarea' && $ObjectType[objectAPIName].fields[objField].HtmlFormatted == true, false, true)}"
+                                                 onchange="getEndDate('{!objField.FieldPath}');" onkeyup="getEndFromDuration('{!objField.FieldPath}','{!recordObject[objField.FieldPath]}')">
+                                	
+                                </apex:inputField>
+								<apex:inputtextarea id="richTextArea" styleClass="ckeditor slds-form-element__control slds-input" richtext="false" required="{!objField.Required}"
+								 value="{!recordObject[objField.FieldPath]}" rendered="{!If(objField.Type == 'textarea' && $ObjectType[objectAPIName].fields[objField].HtmlFormatted == true, true, false)}">
+									<script>reloadCKEditor('{!$Component.richTextArea}')</script>
+								</apex:inputtextarea>
+							</apex:outputPanel>
+							<apex:outputPanel rendered="{!if($ObjectType[objectAPIName].fields[objField].Updateable == false,true,false)}">
+								<br/>
+								<apex:outputField value="{!recordObject[objField.FieldPath]}" styleClass="slds-form-element__control slds-input"
+								/>
+							</apex:outputPanel>
+						</apex:outputPanel>
+						<!-- boolean type fields -->
+						<apex:outputPanel rendered="{!If(objField.Type = 'boolean', true, false)}">
+							<div class="slds-form-element">
+								<div class="slds-form-element__control">
+									<span class="slds-checkbox">
+										<apex:inputCheckbox id="checkBox" value="{!recordObject[objField.FieldPath]}" required="{!objField.Required}" rendered="{!if($ObjectType[objectAPIName].fields[objField].Updateable == true,true,false)}"
+										/>
+										<label class="slds-checkbox__label" for="{!$Component.checkBox}">
+											<span class="slds-checkbox--faux"></span>
+											<span class="slds-form-element__label" style="display: inline-block;">{!objField.label}
+
+												<!--  Tool tip -->
+												<apex:outputPanel styleClass="tooltip" rendered="{!if(ISBLANK($ObjectType[objectAPIName].fields[objField].inlineHelpText) == false,true,false)}">
+													<div class="slds-form-element">
+														<div class="slds-form-element__icon slds-align-middle">
+															&nbsp;
+															<button class="slds-button slds-button slds-button--icon" aria-describedby="help" title="Help" onclick="return false;">
+																<svg class="slds-button__icon" aria-hidden="true">
+																	<use xlink:href="{!URLFOR($Asset.SLDS,'/assets/icons/utility-sprite/svg/symbols.svg#info')}"></use>
+																</svg>
+																<span class="slds-assistive-text">Help</span>
+															</button>
+														</div>
+													</div>
+													<div class="slds-popover slds-popover--tooltip slds-nubbin--left" role="tooltip" id="help" style="width: 250px;">
+														<div class="slds-popover__body">{!$ObjectType[objectAPIName].fields[objField].inlineHelpText}</div>
+													</div>
+												</apex:outputPanel>
+											</span>
+										</label>
+									</span>
+								</div>
+							</div>
+						</apex:outputPanel>
+						<!-- reference type fields -->
+						<apex:outputPanel styleclass="btauto" rendered="{!If(objField.Type = 'reference', true, false)}">
+							<div class="slds-select" data-select="multi" data-scope="single">
+								<div class="slds-form-element">
+									<label class="slds-form-element__label" for="lookup">{!objField.label}
+										<!--  Tool tip -->
+										<apex:outputPanel styleClass="tooltip" rendered="{!if(ISBLANK($ObjectType[objectAPIName].fields[objField].inlineHelpText) == false,true,false)}">
+											<div class="slds-form-element">
+												<div class="slds-form-element__icon slds-align-middle">
+													&nbsp;
+													<button class="slds-button slds-button slds-button--icon" aria-describedby="help" title="Help" onclick="return false;">
+														<svg class="slds-button__icon" aria-hidden="true">
+															<use xlink:href="{!URLFOR($Asset.SLDS,'/assets/icons/utility-sprite/svg/symbols.svg#info')}"></use>
+														</svg>
+														<span class="slds-assistive-text">Help</span>
+													</button>
+												</div>
+											</div>
+											<div class="slds-popover slds-popover--tooltip slds-nubbin--left" role="tooltip" id="help" style="width: 250px;">
+												<div class="slds-popover__body">{!$ObjectType[objectAPIName].fields[objField].inlineHelpText}</div>
+											</div>
+										</apex:outputPanel>
+									</label>
+									<div style=" cursor: pointer;display:{!if(objField.FieldPath == 'RecordTypeId','none','')}">
+										<c:BT_AutoCompleteComponent allowClear="true" labelField="Name" SObject="{!if(objField.FieldPath == 'buildertek__Contractor__c','Account',if(objField.FieldPath == 'buildertek__Contractor_Resource__c' || objField.FieldPath == 'buildertek__Resource__c', 'Contact', objectAPI))}"
+										 valueField="Id" whereClause="{!if(objField.FieldPath == 'buildertek__Contractor__c','',if(objField.FieldPath == 'buildertek__Contractor_Resource__c' || objField.FieldPath == 'buildertek__Resource__c', '', whereConditionForAutoLookup))}"
+										 targetField="{!recordObject[objField.FieldPath]}" style="width:260px" />
+									</div>
+									<apex:outputPanel styleclass="slds-form-element__control slds-input-has-icon slds-input-has-icon--right " rendered="{!if(objField.FieldPath == 'RecordTypeId',true,false)}">
+										<br/>
+										<apex:outputField value="{!recordObject[objField.FieldPath]}" styleClass="slds-form-element__control slds-input"
+										/>
+									</apex:outputPanel>
+									<br/>
+									<br/>
+								</div>
+							</div>
+						</apex:outputPanel>
+					</div>
+				</div>
+			</div>
+		</apex:repeat>
+	</apex:outputpanel>
+
+	</html>
+</apex:component>

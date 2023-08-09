@@ -1,0 +1,296 @@
+<apex:page standardController="pba__Offer__c" renderAs="pdf" applyHtmlTag="false" showHeader="false">
+ <html>
+<head>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        
+@page { 
+    size: A4;    
+    margin:0.5cm 0.5cm 0.5cm 0.5cm;
+    
+}
+
+        .group {
+            margin: 1px;
+            border: 1px solid #bbb;
+        }
+
+        .group > span {
+            font-weight: bold;
+        }
+
+        .group > table td {
+            width: 175px;
+        }
+
+        .imglogo {
+           
+        }
+
+
+        .MainHeader {
+            border-bottom: 3px solid;
+            background: black;
+            color: white;
+            margin-top: 15px;
+            margin-bottom: 35px;
+            text-align: center;
+            font-size: 25px;
+            font-weight: bold;
+            padding: 5px;
+
+        }
+        .SubHeader {
+            border-top: 3px solid;
+            background: #d6d6d6;
+            margin-top: 25px;
+            margin-bottom: 25px;
+            text-align: left;
+            font-size: 20px;
+            font-weight: bold;
+            padding: 5px;
+
+        }
+
+tr{
+  line-height: 1.5;
+}
+
+        td.col1 {
+            width:110px;
+        }
+        td.col2 {
+            width:160px;
+        }
+        td.col3 {
+            width:90px;
+            padding-left:50px;
+        }
+        td.col4 {
+            width:210px;
+        }
+
+        .underline {
+            border-bottom: 1px solid;
+        }
+
+
+    </style>
+    </link>
+</head>
+<body>
+
+<!-- Logo -->
+    <table width="100%" >
+        <tr>
+            <td width="30%" style="padding: 0"></td>
+            <td>
+               <table style="text-align: right" width="100%">
+                <tr>
+                    <td>
+                        <span class="imglogo">
+                            <apex:image url="{!$Resource.CompanyLogo}" width="175" /> 
+                        </span>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+
+<!-- Page Header -->
+
+<div class="MainHeader">
+    Sales Advice
+</div>
+
+<!-- Section Header --> 
+
+<div class="SubHeader" > 
+    Property Details
+</div>
+
+<!-- Section Details --> 
+
+<table width="100%">
+   <tr>
+    <td class="col1">
+        Listing
+    </td>
+    <td class="col2 underline" colspan="3">
+     {!pba__offer__c.pba__Listing__r.Name}
+ </td>
+</tr>
+<tr>
+    <td class="col1">
+        Contract Name
+    </td>
+    <td class="col2 underline" colspan="3">
+     {!pba__offer__c.Contract_Name__c}
+ </td>
+</tr>
+<tr>
+    <td class="col1">
+        Purchase Price
+    </td>
+    <td class="col2 underline" colspan="3">
+     <apex:outputText value="{0, number, $#,###.##}"><apex:param value="{!pba__Offer__c.Price__c}" /></apex:outputText>
+ </td>
+</tr>
+</table>
+
+<!-- Section Header --> 
+
+<div class="SubHeader" > 
+    Buyers Details
+</div>
+
+<!-- Section Details --> 
+
+<table width="100%">
+    <tr>
+        <td class="col1">
+            Name:
+        </td>
+        <td class="col2  underline" colspan="3">
+            {!pba__offer__c.pba__Contact__r.FirstName} {!pba__offer__c.pba__Contact__r.LastName}    
+        </td>
+    </tr>
+
+    <tr>
+        <td class="col1">
+            Address:
+        </td>
+        <td class="col2 underline" colspan="3">
+            {!pba__offer__c.pba__Contact__r.MailingStreet} {!pba__offer__c.pba__Contact__r.MailingCity} {!pba__offer__c.pba__Contact__r.MailingState} {!pba__offer__c.pba__Contact__r.MailingPostalCode}
+        </td>
+    </tr>
+    <tr>
+        <td class="col1">
+            Mobile:
+        </td>
+        <td class="col2 underline">
+            {!pba__offer__c.pba__Contact__r.MobilePhone}
+        </td>
+        <td class="col3">
+            Phone:
+        </td>
+        <td class="col4 underline">
+            {!pba__offer__c.pba__Contact__r.Phone}
+        </td>
+    </tr>
+    <tr>
+        <td class="col1">
+            Email:
+        </td>
+        <td class="col2 underline">
+            {!pba__offer__c.pba__Contact__r.Email}
+        </td>
+        <td class="col3">
+            Date of Birth:
+        </td>
+        <td class="col4  underline">
+            
+     <apex:outputText value="{0, date, dd MMM yyyy}"><apex:param value="{!pba__Offer__c.pba__Contact__r.Birthdate}" /></apex:outputText>
+        </td>
+    </tr>
+</table>
+
+<!-- Section Header --> 
+
+<div class="SubHeader" > 
+    Solicitor Details
+</div>
+
+<!-- Section Details --> 
+
+<table width="100%">
+    <tr>
+        <td class="col1">
+            Firm:
+        </td>
+        <td class="col2 underline">
+            {!pba__offer__c.Purchasers_Solicitor_Firm__r.Name}<br/>
+        </td>
+        <td class="col3">
+            Contact:
+        </td>
+        <td class="col4 underline">
+            {!pba__offer__c.Purchasers_Solicitor_Contact__r.FirstName} {!pba__offer__c.Purchasers_Solicitor_Contact__r.LastName} <br/>
+        </td>
+    </tr>
+    <tr>
+        <td class="col1">
+            Address:
+        </td>
+        <td class="col2 underline" colspan="3" >
+            {!pba__offer__c.Purchasers_Solicitor_Firm__r.BillingStreet} {!pba__offer__c.Purchasers_Solicitor_Firm__r.BillingCity} {!pba__offer__c.Purchasers_Solicitor_Firm__r.BillingState} {!pba__offer__c.Purchasers_Solicitor_Firm__r.BillingPostalCode}<br/>
+        </td>
+    </tr>
+    <tr>
+        <td class="col1">
+            Phone:
+        </td>
+        <td class="col2 underline">
+            {!pba__offer__c.Purchasers_Solicitor_Firm__r.Phone}<br/>
+        </td>
+        <td class="col3">
+            Fax:
+        </td>
+        <td class="col4 underline">
+            {!pba__offer__c.Purchasers_Solicitor_Firm__r.Fax}<br/>
+        </td>
+    </tr>
+    <tr>
+        <td wclass="col1">
+            Email:
+        </td>
+        <td class="col2 underline" colspan="3" >
+            {!pba__offer__c.Purchasers_Solicitor_Contact__r.Email}<br/>
+        </td>
+    </tr>
+</table>
+
+
+
+
+<!-- Section Header --> 
+
+<div class="SubHeader" > 
+    Deposit Details
+</div>
+
+<!-- Section Details --> 
+
+<table width="100%">
+    <tr>
+        <td class="col1">
+            Deposit Payable:
+        </td>
+        <td class="col2 underline">
+         <apex:outputText value="{0, number, $#,###.##}"><apex:param value="{!pba__Offer__c.Total_Deposit_Payable__c}" /></apex:outputText>
+     </td>
+     <td class="col3">
+        Initial Deposit:
+    </td>
+    <td class="col4 underline">
+        <apex:outputText value="{0, number, $#,###.##}"><apex:param value="{!pba__Offer__c.Initial_Deposit_Amount_Paid__c}" /></apex:outputText> 
+    </td>
+</tr>
+</table>
+
+<!-- Section Header --> 
+
+<div class="SubHeader" > 
+    Special Conditions
+</div>
+
+<!-- Section Details --> 
+
+<p class="underline"> {!pba__offer__c.pba__Notes_pb__c} </p>
+<p class="underline">  </p>
+
+
+</body>
+</html>
+</apex:page>

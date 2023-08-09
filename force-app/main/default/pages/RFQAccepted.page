@@ -1,0 +1,20 @@
+<apex:page controller="RFQAccepted" showheader="false" id="pageId" action="{!updateRFQ}">
+    <apex:slds />
+    <c:BT_JsAndCssIncludeComponent importJquery="true" importAppurinUtil="true" importJQueryLayout="true" importFancyTree="false"
+        importJqGrid="false" importEasyTooltip="true" importAppurinCss="true" importCkEditor="false" importGnattChart="false"
+        importLightningDesign="true" />
+    <script>
+    // alert("ok")
+    function closeWindow() {
+        self.close();
+    }
+
+    </script>
+    <div style='text-align: center;padding:20px;font-size:20px;'>
+        {!rfqMessage}
+    </div>
+
+    <div style='text-align: center;padding:20px;font-size:20px;'>
+        <button type="button" class="slds-button slds-button_neutral" onclick="closeWindow();">Close</button>
+    </div>
+</apex:page>

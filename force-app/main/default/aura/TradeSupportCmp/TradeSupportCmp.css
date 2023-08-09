@@ -1,0 +1,30 @@
+/*
+	@ PURPOSE : STYLES THE LIGHTNING COMPONENT --> TradeSupportCmp.xml
+	@ Name    : TradeSupportCmp.css
+*/
+.THIS .trade_table {
+    overflow-x: scroll !important;
+    padding-bottom: 100px;
+    height: 320px !important;
+}
+
+.THIS .tradeTableCol {
+	width : 150px;
+}
+
+.THIS .fit_content.slds-dropdown { max-width : fit-content !important; }
+
+.THIS .slds-dropdown_fluid { width: auto !important; }
+
+.THIS .searchResult.slds-dropdown {
+    width: 100% !important;
+}
+
+.THIS .space-up-down {
+    padding-top: 10px; 
+    padding-bottom: 10px;
+}
+
+.THIS .slds-grid { 
+    padding-bottom: 10px !important; 
+}

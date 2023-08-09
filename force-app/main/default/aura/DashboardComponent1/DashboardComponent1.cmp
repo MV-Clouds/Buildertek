@@ -1,0 +1,130 @@
+<aura:component controller="DashboardComponent1cnt" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction,forceCommunity:availableForAllPageTypes" access="global" >
+    
+    <ltng:require scripts="{!join(',',
+                           $Resource.JqueryDashboard + '/JqueryDashboard/jquery.min.js',
+                           $Resource.JqueryDashboard + '/JqueryDashboard/highcharts.js',
+                           $Resource.JqueryDashboard + '/JqueryDashboard/highcharts-3d.js',
+                           $Resource.JqueryDashboard + '/JqueryDashboard/data.js',
+                           $Resource.JqueryDashboard + '/JqueryDashboard/drilldown.js',
+                           $Resource.JqueryDashboard + '/JqueryDashboard/exporting.js'
+                           )}" afterScriptsLoaded="{!c.init}"/>
+    
+    <aura:attribute name="Contract" type="Contract[]" />
+    
+    
+    <div class="slds-grid slds-wrap" Style="background:White">
+        <div class="slds-text-heading_medium slds-col slds-size_12-of-12" Style="padding: 10px;">
+            <div class="slds-page-header" style="border: 1px solid #dddbda;">
+                <div class="slds-page-header__row">
+                    <div class="slds-page-header__col-title">
+                        <div class="slds-media">
+                            <div class="slds-media__figure" Style="padding-top: 6px;">
+                                <lightning:icon iconName="standard:dashboard" alternativeText="dashboard" />
+                                <span class="slds-icon_container slds-icon-standard-dashboard" title="Dashboard">
+                                    <span class="slds-assistive-text">Dashboard</span>
+                                </span>
+                            </div>
+                            <div class="slds-media__body">
+                                <div class="slds-page-header__name">
+                                    <div class="slds-page-header__name-title">
+                                        <h1>
+                                            <span class="slds-page-header__title slds-truncate slds-text-heading_small" title="Dashboard">Dashboard</span>
+                                        </h1>
+                                    </div>
+                                </div>
+                                <b><p class="slds-text-heading_medium">Community Custom Dashboard</p></b>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-page-header__col-actions">
+                        <div class="slds-page-header__controls">
+                            <div class="slds-page-header__control">
+                                <ul class="slds-button-group-list">
+                                    <li>
+                                        <button class="slds-text-heading_small slds-button slds-button_neutral" style="padding-top: 7px; padding-bottom: 7px;">Refresh</button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><br />
+        <!--<div class="slds-text-heading_medium slds-col slds-size_12-of-12" Style="padding: 5px;"><center><b>Custom Community Dashboard</b></center></div>-->
+        
+        <div class="slds-col slds-size_8-of-12" Style="padding-left: 10px;">
+            <div id="container" style="margin: 0 auto; border: 1px solid #dddbda;"></div>
+        </div> <br />
+        <!--  <div class="slds-col slds-size_4-of-12" Style="padding-right: 10px; padding-left: 10px; ">
+            <div id="container1" style="margin: 0 auto; border: 1px solid #dddbda;"></div>
+        </div> <br />-->
+        
+        <div class="slds-col slds-size_8-of-12" Style="padding-top: 10px; padding-bottom: 10px; padding-left: 10px; ">
+            <table id="datatable" class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered" style="width:100%; border: 1px solid #dddbda;">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <aura:iteration items="{!v.Contract}" var="con">
+                            <th>{!con.Name}</th>
+                        </aura:iteration>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>Original Contract Amount</th>
+                        <td>10</td>
+                        <td>20.00</td>
+                        <td>60.0</td>
+                        <td>15.00</td>
+                    </tr>
+                    <tr>
+                        <th>Customer Approved Change Order Amount</th>
+                        <td>434.68</td>
+                        <td>37.10</td>
+                        <td>78.67</td>
+                        <td>24.00</td>
+                    </tr>
+                    <tr>
+                        <th>Revised Contract Amount</th>
+                        <td>434.68</td>
+                        <td>47.92</td>
+                        <td>87.58</td>
+                        <td>38.02</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <br />
+        <!--   <div class="slds-col slds-size_4-of-12" Style="padding-top: 10px; padding-bottom: 10px; padding-left: 10px; padding-right: 10px; ">
+            <div id="container2" style="margin: 0 auto; border: 1px solid #dddbda;"></div>
+        </div>-->
+        <!-- 
+border: 1px solid black;
+<div class="slds-col slds-size_8-of-12" Style="padding-top: 10px; padding-bottom: 10px; padding-left: 10px;">
+            <table id="datatable2" class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered" style="width:100%;">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Test</th>
+                        <th>Test1</th>
+                        <th>Test3</th>
+                        <th>Test4</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>Amount</th>
+                        <td>50.00</td>
+                        <td>20.00</td>
+                        <td>60.0</td>
+                        <td>15.00</td>
+                    </tr> 
+                    
+                </tbody>
+            </table>
+        </div>-->
+        
+    </div>
+    
+</aura:component>

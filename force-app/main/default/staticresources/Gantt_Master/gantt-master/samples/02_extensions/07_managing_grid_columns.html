@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Hiding grid columns</title>
+	<script type="text/javascript" src="../common/dhtmlxSuite/dhtmlx.js"></script>
+	<script type="text/javascript" src="../common/dhtmlxSuite/dhtmlx_deprecated.js"></script>
+	<script src="../../codebase/dhtmlxgantt.js" type="text/javascript" charset="utf-8"></script>
+	<link rel="stylesheet" href="../common/dhtmlxSuite/skins/terrace/dhtmlx.css" type="text/css" media="screen" title="no title" charset="utf-8">
+	<link rel="stylesheet" href="../../codebase/dhtmlxgantt.css" type="text/css" media="screen" title="no title" charset="utf-8">
+
+</head>
+<body>
+	<div id="gantt" style="width: 100%; height: 600px;"></div>
+	<script>
+		var tasks =  {
+			data:[
+				{id:1, text:"Project #2", start_date:"01-04-2013", duration:18,order:10,
+					progress:0.4, open: true},
+				{id:2, text:"Task #1", 	  start_date:"02-04-2013", duration:8, order:10,
+					progress:0.6, parent:1},
+				{id:3, text:"Task #2",    start_date:"11-04-2013", duration:8, order:20,
+					progress:0.6, parent:1}
+			],
+			links:[
+				{ id:1, source:1, target:2, type:"1"},
+				{ id:2, source:2, target:3, type:"0"}
+			]
+		};
+
+		gantt.config.columns = [
+			{ name:"text", tree:true, width:150, resize: true},
+			{ name:"start_date", align: "center", width:150, resize:true},
+			{ name:"duration", align: "center", width:70, resize:true},
+			{ name:"add", width:44, resize:true, hide:true}
+		];
+
+		gantt.init("gantt");
+		gantt.parse(tasks);
+		gantt.message("Right click on a header of the Grid");
+
+
+		(function addContentMenu(){
+			var menu = new dhtmlXMenuObject();
+			menu.setIconsPath("../common/sample_images/");
+			menu.renderAsContextMenu();
+			menu.setSkin("dhx_terrace");
+
+			gantt.attachEvent("onContextMenu", function(taskId, linkId, event){
+				var x = event.clientX + document.body.scrollLeft + document.documentElement.scrollLeft,
+					y = event.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+
+				var target = (event.target || event.srcElement);
+				var column_id = target.getAttribute("column_id");
+				menu.clearAll();
+
+				addColumnsConfig();
+				if(column_id){
+					addColumnToggle(column_id);
+				}
+
+				menu.showContextMenu(x, y);
+				return false;
+			});
+
+			menu.attachEvent("onClick", function(id, zoneId, cas){
+				var parts = (id + "").split("#");
+				var is_toggle = parts[0] == "toggle",
+					column_id = parts[1] || id;
+
+				var column = gantt.getGridColumn(column_id);
+
+				if(column){
+					var visible = !is_toggle ? menu.getCheckboxState(id) : false;
+					column.hide = !visible;
+					gantt.render();
+				}
+				return true;
+			});
+
+			function addColumnToggle(column_name){
+				var column = gantt.getGridColumn(column_name);
+				var label = getColumnLabel(column);
+
+				//add prefix to distinguish from the same item in 'show columns' menu
+				var item_id = "toggle#" + column_name
+				menu.addNewChild(null, -1, item_id, "Hide '" + label + "'", false);
+				menu.addNewSeparator(item_id);
+			}
+
+			function addColumnsConfig(){
+				menu.addNewChild(null, -1, "show_columns", "Show columns:", false);
+				var columns = gantt.config.columns;
+
+				for(var i = 0; i < columns.length; i++){
+					var checked = (!columns[i].hide),
+						itemLabel = getColumnLabel(columns[i]);
+					menu.addCheckbox("child", "show_columns", i, columns[i].name, itemLabel, checked);
+				}
+			}
+
+			function getColumnLabel(column){
+				if(column == null)
+					return '';
+
+				var locale = gantt.locale.labels;
+				var text = column.label !== undefined ? column.label : locale["column_" + column.name];
+
+				text = text || column.name;
+				return text;
+			}
+		})();
+	</script>
+</body>
+</html>

@@ -1,0 +1,340 @@
+<aura:component controller = "BT_New_Meeting_Controller" 
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global" >
+	
+    
+    <aura:html tag="style">
+        .slds-modal__container {
+        width: 80% !important;      
+        max-width: 80% !important; 
+       
+               
+        }
+      
+         
+        .quick-actions-panel{
+         overflow: hidden !important;
+        
+        }
+     	.slds-rich-text-area__content{
+        	height:250px !important;
+        }
+
+    </aura:html> 
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> 
+    <aura:attribute name="IsSpinner" type="Boolean" default="false" />
+    <aura:attribute name="isOwnerLookupOpen" type="Boolean" default="false" />
+    <aura:attribute name="actionItemsList" type="Action_Item__c[]"/> 
+	<aura:attribute name="selectedIndex" type="Boolean" default="false" />
+    <aura:attribute name="MeetingId" type="String" default="false" />
+    <aura:handler name="NewMeetingEvent" event="c:NewMeetingEvent"
+                  action="{!c.handleComponentEvent}"/>
+    <aura:attribute name="LookupFieldName" type="string" default="" />
+
+    <!-- <lightning:overlayLibrary aura:id="overlay"/> -->
+    <aura:if isTrue="{!v.IsSpinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span> 
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                    <b>Processing, Please Wait</b>
+                </div>
+                
+            </div>
+        </div>
+    </aura:if>
+<!--<div class="slds-scrollable_y" style="height:5rem;width:24rem">-->
+
+     <!-- <div class="slds slds-scope "> -->
+        <!--<section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+             aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container ">-->
+        <header class="slds-modal__header">
+            <!-- <lightning:buttonIcon iconName="utility:close" onclick="{! c.doCancel }" alternativeText="close"
+                                          variant="bare-inverse" class="slds-modal__close" />-->
+            <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Meeting Minutes </h2>
+            
+        </header>
+        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1"   >
+            
+            <lightning:messages />
+            
+            <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__Meeting__c"
+                                      onsubmit="{!c.handleSubmit}" onsuccess="{!c.onRecordSuccess}">
+                
+                <div class="c-container"  >
+                    
+                    <!--section 1 start-->  
+                    <div class="slds-section slds-is-open" aura:id="basicsSection">
+                        <!--section header-->
+                        <h3 class="slds-section__title">
+                            <span style="width:100%; background-color:#DCDCDC;padding-left:4px;border-radius:4px;">
+                            
+                            <!-- <button aria-controls="basicsSectionId" class="slds-button slds-section__title-action"> -->
+                                <span onclick="{!c.toggleSection}" data-auraId="basicsSection" style="cursor:pointer">
+                                    <lightning:icon iconName="utility:switch"
+                                                    size="x-small"
+                                                    class="slds-section__title-action-icon slds-button__icon_left"
+                                                    alternativeText="button icon" 
+                                                    />
+                                </span>
+                                <span class="slds-truncate" title="Basics">Basics</span>
+                            </span>
+                           <!-- </button> -->
+                        </h3>
+                        <!--section body-->
+                        <div class="slds-section__content" id="basicsSectionId">
+                            
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem size="12" smallDeviceSize="4" mediumDeviceSize="3" largeDeviceSize="6" padding="around-small">
+                                    <div class="custom-box">                                            
+                                        <lightning:inputField fieldName="buildertek__Subject__c"  value = "" required = "true"/>
+                                    </div>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="12" smallDeviceSize="4" mediumDeviceSize="3" largeDeviceSize="6" padding="around-small">
+                                    <div class="custom-box">
+                                        Date
+                                        <lightning:inputField fieldName="buildertek__Date__c" 
+                                                              value = "" variant="label-hidden" class="nolabel" />
+                                    </div>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="12" smallDeviceSize="4" mediumDeviceSize="3" largeDeviceSize="6" padding="around-small">
+                                    <div class="custom-box">
+                                        <lightning:inputField fieldName="buildertek__Attendees__c"  value = ""/>
+                                    </div>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="12" smallDeviceSize="4" mediumDeviceSize="3" largeDeviceSize="6" padding="around-small">
+                                    <div class="custom-box">
+                                        <lightning:inputField fieldName="buildertek__Location__c"  value = ""/>
+                                    </div>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="12" smallDeviceSize="4" mediumDeviceSize="3" largeDeviceSize="6" padding="around-small">
+                                    <div class="custom-box">
+                                        <lightning:inputField fieldName="buildertek__Version__c"  value = ""/>
+                                    </div>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="12" smallDeviceSize="4" mediumDeviceSize="3" largeDeviceSize="6" padding="around-small">
+                                    <div class="custom-box"></div>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+                            
+                        </div>
+                    </div>
+                    <!--section 1 end-->
+                    
+                    <!--section 2 start-->  
+                    <div class="slds-section slds-is-open" aura:id="meetingminutesSection">
+                        <!--section header-->
+                        <h3 class="slds-section__title">
+                            <span style="width:100%; background-color:#DCDCDC;padding-left:4px;border-radius:4px;">
+                                
+                                <!-- <button aria-controls="meetingminutesSectionId" class="slds-button slds-section__title-action"> -->
+                                <span onclick="{!c.toggleSection}" data-auraId="meetingminutesSection"  style="cursor:pointer">
+                                    <lightning:icon iconName="utility:switch"
+                                                    alternativeText="button icon"
+                                                    size="x-small"
+                                                    class="slds-section__title-action-icon slds-button__icon_left"/>
+                                </span>
+                                <span class="slds-truncate" title="Meeting Minutes">Meeting Minutes</span>
+                             <!-- </button>  -->
+                            </span>
+                        </h3>
+                        <!--section body--> 
+                        <div class="slds-section__content" id="meetingminutesSectionId">
+                            
+                            <lightning:layout multipleRows="true">                               
+                                <lightning:layoutItem size="12" smallDeviceSize="12" mediumDeviceSize="12" largeDeviceSize="12" padding="around-small">
+                                    <div class="custom-box">
+                                        <lightning:inputField fieldName="buildertek__Meeting_Minutes__c" 
+                                                              value = "" required = "true"/>
+                                    </div>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+                            
+                        </div>
+                    </div>
+                    <!--section 2 end-->
+                    
+                    <!--section 3 start-->  
+                    <div class="slds-section slds-is-open" aura:id="tasksSection">
+                        <!--section header-->
+                        <h3 class="slds-section__title">
+                            <span style="width:100%; background-color:#DCDCDC;padding-left:4px;border-radius:4px;">
+                                
+                                <!-- <button aria-controls="tasksSectionId" class="slds-button slds-section__title-action"> -->
+                                <span onclick="{!c.toggleSection}" data-auraId="tasksSection"  style="cursor:pointer">
+                                    <lightning:icon iconName="utility:switch"
+                                                    alternativeText="button icon"
+                                                    size="x-small"
+                                                    class="slds-section__title-action-icon slds-button__icon_left"/>
+                                </span>
+                                <span class="slds-truncate" title="Tasks">Tasks</span>
+                             <!-- </button>  -->
+                            </span>
+                        </h3>
+                        <!--section body-->
+                        <div class="slds-section__content" id="tasksSectionId">                                                                
+                            <div class="slds-float_right slds-p-bottom_small">
+                                <h1 class="slds-page-header__title">
+                                    <lightning:buttonIcon iconName="utility:add"  size="large" variant="bare" alternativeText="Add" onclick="{!c.addRow}"/>
+                                </h1> 
+                            </div>
+                            <div class="container-fluid">        
+                                <table class="slds-table slds-table_bordered slds-table_cell-buffer"> 
+                                    <thead>
+                                        <tr class="slds-text-title_caps">
+                                            <th scope="col">
+                                                <div class="slds-truncate">#</div>
+                                            </th>
+                                            <th scope="col">
+                                                <div class="slds-truncate" title="Description">Description</div>
+                                            </th>
+                                            <th scope="col">
+                                                <div class="slds-truncate" title="Owner">Owner</div>
+                                            </th>
+                                            <th>
+                                            </th>
+                                            <th scope="col">
+                                                <div class="slds-truncate" title="Due Date">Due Date</div>
+                                            </th>
+                                            <th scope="col">
+                                                <div class="slds-truncate" title="Action">Action</div>
+                                            </th>
+                                        </tr>
+                                    </thead>   
+                                    <tbody>      
+                                        <aura:iteration items="{!v.actionItemsList}" var="rec" indexVar="index">
+                                            <tr style="padding-bottom:20px;">
+                                                <td> 
+                                                    {!index + 1}
+                                                </td>
+                                                <td data-row-index="{!index}">
+                                                    <lightning:input name="description" type="text"  
+                                                                     maxlength="50" value="{!rec.buildertek__Description__c}" 
+                                                                     onchange="{!c.handleOnChange}"/>
+                                                </td>
+                                                <td>                                                       
+                                                    <!-- <lightning:input name="owner" type="text"  maxlength="50" value="{!rec.buildertek__Owner__c}" 
+                                                                     id="{!index}" />  -->
+                                                    <div style="position:relative; top:10px;">
+                                                        <c:rowcustomLookup objectAPIName="Contact"
+                                                                        IconName="standard:contact"
+                                                                        rowIndex="{!index}" />
+                                                    </div>
+                                                    
+                                                    
+                                                </td>
+                                                <td>
+                                                   <!-- <a onclick="{!c.searchPicklist}" data-record="{!index}" >
+                                                        <lightning:buttonIcon iconName="utility:search" 
+                                                                              class="positiontop"
+                                                                              size="large" variant="bare" alternativeText="search" 
+                                                                              />
+                                                    </a> -->
+                                                </td>
+                                                <td>
+                                                    <lightning:input type="date" name="duedate"  value="{!rec.buildertek__Due_Date__c}" 
+                                                                     onchange="{!c.handleOnChange}"/>
+                                                </td>
+                                                <td>
+                                                    <a onclick="{!c.removeRow}" data-record="{!index}" >
+                                                        <lightning:icon iconName="utility:delete" 
+                                                                        class="positiontop" size="small" alternativeText="Delete"/>
+                                                        <span class="slds-assistive-text">Delete</span>
+                                                    </a>
+                                                </td> 
+                                            </tr>
+                                        </aura:iteration>
+                                    </tbody>
+                                </table>                                           
+                            </div>                                
+                        </div>
+                    </div>
+                    <!--section 3 end-->
+                    
+                    <br/>
+                    <br/>
+                    <!--section 4 start-->  
+                    <div class="slds-section slds-is-open" aura:id="internalCommentsSection">
+                        <!--section header-->
+                        <h3 class="slds-section__title">
+                            <span style="width:100%; background-color:#DCDCDC;padding-left:4px;border-radius:4px;">
+                                
+                                <!-- <button aria-controls="internalCommentsSectionId" class="slds-button slds-section__title-action"> -->
+                                <span onclick="{!c.toggleSection}" data-auraId="internalCommentsSection"  style="cursor:pointer">
+                                    <lightning:icon iconName="utility:switch"
+                                                    alternativeText="button icon"
+                                                    size="x-small"
+                                                    class="slds-section__title-action-icon slds-button__icon_left"/>
+                                </span>
+                                <span class="slds-truncate" title="Internal Comments">Internal Comments</span>                                
+                             <!-- </button>  -->
+                            </span>
+                        </h3>
+                        <!--section body-->
+                        <div class="slds-section__content" id="internalCommentsSectionId">
+                            <lightning:layout multipleRows="true">                       
+                                <lightning:layoutItem size="12" smallDeviceSize="12" mediumDeviceSize="12" largeDeviceSize="12" padding="around-small">
+                                    <div class="custom-box">
+                                        <lightning:inputField fieldName="buildertek__Internal_Comments__c"  
+                                                              value = ""/>                                            
+                                    </div>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+                        </div>
+                    </div>
+                    <!--section 4 end-->
+                    
+                    
+                     <footer class="slds-modal__footer" style = "padding-top: 10px">
+                        <center>
+                            <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{!c.closeModel }" />
+                            <!-- <lightning:button variant="neutral" title="Save &amp; New" label="Save &amp; New"
+                                              onclick="{!c.saveAndNew}" /> -->
+                            <lightning:button variant="neutral" type="submit" name="submitrfi" label="Submit Meeting Minutes"  />
+                        </center>
+                    </footer>
+                    <br/>
+                    <br/>
+                    <br/>
+                </div>
+                
+            </lightning:recordEditForm>
+            
+                </div>
+   
+    <!-- </div>-->
+    
+    <aura:if isTrue="{!v.isOwnerLookupOpen}">
+        
+        <!-- Modal/Popup Box starts here-->
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="padding-bottom:10px;">
+               
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="text-align:center">
+                    <p><b>Do you want to send an email to the Action Item Owners?
+                        </b>
+                    </p>
+                </div>
+                <!--Modal/Popup Box Footer Starts here-->
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral"
+                                      label="No"
+                                      title="Cancel"
+                                      onclick="{! c.closeAlert }"/>
+                    <lightning:button variant="brand"
+                                      label="Yes"
+                                      title="OK"
+                                      onclick="{!c.submitDetails}"/>
+                </footer>
+                
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+        
+       
+    </aura:if>
+    
+</aura:component>

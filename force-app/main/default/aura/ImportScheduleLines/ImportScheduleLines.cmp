@@ -1,0 +1,142 @@
+<aura:component controller="ImportScheduleLinesController"
+                implements="lightning:isUrlAddressable,flexipage:availableForAllPageTypes,lightning:actionOverride,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:appHostable,force:lightningQuickActionWithoutHeader"
+                access="global">
+    <aura:attribute name="showError" type="boolean" />
+    <aura:attribute name="startdateError" type="boolean" default="false"/>
+    <aura:attribute name="RecordId" type="string" />
+    <aura:attribute name="isNewGantt" type="String" />
+    <aura:attribute name="errorMessage" type="string" />
+    <aura:attribute name="fileName" type="string" default="select file" />
+    <aura:attribute name="Spinner" type="boolean" default="false" />
+    <aura:attribute name="showMessage" type="Boolean" default="false" />
+    <aura:attribute name="isErrorOccured" type="boolean" default="false" />
+    <aura:attribute name="isOpen" type="boolean" default="false" />
+    <aura:attribute name="BaseURLs" type="string" />
+    <aura:attribute name="CircularDependencyName" type="String" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <lightning:workspaceAPI aura:id="workspace"/>
+    <lightning:navigation aura:id="navService"/>
+    <lightning:navigation aura:id="navigation"/>
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
+ <!--   <ltng:require scripts="{!$Resource.SchedulesFile}"/>-->
+    <div class="slds-m-around_xx-large">
+        <aura:if isTrue="{!v.isOpen}">
+            
+            <!--###### MODAL BOX Start######-->
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                     aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <aura:if isTrue="{!v.Spinner}">
+                            <div aura:id="spinnerId" class="slds-spinner_container" style="position:fixed;">
+                                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                                    <span class="slds-assistive-text">Loading</span>
+                                    <div class="slds-spinner__dot-a"></div>
+                                    <div class="slds-spinner__dot-b"></div>
+                                    <div class="custom-loading-text">
+                                        <aura:if isTrue="{!v.showMessage}">
+                                            
+                                            <b>Processing, Please Wait</b>
+                                            
+                                            <!-- <b>Importing Schedule Lines... </b>-->
+                                        </aura:if>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </aura:if>
+                <div class="slds-modal__container">
+                    <!-- ###### MODAL BOX HEADER Start ######-->
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeModel}"
+                                              alternativeText="close" variant="bare-inverse" class="slds-modal__close" />
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Import Schedules</h2>
+                    </header>
+                    <!--###### MODAL BOX BODY Part Start######-->
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        
+                        <div class="slds-grid">
+                           <!-- <div class="slds-size_1-of-12">
+                                
+                            </div>-->
+                            
+                            <div class="slds-size_12-of-12">
+                                <div class="slds-box slds-theme_default slds-box_small">
+                                    <p>
+                                        <strong>Note: </strong> This import functionality will import Name, Dependency,
+                                        StartDate, Duration, % Complete, Phase, Notes and Lag fields in Schedule Lines .
+                                    </p>
+                                </div>
+                            </div>
+                           <!-- <div class="slds-size_1-of-12">
+                            </div>-->
+                        </div>
+                        <br />
+                        <div class="slds-grid">
+                           <!-- <div class="slds-size_1-of-12">
+                            </div>-->
+                            <div class="slds-size_8-of-12">
+                                <!-- <input type="file" 
+                                      
+                               id="file-upload-input-01" 
+                               aria-labelledby="file-selector-primary-label file-selector-secondary-label" 
+                               aura:id="file"
+                               accept=".csv"
+                               onchange="{!c.handleFilesChange}"/> -->
+                              <lightning:input aura:id="file" type="file" name="file" multiple="false"
+                                                 onchange="{!c.handleFilesChange}" />
+                                <div class="slds-text-body_small">{!v.fileName} </div>
+                            </div>
+                             <div class="slds-size_1-of-12">
+                            </div>
+                            
+                            <div class="slds-size_3-of-12" style="padding-top:1.7rem; padding-left: 10rem;" >
+                 <button class="slds-button slds-button--brand"  onclick="{!c.downloadCsv}" style ="">Download CSV</button> <br/><br/>
+                            </div>
+                           <!-- <div class="slds-size_1-of-12">
+                            </div>-->
+                        </div>
+                        
+                        <div class="slds-grid">
+                            <!--<div class="slds-size_1-of-12">
+                            </div>-->
+                            
+                            <div class="slds-size_10-of-12">
+                                <aura:if isTrue="{!v.showError}">
+                                    <h1 style = "color : red;"> Please upload a file to Import </h1>
+                                    
+                                </aura:if>
+                            </div>
+                        </div>
+                        
+                        <aura:if isTrue="{!v.isErrorOccured}">
+                            <div class="slds-grid">
+                                <div class="slds-size_1-of-12">
+                                </div>
+                                <div class="slds-size_10-of-12">
+                                    <div class="slds-text-color_error">
+                                        {!v.errorMessage}
+                                    </div>
+                                </div>
+                                <div class="slds-size_1-of-12">
+                                </div>
+                            </div>
+                        </aura:if>
+                        
+                    </div>
+                    
+                    <!--###### MODAL BOX FOOTER Part Start ######-->
+                    <footer class="slds-modal__footer">
+                        <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}">Cancel</button>
+                        <button class="slds-button slds-button--brand" onclick="{!c.CreateRecord}">Import</button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+            <!--###### MODAL BOX Part END Here ######-->
+            
+        </aura:if>
+        <aura:if isTrue="{!v.Spinner}">
+         
+        </aura:if>
+    </div>
+</aura:component>

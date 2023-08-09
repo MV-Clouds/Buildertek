@@ -1,0 +1,247 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:appHostable" access="global" controller="ParticipantResponseClass">
+    <aura:attribute name="options" type="List" default="[
+                                                        {'label': 'Yes', 'value': 'Yes'},
+                                                        {'label': 'No', 'value': 'No'}
+                                                        ]"/>
+    <aura:dependency resource="markup://force:*" type="EVENT"/>
+    <aura:attribute name="picklistValue" type="String"/>
+    <aura:attribute name="success" type="boolean"/>
+    <aura:attribute name="error" type="boolean"/>
+    <aura:attribute name="error1" type="boolean"/>   
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="selectedValue" type="String" default=" "/>    
+    <aura:attribute name="course" type="String" />
+    <aura:attribute name="sessiondate" type="Date" />
+    <aura:attribute name="sessiontime" type="string" />
+    <aura:attribute name="sessionduration" type="string" />
+    <aura:attribute name="FirstName" type="string" />
+    <aura:attribute name="LastName" type="string" />
+    <aura:attribute name="Company" type="string" />
+    <aura:attribute name="Title" type="string" />
+    <aura:attribute name="Phone" type="string" />
+    <aura:attribute name="Email" type="string" />
+    <aura:attribute name="sessionfacilitator" type="string" />
+    <aura:attribute name="imgUrl" type="String" default=""/>
+    <aura:attribute name="siteUrl" type="String" default=""/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="TrainingSetObj" type="Training_Settings__c" default="{ 'sobjectType' : 'buildertek__Training_Settings__c '
+                                                                             
+                                                                             
+                                                                             }"/>
+    
+    <aura:attribute name="sessionObj" type="Session_Participant__c" default="{ 'sobjectType' : 'Session_Participant__c',
+                                                                             
+                                                                             'Is_Participant_Attending__c' : '',
+                                                                             'buildertek__Participant_Name__r.LastName' : '',
+                                                                             'buildertek__Participant_Name__r.FirstName' : '',
+                                                                             'buildertek__Participant_Name__r.Phone' : '',
+                                                                             'buildertek__Participant_Name__r.Title' : '',
+                                                                             'buildertek__Participant_Name__r.Email' : ''
+                                                                             }"/>
+    <aura:attribute name="message" description="" type="String" default=""/>
+    <aura:attribute name="type" description="Message type, can be error/warning/info/success"
+                    type="String" default="info"/>
+    
+    <br/>
+    <div class="slds-p-right_xx-large" style="text-align:right;font-size: 18px;">
+       <ui:outputText value="{!v.TrainingSetObj.buildertek__Contact_Info__c}"  class="slds-col slds-size_1-of-3 slds-p-horizontal_x-small" />
+        
+    </div>
+    
+    <div style="width: 100%;text-align: center;margin-bottom: 20px;">
+        <img src="{!v.imgUrl}" id="logoImg" style="width:15%;"/>
+    </div>
+    <div class="slds-text-heading_large" style="text-align:center">
+        Training Confirmation
+    </div>
+    <br/>
+    
+    <aura:if isTrue="{!v.success}">
+        <div style="width:100%; border-radius:10px;
+                    margin:0 auto; padding:10px; position: relative;background:green;
+                    color:white;text-align:center;">
+            {!v.message}</div>
+        <div style="width:100%;text-align:center;position: relative;padding:10px;">
+            <br></br>
+            <br></br>
+            <br></br> <br></br>
+            <lightning:button variant="brand" label="Close" title="Destructive action" onclick="{! c.handleClose }" /></div>
+    </aura:if> 
+    <aura:if isTrue="{!v.error}">
+        <div style="width:100%; border-radius:10px;
+                    margin:0 auto; padding:10px; position: relative;background:red;
+                    color:white;text-align:center;">
+            {!v.message}</div>
+        
+    </aura:if> 
+    <aura:if isTrue="{!v.error1}">
+        <div style="width:100%; border-radius:10px;
+                    margin:0 auto; padding:10px; position: relative;background:red;
+                    color:white;text-align:center;">
+            {!v.message}</div>
+        <div style="width:100%;text-align:center;position: relative;padding:10px;">
+            <br></br>
+            <br></br>
+            <br></br> <br></br>
+            <lightning:button variant="brand" label="Close" title="Destructive action" onclick="{!c.handleClose}" /></div>
+    </aura:if>
+    
+    
+    <br/>
+    <br/>
+    <br/>
+    
+    <!--<div class="slds-text-align_center" Style ="width:68%;margin:0 auto;" >-->
+        <div class="slds-text-align_center" style="margin:0 auto; border:1px solid gray; 
+                                              border-radius:5px; padding:10px;width:1100px;" >
+        <div class="pageHeader slds-page-header slds-page-header_record-home">
+            <div class="slds-form__row">
+                <div class="slds-form__item" role="listitem">
+                    <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                        <label class="slds-form-element__label" >First Name</label>
+                        <div class="slds-form-element__control">
+                            <lightning:input type="text" label="" variant="label-hidden" value="{!v.sessionObj.buildertek__Participant_Name__r.FirstName}"/> 
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-form__item" role="listitem">
+                    <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                        <label class="slds-form-element__label" >Last Name</label>
+                        <div class="slds-form-element__control">
+                            <lightning:input type="text" label="LastName" variant="label-hidden" value="{!v.sessionObj.buildertek__Participant_Name__r.LastName}"/> 
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-form__row">
+                <div class="slds-form__item" role="listitem">
+                    <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                        <label class="slds-form-element__label" >Company</label>
+                        <div class="slds-form-element__control" >
+                            <lightning:input type="text" label="" variant="label-hidden" value="{!v.sessionObj.buildertek__Participant_Company__r.Name}"  />
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-form__item" role="listitem">
+                    <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                        <label class="slds-form-element__label" >Title</label>
+                        <div class="slds-form-element__control">
+                            
+                            <lightning:input  type="text"  label="" variant="label-hidden" value="{!v.sessionObj.buildertek__Participant_Name__r.Title}" />
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-form__row">
+                <div class="slds-form__item" role="listitem">
+                    <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                        <label class="slds-form-element__label" >Phone</label>
+                        <div class="slds-form-element__control">
+                            <lightning:input type="text" label="" variant="" value="{!v.sessionObj.buildertek__Participant_Name__r.Phone}"  />
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-form__item" role="listitem">
+                    <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                        <label class="slds-form-element__label" >Email</label>
+                        <div class="slds-form-element__control">
+                            <lightning:input type="text" label="" variant="" value="{!v.sessionObj.buildertek__Participant_Name__r.Email}"  />
+                        </div>
+                    </div>
+                </div>
+            </div>
+             <div class="slds-form__row">
+                <div class="slds-form__item" role="listitem">
+                    <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                        <label class="slds-form-element__label" >City</label>
+                        <div class="slds-form-element__control">
+                            <lightning:input type="text" label="" variant="" value="{!v.sessionObj.buildertek__Participant_Name__r.MailingCity}"  />
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-form__item" role="listitem">
+                    <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                        <label class="slds-form-element__label" >Street</label>
+                        <div class="slds-form-element__control">
+                            <lightning:input type="text" label="" variant="" value="{!v.sessionObj.buildertek__Participant_Name__r.MailingStreet}"  />
+                        </div>
+                    </div>
+                </div> 
+            </div>
+            <div class="slds-form__row">
+                <div class="slds-form__item" role="listitem">
+                    <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                        <label class="slds-form-element__label" >State</label>
+                        <div class="slds-form-element__control">
+                            <lightning:input type="text" label="" variant="" value="{!v.sessionObj.buildertek__Participant_Name__r.MailingState}"  />
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-form__item" role="listitem">
+                    <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                        <label class="slds-form-element__label" >Country</label>
+                        <div class="slds-form-element__control">
+                            <lightning:input type="text" label="" variant="" value="{!v.sessionObj.buildertek__Participant_Name__r.MailingCountry}"  />
+                        </div>
+                    </div>
+                </div> 
+            </div>
+            <div class="slds-form__row">
+                <div class="slds-form__item" role="listitem">
+                    <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                        <label class="slds-form-element__label" >PostalCode</label>
+                        <div class="slds-form-element__control">
+                            <lightning:input type="text" label="" variant="" value="{!v.sessionObj.buildertek__Participant_Name__r.MailingPostalCode}"  />
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-form__item" role="listitem">
+                    <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                        <label class="slds-form-element__label" ></label>
+                        <div class="slds-form-element__control">
+                            <!--<lightning:input type="text" label="" variant="" value="{!v.sessionObj.buildertek__Participant_Name__r.MailingStreet}"  />-->
+                        </div>
+                    </div>
+                </div> 
+            </div>
+        </div>
+    </div>
+    
+    <div class="demo-only demo-only--sizing slds-grid slds-wrap" aura:id="box" 
+         style="margin-top: 25px;">
+        <!--<div class="slds-size_1-of-3">
+            
+        </div>-->
+        <div class="slds-size_1-of-3"  style="margin:0 auto; border:1px solid gray; 
+                                              border-radius:5px; padding:10px;width:1100px;">
+            
+            <!-- <label  style="font-size:24px;"> Are you still planning on attending course <b>{!v.course}</b> on <b>{!v.sessiondate}</b> at 
+                <b><lightning:formattedDateTime value="{!v.sessiontime}" hour="2-digit"                                                
+                                                minute="2-digit" timeZoneName="short" hour12="true"/></b></label> -->
+            
+            <!--<label  style="font-size:24px;"> Are you still planning on attending course <b>{!v.course}</b> on <b>{!v.sessiondate}</b> at <b>{!v.sessiontime}</b> , Session Duraction is <b>{!v.sessionduration}</b> and Your Session Facilitator is <b>{!v.sessionfacilitator}</b> </label>-->
+            <label  style="font-size:24px;"> Are you still planning on attending course <b>{!v.sessionObj.buildertek__Course_Session_Scheduling__r.buildertek__Course_Name__r.Name}</b> on <b>{!v.sessionObj.buildertek__Course_Session_Scheduling__r.buildertek__Session_Date__c}</b> at <b>{!v.sessionObj.buildertek__Course_Session_Scheduling__r.buildertek__Session_Time_NEW__c}</b> , session duration is <b>{!v.sessionObj.buildertek__Course_Session_Scheduling__r.buildertek__Session_Duration__c}</b> and your session facilitator is: <b>{!v.sessionObj.buildertek__Course_Session_Scheduling__r.buildertek__Session_Facilitator__r.Name}</b> </label>
+            <lightning:radioGroup 
+                                  aura:id="mygroup"
+                                  name="radioButtonGroup"
+                                  options="{! v.options }"
+                                  value="{! v.picklistValue}"  
+                                  onchange="{! c.handleChange }"
+                                  />
+            <br/><br/>
+            
+            <button class="slds-button slds-button_brand" 
+                    onclick="{!c.savesession}">Submit</button>
+            <button class="slds-button slds-button_brand" 
+                    onclick="{!c.handleClose}">Cancel</button>   
+            
+            
+        </div>
+        
+        <!--<div class="slds-size_1-of-3">
+            
+        </div>-->
+    </div>
+    <br/><br/>
+</aura:component>

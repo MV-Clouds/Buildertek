@@ -1,0 +1,66 @@
+<aura:component controller="New_WalkThrough_Component" implements="force:hasRecordId,force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable,lightning:actionOverride,force:hasSObjectName" access="global">
+
+    <aura:attribute name="listOfFields0" type="List" />
+    <aura:attribute name="isSaveNew" type="boolean" default="false"/>
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+    <aura:attribute name="parentprojectRecordId" type="String" default="" />
+    <aura:attribute name="parentRecordId" type="String" default="" />
+    <lightning:workspaceAPI aura:id="workspace"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+
+    <aura:html tag="style">
+        .slds-modal__container{
+            width: 60% !important;
+            padding: 0 !important;
+            max-width: 80rem !important;
+        }
+    </aura:html>
+    <div class="slds-modal__container">
+        <header class="slds-modal__header">
+            <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New Walk Through</h2>
+        </header>
+        <div class="slds-modal__content" id="modal-content-id-1">
+            <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__Walk_Through_List__c" onsubmit="{!c.handleSubmit}" density="Comfy" >
+                <div class="" style="height:50vh;width:100%;overflow: auto;">
+                    <div class="slds-p-around_medium" style="background-color:white;">
+                        <lightning:layout multipleRows="true">
+                        <aura:iteration items="{!v.listOfFields0}" var="field">
+                            <aura:if isTrue="{!field.name == 'buildertek__Project__c'}">
+                                <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                                    <lightning:inputField fieldName="{!field.name}" value="{!v.parentprojectRecordId}" />
+                                </lightning:layoutItem> 
+                                <aura:set attribute="else">
+                                    <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                                        <lightning:inputField fieldName="{!field.name}"/>
+                                    </lightning:layoutItem>  
+                                </aura:set>
+                            </aura:if> 
+                        </aura:iteration>
+                    </lightning:layout>
+                    </div>
+                </div>
+                <footer aura:id="footer" class="slds-modal__footer">
+                    <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{! c.closeModel }" />
+                    <lightning:button variant="neutral" type="submit" title="Save &amp; New" label="Save &amp; New" onclick="{!c.handlesaveNnew}" />
+                    <lightning:button variant="brand" type="submit" name="save" label="Save" disabled="{!v.isDisabled}" />
+                </footer>
+            </lightning:recordEditForm>
+        </div>          
+    </div>
+
+    <aura:if isTrue="{!v.isLoading}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                    <b>Processing, Please Wait</b>
+                </div>
+            </div>
+        </div>
+    </aura:if>
+
+</aura:component>

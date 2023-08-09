@@ -1,0 +1,61 @@
+<aura:component controller="AddExistingBudgetController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global">
+    
+	<aura:attribute name="BudgetLines" type="Budget_Item__c" default="{ 'sobjectType':'Budget_Item__c',
+                                                                              'buildertek__Quantity__c':1,
+                                                                              'buildertek__Budget__c':null,
+                                                                             
+                                                                              }" access="global"/>
+    <aura:attribute name="record" type="Object"/>
+    
+    <aura:attribute name="Object" type="string"/>
+    <aura:attribute name="Fields" type="string"/>
+    <aura:attribute name="objInfo" type="sObject" default="{sobjectType : 'sObject'}" />
+    <aura:attribute name="group" type="object" access="public" description="Group details"/>
+    <aura:registerEvent name="SelectedRecordEvents" type="c:BT_LightningLookupEvent"/>
+    <aura:handler name="SelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.handleComponentEvents}"/>
+    <aura:handler name="oSelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.handleComponentEvent}"/>
+	<aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <aura:method name="refreshData" action="{!c.init}"></aura:method>
+    <aura:attribute name="groupFilter" type="string" />
+   
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth62}"/>
+    <div class="slds-modal__header" style="font-size:17px;">
+	Add To Existing Budget
+    </div>
+    <div class="slds-modal__content slds-p-around--medium">
+    	<lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__Budget_Item__c">
+    		<lightning:layout multipleRows="true">
+                <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+    				<label>Description</label>
+    				<ui:inputText  value="{!v.BudgetLines.buildertek__Description__c}" />
+    			</lightning:layoutItem>
+    			<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+    				<lightning:inputField fieldName="buildertek__Budget__c" value="{!v.BudgetLines.buildertek__Budget__c}" label="Budget"/>
+    				<!--<c:BT_LightningLookup objectAPIName="buildertek__Budget__c" IconName="standard:Budget" />-->
+    			</lightning:layoutItem>
+    			<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+    			    <lightning:inputField fieldName="buildertek__Budget_Line_Group__c" value="{!v.BudgetLines.buildertek__Budget_Line_Group__c}" label="Group"/>
+    				<!--<c:BT_LookUp _field="buildertek__Group__c" 
+    									  _sobject="buildertek__Budget_Item__c" 
+    									  _value="{!v.BudgetLines.buildertek__Group__c}"
+    									  _label=""
+    									  _filter=""
+    									  />-->
+    			</lightning:layoutItem>
+    			<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+    				<label>Quantity</label>
+    				<ui:inputText value="{!v.BudgetLines.buildertek__Quantity__c}"/>
+    			</lightning:layoutItem>
+    			<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+    				<label>Unit Price</label>
+    				<ui:inputText  value="{!v.BudgetLines.buildertek__Unit_Price__c}" />
+    			</lightning:layoutItem>
+    		</lightning:layout>
+    		
+    	</lightning:recordEditForm>
+    </div>
+    <div class="slds-modal__footer" style="margin-top:15px">
+		<button class="slds-button slds-button--neutral" onclick="{!c.closeModel}" >Cancel</button>
+		<button class="slds-button slds-button--brand" onclick="{!c.updateBudgetItemRecord}">Save</button>
+	</div>
+</aura:component>

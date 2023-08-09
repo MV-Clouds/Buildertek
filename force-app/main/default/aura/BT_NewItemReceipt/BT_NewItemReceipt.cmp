@@ -1,0 +1,108 @@
+<aura:component controller="OpenPOForVendor"
+    implements="lightning:isUrlAddressable,force:appHostable,force:lightningQuickAction,flexipage:availableForRecordHome,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes"
+    access="global">
+    <aura:attribute name="itemReceiptRecord" type="Item_Receipt__c" />
+    <aura:handler name="onSelectEvt" event="c:BT_VendorLookUpEvent" action="{!c.getLookUpValues}" />
+    <aura:attribute name="POList" type="List" default="[]" />
+    <aura:attribute name="isStatusOpen" type="Boolean" default="false" />
+    <aura:attribute name="vendorId" type="String" default="" />
+    <aura:attribute name="billId" type="String" default="" />
+    <aura:attribute name="purchaseid" type="String" default="" />
+    <aura:attribute name="projectId" type="String" default="" />
+    <aura:attribute name="parentRecordId" type="String" default="" />
+
+    <aura:attribute name="recordId" type="String" default="" />
+    <lightning:workspaceAPI aura:id="workspace" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <force:recordData aura:id="forceRecord" recordId="{!v.recordId}" targetFields="{!v.itemReceiptRecord}"
+        fields="Id,Name" mode="EDIT" />
+
+    <c:BT_Spinner />
+    <aura:html tag="style">
+        .slds-modal__container {
+            position:relative;       
+            top:6vh !important; 
+        }
+    </aura:html>
+    <div aura:id="editDialog" role="dialog" tabindex="-1" aria-labelledby="header43"
+        class="slds-modal slds-fade-in-open slds-modal_medium slds-p-horizontal_x-medium">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header">
+                <h2 class="slds-text-heading--medium">New Item Receipt</h2>
+            </div>
+            <div style="background:white;">
+                <br />
+                
+                <h3 class="slds-section__title slds-theme--shade primaryPaletteBorder test-id__section-header-container">
+                    <span class="test-id__section-header-title section-header-title slds-p-horizontal--small slds-truncate">Information</span>
+                </h3>
+                <!--<div class="slds-page-header slds-m-horizontal_large slds-m-vertical_large">
+                    <div class="slds-page-header__row">
+                        <div class="slds-page-header__col-title">
+                            <div class="slds-media__body">
+                                <div class="slds-page-header__name">
+                                    <div class="slds-page-header__name-title">
+                                        <h3>
+                                            <span class="slds-page-header__title slds-truncate"
+                                                title="Information">Information</span>
+                                        </h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> -->
+            </div>
+            <div class="slds-modal__content slds-p-around--large slds-grid slds-wrap slds-p-horizontal_x-small">
+                <br />
+                <br />
+                <c:BT_VendorLookUp selectedRecordId="{!v.vendorId}" childObjectName="buildertek__Item_Receipt__c"
+                    fieldName="buildertek__Vendor__c" />
+                <c:BT_VendorLookUp selectedRecordId="{!v.projectId}" childObjectName="buildertek__Item_Receipt__c"
+                    fieldName="buildertek__Project__c" />
+                <lightning:input aura:id="datereceived" name="DateReceived" type="date" label="Date Received"
+                    class="slds-size--1-of-2" style="padding:4px;" />
+                <c:BT_VendorLookUp selectedRecordId="{!v.billId}" childObjectName="buildertek__Item_Receipt__c"
+                    fieldName="buildertek__Bill__c" />
+                <div class="slds-size--1-of-1">
+                    <lightning:input aura:id="refNo" name="refNo" label="Ref No." class="slds-size--1-of-2 "
+                        style="padding:4px;" />
+                    <lightning:input aura:id="memo" name="Memo" label="Memo" class="slds-size--1-of-2"
+                        style="padding:4px;" />
+                </div>
+            </div>
+            <div class="{!!v.isStatusOpen?'slds-modal__footer slds-show':'slds-hide'}">
+                <center>
+                    <lightning:button variant="neutral" label="Cancel" onclick="{! c.closeReceiptItems }" />
+                    <lightning:button variant="brand" label="Save" onclick="{!c.saveRecord}" />
+                </center>
+            </div>
+        </div>
+    </div>
+    <aura:if isTrue="{!v.isStatusOpen}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+            aria-describedby="modal-content-id-1"
+            class="slds-modal slds-fade-in-open slds-modal_large slds-m-horizontal_x-large">
+
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeModel }" alternativeText="close"
+                        variant="bare-inverse" class="slds-modal__close" />
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Open PO's</h2>
+                </header>
+
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1"
+                    style="max-height:400px; height:400px !important;width:100% !important;">
+                    <c:BT_OpenPOForVendor POList="{!v.POList}" />
+                </div>
+
+                <div class="slds-modal__footer">
+                    <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}">Cancel</button>
+                    <button class="slds-button slds-button--brand" onclick="{!c.createItemReceipt}">Add PO</button>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+  <!--<div aura:id="overlay" class="slds-backdrop slds-backdrop-open"></div> -->
+</aura:component>

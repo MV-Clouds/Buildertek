@@ -1,0 +1,171 @@
+<aura:component controller="ContractDAO">
+
+	<!-- Attributes -->
+    <aura:attribute name="contractId" type="string" access="public" description="Quote id"/>
+    <aura:attribute name="headerFields" type="List" default="" description="Quote header fields"/>
+    <aura:attribute name="contractByGroupId" type="Map" access="public" default="{}" description="Section details by parent id map"/>
+    <aura:attribute name="groups" type="List" description="section detail list"/>
+    <aura:attribute name="initReference" type="Aura.Action" default="{!c.init}" description="Init Reference action used to call from child components"/>
+    <aura:attribute name="groupLoaded" type="Boolean"  default="false" description="This boolean will be true once all section list loaded through aura itration."/>
+    <aura:attribute name="groupListSize" type="Integer"  default="0" description="Section list size"/>
+    <aura:attribute name="save" type="Aura.Action"  description="Save action Reference action"/>
+    <aura:attribute name="columns" type="List"/>
+    <aura:attribute name="selectedRows" type="List"/>
+    <aura:attribute name="dummyData" type="List"/>
+    <aura:attribute name="selectedLookUpRecord" type="sObject" default="{}"/>
+    <aura:attribute name="productId" type="string"/>
+    <aura:attribute name="recId" type="string" access="global"/>
+    <aura:attribute name="productName" type="string"/>
+    <aura:attribute name="groupFilter" type="string"/> 
+    <aura:attribute name="costCode" type="string" />
+    <aura:attribute name="costCodeFilter" type="string" />
+    <aura:attribute name="Spinner" type="boolean" default="false"/>
+    <aura:attribute name="parentAttribute" type="Boolean" default="false"/>
+    <aura:handler name="oSelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.handleComponentEvent}"/>
+    <aura:attribute name="newContractLine" type="Contract_Item__c" default="{ 'sobjectType':'Contract_Item__c',
+                                                                                        'buildertek__Quantity__c':1}" access="global"/>
+     
+    <aura:registerEvent name="ClearSelectedRecordEvent" type="c:BT_CLearLightningLookupEvent"/>
+    <aura:handler name="RefreshEvent" event="c:BT_RefreshEvent" action="{!c.handleEvent}"/>
+    
+    <!-- Handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <aura:handler name="change" value="{!v.groupLoaded}" action="{!c.groupLoaded}"/>
+    
+    <aura:method name="refreshData" action="{!c.init}"></aura:method>
+    
+    <div>
+	    <aura:if isTrue="{!v.contractId!= null}">
+	        <div>
+	        	<br/>
+        		<div style="float:right;padding-right:10px;">
+	            	<lightning:button iconName="utility:add" iconPosition="left" onclick="{!c.newGroup}" label="Add Group" class="sldsButtonGroup"/>
+	            </div>
+	            <br/>
+	            
+	            <!-- inline Quote Editing -->
+			    <div aura:id="inlineEditQuote" style="margin-top:25px; margin-bottom:25px;padding:10px;">
+			        <table class="slds-table slds-table_bordered slds-table_cell-buffer" style="border:1px solid grey;border-radius: 5px;">
+			            <thead >
+			                <tr class="slds-text-title_caps">
+			                    
+			                    <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-left-radius:5px;">
+			                        <div class="slds-truncate" title="Product">Product</div>
+			                    </th>
+			                    <th style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+			                        <div class="slds-truncate" title="Quote Line">Contract Line</div>
+			                    </th>
+			                    <th style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+			                        <div class="slds-truncate" title="Cost Code">Cost Code</div>
+			                    </th>
+			                    <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+			                        <div class="slds-truncate" title="Grouping">Contract Group</div>
+			                    </th>
+			                    <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+			                        <div class="slds-truncate" title="Quantity">Quantity</div>
+			                    </th>
+			                    <th style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+			                        <div class="slds-truncate" title="Unit Price">Unit Price</div>
+			                    </th>
+			                   
+			                    <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white;  border-top-right-radius:5px;">
+			                        <div class="slds-truncate" title="Action">Action</div>
+			                    </th>     
+			                </tr>
+			            </thead>
+			            <tbody>
+			                
+			                <tr>
+			                    <td>
+			                        <c:BT_LightningLookup objectAPIName="Product2" IconName="standard:product" selectedRecord="{!v.selectedLookUpRecord}"/>
+			                    </td>
+			                    <td>
+			                        <force:inputField value="{!v.newContractLine.Name}"/>
+			                    </td>
+			                    <td>
+    		                        	<c:BT_LookUp aura:id="costCodeId" _field="buildertek__Cost_Code__c" 
+    									                  _sobject="buildertek__Contract_Item__c" 
+    									                  _value="{!v.newContractLine.buildertek__Cost_Code__c}"
+    									                  _text_value = "{!v.costCode}"
+    									                  _label=""
+    									                  _filter=""
+    									                  />
+    		                        </td>
+			                    <td>
+			                        <c:BT_LookUp aura:id="groupId" _field="buildertek__Contract_Item_Group__c" 
+									                  _sobject="buildertek__Contract_Item__c" 
+									                  _value="{!v.newContractLine.buildertek__Contract_Item_Group__c}"
+									                  _label=""
+									                  _filter=""
+									                  />
+			                    </td>
+			                    <td>
+			                        <force:inputField value="{!v.newContractLine.buildertek__Quantity__c}"/>
+			                    </td>
+			                    <td>
+			                        <force:inputField value="{!v.newContractLine.buildertek__Unit_Price__c}" />
+			                    </td>
+			                   
+			                    <td>
+			                        <lightning:buttonIcon iconName="utility:save"  alternativeText="save" onclick="{!c.saveContractLineRecord}"/>
+			                    </td>
+			                </tr>
+			                
+			            </tbody>
+                    </table>
+			        
+			    </div>
+            </div>
+	        
+	        <aura:if isTrue="{!and(v.groupListSize == 0, v.groupLoaded)}">
+	            <div class="av-list">
+	                <div style="margin-top:5rem;">
+	                    <c:BT_Illustration name="Setup" title="Add Group to Start Contract"/>
+	                </div>
+	            </div>
+	            <aura:set attribute="else">
+	            	<br/>
+	            	<div class="bttableheader">
+	            		<lightning:datatable aura:id="lineTableHead"
+							             columns="{! v.columns }"
+							             data="{!v.dummyData}"
+							             showRowNumberColumn="true"
+							         	 resizeColumnDisabled="true"
+							             keyField="Id"
+							             hideCheckboxColumn="false"
+							             minColumnWidth="108px"
+							             class="bttableheader"
+							             onrowselection="{! c.handleHeaderAction }"
+							            />
+					</div>
+	            </aura:set>
+	        </aura:if>
+	    </aura:if>
+	    <aura:if isTrue="{!v.groupListSize > 0}">
+	        <ol class="slds-accordion av-list">
+	            <aura:iteration items="{!v.groups}" var="group" loaded="{!v.groupLoaded}">
+	                <li class="slds-accordion__list-item av-item" data-id="{!group.Id}" Id="{!group.Id}">
+	                    <c:BT_ContractGroupAccordion aura:id="groupAccordion" group="{!group}" headerFields="{!v.headerFields}"
+	                    						   columns="{!v.columns}" index="{!_index}" initReference="{!v.initReference}" 
+	                    						   selectedRows="{!v.selectedRows}" lines="{!group.buildertek__Contract_Lines__r}" contractId="{!v.contractId}"
+	                    						   childAttribute="{!v.parentAttribute}"/>
+	                </li>
+	            </aura:iteration>
+	        </ol>
+	    </aura:if>
+	    <aura:if isTrue="{!v.Spinner}">
+            <div aura:id="spinnerId" class="slds-spinner_container">
+               <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                 <span class="slds-assistive-text">Loading</span>
+                 <div class="slds-spinner__dot-a"></div>
+                 <div class="slds-spinner__dot-b"></div>
+                    <div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+                
+               </div>
+            </div>
+         </aura:if>
+    </div>
+    <lightning:overlayLibrary aura:id="overlayLib"/>
+</aura:component>

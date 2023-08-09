@@ -1,0 +1,60 @@
+/*.THIS .label-hidden>label {
+    display: none;
+}
+
+.THIS lightning-icon.some-indicator {
+    background-color: #006DCC;
+    width: 2rem;
+    height: 2rem;
+}
+
+.THIS lightning-icon.some-indicator>lightning-primitive-icon>svg>use {
+    fill: white;
+    background-color: #006DCC;
+    width: 2rem;
+    height: 2rem;
+}
+.THIS .slds-form-element__label {
+    margin-top : -11px;
+    /*display : none !important;
+    visibility : hidden !important;*/
+/*}
+.THIS .caption,
+.THIS .th,
+.THIS .td {
+    text-align: right;
+   
+}*/
+.THIS lightning-icon.some-indicator {
+    background-color: #006DCC;
+    width: 2rem;
+    height: 2rem;
+}
+
+.THIS lightning-icon.some-indicator>lightning-primitive-icon>svg>use {
+    fill: white;
+    background-color: #006DCC;
+    width: 2rem;
+    height: 2rem;
+}
+
+.THIS .slds-form-element__icon {
+    display: none !important;
+}
+
+.THIS .slds-form-element__label {
+    margin-top: 0px;
+    /* display : none;
+        visibility : hidden;*/
+}
+
+.THIS .caption,
+.THIS .th,
+.THIS .th,
+.THIS .td {
+    text-align: right;
+}
+.THIS.slds-textarea{
+    padding-top:1rem !important;
+    padding-bottom:1rem !important;
+}

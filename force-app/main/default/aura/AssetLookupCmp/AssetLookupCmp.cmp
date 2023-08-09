@@ -1,0 +1,190 @@
+<!--
+	@ PURPOSE : 1. DISPLAYS ASSET RECORDS WHEN SEARCH KEYWORD PROVIDED.
+				2. FIRES COMPONENT EVENT WHEN POP-UP MODAL IS CLOSED WITH RECORD SELECTED.
+	@ Name    : AssetLookupCmp.xml
+-->
+<aura:component controller="IssueManagementCtrl" access="global">
+    <aura:attribute name="assetToIssueShape" type="Object" default="{}"/>
+	<aura:attribute name="headerText" type="String" default="" required="true"/>
+	
+	<aura:attribute name="recordIndex" type="Integer" default="-1" required="true"/>
+	
+	<aura:attribute name="searchKeyword" type="String" default="" required="false"/>
+	
+	<aura:attribute name="opportunityId" type="String" required="true"/>
+	
+	<aura:attribute name="listName" type="String" default="" required="true"/>
+	
+	<aura:attribute name="fieldName" type="String" default="" required="true"/>
+	
+	<aura:attribute name="showSpinner" type="Boolean" />
+	
+	<aura:attribute name="listOfAssetSearchedResults" type="Object[]" default="[]"/>
+	<aura:attribute name="componentName" type="string" />
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+	
+	<aura:registerEvent name="assetRecordSelectEvt" type="c:CloseAssetModalEvt"/>
+    <aura:registerEvent name="IGUassetRecordSelectEvt" type="c:CloseIGUAssetModal"/>
+	
+	<!-- START MODAL -->
+    <div style="height: 800px; width:auto;">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+				 
+			<!-- START SPINNER -->
+			<aura:if isTrue="{!v.showSpinner}">
+				<lightning:spinner alternativeText="Loading" size="large" />
+			</aura:if>
+			<!-- END SPINNER -->
+			
+            <div class="slds-modal__container">
+                
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" class="slds-modal__close"
+										  size="large" variant="bare" alternativeText="Close"
+										  onclick="{! c.closeModal }"/>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">
+						{!v.headerText}
+					</h2>
+                </header>
+				
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+					
+					<div class="searchSection">
+                        <span onkeypress="{!c.keyCheck}" onkeyup="{!c.keyCheck}">
+						<lightning:input type="search" value="{!v.searchKeyword}" />
+                        </span>
+						<button class="slds-button slds-button_brand asset_selection_btn"
+                                onclick="{!c.doInit}">Search</button>
+					</div>
+					
+					<!-- START TABLE -->
+					<div class="asset_table">
+						<table class="slds-table slds-table_bordered slds-table_cell-buffer"> 
+							<thead>
+								<tr>						
+									
+									<th scope="col">
+										<div class="slds-truncate asset_col" title="Lite Id">Lite Id</div>
+									</th>
+                                    <th scope="col">
+										<div class="slds-truncate asset_col" title="Mark Id">Mark Id</div>
+									</th>
+                                    <th scope="col">
+										<div class="slds-truncate asset_col" title="Product Code">Product Code</div>
+									</th>
+                                    <th scope="col">
+										<div class="slds-truncate asset_col" title="Product SKU">Product SKU</div>
+									</th>
+									<th scope="col">
+										<div class="slds-truncate asset_col" title="Product Name">Product Name</div>
+									</th>
+									
+									<th scope="col">
+										<div class="slds-truncate asset_col" title="Shape">Shape</div>
+									</th>
+                                    <th scope="col">
+										<div class="slds-truncate asset_col" title="Lite Width">Lite Width</div>
+									</th>
+									<th scope="col">
+										<div class="slds-truncate asset_col" title="Lite Hight">Lite Height</div>
+									</th>
+                                    <th scope="col">
+										<div class="slds-truncate asset_col" title="H1 / B1 (in.)">H1 / B1 (in.)</div>
+									</th>
+                                   <!-- <th scope="col">
+										<div class="slds-truncate asset_col" title="W1">W1</div>
+									</th>
+									<th scope="col">
+										<div class="slds-truncate asset_col" title="H1">H1</div>
+									</th>-->
+									
+									
+								</tr>
+							</thead>   
+							<tbody>
+								<aura:iteration items="{!v.listOfAssetSearchedResults}" var="recordAsset" indexVar="index">
+									<tr>
+										
+										<td>
+											<a id="{!index}" onclick="{!c.handleAssetSelect}">
+												{!recordAsset.SerialNumber}
+											</a>
+										</td>
+                                        <td>
+											<a id="{!index}" onclick="{!c.handleAssetSelect}">
+												{!recordAsset.Mark_Id__c}
+											</a>
+										</td>
+                                        <td>
+											<a id="{!index}" onclick="{!c.handleAssetSelect}">
+												{!recordAsset.ProductCode}
+											</a>
+										</td>
+										<td>
+											<a id="{!index}" onclick="{!c.handleAssetSelect}">
+												{!recordAsset.StockKeepingUnit}
+											</a>
+										</td>
+										<td>
+											<pre><a id="{!index}" onclick="{!c.handleAssetSelect}">
+												{!recordAsset.Product2.Name}
+                                                </a></pre>
+										</td>
+										
+										
+										<td>
+											<a id="{!index}" onclick="{!c.handleAssetSelect}">
+												{!recordAsset.AssetShape__c}
+											</a>
+										</td>
+                                        <td>
+											<a id="{!index}" onclick="{!c.handleAssetSelect}">
+												{!recordAsset.Lite_Width__c}
+											</a>
+										</td>
+                                         <td>
+											<a id="{!index}" onclick="{!c.handleAssetSelect}">
+												{!recordAsset.Lite_Height__c}
+											</a>
+										</td>
+                                        <td>
+											<a id="{!index}" onclick="{!c.handleAssetSelect}">
+												{!recordAsset.H1_B1_in__c}
+											</a>
+										</td>
+                                        <!--<td>
+											<a id="{!index}" onclick="{!c.handleAssetSelect}">
+												{!recordAsset.W1__c}
+											</a>
+										</td>
+										<td>
+											<a id="{!index}" onclick="{!c.handleAssetSelect}">
+												{!recordAsset.H1__c}
+											</a>
+										</td>-->
+									    
+									</tr>
+								</aura:iteration>
+							</tbody>
+						</table>
+					</div>
+					<!-- END TABLE -->
+					
+                </div> 
+                
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="brand" label="Cancel" title="Cancel"
+									  onclick="{! c.closeModal }" />   
+                </footer>
+				
+            </div>
+			
+        </section>
+		
+        <div class="slds-backdrop slds-backdrop_open"></div>
+		
+    </div>
+    <!-- END MODAL -->
+	
+</aura:component>

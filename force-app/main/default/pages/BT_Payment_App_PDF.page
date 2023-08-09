@@ -1,0 +1,1085 @@
+<apex:page showHeader="false" applyHtmlTag="false" applyBodyTag="false" controller="PaymentApplicationController" renderAs="PDF"
+    cache="true">
+    <html lang="en">
+
+    <head>
+        <style>
+            @page {
+                size: 11in 11.69in;
+            }
+
+            p {
+                line-height: 0;
+            }
+
+            .small {
+                display: block;
+
+            }
+
+            margin-top: 120px;
+            div.a {
+                line-height: 80%;
+            }
+
+            .pagenumber:before {
+
+                content: counter(page);
+
+            }
+
+            .pagecount:before {
+
+                content: counter(pages);
+
+            }
+        </style>
+    </head>
+
+    <table width="100%" height="100%" cellpadding="0px" cellspacing="0px">
+        <tr>
+            <td>
+                <table width="100%" height="100%" style="margin-top:10px;">
+                    <tr>
+
+                        <td width="70%">
+                            <font style="font-size:60px" face="Swis721LtBT-NormalItalic">
+                                <b>AIA
+                                    <sup>
+                                        <font style="font-size:18px">®</font>
+                                    </sup>&nbsp;&nbsp; Document G702
+                                    <sup>
+                                        <font style="font-size:18px">TM</font>
+                                    </sup>-1992</b>
+                            </font>
+                            <br/>
+                            <b>APPLICATION AND CERTIFICATION FOR PAYMENT</b>
+                        </td>
+
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <hr/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <table width="100%">
+                    <tr>
+                        <td width="25%" style="vertical-align: baseline;">
+                            <span style="font-size:13px;display:block" face="Swis721LtBT-NormalItalic">
+                                <b> TO OWNER:</b>
+                            </span>
+                            <!--    <span style="font-size:10px;display:block" face="Swis721LtBT-NormalItalic">
+Balfour Beatty Construction3100 McKinnon StreetDallas, Texas 75201
+</span> -->
+
+                            <span style="font-size:10px;top:0px;display:block" face="Swis721LtBT-NormalItalic">
+                                <!-- Balfour Beatty Construction -->
+                                <b>
+                                    <apex:outputField value="{!paymentApp.buildertek__Payment_Application_To__r.Name}" />
+                                </b>
+                            </span>
+
+                            <span style="font-size:10px;top:0px;display:block" face="Swis721LtBT-NormalItalic">
+                                <!-- 3100 McKinnon StreetDallas, -->
+                                <b>
+                                    <apex:outputField value="{!paymentApp.buildertek__Payment_Application_To__r.BillingStreet}"
+                                    />,&nbsp;</b>
+                            </span>
+
+                            <span style="font-size:10px;top:0px;display:block" face="Swis721LtBT-NormalItalic">
+                                <!-- Texas 75201 -->
+                                <b>
+                                    <apex:outputField value="{!paymentApp.buildertek__Payment_Application_To__r.BillingCity}"
+                                    />
+                                    <apex:outputText value="{!IF(paymentApp.buildertek__Payment_Application_To__r.BillingState != '', ',' , '')}"
+                                    />&nbsp;
+                                    <apex:outputField value="{!paymentApp.buildertek__Payment_Application_To__r.BillingState}"
+                                    />
+                                    <apex:outputText value="{!IF(paymentApp.buildertek__Payment_Application_To__r.BillingPostalCode != '', ',' , '')}"
+                                    />&nbsp;
+                                    <apex:outputField value="{!paymentApp.buildertek__Payment_Application_To__r.BillingPostalCode}"
+                                    />
+                                    <apex:outputText value="{!IF(paymentApp.buildertek__Payment_Application_To__r.BillingCountry != '', ',' , '')}"
+                                    />&nbsp;
+                                    <apex:outputField value="{!paymentApp.buildertek__Payment_Application_To__r.BillingCountry}"
+                                    />
+                                </b>
+                            </span>
+
+                            <!-- <span style="font-size:8px;top:0px;display:block;" face="Swis721LtBT-NormalItalic">
+                                    <b><apex:outputField value="{!paymentApp.buildertek__Payment_Application_To__r.BillingState}" /></b>
+                                </span>
+                                
+                                <span style="font-size:8px;top:0px;display:block;" face="Swis721LtBT-NormalItalic">
+                                    <b ><apex:outputField value="{!paymentApp.buildertek__Payment_Application_To__r.BillingCountry}" /></b>
+                                </span> -->
+                            &nbsp;
+                            <span style="font-size:13px;top:0px;display:block;line-height:1;" face="Swis721LtBT-NormalItalic">
+                                <b> FROM CONTRACTOR:</b>
+
+                            </span>
+
+                            <span style="font-size:10px;top:0px;display:block;line-height:1;" face="Swis721LtBT-NormalItalic">
+                                <!-- View, Inc. -->
+                                <b>
+                                    <apex:outputField value="{!paymentApp.buildertek__Vendor__r.Name}" />
+                                </b>
+                            </span>
+
+                            <span style="font-size:10px;top:0px;display:block;line-height:1;" face="Swis721LtBT-NormalItalic">
+                                <!-- 195 S. Milpitas Blvd , -->
+                                <b>
+                                    <apex:outputField value="{!paymentApp.buildertek__Vendor__r.BillingStreet}" />
+                                </b>
+                            </span>
+
+                            <span style="font-size:10px;display:block" face="Swis721LtBT-NormalItalic">
+                                <!-- California 95035 -->
+                                <!-- <b><apex:outputField value="{!paymentApp.buildertek__Vendor__r.BillingCity}" /></b> -->
+                                <b>
+                                    <apex:outputField value="{!paymentApp.buildertek__Vendor__r.BillingCity}" />
+                                    <apex:outputText value="{!IF(paymentApp.buildertek__Vendor__r.BillingState != '', ',' , '')}"
+                                    />&nbsp;
+                                    <apex:outputField value="{!paymentApp.buildertek__Vendor__r.BillingState}" />
+                                    <apex:outputText value="{!IF(paymentApp.buildertek__Vendor__r.BillingPostalCode != '', ',' , '')}"
+                                    />&nbsp;
+                                    <apex:outputField value="{!paymentApp.buildertek__Vendor__r.BillingPostalCode}"
+                                    />
+                                    <apex:outputText value="{!IF(paymentApp.buildertek__Vendor__r.BillingCountry != '', ',' , '')}"
+                                    />&nbsp;
+                                    <apex:outputField value="{!paymentApp.buildertek__Vendor__r.BillingCountry}" />
+                                </b>
+
+                            </span>
+
+
+                            <!-- <span style="font-size:8px;display:block;"  face="Swis721LtBT-NormalItalic">
+                                    <b><apex:outputField value="{!paymentApp.buildertek__Vendor__r.BillingState}" /></b>
+                                    <b><apex:outputField value="{!paymentApp.buildertek__Vendor__r.BillingCountry}" /></b>
+                                    
+                                </span> -->
+
+                        </td>
+                        <td width="25%" style="vertical-align: baseline;">
+                            <font style="font-size:13px;display:block" face="Swis721LtBT-NormalItalic" align="left">
+                                <b>PROJECT:</b>
+                            </font>
+                            <font style="font-size:10px;display:block" face="Swis721LtBT-NormalItalic">
+                                <!--TAVISTOCK OFFICE PHASE 1C-->
+                                <b>
+                                    <apex:outputField value="{!paymentApp.buildertek__Project__r.Name}" />
+                                </b>
+                            </font>
+
+                            <font style="font-size:10px;display:block" face="Swis721LtBT-NormalItalic">
+                                <!--6955 LAKE NONA BOULEVARD-->
+                                <b>
+                                    <apex:outputField value="{!paymentApp.buildertek__Project__r.Address__c}" />
+                                </b>
+                            </font>
+
+                            <font style="font-size:10px;display:block" face="Swis721LtBT-NormalItalic">
+                                <!-- ORLANDO, Florida 32827-7560, ORANGE County -->
+                                <b>
+                                    <apex:outputField value="{!paymentApp.buildertek__Project__r.City__c}" />
+                                    <apex:outputText value="{!IF(paymentApp.buildertek__Project__r.State__c != '', ',' , '')}"
+                                    />&nbsp;
+                                    <apex:outputField value="{!paymentApp.buildertek__Project__r.State__c}" />
+                                    <apex:outputText value="{!IF(paymentApp.buildertek__Project__r.Zip__c != '', ',' , '')}"
+                                    />&nbsp;
+                                    <apex:outputField value="{!paymentApp.buildertek__Project__r.Zip__c}" />
+                                    <apex:outputText value="{!IF(paymentApp.buildertek__Project__r.Country__c != '', ',' , '')}"
+                                    />&nbsp;
+                                    <apex:outputField value="{!paymentApp.buildertek__Project__r.Country__c}" /> </b>
+                            </font>
+                            &nbsp;
+                            <font style="font-size:13px;display:block" face="Swis721LtBT-NormalItalic" align="left">
+                                <b> VIA ARCHITECT:</b>
+                                <br/>
+                                <apex:outputField value="{!paymentApp.buildertek__Architect__r.Name}" />
+                            </font>
+
+                            <font style="font-size:10px;display:block" face="Swis721LtBT-NormalItalic">
+
+                            </font>
+
+                            <font style="font-size:10px;display:block" face="Swis721LtBT-NormalItalic">
+                            </font>
+
+                            <font style="font-size:10px;display:block" face="Swis721LtBT-NormalItalic">
+                            </font>
+                        </td>
+                        <td width="25%">
+                            <font style="font-size:10px" face="Swis721LtBT-NormalItalic">
+                                <b> APPLICATION NO: </b>
+                                <apex:outputField value="{!paymentApp.Application__c}" />
+                            </font>
+                            &nbsp;
+                            <!--  <font style="font-size:10px" face="Swis721LtBT-NormalItalic">
+
+</font>
+
+<font style="font-size:10px" face="Swis721LtBT-NormalItalic">
+
+</font>-->
+                            <br/>
+                            <font style="font-size:10px" face="Swis721LtBT-NormalItalic">
+                                <b> PERIOD TO:</b> &nbsp;&nbsp;&nbsp;&nbsp;
+                                <b>
+                                    <apex:outputField value="{!paymentApp.Period_To__c}" />
+                                </b>
+                            </font>
+                            <br/>
+                            <!-- <font style="font-size:10px" face="Swis721LtBT-NormalItalic">
+
+</font>
+<br/>
+<font style="font-size:10px" face="Swis721LtBT-NormalItalic">
+
+</font>-->
+                            <br/>
+                            <font style="font-size:10px;display:block" face="Swis721LtBT-NormalItalic">
+                                <b> CONTRACT FOR:</b> &nbsp;&nbsp;&nbsp;&nbsp;
+                                <b>
+                                    <apex:outputField value="{!paymentApp.Contract_For__c}" />
+                                </b>
+                            </font>
+                            <br/>
+                            <font style="font-size:10px;display:block" face="Swis721LtBT-NormalItalic">
+                                <b> CONTRACT DATE:</b> &nbsp;&nbsp;&nbsp;&nbsp;
+                                <b>
+                                    <apex:outputField value="{!paymentApp.Contract_Date__c}" />
+                                </b>
+                            </font>
+                            <br/>
+                            <font style="font-size:10px;display:block" face="Swis721LtBT-NormalItalic">
+                                <b> PROJECT NOS:</b> &nbsp;&nbsp;&nbsp;&nbsp;
+                                <b>
+                                    <apex:outputField value="{!paymentApp.buildertek__Project__r.Project_NOS__c}" />
+                                </b>
+                            </font>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <hr/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <table width="100%" height="100%">
+                    <tr>
+                        <td width="50%">
+
+                            <font style="font-size:15px" face="Swis721LtBT-NormalItalic">
+                                <b>CONTRACTOR'S APPLICATION FOR PAYMENT</b>
+                            </font>
+                            <div class="a" style="font-size:10px">
+                                Application is made for payment, as shown below, in connection with the Contract.
+                                <br></br>
+                                ContinuationSheet, AIA Document G703, is attached</div>
+                            <table width="100%" height="100%">
+                                <tr>
+                                    <td width="100%" align="left">
+                                        <div class="a" style="font-size:10.5px">
+                                            1. ORIGINAL CONTRACT SUM
+                                        </div>
+                                    </td>
+                                    <td width="100%" align="right">
+                                        <div class="a" style="font-size:10.5px;">
+                                            <u>
+                                                <apex:outputField value="{!paymentApp.Original_Contract_Sum__c}" />
+                                            </u>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="100%" align="left">
+                                        <div class="a" style="font-size:10.5px">
+                                            2. Net change by Change Orders
+                                        </div>
+                                    </td>
+                                    <td width="100%" align="right">
+                                        <div class="a" style="font-size:10.5px">
+                                            <u>
+                                                <apex:outputField value="{!paymentApp.Net_Change_by_Change_Orders__c}" />
+                                            </u>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="100%" align="left">
+                                        <div class="a" style="font-size:10.5px">
+                                            3. CONTRACT SUM TO DATE (Line 1 ± 2)
+                                        </div>
+                                    </td>
+                                    <td width="100%" align="right">
+                                        <div class="a" style="font-size:10.5px">
+                                            <u>
+                                                <apex:outputField value="{!paymentApp.Contract_Sum_To_Date__c}" />
+                                            </u>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="100%" align="left">
+                                        <div class="a" style="font-size:10.5px">
+                                            4. TOTAL COMPLETED AND STORED TO DATE
+                                            <br/>
+                                            <div style="margin-left:20px">(Column G on Sheet 2)</div>
+                                        </div>
+                                    </td>
+                                    <td width="100%" align="right">
+                                        <div class="a" style="font-size:10.5px">
+                                            <u>
+                                                <apex:outputField value="{!paymentApp.Total_Completed_and_Stored_To_Date__c}"
+                                                />
+                                            </u>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="100%" align="left">
+                                        <div class="a" style="font-size:10.5px">
+                                            5. HOLDBACK:
+                                            <br/>
+                                            <div style="margin-left:20px">a. {!retainageValue} % of Completed Work</div>
+                                            <div style="margin-left:30px">(Column D + E on G703)</div>
+                                            <br/>
+                                            <div style="margin-left:20px">b. {!retainageValue} % of Stored Material</div>
+                                            <div style="margin-left:30px">(Column F on G703)</div>
+                                            <br/>
+                                            <div style="margin-left:20px">Total Retainage (Lines 5a + 5b or Total in Column I of G703)</div>
+                                        </div>
+                                    </td>
+                                    <td width="100%" align="right">
+                                        <div class="a" style="font-size:10.5px;padding-top:10px">
+                                            <!-- <u> 
+                                            <apex:outputText value="{!CurrencyCode} {0, number, ###,###,###,##0.00}" >
+                                                <apex:param value="{!cd.workcompletedTotal10}" />
+                                            </apex:outputText>
+                                        </u> -->
+                                            <u>
+                                                <apex:outputField value="{!paymentApp.Retainage_of_Completed_Work_F__c}" />
+                                            </u>
+                                        </div>
+                                        <br/>
+                                        <div class="a" style="font-size:10.5px">
+                                            <u>
+                                                <apex:outputField value="{!paymentApp.Retainage_of_Stored_Material_F__c}" />
+                                            </u>
+                                        </div>
+                                        <div class="a" style="font-size:10.5px;padding-top:10px">
+                                            <!-- <u>
+                                                <apex:outputText value="{!CurrencyCode} {0, number, ###,###,###,##0.00}">
+                                                    <apex:param value="{!cd.totalWorkBy10}" />
+                                                </apex:outputText>
+                                            </u> -->
+                                            <u>
+                                                <apex:outputField value="{!paymentApp.Total_Retainage__c}" />
+                                            </u>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="100%" align="left">
+                                        <div class="a" style="font-size:10.5px">
+                                            6. TOTAL EARNED LESS RETAINAGE
+                                            <br/>
+                                            <div style="margin-left:30px">(Line 4 Less Line 5)</div>
+                                        </div>
+                                    </td>
+                                    <td width="100%" align="right">
+                                        <div class="a" style="font-size:10.5px">
+                                            <u>
+                                                <apex:outputField value="{!paymentApp.Total_Earned_Less_Retainage__c}" />
+                                            </u>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="100%" align="left">
+                                        <div class="a" style="font-size:10.5px">
+                                            7. LESS PREVIOUS CERTIFICATES FOR
+                                            <br/>
+                                            <div style="margin-left:10px">PAYMENT (Line 6 from prior Certificate) </div>
+                                        </div>
+                                    </td>
+                                    <td width="100%" align="right">
+                                        <div class="a" style="font-size:10.5px">
+                                            <u>
+                                                <apex:outputField value="{!paymentApp.Less__c}" />
+                                            </u>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="100%" align="left">
+                                        <div class="a" style="font-size:10.5px">
+                                            8. CURRENT PAYMENT DUE
+                                        </div>
+                                    </td>
+                                    <td width="100%" align="right">
+                                        <div class="a" style="font-size:10.5px">
+                                            <u>
+                                                <apex:outputField value="{!paymentApp.Current_Payment_Due__c}" />
+                                            </u>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="100%" align="left">
+                                        <div class="a" style="font-size:10.5px">
+                                            9. BALANCE TO FINISH, INCLUDING RETAINAGE
+                                            <br/>
+                                            <div style="margin-left:30px">(Line 3 less Line 6) </div>
+                                        </div>
+                                    </td>
+                                    <td width="100%" align="right">
+                                        <div class="a" style="font-size:9.5px">
+                                            <u style="margin-left:100px">
+                                                <apex:outputField value="{!paymentApp.Balance_To_Finish_Including_Retainage__c}"
+                                                />
+                                            </u>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <table width="90%" height="100%" style="border: 1px solid black;border-collapse: collapse;margin-top:20px;margin-bottom:30px;">
+                                <tr style="border: 1px solid black;border-collapse: collapse;font-size:10.5px">
+                                    <td align="center" width="50%" style="border: 1px solid black;border-collapse: collapse;margin-top:5px;">CHANGE ORDER SUMMARY</td>
+                                    <td align="center" width="25%" style="border: 1px solid black;border-collapse: collapse;">ADDITIONS </td>
+                                    <td align="center" width="25%" style="border: 1px solid black;border-collapse: collapse;">DEDUCTIONS </td>
+                                </tr>
+                                <tr style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                    <td align="left" width="50%" style="border: 1px solid black;border-collapse: collapse;margin-left:5px;">Total changes approved
+                                        <br/> in previous months by Owner</td>
+
+                                    <td align="right" width="25%" style="border: 1px solid black;border-collapse: collapse;">
+                                        <apex:outputText value="{0, number, ###,###,###,##0.00}">
+                                            <apex:param value="{!paymentApp.CO_Additions_Approved_This_Month__c}" />
+                                        </apex:outputText>
+                                    </td>
+
+                                    <td align="right" width="25%" style="border: 1px solid black;border-collapse: collapse;">
+
+                                        (
+                                        <apex:outputText value="{0, number, ###,###,###,##0.00}">
+                                            <apex:param value="{!paymentApp.CO_Deductions_Approved_in_Previous_Month__c}" />
+                                        </apex:outputText>)
+
+                                    </td>
+                                </tr>
+                                <tr style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                    <td align="left" width="50%" style="border: 1px solid black;border-collapse: collapse;margin-left:5px;">Total approved this Month</td>
+                                    <td align="right" width="25%" style="border: 1px solid black;border-collapse: collapse;">
+                                        <apex:outputText value="{0, number, ###,###,###,##0.00}">
+                                            <apex:param value="{!paymentApp.Change_Order_Additions__c}" /> </apex:outputText>
+                                    </td>
+                                    <td align="right" width="25%" style="border: 1px solid black;border-collapse: collapse;">
+                                        <apex:outputText value="{0, number, ###,###,###,##0.00}">
+                                            <apex:param value="{!paymentApp.Change_Order_Decuctions__c}" /> </apex:outputText>
+                                    </td>
+                                </tr>
+                                <tr style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                    <td align="left" width="50%" style="border: 1px solid black;border-collapse: collapse;margin-left:5px;"> TOTALS</td>
+                                    <td align="right" width="25%" style="border: 1px solid black;border-collapse: collapse;">
+
+                                        <apex:outputText value="{0, number, ###,###,###,##0.00}">
+                                            <apex:param value="{!ADDITIONS}" />
+                                        </apex:outputText>
+
+                                    </td>
+                                    <td align="right" width="25%" style="border: 1px solid black;border-collapse: collapse;">
+                                        <apex:outputText value="{0, number, ###,###,###,##0.00}">
+                                            <apex:param value="{!DEDUCTIONS}" />
+                                        </apex:outputText>
+
+
+                                    </td>
+                                </tr>
+                                <tr style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                    <td width="50%" style="border: 1px solid black;border-collapse: collapse;margin-left:5px;">NET CHANGES by Change Order</td>
+                                    <td align="right" colspan="2" width="50%" style="border: 1px solid black;border-collapse: collapse;">
+
+
+                                        <apex:outputText value="{0, number, ###,###,###,##0.00}">
+                                            <apex:param value="{!paymentApp.Net_Change_by_Change_Orders__c}" />
+                                        </apex:outputText>
+
+                                    </td>
+                                </tr>
+
+                            </table>
+
+
+                        </td>
+                        <td width="50%">
+                            <table width="100%" height="100%">
+                                <tr>
+                                    <td width="100%" align="left">
+                                        <div class="a" style="font-size:10px">
+                                            The undersigned Contractor certifies that to the best of the Contractor's knowledge
+                                            <br/> information and belief the Work covered by this Application for Payment has
+                                            been
+                                            <br/> completed in accordance with the Contract Documents, that all amounts have been
+                                            paid by
+                                            <br/> the Contractor for Work for which previous Certificates for Payment were issued
+                                            and
+                                            <br/> payments received from the Owner, and that current payment shown herein is now
+                                            due.
+                                            <br/>
+                                            <br/>
+                                            <div style="font-size:10.5px">CONTRACTOR:
+                                                <b>View, Inc.</b>
+                                            </div>
+                                            <br/>
+                                            <br/>
+                                            <br/>
+                                            <div style="font-size:10.5px">By:_________{!paymentApp.buildertek__Certified_By__r.Name}___________Date:_____________________________________</div>
+                                            <br/>
+                                            <table width="100%" height="100%">
+                                                <tr>
+                                                    <td width="50%" align="left">
+                                                        <div class="a" style="font-size:10px">State of:
+                                                            <br/>
+                                                            <div style="font-size:10px">Subscribed and sworn to before me this</div>
+                                                            <div style="font-size:10px">Notary Public:</div>
+                                                            <div style="font-size:10px">My Commission expires:</div>
+                                                        </div>
+                                                    </td>
+
+                                                    <td width="50%">
+                                                        <div class="a" style="font-size:10px">County of:
+                                                            <br/>
+                                                            <div style="font-size:10px"> </div>
+                                                            <div style="font-size:10px"></div>
+                                                            <div style="font-size:10px"></div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="2">
+                                                        <div class="a">
+                                                            <hr/>
+                                                            <b style="font-size:15px">ARCHITECT'S CERTIFICATE FOR PAYMENT</b>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="100%" align="left">
+                                        <div class="a" style="font-size:10px">
+                                            In accordance with the Contract Documents, based on on-site observations and the data
+                                            <br/> comprising the application, the Architect certifies to the Owner that to the
+                                            best of the
+                                            <br/> Architect's knowledge, information and belief the Work has progressed as indicated,
+                                            <br/> the quality of the Work is in accordance with the Contract Documents, and the
+                                            Contractor
+                                            <br/> is entitled to payment of the AMOUNT CERTIFIED.
+                                            <br/>
+                                            <br/> AMOUNT CERTIFIED . . . . . . . . . . . . . . . &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                            <u>
+                                                <apex:outputField value="{!paymentApp.Amount_Certified__c}" />
+                                            </u>
+                                            <br/>
+                                            <br/>
+                                            <i>(Attach explanation if amount certified differs from the amount applied. Initial
+                                                all figures on this</i>
+                                            <br/>
+                                            <i>Application and onthe Continuation Sheet that are changed to conform with the
+                                                amount certified.)</i>
+                                            <br/> ARCHITECT:
+                                            <br/>
+                                            <br/>
+                                            <div style="font-size:10.5px">By:_______________________________________________Date:_____________________________________</div>
+                                            <br/>
+                                            <br/> This Certificate is not negotiable. The AMOUNT CERTIFIED is payable only to
+                                            the
+                                            <br/> Contractor named herein. Issuance, payment and acceptance of payment are without
+                                            <br/> prejudice to any rights of the Owner or Contractor under this Contract.
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <hr/>
+            </td>
+        </tr>
+    </table>
+    <table width="100%" height="100%">
+        <tr>
+            <td>
+                <hr/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="a" style="font-size:10px">
+
+                    <b>AIA Document G703™ -- 1992. Copyright ©</b> 1953, 1963, 1965, 1971, 1978, 1983 and 1992 by The American
+                    Institute of Architects.
+                    <b>All rights reserved</b>.
+                    <span style="color:red">WARNING: This AIA® Document is protected by U.S. Copyright Law and International Treaties. Unauthorized
+                        reproduction or distribution of this AIA® Document, or any portion of it, may result in severe civil
+                        and criminal penalties,and will be prosecuted to the maximum extent possible under the law.</span>
+                    Purchasers are permitted to reproduce ten (10) copies of this document when completed. To report copyright violations of
+                    AIA Contract Documents, e-mail The American Institute of Architects' legal counsel, copyright@aia.org.
+                </div>
+            </td>
+        </tr>
+
+    </table>
+
+    <div style="page-break-after:always;"></div>
+
+    <table width="100%" height="100%" cellpadding="0px" cellspacing="0px">
+
+
+        <table width="100%" height="100%" style="margin-top:10px;">
+            <tr>
+                <td width="70%" style="align:center;">
+                    <font style="font-size:50px" face="Swis721LtBT-NormalItalic">
+                        <b>AIA
+                            <sup>
+                                <font style="font-size:18px">®</font>
+                            </sup>&nbsp;&nbsp; Document G702
+                            <sup>
+                                <font style="font-size:18px">TM</font>
+                            </sup>-1992</b>
+                    </font>
+                    <br/>
+                    <b> CONTINUATION SHEET</b>
+                </td>
+
+                <!--   <td width="2%"> 
+<font style="font-size:9px" face="Swis721LtBT-NormalItalic">
+Page <span class="pagenumber" style="font-size:10px" face="Swis721LtBT-NormalItalic"/> of <span class="pagecount" style="font-size:10px" face="Swis721LtBT-NormalItalic"/>
+</font>
+</td> -->
+                <td width="30%" align="right">
+                    <font style="font-size:15px" face="Swis721LtBT-NormalItalic">
+                        <b>View, Inc. - 01644822OS</b>
+                    </font>
+                </td>
+            </tr>
+
+        </table>
+
+        <tr>
+            <td>
+                <hr/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <table width="100%" height="100%">
+                    <tr>
+                        <td width="75%">
+                            <div class="a" style="font-size:10px">
+
+                                <div class="a" style="font-size:15px">
+                                    AIA Document G702, APPLICATION AND CERTIFICATION FOR PAYMENT,
+                                    <br/> containing Contractor's signed certification is attached.
+                                    <br/> In tabulations below, amounts are stated to the nearest dollar.
+                                    <br/> Use Column I on Contracts where variable retainage for line items may apply</div>
+                                <!--   <apex:outputField value="{!paymentApp.Payment_Application_To__c}" /><br/>
+<apex:outputField value="{!paymentApp.buildertek__Payment_Application_To__r.BillingStreet}" /><br/>
+<apex:outputField value="{!paymentApp.buildertek__Payment_Application_To__r.BillingCity}" /><br/>
+<apex:outputField value="{!paymentApp.buildertek__Payment_Application_To__r.BillingState}" /><br/>
+<apex:outputField value="{!paymentApp.buildertek__Payment_Application_To__r.BillingCountry}" />
+<br/><br/>
+Contractor: &nbsp;&nbsp; <apex:outputField value="{!paymentApp.buildertek__Vendor__r.Name}" /><br/>
+<div style="margin-left:57px;"><apex:outputField value="{!paymentApp.buildertek__Vendor__r.BillingStreet}" /><br/>
+<apex:outputField value="{!paymentApp.buildertek__Vendor__r.BillingCity}" /></div>
+<div style="margin-left:57px;"><apex:outputField value="{!paymentApp.buildertek__Vendor__r.BillingState}" /><br/>
+<apex:outputField value="{!paymentApp.buildertek__Vendor__r.BillingCountry}" /></div><br/><br/><br/>
+Project #: &nbsp;&nbsp;&nbsp;&nbsp; <apex:outputField value="{!paymentApp.buildertek__Project__r.Auto_Number__c}" /><br/>
+Project : &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  <apex:outputField value="{!paymentApp.Project__r.Name}" /><br/> -->
+                            </div>
+                        </td>
+                        <td width="25%" align="left">
+                            <div class="a" style="font-size:10px">
+                                <br/>
+
+                                <table>
+                                    <tr>
+                                        <td style="text-align:right;">
+                                            <b>APPLICATION NO.:</b>
+                                        </td>
+                                        <td>{!paymentApp.buildertek__Application__c}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:right;">
+                                            <b>INV#:</b>
+                                        </td>
+                                        <td>
+
+                                            <!--   <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
+<apex:param value="{!paymentApp.Period_To__c}" /> 
+</apex:outputText> -->
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:right;">
+                                            <b>APPLICATION DATE:</b>
+                                        </td>
+
+                                        <td>
+                                            <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
+                                                <apex:param value="{!paymentApp.Submission_Date__c}" />
+                                            </apex:outputText>
+                                            <!--    <apex:outputText value="{0, number, ###,###,###,##0.00}">
+{!CurrencyCode}<apex:param value="{!workCompletedthisperiod}"/>
+</apex:outputText> -->
+                                        </td>
+
+
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:right;">
+                                            <b>PERIOD TO:</b>
+                                        </td>
+
+
+                                        <td>
+                                            <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
+                                                <apex:param value="{!paymentApp.Period_To__c}" />
+                                            </apex:outputText>
+                                            <!--    <apex:outputText value="{0, number, ###,###,###,##0.00}">
+{!CurrencyCode}<apex:param value="{!balancetofinsh}"/>
+</apex:outputText> -->
+                                        </td>
+
+
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:right;">
+                                            <b>ARCHITECT'S PROJECT NO:</b>
+                                        </td>
+
+                                        <td>
+                                            {!paymentApp.buildertek__Project__r.Auto_Number__c}
+                                            <!--    <apex:outputText value="{0, number, ###,###,###,##0.00}">
+{!CurrencyCode}<apex:param value="{!retainage}"/>
+</apex:outputText> -->
+                                        </td>
+
+
+                                    </tr>
+
+
+                                </table>
+
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+
+        </tr>
+        <tr>
+            <td>
+                <hr/>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <table width="100%" height="100%" style="border: 1px solid black;border-collapse: collapse;">
+
+                    <apex:repeat value="{!wrapList}" var="record">
+                        <tr>
+                            <td colspan="11">{!record.groupVal}</td>
+                            <td colspan="11"></td>
+                        </tr>
+                        <tr style="border: 1px solid black;border-collapse: collapse;">
+                            <td align="center" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                <b>A</b>
+                            </td>
+                            <td align="center" width="20%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                <b>B</b>
+                            </td>
+                            <td align="center" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                <b>C</b>
+                            </td>
+                            <td align="center" colspan="1" width="15%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                <b>D</b>
+                            </td>
+                            <td align="center" colspan="1" width="15%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                <b>E</b>
+                            </td>
+                            <td align="center" colspan="1" width="15%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                <b>F</b>
+                            </td>
+                            <td align="center" colspan="2" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                <b>G</b>
+                            </td>
+                            <td align="center" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                <b>H</b>
+                            </td>
+                            <td align="center" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                <b>I</b>
+                            </td>
+                        </tr>
+                        <tr style="border: 1px solid black;border-collapse: collapse;">
+                            <td align="center" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                <b>ITEM NO</b>
+                            </td>
+                            <td align="center" width="20%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                <b>DESCRIPTION OF WORK</b>
+                            </td>
+                            <td align="center" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                <b>SCHEDULED VALUE ({!CurrencyCode})</b>
+                            </td>
+                            <td align="center" colspan="2" width="15%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                <b>WORK COMPLETED ({!CurrencyCode})</b>
+                                <table width="100%" height="100%" style="border: 0.2px solid black;border-collapse: collapse;">
+                                    <tr style="border: 0.2px solid black;border-collapse: collapse;">
+                                        <td align="center" width="50%" style="border: 0.2px solid black;border-collapse: collapse;font-size:10px">
+                                            <b>FROM PREVIOUS APPLICATION(D + E) ({!CurrencyCode})</b>
+                                        </td>
+                                        <td align="center" width="50%" style="border: 0.2px solid black;border-collapse: collapse;font-size:10px">
+                                            <b>THIS PERIOD ({!CurrencyCode})</b>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td align="center" colspan="1" width="15%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                <b>MATERIALS PRESENTLY STORED (NOT IN D OR E) ({!CurrencyCode})</b>
+
+                            </td>
+                            <td align="center" colspan="2" width="15%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                <b></b>
+                                <table width="100%" height="100%" style="border: 0.2px solid black;border-collapse: collapse;">
+                                    <tr style="border: 0.2px solid black;border-collapse: collapse;">
+                                        <td align="center" width="50%" style="border: 0.2px solid black;border-collapse: collapse;font-size:10px">
+                                            <b>TOTAL COMPLETED AND STORED TO DATE(D+E+F) ({!CurrencyCode})</b>
+                                        </td>
+                                        <td align="center" width="50%" style="border: 0.2px solid black;border-collapse: collapse;font-size:10px">
+                                            <b>% (G/C)</b>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td align="center" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                <b>BALANCE TO FINISH(C-G) ({!CurrencyCode})</b>
+                                <table width="100%" height="100%" style="border: 0.2px solid black;border-collapse: collapse;">
+                                    <tr style="border: 0.2px solid black;border-collapse: collapse;">
+                                        <td align="center" width="100%" style="border-collapse: collapse;font-size:10px">
+                                            <b></b>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td align="center" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                <b>RETAINAGE(IF VARIABLE RATE) ({!CurrencyCode})</b>
+                            </td>
+                        </tr>
+
+                        <apex:repeat value="{!record.sheetLines}" var="record1">
+                            <tr style="border: 1px solid black;border-collapse: collapse;">
+                                <td align="center" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">{!record1.buildertek__Item_No__c}
+                                </td>
+                                <td align="left" width="20%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">{!record1.Description_of_Work__c}
+                                </td>
+                                <td align="right" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                    <apex:outputText value="{0, number, ###,###,###,##0.00}">
+                                        <apex:param value="{!record1.Scheduled_Value__c}" />
+                                    </apex:outputText>
+                                </td>
+                                <td align="right" width="7.5%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                    <apex:outputText value="{0, number, ###,###,###,##0.00}">
+                                        <apex:param value="{!record1.Work_Completed_from_Previous_Application__c}" />
+                                    </apex:outputText>
+
+                                </td>
+                                <td align="right" width="7.5%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                    <apex:outputText value="{0, number, ###,###,###,##0.00}">
+                                        <apex:param value="{!record1.Work_Completed__c}" />
+                                    </apex:outputText>
+                                </td>
+
+                                <td align="right" width="7.5%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                    <apex:outputText value="{0, number, ###,###,###,##0.00}">
+                                        <apex:param value="{!record1.Material_Presently_Stored__c}" />
+                                    </apex:outputText>
+                                </td>
+                                <td align="right" width="7.5%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                    <apex:outputText value="{0, number, ###,###,###,##0.00}">
+                                        <apex:param value="{!record1.Total__c}" />
+                                    </apex:outputText>
+                                </td>
+                                <td align="right" width="7.5%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+
+                                    {!record1.buildertek__G_C__c}%
+                                </td>
+                                <td align="right" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                    <apex:outputText value="{0, number, ###,###,###,##0.00}">
+                                        <apex:param value="{!record1.Balance_To_Finish__c}" />
+                                    </apex:outputText>
+                                </td>
+                                <td align="right" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                    <apex:outputText value="{0, number, ###,###,###,##0.00}">
+                                        <apex:param value="{!record1.New_Retainage__c}" />
+                                    </apex:outputText>
+                                </td>
+                            </tr>
+                        </apex:repeat>
+
+                        <tr style="border: 1px solid black;border-collapse: collapse;">
+                            <td align="right" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px"></td>
+                            <td align="right" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">Sub Total</td>
+                            <td align="right" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                <apex:outputText value="{0, number, ###,###,###,##0.00}">
+                                    <apex:param value="{!calcMap[record.groupVal].scheduleValueTotal1}" />
+                                </apex:outputText>
+                            </td>
+
+                            <td align="right" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                <apex:outputText value="{0, number, ###,###,###,##0.00}">
+                                    <apex:param value="{!calcMap[record.groupVal].workFromPrevAppTotal1}" />
+                                </apex:outputText>
+                            </td>
+                            <td align="right" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                <apex:outputText value="{0, number, ###,###,###,##0.00}">
+                                    <apex:param value="{!calcMap[record.groupVal].workcompletedTotal1}" />
+                                </apex:outputText>
+                            </td>
+
+                            <td align="right" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                <apex:outputText value="{0, number, ###,###,###,##0.00}">
+                                    <apex:param value="{!calcMap[record.groupVal].materialsStoredTotal1}" />
+                                </apex:outputText>
+                            </td>
+                            <td align="right" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                <apex:outputText value="{0, number, ###,###,###,##0.00}">
+                                    <apex:param value="{!calcMap[record.groupVal].totalCompletedStored1}" />
+                                </apex:outputText>
+                            </td>
+                            <td align="right" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+
+                            </td>
+                            <td align="right" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                <!--     <apex:outputText value="{0, number, ###,###,###,##0.00}" > 
+<apex:param value="{!calcMap[record.groupVal]}" />
+</apex:outputText>  -->
+
+
+
+                            </td>
+                            <td align="right" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                                <!--   <apex:outputText value="{0, number, ###,###,###,##0.00}" >
+<apex:param value="{!calcMap[record.groupVal].retainage1}" />
+</apex:outputText> -->
+                                <apex:outputText value="{0, number, ###,###,###,##0.00}">
+                                    <apex:param value="{!calcMap[record.groupVal].balancetofinsh1}" />
+                                </apex:outputText>
+                            </td>
+                        </tr>
+                    </apex:repeat>
+
+                    <tr style="border: 1px solid black;border-collapse: collapse;">
+                        <td align="left" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+
+                        </td>
+                        <td align="right" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px;font-face:bold;">
+                            Total
+                        </td>
+                        <td align="right" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                            <apex:outputText value="{0, number, ###,###,###,##0.00}">
+                                <apex:param value="{!scheduleValueTotal}" />
+                            </apex:outputText>
+
+                        </td>
+                        <td align="right" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                            <apex:outputText value="{0, number, ###,###,###,##0.00}">
+                                <apex:param value="{!cd.workFromPrevAppTotal}" />
+                            </apex:outputText>
+                        </td>
+                        <td align="right" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                            <apex:outputText value="{0, number, ###,###,###,##0.00}">
+                                <apex:param value="{!cd.workcompletedTotal}" />
+                            </apex:outputText>
+                        </td>
+
+                        <td align="right" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                            <apex:outputText value="{0, number, ###,###,###,##0.00}">
+                                <apex:param value="{!cd.materialsStoredTotal}" />
+                            </apex:outputText>
+                        </td>
+                        <td align="right" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+
+                            <apex:outputText value="{0, number, ###,###,###,##0.00}">
+                                <apex:param value="{!cd.totalCompletedStored}" />
+                            </apex:outputText>
+                        </td>
+                        <td align="right" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                            <apex:outputText value="{!ROUND(cd.gcTotal, 2)}" />%
+                            <!--2 is your decimal places -->
+
+                        </td>
+                        <td align="right" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                            <apex:outputText value="{0, number, ##,##,##,##0.00}">
+                                <apex:param value="{!cd.balanceTotal}" />
+                            </apex:outputText>
+                        </td>
+                        <td align="right" width="7%" style="border: 1px solid black;border-collapse: collapse;font-size:10px">
+                            <apex:outputText value="{0, number, ##,##,##,##0.00}">
+                                <apex:param value="{!balancetofinsh}" />
+                            </apex:outputText>
+
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+
+    </table>
+
+    <table width="100%" height="100%">
+        <tr>
+            <td>
+                <hr/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="a" style="font-size:10px">
+                    <b>AIA Document G703™ -- 1992. Copyright ©</b> 1953, 1963, 1965, 1971, 1978, 1983 and 1992 by The American
+                    Institute of Architects.
+                    <b>All rights reserved.</b>
+                    <span style="color:red">WARNING: This AIA® Document is protected by U.S. Copyright Law and International Treaties. Unauthorized
+                        reproduction or distribution of this AIA® Document, or any portion of it, may result in severe civil
+                        and criminal penalties,and will be prosecuted to the maximum extent possible under the law.</span>
+                    Purchasers are permitted to reproduce ten (10) copies of this document when completed. To report copyright violations of
+                    AIA Contract Documents, e-mail The American Institute of Architects' legal counsel, copyright@aia.org.
+                </div>
+            </td>
+        </tr>
+
+    </table>
+
+    </html>
+</apex:page>

@@ -1,0 +1,494 @@
+<aura:component controller="ManageVendorSOVController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,lightning:isUrlAddressable,force:hasRecordId,force:lightningQuickActionWithoutHeader,forceCommunity:availableForAllPageTypes,forceCommunity:layout" access="global" >
+    <lightning:workspaceAPI aura:id="workspace" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <aura:attribute name="currencycode" type="String"/>
+    
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="ManageSovId" type="String" />
+    <aura:attribute name="ProjectId" type="String" />
+    <aura:attribute name="SOVName" type="String" />
+    <aura:attribute name='sovLineList' type='List'/>
+    <aura:attribute name="sovsList" type="list"/>
+    <aura:attribute name="isApproveClick" type="Boolean" />
+    <aura:attribute name="isApproveAllClick" type="Boolean" />
+    <aura:attribute name="isApproveAllexceptRejectClick" type="Boolean" />
+    <aura:attribute name="isRejectClick" type="Boolean" />
+    
+    <aura:attribute name="isCommUser" type = "Boolean" />
+    
+    <aura:attribute name="RejectSOVid" type="String" />
+    <aura:attribute name="ApprovedSOVid" type="String" />
+    <aura:attribute name="rejectionreason" type="String" />
+    <aura:attribute name="editreject" type="String" />
+    <aura:attribute name='sovLineListIds' type='List'/>
+    <aura:attribute name="hideheadCheck" type="Boolean" />
+    <aura:attribute name="ApprovedToggle" type="Boolean" default="false"/>
+    <aura:attribute name="RejectedToggle" type="Boolean" default="false"/>
+    <aura:attribute name="PendingToggle" type="Boolean" default="false"/>
+    <aura:attribute name="VendorSubmittedToggle" type="Boolean" default="false"/>
+    <aura:attribute name="AllToggle" type="Boolean" default="true"/>
+    <aura:attribute name="CompanySubmittedToggle" type="Boolean" default="false"/>
+    
+    <aura:attribute name="SOVstatus" type="String" />
+    <aura:attribute name="SOVType" type="String" />
+    <aura:attribute name="aggvalue" type="Integer" />
+    <aura:attribute name="SOVtotaltext" type="String" />
+    
+    <aura:attribute name="listOfSelectedSOVIds" type="List" default="[]"/>
+    
+    
+    
+    
+    <div class="slds-card " style="background: var(--lwc-pageHeaderColorBackground, rgb(243, 242, 242)); padding: 10px">
+        <div class="slds-grid slds-gutters cardCss  slds-p-around_small">
+            <div class="slds-col">
+                <span>
+                    <span style=" color: #6b6d70;">SOV</span>
+                    <h2 class="slds-card__header-title">
+                        <span>
+                            
+                            <a href="javascript:void()"  onclick="{!c.NavToSovRec}">{!v.SOVName}</a>
+                            
+                        </span>
+                    </h2>
+                </span>
+            </div>
+            
+            <div class="slds-col">  
+                <div class="slds-col">
+                    <div class="slds-m-around--small">
+                        <div class="slds-form-element">
+                            <!--<lightning:formattedNumber value="{!v.aggvalue}" currencyDisplayAs="code" currencyCode="USD" style="currency"/>-->
+                            <!--{!v.aggvalue} -->
+                            <div class="btn-group" role="group">
+                                <aura:if isTrue="{!v.AllToggle}">
+                                    <span onclick="{!c.AllToggle}">
+                                        <button type="button" class="btn-group btn-group-justified bgm" style="width:90px;margin-right: 3px;height:32px" >All</button>
+                                    </span>
+                                    <aura:set attribute="else">
+                                        <span onclick="{!c.AllToggle}">
+                                            <button type="button" class="btn-group btn-group-justified btm" style="width:90px;margin-right: 3px;height:32px">All</button>
+                                        </span>
+                                    </aura:set>
+                                </aura:if>
+                                
+                                
+                                
+                                <aura:if isTrue="{!v.ApprovedToggle}">
+                                    <span onclick="{!c.changeApprovedToggle}" style="">
+                                        <button type="button" class="btn-group btn-group-justified bgm" style="margin-right: 3px;height:32px">Approved</button>
+                                    </span>
+                                    <aura:set attribute="else">
+                                        <span onclick="{!c.changeApprovedToggle}" >
+                                            <button type="button" class="btn-group btn-group-justified btm" style="width:90px;margin-right: 3px;height:32px">Approved</button>
+                                        </span>
+                                    </aura:set>
+                                </aura:if>
+                                
+                                
+                                <aura:if isTrue="{!v.RejectedToggle}">
+                                    <span onclick="{!c.ChangeRejectedToggle}" >
+                                        <button type="button" class="btn-group btn-group-justified bgm" style="margin-right: 3px;height:32px">Rejected</button>
+                                    </span>
+                                    <aura:set attribute="else">
+                                        <span onclick="{!c.ChangeRejectedToggle}">
+                                            <button type="button" class="btn-group btn-group-justified btm" style="width:90px;margin-right: 3px;height:32px">Rejected</button>
+                                        </span>
+                                    </aura:set>
+                                </aura:if> 
+                                
+                                <aura:if isTrue="{!v.VendorSubmittedToggle}">
+                                    <span onclick="{!c.changeVendorSubmittedToggle}" >
+                                        <button type="button" class="btn-group btn-group-justified bgm" style="margin-right: 3px;height:32px;width:129px!important">Vendor Submitted</button>
+                                    </span>
+                                    <aura:set attribute="else">
+                                        <span onclick="{!c.changeVendorSubmittedToggle}">
+                                            <button type="button" class="btn-group btn-group-justified btm" style="width:90px; margin-right: 3px;height:32px;width:129px!important">Vendor Submitted</button>
+                                        </span>
+                                    </aura:set>
+                                </aura:if>
+                                
+                                
+                                <aura:if isTrue="{!v.CompanySubmittedToggle}">
+                                    <span onclick="{!c.changeCompanySubmittedToggle}" >
+                                        <button type="button" class="btn-group btn-group-justified bgm" style="margin-right: 3px;height:32px;width:11rem!important">Company Submitted</button>
+                                    </span>
+                                    <aura:set attribute="else">
+                                        <span onclick="{!c.changeCompanySubmittedToggle}">
+                                            <button type="button" class="btn-group btn-group-justified btm" style="margin-right: 3px;height:32px;width:11rem!important">Company Submitted</button>
+                                        </span>
+                                    </aura:set>
+                                </aura:if> 
+                                
+                                
+                                
+                                
+                                <aura:if isTrue="{!v.PendingToggle}">
+                                    <span onclick="{!c.changePendingToggle}" >
+                                        <button type="button" class="btn-group btn-group-justified bgm" style="margin-right: 3px;height:32px">Pending</button>
+                                    </span>
+                                    <aura:set attribute="else">
+                                        <span onclick="{!c.changePendingToggle}">
+                                            <button type="button" class="btn-group btn-group-justified btm" style="width:90px; margin-right: 3px;height:32px">Pending</button>
+                                        </span>
+                                    </aura:set>
+                                </aura:if> 
+                                
+                                
+                                
+                                
+                                
+                                
+                            </div>
+                            
+                            
+                        </div> 
+                    </div> 
+                </div>
+                
+                <div class="slds-col">
+                    <div class="slds-m-around--small">
+                        <div class="slds-form-element">
+                            <div class="flex-container">
+                                <div>
+                                    {!v.SOVtotaltext} :&nbsp;
+                                </div>
+                                <div>
+                                    <!--  <b><lightning:formattedNumber value="{!v.aggvalue}" currencyDisplayAs="code" currencyCode="USD" style="currency"/></b> -->
+                                    
+                                    <b> <lightning:formattedNumber value="{!v.aggvalue}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code"/>  </b>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            
+            
+            
+            
+            <!-- <lightning:button iconPosition="left" onclick="{!c.ApproveSOVs}" label="Approve"
+                              class="sldsButtonGroup" />
+            
+            <lightning:button iconPosition="left" onclick="{!c.RejectSOVs}" label="Reject"
+                              class="sldsButtonGroup" />-->
+            
+            <span style="height:40px;margin-top: 7px;padding-right:12px">
+                <lightning:button iconPosition="left" onclick="{!c.ApproveAllSOVs}" label="Approve All" 
+                                  class="sldsButtonGroup" />
+            </span>
+            
+            <span style="height:40px;margin-top: 7px;">
+                <lightning:button iconPosition="left" onclick="{!c.ApproveAllSOVsexceptReject}" label="Approve All Except Reject" 
+                                  class="sldsButtonGroup" />
+            </span>
+            
+        </div>
+    </div>
+    
+    <div style = "height:3%;">
+        
+    </div>
+    
+    
+    
+    <div>
+        <table class='slds-table slds-table--bordered slds-table--cell-buffer' style = "border-radius : 6px;">
+            <thead style = "height:40px; border-radius : 40px;">
+                <tr class='slds-text-title--caps' style = "border-radius : 40px;">
+                    <!--<th class="slds-is-sortable" scope="col" width="5px" style="background-color:rgb(243, 242, 242) color:white; border-radius : 6px;">
+                        <lightning:input type="checkbox" aura:id="headCheckRFQ" checked="false" onchange="{!c.selectAllRfq}" disabled="{!v.hideheadCheck}" /> 
+                    </th>-->
+                    <!-- <th style = "width:1%; border-radius: 9px;"></th>-->
+                    <th scope='col' style = "width:5%; border-radius: 3px;">
+                        <div class='slds-truncate' title='S.No'>Item No</div>
+                    </th>
+                    <th scope='col' style = "width:10%;">
+                        <div class='slds-truncate' title='SOV Line Number'>SOV Line Number</div>
+                    </th>
+                    <th scope='col' style = "width:7%;">
+                        <div class='slds-truncate' title='Vendor'>Vendor</div>
+                    </th>
+                    <th scope='col' style = "width:25%;">
+                        <div class='slds-truncate' title='Description of Work'>Description of Work</div>
+                    </th>
+                    <th scope='col' style = "width:10%;">
+                        <div class='slds-truncate' title='Scheduled Value'>Scheduled Value</div>
+                    </th>
+                    
+                  <!--  <th scope='col' style = "width:10%;">
+                        <div class='slds-truncate' title='Scheduled Value'>Original Scheduled Value</div>
+                    </th> -->
+                    
+                    <th scope='col' style = "width:10%;">
+                        <div class='slds-truncate' title='Scheduled Value'>Status</div>
+                    </th>
+                    
+                    <th style="width:3px">
+                        
+                    </th>
+                    
+                    <th>
+                        
+                    </th>
+                    
+                    <th></th>
+                    
+                    
+                    <th style="padding-left:30px" >
+                        <div class='slds-truncate' title='Reject Reason'>Reject Reason</div>
+                    </th>
+                    
+                    <th style = "border-radius : 6px;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <aura:iteration items="{!v.sovLineList}" var="sov" indexVar="recIndex">
+                    <tr >
+                        
+                        <!--<td>
+                            
+                            <aura:if isTrue="{!sov.buildertek__Status__c == 'Approved'}">
+                                
+                                <aura:set attribute="else">
+                                    <lightning:input type="checkbox" aura:id="checkRFQ"  checked="{!sov.isChecked}" name="{!sov.Id}" onchange="{!c.selectRfq}"/>
+                                </aura:set>
+                            </aura:if> 
+                            
+                            
+                        </td>-->
+                        
+                        <td>
+                            {!sov.buildertek__Item__c}
+                        </td>
+                        
+                        <td>
+                            <ui:outputURL
+                                          value="{!'/one/one.app?#/sObject/'+ sov.Id + '/view'}"
+                                          target="_blank" label="{!sov.Name}" />
+                        </td>
+                        
+                        <td>
+                            {!sov.buildertek__Vendor__r.Name}
+                        </td>
+                        
+                        <td>
+                            {!sov.buildertek__Description_of_Work__c}
+                        </td>
+                        
+                        <td>
+                            
+                            <!--   <lightning:formattedNumber value="{!sov.buildertek__Scheduled_Value__c}" currencyDisplayAs="code" currencyCode="USD" style="currency"/> -->
+                            
+                            <lightning:formattedNumber value="{!sov.buildertek__Scheduled_Value__c}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code"/>
+                            
+                        </td>
+                        
+                       <!-- <td>
+                            <lightning:formattedNumber value="{!sov.buildertek__Original_Scheduled_Value__c}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code"/>
+                            
+                        </td> -->
+                        
+                        
+                        <td>
+                            <aura:if isTrue="{!or(sov.buildertek__Status__c == 'Rejected',sov.buildertek__Status__c == 'Approved')}">
+                                <aura:if isTrue="{!sov.buildertek__Status__c == 'Rejected'}">
+                                    Company Rejected
+                                    <aura:set attribute="else">
+                                        Company Approved
+                                    </aura:set>
+                                </aura:if>
+                                <aura:set attribute="else">
+                                    {!sov.buildertek__Status__c}
+                                </aura:set>
+                            </aura:if>
+                            
+                            
+                        </td>
+                        
+                        <td>
+                            
+                            
+                            <aura:if isTrue="{!sov.buildertek__Status__c == 'Approved'}">
+                                &nbsp;&nbsp;
+                                <span style="cursor: pointer" data-index="{!parentGroupIndex+'_'+subGroupIndex+'_'+recIndex}">
+                                    <!--  <lightning:icon iconName="utility:check" class="iconClrforapp" title = "Approved"
+                                                    size="xx-small" />-->
+                                    <lightning:icon iconName="action:approval" title = "Approved"  class=""
+                                                    size="xx-small"  style = " padding-top:0.1rem; padding-bottom:0.1rem; padding-left:0.1rem; padding-right:0.1rem; height:1rem; padding-top:0rem; padding-right:0.0rem; background-color: green;"/>
+                                </span>
+                                <aura:set attribute="else">
+                                    &nbsp;&nbsp;
+                                    <span style="cursor: pointer" data-index="{!sov.Id}" onclick="{!c.ApproveSOVs}">
+                                        <lightning:icon iconName="utility:check"
+                                                        size="xx-small" />
+                                    </span>&nbsp;&nbsp;
+                                </aura:set>
+                            </aura:if>
+                            
+                        </td>
+                        
+                        
+                        
+                        
+                        <td>
+                            <aura:if isTrue="{!sov.buildertek__Status__c == 'Rejected'}">
+                                <span style="cursor: pointer" data-index="{!parentGroupIndex+'_'+subGroupIndex+'_'+recIndex}">
+                                    <lightning:icon iconName="utility:warning" class="iconClr" title="{!sov.buildertek__Rejection_Reason__c}" 
+                                                    size="xx-small" />
+                                </span>
+                                <aura:set attribute="else">
+                                    
+                                    <span style="cursor: pointer" data-index="{!sov.Id}" onclick="{!c.RejectSOVs}">
+                                        <lightning:icon iconName="utility:close"
+                                                        size="xx-small" />
+                                    </span>
+                                </aura:set>
+                            </aura:if>                            
+               
+                        </td>
+                        
+                        <td>
+                            
+                            <aura:if isTrue="{!(sov.buildertek__Scheduled_Value__c == sov.buildertek__Original_Scheduled_Value__c)}">
+                                
+                                <aura:set attribute="else">
+                                     <span style="cursor: pointer" data-index="{!parentGroupIndex+'_'+subGroupIndex+'_'+recIndex}">
+                                    <lightning:icon iconName="utility:contract_alt" class="iconClr3" title="{!sov.buildertek__Original_Scheduled_Value__c}" 
+                                                    size="xx-small" />
+                                </span>
+                                </aura:set>
+                            </aura:if>
+                        </td>
+                     
+                        <td style="padding-left:30px" class="slds-cell-wrap ">
+                            
+                            <aura:if isTrue="{!sov.buildertek__Status__c == 'Rejected'}">
+                                {!sov.buildertek__Rejection_Reason__c}
+                                
+                            </aura:if>
+                      
+                            
+                        </td>
+                        
+                        <td>
+                            <aura:if isTrue="{!sov.buildertek__Rejection_Reason__c != null}">
+                                <aura:if isTrue="{!sov.buildertek__Status__c != 'Company Submitted'}"> 
+                                    <span  style="cursor: pointer" data-index="{!sov.buildertek__Rejection_Reason__c+'_'+sov.Id}" onclick="{!c. EditRejectSOVs}" >
+                                        <lightning:Icon iconName="utility:edit"   alternativeText="Edit" size="xx-small" id="{!v.rejectionreason}"  title = "Edit" />
+                                        
+                                    </span>
+                                </aura:if>
+                            </aura:if>
+                        </td>
+                        
+                    </tr>
+                    
+                </aura:iteration>
+            </tbody>
+        </table>
+    </div>
+    
+    
+    <footer class="slds-modal__footer" >
+        <button class="slds-button slds-button--neutral" onclick="{!c.closeModal}">Cancel</button>
+        <button class="slds-button slds-button_brand" onclick="{!c.closeModal}">Save</button>
+    </footer>   
+    
+    
+    
+    <aura:if isTrue='{!v.isApproveClick}'>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="min-width:30rem;">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Approve Selected SOV Lines
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height:50px; text-align: center;">
+                    Are you sure you want to Approve the Selected SOV Lines?
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button label="No" title="No" onclick="{!c.cancelApprove}" />
+                    <lightning:button variant="neutral" label="Yes" title="Yes" onclick="{!c.confirmApprove}" />
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    
+    
+    <aura:if isTrue='{!v.isRejectClick}'>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="min-width:30rem;">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Reject SOV Line
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height:50px">
+                    <div class="slds-p-around_large">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-col slds-size_6-of-12">
+                                <lightning:textarea value="{!v.rejectionreason}" required="true" label = "Reject Reason"/>
+                            </div>
+                            <div class="slds-col slds-size_6-of-12">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button label="No" title="No" onclick="{!c.cancelReject}"/>
+                    <lightning:button variant="neutral" label="Yes" title="Yes" onclick="{!c.confirmReject}" />
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    
+    
+    <aura:if isTrue='{!v.isApproveAllClick}'>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="min-width:30rem;">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Approve All SOV Lines
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height:50px; text-align: center;">
+                    Are you sure you want to Approve All the SOV Lines?
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button label="No" title="No" onclick="{!c.cancelApprove}" />
+                    <lightning:button variant="neutral" label="Yes" title="Yes" onclick="{!c.confirmApproveAll}" />
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    
+        <aura:if isTrue='{!v.isApproveAllexceptRejectClick}'>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="min-width:30rem;">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Approve All SOV Lines Except Reject
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height:50px; text-align: center;">
+                    Are you sure you want to Approve All the SOV Lines Except Reject?
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button label="No" title="No" onclick="{!c.cancelApproveexceptReject}" />
+                    <lightning:button variant="neutral" label="Yes" title="Yes" onclick="{!c.confirmApproveAllExceptReject}" />
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    
+    
+</aura:component>

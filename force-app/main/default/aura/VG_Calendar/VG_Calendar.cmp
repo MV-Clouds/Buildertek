@@ -1,0 +1,26 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes" 
+                access="global"
+                controller="VG_FetchCalendarEvents">
+    
+	<ltng:require styles="{!$Resource.FullCalendar  + '/fullcalendar-3.9.0/fullcalendar.css'}" 
+                  scripts="{!join(',',
+                          $Resource.carousel + '/carousel/jquery/jquery.js',
+						  $Resource.FullCalendar  + '/fullcalendar-3.9.0/lib/moment.min.js',
+                          $Resource.FullCalendar  + '/fullcalendar-3.9.0/fullcalendar.js')}" 
+                  afterScriptsLoaded="{!c.scriptsLoaded}" />
+    
+    <!-- Attributes-->
+    <aura:attribute name="Objectlist" type="Object[]"/>
+    
+    <!-- Markup -->
+    <lightning:layout multipleRows="false" horizontalAlign="space">
+        
+        <lightning:layoutItem size="11">
+            <h2 class="slds-truncate slds-text-heading--small slds-p-around_small" style="font-family:Gotham-Bold;font-size:16px">Events Calendar
+    		<span style=" float: right;"><a style="test-decoration:none;color:#F06C5C;font-family:gotham-medium;font-size:14px" onclick="{! c.viewAll }" >View All</a></span></h2>
+    
+        	<div id='calendar' class="slds-p-around_small"></div>
+        </lightning:layoutItem>
+    
+    </lightning:layout>
+</aura:component>

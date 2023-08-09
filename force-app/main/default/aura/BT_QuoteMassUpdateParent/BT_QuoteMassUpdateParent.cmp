@@ -1,0 +1,8 @@
+<aura:component
+    implements="force:appHostable,force:lightningQuickActionWithoutHeader,flexipage:availableForRecordHome,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes"
+    access="global" controller="MassUpdateQuote">
+    <lightning:navigation aura:id="navService" />
+    <aura:attribute name="pageReference" type="Object" />
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}" />
+
+</aura:component>

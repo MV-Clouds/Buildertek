@@ -1,0 +1,25 @@
+<aura:component controller="RelatedScheduleOfValuesLinesController" implements="flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global" >
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="ScheduleOfValuesLineList" type="Schedule_of_Value_Lines__c[]"/>    
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="ScheduleofValuesId" type="Id" />
+    <aura:attribute name="data" type="list"/>
+    <aura:attribute name="columns" type="List"/>
+
+	<aura:html tag="style">
+    	.slds-card.slds-card_boundary{
+        	background: #f3f3f3;
+        }
+    </aura:html>
+    
+    <lightning:card iconName="custom:custom5" class="slds-card_boundary" title="Schedule of Values Lines">
+		<div style="max-height:48vh;overflow: auto;">        
+        <lightning:datatable aura:id="itemsTable"   data="{!v.ScheduleOfValuesLineList}" 
+                             columns="{!v.columns }" 
+                             keyField="Id"                         
+                             hideCheckboxColumn="true"
+                             onrowaction="{!c.handleRowAction}"
+                             />
+        </div>
+    </lightning:card>
+</aura:component>

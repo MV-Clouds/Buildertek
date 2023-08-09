@@ -1,0 +1,42 @@
+.THIS .asset_table {
+	overflow-x: scroll !important;
+    height: 250px;
+    
+}
+
+.THIS .asset_table pre a{
+	font-size: 1.1em !important;
+    
+}
+
+.THIS .asset_table table td pre {
+      white-space: pre-wrap;       /* css-3 */
+      white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+      white-space: -pre-wrap;      /* Opera 4-6 */
+      white-space: -o-pre-wrap;    /* Opera 7 */
+      word-wrap: break-word;       /* Internet Explorer 5.5+ */
+      width: 200px;
+    }
+
+.THIS .asset_col {
+	width : 150px;
+}
+
+.THIS .searchSection {
+    display : inline-flex;
+    margin-bottom: 10px;
+}
+
+.THIS .asset_selection_btn {
+ 	height: 32px !important;
+	margin-top: 17px;
+    margin-left: 10px; 
+}
+
+.THIS th{
+    background: #e4e4e2 !important;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    
+}

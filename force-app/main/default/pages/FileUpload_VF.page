@@ -1,0 +1,27 @@
+<apex:page controller="FileUpload" showHeader="false" standardStylesheets="false">
+<head>
+<script type="text/javascript">
+
+function SelectFile( fileUrl )
+{
+
+// window.opener.SetUrl( url, width, height, alt);
+parent.SetUrl( fileUrl ) ;
+}
+</script>
+</head>
+    <apex:messages />
+    <apex:form >
+    <apex:inputFile value="{!document.body}" filename="{!document.name}"/>
+    <br />
+    <apex:commandButton value="save" action="{!doUpload}" />
+    </apex:form>
+    <apex:pageBlock rendered="{!hasImage}" >
+        <img src="{!url}"  width="200" height="160" />
+        <script>
+            this.onload = function() {
+                SelectFile('{!url}');
+            }
+        </script>
+    </apex:pageBlock>
+</apex:page>

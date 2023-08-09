@@ -1,0 +1,131 @@
+<aura:component controller="VG_UserDataAccess" access="global" implements="forceCommunity:availableForAllPageTypes,force:appHostable,flexipage:availableForAllPageTypes">
+    
+    <aura:attribute name="whiteFG" type="boolean" default="true"/>
+    <aura:attribute name="profileMenu" type="Aura.Component[]" required="false"/>
+    <aura:attribute name="isAdmin" type="boolean" default="false"/>
+    <aura:attribute name="profileName" type="string" />
+    <aura:attribute name="communityPrefix" type="string" />
+    <aura:attribute name="AllDepartments" type="List" />
+    <aura:attribute name="AllDepartmentWithNav" type="Map" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <div class="{!(v.whiteFG)?'topnav whiteFG':'topnav BlackFG'}"   id="myTopnav">
+        <div class="slds-grid slds-wrap">
+            <div class="slds-col slds-size_2-of-12">
+                <div class="icon2">                    
+                    <a href="{! v.communityPrefix }" style="padding-top: 0px;" > 
+                        <aura:if isTrue="{!v.whiteFG}">                   
+                            <img src="{!$Resource.ViewGlassLogo}" />
+                            <aura:set attribute="else">
+                                <img  src="{!$Resource.WhiteNavBarUpdatedLogo}"/>
+                            </aura:set> 
+                        </aura:if>
+                    </a>
+                </div>
+            </div>
+            <!--home button removed in all pages
+            <div class="slds-col slds-large-size_1-of-12 slds-small-medium-size-1-of-1 dropdown">  
+            <div class="dropbtn">  
+                <a href="/" class="active paddngBottomHome" style="padding-top: 6px;">Home</a> </div>
+            </div>
+             -->
+            <aura:if isTrue="{!not(empty(v.AllDepartments))}">
+                <div class="slds-col slds-large-size_2-of-12 slds-small-medium-size_1-of-1 dropdown adminclose highresolution"  >  
+                    <div class="dropbtn"> 
+                        <div class="dropdown">
+                            <button class="dropbtn" style="padding-top: 6px;" >Department
+                                <lightning:buttonIcon iconName="utility:chevrondown" variant="bare"  alternativeText="menu" class="menuIcon" />    
+                            </button>
+                            
+                            <div class="dropdown-content " id="departmentids">
+                                <aura:iteration items="{!v.AllDepartments}" var="eachDepartment">
+                                    <a data-DeptVal="{!eachDepartment}" onclick="{!c.navigateToRespectivePage}">  
+                                        {!eachDepartment}  
+                                    </a> 
+                                </aura:iteration>
+                            </div>
+                            <!--<div class="dropdown-content ">
+                            <a onclick="{!c.navigateToHRPage}" >  
+                                Human Resource
+                            </a> 
+                        </div>-->
+                        </div>
+                    </div>
+                </div>
+                <aura:set attribute="else">
+                    <!-- To display blank space in place of department when value is blank -->
+                    <div class="slds-col slds-large-size_2-of-12 slds-x-large-size_1-of-12 slds-small-medium-size_1-of-1 dropdown adminclose highresolution" >  
+                        
+                    </div>
+                </aura:set>
+            </aura:if>
+            
+            
+            
+            <div class="slds-col slds-large-size_2-of-12 slds-small-medium-size_1-of-1 dropdown adminclose  hidesa"  >
+                 <aura:if isTrue="{!(v.profileName!='Intranet Basic Profile')}">
+                <div class="dropbtn"> 
+                    <div class="dropdown">
+                        <button class="dropbtn SalesforceButnClass" style="padding-top: 6px;" >
+                            <ui:outputURL  label="Salesforce"  target="_blank" value="https://viewinc.my.salesforce.com/home/home.jsp"/>    
+                        </button>
+                    </div>
+                </div>
+                </aura:if>
+            </div>
+       
+            <div class="slds-col slds-large-size_2-of-12 slds-small-medium-size_1-of-1 dropdown adminclose highresolutionad" >  
+                <aura:if isTrue="{!(v.profileName=='System Administrator' || v.profileName=='Intranet_Admin')}">
+                    <!--  <aura:if isTrue="{!$Browser.formFactor == 'DESKTOP' || $Browser.formFactor == 'TABLET'}"> -->
+                    <div class="dropbtn"> <!-- Changes -->
+                        <div class="dropdown">
+                            <button class="dropbtn" style="padding-top: 6px;" >Admin 
+                                <lightning:buttonIcon iconName="utility:chevrondown" variant="bare"  alternativeText="menu" class="menuIcon" />    
+                            </button>
+                            
+                            <div class="dropdown-content ">
+                                <a href="{!$Label.c.VG_Content_Management_URL}">Content Management</a>
+                                <a href="{!$Label.c.VG_Site_Management_URL}">Site Management</a>
+                                <a href="{!$Label.c.VG_Article_Management_URL}">Article Management</a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- </aura:if> -->
+                </aura:if>
+            </div>
+            
+            
+            <div class="slds-col slds-small-medium-size_1-of-1 dropdown  peopleDirectory"> 
+                <div class="dropbtn"><c:VG_PeopleDirectory RecentSearch="flase"/> </div>
+            </div>
+            <div class="slds-col slds-small-medium-size_1-of-1 dropdown  peopleDirectory"> 
+                <div class="dropbtn articleSearch"><c:VG_ArticleSearch RecentSearch="flase"/> </div>
+            </div>
+            <div class="slds-col slds-small-medium-size_1-of-1 dropdown  peopleDirectory">
+                <div class="dropbtn articleSearch" onclick="{!c.navigateToUserProfile}"><a  class="active paddngBottomHome">Profile</a> </div>
+            </div>
+            
+            <div class="slds-col slds-size_3-of-12 highreso" >            
+                <div  class="slds-float_right">
+                    <div class="{!(v.whiteFG)?'search textColor':'search searchWhite'}"  style=" " ><c:VG_GlobalSearch /></div>
+                    <a  style="font-size:15px;" class="icon" onclick="{!c.showDropDown}">&#9776;</a> 
+                </div>
+            </div>
+          <div class="slds-col slds-size_1-of-12" style="    margin-left: -5%;">
+                <div style="margin-left: 30px !IMPORTANT;">
+                    <div > 
+                        <a href="{! 'profile/'+$SObjectType.CurrentUser.Id}">
+                            <lightning:icon iconName="action:user" alternativeText="UserProfile"  size="xx-small" class="profileIcon profile" />
+                        </a>
+                    </div> 
+                </div>
+            </div>
+          <!--     <div class="slds-col slds-size_1-of-12 slds-small-medium-size_1-of-1" style="margin-left: -6%;">
+                <div style="margin-top: 20px !important;     padding-left: 60px;">
+                    <div onclick="{!c.navigateToUserProfile}">
+                        <lightning:icon iconName="action:user" alternativeText="UserProfile"  size="xx-small" class="profileIcon profile" />
+                    </div>
+                </div>
+            </div>-->
+        </div>
+    </div>
+</aura:component>

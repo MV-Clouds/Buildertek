@@ -1,0 +1,19 @@
+<aura:component access="global" implements="forceCommunity:availableForAllPageTypes,force:appHostable,flexipage:availableForAllPageTypes">
+  <div class="slds">
+    <div class="slds-grid slds-wrap slds-grid--align-center  slds-container--center">
+
+      <div class="slds-col--padded slds-small-size--1-of-1 slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1 slds-p-around--small" style=" background-color: white;">
+        <div class="card" style="    border: 1px solid #f5e8e8;">
+          <p class="card-title">My Team Members</p>
+          <p><c:VG_OrgChartD4 /></p>
+          <!-- <p class="url">
+            <a href="#" data-url="/orghierarchy" onclick="{!c.goToURL}">View More</a>
+          </p> -->
+        </div>
+
+      </div>
+    </div>
+  
+
+  </div>
+</aura:component>

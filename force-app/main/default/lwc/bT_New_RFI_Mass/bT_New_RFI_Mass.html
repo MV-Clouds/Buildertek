@@ -1,0 +1,146 @@
+<template>
+    
+
+
+
+
+    <div class="slds-float--right slds-m-bottom_x-small" >
+        <div >
+            <lightning-button  label="Add Row" variant="brand"  onclick={addRow} >
+            </lightning-button> &nbsp;&nbsp;&nbsp;
+            <lightning-button  label="Save" variant="brand" onclick={handleSave} >
+            </lightning-button> &nbsp;&nbsp;&nbsp;
+            <lightning-button label="Cancel" variant="brand" onclick={navigateToCourseSessionPage}></lightning-button>&nbsp;&nbsp;
+        </div>          
+      <!-- <div  style=" position: absolute;top:43px;right: 18px;">  <c-create-new-contact></c-create-new-contact></div>-->
+            
+    </div>
+    <table class="slds-table slds-table_cell-buffer slds-table_bordered"
+    style="max-height: 300px;overflow-x:auto;overflow-y:auto;" >
+        <thead>           
+            <tr class="slds-line-height_reset">
+                <th class="" scope="col">
+                    <div class="slds-truncate">No</div>
+                </th>
+                <th>
+                    <label class="slds-form-element__label">
+                        <abbr title="required" class="slds-required"></abbr>
+                        <label class="slds-form-element__label " style="margin-right: 0.5rem;">Subject</label>
+                    </label> 
+                </th>
+                <th>
+                    <label class="slds-form-element__label">
+                        <abbr title="required" class="slds-required"></abbr>
+                        <label class="slds-form-element__label" style="margin-right: 0.2rem;">Question</label>
+                    </label> 
+                </th>
+                <th>
+                    <label class="slds-form-element__label">
+                        <abbr title="required" class="slds-required"></abbr>
+                        <label class="slds-form-element__label" style="margin-right: 0.5rem;">Due Date</label>
+                    </label> 
+                </th>
+                <th>
+                    <label class="slds-form-element__label">
+                        <abbr title="required" class="slds-required"></abbr>
+                        <label class="slds-form-element__label" style="margin-right: 0.5rem;">Assigned To</label>
+                    </label> 
+                </th>
+                <th>
+                    <label class="slds-form-element__label">
+                        <abbr title="required" class="slds-required"></abbr>
+                        <label class="slds-form-element__label" style="margin-right: 0.5rem;">Action </label>
+                    </label> 
+                </th>
+
+            </tr> 
+        </thead>
+        
+        <tbody style="max-height: 300px;overflow: scroll;">
+
+            <template for:each={RFIsWrapper} for:item = "rec" for:index="index" >
+                <tr key={rowIndex} class="slds-hint-parent">
+
+                    <td class="slds-size_5-of-10"> 
+                        <div>
+                            <label>{rec.RowNumber} </label>
+                        </div>  
+                    </td>
+                    <td class="slds-size_5-of-10">  
+                        <div >
+                            <lightning-input name="Subject" type="text" 
+                            access-key={index} id={index}
+                            value={rec.Subject} readonly 
+                            ></lightning-input>                             
+                        </div>                                                                        
+                    </td>
+                    <td class="slds-size_5-of-10">  
+                        <div >
+                            <lightning-input name="Question" type="text" 
+                            access-key={index} id={index}
+                            value={rec.Question} readonly 
+                            ></lightning-input>                             
+                        </div>                                                                        
+                    </td>
+                    <td class="slds-size_5-of-10">  
+                        <div>       
+                            <lightning-input name="DueDate" type="date" 
+                            access-key={index} id={index}
+                            value={rec.DueDate} onchange={ParticipantChangeHandler}                             
+                            ></lightning-input>                                                
+                        </div>                                                                        
+                    </td>                    
+                    <td class="slds-size_5-of-10">  
+                        <div style="position: relative;">
+                            <!-- <lightning-input name="ParticipantName" type="text" 
+                            access-key={index} id={index}
+                            value={rec.ParticipantName} onchange={ConditionChangeHandler} 
+                            ></lightning-input> -->
+                            <template if:true={rec.showContactLookup}>
+                                <c-search-component
+                                obj-name="Contact"
+                                icon-name="standard:contact"                            
+                                placeholder="Search" 
+                                fields={contactfields}
+                                display-fields={contactdisplayFields}
+                                access-key={index} 
+                                onlookup={handleContactLookup} >
+                                </c-search-component>
+                            </template>
+                            <template if:false={rec.showContactLookup}>       
+                                
+                                <div class="slds-grid">                                   
+                                   
+                                    <div class="slds-col">
+                                        <lightning-input name="AssignedTo" type="text" 
+                                        access-key={index} id={index} style="width:100px;"
+                                        value={rec.AssignedTo} read-only="true"
+                                        ></lightning-input> 
+                                    </div>
+                                        <div class="slds-col">
+                                            <lightning-button-icon icon-name="action:close"  access-key={index} id={index} 
+                                        alternative-text="Delete"  title="Delete"
+                                        onclick={handleClose} >
+                                        </lightning-button-icon>
+                                    </div>                                    
+                                </div>
+                            </template>
+                        </div>                                                                        
+                    </td>
+                    <td class="slds-size_5-of-10" >
+                        <div>
+                            <lightning-button icon-name="action:delete" size="large" variant="base" access-key={index} id={index} 
+                            alternative-text="Delete Row"  title="Delete Row"
+                            onclick={deleteRow} style="cursor: pointer;padding:6px;border:none;" >
+                                </lightning-button>  
+                        </div>
+                      
+                    </td>
+                </tr>                                       
+
+            </template>                                        
+        </tbody> 
+
+    </table>
+
+</template>

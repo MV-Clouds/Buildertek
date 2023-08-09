@@ -1,0 +1,727 @@
+<aura:component controller="ScheduleIteminlineEditcontroller" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global">
+    
+    <aura:attribute name="lstOfRecords" type="Object"/>
+    <aura:attribute name="columnsHeader" type="List"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <!-- <aura:handler event="aura:locationChange" action="{!c.update}"/> -->
+    <aura:attribute name="setIntervalId" type="Integer"/>    
+    <lightning:workspaceAPI aura:id="workspace" />	
+    <aura:handler event="force:refreshView" action="{! c.doInit}" />
+    <aura:attribute name="TotalRecords" type="object" access="global" />
+    <aura:attribute name="Spinner" type="Boolean" />
+    <aura:attribute name="recordId" type="string"/> 
+    <aura:attribute name="ProejectrecordId" type="string"/> 
+    <aura:attribute name="schedulerecid" type="string"/> 
+    <aura:attribute  name="scheduleitemlst" type="Project_Task__c[]"/>    
+    <aura:attribute name="mycolumns" type="List"/>    
+    <aura:attribute name="allData" type="List"/>
+    <aura:attribute name="allDataNumbering" type="List"/>
+    <aura:attribute name="currentPageNumber" type="Integer" default="1"/>
+    <aura:attribute name="pageSize" type="Integer" default="25"/>
+    <aura:attribute name="totalPages" type="Integer" default="0"/>
+    <aura:attribute name="pageList" type="List"/>
+  
+    
+    <aura:attribute name="deleteConfirmModal" type="Boolean" default="false" />
+    <aura:attribute name="deleteAction" type="Object" default="" />
+    <aura:attribute name="deleteRow" type="string"/>
+    <aura:attribute name="mouseStart" type="string" />
+    <aura:attribute name="newWidth" type="string" />
+    <aura:attribute name="currentEle" type="Object" />
+    <aura:attribute name="oldWidth" type="string" /> 
+    <aura:attribute name="quoteGroupName" type="string" />
+    <aura:attribute name="isdeleteRow" type="string" />
+    
+    
+    <aura:attribute name="Innerclass" type="List" />
+    <aura:attribute name="quoteGroupNameDescription" type="string" />
+    <aura:attribute name="groupFilter" type="string" />
+    <aura:attribute name="groupDescription" type="string" default="" />
+    <aura:attribute name="groupDescriptionIndex" type="Integer" />
+    <aura:attribute name="isGroupDescriptionOpen" type="Boolean" default="false" />
+    <aura:attribute name="isGroupNameOpen" type="Boolean" default="false" />
+    <aura:attribute name="changeGroupNameId" type="String" default="" />
+    <aura:attribute name="changeGroupName" type="String" default="" />
+    <aura:attribute name="groupNameIndex" type="Integer" />
+    <aura:attribute name="groupListSize" type="Integer" default="0" description="Section list size" />
+    <aura:attribute name="groups" type="List" description="section detail list" />
+    <aura:attribute name="groupLoaded" type="Boolean" default="false"
+                    description="This boolean will be true once all section list loaded through aura itration." />
+    <aura:attribute name="currentTab" type="String" />
+    <aura:attribute name="nameEditMode" type="boolean" default="false" />
+    <aura:attribute name="EditInputvalues" type="Boolean" default="false"/>
+    <aura:attribute name="isTaskName" type="Boolean" default = "false"/>
+    <aura:attribute name="Show" type="Boolean" default = "false"/>
+    
+    <aura:attribute name="addRecordCount" type="Integer" default="0" /> 
+    <!--  <aura:handler name="onSelectEvt" event="c:BT_LookupEvent" action="{!c.getLookUpValues}" /> -->
+    <aura:handler name="dataTableRow" event="c:BT_BudgetAddLineEvent"
+                  action="{!c.handleChildBudgetLineEvent}"/>
+    <aura:handler name="change" value="{!v.contractor}" action="{!c.handleContractorChange}"/>
+    <aura:attribute name="fieldSetValues" type="List"  />
+    <aura:attribute name="clickedScheduleItem" type="Object" />
+    <aura:attribute name="fromcustomDataTable" type="Boolean" default="true" />
+    <aura:attribute name="isExpand" type="Boolean" default="false" />
+    <aura:attribute name="isExpandGrp" type="Boolean" default="false" />
+    <aura:attribute name="currentExpandIndex" type="Integer" default="" />
+    <aura:attribute name="expandedList" type="Integer[]" default="[]" />
+    <aura:attribute name="ShowTaskOrderSave" type="Boolean" default="false" />
+    <aura:attribute name="isDuration" type="Boolean" default="false" />
+    <aura:attribute name="oninitExpandIcon" type="Boolean" default="true" />
+    <aura:attribute name="dupScheduleItems" type="List" />
+    <aura:attribute name="expandedCount" type="Integer" default="0"/>
+    <aura:attribute name="isFinish" type="Boolean" default="false" />
+    <aura:attribute name="reloadComp" type="Boolean" default="false" />
+    
+    <aura:attribute name="deleteRowClassData" type="Object" />
+
+
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
+    
+        <aura:handler event="c:refresheventForGantt" action="{!c.handlelwcRefresh}"/>
+ 	<aura:registerEvent name="apprefreshEventfromTable" type="c:refresh_componenent_event"/>
+    
+    <div class="slds-m-around_xx-large" style=" border: 1px solid lightgray;border-radius: 5px; ">
+        <div class="slds-clearfix slds-theme_shade" style="padding-bottom:0.5rem;">
+            <div class="slds-page-header" role="banner">
+                <p class="slds-page-header__title">Schedule Items</p>
+                <div class="slds-float_right" style="margin-top: -25px;"> 
+                    <lightning:button label="Reload Data" iconName="utility:refresh" iconPosition="right"
+                                      onclick="{!c.reloadtable}" />
+                    <lightning:buttonGroup>
+                        <lightning:button label="New" onclick="{!c.CreateNewScheduleitemrec}"/>
+                    </lightning:buttonGroup> 
+                   <!-- <lightning:button label="Prev" iconName="utility:chevronleft" iconPosition="left"
+                                      onclick="{!c.onPrev}" disabled="{! v.currentPageNumber == 1}"/>
+                    <lightning:button label="Next" iconName="utility:chevronright" iconPosition="right"
+                                      disabled="{! v.currentPageNumber == v.totalPages}" onclick="{!c.onNext}"/> -->
+                    <lightning:button label="Mass Update" onclick="{!c.MassUpdateScheduleItem}"/>
+                </div>
+            </div>
+        </div>
+        <!-- expand/collapse buttons -->
+        <div class="" style="margin:0.5rem 0 0.5em 0.5rem;">
+            <aura:if isTrue="{!v.currentTab}">
+                <span style="display:none;" class="{!v.currentTab+' expandAllBtn_'+v.recordId}" data-iconattr ="{!'expandAllBtn_'+v.recordId}" data-iconname="Expand All" onclick="{!c.expandCollapseAll}">
+                    <lightning:buttonIcon aura:id="expandCollapeseAllBtn" iconName="utility:add"  variant="border-filled" iconClass="dark" alternativeText="Expand All" title="Expand All"  />                       
+                </span> 
+                <span style="display:inline-block;" class="{!v.currentTab+' CollapeseAllBtn_'+v.recordId}" data-iconattr ="{!'CollapeseAllBtn_'+v.recordId}" data-iconname="Collapse All"  onclick="{!c.expandCollapseAll}">
+                    <lightning:buttonIcon aura:id="expandCollapeseAllBtn2" iconName="utility:dash"  variant="border-filled" iconClass="dark" alternativeText="Collapse All" title="Collapse All"/>                       
+                </span>
+                <aura:set attribute="else">
+                    <span style="display:none;" class="{!'expandAllBtn_'+v.recordId}" data-iconattr ="{!'expandAllBtn_'+v.recordId}" data-iconname="Expand All" onclick="{!c.expandCollapseAll}">
+                        <lightning:buttonIcon aura:id="expandCollapeseAllBtn" iconName="utility:add"  variant="border-filled" iconClass="dark" alternativeText="Expand All" title="Expand All"  />                       
+                    </span> 
+                    <span style="display:inline-block;" class="{!'CollapeseAllBtn_'+v.recordId}" data-iconattr ="{!'CollapeseAllBtn_'+v.recordId}" data-iconname="Collapse All"  onclick="{!c.expandCollapseAll}">
+                        <lightning:buttonIcon aura:id="expandCollapeseAllBtn2" iconName="utility:dash"  variant="border-filled" iconClass="dark" alternativeText="Collapse All" title="Collapse All"/>                       
+                    </span>
+                </aura:set>
+            </aura:if>
+            
+        </div>
+       
+        <aura:iteration items="{!v.scheduleitemlst}"  var="mapKey" indexVar="index"  >  
+            <div class="slds-modal__header slds-p-around_x-small" style="font-size:15px;border-top: 2px solid #dddbda; font-weight:bold;text-align : left; !important">
+                <div class="slds-grid slds-gutters">
+                    <!--<span style="display:inline-block; padding-left: 1%">-->
+                    <!-- <aura:if isTrue="{!v.currentTab}">
+                            <span style="display:inline-block;margin-left:1rem;" class="{!v.currentTab+' '+v.recordId+' expandGrpIcon_'+index}"  data-grpindex="{!index}" onclick="{!c.expandCollapseGroups}">
+                               
+                                <lightning:icon
+                                                iconName="utility:add"
+                                                size="xx-small"
+                                                alternativeText="add"  style="border: 1px solid #b9b9b9; padding: 0.1rem 0.3rem 0.3rem 0.3rem"/>
+                            </span>
+                            <aura:if isTrue="{!v.expandedList}">
+                                <aura:iteration items="{!v.expandedList}"  var="expandItem" > 
+                                    <aura:if isTrue="{!expandItem == index}">
+                                        <span style="margin-left:1rem;" class="{!v.currentTab+' '+v.recordId+' hideCollapseIcon collapseGrpIcon_'+index}" data-grpindex="{!index}" data-grpName="{!mapKey.key}"
+                                              onclick="{!c.expandCollapseGroups}">
+                                            <lightning:icon
+                                                            iconName="utility:dash"
+                                                            size="xx-small"
+                                                            alternativeText="dash"  style="border: 1px solid #b9b9b9; padding: 0.1rem 0.3rem 0.3rem 0.3rem"/>
+                                        </span>
+                                    </aura:if>                                
+                                </aura:iteration>
+                                <aura:set attribute="else">
+                                    <span style="display:none;margin-left:1rem;" class="{!v.currentTab+' '+v.recordId+' hideCollapseIcon collapseGrpIcon_'+index}" data-grpindex="{!index}" data-grpName="{!mapKey.key}"
+                                          onclick="{!c.expandCollapseGroups}">
+                                        <lightning:icon
+                                                        iconName="utility:dash"
+                                                        size="xx-small"
+                                                        alternativeText="dash"  style="border: 1px solid #b9b9b9; padding: 0.1rem 0.3rem 0.3rem 0.3rem"/>
+                                    </span>
+                                </aura:set>
+                            </aura:if>
+                            <aura:set attribute="else">
+                                <span style="display:inline-block;margin-left:1rem;" class="{!v.recordId+' expandGrpIcon_'+index}"  data-grpindex="{!index}" onclick="{!c.expandCollapseGroups}">
+                                    
+                                    <lightning:icon
+                                                    iconName="utility:add"
+                                                    size="xx-small"
+                                                    alternativeText="add"  style="border: 1px solid #b9b9b9; padding: 0.1rem 0.3rem 0.3rem 0.3rem"/>
+                                </span>
+                                <aura:if isTrue="{!v.expandedList}">
+                                    <aura:iteration items="{!v.expandedList}"  var="expandItem" > 
+                                        <aura:if isTrue="{!expandItem == index}">
+                                            <span style="margin-left:1rem;" class="{!v.recordId+' hideCollapseIcon collapseGrpIcon_'+index}" data-grpindex="{!index}" data-grpName="{!mapKey.key}"
+                                                  onclick="{!c.expandCollapseGroups}">
+                                                <lightning:icon
+                                                                iconName="utility:dash"
+                                                                size="xx-small"
+                                                                alternativeText="dash"  style="border: 1px solid #b9b9b9; padding: 0.1rem 0.3rem 0.3rem 0.3rem"/>
+                                            </span>
+                                        </aura:if>                                
+                                    </aura:iteration>
+                                    <aura:set attribute="else">
+                                        <span style="display:none;margin-left:1rem;" class="{!v.recordId+' hideCollapseIcon collapseGrpIcon_'+index}" data-grpindex="{!index}" data-grpName="{!mapKey.key}"
+                                              onclick="{!c.expandCollapseGroups}">
+                                            <lightning:icon
+                                                            iconName="utility:dash"
+                                                            size="xx-small"
+                                                            alternativeText="dash"  style="border: 1px solid #b9b9b9; padding: 0.1rem 0.3rem 0.3rem 0.3rem"/>
+                                        </span>
+                                    </aura:set>
+                                </aura:if>
+                            </aura:set>
+                        </aura:if> -->
+                    
+                    <!-- using value from list -->
+                    <aura:if isTrue="{!v.currentTab}">
+                        <aura:if isTrue="{!!mapKey.expanded}">
+                            <span style="display:inline-block;margin-left:1rem;" class="{!v.currentTab+' '+v.recordId+' expandGrpIcon_'+index}"  data-grpindex="{!index}" onclick="{!c.expandCollapseGroups}">
+                                
+                                <lightning:icon
+                                                iconName="utility:add"
+                                                size="xx-small"
+                                                alternativeText="add"  style="border: 1px solid #b9b9b9; padding: 0.1rem 0.3rem 0.3rem 0.3rem"/>
+                            </span>
+                        </aura:if>
+                        
+                        <aura:if isTrue="{!mapKey.expanded}">
+                            <span style="margin-left:1rem;" class="{!v.recordId+' hideCollapseIcon collapseGrpIcon_'+index}" data-grpindex="{!index}" data-grpName="{!mapKey.key}"
+                                  onclick="{!c.expandCollapseGroups}">
+                                <lightning:icon
+                                                iconName="utility:dash"
+                                                size="xx-small"
+                                                alternativeText="dash"  style="border: 1px solid #b9b9b9; padding: 0.1rem 0.3rem 0.3rem 0.3rem"/>
+                            </span>
+                        </aura:if>
+                        <aura:set attribute="else">
+                            <aura:if isTrue="{!!mapKey.expanded}">
+                                <span style="display:inline-block;margin-left:1rem;" class="{!v.currentTab+' '+v.recordId+' expandGrpIcon_'+index}"  data-grpindex="{!index}" onclick="{!c.expandCollapseGroups}">
+                                    
+                                    <lightning:icon
+                                                    iconName="utility:add"
+                                                    size="xx-small"
+                                                    alternativeText="add"  style="border: 1px solid #b9b9b9; padding: 0.1rem 0.3rem 0.3rem 0.3rem"/>
+                                </span>
+                            </aura:if>
+                            <aura:if isTrue="{!mapKey.expanded}">
+                                <span style="margin-left:1rem;" class="{!v.recordId+' hideCollapseIcon collapseGrpIcon_'+index}" data-grpindex="{!index}" data-grpName="{!mapKey.key}"
+                                      onclick="{!c.expandCollapseGroups}">
+                                    <lightning:icon
+                                                    iconName="utility:dash"
+                                                    size="xx-small"
+                                                    alternativeText="dash"  style="border: 1px solid #b9b9b9; padding: 0.1rem 0.3rem 0.3rem 0.3rem"/>
+                                </span>
+                            </aura:if>
+                        </aura:set>
+                        
+                    </aura:if>
+                    
+                    <div class="slds-col slds-size_6-of-12 slds-float_right">
+                        <aura:if isTrue="{!mapKey.key == 'null'}">
+                            No Phase
+                            <aura:set attribute="else">
+                                {!mapKey.key}
+                            </aura:set>
+                        </aura:if>
+                        
+                    </div>
+                    
+                </div>
+            </div>  
+            <aura:if isTrue="{!v.currentTab}">
+                <div id="{!mapKey.key+'_'+index}" class="{!v.currentTab+' '+v.recordId+' mapKey_'+index}" style="{!mapKey.expanded ? 'display:block;' : 'display:none;' }"><!-- aura:id = "tableByGroup" aura:id="poTable"-->
+                    
+                    <table data-reactroot="" class="slds-table slds-table_bordered slds-table_cell-buffer"  role="grid" style="table-layout:fixed;"> <!-- slds-table_fixed-layout-->
+                        <thead>
+                            <tr class="slds-text-title_caps slds-line-height--reset">
+                                
+                                <th class="slds-is-resizable slds-text-title--caps" scope="col" >
+                                    <div class="slds-truncate" title="WBS" >WBS</div>
+                                    <div class="slds-resizable" ondblclick="{!c.calculateWidth}">
+                                        <input type="range" min="80" max="1000"  class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-602" tabindex="0" />
+                                        <span class="slds-resizable__handle"  onmousedown="{!c.calculateWidth}" ondrag="{!c.setNewWidth}">
+                                            <span class="slds-resizable__divider"></span>
+                                        </span>
+                                    </div>
+                                </th>
+                                
+                                <aura:iteration items="{!v.fieldSetValues}"  var="field" >
+                                    <aura:if isTrue="{!field.name != 'buildertek__Phase__c'}">
+                                        <th class="slds-is-resizable slds-text-title--caps" scope="col" >
+                                            <div class="slds-truncate" title="{!field.label}" >{!field.label}</div>
+                                            <div class="slds-resizable" ondblclick="{!c.calculateWidth}">
+                                                <input type="range" min="80" max="1000"  class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-602" tabindex="0" />
+                                                <span class="slds-resizable__handle"  onmousedown="{!c.calculateWidth}" ondrag="{!c.setNewWidth}">
+                                                    <span class="slds-resizable__divider"></span>
+                                                </span>
+                                            </div>
+                                        </th>
+                                    </aura:if>
+                                </aura:iteration>
+                                <th class="slds-is-resizable slds-text-title--caps" scope="col"  style="width:13rem !important; ">
+                                    <div class="slds-truncate" title="Icons" ></div>
+                                    <div class="slds-resizable"  ondblclick="{!c.calculateWidth}">
+                                        <input type="range" min="20" max="1000"  class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-602" tabindex="0" />
+                                        <span class="slds-resizable__handle"  onmousedown="{!c.calculateWidth}" ondrag="{!c.setNewWidth}">
+                                            <span class="slds-resizable__divider"></span>
+                                        </span>
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody  ondrop="{!c.drop}" ondragover="{!c.allowDrop}" data-phaseindex="{!index}">
+                            <aura:iteration items="{!mapKey.value}" var="schedule" indexVar="valueindex"  >
+                                <aura:if isTrue="{!schedule.SObjs.Id}">
+                                    <tr class="slds-hint-parent" id="{!valueindex}" draggable="true" ondragstart="{!c.drag}"> 
+                                        <td role="gridcell">
+                                            <div class="slds-truncate" style="margin-top:0.3rem;position: relative;overflow: initial;" > <!-- scheduleId="{!v.recordId}" -->
+                                                <span style="cursor:move;">
+                                                    <lightning:icon iconName="utility:drag_and_drop" alternativeText="drag row" title="Drag and Drop" size="small" />
+                                                </span>
+                                                <aura:if isTrue="{!mapKey.key == 'null'}">
+                                                    1.{!schedule.wbs}
+                                                    <aura:set attribute="else">
+                                                        1.{!schedule.wbs}
+                                                    </aura:set>
+                                                </aura:if>
+                                          		
+                                            </div>
+                                        </td>
+                                        
+                                        <aura:iteration items="{!v.fieldSetValues}" var="field">
+                                            <aura:if isTrue="{!field.name != 'buildertek__Phase__c'}">
+                                                <aura:if isTrue="{!field.name == 'buildertek__Completion__c'}">
+                                                    <td role="gridcell">
+                                                        <div class="slds-truncate" style="margin-top:0.3rem;position: relative;overflow: initial;" > <!-- scheduleId="{!v.recordId}" -->
+                                                            <c:BT_FieldSetMassUpdate record="{!schedule.SObjs}" index="{!valueindex}" field="{!field}" isMassUpdateEnable="false"
+                                                                                     scheduleId="{!v.recordId}"    phaseIndex="{!index}"  fromcustomDataTable="{!v.fromcustomDataTable}"  childObjectName="buildertek__Project_Task__c"/>
+                                                        </div>
+                                                    </td>
+                                                    <aura:set attribute="else">
+                                                        <aura:if isTrue="{!field.name == 'Name'}">
+                                                            <td role="gridcell">
+                                                                <!--<div  class="slds-truncate onhoverCSS" title="{!schedule.SObjs.Name}" style="text-overflow:initial;color: #3d85de;cursor: pointer; "  onclick="{! c.openTabWithSubtab }" data-recid="{!schedule.SObjs.Id}">-->
+                                                                <div  class="slds-truncate onhoverCSS" style="text-overflow:initial;color: #3d85de;cursor: pointer; "  onclick="{! c.openTabWithSubtab }" data-recid="{!schedule.SObjs.Id}">
+                                                       
+                                                                    <!-- <span style="cursor:move;">
+                                                                        <lightning:icon iconName="utility:drag_and_drop" alternativeText="drag row" title="Drag and Drop" size="small" />
+                                                                    </span> -->
+                                                                 <!-- <a href ="{!'/lightning/r/buildertek__Project_Task__c/'+schedule.SObjs.Id+'/view'}">-->
+                                                                    <div  style="display:inline-block;" class ="onhoverCSS">
+                                                                        <c:BT_FieldSetMassUpdate record="{!schedule.SObjs}"  phaseIndex="{!index}" index="{!valueindex}" field="{!field}" isMassUpdateEnable="false"
+                                                                                                 scheduleId="{!v.recordId}"       fromcustomDataTable="{!v.fromcustomDataTable}"       childObjectName="buildertek__Project_Task__c"/>
+                                                                        
+                                                                    </div>
+                                                                  <!--  </a>-->
+                                                                </div>
+                                                                
+                                                            </td>
+                                                             <aura:set attribute="else">
+                                                                  <aura:if isTrue="{!field.name == 'buildertek__Dependency__c'}">
+                                                            <td role="gridcell">
+                                                                <div class="slds-truncate" title="{!schedule.SObjs.Name}" style="text-overflow:initial;"  onclick="{! c.openTabWithSubtabs }" data-recids="{!schedule.SObjs.buildertek__Dependency__c}">
+                                                                   
+                                                                  
+                                                                    <div style="display:inline-block;   ">
+                                                                        <c:BT_FieldSetMassUpdate record="{!schedule.SObjs}"  phaseIndex="{!index}" index="{!valueindex}" field="{!field}" isMassUpdateEnable="false"
+                                                                                                 scheduleId="{!v.recordId}"       fromcustomDataTable="{!v.fromcustomDataTable}"       childObjectName="buildertek__Project_Task__c"/>
+                                                                        
+                                                                    </div>
+                                                                   <!-- </a>-->
+                                                                </div>
+                                                                
+                                                            </td>
+                                                       
+                                                                <aura:set attribute="else">
+                                                                <td role="gridcell">
+                                                                    <div class="slds-truncate" style="text-overflow:initial;">
+                                                                        
+                                                                        <c:BT_FieldSetMassUpdate record="{!schedule.SObjs}"  phaseIndex="{!index}" index="{!valueindex}" field="{!field}" isMassUpdateEnable="false"
+                                                                                                 scheduleId="{!v.recordId}"       fromcustomDataTable="{!v.fromcustomDataTable}"       childObjectName="buildertek__Project_Task__c"/>
+                                                                    </div>
+                                                                </td>
+                                                            </aura:set>
+                                                                
+                                                        </aura:if>
+                                                        
+                                                    </aura:set>
+                                                </aura:if>
+                                                    </aura:set>
+                                                </aura:if>
+                                            </aura:if>
+                                        </aura:iteration>
+                                        <!--  <td role="gridcell">
+                                            <div class="slds-truncate" title="{!schedule.Name}">
+                                                <span style="cursor:move;">
+                                                    <lightning:icon iconName="utility:drag_and_drop" alternativeText="drag row" title="Drag and Drop" size="small" />
+                                                </span>
+                                                {!schedule.Name}
+                                            </div>
+                                        </td>
+                                        <td role="gridcell">
+                                            <div class="slds-truncate" title="{!schedule.buildertek__Dependency__r.Name}">
+                                                <a href="{!'/lightning/r/buildertek__Project_Task__c/'+schedule.buildertek__Dependency__c+'/view'}">
+                                                    {!schedule.buildertek__Dependency__r.Name}
+                                                </a>
+                                            </div>
+                                        </td>
+                                        <td role="gridcell">
+                                            <div class="slds-truncate" title="{!schedule.buildertek__Start__c}">
+                                                {!schedule.buildertek__Start__c}
+                                            </div>
+                                        </td>
+                                        <td role="gridcell"><div class="slds-truncate" title="{!schedule.buildertek__Finish__c}">{!schedule.buildertek__Finish__c}</div></td>
+                                        <td role="gridcell">
+                                            <div class="slds-truncate" title="{!schedule.buildertek__Contractor_Resource__r.Name}">
+                                                <a href="{!'/lightning/r/Contact/'+schedule.buildertek__Contractor_Resource__c+'/view'}">
+                                                    {!schedule.buildertek__Contractor_Resource__r.Name}
+                                                </a>
+                                            </div>
+                                        </td>
+                                        <td role="gridcell"><div class="slds-truncate" title="{!schedule.buildertek__Completion__c}">{!schedule.buildertek__Completion__c}</div></td> -->
+                                        <td role="gridcell">
+                                            <div class="slds-truncate">
+                                                <span onclick="{! c.editRecord }" data-rowid="{!schedule.SObjs.Id}" style="margin-right:0.8rem;">
+                                                    <lightning:buttonIcon iconName="utility:edit"   alternativeText="edit" />
+                                                </span>
+                                                <span onclick="{! c.addRecords}" data-phaseindex="{!index}"  data-itemindex="{!valueindex}" datadata-rowid="{!schedule.SObjs.Id}" style="margin-right:0.8rem;">
+                                                    <lightning:buttonIcon iconName="utility:add"    alternativeText="add" />
+                                                </span>
+                                                <span onclick="{! c.deleteRecords}" data-rowid="{!schedule.SObjs.Id}" data-phaseindex="{!index}"  data-itemindex="{!valueindex}" data-classname="{!v.currentTab+' '+v.recordId+' mapKey_'+index}" style="margin-right:0.8rem;">
+                                                    <lightning:buttonIcon iconName="utility:delete"    alternativeText="delete" />
+                                                </span>
+                                                <span onclick="{! c.handleClick }" data-rowid="{!schedule.SObjs.Id}" >
+                                                    <lightning:buttonIcon iconName="utility:preview"   alternativeText="preview" />
+                                                </span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <aura:set attribute="else">
+                                        <tr class="slds-hint-parent" id="{!valueindex}" draggable="true" ondragstart="{!c.drag}">  
+                                             <td role="gridcell">
+                                            <div class="slds-truncate" style="margin-top:0.3rem;position: relative;overflow: initial;" > <!-- scheduleId="{!v.recordId}" -->
+                                              
+                                          		
+                                            </div>
+                                             </td>
+                                            <aura:iteration items="{!v.fieldSetValues}" var="field">
+                                                <aura:if isTrue="{!field.name != 'buildertek__Phase__c'}">
+                                                    <aura:if isTrue="{!field.name == 'buildertek__Completion__c'}">
+                                                        <td role="gridcell">
+                                                            <div class="slds-truncate" style="margin-top:0.3rem;position: relative;overflow: initial;" > <!-- scheduleId="{!v.recordId}" -->
+                                                                <c:BT_FieldSetMassUpdate record="{!schedule.SObjs}" index="{!valueindex}" field="{!field}" isMassUpdateEnable="true"
+                                                                                         scheduleId="{!v.recordId}"    phaseIndex="{!index}"  fromcustomDataTable="{!v.fromcustomDataTable}"  childObjectName="buildertek__Project_Task__c"/>
+                                                            </div>
+                                                        </td>
+                                                        <aura:set attribute="else">
+                                                            <td role="gridcell">
+                                                                <div class="slds-truncate" style="position: relative;overflow: initial;">
+                                                                    <c:BT_FieldSetMassUpdate record="{!schedule.SObjs}"  phaseIndex="{!index}" index="{!valueindex}" field="{!field}" isMassUpdateEnable="true"
+                                                                                             scheduleId="{!v.recordId}"       fromcustomDataTable="{!v.fromcustomDataTable}"       childObjectName="buildertek__Project_Task__c"/>
+                                                                </div>
+                                                            </td>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </aura:if>
+                                            </aura:iteration>
+                                           <!-- <td role="gridcell" style="padding-top: 1.4rem;">-->
+                                                <td role="gridcell">
+                                                <div class="slds-truncate">
+                                                    <span onclick="{! c.addRecords}" style="margin-right:0.8rem;" data-phaseindex="{!index}"  data-itemindex="{!valueindex}" datadata-rowid="{!schedule.SObjs.Id}" >
+                                                        <lightning:buttonIcon iconName="utility:add"    alternativeText="add" />
+                                                    </span>
+                                                    <span onclick="{! c.deleteRecords}" style="margin-right:0.8rem;" data-phaseindex="{!index}"  data-itemindex="{!valueindex}" data-rowid="{!schedule.SObjs.Id}" >
+                                                        <lightning:buttonIcon iconName="utility:delete"    alternativeText="delete" />
+                                                    </span>
+                                                    <span onclick="{! c.saveSingleRecord}" data-phaseindex="{!index}"  data-itemindex="{!valueindex}" data-rowid="{!schedule.SObjs.Id}" >
+                                                        <lightning:buttonIcon iconName="utility:save"    alternativeText="save" />
+                                                    </span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </aura:set>
+                                </aura:if>
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <aura:set attribute="else">
+                    <div id="{!mapKey.key+'_'+index}" class="{!v.recordId+' mapKey_'+index}" style="{!mapKey.expanded ? 'display:block;' : 'display:none;' }"><!-- aura:id = "tableByGroup" aura:id="poTable"-->
+                        
+                        <table data-reactroot="" class="slds-table slds-table_bordered slds-table_cell-buffer"  role="grid" style="table-layout:fixed;"> <!-- slds-table_fixed-layout-->
+                            <thead>
+                                <tr class="slds-text-title_caps slds-line-height--reset">
+                                    <th class="slds-is-resizable slds-text-title--caps" scope="col" >
+                                        <div class="slds-truncate" title="WBS" >WBS</div>
+                                        <div class="slds-resizable" ondblclick="{!c.calculateWidth}">
+                                            <input type="range" min="80" max="1000"  class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-602" tabindex="0" />
+                                            <span class="slds-resizable__handle"  onmousedown="{!c.calculateWidth}" ondrag="{!c.setNewWidth}">
+                                                <span class="slds-resizable__divider"></span>
+                                            </span>
+                                        </div>
+                                    </th>
+                                    <aura:iteration items="{!v.fieldSetValues}"  var="field" >
+                                        
+                                        <aura:if isTrue="{!field.name != 'buildertek__Phase__c'}">
+                                            <th class="slds-is-resizable slds-text-title--caps" scope="col" >
+                                                <div class="slds-truncate" title="{!field.label}" >{!field.label}</div>
+                                                <div class="slds-resizable" ondblclick="{!c.calculateWidth}">
+                                                    <input type="range" min="80" max="1000"  class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-602" tabindex="0" />
+                                                    <span class="slds-resizable__handle"  onmousedown="{!c.calculateWidth}" ondrag="{!c.setNewWidth}">
+                                                        <span class="slds-resizable__divider"></span>
+                                                    </span>
+                                                </div>
+                                            </th>
+                                        </aura:if>
+                                    </aura:iteration>
+                                    <th class="slds-is-resizable slds-text-title--caps" scope="col"  style="width:13rem !important; ">
+                                        <div class="slds-truncate" title="Icons" ></div>
+                                        <div class="slds-resizable"  ondblclick="{!c.calculateWidth}">
+                                            <input type="range" min="20" max="1000"  class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-602" tabindex="0" />
+                                            <span class="slds-resizable__handle"  onmousedown="{!c.calculateWidth}" ondrag="{!c.setNewWidth}">
+                                                <span class="slds-resizable__divider"></span>
+                                            </span>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody  ondrop="{!c.drop}" ondragover="{!c.allowDrop}" data-phaseindex="{!index}">
+                                <aura:iteration items="{!mapKey.value}" var="schedule" indexVar="valueindex"  >
+                                    <aura:if isTrue="{!schedule.SObjs.Id}">
+                                        <tr class="slds-hint-parent" id="{!valueindex}" draggable="true" ondragstart="{!c.drag}"> 
+                                            
+                                            <td role="gridcell">
+                                                <div class="slds-truncate" style="margin-top:0.3rem;position: relative;overflow: initial;" > <!-- scheduleId="{!v.recordId}" -->
+                                                    <span style="cursor:move;">
+                                                        <lightning:icon iconName="utility:drag_and_drop" alternativeText="drag row" title="Drag and Drop" size="small" />
+                                                    </span>
+                                                    <aura:if isTrue="{!mapKey.key == 'null'}">
+                                                        1.{!schedule.wbs}
+                                                        <aura:set attribute="else">
+                                                            1.{!schedule.wbs}
+                                                        </aura:set>
+                                                    </aura:if>
+                                                    
+                                                </div>
+                                            </td>
+                                            
+                                            <aura:iteration items="{!v.fieldSetValues}" var="field">
+                                                <aura:if isTrue="{!field.name != 'buildertek__Phase__c'}">
+                                                    <aura:if isTrue="{!field.name == 'buildertek__Completion__c'}">
+                                                        <td role="gridcell">
+                                                            <div class="slds-truncate" style="margin-top:0.3rem;position: relative;overflow: initial;" > <!-- scheduleId="{!v.recordId}" -->
+                                                                <c:BT_FieldSetMassUpdate record="{!schedule.SObjs}" index="{!valueindex}" field="{!field}" isMassUpdateEnable="false"
+                                                                                         scheduleId="{!v.recordId}"    phaseIndex="{!index}"  fromcustomDataTable="{!v.fromcustomDataTable}"  childObjectName="buildertek__Project_Task__c"/>
+                                                            </div>
+                                                        </td>
+                                                        <aura:set attribute="else">
+                                                            <aura:if isTrue="{!field.name == 'Name'}">
+                                                                <td role="gridcell">
+                                                                    <div class="slds-truncate" title="{!schedule.SObjs.Name}" style="text-overflow:initial;">
+                                                                        <div style="display:inline-block;">
+                                                                            <c:BT_FieldSetMassUpdate record="{!schedule.SObjs}"  phaseIndex="{!index}" index="{!valueindex}" field="{!field}" isMassUpdateEnable="false"
+                                                                                                     scheduleId="{!v.recordId}"       fromcustomDataTable="{!v.fromcustomDataTable}"       childObjectName="buildertek__Project_Task__c"/>
+                                                                            
+                                                                        </div>
+                                                                    </div>
+                                                                    
+                                                                </td>
+                                                                <aura:set attribute="else">
+                                                                    <td role="gridcell">
+                                                                        <div class="slds-truncate" style="text-overflow:initial;">
+                                                                            <c:BT_FieldSetMassUpdate record="{!schedule.SObjs}"  phaseIndex="{!index}" index="{!valueindex}" field="{!field}" isMassUpdateEnable="false"
+                                                                                                     scheduleId="{!v.recordId}"       fromcustomDataTable="{!v.fromcustomDataTable}"       childObjectName="buildertek__Project_Task__c"/>
+                                                                        </div>
+                                                                    </td>
+                                                                </aura:set>
+                                                            </aura:if>
+                                                            
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </aura:if>
+                                            </aura:iteration>
+                                            <!-- <td role="gridcell">
+                                                <div class="slds-truncate" title="{!schedule.Name}">
+                                                    <span style="cursor:move;">
+                                                        <lightning:icon iconName="utility:drag_and_drop" alternativeText="drag row" title="Drag and Drop" size="small" />
+                                                    </span>
+                                                    {!schedule.Name}
+                                                </div>
+                                            </td>
+                                            <td role="gridcell">
+                                                <div class="slds-truncate" title="{!schedule.buildertek__Dependency__r.Name}">
+                                                    <a href="{!'/lightning/r/buildertek__Project_Task__c/'+schedule.buildertek__Dependency__c+'/view'}">
+                                                        {!schedule.buildertek__Dependency__r.Name}
+                                                    </a>
+                                                </div>
+                                            </td>
+                                            <td role="gridcell">
+                                                <div class="slds-truncate" title="{!schedule.buildertek__Start__c}">
+                                                    {!schedule.buildertek__Start__c}
+                                                </div>
+                                            </td>
+                                            <td role="gridcell"><div class="slds-truncate" title="{!schedule.buildertek__Finish__c}">{!schedule.buildertek__Finish__c}</div></td>
+                                            <td role="gridcell">
+                                                <div class="slds-truncate" title="{!schedule.buildertek__Contractor_Resource__r.Name}">
+                                                    <a href="{!'/lightning/r/Contact/'+schedule.buildertek__Contractor_Resource__c+'/view'}">
+                                                        {!schedule.buildertek__Contractor_Resource__r.Name}
+                                                    </a>
+                                                </div>
+                                            </td>
+                                            <td role="gridcell"><div class="slds-truncate" title="{!schedule.buildertek__Completion__c}">{!schedule.buildertek__Completion__c}</div></td> -->
+                                            <td role="gridcell">
+                                                <div class="slds-truncate">
+                                                    <span onclick="{! c.editRecord }" style="margin-right:0.8rem;" data-rowid="{!schedule.SObjs.Id}">
+                                                        <lightning:buttonIcon iconName="utility:edit"   alternativeText="edit" />
+                                                    </span>
+                                                    <span onclick="{! c.addRecords}" data-phaseindex="{!index}" style="margin-right:0.8rem;" data-itemindex="{!valueindex}" datadata-rowid="{!schedule.SObjs.Id}" >
+                                                        <lightning:buttonIcon iconName="utility:add"    alternativeText="add" />
+                                                    </span>
+                                                    <span onclick="{! c.deleteRecords}" data-rowid="{!schedule.SObjs.Id}" style="margin-right:0.8rem;">
+                                                        <lightning:buttonIcon iconName="utility:delete"    alternativeText="delete" />
+                                                    </span>
+                                                    <span onclick="{! c.handleClick }" data-rowid="{!schedule.SObjs.Id}" >
+                                                        <lightning:buttonIcon iconName="utility:preview"   alternativeText="preview" />
+                                                    </span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <aura:set attribute="else">
+                                            <tr class="slds-hint-parent" id="{!valueindex}" draggable="true" ondragstart="{!c.drag}">  
+                                                <td role="gridcell">
+                                                    <div class="slds-truncate" style="margin-top:0.3rem;position: relative;overflow: initial;" > <!-- scheduleId="{!v.recordId}" -->
+                                                        
+                                                    </div>
+                                                </td>
+                                                
+                                                <aura:iteration items="{!v.fieldSetValues}" var="field">
+                                                    <aura:if isTrue="{!field.name != 'buildertek__Phase__c'}">
+                                                        <aura:if isTrue="{!field.name == 'buildertek__Completion__c'}">
+                                                            <td role="gridcell">
+                                                                <div class="slds-truncate" style="margin-top:0.3rem;position: relative;overflow: initial;" >
+                                                                    <c:BT_FieldSetMassUpdate record="{!schedule.SObjs}" index="{!valueindex}" field="{!field}" isMassUpdateEnable="true"
+                                                                                             scheduleId="{!v.recordId}"     phaseIndex="{!index}" fromcustomDataTable="{!v.fromcustomDataTable}"  childObjectName="buildertek__Project_Task__c"/>
+                                                                </div>
+                                                            </td>
+                                                            <aura:set attribute="else">
+                                                                <td role="gridcell">
+                                                                    <div class="slds-truncate" style="position: relative;overflow: initial;">
+                                                                        <c:BT_FieldSetMassUpdate record="{!schedule.SObjs}"  phaseIndex="{!index}" index="{!valueindex}" field="{!field}" isMassUpdateEnable="true"
+                                                                                            scheduleId="{!v.recordId}"     fromcustomDataTable="{!v.fromcustomDataTable}"       childObjectName="buildertek__Project_Task__c"/>
+                                                                    </div>
+                                                                </td>
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </aura:if>
+                                                </aura:iteration>
+                                                <td role="gridcell" style="padding-top: 1.4rem;">
+                                                    <div class="slds-truncate">
+                                                        <span onclick="{! c.addRecords}" data-phaseindex="{!index}" style="margin-right:0.8rem;"  data-itemindex="{!valueindex}" datadata-rowid="{!schedule.SObjs.Id}" >
+                                                            <lightning:buttonIcon iconName="utility:add"    alternativeText="add" />
+                                                        </span>
+                                                        <span onclick="{! c.deleteRecords}" data-phaseindex="{!index}" style="margin-right:0.8rem;"  data-itemindex="{!valueindex}" data-rowid="{!schedule.SObjs.Id}" >
+                                                            <lightning:buttonIcon iconName="utility:delete"    alternativeText="delete" />
+                                                        </span>
+                                                        <span onclick="{! c.saveSingleRecord}" data-phaseindex="{!index}" data-itemindex="{!valueindex}" data-rowid="{!schedule.SObjs.Id}" >
+                                                            <lightning:buttonIcon iconName="utility:save"    alternativeText="save" />
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </aura:set>
+                                    </aura:if>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                </aura:set>
+            </aura:if>
+            
+        </aura:iteration>
+        <!--  <aura:if isTrue="{!v.Show}"> -->
+        <aura:if isTrue="{!and(v.Show == true, v.ShowTaskOrderSave == false)}">
+            <div class="slds-p-around_small slds-align_absolute-center">
+                <lightning:button variant="neutral" label="Cancel" onclick="{! c.closeModel}" />
+                <!-- <lightning:button variant="brand" label="Save" onclick="{! c.onSave }" /> -->
+                <lightning:button variant="brand" label="Save" onclick="{! c.onSaveandupdate }" /> 
+            </div>
+        </aura:if> 
+        <aura:if  isTrue="{!and(v.Show, v.ShowTaskOrderSave)}" >
+            <div class="slds-p-around_small slds-align_absolute-center">
+                <lightning:button variant="neutral" label="Cancel" onclick="{! c.closeModel}" />
+                <!-- <lightning:button variant="brand" label="Save" onclick="{! c.onSaveandupdate }" /> -->
+                <lightning:button variant="brand" label="Save" onclick="{! c.onSaveandupdate }" /> 
+            </div>
+        </aura:if>
+        <!--<aura:if isTrue="{!v.ShowTaskOrderSave}">-->
+        <aura:if isTrue="{!and(v.ShowTaskOrderSave == true, v.Show == false)}">
+            <div class="slds-p-around_small slds-align_absolute-center">
+                <lightning:button variant="neutral" label="Cancel" onclick="{! c.closeModel}" />
+                <lightning:button variant="brand" label="Save" onclick="{! c.saveTaskOrder }" /> 
+            </div>
+        </aura:if> 
+        
+        <aura:if isTrue="{!v.deleteConfirmModal}">
+            <!--Modal Box Start-->
+            <div role="dialog" class="slds-modal slds-fade-in-open ">
+                <div class="slds-modal__container">
+                    <!--Modal Box Header Start-->
+                    <header class="slds-modal__header">
+                        <h1 class="slds-text-heading--medium">Delete Schedule Item</h1>
+                    </header>
+                    <!--Modal Box Header End-->
+                    
+                    <!--Modal Box Content Start-->
+                    <div class="slds-modal__content slds-p-around--medium">
+                        <br/> <center><b>Are you sure you want to delete this item?</b></center><br/>
+                    </div>
+                    <!--Modal Box Content End-->
+                    
+                    <!--Modal Box Button Start-->
+                    <footer class="slds-modal__footer">
+                        <lightning:button name='Cancel' label='Cancel' onclick='{!c.handleConfirmDialogNo}'/>
+                        &nbsp;&nbsp;
+                        <span onclick="{!c.handleConfirmDialogYes}">
+                            <lightning:button variant="brand" name='Delete' label='Delete'/>
+                        </span>
+                    </footer>
+                    <!--Modal Box Button End-->
+                </div>
+            </div>
+            <div class="slds-backdrop slds-backdrop--open"></div>            
+        </aura:if>
+        
+        <aura:if isTrue="{!v.Spinner}">
+            <div aura:id="spinnerId" class="slds-spinner_container"  style="position:fixed;"> <!-- style="position:fixed;" -->
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                    <div class="custom-loading-text">
+                        <!-- <aura:if isTrue="{!v.showMessage}"> -->
+                        <!--<b>Importing Schedule Lines... </b>-->
+                        <b>Processing, Please Wait</b>
+                        <!-- </aura:if> -->
+                    </div>
+                </div>
+            </div>
+        </aura:if>
+    </div>
+</aura:component>

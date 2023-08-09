@@ -1,0 +1,8 @@
+<aura:component                 implements="flexipage:availableForRecordHome,forceCommunity:availableForAllPageTypes,force:hasRecordId,force:lightningQuickAction,lightning:isUrlAddressable"
+ access="global" >
+	
+    <aura:attribute name="recordId" type="string" />
+    <lightning:button label="Budget Line Items" title="Budget Line Items" iconName="utility:new_window"
+                      onclick="{!c.handleShowBudgetLineComponent}"></lightning:button>
+    
+</aura:component>

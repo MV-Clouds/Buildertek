@@ -1,0 +1,166 @@
+<aura:component
+    implements="force:appHostable,flexipage:availableForRecordHome,flexipage:availableForAllPageTypes,force:lightningQuickAction,force:hasRecordId,forceCommunity:availableForAllPageTypes"
+    controller="OpenPOForVendor" access="global">
+    <aura:attribute name="recordId" type="string" />
+    <aura:attribute name="POList" type="List" />
+    <aura:attribute name="isAllSelected" type="Boolean" default="false" />
+    <aura:attribute name="loading" type="Boolean" default="false" />
+
+    <aura:attribute name="Spinner" type="Boolean" default="false" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+
+    <div class="slds-modal__content slds-p-around--large">
+        <div class="slds slds-scope">
+            <table class="slds-table slds-table_bordered slds-table_fixed-layout" role="grid">
+                <thead>
+                    <tr class="slds-text-title_caps">
+                        <th width="10%" scope="col"
+                            style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-left-radius:5px;vertical-align: top;line-height: 2;">
+                            <ui:inputCheckbox aura:id="checkPOs" value="{!v.isAllSelected}" name="{!v.isAllSelected}"
+                                change="{!c.selectAll}" />
+                        </th>
+                        <th width="10%"
+                            style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                        </th>
+                        <th width="20%"
+                            style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                            Name
+                        </th>
+                        <th width="20%"
+                            style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                            Vendor
+                        </th>
+                        <th width="20%"
+                            style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                            Date Created
+                        </th>
+                        <th width="20%"
+                            style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                            PO Amount
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.POList}" var="rec">
+                        <tr class="slds-hint-parent">
+                            <aura:if isTrue="{!rec.Id != null}">
+                                <td style="width: 30px;">
+                                    <ui:inputCheckbox aura:id="checkPO" value="{rec.buildertek__Is_Selected__c}"
+                                        text="{!rec.Id}" change="{!c.onChangeHandler}" />
+                                </td>
+                                <td role="gridcell">
+                                    <aura:if isTrue="{!rec.buildertek__Is_Option_Expanded__c}">
+                                        <lightning:buttonIcon iconName="utility:dash" name="{!rec.Id}"
+                                            onclick="{!c.collapsePO}" variant="border-filled" alternativeText="Collapse"
+                                            class="collapseIcon" />
+                                    </aura:if>
+                                    <aura:if isTrue="{!!rec.buildertek__Is_Option_Expanded__c}">
+                                        <lightning:buttonIcon iconName="utility:add" name="{!rec.Id}"
+                                            onclick="{!c.expandPO}" variant="border-filled" alternativeText="Expand"
+                                            class="expandIcon" />
+                                    </aura:if>
+                                </td>
+                                <td role="gridcell">
+                                    <ui:outputText value="{!rec.Name}" />
+                                </td>
+                                <td role="gridcell">
+                                    <ui:outputText value="{!rec.buildertek__Vendor__r.Name}" />
+                                </td>
+                                <td role="gridcell">
+                                    <ui:outputDate value="{!rec.buildertek__Date_Created__c}" />
+                                </td>
+                                <td role="gridcell">
+                                    <ui:outputCurrency value="{!rec.buildertek__PO_Amount__c}" />
+                                </td>
+                            </aura:if>
+                        </tr>
+                        <aura:if isTrue="{!rec.buildertek__Is_Option_Expanded__c}">
+                            <tr>
+                                <td colspan="6">
+                                    <table class="slds-table slds-table_bordered" role="grid">
+                                        <thead>
+                                            <tr class="slds-text-title_caps" style="width:100%">
+                                                <th width="20%"
+                                                    style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                                                </th>
+                                                <th width="20%"
+                                                    style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                                                    Item Name
+                                                </th>
+                                                <th width="20%"
+                                                    style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                                                    Quantity
+                                                </th>
+                                                <th width="20%"
+                                                    style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                                                    Unit Price
+                                                </th>
+                                                <th width="20%"
+                                                    style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                                                    Received Items
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <aura:if isTrue="{!rec.buildertek__Purchase_Order_Items__r.records}">
+                                                <aura:iteration
+                                                    items="{!rec.buildertek__Purchase_Order_Items__r.records}"
+                                                    var="poItems">
+                                                    <tr>
+                                                        <td role="gridcell">
+                                                        </td>
+                                                        <td role="gridcell">
+                                                            <ui:outputText
+                                                                value="{!poItems.buildertek__Item_Name__c}" />
+                                                        </td>
+                                                        <td role="gridcell">
+                                                            <ui:outputText value="{!poItems.buildertek__Quantity__c}" />
+                                                        </td>
+                                                        <td role="gridcell">
+                                                            <ui:outputText
+                                                                value="{!poItems.buildertek__Unit_Price__c}" />
+                                                        </td>
+                                                        <td role="gridcell">
+                                                            <ui:inputNumber
+                                                                value="{!poItems.buildertek__Items_Received__c}" />
+                                                        </td>
+                                                    </tr>
+                                                </aura:iteration>
+                                                <aura:set attribute="else">
+                                                    <tr>
+                                                        <td colspan="6" style="text-align:center !important;">
+                                                            No Purchase Order Items
+                                                            found.
+                                                        </td>
+                                                    </tr>
+                                                </aura:set>
+                                            </aura:if>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </aura:if>
+                    </aura:iteration>
+                </tbody>
+            </table>
+            <br />
+        </div>
+        <aura:if isTrue="{!v.Spinner}">
+            <div aura:id="spinnerId" class="slds-spinner_container">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                     <div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+                </div>
+            </div>
+        </aura:if>
+    </div>
+    <div class="loading_wheel">
+        <aura:if isTrue="{! v.loading }">
+            <lightning:spinner alternativeText="Loading" size="large" variant="brand" />
+        </aura:if>
+    </div>
+</aura:component>

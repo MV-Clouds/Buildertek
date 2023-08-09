@@ -1,0 +1,38 @@
+<apex:component controller="QuoteSummaryController" access="global">
+
+    <apex:attribute type="id" name="relatedTo_id" assignTo="{!relatedToId}" description="RelatedTo" />
+
+    <table style="width: 100%;text-align: left;border-spacing: 0;">
+        <tr style="background:lightgrey;">
+            <th style="font-size:15px; border-bottom:1px solid #ccc; padding: 5px 15px;">Name</th>
+            <th style="font-size:15px; border-bottom:1px solid #ccc; padding: 5px 15px;">Description</th>
+            <th style="font-size:15px; border-bottom:1px solid #ccc; padding: 5px 15px; text-align: right">Price</th>
+            <th style="font-size:15px; border-bottom:1px solid #ccc; padding: 5px 15px; text-align: right">Qty</th>
+            <th style="font-size:15px; border-bottom:1px solid #ccc; padding: 5px 15px; text-align: right">Total</th>
+        </tr>
+        
+        <apex:repeat value="{!QuoteLineRecordList}" var="QuoteLineRecord">
+            <tr class="alternateRow" style="line-height: 1.6;">
+                <td style="font-size:14px; padding:5px 15px; color:black; text-align:left; border-bottom:1px solid #ccc;">
+                    <apex:outputText value="{!QuoteLineRecord.Name}" />
+                </td>
+                <td style="font-size:14px; padding:5px 15px; color:black; text-align:left; border-bottom:1px solid #ccc;">
+                    <apex:outputText value="{!QuoteLineRecord.Description__c}" />
+                </td>
+                <td style="font-size:14px; padding:5px 15px; color:black; text-align:right; border-bottom:1px solid #ccc;">
+                    <apex:outputText value="{0, number, $###,###,###,##0.00}">
+                        <apex:param value="{!QuoteLineRecord.Quantity__c}" />
+                    </apex:outputText>
+                </td>
+                <td style="font-size:14px; padding:5px 15px; color:black; text-align:right; border-bottom:1px solid #ccc;">
+                    <apex:outputText value="{!QuoteLineRecord.Net_Unit__c}" />
+                </td>
+                <td style="font-size:14px; padding:5px 15px; color:black; text-align:right; border-bottom:1px solid #ccc;">
+                    <apex:outputText value="{0, number, $###,###,###,##0.00}">
+                        <apex:param value="{!QuoteLineRecord.Net_Total_Price__c}" />
+                    </apex:outputText>
+                </td>
+            </tr>
+        </apex:repeat>
+    </table> 
+</apex:component>

@@ -1,0 +1,25 @@
+<aura:component implements="forceCommunity:availableForAllPageTypes" access="global" controller="VG_FileCreationHelper">
+    
+	<aura:Attribute name="files" type="object[]"/>
+    <aura:attribute name="recordId" type="string"/>
+    <aura:attribute name="title" type="string" default="Attachments" />
+    <aura:dependency resource="markup://force:navigateToSObject" type="EVENT"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <lightning:navigation aura:id="navLink"/>
+	<aura:if  isTrue="{!v.files[0]!=null}">
+	<lightning:card>
+        <aura:set attribute="title">           
+            <ui:outputText value= "{! v.title }" class="title"/>
+        </aura:set>
+		
+			<aura:iteration items="{!v.files}" var="file">
+				<ol>
+					<!--<li><a href="{!'/sfc/servlet.shepherd/version/download/' + file.Id}"><ui:outputText value="{!file.Title}"/></a> </li>        -->
+                   <li><a data-recId="{!file.ContentDocumentId}" id="{!file.ContentDocumentId}" style=" color:#F05F4D;" onclick="{!c.navigateToFile}"><ui:outputText value="{!file.Title}"/></a> </li>
+				</ol>
+			</aura:iteration>
+			
+        
+    </lightning:card>
+	</aura:if>
+</aura:component>

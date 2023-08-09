@@ -1,0 +1,36 @@
+<aura:component>
+	<aura:attribute name="lotEngagement" type="Object[]" default="[]"/>
+	<aura:attribute name="packageEngagement" type="Object[]" default="[]"/>
+	<aura:attribute name="downloadEngagement" type="Object[]"/>
+
+	<div class="slds-grid slds-wrap slds-gutters_direct slds-p-horizontal_small slds-m-top_small">
+		<div class="slds-col slds-size_1-of-1">
+			<c:InSitePieChart data="{!v.lotEngagement}" header="Apartment Engagement"/>
+		</div>
+	</div>
+	<div class="slds-m-top_small">
+		<div class="slds-p-around_x-small" style="width: 100%;">
+			<h3 class="slds-text-heading_small">Download Engagement</h3>
+		</div>
+		<div style="max-height: 320px; overflow-y: scroll;">
+			<table apex:id="downloadEngagementTable" class="display slds-p-horizontal_x-small dataTable no-footer">
+				<thead>
+				<tr>
+					<th class="sorting_disabled center" style="width: 20%;">Type</th>
+					<th class="sorting_disabled center" style="width: 60%;">Description</th>
+					<th class="sorting_disabled center" style="width: 20%;">Actions</th>
+				</tr>
+				</thead>
+				<tbody>
+				<aura:iteration items="{!v.downloadEngagement}" var="download">
+					<tr class="{!_index % 2 == 0 ? 'even' : 'odd'}">
+						<td class="center">{!download.type}</td>
+						<td class="center">{!download.label}</td>
+						<td class="center">{!download.count}</td>
+					</tr>
+				</aura:iteration>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</aura:component>

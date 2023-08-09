@@ -1,0 +1,15 @@
+{
+  "name": "@bryntum/gantt",
+  "version": "4.2.4",
+  "description": "Bryntum Gantt JavaScript component",
+  "author": {
+    "name": "Bryntum",
+    "url": "https://bryntum.com",
+    "email": "info@bryntum.com"
+  },
+  "homepage": "https://bryntum.com",
+  "license": "Commercial",
+  "devDependencies": {},
+  "main": "gantt.module.js",
+  "types": "./gantt.d.ts"
+}

@@ -1,0 +1,3 @@
+<aura:event type="APPLICATION" description="This event is used to refresh the tree node">
+     <aura:attribute name="key" type="String"/>
+</aura:event>

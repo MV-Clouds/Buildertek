@@ -1,0 +1,60 @@
+<aura:component controller="SubmitMSAController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global" >
+    <aura:attribute name="documentIds" type="list" />
+    <aura:attribute name="recordId" type="String" />
+    
+    <aura:attribute name="IsSignature" type="Boolean" />
+     <aura:attribute name="IsFullyExecuted" type="Boolean" />
+    <aura:attribute name="message" type="String" />
+    
+     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+   <!-- <div class="slds slds-p-around_medium">
+        <lightning:fileUpload label="Upload Counter Signed MSA Document"
+                                name="fileUploader"
+                                multiple="true"
+                                recordId="{!v.recordId}"
+                                onuploadfinished="{!c.handleUploadFinished}" />
+    </div>-->
+    
+    
+    <aura:if isTrue="{!v.IsSignature}">
+        
+          <!--Custom Styles for Modal Header and Footer--> 
+    <aura:html tag="style">
+        .cuf-content {
+        padding: 0 0rem !important;
+        }
+        .slds-p-around--medium {
+        padding: 0rem !important;
+        }       
+        .slds-modal__content{
+        overflow-y:hidden !important;
+        height:unset !important;
+        max-height:unset !important;
+        }
+    </aura:html>
+     
+    <!--Modal Header-->  
+    <div class="modal-header slds-modal__header slds-size_1-of-1">
+        <h4 class="title slds-text-heading--medium">Execute MSA</h4>
+    </div>
+    <!--End Modal Header-->  
+     
+    <!--Modal Body-->   
+    <div class="slds-modal__content slds-p-around--x-small slds-align_absolute-center slds-size_1-of-1 slds-is-relative">
+        <form class="slds-form--stacked">
+            <h3 style = "font-size: 18px; font-weight: bold;text-align: center;">  {!v.message} </h3>
+        </form> 
+    </div>
+    <!--End of Modal Body--> 
+     
+    <!--Modal Footer-->
+    <div class="modal-footer slds-modal__footer slds-size_1-of-1" style="background-color: white;">
+        <lightning:button variant="Neutral" class="slds-button" label="OK" onclick="{!c.handleCancel}"/>
+    </div>
+    <!--End of Modal Footer-->
+     
+        
+    </aura:if> 
+    
+    
+</aura:component>

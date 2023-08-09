@@ -1,0 +1,177 @@
+<aura:component controller="BOXSettingsController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+	<aura:attribute name="options" type="list" />
+    <aura:attribute name="boxSettings" type="Box_Settings__c" default="{'sObjectType' : 'buildertek__Box_Settings__c'}"/>
+    <aura:attribute name="selectedValue" type="String" />
+    <aura:attribute name="isEdit" type="Boolean" default="false"/>
+    <aura:attribute name="results" type="List" />
+    <aura:attribute name="openDropDown" type="Boolean" default="false" />
+    <aura:attribute name="openPDFDropDown" type="Boolean" default="false" />
+    <aura:attribute name="selectedOption" type="String" />
+    <aura:attribute name="selectedPDFOption" type="String" />
+    <aura:attribute name="inputValue" type="String" />
+    <aura:attribute name="inputSearchFunction" type="Object" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <div class="slds slds-p-around_medium">
+        <div class="pageHeader slds-page-header slds-page-header_record-home">
+            <div class="slds-page-header__row">
+                <div class="slds-page-header__col-title">
+                    <div class="slds-media">
+                        <div class="slds-media__figure">
+                            <span class="slds-icon_container">
+                                <lightning:icon iconName="utility:settings" size="medium"/>	
+                            </span>
+                        </div>
+                        <div class="slds-media__body">
+                            <div class="slds-page-header__name">
+                                <div class="slds-page-header__name-title">
+                                    <h1>
+                                        <span class="slds-text-heading_small">BOX Settings</span>	
+                                    </h1>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-page-header__col-actions">
+                    <div class="slds-page-header__controls">
+                        <div class="slds-page-header__control">
+                            <aura:if isTrue="{!!v.isEdit}">
+                                <lightning:button label="edit" onclick="{!c.edit}" />
+                            </aura:if>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-page-header__row slds-page-header__row_gutters">
+                
+            </div>
+        </div>
+        <div class="slds-p-around_medium">
+            <aura:if isTrue="{!v.isEdit}">
+                <div class="slds-form" role="list">
+                    
+                    <div class="slds-form__row">
+                        <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <label class="slds-form-element__label" >Client Id</label>
+                                <div class="slds-form-element__control">
+                                    <lightning:input type="text" label="" variant="label-hidden" value="{!v.boxSettings.buildertek__Client_Id__c}"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <label class="slds-form-element__label" >Client Secret</label>
+                                <div class="slds-form-element__control">
+                                    <lightning:input type="text" label="" variant="label-hidden" value="{!v.boxSettings.buildertek__Client_Secret__c}"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-form__row">
+                        <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <label class="slds-form-element__label" >Enterprise ID</label>
+                                <div class="slds-form-element__control">
+                                    <lightning:input type="text" label="" variant="label-hidden" value="{!v.boxSettings.buildertek__Enterprise_ID__c}"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <label class="slds-form-element__label" >Box Folder Id</label>
+                                <div class="slds-form-element__control">
+                                    <lightning:input type="text" label="" variant="label-hidden" value="{!v.boxSettings.buildertek__Box_Parent_Folder_Id__c}"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="slds-form__row">
+                        
+                        <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <label class="slds-form-element__label" ></label>
+                                <div class="slds-form-element__control">
+                                   
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            
+                    
+                    
+                    
+                    
+                </div>
+                <div class="slds-align_absolute-center slds-m-top_medium">
+                    <lightning:button label="Cancel" variant="neutral" onclick="{!c.cancel}" />&nbsp;&nbsp;
+                    <lightning:button label="Save" variant="brand" onclick="{!c.save}" />
+                </div>
+                
+                
+                
+                <aura:set attribute="else">
+                    <div class="slds-form" role="list">
+                       
+                        <div class="slds-form__row">
+                            <div class="slds-form__item" role="listitem">
+                                <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                    <label class="slds-form-element__label" style="font-weight: bold;">Client Id</label>
+                                    <div class="slds-form-element__control">
+                                        {!v.boxSettings.buildertek__Client_Id__c}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-form__item" role="listitem">
+                                <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                    <label class="slds-form-element__label" style="font-weight: bold;">Client Secret</label>
+                                    <div class="slds-form-element__control">
+                                        {!v.boxSettings.buildertek__Client_Secret__c}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-form__row">
+                            <div class="slds-form__item" role="listitem">
+                                <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                    <label class="slds-form-element__label" style="font-weight: bold;">Enterprise ID</label>
+                                    <div class="slds-form-element__control">
+                                        {!v.boxSettings.buildertek__Enterprise_ID__c}
+                                    </div>
+                                </div>
+                            </div>
+                             <div class="slds-form__item" role="listitem">
+                                <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                    <label class="slds-form-element__label" style="font-weight: bold;">Box Folder Id</label>
+                                    <div class="slds-form-element__control">
+                                        {!v.boxSettings.buildertek__Box_Parent_Folder_Id__c}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                         <div class="slds-form__row">
+                           
+                            <div class="slds-form__item" role="listitem">
+                                <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                    <label class="slds-form-element__label" style="font-weight: bold;"></label>
+                                    <div class="slds-form-element__control">
+                                     
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                
+                
+                     
+                       
+                               
+                             
+                       
+                       
+                    
+                    </div>
+                </aura:set>
+            </aura:if>
+        </div>
+    </div>
+</aura:component>

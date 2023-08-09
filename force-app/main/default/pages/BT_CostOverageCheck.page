@@ -1,0 +1,12 @@
+<apex:page controller="BT_CostOverageCheck" sidebar="false" lightningStylesheets="true">
+    <apex:slds />
+    <apex:form >
+        <apex:pageBlock mode="maindetail">
+            <apex:pageblocksection >
+                <apex:inputcheckbox value="{!isCreateChangeOrderonOverage}" label="Turn off Cost Option Allowance Check">
+                </apex:inputcheckbox>
+                <apex:commandButton value="Save" id="onCreateChangeOrderonOverage" styleClass="slds-button slds-button_brand" action="{!onQuoteAccepted}"></apex:commandButton>
+            </apex:pageblocksection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

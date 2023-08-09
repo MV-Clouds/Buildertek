@@ -1,0 +1,160 @@
+<!--**********************************************************************************
+* Copyright © 2017-2017, BuilderTek.
+* All rights reserved
+*
+* VisualForce Page: BT_CleanupFiles
+* Created by Sagar
+
+* - Clean up files from salesforce.
+
+* - Modifications:
+* - Sagar - Initial 
+***********************************************************************************-->
+<apex:page controller="BT_CleanupFilesController" title="{!$Label.buildertek__Cleanup_Files}" >
+	<c:BT_JsAndCssIncludeComponent importJquery="true"
+                              importAppurinUtil="true"
+                              importJQueryLayout="true"
+                              importFancyTree="true"
+                              importJqGrid="false"
+                              importEasyTooltip="true"
+                              importAppurinCss="true"
+                              importCkEditor="false"
+                              importGnattChart="false"
+                              importLightningDesign="true"/>
+	<script>
+        var twistyLightningSectionStatus = {};
+        j$(document).ready(function() {
+			easyToolTipForAll();
+			
+		});
+		
+        function easyToolTipForAll() {
+            j$('.apHelpText').easyTooltip({width: '200px', isLightning:true, isFormatted:true});
+            return false;
+        }
+        
+        function cleanup(){
+			var selectedTreeNodes = j$("#cleanupFilesTreeDiv").fancytree('getTree').getSelectedNodes();
+			var selectedNodeKeys = {};
+			j$.each(selectedTreeNodes, function(i, item) {
+				if(!item.folder){
+					selectedNodeKeys[item.key] = item.data.userData.id;
+				}
+			});
+			if(selectedTreeNodes.length != 0){
+				startSplash();
+            	afCleanUp(JSON.stringify(selectedNodeKeys));
+            } else{
+				Appurin.lightning.showAlertPrompt({'modalPopupId':'lightningInfoPopup', 'messageType':'Error', 'title': 'Error', 'message': '{!JSENCODE($Label.No_File_Selected_For_Cleanup_Warning)}'});
+			}
+			return false;
+		}
+    </script>
+                              
+    <apex:actionStatus id="splashStatus" onstart="startSplash();" onstop="endSplash(); " />
+	<div class="slds">
+        <div id="splashDiv" class="apInitiallyDivDisplayNone" style="z-index:9998;">
+            <div class="slds-spinner_container apLightningSpinnerContainer">
+                <div role="status" class="slds-spinner slds-spinner--medium slds-spinner--brand">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <apex:outputPanel rendered="{!isNoAmazonCredential}">
+        <apex:pagemessages id="pageLoadErrorMessage"/>
+        <script>
+            Appurin.lightning.createLightningPageMessage({'classicPageMessageId' : '{!$Component.pageLoadErrorMessage}'});   
+        </script>
+    </apex:outputPanel>
+    
+    <apex:form id="form" rendered="{!!isNoAmazonCredential}">
+        <apex:actionFunction name="afCleanUp" action="{!cleanUp}" rerender="" onComplete="getFilesNeedsToBeCleanup();">
+			<apex:param name="selectedNodeKeys" value=""/>
+		</apex:actionFunction>
+		<apex:actionFunction name="getFilesNeedsToBeCleanup" action="{!getFilesNeedsToCleanUp}" rerender="form" onComplete="endSplash();if({!isSuccess}){Appurin.lightning.showAlertPrompt({'modalPopupId':'lightningInfoPopup', 'messageType':'Info', 'title': 'Success', 'message': '{!JSENCODE($Label.buildertek__Cleanup_File_Job_Started_Message)}', 'buttonLabel': '{!JSENCODE($Label.buildertek__Ok)}', 'isRedirect' : false});}"/>
+    
+	    <apex:outputPanel styleClass="slds" rendered="{!AND(NOT(isJobQueued), treeNodesString != '[]')}">
+    		<div class="apPageHeader" id="PageHeader">
+    			<div class="apPageHeaderMedia">
+    	          	<div id="pageHeaderMedia" class="apPageHeaderMediaFigure">
+    	          	    <c:BT_LightningSvg parentId="pageHeaderMedia" styleClass="apLightningPageHeaderIcon slds-button__icon" path="/assets/icons/utility-sprite/svg/symbols.svg#delete"/>
+    	            </div>
+    	            <div class="apPageHeaderMediaBody">
+    					<div class="apPageHeaderTitle" title="Clean {!$ObjectType.File__c.labelPlural}">Clean {!$ObjectType.File__c.labelPlural}</div>
+    	              	<apex:outputPanel styleClass="apPageHeaderInfo" rendered="{!AND(NOT(isJobQueued), treeNodesString != '[]')}">
+    	              		<label>{!$Label.buildertek__Cleanup_Files_Message}</label>
+    	              	</apex:outputPanel>
+              		</div>
+    	            <div style="float:right;" class="apPageHeaderMediaButtons">
+    	                <apex:commandButton styleClass="slds-button slds-button--brand" value="{!$Label.buildertek__Cleanup_File_Button}" onClick=" return cleanup()" status="splashStatus" onComplete="easyToolTipForAll();"/>
+    	            </div>
+    	           <script>
+    	           		Appurin.lightning.createPageHeader('PageHeader');
+    	           </script>
+    	        </div>
+            </div>
+	    </apex:outputPanel>
+	    <apex:outPutPanel layout="block" styleClass="slds" id="fileCleanupPanel" rendered="{!AND(NOT(isJobQueued), treeNodesString != '[]')}">
+	        <apex:outputPanel layout="block">
+                <apex:pagemessages id="errorMessages"/>
+                <script>
+                    Appurin.lightning.createLightningPageMessage({'classicPageMessageId' : '{!$Component.errorMessages}'});   
+                </script>
+            </apex:outputPanel>
+            
+            <apex:outputPanel layout="block">
+                <c:BT_TreePickerComponent treeType="Files" treeId="cleanupFilesTreeDiv" 
+                 	treeSelectMode="3"
+                    treeConfigName=""
+                    checkableTreeNodes="{!cleanupObjectTypes}"
+                    treeSource="{!treeNodesString}"
+                    treeWidth="550"
+                    treeHeight="330"
+                    showSelectedNodeNamesList="true"
+                    isTreePersist="false"
+                    jsonStringForSelectedNodes=""
+                    isExpandTreeRoots="false">
+               	</c:BT_TreePickerComponent>
+	        </apex:outputPanel>
+        </apex:outputPanel>
+        <apex:outputPanel styleClass="slds" rendered="{!OR(isJobQueued, treeNodesString == '[]')}">
+            <apex:outputPanel layout="block" rendered="{!AND(NOT(isJobQueued),treeNodesString == '[]')}">
+            	<div id="noFileMessageDiv"/>
+                <script>
+                    Appurin.lightning.createLightningPageMessage({'lightningPageMessageId' : 'noFileMessageDiv', 'severity' : 'success', 'summary' : '{!JSENCODE($Label.buildertek__No_File_For_Cleanup_Message)}'});   
+                </script>
+            </apex:outputPanel>
+            <apex:outputPanel layout="block" rendered="{!isJobQueued}">
+            	<div id="cleanupJobInprogressMessageDiv"/>
+                <script>
+                    Appurin.lightning.createLightningPageMessage({'lightningPageMessageId' : 'cleanupJobInprogressMessageDiv', 'severity' : 'info', 'summary' : '{!JSENCODE($Label.buildertek__Cleanup_Files_Job_Queued_Message)}'});   
+                </script>
+            </apex:outputPanel>
+        </apex:outputPanel>
+        <apex:outputPanel layout="block" id="lightningInfoPopup" style="display: none; z-index: 8552;"> 
+	        <div class="apModal" style="z-index: 8551;">
+		        <div class="apModalContainer">
+		        	<div class="apModalHeader">
+		        		<h2 class="apModalHeading" id="lightningInfoPopupHeader">{!$Label.Warning}</h2>
+		        	</div>
+		        	<div class="apModalContent">
+						<div class="apNotifyContainer" style="position: relative; text-align:left;">
+							<div>
+								<h2 id="lightningInfoPopupMessage"></h2>
+							</div>
+						</div>
+		        	</div>
+		        	<div class="apModalFooter">
+		        		<button id="lightningInfoPopupOkButton">{!$Label.Ok}</button>
+		        		<button id="lightningInfoPopupCloseButton">{!$Label.Close}</button>
+		        	</div>
+		        </div>
+	        </div>
+	        <div class="slds-backdrop slds-backdrop--open" style="z-index: 5881;"></div>
+        </apex:outputPanel>
+    </apex:form>
+</apex:page>

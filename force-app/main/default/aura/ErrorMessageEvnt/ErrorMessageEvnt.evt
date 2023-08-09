@@ -1,0 +1,4 @@
+<aura:event type="APPLICATION" description="Error Message" >
+     <aura:attribute name="errMsg" type="String" default=""/>
+     <aura:attribute name="isMsg" type="Boolean" default="false"/>
+</aura:event>

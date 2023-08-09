@@ -1,0 +1,125 @@
+<aura:component controller="BT_QuestionnaireBuilder" access="public">
+    <aura:attribute name="namespace" type="String" default="buildertek" description="namespace prefix" />
+    <aura:attribute name="questionGroup" type="object" access="public" description="Question group details" />
+    <aura:attribute name="section" type="object" access="public" description="Section details" />
+    <aura:attribute name="isNewControl" type="Boolean" default="true"
+        description="this attribute is uses is that control record is new or edit" />
+    <aura:attribute name="isSaveAndNew" type="Boolean" default="false" />
+    <aura:attribute name="controlDetails" type="Object" description="control Details like control fields of fields" />
+    <aura:attribute name="onSuccess" type="Aura.Action"
+        description="parent component method Reference action used to call from child components on record Save" />
+    <aura:attribute name="onDelete" type="Aura.Action"
+        description="parent component method Reference action used to call from child components on record delete" />
+
+    <aura:attribute name="productfamilyoptions" type="List" />
+
+    <aura:attribute name="responsetypeOptions" type="List" default="[]" description="response type options list" />
+    <aura:attribute name="richTableData" type="List" description="Rich Table Data in JSON Format" />
+    <aura:attribute name="responseTypeList" type="List" default="[]" />
+    <aura:handler name="init" value="{! this }" action="{! c.init }" />
+    <aura:attribute name="modalPromise" type="Aura.Action" />
+
+    <div aura:id="newControl" class="slds-is-relative">
+        <!-- Spinner -->
+        <c:BT_Spinner />
+        <lightning:recordEditForm aura:Id="controlRecord" objectApiName="buildertek__Question_Group__c"
+            recordId="{!v.questionGroup.Id}" onsubmit="{!c.submitcontrolRecord}" onsuccess="{!c.sucsesscontrolRecord}">
+
+            <lightning:messages />
+            <lightning:tabset>
+
+                <lightning:tab label="Details" Id="setup">
+                    <div class="slds-grid slds-wrap slds-scrollable">
+                        <aura:iteration items="{!v.controlDetails.controlSetupFields}" var="field">
+                            <div class="slds-col slds-size_1-of-2">
+                                <div class="slds-box_x-small slds-m-around_x-small">
+                                    <lightning:inputField aura:id="setupField" fieldName="{!field}" />
+                                </div>
+                            </div>
+                        </aura:iteration>
+                        <lightning:inputField fieldName="buildertek__Section__c" value="{!v.section.Id}"
+                            class="slds-hide" />
+                    </div>
+                </lightning:tab>
+                <lightning:tab label="Selection Attribute" id="response">
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col" style="text-align:right;">
+                            <lightning:button label="Add New Attribute" title="Add New Attribute" variant="Brand"
+                                class="slds-m-top_x-small" onclick="{!c.addNewResponseType}" />
+                        </div>
+                    </div>
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col">
+                            <lightning:accordion aura:id="accordion" allowMultipleSectionsOpen="true">
+                                <aura:iteration items="{!v.responseTypeList}" var="responseTypeItem"
+                                    indexVar="indexResponseType">
+                                    <lightning:accordionSection
+                                        name="{!responseTypeItem.responseTypeName==null?'New Attribute':responseTypeItem.responseTypeName}"
+                                        label="{!responseTypeItem.responseTypeName==null?'New Attribute':responseTypeItem.responseTypeName}">
+                                        <aura:set attribute="actions">
+                                            <lightning:buttonIcon iconName="utility:delete" name="{!indexResponseType}"
+                                                alternativeText="delete" title="delete"
+                                                onclick="{!c.onDeleteHandler}" />
+                                        </aura:set>
+                                        <lightning:layout verticalAlign="stretch" multipleRows="true" class="x-large">
+                                            <lightning:layoutItem flexibility="auto" padding="around-small" size="6"
+                                                class="custom-box">
+                                                <lightning:input label='Attribute Name' Name='Attribute Name'
+                                                    value="{!responseTypeItem.responseTypeName}" />
+                                                <lightning:combobox aura:id="responsetype" name="{!indexResponseType}"
+                                                    label="Attribute Type" options="{! v.responsetypeOptions }"
+                                                    value="{!responseTypeItem.selectedResponsetypeValue}"
+                                                    onchange="{! c.responsetype }" />
+                                                <lightning:inputField aura:id="buildertek__choice_template__c"
+                                                    fieldName="buildertek__Choice_Template__c"
+                                                    class="slds-p-top_small slds-hide" />
+                                            </lightning:layoutItem>
+
+                                            <!-- Rich Table -->
+                                            <lightning:layoutItem aura:id="rich_table" size="12" padding="around-small"
+                                                class="slds-hide">
+                                                <c:BT_RichTable aura:id="rich_table_Component"
+                                                    richTableData="{!v.richTableData}" />
+                                            </lightning:layoutItem>
+
+                                            <lightning:layoutItem aura:id="NewSelectionChoices" size="12"
+                                                padding="around-small" class="">
+                                                <c:BT_NewSelectionChoices aura:id="NewSelectionChoices_Component"
+                                                    selectedResponsetypeValue="{!responseTypeItem.selectedResponsetypeValue}"
+                                                    responseTypeName="{!responseTypeItem.responseTypeName}"
+                                                    selectionChoices="{!responseTypeItem.selectionChoices}"
+                                                    questionId="{!v.question.Id}"
+                                                    questionGroupId="{!v.questionGroup.Id}" />
+                                            </lightning:layoutItem>
+
+                                        </lightning:layout>
+                                    </lightning:accordionSection>
+                                </aura:iteration>
+                            </lightning:accordion>
+                        </div>
+                    </div>
+                </lightning:tab>
+
+            </lightning:tabset>
+
+            <div class="slds-hide">
+                <div aura:id="footer">
+                     <lightning:button name="cancel" class="slds-float" variant="neutral" label="Cancel"
+                        onclick="{!c.cancel}" />
+                    <aura:if isTrue="{!!v.isNewControl}">
+                        <lightning:button name="delete" class="slds-float" variant="brand" label="Delete"
+                            onclick="{!c.deleteRecordModal}" />
+                    </aura:if>
+                   
+                    <lightning:button class="slds-float_right" name="save" variant="brand" type="submit" label="Save"
+                        onclick="{!c.save}" />
+                    <lightning:button class="slds-float_right" name="save" variant="brand" type="submit"
+                        label="Save &amp; New" onclick="{!c.saveAndNew}" />
+                </div>
+                <button class="slds-hide" id="saveQuestionGroupbutton" name="save" type="submit" />
+            </div>
+
+        </lightning:recordEditForm>
+    </div>
+    <lightning:overlayLibrary aura:id="overlayLib" />
+</aura:component>

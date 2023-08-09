@@ -1,0 +1,57 @@
+.container {
+    height : 50em;
+}
+
+.b-float-root {
+    z-index: 100;
+}
+
+.container1 .b-schedulerbase.b-schedulerprobase{
+    position: relative;
+    top: -0.5em;
+}
+
+i.b-action-item.b-fa.b-fa-plus{
+    color: blue;
+}
+
+i.b-action-item.b-fa.b-fa-pen{
+    color: #3183fe;/*orange;*/
+}
+
+i.b-action-item.b-fa.b-fa-trash{
+    color: grey;
+}
+
+i.b-action-item.b-fa.b-fa-check{
+    color: green;
+}
+.spins::after {
+    position: absolute;
+    content: 'Processing, Please wait...';
+    width: 100%;
+    text-align: center;
+    top: calc(50% + 3em);
+    font-weight: bold;
+    font-size: large;
+}
+.slds-modal__container{
+    max-width: 72rem !important;
+    width:72% !important;
+ }
+ .cuf-content {
+ padding: 0 0rem !important;
+ }
+ .slds-p-around--medium {
+ padding: 0rem !important;
+ }
+ .slds-modal__content {
+     height: unset !important;
+     max-height: unset !important;
+     box-shadow: none !important;
+ } 
+ .slds-modal__container{
+    max-width: 72rem !important;
+    width:72% !important;
+ 
+ }

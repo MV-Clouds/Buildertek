@@ -1,0 +1,83 @@
+<aura:component controller="ImportVendorReview" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable" access="global"> 
+    
+    <aura:attribute name="masterVendorReviewList" type="object" />
+    <aura:attribute name="pageSize" type="Integer" default="10"/>
+    <aura:attribute name="PaginationList" type="Object"/>
+    <aura:attribute name="totalRecords" type="Integer"/>
+    <aura:attribute name="startPage" type="Integer" />
+    <aura:attribute name="endPage" type="Integer"/>
+    <aura:attribute name="Spinner" type="Boolean" />
+    <aura:attribute name="pageReference" type="String" />
+    <lightning:workspaceAPI aura:id="workspace" />
+     
+    <aura:attribute name="showMessage" type="Boolean" default="false" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> 
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/> 
+    <div class="slds-modal__header" style="font-size:17px;">
+        Import Vendor Review
+    </div>
+    <div class="slds-modal__content slds-p-around--large">
+        <div class="slds slds-scope">
+            <table class="slds-table slds-table_bordered slds-table_fixed-layout" role="grid">
+                <thead>
+                    <tr class="slds-text-title_caps">
+                        <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-left-radius:5px;vertical-align: top;line-height: 2;width: 30px !important;">
+                            <ui:inputCheckbox aura:id="checkContractors" change="{!c.selectAll}" />		
+                        </th>
+                        <th  style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                            Vendor Scorecard Name
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.PaginationList}" var="rec">
+                        <tr class="slds-hint-parent">
+                            <aura:if isTrue="{!rec.budgetRecord != null}">
+                                <td> 
+                                    <ui:inputCheckbox aura:id="checkContractor" value="{rec.budgetCheck}" text="{!rec.budgetRecord.Id}" change="{!c.handleCheck}" />
+                                    <!--    <lightning:input aura:id="quoteselection" type="checkbox" value="{!rec.quoteCheck}" text="{!rec.quoteRecord.Id}" onclick="{!c.uncheckAll}" style="cursor: pointer !important;"/>-->
+                                </td> 
+                                <td role="gridcell">
+                                    
+                                    <!--<a href="{!'/'+rec.budgetRecord.Id}">-->
+                                        <ui:outputText value="{!rec.budgetRecord.Name}" /> <!-- </a>-->
+                                </td>
+                            </aura:if>
+                        </tr>
+                    </aura:iteration>
+                </tbody>
+            </table>
+            <br/>
+            <lightning:buttonGroup >
+                <lightning:button label="Previous" disabled="{!v.startPage == 0}"  
+                                  onclick="{!c.previous}" variant="brand"
+                                  iconName='utility:back'/>
+                &nbsp; &nbsp; &nbsp;
+                <lightning:button label="Next" disabled="{!v.endPage >= v.totalRecords}" 
+                                  onclick="{!c.next}" variant="brand"
+                                  iconName='utility:forward' iconPosition='right'/>
+            </lightning:buttonGroup> 
+        </div>
+        <aura:if isTrue="{!v.Spinner}">
+            <div aura:id="spinnerId" class="slds-spinner_container">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                    <div class="custom-loading-text">
+                            <aura:if isTrue="{!v.showMessage}">
+                               <!-- <b>Creating Vendor Review... </b>-->
+                                 <b>Processing, Please Wait</b>
+                            </aura:if>
+                        </div>
+                </div>
+            </div>
+        </aura:if>
+    </div>
+    <div class="slds-modal__footer">
+        <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}" >Cancel</button>
+        <button class="slds-button slds-button--brand" onclick="{!c.importBudget}">Import Vendor Review</button>
+    </div>
+   <ltng:require scripts="/support/console/34.0/integration.js"/> 
+</aura:component>

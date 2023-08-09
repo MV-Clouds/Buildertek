@@ -1,0 +1,30 @@
+.THIS .popupsize{
+     width: 78%;
+}
+.THIS .custom-loading-text {
+    transform: rotate(-90deg);
+    position: absolute;
+    top: -0.5rem;
+    left: 1rem;
+    white-space: nowrap;
+    font-size: 20px;
+}
+.THIS .budgetInput .slds-input{
+    padding-left: 2rem;
+    border:1px solid var(--slds-g-color-border-base-4, var(--lwc-colorBorderInput,rgb(201, 201, 201))) !important;
+
+}
+
+.THIS .budgetInput .slds-input__icon_left{
+    display: none;
+}
+
+.THIS .budgetLineInput .slds-input{
+    padding-left: 2rem;
+    border:1px solid var(--slds-g-color-border-base-4, var(--lwc-colorBorderInput,rgb(201, 201, 201))) !important;
+
+}
+
+.THIS .budgetLineInput .slds-input__icon_left{
+    display: none;
+}

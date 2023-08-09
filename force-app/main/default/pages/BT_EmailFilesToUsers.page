@@ -1,0 +1,230 @@
+<!--**********************************************************************************
+* Copyright © 2017 - 2017, BuilderTek.
+* All rights reserved
+*
+* VisualForce Page: BT_EmailFilesToUsers
+* Created by Sagar
+
+* - Emails file to users.
+
+* - Modifications:
+* - Sagar - Initial 
+***********************************************************************************-->
+<apex:page controller="BT_EmailFilesToUsersController" docType="html-5.0" sidebar="false" title="{!$Label.buildertek__Email_Files}" >
+	<c:BT_JsAndCssIncludeComponent importJquery="true"
+                              importAppurinUtil="true"
+                              importJQueryLayout="true"
+                              importFancyTree="true"
+                              importJqGrid="false"
+                              importEasyTooltip="true"
+                              importAppurinCss="true"
+                              importCkEditor="true"
+                              importGnattChart="false"
+							  importLightningDesign="true"/>
+							  
+	<script>
+        var twistyLightningSectionStatus = {};
+        j$(document).ready(function() {
+            // CKEditor configuration
+            CKEDITOR.config.forcePasteAsPlainText = true;
+            CKEDITOR.config.height = 150;
+            CKEDITOR.config.toolbarCanCollapse = true;
+            CKEDITOR.config.enterMode = CKEDITOR.ENTER_BR;
+            CKEDITOR.config.autoParagraph = false;
+			easyToolTipForAll();
+			
+		});
+		
+        function easyToolTipForAll() {
+            j$('.apHelpText').easyTooltip({width: '200px', isLightning:true, isFormatted:true});
+            return false;
+        }
+        
+        // Reload CKEditor
+        function reloadCKEditor(instanceName){
+            CKEDITOR.replace(instanceName);
+        }
+        
+        // Assigning the html content to responsible textarea         
+        function assignRichTextHtml() {
+            for (name in CKEDITOR.instances) {
+                var richTextValue = CKEDITOR.instances[name].getData(); 
+                richTextValue = richTextValue.replace(/<\!--[\s\S]*?-->/g, '' );
+               richTextValue = richTextValue.replace(/\\/g,'\\\\');
+                var ckEditorTextArea = document.getElementById(name);
+                if (ckEditorTextArea != null) {
+                    ckEditorTextArea.innerHTML = richTextValue.trim();
+                }
+            }
+            return false;
+        }
+    </script> 					  
+							  
+	<apex:actionStatus id="splashStatus" onstart="startSplash();" onstop="endSplash();"/>
+	<div class="slds">
+        <div id="splashDiv" class="apInitiallyDivDisplayNone" style="z-index:9998;">
+            <div class="slds-spinner_container apLightningSpinnerContainer">
+                <div role="status" class="slds-spinner slds-spinner--medium slds-spinner--brand">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+	<apex:form id="formContent">
+	    <apex:outputPanel styleClass="slds">
+    		<div class="apPageHeader" id="PageHeader">
+    			<div class="apPageHeaderMedia">
+    	          	<div id="pageHeaderMedia" class="apPageHeaderMediaFigure">
+    	                <c:BT_LightningSvg parentId="pageHeaderMedia" styleClass="apLightningPageHeaderIcon slds-button__icon" path="/assets/icons/utility-sprite/svg/symbols.svg#email"/>
+    	            </div>
+    	            <div class="apPageHeaderMediaBody">
+    	                <p class="slds-text-title--caps slds-line-height--reset">{!$ObjectType.File__c.Label}</p>
+    					<div class="apPageHeaderTitle" title="{!$Label.File_Explorer_Configuration_Subtitle}">{!$Label.Email_Files_Page_Subtitle}</div>
+    	              	<div class="apPageHeaderInfo">
+    	              		<label>{!$Label.Email_Files_Message}</label>
+    	              	</div>
+              		</div>
+    	            <div style="float:right;" class="apPageHeaderMediaButtons">
+                        <apex:commandButton styleClass="slds-button slds-button_neutral" value="{!$Label.buildertek__Cancel}" rendered="{!!isShowClose}" action="{!Cancel}" status="splashStatus" reRender="formContent" onComplete="if(Appurin.lightning.isLightningExperience()){Appurin.lightning.back(true);} easyToolTipForAll();"/>
+                    	<apex:commandButton styleClass="slds-button slds-button_neutral" value="{!$Label.buildertek__Close}" rendered="{!isShowClose}" onClick="if(Appurin.lightning.isLightningExperience()){Appurin.lightning.back(true);} else{ window.close();} return false;" status="splashStatus" rerender="formContent" onComplete="if(Appurin.lightning.isLightningExperience()){Appurin.lightning.back(true);} easyToolTipForAll();"/>
+                    	<apex:commandButton styleClass="slds-button slds-button_brand" value="{!$Label.buildertek__Send}" action="{!sendEmail}" onclick="assignRichTextHtml();" status="splashStatus" reRender="formContent" onComplete="if({!isSuccess} && Appurin.lightning.isLightningExperience()){Appurin.lightning.back(true);} else{easyToolTipForAll();}"/>
+                    </div>
+                    <script>
+                        Appurin.lightning.createPageHeader('PageHeader');
+                    </script>
+    	        </div>
+            </div>
+	    </apex:outputPanel>
+	    <apex:outputPanel layout="block" styleClass="slds">
+            <apex:outputPanel >
+                <apex:pagemessages id="errorMessages"/>
+                <script>
+                    Appurin.lightning.createLightningPageMessage({'classicPageMessageId' : '{!$Component.errorMessages}'});   
+                </script>
+            </apex:outputPanel>
+            <apex:outputPanel layout="block">
+                <apex:outPutPanel layout="block" styleClass="slds-section slds-is-open" id="filesAndUsersSection">
+                    <h3 class="slds-section__title">
+                        <apex:outputPanel id="fileAndUsersHeader" layout="block" styleclass="slds-button slds-section__title-action">
+                            <c:BT_LightningSvg parentId="fileAndUsersHeader" parentType="div" styleClass="slds-section__title-action-icon slds-button__icon slds-button__icon--left" path="/assets/icons/utility-sprite/svg/symbols.svg#switch"/>
+                            <label class="avLightningFormElementLabel">Files and Users</label>
+                        </apex:outputPanel>
+                    </h3>
+                    <apex:outPutPanel layout="block" styleClass="slds-section__content">
+                        <apex:outputPanel layout="block" styleClass="slds-grid slds-grid--pull-padded-medium">
+                            <apex:outputPanel layout="block" styleClass="slds-col slds-p-horizontal--medium slds-size--1-of-2">
+                                <apex:outputPanel layout="block" styleClass="slds-form-element">
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                        <c:BT_TreePickerWithSelectComponent treeId="FilePicker" 
+                	                    	treeType="{!FileTreeType}"
+                	                        treeConfigName="{!FilePickerConfigName}"
+                	                        checkableTreeNodes="{!FilePickerCheckableObjectTypes}"
+                	                        title="{!$ObjectType.File__c.Label} {!$Label.buildertek__Picker}" 
+                	                        treeWidth="auto" 
+                	                        treeHeight="300"
+                	                        selectedNodes="{!selectedFileNodes}"
+                	                        searchableObjectTypes="{!searchableFileObjectTypes}"
+                	                        selectableObjectNamesForHeader="File"
+                	                        treePickerLabel="{!$ObjectType.File__c.Label}"
+                	                        selectButtonLabel="{!$Label.buildertek__Add_Files_Button}"
+                	                        queryParameters="{!queryParameters}">
+                	                    </c:BT_TreePickerWithSelectComponent>
+                                    </apex:outputPanel>
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                            <apex:outputPanel layout="block" styleClass="slds-col slds-p-horizontal--medium slds-size--1-of-2">
+                                <apex:outputPanel layout="block" styleClass="slds-form-element">
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                        <c:BT_TreePickerWithSelectComponent treeId="UserPicker" 
+                	                    	treeType="{!UserTreeType}"
+                	                        treeConfigName="{!UserPickerConfigName}"
+                	                        checkableTreeNodes="{!UserPickerCheckableObjectTypes}"
+                	                        title="{!$ObjectType.User.Label} {!$Label.buildertek__Picker}" 
+                	                        treeWidth="auto" 
+                	                        treeHeight="300"
+                	                        selectedNodes="{!selectedUserNodes}"
+                	                        searchableObjectTypes="{!searchableUserObjectTypes}"
+                	                        selectableObjectNamesForHeader="user"
+                	                        treePickerLabel="{!$Label.buildertek__To}"
+                	                        selectButtonLabel="{!$Label.buildertek__Add_Recipients_Button}">
+                	                    </c:BT_TreePickerWithSelectComponent>
+                                    </apex:outputPanel>
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                        </apex:outputPanel>
+                    </apex:outputPanel>
+                    <script>
+    				    Appurin.lightning.createLightningSection('{!$Component.filesAndUsersSection}');
+    				</script>
+                </apex:outputPanel>
+                <apex:outPutPanel layout="block" styleClass="slds-section slds-is-open" id="emailConfigurationSection">
+                    <h3 class="slds-section__title">
+                        <apex:outputPanel id="emailConfigHeader" layout="block" styleclass="slds-button slds-section__title-action">
+                            <c:BT_LightningSvg parentId="emailConfigHeader" parentType="div" styleClass="slds-section__title-action-icon slds-button__icon slds-button__icon--left" path="/assets/icons/utility-sprite/svg/symbols.svg#switch"/>
+                            <label class="avLightningFormElementLabel">Email Configuration</label>
+                        </apex:outputPanel>
+                    </h3>
+                    <apex:outPutPanel layout="block" styleClass="slds-section__content">
+                        <apex:outputPanel layout="block" styleClass="slds-grid slds-grid--pull-padded-medium">
+                            <apex:outputPanel layout="block" styleClass="slds-col slds-p-horizontal--medium slds-size--1-of-1">
+                                <apex:outputPanel layout="block" styleClass="slds-form-element">
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                        <apex:outputLabel for="expireFileUrlDuration" value="URL Expiration Duration (days)"/>
+                                    </apex:outputPanel>
+                                    <c:BT_LightningHelpText helptext="If empty, URL will expires in 2 days."/>
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                        <apex:input type="number" styleClass="slds-input" id="expireFileUrlDuration" label="URL Expiration Duration (days)" value="{!expireFileUrlDuration}"/>
+                                    </apex:outputPanel>
+                                </apex:outputPanel> 
+                            </apex:outputPanel>
+                        </apex:outputPanel>
+                    </apex:outputPanel>
+                    <script>
+    				    Appurin.lightning.createLightningSection('{!$Component.emailConfigurationSection}');
+    				</script>
+                </apex:outputPanel>
+                <apex:outPutPanel layout="block" styleClass="slds-section slds-is-open" id="emailContentSection">
+                    <h3 class="slds-section__title">
+                        <apex:outputPanel id="emailContentHeader" layout="block" styleclass="slds-button slds-section__title-action">
+                            <c:BT_LightningSvg parentId="emailContentHeader" parentType="div" styleClass="slds-section__title-action-icon slds-button__icon slds-button__icon--left" path="/assets/icons/utility-sprite/svg/symbols.svg#switch"/>
+                            <label class="avLightningFormElementLabel">Email Content</label>
+                        </apex:outputPanel>
+                    </h3>
+                    <apex:outPutPanel layout="block" styleClass="slds-section__content">
+                        <apex:outputPanel layout="block" styleClass="slds-grid slds-grid--pull-padded-medium">
+                            <apex:outputPanel layout="block" styleClass="slds-col slds-p-horizontal--medium slds-size--1-of-1">
+                                <apex:outputPanel layout="block" styleClass="slds-form-element">
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                        <apex:outputLabel for="subject" value="{!$Label.buildertek__Email_Subject}"></apex:outputLabel>
+                                    </apex:outputPanel>
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                        <apex:inputText id="subject" styleClass="slds-input" value="{!emailSubject}"/>
+                                    </apex:outputPanel>
+                                </apex:outputPanel> 
+                            </apex:outputPanel>
+                        </apex:outputPanel>
+                        <apex:outputPanel layout="block" styleClass="slds-grid slds-grid--pull-padded-medium">
+                            <apex:outputPanel layout="block" styleClass="slds-col slds-p-horizontal--medium slds-size--1-of-1">
+                                <apex:outputPanel layout="block" styleClass="slds-form-element">
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                        <apex:outputLabel value="Body"/>
+                                    </apex:outputPanel>
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                        <apex:inputTextArea rows="4" id="body" value="{!emailBody}"/>
+                                        <script>reloadCKEditor('{!$Component.body}');</script>
+                                    </apex:outputPanel>
+                                </apex:outputPanel> 
+                            </apex:outputPanel>
+                        </apex:outputPanel>
+                    </apex:outputPanel>
+                    <script>
+    				    Appurin.lightning.createLightningSection('{!$Component.emailContentSection}');
+    				</script>
+                </apex:outputPanel>
+            </apex:outputPanel>
+	    </apex:outputPanel>
+	</apex:form>
+</apex:page>

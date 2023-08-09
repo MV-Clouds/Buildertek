@@ -1,0 +1,16 @@
+<apex:page controller="BT_SOVConfiguration" sidebar="false" lightningStylesheets="true">
+     <apex:slds />
+    <apex:includeLightning />
+    <apex:form >
+        <apex:pageBlock mode="maindetail">
+            <apex:pageMessages />
+            <apex:pageblocksection >
+            <apex:inputField value="{!newrfi.Default_Account_for_SOV__c}" styleClass="slds-input" style="width:320px;"/>
+                <!--<apex:inputField value="{!buildertek__Admin_Interface_Node_Configuration__c.buildertek__Default_Account_for_SOV__c}" label="Default Account for SOV"/>-->
+                <center>
+                <apex:commandButton value="Save" id="onCreateChangeOrderonOverage" styleClass="slds-button slds-button_brand" action="{!onCreateChangeOrderonOverage}"></apex:commandButton>
+                </center>
+            </apex:pageblocksection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

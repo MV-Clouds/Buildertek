@@ -1,0 +1,34 @@
+<aura:component controller="GetResourceLocation"  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global">
+    <aura:attribute name="latitude" type="decimal" default=""/>
+    <aura:attribute name="longitude" type="decimal" default=""/>
+    <aura:attribute name="Endtime" type="string" default="Endtime"/>
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="newResourcelog" type="Resource_Log__c" default="{ 'sobjectType': 'Resource_Log__c'}" access="public"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> 
+        <!-- <div class="slds-col modal-header slds-modal__header">
+        <h2 class="title slds-text-heading–medium">End Time</h2>
+       </div>
+ 
+        <div class="slds-col modal-body  slds-p-around_medium" style="height: 100%; overflow-y: auto !important;background:white">
+
+       
+
+       <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__Resource_Log__c" >
+           <lightning:layout   >
+        	  <lightning:layoutItem size="12" mediumDeviceSize="12" padding="around-small">
+        			<lightning:inputField aura:id="endtime" fieldName="buildertek__End_Time__c" value="{!v.newResourcelog.buildertek__End_Time__c}" label="End Time" />
+        		</lightning:layoutItem> 
+               
+              </lightning:layout>
+			</lightning:recordEditForm>
+
+          </div>
+
+
+     <div class="slds-col slds-align_absolute-center" style="margin-top:10px;" >  
+        <lightning:button class="slds-button slds-button_brand"  onclick="{!c.submit}" label="Submit"/>
+        <lightning:button class="slds-button slds-button_neutral" onclick="{!c.close}" label="Cancel"/>
+    </div>
+    <br/><br/> -->
+    <lightning:overlayLibrary aura:id="overlayLib" />
+    </aura:component>

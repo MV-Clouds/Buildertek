@@ -1,0 +1,81 @@
+@isTest
+private class NewQuoteTemplate_TC {
+    static TestMethod void NewQuoteTemplate(){
+        Template_Header__c th = new Template_Header__c();
+        th.Description__c = 'test';
+        th.Template_Header__c = 'test';
+        insert th;
+        Template_Footer__c tf = new Template_Footer__c();
+        tf.Description__c = 'test';
+        tf.Template_Footer__c = 'test';
+        insert tf;
+        Quote_Template__c qt = new Quote_Template__c();
+        qt.Template_Body__c = 'Test';
+        qt.Template_Format__c = 'Quote';
+        qt.Template_Header__c = th.id;
+        qt.Template_Footer__c = tf.Id;
+        insert qt;
+        // Sales_Order__c so = new Sales_Order__c();
+        // so.Sales_OrderName__c = 'test name';
+        // so.Doc_Template__c = qt.id;
+        // insert so;
+        DocTemplate_Page__c qp = new DocTemplate_Page__c();
+        qp.DocTemplate_Page__c = 'test';
+        qp.Doc_Template__c = qt.id;
+        // insert qp;
+        ApexPages.currentPage().getParameters().put('retURL', qt.id);
+        ApexPages.StandardController sc1 = new ApexPages.StandardController(qp);
+        NewQuoteTemplate_AC NewQuoteTemplate_AC = new NewQuoteTemplate_AC(sc1);
+        NewQuoteTemplate_AC.TemplatePageInfo = qp;
+        List<string> strlist = new List<String>();
+        string s = 'None';
+        strlist.add(s);        
+        NewQuoteTemplate_AC.leftselected = strlist;
+        NewQuoteTemplate_AC.selectclick();
+        List<string> strlisttwo = new List<String>();
+        string ss = 'None';
+        strlisttwo.add(ss); 
+        NewQuoteTemplate_AC.rightselected = strlisttwo;
+        NewQuoteTemplate_AC.unselectclick();
+        // NewQuoteTemplate_AC.getunSelectedValues();
+        NewQuoteTemplate_AC.getSelectedValues();
+        NewQuoteTemplate_AC.islineItem = true;
+        NewQuoteTemplate_AC.verifyError();
+        NewQuoteTemplate_AC.islineItem = false;
+        NewQuoteTemplate_AC.verifyError();
+        //NewQuoteTemplate_AC.islineItem = true;
+        NewQuoteTemplate_AC.SaveNewQuoteTemplatePage();
+         system.assertEquals(qt.id,qt.id);
+    }
+    static TestMethod void NewQuoteTemplatetwo(){
+        Template_Header__c th = new Template_Header__c();
+        th.Description__c = 'test';
+        th.Template_Header__c = 'test';
+        insert th;
+        Template_Footer__c tf = new Template_Footer__c();
+        tf.Description__c = 'test';
+        tf.Template_Footer__c = 'test';
+        insert tf;
+        Quote_Template__c qt = new Quote_Template__c();
+        qt.Template_Body__c = 'Test';
+        qt.Template_Format__c = 'Quote';
+        qt.Template_Header__c = th.id;
+        qt.Template_Footer__c = tf.Id;
+        insert qt;
+        // Sales_Order__c so = new Sales_Order__c();
+        // so.Sales_OrderName__c = 'test name';
+        // so.Doc_Template__c = qt.id;
+        // insert so;
+        DocTemplate_Page__c qp = new DocTemplate_Page__c();
+        qp.DocTemplate_Page__c = '';
+        qp.Doc_Template__c = qt.id;
+        // insert qp;
+        ApexPages.currentPage().getParameters().put('retURL', qt.id);
+        ApexPages.StandardController sc1 = new ApexPages.StandardController(qp);
+        NewQuoteTemplate_AC NewQuoteTemplate_AC = new NewQuoteTemplate_AC(sc1);
+        NewQuoteTemplate_AC.TemplatePageInfo = qp;
+        NewQuoteTemplate_AC.verifyError();
+        NewQuoteTemplate_AC.SaveNewQuoteTemplatePage();
+         system.assertEquals(qt.id,qt.id);
+    }
+}

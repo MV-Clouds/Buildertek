@@ -1,0 +1,23 @@
+<apex:page controller="RFQRejectController"  showheader="false" id="pageId" action="{!changeTheStatus}">
+    <apex:slds />
+    <apex:includeLightning />
+    <c:BT_JsAndCssIncludeComponent importJquery="true" importAppurinUtil="true" importJQueryLayout="true" importFancyTree="false"
+        importJqGrid="false" importEasyTooltip="true" importAppurinCss="true" importCkEditor="false" importGnattChart="false"
+        importLightningDesign="true" />
+
+    <head>
+     <!-- <apex:stylesheet value="{!URLFOR($Resource.SLDSv0122, 'assets/styles/salesforce-lightning-design-system-vf.css')}" /> -->
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+        <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css" />
+        <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"/>
+         <apex:includeScript value="{!$Resource.FileUploadJs}"/>
+    </head>
+    <body>
+        <center style="background: #ff0000bf;color: white;font-size: 16px;font-weight: bold; width: 50vw; margin: 10% auto; padding: 20px;">You have rejected RFQ "{!getRFQName}". If you have any questions please contact "{!getOwnerName}."</center> 
+
+    </body>
+
+</apex:page>

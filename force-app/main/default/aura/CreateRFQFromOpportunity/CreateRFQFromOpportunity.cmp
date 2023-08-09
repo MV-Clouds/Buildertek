@@ -1,0 +1,75 @@
+<aura:component controller="CreateRFQFromOpportunity" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global">
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="newRFQ" type="RFQ__c" default="{ 'sobjectType': 'RFQ__c'}" access="public"/>
+    <aura:attribute name="Spinner" type="Boolean" default="false"/>
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />  
+	<aura:html tag="style">
+        .quick-actions-panel {
+            overflow: hidden !important;
+        }
+        .slds-modal__content{
+            overflow: hidden !important;
+           
+        }
+        .slds-docked-form-footer{
+            bottom: auto !important;
+            Display: block !important;
+        }
+       
+       
+    </aura:html>
+
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/>
+	<div class="slds-modal__content ">
+		<div class="slds slds-scope">
+			<div class="slds-modal__header" style="font-size:17px;">
+				New RFQ
+			</div>
+			<div class="slds-modal__content" id="modal-content-id-1" style="height:100%">
+				<div class="slds-modal__content slds-p-around--large">
+					<aura:if isTrue="{!v.Spinner}">
+						<div aura:id="spinnerId" class="slds-spinner_container">
+						   <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+							 <span class="slds-assistive-text">Loading</span>
+							 <div class="slds-spinner__dot-a"></div>
+							 <div class="slds-spinner__dot-b"></div>
+						   </div>
+						</div>
+					</aura:if>
+					<lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__RFQ__c" density="Compact">
+						<lightning:layout multipleRows="true">
+							<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+								<lightning:inputField aura:id="rfqDescription" value="{!v.newRFQ.Name}" label="RFQ Description" fieldName="Name" autocomplete="off"/>
+							</lightning:layoutItem>
+							
+							<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+								<lightning:inputField aura:id="oppid" fieldName="buildertek__Opportunity__c" label="Opportunity"/>
+							</lightning:layoutItem>       
+							
+							<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+								<lightning:inputField aura:id="details" fieldName="buildertek__RFQ_Details__c" value="{!v.newRFQ.buildertek__RFQ_Details__c}" label="RFQ Details" />
+							</lightning:layoutItem>
+							<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+								<lightning:inputField aura:id="projectNameId" fieldName="buildertek__Project__c" label="Project"/>
+							</lightning:layoutItem>
+							
+							<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+								<lightning:inputField  aura:id="dueDate" fieldName="buildertek__Due_Date__c" value="{!v.newRFQ.buildertek__Due_Date__c}" label="RFQ Due Date" autocomplete="off"/>
+							</lightning:layoutItem>
+							
+							<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+								<lightning:inputField aura:id="tradeType" fieldName="buildertek__Trade_Type__c" value="{!v.newRFQ.buildertek__Trade_Type__c}" label="Trade Type" />
+							</lightning:layoutItem>
+						</lightning:layout>
+					</lightning:recordEditForm>
+				</div>
+				<div class="slds-modal__footer">
+					<lightning:button variant="neutral"   label="Cancel"  title="Cancel"  onclick="{! c.closeModel }"/>
+					<lightning:button variant="neutral"   label="Save &amp; New"  title="Save &amp; New"  onclick="{!c.saveAndNew}"/>                  
+					<lightning:button variant="brand"   label="Save"  title="Save"  onclick="{!c.saveRFQ}"/>
+				</div> 
+			</div>
+
+		</div>
+	</div>
+</aura:component>

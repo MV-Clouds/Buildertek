@@ -1,0 +1,150 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction,forceCommunity:availableForAllPageTypes,forceCommunity:layout" 
+                controller="ImportMasterSOVs" access="global" >
+    <aura:attribute name="recordId" type="string" access="public"/>
+  	<aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="cancelCallback" type="object" access="public" />
+    
+    <aura:attribute name="rfqRecordList" type="SOV_Continuation__c[]" />
+    <aura:attribute name="listOfSelectedRFQIds" type="List" default="[]"/>
+    <aura:attribute name="PageNumber" type="integer" default="1" />
+    <aura:attribute name="pageSize" type="integer" default="10" />
+    <aura:attribute name="TotalPages" type="integer" default="0" />
+    <aura:attribute name="TotalRecords" type="integer" default="0" />
+    <aura:attribute name="RecordStart" type="integer" default="0" />
+    <aura:attribute name="RecordEnd" type="integer" default="0" />
+    <aura:attribute name="Spinner" type="boolean" default="false"/>
+    <aura:attribute name="commUserId" type="String" />
+    
+    <aura:attribute name="Iscommunity" type = "Boolean" />
+    
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/> 
+    
+    
+    <div  class="slds-modal__content slds-p-around--large">
+        <div>
+            <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                <thead>
+                    <tr class="slds-text-heading--label">
+                        <th class="slds-is-sortable" scope="col" width="5px" style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-left-radius:5px;vertical-align: top;line-height: 2;width: 30px !important;padding-top: 8px;">
+                            <lightning:input type="checkbox" aura:id="headCheckRFQ" checked="false" onchange="{!c.selectAllRfq}"/> 
+                        </th>
+                        <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;width: 30px !important;padding-top: 8px;">
+                            <div class="slds-truncate" title="Continuation Sheet">
+                                Continuation Sheet
+                            </div>
+                        </th>
+                        <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;width: 30px !important;padding-top: 8px;">
+                            <div class="slds-truncate" title="Application #">
+                                Application #
+                            </div>
+                        </th>
+                        <th  scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;width: 30px !important;padding-top: 8px;">
+                            <div class="slds-truncate" title="Architect Project No:">
+                                Architect Project No:
+                            </div>
+                        </th>
+                        <th  scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;width: 30px !important;padding-top: 8px;">
+                            <div class="slds-truncate" title="Application Date">
+                                Application Date
+                            </div>
+                        </th>
+                        <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;width: 30px !important;padding-top: 8px;">
+                            <div class="slds-truncate" title="Type">
+                                Type
+                            </div>
+                        </th>
+                        <th scope="col" width="5px" style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-right-radius:5px;vertical-align: top;line-height: 2;width: 30px !important;padding-top: 8px;">
+                            <div class="slds-truncate" title="Type">
+                                Period To
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.rfqRecordList}" var="item" indexVar="index">
+                        <tr>
+                            <td>
+                                <lightning:input type="checkbox" aura:id="checkRFQ" checked="false" name="{!item.Id}" onchange="{!c.selectRfq}"/>
+                            </td>
+                            <td>
+                                <div class="slds-truncate" title="{!item.Name}" >
+                                    {!item.Name}
+                                </div>
+                            </td>
+                            <td>
+                                <aura:if isTrue="{!item.buildertek__Application__c != undefined}">
+                                    <div class="slds-truncate" title="{!item.buildertek__Application__c}" >
+                                        {!item.buildertek__Application__c}
+                                    </div>
+                                    <aura:set attribute="else">
+                                        <div class="slds-truncate" title="">
+                                            
+                                        </div>
+                                    </aura:set>
+                                </aura:if>
+                            </td>
+                            <td>
+                                <aura:if isTrue="{!item.buildertek__Architect_Project_No__c != undefined}">
+                                    <div class="slds-truncate" title="{!item.buildertek__Architect_Project_No__c}" >
+                                        {!item.buildertek__Architect_Project_No__c}
+                                    </div>
+                                    <aura:set attribute="else">
+                                        <div class="slds-truncate" title="" >
+                                            
+                                        </div>
+                                    </aura:set>
+                                </aura:if>
+                            </td>
+                            <td>
+                                <div class="slds-truncate" title="{!item.buildertek__Application_Date__c}" >
+                                    {!item.buildertek__Application_Date__c}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate" title="{!item.buildertek__Type__c}" >
+                                    {!item.buildertek__Type__c}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate" title="{!item.buildertek__Period_To__c}" >
+                                    {!item.buildertek__Period_To__c}
+                                </div>
+                            </td>
+                        </tr>
+                    </aura:iteration>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="slds-modal__footer">
+       <!-- <lightning:button disabled="{!v.PageNumber == 1}" variant="brand" aura:id="prevPage" label="Prev"
+                          onclick="{!c.handlePrev}" class="next-prev_button"/>
+        <lightning:button disabled="{!v.PageNumber >= v.TotalPages}" aura:id="nextPage" variant="brand"
+                          label="Next" onclick="{!c.handleNext}" class="next-prev_button"/> -->
+       
+        
+        
+        
+        
+        
+        <lightning:button variant="neutral"  label="Cancel"
+                          onclick="{!c.closeModal}" />
+        <lightning:button aura:id="nextPage" variant="brand"
+                          label="Import" onclick="{!c.importSheetLines}" />
+    </div> 
+    
+    
+    
+    <aura:if isTrue="{!v.Spinner}">
+                <div aura:id="spinnerId" class="slds-spinner_container">
+                    <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                        <span class="slds-assistive-text">Loading</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                        <div class="custom-loading-text">
+                            <b>Processing, Please Wait</b>
+                        </div>
+                    </div>
+                </div>
+            </aura:if>
+</aura:component>

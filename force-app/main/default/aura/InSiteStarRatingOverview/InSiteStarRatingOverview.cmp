@@ -1,0 +1,14 @@
+<aura:component>
+	<aura:attribute name="rating" type="Double"/>
+	<aura:attribute name="stars" type="String[]"/>
+
+	<aura:handler name="init" value="{!this}" action="{!c.init}"/>
+
+	<div class="slds-grid">
+		<aura:iteration items="{!v.stars}" var="star">
+			<div class="slds-col slds-p-horizontal_xx-small insite-star-container">
+				<img class="insite-star" src="{!star}" alt=""/>
+			</div>
+		</aura:iteration>
+	</div>
+</aura:component>

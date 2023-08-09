@@ -1,0 +1,107 @@
+.THIS .ui-widget .slds-grid .slds-size--1-of-3{
+padding:4px;
+}
+.THIS .oneAlohaPageDeprecated>iframe{
+        height: 338px;
+        }
+.THIS .custom-box{
+    border-radius: 4px;
+    box-shadow: 1px 1px 1px 2px rgba(0,0,0,0.14);
+    transition: 0.3s;
+    background-color: white;
+    margin: 1%;
+}
+.THIS .missionStyle{
+    margin-left: 6px;
+    margin-right: 6px;
+}
+.THIS .oneAlohaPageDeprecated.content{
+    border-radius: 4px !important;
+}
+.THIS .eventStyle{
+    margin-right: 10px !important;
+    margin-left: 9px !important;
+    margin-top: 3.5px !important;
+}
+.THIS .linkdInstyle{
+    box-shadow: 0px !important;
+    transition: 0s;
+    background-color: unset !important;
+}
+
+
+@media screen and (max-width: 760px) {
+    
+    .THIS .mobileQuicklink{
+        display:none;
+    }
+    .THIS .mobilePeopledirectory{
+        display:none;
+    }
+    
+    .THIS .eventStyle{
+        margin-right:1% !important;
+        margin-left: 1% !important;
+        margin-top: 3.5px !important;
+    }
+    .THIS .linkdInstyle{
+        box-shadow: 0px !important;
+        transition: 0s;
+        background-color: #fff !important;
+    }
+    .THIS .mobilearticlesearch{
+        display:none;
+    }
+    .THIS .widget .ui-widget ul{
+        padding-top:0px!important;
+    }
+    .THIS .forceCommunityCmsContentCardLayout h2 .titleFont {
+        font-weight: bold;
+        color: rgb(51, 63, 72);
+        font-family: Gotham-Light;
+        text-transform: capitalize;
+        font-size: 12px!important;
+    }
+}
+
+@media only screen 
+    and (min-device-width: 768px) 
+    and (max-device-width: 1024px) 
+    and (orientation: portrait) 
+    and (-webkit-min-device-pixel-ratio: 2) {
+    .THIS .mobilearticlesearch{
+        margin-left:-0.5% !important;
+    }
+    .THIS .custom-box{
+        border-radius: 4px;
+        box-shadow: 1px 1px 1px 2px rgba(0,0,0,0.14);
+        transition: 0.3s;
+        background-color: white;
+        margin: 1%;
+    }
+    .THIS .eventStyle{
+        margin-right: -10px!important;
+        margin-left: 9px !important;
+        margin-top: 3.5px !important;
+    }
+    .THIS .employ_12{
+        margin-left: 15px!important;
+        width: 23%!important;
+    }
+    .THIS .custom-box.dir_search {
+        height: 520px!important;
+    }
+    .THIS .widget{
+        height:360px!important;      
+    }
+    .THIS .forceCommunityCmsContentCardLayout h2 .titleFont {
+        font-weight: bold;
+        color: rgb(51, 63, 72);
+        font-family: Gotham-Light;
+        text-transform: capitalize;
+        font-size: 12px!important;
+    }
+    .THIS .slds-assistive-text{
+        font-size: 12px!important;
+    }
+}

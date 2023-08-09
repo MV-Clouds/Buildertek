@@ -1,0 +1,72 @@
+<aura:component>
+    <aura:attribute name="selectionChoices" type="Answer_Choice__c[]" />
+    <aura:attribute name="questionId" type="string" />
+    <aura:attribute name="questionGroupId" type="string" />
+    <aura:attribute name="columns" type="List" description="Table column name" />
+    <aura:attribute name="responseTypeName" type="string" />
+    <aura:attribute name="selectedResponsetypeValue" type="String" />
+    <aura:handler name="change" value="{!v.selectedResponsetypeValue}" action="{!c.onChangeTypeHandler}" />
+    <aura:attribute name="modalPromise" type="Aura.Action" />
+    <lightning:overlayLibrary aura:id="overlay" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <aura:attribute name="responseDependentTypeList" type="List" default="[]" />
+
+    <div class="" aura:id="NewSelectionChoices">
+        <label class="slds-form-element__label slds-no-flex">Selection Choices</label>
+        <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+            <thead>
+                <tr>
+                    <th scope="col" class="slds-cell-wrap" style="width: 10%;">
+                        <div class="slds-truncate" title="Action"></div>
+                    </th>
+                    <th scope="col" class="slds-cell-wrap" style="width: 2%;">
+                        <div class="slds-truncate" title="Required"></div>
+                    </th>
+                    <aura:iteration items="{!v.columns}" var="columnName">
+                        <th scope="col" class="slds-cell-wrap" style="width: 60%;">
+                            <div class="slds-truncate" title="{!columnName}">{!columnName}</div>
+                        </th>
+                    </aura:iteration>
+                    <th scope="col" class="slds-cell-wrap" style="width: 20%;">
+                        <div class="slds-truncate" title="Price">Price</div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <aura:iteration items="{!v.selectionChoices}" var="data" indexVar="index">
+                    <tr aura:id="rows" id="{!'row' + index}">
+                        <td data-label="Action" class="" scope="row" data-index="{!index}">
+                            <lightning:buttonIcon iconName="utility:delete" variant="bare" name="{!index}"
+                                onclick="{!c.deleteRow}" alternativeText="delete" />
+                        </td>
+                        <td data-label="Required">
+                            <div class="slds-required" style="float:left">* </div>
+                        </td>
+                        <td data-label="Column Header" class="">
+                            <lightning:input aura:id="columnHeaders" type="text" variant="label-hidden" name="{!index}"
+                                value="{!data.buildertek__Choice_Text__c}"
+                                messageWhenValueMissing="Field is required" />
+                        </td>
+                        <td data-label="Price" class="" scope="row">
+                            <ui:inputCurrency aura:id="amount" value="{!data.buildertek__Additional_Cost__c}"
+                                updateOn="keyup" />
+                        </td>
+                        <td data-index="{!index}">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col" style="text-align:right;">
+                                    <lightning:button label="Add" name="{!index}" title="Add" variant="Brand"
+                                        class="slds-m-top_x-small" onclick="{!c.addDependentResponseType}" />
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </aura:iteration>
+            </tbody>
+        </table>
+        <div>
+            <lightning:button label="Add New Choice" title="Add New Choice" variant="Brand" class="slds-m-top_x-small"
+                onclick="{!c.addNewRow}" />
+        </div>
+    </div>
+</aura:component>

@@ -1,0 +1,11 @@
+.THIS .fontcolor {color:#F06C5C;font-size:12px;font-weight: 300;}
+.THIS .Styletype {text-align:center;padding-bottom:0.8%}
+.THIS .accordianfont{font-size:1em;color:#333F48;font-weight:700;padding-left:10px;}
+@media (max-width:768px) {
+    .THIS .Styletype {
+        margin-left: 6%;
+        margin-right: 6%;
+        text-align: center;
+        padding-bottom: 2.8%;
+    }
+}

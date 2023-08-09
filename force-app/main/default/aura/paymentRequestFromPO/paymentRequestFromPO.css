@@ -1,0 +1,17 @@
+.THIS .classbyrk{
+    display: flex;
+}
+/* .THIS lightning-timepicker{
+    width: 100% !important;
+}
+.THIS lightning-datepicker{
+    width: 100% !important;
+}
+.THIS .classbyrk slds-p-around_small slds-size_12-of-12 slds-medium-size_6-of-12{
+    width: 100% !important;
+} */
+.THIS input[readonly][role=combobox][disabled] {
+    background-color: white;
+    border-color: rgb(119, 119, 119);
+    color: var(--slds-c-input-text-color, var(--sds-c-input-text-color));
+}

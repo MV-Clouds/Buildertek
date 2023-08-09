@@ -1,0 +1,5 @@
+<aura:component implements="force:hasRecordId,force:lightningQuickActionWithoutHeader" controller="BT_Lightning_Utils" access="global">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+   <!-- <aura:handler event="aura:doneRendering" action="{!c.doneRendering}"/> -->
+    <aura:attribute name="objectName" type="String"/>
+</aura:component>

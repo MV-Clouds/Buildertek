@@ -1,0 +1,138 @@
+<aura:component controller="BT_UploadFileController">
+	
+		<ltng:require scripts="{!join(',',$Resource.Jquery + '/jquery/lightning/js/jquery-3.2.1.min.js')}"/>
+	
+	<aura:attribute name="onSuccess" type="Object"/>
+	<aura:attribute name="onCancel" type="Object"/>
+    <aura:attribute name="modalPromise" type="Aura.Action"/>
+	
+	<aura:attribute name="selectedBucket" type="String" description="Selected Bucket name"/>
+	<aura:attribute name="filename" type="String" description="Selected file name"/>
+	<aura:attribute name="selectedFolder" type="String"/>
+	<aura:attribute name="parentFolder" type="String"/>
+	<aura:attribute name="mainObjectFieldAPI" type="String"/>
+	<aura:attribute name="mainObjectId" type="String"/>
+	<aura:attribute name="otherObjectFieldAPI" type="String"/>
+	<aura:attribute name="otherObjectId" type="String"/>
+	<aura:attribute name="selectedFiles" type="sObject[]" default="[]"/>
+	
+	<aura:attribute name="filekey" type="String"/>
+	<aura:attribute name="s3AccessKey" type="String"/>
+	<aura:attribute name="policy" type="String"/>
+	<aura:attribute name="signedPolicy" type="String"/>
+	<aura:attribute name="redirectUrl" type="String"/>
+	<aura:attribute name="acl" type="String" default="public-read"/>
+	<aura:attribute name="filesList" type="List" />
+	
+	<aura:handler name="init" value="{! this }" action="{! c.init }"/>
+	<c:BT_Spinner/>
+	<aura:if isTrue="{!v.selectedBucket != null}">
+	    <form class="fileSubmitForm" id="fileSubmitForm" action="{!'https://s3.amazonaws.com/'+v.selectedBucket}" method="post" enctype="multipart/form-data">
+	        <input type="hidden" id="filekey" name="key" value="{!v.filename}"/>
+	        <input type="hidden" id="AWSAccessKeyId" name="AWSAccessKeyId" value="{!v.s3AccessKey}"/>
+	        <input type="hidden" id="policy" name="policy" value="{!v.policy}"/>
+	        <input type="hidden" id="signature" name="signature" value="{!v.signedPolicy}"/>
+	        <input type="hidden" id="acl" name="acl" value="{!v.acl}"/>
+	        <input type="hidden" name="success_action_redirect" id="successActionRedirect" />
+	        <div class="slds-grid" style="background:#f4f6f9;padding: 0px;">
+	            <div class="slds-panel slds-grid slds-grid--vertical slds-nowrap slds-is-editing" style="box-shadow: none;">
+	                <div class="slds-form--stacked slds-grow slds-scrollable--y">
+	                    <div class="slds-panel__section">
+	                        <h3 class="slds-text-heading--small slds-m-bottom--xx-small">Available Project Files List</h3>
+	                        <div class="slds-form-element">
+	                            <div style="margin:0px;" class="slds-form-element__label">
+	                                <!--<label id="fileLabel"><abbr class="slds-required" title="required">*</abbr>File</label>-->
+	                                <!-- <apex:outputLabel rendered="{!s3LinkConfig.configForMaxFileSize.Configured_Value__c != null}" value=" - {!$Label.buildertek__max_file_size_message} {!s3LinkConfig.configForMaxFileSize.Configured_Value__c} KB" /> -->
+	                            </div>
+	                            <!-- <c:BT_LightningHelpText helptext="{!$Label.buildertek__select_file_helptext}" /> -->
+	                            <aura:if isTrue="{!v.filesList != null}">
+    	                            <table class="slds-table slds-table_bordered slds-table_cell-buffer" style="border:1px solid rgb(216, 237, 255); border-radius:5px;">
+                                    	<thead>
+                                    		<tr class="slds-text-title_caps"  >
+                                    			<th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-left-radius:5px;vertical-align: top;">
+                                    				<div class="slds-truncate" title="Product">Check All</div>
+                                    				<ui:inputCheckbox aura:id="checkContractors"  change="{!c.selectAll}"/>
+                                    			</th>
+                                    			<th style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;">
+                                    				 <div class="slds-truncate" title="Name">File Name</div>
+                                    			</th>
+                                    					  
+                                    		</tr>
+                                    	</thead>
+                                    	<tbody>
+                                    		<aura:iteration items="{!v.filesList}" var="obj">
+                                    		<tr>
+                                    			<td>
+                                    				<ui:inputCheckbox aura:id="checkContractor" value="{!obj.IsChecked}" text="{!obj.FileId}" change="{!c.handleCheck}"/>
+                                    			</td>
+                                    			<td>
+                                    				<ui:outputtext value="{!obj.FileName}" />
+                                    			</td>
+                                    		</tr>
+                                    		</aura:iteration>
+                                    	</tbody>
+                                    </table>
+                                </aura:if><br/>
+	                            <div class="slds-form-element__control">
+	                                <div class="slds-file-selector slds-file-selector--files">
+	                                    <div class="slds-file-selector__dropzone">
+	                                        <input id="fileToUpload" type="file" onchange="{!c.showFileNameField}" name="file" class="slds-file-selector__input slds-assistive-text" aria-describedby="fileLabel" />
+	                                        <label class="slds-file-selector__body" for="fileToUpload">
+	                                                <div class="slds-file-selector__button slds-button slds-button_brand">
+	                                                    <img class="slds-button__icon slds-button__icon--left" src="{!$Resource.SLDS+'/assets/icons/utility/upload_60.png'}"/>
+	                                                    Upload New Files
+	                                                </div>
+	                                                <div styleClass="slds-file-selector__text"><!-- or Drop Files --></div>
+	                                            </label>
+	                                        <div class="slds-has-error">
+	                                            <div id="fileError" style="display:none;" class="slds-form-element__help">{!$Label.c.Please_Select_File}</div>
+	                                        </div>
+	                                    </div>
+	                                </div>
+	                            </div>
+	                        </div>
+	                        <div class="slds-grid slds-grid--pull-padded-medium" style="{!if(v.filename != null,'','display:none;')}">
+	                            <div class="slds-col slds-p-horizontal--medium slds-size--1-of-2">
+	                                <div class="slds-form-element">
+	                                    <div  style="margin:0px;" class="slds-form-element__label">
+	                                        <label><abbr class="slds-required" title="required">*</abbr>{!$Label.c.Name}</label>
+	                                    </div>
+	                                    <!-- <c:BT_LightningHelpText rendered="{!$Label.buildertek.buildertek__file_name_helptext != null}" helptext="{!$Label.buildertek.buildertek__file_name_helptext}" /> -->
+	                                    <div class="slds-form-element__control">
+	                                        <input class="slds-input" id="fileNameField" value="{!v.filename}"/>
+	                                    </div>
+	                                </div>
+	                            </div>
+	                            <div class="slds-col slds-p-horizontal--medium slds-size--1-of-2">
+	                            	<aura:if isTrue="{!v.fileUploadConfiguration.isShowAccessType}">
+	                            		<!-- 
+		                                <div class="slds-form-element">
+		                                    <div layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+		                                        <apex:outputLabel title="{!$ObjectType.File__c.fields.Access_Type__c.inlineHelpText}" value="{!$ObjectType.File__c.fields.Access_Type__c.label}"></apex:outputLabel>
+		                                    </div>
+		                                    <c:BT_LightningHelpText rendered="{!AND(!isChildWindow, $ObjectType.File__c.fields.Access_Type__c.inlineHelpText != null)}" helptext="{!$ObjectType.File__c.fields.Access_Type__c.inlineHelpText}" />
+		                                    <div layout="block" styleClass="slds-form-element__control">
+		                                        <select size="1" class="slds-select" id="accessType">
+		                						        <apex:repeat value="{!accessTypeOptions}" var="accessTypeOption">
+		                						        <option value="{!accessTypeOption.value}">{!accessTypeOption.value}</option>
+		                						        </apex:repeat>
+		                						    </select>
+		                                    </div>
+		                                </div> -->
+	                                </aura:if>
+	                            </div>
+	                        </div>
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
+	        <!--<button class="slds-hide" id="uploadfilesubmit" name="save" type="submit"/>-->
+	    </form>
+    </aura:if>
+    <div class="slds-hide">
+	    <div aura:id="footer">
+	         <lightning:button name="cancel" variant="neutral" label="Cancel" onclick="{!c.onCancel}"/>
+             <lightning:button class="slds-float_right" name="Send" variant="brand" type="submit" label="Add Files" onclick="{!c.upload}"/>
+	     </div>
+    </div>
+</aura:component>

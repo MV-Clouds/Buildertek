@@ -1,0 +1,4 @@
+<aura:event type="COMPONENT" description="Event template" >
+	<aura:attribute name="callerLevel" type="Integer"/>
+    <aura:attribute name="checked" type="Boolean"/>
+</aura:event>

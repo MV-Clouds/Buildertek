@@ -1,0 +1,7 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,lightning:isUrlAddressable" access="global">
+ <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <lightning:navigation aura:id="navService"/>
+    <!--<lightning:button name="Test" label="Create Contact" onclick="{!c.navigate}"/>-->
+ 
+
+</aura:component>

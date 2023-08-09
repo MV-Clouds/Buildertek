@@ -1,0 +1,605 @@
+<aura:component controller="ChooseBTChecklist" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+	<aura:attribute name="ChecklistObjects" type="list" default="" />
+    <aura:attribute name="Questions" type="list" default="" /> 
+     <aura:attribute name="QuestionType" type="list" default="" />    
+    <aura:attribute name="ChecklistName" type="string" default="" />
+     <aura:attribute name="TextName" type="string" default="" />
+    <aura:attribute name="configureId" type="string" default="" />
+     <aura:attribute name="Question" type="string" default="" />
+     <aura:attribute name="option" type="string" default="" />
+    <aura:attribute name="recordId" type="string" />
+    <aura:attribute name="groupName" type="string" default="" />
+    <aura:attribute name="selectedgroup" type="string" default="" />
+    <aura:attribute name="showGroup" type="boolean" default="false" />
+        <aura:attribute name="message" type="boolean" default="false"/>
+    
+     <aura:attribute name="deleteIndex" type="Integer"/>
+    
+    <aura:attribute name="SelectedChecklistObject" type="string" default="" />
+    <aura:attribute name="ischecklistNameError" type="boolean" default="false" />
+    <aura:attribute name="isRelatedToError" type="boolean" default="false" />   
+    <aura:attribute name="selectedSurveyObject" type="list" default="" />
+    <aura:attribute name="grouplist" type="list" default="" />
+    <aura:attribute name="OpenQuestion" type="boolean" default="" />
+    <aura:attribute name="EditQuestion" type="boolean" default="false" />
+    <aura:attribute name="DeleteQuestion" type="boolean" default= "" />
+    <aura:attribute name="PicklistArrayValue" type="list"/>
+     <aura:attribute name="availableIds" type="list" />
+    <aura:attribute name="selectedIds" type="String[]" />  
+    <aura:attribute name="NewQuestion" type="Questions__c" default="{'sobjectType':'Questions__c'}"/>
+     <aura:attribute name="isMulti" type="boolean" default="false"/> 
+    <aura:attribute name="isQuestionError" type="boolean" default="false"/> 
+    <aura:attribute name="isOptionError" type="boolean" default="false"/> 
+    <aura:attribute name="Spinner" type="boolean" default="false"/>
+    <aura:attribute name="Spinner2" type="boolean" default="false"/>
+    <aura:method name="doinits"  action="{!c.doInit}"/>
+    
+    <aura:attribute name="isshow" type="boolean" default="false"/>
+    <aura:attribute name="isEditrecord" type="boolean" default="true"/>
+    <aura:attribute access="PUBLIC" name="manageView" type="Object[]"/>
+    <aura:attribute access="PUBLIC" name="view" type="Object"/> 
+    
+    <aura:attribute name="showConfirmDialog" type="boolean" default="false"/>
+    <aura:attribute name="showConfirmDialogDeleteQuestion" type="boolean" default="false"/>
+    <aura:attribute name="isDelete" type="boolean" default="false"/>
+    <aura:method name="sampleMethod" action="{!c.doInit}"/>
+    
+    <lightning:workspaceAPI aura:id="workspace"/>
+    
+     <aura:attribute name="deleterecord" type="string" default=""/>
+     <aura:attribute name="deleteQuestionId" type="string" default=""/>
+    <div style="background:white;margin:-12px;padding:12px;height:90vh">
+      <div class="slds-page-header" style="background:white">
+  			<div class="slds-page-header__row">
+                <div class="slds-page-header__col-title">
+               		<div class="slds-media"> 
+        				<div class="slds-media__body">
+          					<div class="slds-page-header__name">
+            					<div class="slds-page-header__name-title">
+              						<h1>
+                						<span class="slds-page-header__title slds-truncate" title="">Checklist Configuration</span>
+              						</h1>
+                                </div>
+                                
+          					</div>        
+        				</div>
+      				</div>
+    			</div>
+  			</div>
+        </div>   
+            
+ 		<aura:if isTrue="{!v.isEditrecord}">  
+     <div style="margin-top:5px;margin-bottom:5px">
+         <lightning:layout multipleRows="true">
+            <lightning:layoutItem size="6">
+                    <p style="padding-top:8px;padding-left:10px;font-size:1.1rem">Manage Checklist Configuration</p>
+             </lightning:layoutItem>
+             <lightning:layoutItem size="6">
+                 <div style="text-align:right;padding-right:10px;padding-top:px">
+                    <lightning:button variant="brand" label="Create CheckList Configuration" onclick="{! c.createChecklist }" />	
+                </div>
+             </lightning:layoutItem>
+             
+         </lightning:layout>
+     </div>
+<div class="slds">
+	<table data-reactroot="" class="slds-table slds-table_bordered slds-table_cell-buffer">
+      <thead>
+        <tr class="slds-text-title_caps">
+          <th scope="col" style="background:var(--lwc-colorBackgroundRowHover,rgb(243, 242, 242))">
+            <div class="slds-truncate" title="Name"> Name</div>
+          </th>
+          <th scope="col" style="background:var(--lwc-colorBackgroundRowHover,rgb(243, 242, 242))">
+            <div class="slds-truncate" title="Object Name">Object Name</div>
+          </th>
+            <th scope="col" style="background:var(--lwc-colorBackgroundRowHover,rgb(243, 242, 242))">
+            <div class="slds-truncate" title="Created Date">Created Date</div>
+          </th>
+             <th scope="col" style="background:var(--lwc-colorBackgroundRowHover,rgb(243, 242, 242))">
+            <div class="slds-truncate" title="Created Date"></div>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+          <aura:iteration items="{!v.manageView}" var="view">
+               <!--<c:displayCheckListConfigRecords view="{!row}"/>-->
+              
+                <tr>
+        <th scope="row" data-label="Account Name">
+            <div class="slds-truncate" ><a href="{!('/'+view.Id)}" target="_blank">{!view.Name}</a></div>
+        </th>
+        <td data-label="Object Name">
+            <div class="slds-truncate" >{!view.buildertek__Object_Name__c}</div>
+        </td>
+        
+        <td data-label="Created date">
+            <div class="slds-truncate" >
+                
+                <lightning:formattedDateTime value="{!view.CreatedDate}" year="numeric" month="2-digit" day="2-digit" hour="2-digit"
+                                 minute="2-digit" />
+            </div>
+        </td>
+        
+        <td data-label="">
+            <div class="slds-truncate" >
+                <button onclick="{!c.callUpdateRecord}" class="slds-button slds-button_icon" title="Edit" data-id="{!view.Id}">
+                    <lightning:icon iconName="action:edit" size="xx-small" alternativeText="Edit"/>
+                    <span class="slds-assistive-text">Edit</span>
+                </button>
+                <button onclick="{!c.callDeleteRecord}" class="slds-button slds-button_icon" title="Delete" data-id="{!view.Id}">
+                    <lightning:icon iconName="action:delete" size="xx-small" alternativeText="Delete"/>
+                    <span class="slds-assistive-text">Delete</span>
+                </button>
+            
+                
+            </div>
+        </td>        
+    </tr>
+          </aura:iteration>                
+      </tbody>
+    </table>    
+</div>
+</aura:if>
+     	<aura:if isTrue="{!v.isshow}">
+    <div class="Header" style="background:white;padding:10px;border-radius: 5px;">
+       
+         <aura:if isTrue="{!v.Spinner}">                
+                    <div aura:id="spinnerId" class="slds-spinner_container">
+                        <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                            <span class="slds-assistive-text">Loading</span>
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                        </div>
+                    </div>
+                </aura:if>
+		<div class="slds-form-element">
+        	<lightning:input type="text" label="Checklist Name" class="ChecklistName"  name="myname" value="{!v.ChecklistName}" 
+                                             minlength="4" 
+                                                 messageWhenBadInput="Your entry must be at least 4 characters."  onblur="{!c.afterSelect}" onchange="{!c.checkObjName}"/>
+             <aura:if isTrue="{!v.ischecklistNameError}" >
+            	<span style="color:rgb(194, 57, 52);">Checklist Name is required</span>  
+             </aura:if>
+   		</div>
+        <div class="slds-form-element" style="margin-top:0.8%;">
+            <lightning:select  value="{!v.SelectedChecklistObject}" name="ServeyObjects" label="Checklist Object"  onchange="{!c.checkTheObject}">
+                <option value="--None--">--None--</option>
+                <aura:iteration items="{!v.ChecklistObjects}" var="row">
+                    <option value="{!row.buildertek__Object_API_Name__c}" selected="{!(row.buildertek__Object_API_Name__c == v.SelectedChecklistObject)}">{!row.buildertek__Object_Label__c}</option>
+                </aura:iteration>      
+            </lightning:select>
+            <aura:if isTrue="{!v.isRelatedToError}" >
+                <span style="color:rgb(194, 57, 52);">Checklist Object is required</span>  
+            </aura:if>                            
+        </div>
+        
+        <div class="slds-grid slds-wrap">
+        
+        <div class="slds-col slds-size--1-of-1 slds-small-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1">
+            <div class="slds-grid slds-wrap">
+                <div class="slds-size--1-of-2 slds-medium-size--1-of-1 slds-large-size--1-of-2">
+                    <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1">
+                        <center>Available Questions</center>
+                    </div> 
+                    <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1">
+                        <div class="slds-form-element">
+                            <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon--left">
+                                <lightning:icon iconName="utility:filterList" size="xx-small" class="slds-input__icon slds-icon-text-default innerIcon"/>
+                                <input onkeyup="{!c.AvalQuestions}" id="AvailImp" type="text"  class="slds-input" placeholder="Filter Available Questions" />
+                            </div>
+                        </div>    
+                    </div> 
+                    <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1">
+                        <ul class="slds-scrollable--y style-4" id="available"  style="height:300px;width:100%;background-color:#F5F6FA;padding: 10px;border: 1px solid #aaaaaa;">
+                            <aura:iteration items="{!v.Questions}" var="item"> 
+                                <li class="Menu" onclick="{!c.MoveToQuestion}" id="{!item.Id}"  draggable="true">{!item.buildertek__Customize__c}-[{!item.buildertek__group_name__c}]</li>
+                                <!-- <li class="Menu" onclick="{!c.MoveToQuestion}" id="{!item.Id}"  draggable="true">{!item.selectedgroup}</li>-->
+                            </aura:iteration>    
+                        </ul>    
+                        
+                    </div>	            
+                </div>
+                <div class="slds-size--1-of-2 slds-medium-size--1-of-1 slds-large-size--1-of-2">
+                    <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1">
+                        <center>Selected  Questions</center>
+                    </div> 
+                    <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1">
+                        <div class="slds-form-element">
+                            <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon--left">
+                                <lightning:icon iconName="utility:filterList" size="xx-small" class="slds-input__icon slds-icon-text-default innerIcon"/>
+                                <input onkeyup="{!c.SelectedQuestions}" id="selectedImp" type="text"  class="slds-input" placeholder="Filter Selected  Questions" />
+                            </div>
+                        </div>    
+                    </div>
+                    <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1">
+                        <ul class="slds-scrollable--y style-4" id="Selected" style="height:300px;width:100%;background-color:#F5F6FA;padding: 10px;border: 1px solid #aaaaaa;">
+                        </ul>	
+                    </div>            
+                </div>
+            </div>
+            <div class="slds-grid slds-wrap">
+                 <div style="padding: 1%;" class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--1-of-4 slds-large-size--1-of-4">
+                <lightning:layout>
+                    <lightning:layoutitem size="6">
+                        <div  onclick="{!c.addQuestionsModel}" style="cursor: pointer;" class="slds-float--right slds-button slds-button--neutral slds-not-selected" aria-live="assertive">
+                        <span class="slds-text-not-selected">
+                            <lightning:icon iconName="utility:add" size="xx-small" class="slds-input__icon slds-icon-text-default texticon "     />
+                            Add Questions
+                        </span>
+                    </div>
+                </lightning:layoutitem>
+                 <lightning:layoutitem size="6" >
+                     <div style="width:170px">
+                       <div  onclick="{!c.deleteQuestionsModel}" style="cursor: pointer;" class="slds-float--right slds-button slds-button--neutral slds-not-selected" aria-live="assertive">
+                            Manage Question
+                       <!-- <span class="" >
+                            <lightning:icon  size="xx-small"  class="slds-input__icon slds-icon-text-default texticon " />
+                           Manage Question
+                        </span>-->
+                    </div> 
+                         </div>
+                    </lightning:layoutitem>
+            </lightning:layout>
+               
+                   
+                   &nbsp;&nbsp;
+                           
+                </div>
+                <div style="padding: 1%;text-align:right" class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--3-of-4 slds-large-size--3-of-4">
+                    <div onclick="{!c.saveConfigureBack}" style="cursor: pointer;" class=" slds-button slds-button--brand slds-not-selected" aria-live="assertive">
+                        Back
+                    </div>
+                    <div onclick="{!c.saveSelectedQuestions}" style="margin-left:1%;cursor: pointer;" class=" slds-button slds-button--brand slds-not-selected" aria-live="assertive">
+                        Save
+                    </div>  
+                  
+                    
+                </div>            
+                
+            </div>
+            
+        </div>
+    </div>
+        
+         <!-- New Questions -->
+      
+        
+        <aura:if isTrue="{!v.OpenQuestion}">
+             
+    <div class="slds">
+              <div aria-hidden="true" role="dialog" class="slds-modal slds-modal--prompt slds-fade-in-open" aura:id="modaldialogNewQuestion">
+            <div class="slds-modal__container" style="padding: 0rem 0 !important;">
+                <div class="slds-modal__header slds-theme--info">
+                     <button style="background: white;" class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick="{!c.CancelQuestionsModel}">
+                        <lightning:icon iconName="utility:close" alternativeText="close" size="x-small"  class="buttonclass" />
+                     </button>
+                    <h2 class="slds-text-heading--medium">New Question</h2>
+                </div>
+                <aura:if isTrue="{!v.Spinner2}">                
+                    <div aura:id="spinnerId" class="slds-spinner_container">
+                        <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                            <span class="slds-assistive-text">Loading</span>
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                        </div>
+                    </div>
+                </aura:if>
+                <div class="slds-modal__content" style="padding-top: 5px;padding-bottom: 5px;">
+                    <label for="fullname">Question Type</label>
+                    <ui:inputSelect aura:id="newQueType" change="{!c.ChageType}" multiple="false" value="{!v.NewQuestion.buildertek__Question_Type__c}" class="slds-select">
+                        <aura:iteration items="{!v.PicklistArrayValue[0]}" var="val">
+                            <aura:if isTrue="{!val == '--None--'}">
+                                <ui:inputSelectOption text="" label="{!val}"/>
+                                <aura:set attribute="else">
+                                    <ui:inputSelectOption text="{!val}" label="{!val}"/>
+                                </aura:set>
+                            </aura:if> 
+                        </aura:iteration>
+                    </ui:inputSelect>
+                    
+                </div>
+                <div class="slds-modal__content" style="padding-top: 5px;padding-bottom: 5px;">
+                    <label for="fullname">Select Group</label>
+                    <div>
+                        <div style="display:inline-flex;width:100%">
+                            <div style="width:80%">
+                                <ui:inputSelect aura:id="seelctgroupName"  multiple="false" value="{!v.selectedgroup}" class="slds-select">
+                                    <ui:inputSelectOption text="" label="--None--"/>
+                                    <aura:iteration items="{!v.grouplist}" var="val">
+                                        <ui:inputSelectOption text="{!val}" label="{!val}"/>
+                                    </aura:iteration>
+                                </ui:inputSelect>
+                            </div>
+                            <div style="padding-left:2px">
+                                <button class="slds-button slds-button--neutral" onclick="{!c.AddGroup}" >New Group</button>
+                            </div>
+                        </div>
+                    </div>
+                    <aura:if isTrue="{!v.showGroup}">
+                    	<lightning:input name="groupName" label="Group Name" value="{!v.groupName}"/>
+                    </aura:if>
+                </div>
+                <div class="slds-modal__content" style="padding-top: 5px;padding-bottom: 5px;">
+                    <lightning:textarea name="QuestionText" value="{!v.NewQuestion.buildertek__Customize__c}" label="Question Text" />
+                    <aura:if isTrue="{!v.isQuestionError}" >
+                        <span style="color:rgb(194, 57, 52);">Please Enter Question</span>  
+                    </aura:if>
+                </div>
+                <aura:if isTrue="{!v.isMulti}" > 
+                <div class="slds-modal__content" style="padding-top: 5px;padding-bottom: 5px;">
+                    <lightning:textarea name="Options" value="{!v.NewQuestion.buildertek__Options__c}" label="Options"  />
+                    <aura:if isTrue="{!v.isOptionError}" >
+                        <span style="color:rgb(194, 57, 52);">Please Enter Options</span>  
+                    </aura:if>
+                    <h5 style="color:rgb(194, 57, 52);">Use #$# as the separator between options.</h5>
+                    
+                </div> 
+                 
+                    
+                </aura:if>
+                
+                    
+               
+                <div class="slds-modal__footer">
+                    <div class="slds-x-small-buttons--horizontal slds-float--right">
+                        <button class="slds-button slds-button--neutral" onclick="{!c.CancelQuestionsModel}"  >Cancel</button>
+                        <button class="slds-button slds-button--brand" onclick="{!c.SaveQuestionsModel}" >Save</button>
+                    </div>                
+                </div>
+                
+            </div>
+        </div>
+        
+        <div class="slds-backdrop slds-backdrop--open" aura:id="backdropNewQuestion"></div>
+    </div>     
+    </aura:if>
+        
+
+        
+        
+        
+        <!-- Delete Questions -->
+        <div>
+        <aura:if isTrue="{!v.DeleteQuestion}">
+            
+         <aura:if isTrue="{!v.Spinner}">                
+                    <div aura:id="spinnerId" class="slds-spinner_container">
+                        <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                            <span class="slds-assistive-text">Loading</span>
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                        </div>
+                    </div>
+                </aura:if>
+         <div class="slds">
+        <div aria-hidden="true" role="dialog" class="slds-modal slds-modal--prompt slds-fade-in-open" aura:id="modaldialogNewQuestion">
+            <div class="slds-modal__container" style="padding: 0rem 0 !important;width:75%;min-width:60rem;">
+                <div class="slds-modal__header slds-theme--info">
+                     <button style="background: white;" class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick="{!c.CancelQuestionsModel}">
+                        <lightning:icon iconName="utility:close" alternativeText="close" size="x-small"  class="buttonclass" />
+                     </button>
+                    <h2 class="slds-text-heading--medium">Manage Question</h2>
+                </div>
+                  
+             <aura:if isTrue="{!!v.message}">               
+                <div class="slds" style="height:300px;overflow:auto;background-color:white">
+                      
+                        <table data-reactroot="" class="slds-table slds-table_bordered slds-table_cell-buffer">
+                          <thead>
+                            <tr class="slds-text-title_caps">
+                              <th scope="col" style="background:var(--lwc-colorBackgroundRowHover,rgb(243, 242, 242))">
+                                  <div class="slds-truncate" title="Name">Question</div>
+                              </th>
+                              <th scope="col" style="background:var(--lwc-colorBackgroundRowHover,rgb(243, 242, 242))">
+                                  <div class="slds-truncate" title="Object Name">Question Type</div>
+                              </th>
+                                 <th scope="col" style="background:var(--lwc-colorBackgroundRowHover,rgb(243, 242, 242))">
+                                  <div class="slds-truncate" title="Object Name"></div>
+                              </th> 
+                               
+                            </tr>
+                          </thead>
+                          <tbody>
+                                
+                            
+                              <aura:iteration items="{!v.QuestionType}" var="view" indexVar = "questionIndex">
+                                
+                                                                     <!--<c:displayCheckListConfigRecords view="{!row}"/>-->
+                                 
+                                    <tr>
+                            <th scope="row" data-label="Account Name">
+                                <div class="slds-truncate" ><a href="{!('/'+view.Id)}" target="_blank">{!view.buildertek__Customize__c}</a></div>
+                            </th>
+                            <td data-label="Object Name">
+                                <div class="slds-truncate slds-is-sortable" >{!view.buildertek__Question_Type__c}</div>
+                            </td>
+                            
+                            
+                            
+                            <td data-label="">
+                                <div class="slds-truncate" >
+                                    
+                                     <button onclick="{!c.callEditQuestion}" class="slds-button slds-button_icon" title="Edit" data-id="{!view.Id}">
+                                        <lightning:icon iconName="action:edit" size="xx-small" alternativeText="Delete"/>
+                                        <span class="slds-assistive-text">edit</span>
+                                    </button>
+                                    
+                                    <button onclick="{!c.callDeleteQuestion}" class="slds-button slds-button_icon" title="Delete" data-id="{!view.Id}" data-index="{!questionIndex}">
+                                        <lightning:icon iconName="action:delete" size="xx-small" alternativeText="Delete"/>
+                                        <span class="slds-assistive-text">Delete</span>
+                                    </button>
+                                
+                                    
+                                </div>
+                            </td>        
+                        </tr>
+                              </aura:iteration>                
+                          </tbody>
+                        </table>    
+                    </div>
+                 <aura:set attribute="else">
+                     <div style="line-height: 131px;background-color: white;font-size: 21px;text-align: center;"> Please Add Questions </div>
+                 </aura:set>
+                </aura:if>
+               
+                
+                <div class="slds-modal__footer">
+                    <div class="slds-x-small-buttons--horizontal slds-float--right">
+                        <button class="slds-button slds-button--neutral" onclick="{!c.CancelDeleteModel}"  >Cancel</button>
+                    </div>                
+                </div>
+                
+            </div>
+        </div>
+        
+        <div class="slds-backdrop slds-backdrop--open" aura:id="backdropNewQuestion"></div>
+    </div>     
+        
+        
+        
+         </aura:if>
+        </div>
+        
+        
+          <!-- edit Questions-->
+        
+        <aura:if isTrue="{!v.EditQuestion}">
+            <div class="slds">
+                <div aria-hidden="true" role="dialog" class="slds-modal slds-modal--prompt slds-fade-in-open" aura:id="modaldialogNewQuestion">
+                    <div class="slds-modal__container" style="padding: 0rem 0 !important;">
+                        <div class="slds-modal__header slds-theme--info">
+                            <button style="background: white;" class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick="{!c.CancelQuestionsModel}">
+                                <lightning:icon iconName="utility:close" alternativeText="close" size="x-small"  class="buttonclass" />
+                            </button>
+                            <h2 class="slds-text-heading--medium">New Question</h2>
+                        </div>
+                        <div class="slds-modal__content" style="padding-top: 5px;padding-bottom: 5px;">
+                           
+                            <label for="fullname">Question Type</label>
+                            <ui:inputSelect aura:id="newQueType" change="{!c.ChageTypes}" multiple="false" value="{!v.Question}" class="slds-select">
+                                <aura:iteration items="{!v.PicklistArrayValue[0]}" var="val">
+                                    <aura:if isTrue="{!val == '--None--'}">
+                                        <ui:inputSelectOption text="" label="{!val}"/>
+                                        <aura:set attribute="else">
+                                            <ui:inputSelectOption text="{!val}" label="{!val}"/>
+                                        </aura:set>
+                                    </aura:if> 
+                                </aura:iteration>
+                            </ui:inputSelect>
+                            
+                        </div>
+                        <div class="slds-modal__content" style="padding-top: 5px;padding-bottom: 5px;">
+                            <label for="fullname">Select Group</label>
+                            <div>
+                                <div style="display:inline-flex;width:100%">
+                                    <div style="width:80%">
+                                        <ui:inputSelect aura:id="seelctgroupName"  multiple="false" value="{!v.selectedgroup}" class="slds-select">
+                                            <ui:inputSelectOption text="" label="--None--"/>
+                                            <aura:iteration items="{!v.grouplist}" var="val">
+                                                <ui:inputSelectOption text="{!val}" label="{!val}"/>
+                                            </aura:iteration>
+                                        </ui:inputSelect>
+                                    </div>
+                                    <div style="padding-left:2px">
+                                        <button class="slds-button slds-button--neutral" onclick="{!c.AddGroup}" >New Group</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <aura:if isTrue="{!v.showGroup}">
+                                <lightning:input name="groupName" label="Group Name" value="{!v.groupName}"/>
+                            </aura:if>
+                        </div>
+                        <div class="slds-modal__content" style="padding-top: 5px;padding-bottom: 5px;">
+                            <lightning:textarea name="QuestionText" value= "{!v.TextName}" label="Question Text" />
+                            <aura:if isTrue="{!v.isQuestionError}" >
+                                <span style="color:rgb(194, 57, 52);">Please Enter Question</span>  
+                            </aura:if>
+                        </div>
+                <aura:if isTrue="{!v.isMulti}" > 
+                <div class="slds-modal__content" style="padding-top: 5px;padding-bottom: 5px;">
+                    <lightning:textarea name="Options" value="{!v.option}" label="Options"  />
+                    <aura:if isTrue="{!v.isOptionError}" >
+                        <span style="color:rgb(194, 57, 52);">Please Enter Options</span>  
+                    </aura:if>
+                    <h5 style="color:rgb(194, 57, 52);">Use #$# as the separator between options.</h5>
+                    
+                </div> 
+                 
+                    
+                </aura:if>
+                
+                    
+               
+                <div class="slds-modal__footer">
+                    <div class="slds-x-small-buttons--horizontal slds-float--right">
+                        <button class="slds-button slds-button--neutral" onclick="{!c.CancelQuestionsModel}"  >Cancel</button>
+                        <button class="slds-button slds-button--brand" aura:id="modaldialogNewQuestion" onclick="{!c.SavingQuestionsModel}" >Save</button>
+                    </div>                
+                </div>
+                
+            </div>
+        </div>
+        
+        <div class="slds-backdrop slds-backdrop--open" aura:id="backdropNewQuestion"></div>
+    </div>     
+    </aura:if>
+   
+        <!-- Delete End-->
+    </div>
+          </aura:if>
+        
+           <aura:if isTrue="{!v.showConfirmDialog}">
+            <!--Modal Box Start-->
+            <div role="dialog" class="slds-modal slds-fade-in-open ">
+                <div class="slds-modal__container">
+                    <!--Modal Box Header Start-->
+                    <header class="slds-modal__header">
+                        <h1 class="slds-text-heading--medium">Confirmation</h1>
+                    </header>
+                    <!--Modal Box Header End-->
+                     
+                    <!--Modal Box Content Start-->
+                    <div class="slds-modal__content slds-p-around--medium">
+                        <center><b>Are you sure you want to delete this item?</b></center>
+                    </div>
+                    <!--Modal Box Content End-->
+                     
+                    <!--Modal Box Button Start-->
+                    <footer class="slds-modal__footer">
+                        <lightning:button name='No' label='No' onclick='{!c.handleConfirmDialogNo}'/>
+                        <lightning:button variant="brand" name='Yes' label='Yes' onclick='{!c.handleConfirmDialogYes}'/>
+                    </footer>
+                    <!--Modal Box Button End-->
+                </div>
+            </div>
+            <div class="slds-backdrop slds-backdrop--open"></div>            
+        </aura:if>
+        
+        <aura:if isTrue="{!v.showConfirmDialogDeleteQuestion}">
+            <!--Modal Box Start-->
+            <div role="dialog" class="slds-modal slds-fade-in-open ">
+                <div class="slds-modal__container">
+                    <!--Modal Box Header Start-->
+                    <header class="slds-modal__header">
+                        <h1 class="slds-text-heading--medium">Confirmation</h1>
+                    </header>
+                    <!--Modal Box Header End-->
+                     
+                    <!--Modal Box Content Start-->
+                    <div class="slds-modal__content slds-p-around--medium">
+                        <center><b>Are you sure you want to delete this item?</b></center>
+                    </div>
+                    <!--Modal Box Content End-->
+                     
+                    <!--Modal Box Button Start-->
+                    <footer class="slds-modal__footer">
+                        <lightning:button name='No' label='No' onclick='{!c.handleConfirmDialogDeleteQuesNo}'/>
+                        <lightning:button variant="brand" name='Yes' label='Yes' onclick='{!c.handleConfirmDialogDeleteQuesYes}'/>
+                    </footer>
+                    <!--Modal Box Button End-->
+                </div>
+            </div>
+            <div class="slds-backdrop slds-backdrop--open"></div>            
+        </aura:if>
+    </div>
+</aura:component>

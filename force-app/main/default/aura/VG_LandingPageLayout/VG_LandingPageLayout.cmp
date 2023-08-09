@@ -1,0 +1,50 @@
+<aura:component implements="forceCommunity:layout" description="Landing Page Layout" access="global">
+    <aura:attribute name="Row1Col1" type="Aura.Component[]" required="false"></aura:attribute>
+    <aura:attribute name="Row1Col2" type="Aura.Component[]" required="false"></aura:attribute>
+     <aura:attribute name="Row2Col1" type="Aura.Component[]" required="false"></aura:attribute>
+     <aura:attribute name="Row2Col2" type="Aura.Component[]" required="false"></aura:attribute>
+     <aura:attribute name="Row2Col3" type="Aura.Component[]" required="false"></aura:attribute>
+     <aura:attribute name="Row3Col1" type="Aura.Component[]" required="false"></aura:attribute>
+     <aura:attribute name="Row3Col2" type="Aura.Component[]" required="false"></aura:attribute>
+     <aura:attribute name="Row4Col1" type="Aura.Component[]" required="false"></aura:attribute>
+
+    <!--<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>-->
+    
+    <div class="container">
+      
+        <lightning:layout multipleRows="true">
+            <lightning:layoutItem  padding="around-x-small" size="12" mediumDeviceSize="9" >
+                <div class="custom-box">{!v.Row1Col1}</div>
+            </lightning:layoutItem>
+            <lightning:layoutItem size="12" mediumDeviceSize="3"  padding="around-x-small" class="mobileQuicklink" >
+                <div class="custom-box" style="height: 375px;background-color:white; ">{!v.Row1Col2}</div>
+            </lightning:layoutItem>
+        </lightning:layout>
+    <lightning:layout multipleRows="true">
+            <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-x-small">
+                <div class="custom-box eventStyle" style="margin-right: 10px; margin-left: 9px;margin-top: 3.5px;">{!v.Row2Col1}</div>
+            </lightning:layoutItem>
+            <lightning:layoutItem size="12" class="employ_12" mediumDeviceSize="3" padding="around-x-small">
+                <div class="custom-box dir_search"  style="margin-right: 10px;">{!v.Row2Col2}</div>
+            </lightning:layoutItem>
+         <lightning:layoutItem size="12" mediumDeviceSize="3" padding="around-x-small" class="mobilearticlesearch">
+                <div class="">{!v.Row2Col3}</div>
+            </lightning:layoutItem>
+        </lightning:layout>
+         <lightning:layout multipleRows="true">
+            <lightning:layoutItem   size="12" mediumDeviceSize="6" padding="around-x-small">
+                <div class="custom-box linkdInstyle">{!v.Row3Col1}</div>
+            </lightning:layoutItem>
+            <!--<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-x-small">
+                <div class="custom-box widget newsFeed">{!v.Row3Col2}</div>
+            </lightning:layoutItem>-->
+         
+        </lightning:layout>
+        <lightning:layout multipleRows="true">
+            <lightning:layoutItem   size="12" mediumDeviceSize="12" padding="around-x-small">
+                <div class="custom-box missionStyle">{!v.Row4Col1}</div>
+            </lightning:layoutItem>            
+            
+        </lightning:layout>
+    </div>
+</aura:component>

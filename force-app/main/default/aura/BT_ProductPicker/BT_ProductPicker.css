@@ -1,0 +1,5 @@
+.THIS {
+}
+.THIS .combobox-dropdown div[role="listbox"]{
+    max-height: calc(((0.8125rem * 1.6) + 1rem) * 6) !important;
+}

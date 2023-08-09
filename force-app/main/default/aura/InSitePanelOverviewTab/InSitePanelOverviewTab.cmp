@@ -1,0 +1,80 @@
+<aura:component>
+	<aura:attribute name="overviewData" type="Object" default="{}"/>
+
+	<div class="slds-grid slds-wrap slds-gutters_direct slds-p-horizontal_small">
+		<div class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-horizontal_small">
+			<div class="insite-rating-container">
+				<img src="{!$Resource.insite + '/insite/imgs/outline.png'}" alt=""/>
+				<div class="outline-curtain"></div>
+				<div class="slds-grid outline-rating-grid">
+					<c:InSiteStarRatingOverview rating="{!v.overviewData.rating}"/>
+				</div>
+			</div>
+			<div class="slds-m-top_large slds-p-horizontal_medium">
+				<p class="slds-clearfix slds-m-bottom_x-small">
+					<span class="slds-text-heading_small slds-float_left" style="font-weight: bold;">InSite Status:</span>
+					<aura:if isTrue="{!v.overviewData.status == 'Cold'}">
+						<span class="slds-text-heading_small slds-float_right" style="color: #00adef;">Cold</span>
+					</aura:if>
+					<aura:if isTrue="{!v.overviewData.status == 'Warm'}">
+						<span class="slds-text-heading_small slds-float_right" style="color: #ffc444;">Warm</span>
+					</aura:if>
+					<aura:if isTrue="{!v.overviewData.status == 'Hot'}">
+						<span class="slds-text-heading_small slds-float_right" style="color: #ff4444;">Hot</span>
+					</aura:if>
+					<aura:if isTrue="{!v.overviewData.status == 'Deposit'}">
+						<span class="slds-text-heading_small slds-float_right" style="color: #8ebd3e;">Deposited</span>
+					</aura:if>
+					<aura:if isTrue="{!v.overviewData.status == 'Purchased'}">
+						<span class="slds-text-heading_small slds-float_right" style="color: #8ebd3e;">Purchased</span>
+					</aura:if>
+					<aura:if isTrue="{!v.overviewData.status != 'Cold' &amp;&amp; v.overviewData.status != 'Warm' &amp;&amp; v.overviewData.status != 'Hot' &amp;&amp; v.overviewData.status != 'Deposit' &amp;&amp; v.overviewData.status != 'Purchased'}">
+						<span class="slds-text-heading_small slds-float_right" style="color: #000000;">{!v.overviewData.status}</span>
+					</aura:if>
+				</p>
+				<p class="slds-clearfix slds-m-bottom_x-small">
+					<span class="slds-text-heading_small slds-float_left" style="font-weight: bold;">Registration:</span>
+					<span class="slds-text-heading_small slds-float_right">{!v.overviewData.dates.registration}</span>
+				</p>
+				<p class="slds-clearfix slds-m-bottom_x-small">
+					<span class="slds-text-heading_small slds-float_left" style="font-weight: bold;">First Visit:</span>
+					<span class="slds-text-heading_small slds-float_right">{!v.overviewData.dates.firstVisit}</span>
+				</p>
+				<p class="slds-clearfix slds-m-bottom_x-small">
+					<span class="slds-text-heading_small slds-float_left" style="font-weight: bold;">Last Active:</span>
+					<span class="slds-text-heading_small slds-float_right">{!v.overviewData.dates.lastActive}</span>
+				</p>
+			</div>
+		</div>
+		<div class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-horizontal_small">
+			<div class="slds-p-horizontal_large">
+				<div class="slds-col slds-size_1-of-1 slds-m-bottom_medium">
+					<h3 class="slds-text-heading_small" style="text-transform: uppercase; color: #ee6837;">Online
+						Activity</h3>
+				</div>
+				<div class="slds-grid slds-wrap slds-gutters_direct">
+					<div class="slds-col slds-size_1-of-1 slds-large-size_1-of-1 slds-m-bottom_x-small">
+						<p class="slds-text-heading_small" style="font-weight: bold;">Total Website Visits</p>
+						<p class="slds-text-heading_small">{!v.overviewData.activity.totalVisits}</p>
+					</div>
+					<div class="slds-col slds-size_1-of-1 slds-large-size_1-of-1 slds-m-bottom_x-small">
+						<p class="slds-text-heading_small" style="font-weight: bold;">Registration Source</p>
+						<p class="slds-text-heading_small">{!v.overviewData.activity.registrationSource}</p>
+					</div>
+					<div class="slds-col slds-size_1-of-1 slds-large-size_1-of-1 slds-m-bottom_x-small">
+						<p class="slds-text-heading_small" style="font-weight: bold;">Initial Lead Source</p>
+						<p class="slds-text-heading_small">{!v.overviewData.activity.initialLeadSource}</p>
+					</div>
+					<div class="slds-col slds-size_1-of-1 slds-large-size_1-of-1 slds-m-bottom_x-small">
+						<p class="slds-text-heading_small" style="font-weight: bold;">Devices Recorded</p>
+						<aura:iteration items="{!v.overviewData.activity.devices}" var="device">
+							<p class="slds-text-heading_small slds-m-bottom_xx-small">
+								<lightning:icon size="x-small" iconName="{!device.iconName}" alternativeText="{!device.type}"/>&nbsp;{!device.type}
+								x {!device.count}</p>
+						</aura:iteration>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</aura:component>

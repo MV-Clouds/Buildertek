@@ -1,0 +1,84 @@
+.THIS .slds-form-element__icon {
+    display: none !important;
+}
+
+.THIS .slds-form-element__label {
+    margin-top: 0px;
+     display: none !important;
+}
+.THIS .label-hidden {
+      display : none;
+      visibility : hidden;
+}
+   
+/*.THIS.slds-textarea {
+    height:10vh  !important;
+}*/
+
+.THIS .percentCompletion::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0; 
+}
+
+.THIS .percentCompletion::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0; 
+}
+/*.THIS.slds-textarea{
+    padding-top:0.3rem !important;
+    padding-bottom:0.3rem !important;
+}*/
+
+
+.THIS input[name*="buildertek__BL_LIST_PRICE__c"] {
+
+    pointer-events: none;
+    background-color: gainsboro;
+}
+
+/* .THIS input[name*="buildertek__UOM__c"] {
+
+    pointer-events: none;
+    background-color: gainsboro;
+} */
+
+.THIS input[fieldapi="buildertek__BL_LIST_PRICE__c"] {
+
+    pointer-events: none;
+    background-color: gainsboro;
+}
+
+.THIS div[data-fieldapi="buildertek__BL_LIST_PRICE__c"] {
+
+    pointer-events: none !important;
+    background-color: gainsboro;
+}
+
+.THIS div[data-fieldapi="buildertek__Takeoff_Line__c"] {
+
+    pointer-events: none !important;
+}
+
+.THIS div[fieldapi="buildertek__Takeoff_Line__c"] {
+
+    pointer-events: none !important;
+}
+
+.THIS.takeoff-line-col {
+    pointer-events: none;
+}
+
+.THIS.takeoff-line-col .slds-combobox__input-entity-icon, .THIS.takeoff-line-col .slds-input__icon-group_right  {
+    display:none;
+}
+
+
+.THIS.takeoff-line-col input.slds-combobox__input  {
+    background: transparent;
+    border: 0px;
+    padding: 0px;
+}

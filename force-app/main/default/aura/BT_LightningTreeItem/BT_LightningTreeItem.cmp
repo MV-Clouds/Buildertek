@@ -1,0 +1,168 @@
+<aura:component controller="BT_LightningTreeItemController" implements="forceCommunity:availableForAllPageTypes"
+    access="global">
+    <aura:attribute name="treeType" type="String"
+        description="Tree type such as Controls, Assessments, Policies, Assets etc." />
+    <aura:attribute name="sobjectFields" type="String"
+        description="List of field API names to get query for tree node record." />
+    <aura:attribute name="selectMode" type="Integer" default="2"
+        description="Set tree select mode to 1 if you want single-selection enabled, 2 if you want multi-selection enabled, 3 if you want hierarchical multi-selection enabled." />
+    <aura:attribute name="checkableSObjectTypes" type="String[]"
+        description="Array of object types indicating that nodes of these object types are checkable" />
+    <aura:attribute name="key" type="String" description="Unique tree node path" />
+    <aura:attribute name="title" type="String" description="Tree node title" />
+    <aura:attribute name="userData" type="Object" description="Tree node sobject information" />
+    <aura:attribute name="folder" type="Boolean" default="true"
+        description="Flag to indicate whether or not this item is folder" />
+    <aura:attribute name="icon" type="String" description="Icon for tree node to be used" />
+    <aura:attribute name="iconName" type="String" default="add" description="Icon for tree node to be used" />
+    <aura:attribute name="checkable" type="Boolean" default="true"
+        description="Flag to indicate whether or not users will be allowed to select records from tree." />
+    <aura:attribute name="nodeCheckable" type="Boolean" default="false"
+        description="Flag to indicate whether or not users will be allowed to select this item" />
+    <aura:attribute name="lazy" type="Boolean" default="false"
+        description="Flag to indicate whether or not children of this item are loaded" />
+    <aura:attribute name="parentChecked" type="Boolean" default="false"
+        description="Flag to indicate whether or not parent of this item is checked" />
+    <aura:attribute name="checked" type="Boolean" default="false"
+        description="Flag to indicate whether or not this item is checked" />
+    <aura:attribute name="selected" type="Boolean" default="false"
+        description="Flag to indicate whether or not this item is added in list of selected items" />
+    <aura:attribute name="parentSelected" type="Boolean" default="false"
+        description="Flag to indicate whether or not parent of this item is selected" />
+    <aura:attribute name="expanded" type="Boolean" default="false"
+        description="Flag to indicate whether or not this item is expanded" />
+    <aura:attribute name="active" type="Boolean" default="false"
+        description="Flag to indicate whether or not this item is active" />
+    <aura:attribute name="children" type="Object[]" default="[]" description="List of direct children of the item" />
+    <aura:attribute name="level" type="Integer" default="1" description="Level of the hierarchy" />
+    <aura:attribute name="treeId" type="String" description="TreeX-NodeX Id used in the tree markup" />
+    <aura:attribute name="treeItemId" type="String" description="TreeX-NodeX Id used in the tree markup" />
+    <aura:attribute name="maxAutoExpandLevel" type="Integer" default="1"
+        description="Maximum number of levels the hierarchy should auto-expand to upon load" />
+    <aura:attribute name="selectedNodes" type="Object[]" description="List of selected nodes of tree" />
+    <aura:attribute name="checkedNodes" type="Object[]" description="List of checked nodes of tree" />
+    <aura:attribute name="activeNode" type="Object" description="Active node of tree" />
+    <aura:attribute name="checkedChildrenCount" type="Integer" default="0" description="Count of checked child nodes" />
+    <aura:attribute name="lastEffectiveNodeLevel" type="Integer"
+        description="Level of the last node which is manually marked as check or unchecked" />
+    <aura:attribute name="startGetCheckedNodes" type="Boolean" default="false"
+        description="Flag to indicate whether or not process to get checked nodes is intiated" />
+    <aura:attribute name="colors" type="String" default="grey" />
+    <aura:attribute name="showProgress" type="boolean" default="false" description="show selection progress" />
+    <aura:attribute name="sumOfSelectedItems" type="String" />
+
+    <aura:registerEvent name="updateParentNodeStatus" type="c:BT_UpdateParentNodeStatusEvent" />
+    <aura:handler name="updateParentNodeStatus" event="c:BT_UpdateParentNodeStatusEvent"
+        action="{!c.updateParentNodeStatus}" />
+
+    <aura:handler event="c:BT_RefreshTreeNodeEvent" action="{!c.refreshTreeNode}" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <aura:handler name="change" value="{!v.parentChecked}" action="{!c.parentCheckedChange}" />
+    <aura:handler name="change" value="{!v.expanded}" action="{!c.expandedChange}" />
+    <aura:handler name="change" value="{!v.activeNode}" action="{!c.activeNodeChange}" />
+    <aura:handler name="change" value="{!v.checked}" action="{!c.checkedChange}" />
+    <aura:handler name="change" value="{!v.selectedNodes}" action="{!c.selectedNodesChange}" />
+    <aura:handler name="change" value="{!v.checkedNodes}" action="{!c.checkedNodesChange}" />
+    <aura:handler name="change" value="{!v.startGetCheckedNodes}" action="{!c.addNodeIntoCheckedNodes}" />
+    <aura:attribute name="isResponse" type="Boolean" default="false" />
+
+    <li id="{!v.treeItemId}" aura:id="{!v.treeItemId}" role="treeitem" aria-level="{!v.level}"
+        aria-selected="{!v.active}" aria-expanded="{!v.expanded}">
+        <aura:if isTrue="{!v.showProgress}">
+            <aura:if isTrue="{!v.level==1}">
+                <br />
+            </aura:if>
+        </aura:if>
+        <div aura:id="itemDiv" style="width: 85%;float: left; white-space: nowrap;"
+            class="{!(or(v.selected, and(v.selectMode == 3, v.parentSelected)) ? 'slds-tree__item avSelectedTreeNode': 'slds-tree__item') +' '+ (v.checked ? 'avCheckedTreeNode' : '')}">
+          
+            
+            <button aura:id="expandCollapseButton" style="{!and(!v.lazy, v.children.length == 0) ? '' : ''}"
+                name="{!v.expanded}" class="slds-button slds-button_icon slds-button_icon slds-m-right_x-small iconTopMargin"
+                aria-controls="{!v.treeItemId}" onclick="{!c.expandClick}">
+                
+                <lightning:icon iconName="{!'utility:'+v.iconName}" variant="bare" size="large"
+                    class="{!(v.iconName=='dash' ? 'slds-icon_container_circle collapseIcon' : 'slds-icon_container_circle iconStyle')}" />
+            </button>
+
+            <aura:if isTrue="{!v.nodeCheckable}">
+                <aura:if isTrue="{!v.selectMode != 1}">
+                    <lightning:input type="checkbox" class="slds-button slds-button_icon" checked="{!v.checked}"
+                        onfocus="{!c.checkBoxFocus}" onchange="{!c.checkBoxChange}" />
+                </aura:if>
+                <aura:if isTrue="{!v.selectMode == 1}">
+                    <lightning:input type="radio" class="slds-button slds-button_icon" checked="{!v.checked}" />
+                </aura:if>
+            </aura:if>
+            <aura:if isTrue="{!v.icon.length == 0}">
+                <lightning:icon class="slds-m-right_xx-small marginTop" iconName="utility:open_folder" size="xx-small"
+                    variant="default" />
+            </aura:if>
+            <aura:if isTrue="{!v.icon.length != 0}">
+                <!--<img style="margin-left: 0px;" class="slds-button slds-button_icon slds-m-right_xx-small" src="{!$Resource.GRCWeb + '/resources/images/icons16x16/'+v.icon}"/> -->
+            </aura:if>
+            <div style="margin-top: 10px">
+                <a id="{!concat(v.treeItemId,'__label')}" style="text-align:center;white-space: pre-wrap;"
+                    aura:id="itemLink" href="javascript:void(0);" tabindex="-1" role="presentation"
+                    class="slds-truncate" onclick="{!c.nodeClick}">{!v.title}</a>
+            </div>
+            <aura:if isTrue="{!v.showProgress}">
+                <div style=" margin-left: auto; order: 2;">
+                    <aura:if isTrue="{!and((v.userData.nodeType=='NodeType_Object'),(v.userData.childObjectType!=''))}">
+                        <c:BT_Progress themeAfterThreshold="{!v.colors}" fontColor="{!v.colors}"
+                            themeBeforeThreshold="{!v.colors}" size="small" totalProgress="{!v.userData.totalOptions}"
+                            actualProgress="{!v.userData.totalTestedOptions}" Legend="" resultFormat="Mix"
+                            threshold="0" />
+                    </aura:if>
+                    <aura:if isTrue="{!(v.userData.nodeType=='NodeType_Object' ? 'false' : 'true')}">
+                        <br />
+                    </aura:if>
+                    <aura:if isTrue="{!and((v.userData.nodeType=='NodeType_Object'),(v.userData.childObjectType==''))}">
+                        <br />
+                    </aura:if>
+                </div>
+            </aura:if>
+        </div>
+
+
+
+        <aura:if isTrue="{!!v.lazy}">
+            <ul class="slds-is-expanded" style="{!(v.expanded ? '' : 'display:none;')}" role="group"
+                aria-labelledby="{!concat(v.treeItemId,'__label')}">
+                <aura:iteration items="{!v.children}" var="childNode" indexVar="childIndex">
+                    <aura:if isTrue="{!and(v.isResponse,childNode.userData.CustomerVisibility)}">
+                        <c:BT_LightningTreeItem aura:id="treeNode" treeType="{!v.treeType}"
+                            sobjectFields="{!v.sobjectFields}" selectMode="{!v.selectMode}"
+                            checkableSObjectTypes="{!v.checkableSObjectTypes}" checkable="{!v.checkable}"
+                            parentChecked="{!v.checked}" parentSelected="{!v.selected}" title="{!childNode.tooltip}"
+                            key="{!childNode.key}" expanded="{!childNode.expanded}" children="{!childNode.children}"
+                            folder="{!childNode.folder}" icon="{!childNode.icon}" userData="{!childNode.userData}"
+                            colors="{!childNode.colors}" level="{!v.level+1}" treeId="{!v.treeId}"
+                            treeItemId="{!concat(v.treeItemId, '-'+childIndex)}"
+                            maxAutoExpandLevel="{!v.maxAutoExpandLevel}" lazy="{!childNode.lazy}"
+                            selectedNodes="{!v.selectedNodes}" checkedNodes="{!v.checkedNodes}"
+                            activeNode="{!v.activeNode}" lastEffectiveNodeLevel="{!v.lastEffectiveNodeLevel}"
+                            startGetCheckedNodes="{!v.startGetCheckedNodes}" showProgress="{!v.showProgress}" />
+                    </aura:if>
+                    <aura:if isTrue="{!!v.isResponse}">
+                        <c:BT_LightningTreeItem aura:id="treeNode" treeType="{!v.treeType}"
+                            sobjectFields="{!v.sobjectFields}" selectMode="{!v.selectMode}"
+                            checkableSObjectTypes="{!v.checkableSObjectTypes}" checkable="{!v.checkable}"
+                            parentChecked="{!v.checked}" parentSelected="{!v.selected}" title="{!childNode.tooltip}"
+                            key="{!childNode.key}" expanded="{!childNode.expanded}" children="{!childNode.children}"
+                            folder="{!childNode.folder}" icon="{!childNode.icon}" userData="{!childNode.userData}"
+                            colors="{!childNode.colors}" level="{!v.level+1}" treeId="{!v.treeId}"
+                            treeItemId="{!concat(v.treeItemId, '-'+childIndex)}"
+                            maxAutoExpandLevel="{!v.maxAutoExpandLevel}" lazy="{!childNode.lazy}"
+                            selectedNodes="{!v.selectedNodes}" checkedNodes="{!v.checkedNodes}"
+                            activeNode="{!v.activeNode}" lastEffectiveNodeLevel="{!v.lastEffectiveNodeLevel}"
+                            startGetCheckedNodes="{!v.startGetCheckedNodes}" showProgress="{!v.showProgress}" />
+                    </aura:if>
+                </aura:iteration>
+            </ul>
+        </aura:if>
+    </li>
+
+</aura:component>

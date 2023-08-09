@@ -1,0 +1,8 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global">
+    <aura:attribute name="recordId" description="Related Record Id" type="String" default="" access="global"/>
+    <aura:attribute name="targetObject" description="Target OBject API Name" type="String" default="buildertek__Project__c" access="global"/>
+    <aura:attribute name="explorerConfig" description="File exploer config name" type="String" default="" access="global"/>
+    
+   <iframe src="{! 'https://btservice360-dev-ed--c.na35.visual.force.com/apex/buildertek__BT_Home?mainObjectFieldAPI='+v.targetObject+'&amp;mainObjectId=' + v.recordId+'&amp;explorerConfig='+v.explorerConfig}" width="100%" height="600px;" frameBorder="0"/>
+   <!-- <iframe src="{ '$Label.c.AWS_URL' + v.recordId+'&amp;explorerConfig='+v.explorerConfig}" width="100%" height="600px;" frameBorder="0"/>-->
+</aura:component>

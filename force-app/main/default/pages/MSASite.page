@@ -1,0 +1,36 @@
+<apex:page sidebar="false" showHeader="false" standardStylesheets="false"> 
+    <apex:includeLightning />
+    <div id="lightning" />
+    <script>
+   
+        var AccountId = "{!$CurrentPage.parameters.id}"
+        var booleanval = "{!$CurrentPage.parameters.bool}"
+        var isres = "{!$CurrentPage.parameters.isresend}"
+        var objName = "{!$CurrentPage.parameters.objName}"
+        if(objName == 'buildertek__Pre_Qual__c'){
+         
+            $Lightning.use("buildertek:PreQualObjectQualificationApp", function() {
+            $Lightning.createComponent("buildertek:PreQualObject_MSAForm",
+            {recordId : AccountId,disable : booleanval,resendMSA : isres},
+            "lightning",
+            function(component) { 
+                
+            });
+        });
+        }
+    else{     
+        $Lightning.use("buildertek:MSAFormApp", function() {
+            $Lightning.createComponent("buildertek:MSAForm",
+            {recordId : AccountId,disable : booleanval,resendMSA : isres},
+            "lightning",
+            function(component) { 
+                
+            });
+        });
+            }
+    </script>
+    <apex:pageBlock >
+        <apex:pageMessages ></apex:pageMessages>
+    </apex:pageBlock>
+    
+</apex:page>

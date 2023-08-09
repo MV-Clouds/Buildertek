@@ -1,0 +1,16 @@
+<aura:component >
+
+	<aura:attribute name="type" type="String" description="Message Type"/>
+    <aura:attribute name="Message" type="String" description="RFQ record object"/>
+    
+    
+	<div class="{!'slds-box slds-box_xx-small slds-theme_'+v.type}">
+	    <div id="avMessage" class="slds-inline_icon_text slds-grid">
+			<lightning:icon iconName="{!'utility:'+v.type}" size="slds-icon" variant="inverse"/> 
+			<div aura:id="infoMessage" class="slds-col slds-align-middle">
+  				<p> &nbsp; {!v.Message} </p>
+			</div>
+  		</div>
+	</div>
+	<br/>
+</aura:component>

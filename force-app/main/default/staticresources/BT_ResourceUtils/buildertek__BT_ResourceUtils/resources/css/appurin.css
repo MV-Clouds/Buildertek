@@ -1,0 +1,242 @@
+/* Table header */
+.apTableCaption{
+	background-color: #007fcc !important;
+	font-size: 1.1em;
+	color: white !important;
+	border: 0px !important;
+	padding-right: 5px !important;
+}
+
+/* Table container using div */
+.apTableContainer{
+	display:table;
+	width:100%;
+	border-collapse: collapse;
+}
+
+/* Table row using div */
+.apTableRow{  
+	display:table-row;
+}
+
+/* Table column using div */
+.apTableColumn{
+	display:table-cell;
+	border: 1px solid #CCC;
+	padding: 5px;
+	vertical-align: middle;
+}
+
+.apTableColumnWithoutBorder{
+	display:table-cell;
+	border: 0px;
+	padding: 5px;
+	vertical-align: middle;
+}
+
+.apCenterContent{
+	margin-left: auto;
+	display: block;
+	margin-right: auto;
+}
+
+/* Inactive Button css */ 
+.apInActiveButton{
+	 border-radius: 10px !important;
+	font-size: 16px !important;
+	margin-right: 0.1in !important;
+	width: auto !important;
+	height: 30px !important;
+	border-color: #75b2dd !important;
+	overflow: hidden !important;
+	text-overflow: ellipsis !important;
+	background: #E6E7E8 ! important;
+	padding-left: 10px ! important;
+	padding-right: 10px ! important;
+}
+
+/* Active Button css */ 
+.apActiveButton{
+	border-radius: 6px !important;
+	font-size: 16px !important;
+	margin-right: 0.1in !important;
+	width: auto !important;
+	height: 30px !important;
+	border-color: #007fcc !important;
+	overflow: hidden !important;
+	text-overflow: ellipsis !important;
+	padding-left: 10px ! important;
+	padding-right: 10px ! important;
+	color: #333;
+	margin: 1px;
+	padding: 2px 3px;
+	border: 1px solid #b5b5b5;
+	border-bottom-color: #7f7f7f;
+	background: #e8e8e9 url('/img/alohaSkin/btn_sprite.png') repeat-x right top;
+	font-weight: bold;
+	font-size: .9em;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+	font-family: Arial,Helvetica,sans-serif;
+}
+
+.apActiveButton:hover{
+	color: #007fcc !important;
+}
+
+/* Convert standard commandButton to commandLink*/
+.apButtonToLink{
+    border: 0px !important;
+    text-decoration: underline !important;
+    background: none !important;
+    font-weight: normal !important;
+    font-size: 12px !important;
+	padding-top: 0px !important;
+    padding-left: 0px !important;
+}
+
+.apTreeDiv {
+	overflow: auto;
+	border: 4px solid #99BBE8;
+}
+
+.apLoaderImageDiv {
+	background-image: url('../images/icons/loader.gif');
+	background-repeat: no-repeat;
+	width: 24px;
+	height: 24px; 
+}
+	
+.apLoaderImageDivfortree {
+	position:relative;
+	top:45%;
+	left:45%;
+	background-image: url('../images/icons/loderimage.gif');
+	background-repeat: no-repeat;
+	width: 50px;
+	height: 50px; 
+}
+
+.apRefreshDivfortree {
+	background-image: url('../images/icons/refresh.png');
+	background-repeat: no-repeat;
+	float:right;
+	position:relative;
+	left:-6px;
+	width:20px;
+	height:15px;
+	cursor: pointer;
+	display: block;
+    z-index:3;
+}
+
+.apPopup{
+    background-color: white;
+    border-width: 2px;
+    border-color: #014ead ;
+    border-style: solid;
+    z-index: 9999;
+    padding:10px;
+    position: absolute;
+    top:100px;
+}
+
+.apPopupBackground{
+    background-color:black;
+    opacity: 0.20;
+    filter: alpha(opacity = 20);
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 9998;
+}
+	
+.apcircle {				
+	display: table-cell;
+}
+	
+/* Action Status - Please wait text. */	
+.aptxt {
+	display: table-cell;
+	padding-left: 10px;
+	vertical-align: middle;
+	font-size: 13px;
+	margin-left: 25px;
+	font-weight: bold;
+}   	                     
+	
+/* When ajax request send disable whole background content. */	
+.apdisableBackPage {
+	filter: Alpha(Opacity = 40);
+	-moz-opacity: 0.4;
+	opacity: 0.4;
+	width: 100%;
+	height: 100%;
+	background-color: #999999;
+	position: fixed;
+	z-index: 500;
+	top: 0px;
+	left: 0px;
+} 
+  
+/* Action Status - Please wait Divition. */	
+.apsplashDiv{
+	display: table-row;
+	position: fixed;
+	left: 500px;
+	top: 280px;
+	z-index: 9999;
+	border: 1px solid gray;
+	background-color: white;
+	padding: 10px;
+}
+
+	
+.pane, .ui-layout-pane{
+	overflow: hidden;
+}
+	
+
+/* It will hide divition at initial level. */	
+.apInitiallyDivDisplayNone{
+	display:none;
+}
+
+/* Easy Tooltip  and diff table that uses the easy tooltip */
+#easyTooltip{
+	background-color: #007fcc;
+	color: white;
+	border:2px solid #e1e1e1;
+	line-height:130%;
+	width:auto;	
+	margin:20px 20px 20px 20px;
+	padding:8px;
+	display:none;
+	word-break: break-all;
+}
+
+#easyTooltip h4{
+	margin:0 0 .5em 0;
+	font:13px Arial, Helvetica, sans-serif;
+	text-transform:uppercase;
+	font-style: bold;
+}
+
+
+#curtain {
+	height:0px;
+	width:100%;
+	position:absolute;
+	z-index:5;
+}
+
+#move{  
+	position:relative;
+	background-color:white;
+	height:0px;
+	display :none;
+	overflow:auto;
+}

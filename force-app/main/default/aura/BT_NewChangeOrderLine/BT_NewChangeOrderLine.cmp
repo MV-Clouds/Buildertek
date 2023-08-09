@@ -1,0 +1,220 @@
+<aura:component implements="force:appHostable,force:hasRecordId,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction,lightning:actionOverride" access="global"
+                controller="ChangeOrderDAO" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="parentRecordId" type="String" default="" />
+    <aura:attribute name="isLoading" type="Boolean" />
+    <aura:attribute name="listOfFields" type="List" />
+    <aura:attribute name="NameOfVendor" type="String"/>
+    <aura:attribute name="NameOfVendorReview" type="String"/>
+    <aura:attribute name="Quantity" type="Integer" default="1" />
+    
+     <aura:attribute name="Iscommunity" type="Boolean" default = "false"/>
+    
+    
+    <aura:attribute name="productId" type="string" />
+    <aura:attribute name="productName" type="string" />
+    <aura:attribute name="buttonTypeName" type="string" default="saveButton" />
+    
+    <aura:attribute name="pricebookName" type="string" />
+    <aura:attribute name="pricebookoptions" type="List" />
+    <aura:attribute name="listofproductfamily" type="List" />
+    <aura:attribute name="selectedLookUpRecord" type="string" />
+    <aura:attribute name="productfamily" type="string" />
+    
+    <aura:attribute name="PdtName" type="String" />
+    <aura:attribute name="UnitPrice" type="String" />
+    
+     <aura:attribute name="lineName" type="String"/>
+     <aura:attribute name="changeOrder" type="Id"/>
+    <aura:attribute name="isopen" type="Boolean" default="false" />
+    <aura:attribute name="ischangeorderline" type="Boolean" default="false" />
+    <aura:attribute name="isproduct" type="Boolean" default="false" />
+     <aura:attribute name="ischangeorder" type="Boolean" default="false" />
+    <!-- <aura:attribute name="autocomplete" type="String"/>-->
+    <lightning:workspaceAPI aura:id="workspace" />
+    
+    <aura:attribute name="newPOItem" type="Change_Order_Item__c" default="{ 'sobjectType': 'Change_Order_Item__c'}"
+                    access="global" />
+    <aura:handler name="oSelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.handleComponentEvent}" />
+    <aura:handler name="SelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.handleComponentEvents}" />
+    
+    <ltng:require styles="{!$Resource.ModalWidthCSS}"/>
+    
+    <aura:if isTrue="{!v.ischangeorder}" >
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container confirmationPopup1">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeModel }" alternativeText="close"
+                                          variant="bare-inverse" class="slds-modal__close" />
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New Change Order Line</h2>
+                </header>
+                   <div class="slds-modal__content" id="modal-content-id-1">
+                 <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__Change_Order_Item__c"
+                                              onsubmit="{!c.handleSubmit}" onsuccess="{!c.onRecordSuccess}" onerror="{!c.handleOnError}">
+              
+                   
+                        
+                        <lightning:layout multipleRows="true">
+                          
+                            <aura:iteration items="{!v.listOfFields}" var="field">
+                              
+                             
+                                      
+                                        <aura:if isTrue="{!v.isproduct}" >
+                                            <aura:if  isTrue="{!and(field.name !='Name',field.name !='buildertek__Unit_Price__c')}" >  
+                                                <aura:if isTrue="{!field.name=='buildertek__Product__c'}">
+                                                        
+                                                     <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small" > 
+                                                    <label class="slds-form-element__label slds-no-flex">Pricebook</label>
+                                                    <ui:inputSelect value="{! v.pricebookName }" change="{!c.changeEvent}"
+                                                                    class="pricebook-class">
+                                                        <aura:iteration var="option" items="{! v.pricebookoptions }">
+                                                            <option value="{! option.value }"
+                                                                    selected="{!option.value == v.pricebookName}">{!
+                                                                option.key }</option>
+                                                        </aura:iteration>
+                                                    </ui:inputSelect>
+                                                    </lightning:layoutItem>
+                                                       <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small" > 
+                                                  <!--  <div class="slds-size_2-of-2"> -->
+                                                        <label class="slds-form-element__label slds-no-flex">Product Family</label>
+                                                        <ui:inputSelect value="{!v.productfamily}" change="{!c.changefamily}"
+                                                                        class="pricebook-class">
+                                                            <aura:iteration var="option" items="{!v.listofproductfamily}">
+                                                                <option value="{!option.productfamilyvalues}"
+                                                                        selected="{!option.productfamilyvalues == v.productfamily}">
+                                                                    {!option.productfamilyvalues}</option>
+                                                            </aura:iteration>
+                                                        </ui:inputSelect>
+                                                    </lightning:layoutItem>  
+                                                       <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small"> 
+                                                        <label class="slds-form-element__label slds-no-flex">Product Description</label>
+                                                        <c:BT_LightningLookup aura:id="productId" objectAPIName="Product2"
+                                                                              IconName="standard:product" selectedRecord="{!v.selectedLookUpRecord}"
+                                                                              parentId="{! v.pricebookName }" prodctfamly="{!v.productfamily}" />
+                                                        <!-- <lightning:inputField fieldName="{!field.buildertek__Quantity__c}" value="{!v.Quantity}" /> -->
+                                                    </lightning:layoutItem>
+                                                    <aura:set attribute="else">
+                                                         <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small" >  
+                                                     
+                                                        <aura:if isTrue="{!field.name =='buildertek__Change_Order__c'}">
+                                                            <aura:if isTrue="{!v.parentRecordId}">
+                                                                <lightning:inputField fieldName="{!field.name}"
+                                                                                      value="{!if(parentRecordId !='',v.parentRecordId)}" />
+                                                                <aura:set attribute="else">
+                                                                    <lightning:inputField fieldName="{!field.name}" />
+                                                                </aura:set>
+                                                            </aura:if>
+                                                            <aura:set attribute="else">
+                                                                <lightning:inputField fieldName="{!field.name}" />
+                                                            </aura:set> 
+                                                        </aura:if>
+                                                        </lightning:layoutItem>
+                                                    </aura:set>
+                                                </aura:if>
+                                                <!--<aura:set attribute="else">
+                                                    <aura:if isTrue="{!field.name =='buildertek__Change_Order__c'}">
+                                                        <aura:if isTrue="{!v.parentRecordId}">
+                                                            <lightning:inputField fieldName="{!field.name}"
+                                                                                  value="{!if(parentRecordId !='',v.parentRecordId)}" />
+                                                            <aura:set attribute="else">
+                                                                <lightning:inputField fieldName="{!field.name}" />
+                                                            </aura:set>
+                                                        </aura:if>
+                                                        <aura:set attribute="else">
+                                                            <lightning:inputField fieldName="{!field.name}" />
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </aura:set>-->
+                                                <aura:set attribute="else"> 
+                                                
+                                                       <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small"> 
+                                                    <aura:if isTrue="{!field.name =='buildertek__Unit_Price__c'}">
+                                                        <aura:if isTrue="{!v.UnitPrice}">
+                                                            <lightning:inputField fieldName="{! field.name }" 
+                                                                                  value="{!if(UnitPrice !='',v.UnitPrice)}"/>
+                                                            <aura:set attribute="else">
+                                                                <lightning:inputField fieldName="{!field.name}" />
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!field.name =='Name'}">
+                                                        <aura:if isTrue="{!v.PdtName}">
+                                                            <lightning:inputField fieldName="{! field.name }" 
+                                                                                  value="{!if(PdtName !='',v.PdtName)}" aura:id = "itemName"/>
+                                                            <aura:set attribute="else">
+                                                                <lightning:inputField fieldName="{!field.name}" required="true" value = "{!v.lineName}" />
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </aura:if>
+                                                    </lightning:layoutItem>
+                                                </aura:set>
+                                            </aura:if>
+                                        </aura:if>
+                                        
+                                       
+                                        <aura:if isTrue="{!v.ischangeorderline}" >
+                                           
+                                               <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small" > 
+                                            <aura:if isTrue="{!and(field.name =='buildertek__Change_Order__c')}">
+                                            
+                                                <aura:if isTrue="{!v.parentRecordId}">
+                                                    <lightning:inputField fieldName="{!field.name}"
+                                                                          value="{!if(parentRecordId !='',v.parentRecordId)}" />
+                                                    <aura:set attribute="else">
+                                                        <lightning:inputField fieldName="{!field.name}" />
+                                                    </aura:set>
+                                                </aura:if>
+                                                <aura:set attribute="else">
+                                                    <!-- <aura:if isTrue="{!field.name =='buildertek__Product__c'}">
+                                                        <lightning:inputField fieldName="{!field.name}" class="slds-hidden"/>
+                                                        <aura:set attribute="else"> -->
+                                                    <aura:if isTrue="{!(field.name == 'Name')}">
+                                                        <lightning:inputField fieldName="{!field.name}" required='true' value = "{!v.lineName}"/>
+                                                        <aura:set attribute="else">
+                                                            <lightning:inputField fieldName="{!field.name}" />
+                                                        </aura:set>
+                                                    </aura:if>
+                                                    
+                                                    <!-- </aura:set>
+                                                    </aura:if> -->
+                                                </aura:set>
+                                            </aura:if>
+                                            </lightning:layoutItem>
+                                        </aura:if>
+                                        
+                                  
+                                
+                            </aura:iteration>
+                          
+                        </lightning:layout>
+                        <aura:if isTrue="{!v.isLoading}">
+                            <div aura:id="spinnerId" class="slds-spinner_container">
+                                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                                    <span class="slds-assistive-text">Loading</span>
+                                    <div class="slds-spinner__dot-a"></div>
+                                    <div class="slds-spinner__dot-b"></div>
+                                    <div class="custom-loading-text">
+                                        <b>Processing, Please Wait</b>
+                                    </div>
+                                </div>
+                            </div>
+                        </aura:if>
+                        <footer class="slds-modal__footer" style = "padding-top: 10px">
+                            <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{! c.closeModel }" />
+                            <lightning:button variant="neutral" title="Save &amp; New" label="Save &amp; New"
+                                              onclick="{!c.saveAndNew}" aura:id="saveAndNewButton" />
+                            
+                            <lightning:button aura:id="saveButton" variant="brand" type="submit" name="save" label="Save"  />
+                        </footer>
+                    
+                    </lightning:recordEditForm> 
+                    
+                </div>
+            </div>
+        </section>
+    </aura:if>
+    
+    
+</aura:component>

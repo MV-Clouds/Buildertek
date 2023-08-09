@@ -1,0 +1,71 @@
+<aura:component  controller="RFQToAccountClass" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}" access="global" /> 
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="rfiRecordDetails" type="sObject[]" />
+    <aura:attribute name="fields" type="String[]" default="['buildertek__Subject__c','buildertek__Status__c','buildertek__Question__c','buildertek__Due_Date__c']" />
+    <aura:attribute name="fields1" type="String[]" default="['buildertek__RFQ_To_Vendor__c','buildertek__RFI_Assigned_To__r.Name','buildertek__Last_Responded_By__c']" />
+    
+    
+    <table class="slds-table" style="width:800px;">
+        <tbody>
+            <aura:iteration items="{!v.rfiRecordDetails}" var="item">  
+                <tr style="padding-top:20px;">
+                    <td style="width:150px;font-size:12px;padding-left:20px;top:16px;" class="slds-form-element__label">
+                        RFQ To Vendor
+                            
+                    </td>   
+                    <td style="width:250px;padding-left:0px;top:10px;" >
+                        <div class= "slds-border_bottom slds-form-element__static" style="width:224px">
+                        <a href="javascript:void(0);" data-id="{!item.buildertek__RFQ_To_Vendor__c}"
+                                           onclick="{!c.openRecordPage}">
+                        {!item.buildertek__RFQ_To_Vendor__r.Name} 
+                             </a>
+                        </div>
+                    </td>
+                    <td style="width:150px;font-size:12px;padding-left:28px;top:16px;" class="slds-form-element__label">
+                       Last Responded By
+                    </td>   
+                    <td style="width:250px;top:10px;padding-left:10px;">
+                        <div class= "slds-border_bottom slds-form-element__static"> {!item.buildertek__Last_Responded_By__r.Name}</div>
+                    </td>
+                </tr> 
+                
+                <tr >
+                    <td style="width:150px;font-size:12px;padding-left:20px;top:10px;" class="slds-form-element__label">
+                       RFI Assigned To
+                    </td>   
+                    <td style="width:250px;padding-left:0px;top:10px;">
+                       <div class= "slds-border_bottom slds-form-element__static" style="width:224px"> {!item.buildertek__RFI_Assigned_To__r.Name}
+                           </div>
+                    </td>
+                     <td style="width:150px;font-size:12px;padding-left:30px;top:10px;" class="slds-form-element__label">
+                         Last Responded <br></br>Date
+                    </td>   
+                    <td style="width:250px;top:10px;padding-left:10px;"  >
+                        <div class= "slds-border_bottom slds-form-element__static">
+                            <ui:outputDate value="{!item.buildertek__Last_Responded_Date__c}" format="MM/DD/YYYY"/>
+                            </div>
+                    </td>
+                </tr>
+                
+            </aura:iteration>
+            
+        </tbody>
+    </table>
+    <div class="slds-var-p-*_xxx-large slds-theme_default" style="padding-left:15px;width:800px;">
+        <div class="slds-has-flexi-truncate " style="width:102%">
+            <lightning:recordForm recordId="{!v.recordId}" 
+                                  objectApiName="buildertek__RFI__c"
+                                  mode="view"
+                                  columns="2"        
+                                  fields="{!v.fields}" style="padding:80px;"/>
+             <!--<lightning:recordForm recordId="{!v.recordId}" 
+                                  objectApiName="buildertek__RFI__c"
+                                  mode="readonly"
+                                  columns="2"        
+                                  fields="{!v.fields1}" />-->
+            
+        </div>
+        
+    </div>
+</aura:component>

@@ -1,0 +1,5 @@
+<design:component >
+    <design:attribute name="fieldSetName" label="Field Set Name" default="buildertek__RFQ_Field_Set" description="API Name of the field set to use." />
+    <design:attribute name="sObjectName" label="Object Name" default="buildertek__RFQ__c" description="API Name of the Object to use. This only needs to be populated when not on a record detail page." />
+    <design:attribute name="recordTypeId" label="Record Type Id" description="Id of the record type to use for the given Object." />
+</design:component>

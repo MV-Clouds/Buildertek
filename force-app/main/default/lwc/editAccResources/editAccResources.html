@@ -1,0 +1,111 @@
+<template>
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-07" aria-modal="true" aria-describedby="modal-content-id-7" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container" style="max-width:70rem;width:70%;">
+            
+            <header class="slds-modal__header">
+              <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closePopup}>
+                  <lightning-icon icon-name="utility:close"
+                      alternative-text="close"
+                      variant="inverse"
+                      size="small" ></lightning-icon>
+                  <span class="slds-assistive-text">Close</span>
+              </button>
+              <h2 id="modal-heading-07" class="slds-text-heading_medium slds-hyphenate">Select Resources</h2>
+            </header>
+            <div  class="slds-text-align_center slds-modal__content slds-p-around_medium" id="modal-content-id-7" >
+                <!-- <div if:true={isLoadedResources} class="slds-p-around_x-large editResourceSpinner">
+                    <lightning-spinner alternative-text="Loading" class="spins" size="large" variant="brand"></lightning-spinner>
+                  </div> -->
+                <div if:true={isLoadedResources} class="slds-p-around_x-large" style="padding: 5rem;">
+                    <!-- <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert"> -->
+                        <div>
+                        <!-- <span class="slds-assistive-text">Loading</span> -->
+                        <!-- <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div> -->
+                        <div class="custom-loading-text" style="transform: rotate(-90deg);
+                        position: absolute;
+                        top: -0.5rem;
+                        left: 1rem;
+                        white-space: nowrap;
+                        font-size: 20px;">
+                                <b>Processing, Please Wait</b>
+                        </div>
+                    </div>
+                </div> 
+                <div if:false={isLoadedResources}>
+                    <div if:false={showAddContactBtn}>                        
+                        <template if:true={conList}>
+                            <div class="filterSection">                                                            
+                                <lightning-input
+                                    data-searchname = 'account'
+                                    style="width: 50%; display: inline-block; padding: 0% 1% 1% 2%;"
+                                    autocomplete="off"
+                                    name="enter-search"
+                                    type="search"
+                                    placeholder="Search Account..."
+                                    value={searchAccVal} 
+                                    onchange={serchCon}>
+                                </lightning-input>
+                            </div>
+                            <table class="slds-table slds-table_bordered slds-table_cell-buffer" style="margin-top:1rem;">
+                                <thead>
+                                    <tr class="slds-text-title_caps">
+                                        <th scope="col" style="width:22%;">
+                                            <div title=""></div>
+                                        </th>                                            
+                                        <th scope="col" style="width:50%;">
+                                            <div title="Name">Account Name</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template for:each={conList} for:item="keyValue">
+                                        <tr key={keyValue.Id}>
+                                            <td scope="col">
+                                                <div >
+                                                    <input type="radio" id={keyValue.Id} value={keyValue.Name} name="default" checked={keyValue.check} onchange={handleRadioChange} />
+                                                    <label class="slds-radio__label" for={keyValue.Name}>
+                                                    </label>
+                                                </div>
+                                            </td>
+                                            <td scope="col">
+                                                <div style="white-space: pre-wrap;">{keyValue.Name}</div>
+                                            </td>                                               
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </template>                        
+                    </div>                                                            
+                </div>
+            </div>
+
+            <div if:false={showAddContactBtn}>
+                <div if:true={showCreateContactPopup} style="padding-top: 3rem;">
+                    <lightning-record-edit-form
+                    object-api-name='Contact' onsubmit={handleConSubmit}
+                    onsuccess={handleConSuccess}
+                    >
+                    <lightning-messages> </lightning-messages>                    
+                    </lightning-record-edit-form>
+                </div>
+            </div>
+
+            <footer class="slds-modal__footer">
+              <div style="float:left;">
+                <lightning-button disabled={disablePrev} variant="brand"  label="Previous"
+                    onclick={handlePrevious}  class="next-prev_button"></lightning-button>
+                <lightning-button disabled={disableNext}  variant="brand" style="margin-left:0.5rem;"
+                    label="Next" onclick={handleNext} class="next-prev_button"></lightning-button>
+                
+              </div>
+              <div>
+                <button class="slds-button slds-button_neutral" variant="neutral" title="Close" label="Close" onclick={closePopup}>Close</button>
+                <button class="slds-button slds-button_brand" variant="brand" title="Save" label="Save" onclick={saveResource}>Save</button>                                                                                
+              </div>
+              
+           </footer>
+        </div>
+      </section>
+      <div class="slds-backdrop slds-backdrop_open"></div>
+</template>

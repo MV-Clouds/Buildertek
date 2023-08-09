@@ -1,0 +1,84 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader,forceCommunity:availableForAllPageTypes,forceCommunity:layout" 
+                controller="SubmitSovToOwnerController" access="global" >
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="Iscommunity" type="Boolean" default = "false"/>
+    <aura:attribute name="Vendorname" type="String" />
+    <aura:attribute name="communityUserId" type="String" />
+    <aura:attribute name="IsSubmitted" type="Boolean" />
+    <aura:attribute name="IsActive" type="Boolean" default = "false"/>
+    <aura:attribute name="IsCompanyApproved" type="Boolean" />
+    
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/> 
+
+    
+    <!--Custom Styles for Modal Header and Footer--> 
+    <aura:html tag="style">
+        .cuf-content {
+        padding: 0 0rem !important;
+        }
+        .slds-p-around--medium {
+        padding: 0rem !important;
+        }       
+        .slds-modal__content{
+        overflow-y:hidden !important;
+        height:unset !important;
+        max-height:unset !important;
+        }
+    </aura:html>
+    
+    
+    <aura:if isTrue="{!v.IsSubmitted}">
+        
+        <!--Modal Body-->   
+        <div class="slds-modal__content slds-p-around--x-small slds-align_absolute-center slds-size_1-of-1 slds-is-relative">
+            <form class="slds-form--stacked">
+                <h3 class="title slds-text-heading--medium" style="color:red;font-weight: bold;">This SOV Is Under Review</h3>
+            </form> 
+        </div>
+        <!--End of Modal Body--> 
+        
+     </aura:if> 
+    
+    
+      <aura:if isTrue="{!v.IsCompanyApproved}">
+        
+        <!--Modal Body-->   
+        <div class="slds-modal__content slds-p-around--x-small slds-align_absolute-center slds-size_1-of-1 slds-is-relative">
+            <form class="slds-form--stacked">
+                <h3 class="title slds-text-heading--medium" style="color:red;font-weight: bold;">This SOV Is Approved by Company, You cannot make any changes to this Record</h3>
+            </form> 
+        </div>
+        <!--End of Modal Body--> 
+        
+     </aura:if> 
+    
+    
+        
+    <aura:if isTrue="{!v.IsActive}">        
+        <!--Modal Header-->  
+        <div class="modal-header slds-modal__header slds-size_1-of-1">
+            <h4 class="title slds-text-heading--medium">Submit SOV To Owner</h4>
+        </div>
+        <!--End Modal Header-->  
+        
+        <!--Modal Body-->   
+        <div class="slds-modal__content slds-p-around--x-small slds-align_absolute-center slds-size_1-of-1 slds-is-relative">
+            <form class="slds-form--stacked">
+                Are you sure you want to Submit the SOV?
+            </form> 
+        </div>
+        <!--End of Modal Body--> 
+        
+        <!--Modal Footer-->
+        <div class="modal-footer slds-modal__footer slds-size_1-of-1">
+            <lightning:button variant="Neutral" class="slds-button" label="No" onclick="{!c.cancelSubmit}"/>
+            <lightning:button variant="Neutral" class="slds-button" label="Yes" onclick="{!c.confirmSubmit}"/>
+        </div>
+        <!--End of Modal Footer-->
+        
+    </aura:if> 
+    
+    
+    
+</aura:component>

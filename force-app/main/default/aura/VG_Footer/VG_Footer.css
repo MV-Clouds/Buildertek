@@ -1,0 +1,129 @@
+.THIS .imgstyle{
+    height: 20px;
+    border-radius: 10%;
+    width:26px;  
+    margin-left: 7%;
+}
+
+.THIS .imgheight{
+    height: 51px;
+}
+.THIS.footerContainer{
+    background-color: #304048;   
+    
+    height:100%;
+    width:100%;
+}
+.THIS .footerLogo{
+    font-size:36px;
+    font-family:Gotham-Bold;
+    text-align:center;
+    color:white;  
+    background-color: #304048;
+    padding-top: 2%;
+}
+.THIS .footercontent{
+    font-size:13px;
+    font-family:Gotham-Medium;
+    color:white;
+    text-align:center;
+    padding-top: .5%;
+}
+.THIS .footerlink{
+    width:100%;
+    display:flex;
+    padding-left: 1%;  
+    padding-top: 4%;
+    background-color: #304048;
+        padding-bottom: 1%;
+}
+.THIS .footerPrivacyLink{
+    width:50%;
+    font-size:13px;
+    font-family:Gotham-Medium;
+    color:white;
+    padding-top: 5px;
+    background-color: #304048;
+}
+.THIS .footerImage{
+    width:50%;
+    color:white;
+    padding-left: 25%;
+    background-color: #304048;
+}
+
+.THIS .footerLinkImages{
+     color: white;
+    text-decoration: none;
+    background-color: #304048;
+}
+
+
+@media screen and (max-width: 767px) {
+
+.THIS .imgstyle{
+    height: 14px;
+    border-radius: 10%;
+    width:18px;  
+    margin-left: 3%;
+}
+ .THIS.footerContainer{
+    background-color: #304048;   
+   height: 160px;
+}   
+   .THIS .footerLogo{
+    font-size:16px;
+    font-family:Gotham-Bold;
+    text-align:center;
+    color:white;  
+    padding-top: 5%;
+    margin-bottom: 2%;
+} 
+    .THIS .footercontent{
+    font-size:8px;
+    font-family:Gotham-Medium;
+    color:White;
+    text-align:center;
+    padding-top: .5%;
+}
+    .THIS .footerlink {
+    text-align: center;
+    width: 100%;
+    display: block;
+    padding-left: 1%;
+    padding-top: 10%;
+} 
+ 
+   .THIS .footerPrivacyLink {
+    width: 100%;
+    font-size: 8px;
+    font-family: Gotham-Medium;
+    color: white;
+    padding-top: 10px;
+      
+}
+.THIS .footerImage {
+    margin-top: -41px;
+    /* float: left; */
+    width: 100%;
+    color: white;
+        padding-left: 0%;}
+    
+    .THIS .imgheight{
+    height: 30px;
+}
+}
+  @media only screen 
+  and (min-device-width: 768px) 
+  and (max-device-width: 1024px) 
+  and (orientation: portrait) 
+        and (-webkit-min-device-pixel-ratio: 2) {
+        
+        .THIS .footerImage{
+                width:60%;
+                color:white;
+                padding-left: 25%;
+                background-color:#304048;
+		}
+    
+}

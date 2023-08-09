@@ -1,0 +1,87 @@
+.THIS {
+    
+}
+
+.THIS.slds-p-around_medium{
+    color: #91D5D2;
+}
+.THIS .maincontainer{
+    width:95%;
+    box-shadow: 4px 4px 8px 4px rgba(0,0,0,0.2);
+    transition: 0.3s;
+    margin: 1%;
+    background-color: white;
+}
+
+.THIS .subcontainer{
+    width:100%;
+    display:flex;
+    padding-left: 1%;
+    
+    padding-top: 1%;
+    
+}
+
+.THIS .containerMission{
+    width:50%;
+}
+.THIS .containercarousel{
+    width:50%;
+}
+.THIS .missionheader{
+    color:#334048;
+    font-family: Gotham-Bold;
+    font-size: 16px;
+}
+.THIS .missionbigheader{
+    font-family: Gotham-Medium;
+    margin-top: -8px;
+    color:#44b4c8;
+    font-size: 48px;
+}
+.THIS .missiontext{
+    color:#334048;
+    font-size: 14px;
+    font-family: Gotham-Book;
+}
+
+
+@media screen and (max-width: 768px) {
+    .THIS .containerMission {
+        width:100%;
+    }
+    .THIS .containercarousel {
+        width:100%;
+    }
+    .THIS .subcontainer{
+        width:100%;
+        display:block;
+        padding-left: 2%;
+        margin: 1%;
+        padding-top: 1%;
+        background-color: white;
+    }
+    .THIS .missionheader{
+        color:#334048;
+        font-family: Gotham-Bold;
+        font-size: 16px;
+    }
+    .THIS .missionbigheader{
+        font-family: Gotham-Medium;
+        
+        color:#44b4c8;
+        font-size: 24px;
+    }
+    .THIS .missiontext{
+        color:#334048;
+        font-size: 12px;
+        font-family: Gotham-Book;
+        
+    }
+    .THIS .slds-m-horizontal--large{
+        margin-left:0px;
+    }
+    .THIS .missionbigheader{
+        margin-top: -1px;
+    }
+}

@@ -1,0 +1,126 @@
+<aura:component Controller="BT_Lightning_Utils" >
+    
+    <!-- Attributes -->
+    <aura:attribute name="recordId" type="String"/>
+    
+    <aura:attribute name="layoutAction" type="String" default="LIST"/>
+    <aura:attribute name="filterCondition" type="String"/>
+    <aura:attribute name="sObjectName" type="String" default="Account" required="true"/>
+    <aura:attribute name="fieldSetName" type="String" default="BT_Filter_Criteria_Fields" required="true"/>
+    <aura:attribute name="fieldlist" type="List"/>
+    <aura:attribute name="sObjWrapperlist" type="List"/>
+    
+    <aura:attribute name="sectionTitle" type="string" default="Informations"/>
+    
+    <!-- handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <div class="slds">
+
+            <!-- EDIT RECORD VIEW -->
+            <aura:if isTrue="{!v.layoutAction == 'EDIT'}">
+                <div class="slds-section slds-is-open">
+                    <h3 class="slds-section__title">
+                        <span  aria-expanded="false" class="slds-button slds-section__title-action">
+                            <span class="slds-truncate" title="{!v.sectionTitle}">{!v.sectionTitle}</span>
+                        </span>
+                    </h3>
+                    <div aria-hidden="false" class="slds-section__content">
+                        <lightning:layout horizontalAlign="spread" multipleRows="true">
+                            <aura:iteration items="{!v.sObjWrapperlist}" var="objWrapper">
+                                <aura:iteration items="{!objWrapper}" var="obj" >
+                                    <lightning:layoutItem size="6" flexibility="auto" padding="around-small">
+                                        <aura:if isTrue="{!obj.fDetails.type == 'string'}">
+                                            <lightning:input label="{!obj.fDetails.label}" 
+                                                             name="{!obj.fDetails.label}" value="{!obj.fvalue}"/>
+                                        </aura:if>
+                                        <aura:if isTrue="{!obj.fDetails.type == 'textarea'}">
+                                            <lightning:textarea name="{!obj.fDetails.label}" value="{!obj.fvalue}" 
+                                                                label="{!obj.fDetails.label}" maxlength="3000" />
+                                        </aura:if>
+                                        <aura:if isTrue="{!obj.fDetails.type == 'reference'}">
+                                            <force:inputField aura:id="{!obj.fDetails.label}" value="{!obj.fvalue}"/>
+                                        </aura:if>
+                                    </lightning:layoutItem>
+                                </aura:iteration>
+                            </aura:iteration>
+                        </lightning:layout>
+                    </div>
+                </div>        
+                
+            </aura:if>
+            <!-- NEW RECORD VIEW -->
+            <aura:if isTrue="{!v.layoutAction == 'NEW'}">
+                <lightning:layout horizontalAlign="spread" multipleRows="true">
+                    {!v.layoutAction}
+                    <aura:iteration items="{!fieldlist}" var="field" >
+                        {!field.fSetMember.label}
+                        <lightning:layoutItem size="6" flexibility="auto" padding="around-small">
+                            <aura:if isTrue="{!field.fType == 'STRING'}">
+                                <lightning:input label="{!field.fLabel}" 
+                                                 name="{!field.fLabel}" value="{!field.sObjNewRecord}"/>
+                            </aura:if>
+                            <aura:if isTrue="{!field.fSetMember.type == 'textarea'}">
+                                <lightning:textarea name="{!field.fSetMember.label}" value="{!field.sObjNewRecord.fAPIName}"
+                                                    label="{!field.fSetMember.label}" maxlength="3000" />
+                            </aura:if>
+                            <aura:if isTrue="{!field.fSetMember.type == 'reference'}">
+                                <force:inputField aura:id="{!field.fSetMember.label}" value="{!field.sObjNewRecord.fAPIName}"/>
+                            </aura:if>
+                        </lightning:layoutItem>
+                    </aura:iteration>
+                    
+                </lightning:layout>
+  </aura:if>
+            
+            <aura:if isTrue="{!v.layoutAction == 'LIST'}">
+                
+                <!-- Do Something here -->
+                <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                    <thead>
+                        <tr class="slds-text-title_caps">
+                            <td>
+                                    <lightning:input type="checkbox"/>
+                            </td>
+                            <aura:iteration items="{!v.fieldlist}" var="f">
+                                <th scope="col">
+                                    <div class="slds-truncate" title="{!f.fLabel}">{!f.fLabel}</div>
+                                </th>
+                            </aura:iteration>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <aura:iteration items="{!v.sObjWrapperlist}" var="obj">
+                            <tr>
+                                <td style="width:20px">
+                                    <lightning:input type="checkbox" />
+                                </td>
+                                <aura:iteration items="{!obj}" var="obj2" >
+                                    <td>
+                                        <div class="slds-truncate" >
+                                            <aura:if isTrue="{!obj2.fDetails.type == 'string' || obj2.fDetails.type == 'picklist'}">
+                                                <ui:outputText value="{!obj2.fvalue}" />
+                                            </aura:if>
+                                            
+                                            <aura:if isTrue="{!obj2.fDetails.type == 'datetime'}">
+                                                <ui:outputDateTime value="{!obj2.fvalue}" />
+                                            </aura:if>
+                                            
+                                            <aura:if isTrue="{!obj2.fDetails.type == 'int'}">
+                                                <ui:outputNumber value="{!obj2.fvalue}" format=".00"/>
+                                            </aura:if>
+                                            
+                                            <aura:if isTrue="{!obj2.fDetails.type == 'currency'}">
+                                                <ui:outputCurrency value="{!obj2.fvalue}" format="$#,###.00"/>
+                                            </aura:if>
+                                        </div>
+                                    </td>
+                                </aura:iteration>
+                            </tr>
+                        </aura:iteration>
+                    </tbody>
+                </table>
+            </aura:if>
+
+    </div>
+</aura:component>

@@ -1,0 +1,9 @@
+<aura:component implements = "forceCommunity:availableForAllPageTypes,force:appHostable,flexipage:availableForAllPageTypes,forceCommunity:themeLayout">
+	<aura:attribute name="SharedFolderId" type="String" access="global" default="f2uu457d1q4lxivwmd0ew3iukqxxkp51"/> 
+    <!--  -->
+    <div style="overflow: hidden;border-radius: 4px;box-shadow: 1px 1px 1px 2px rgba(0,0,0,0.14);transition: 0.3s;background-color: white;" class="custom-box">
+        <div style="overflow: hidden; margin-right: -10px;">
+            <iframe class="MainIframe" src="{!'https://app.box.com/embed_widget/s/'+v.SharedFolderId+'?partner_id=219&amp;from=salesforce-lightning-v1-folder&amp;view=iconsortColumn=date&amp;sortColumn=date&amp;sortDirection=asc'}" width="100%" height="1000px;" aura:id="iframeHolder"></iframe>
+        </div>
+    </div>
+</aura:component>

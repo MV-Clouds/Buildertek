@@ -1,0 +1,10 @@
+<apex:page standardController="Schedule__c" title="Import Master Schedule" extensions="ImportSchedule_Clone" recordSetVar="s">
+    <apex:includeLightning />
+    <div id="lightning" ></div> 
+    <script>
+        var recordId = '{!JSENCODE(parentId)}';
+        
+        $Lightning.use("buildertek:BT_ImportScheduleApp", function() {$Lightning.createComponent("buildertek:BT_ImportSchedule",
+          {ParentId : recordId},"lightning",function(cmp) {});});
+    </script>
+</apex:page>

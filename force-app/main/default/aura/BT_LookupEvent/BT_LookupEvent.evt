@@ -1,0 +1,10 @@
+<aura:event type="COMPONENT" description="On record selection">
+    <aura:attribute name="childObjectName" type="String" />
+    <aura:attribute name="fieldName" type="String" />
+    <aura:attribute name="selectedRecordId" type="String" />
+    <aura:attribute name="index" type="Integer" />
+    <aura:attribute name="listOfTakeOffLines" type="Project_Takeoff_Lines__c[]" />
+    <aura:attribute name="listOfToDoItems" type="To_Do_Items__c[]" />
+    <aura:attribute name="listOfScheduleItems" type="Project_Task__c[]" />
+    <aura:attribute name="listOfSelectionSheetItems" type="Select_Sheet__c[]" />
+</aura:event>

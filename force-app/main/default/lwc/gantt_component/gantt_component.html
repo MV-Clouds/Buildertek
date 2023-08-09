@@ -1,0 +1,103 @@
+<template>
+
+     <!-- ============== toast =========== -->
+     <!-- <template if:true={error_toast}> -->
+        <!-- <c-toast-component></c-toast-component> -->
+    <!-- </template> -->
+    <!-- ============== toast =========== -->
+
+    <!-- spinner -->
+    <template if:true={spinnerDataTable}>
+        <div data-id="spinnerId" class="slds-spinner_container" style="overflow: hidden;">
+            <div class="spinner-main-div">
+                <div class="loader--ripple">
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
+        </div>
+    </template>
+    <!-- spinner -->
+
+    <!-- <template if:true={isLoading}>
+        <c-show-spinner-in-gantt-component></c-show-spinner-in-gantt-component>
+    </template> -->
+
+    <div class="container" lwc:dom="manual"></div>
+
+    <!-- pop up model for exporting schedule -->
+    <template if:true={showExportPopup}>
+        <c-gantt-c-s-v-export-component onhidemodel={hideModalBox}
+            schedule-data-to-export={scheduleItemsDataList}></c-gantt-c-s-v-export-component>
+    </template>
+
+    <template if:true={showImportPopup}>
+        <c-import-schedule-line recordid={SchedulerId} onhidemodel={hideModalBox1}
+            schedule-data-to-export={scheduleItemsDataList}></c-import-schedule-line>
+    </template>
+
+    <template if:true={showEditResourcePopup}>
+        <c-edit-resources field-api-name={selectedContactApiName} taskid={taskRecordId}
+            selected-resourceid={selectedResourceContact} oncontactselected={handlecontactSelection}
+            onclosepopuevent={closeEditPopup} onsaveres={saveSelectedContact}>
+        </c-edit-resources>
+        <!-- <div class="slds-backdrop slds-backdrop_open"></div> -->
+    </template>
+
+    <!--Added for contract-->
+    <template if:true={showContractor}>
+        <c-edit-acc-resources field-api-name={selectedContactApiName} selected-resourceid={selectedResourceAccount}
+            oncontactselected={handleaccountSelectionContractor} onclosepopuevent={closeEditPopup}
+            onsaveres={saveSelectedContact}>
+        </c-edit-acc-resources>
+    </template>
+
+    <template if:true={showpopup}>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+            aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <lightning-card title="Upload File" icon-name="custom:custom19">
+                        <!-- accept={acceptedFormats} -->
+                        <lightning-file-upload label="Attach file" name="fileUploader" record-id={fileTaskId}
+                            onuploadfinished={handleUploadFinished} multiple>
+                        </lightning-file-upload>
+                    </lightning-card>
+                </div>
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" onclick={closeUploadModal}
+                        title="Close">Close</button>
+                    <!-- <button class="slds-button slds-button_brand" onclick={submitDetails} title="OK">OK</button> -->
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+    <template if:true={showFilePopup}>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-04" aria-modal="true"
+            aria-describedby="modal-content-id-4" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                        title="Close" onclick={closeEditPopup}>
+                        <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse"
+                            size="small"></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="modal-heading-04" class="slds-text-heading_medium slds-hyphenate">Files</h2>
+                </header>
+
+                <div class="slds-text-align_center slds-modal__content slds-p-around_medium" id="modal-content-id-4">
+                    <c-preview-files rec-id-list={showFileForRecord}>
+                    </c-preview-files>
+                </div>
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" variant="neutral" title="Close" label="Close"
+                        onclick={closeEditPopup}>Close</button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>

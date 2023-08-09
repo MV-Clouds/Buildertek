@@ -1,0 +1,147 @@
+<aura:component controller="BT_QuestionnaireBuilder" access="public">
+    <aura:attribute name="selectionChoices" type="List" />
+    <aura:attribute name="questionId" type="string" />
+    <aura:attribute name="questionGroupId" type="string" />
+    <aura:attribute name="columns" type="List" description="Table column name" />
+    <aura:attribute name="responseTypeName" type="string" />
+    <aura:attribute name="parentIndex" type="string" />
+    <aura:attribute name="selectedResponsetypeValue" type="String" />
+    <aura:attribute name="responsetypeOptions" type="List" default="[]" description="response type options list" />
+    <aura:handler name="change" value="{!v.selectedResponsetypeValue}" action="{!c.onChangeTypeHandler}" />
+    <aura:attribute name="modalPromise" type="Aura.Action" />
+    <lightning:overlayLibrary aura:id="overlay" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <aura:attribute name="responseDependentTypeList" type="List" default="[]" />
+
+    <div class="" aura:id="NewSelectionChoices">
+        <label class="slds-form-element__label slds-no-flex">Selection Choices</label>
+        <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+            <thead>
+                <tr>
+                    <th scope="col" class="slds-cell-wrap" style="width: 5%;">
+                        <div class="slds-truncate" title="Action"></div>
+                    </th>
+                    <th scope="col" class="slds-cell-wrap" style="width: 1%;">
+                        <div class="slds-truncate" title="Required"></div>
+                    </th>
+                    <aura:iteration items="{!v.columns}" var="columnName">
+                        <th scope="col" class="slds-cell-wrap" style="width: 40%;">
+                            <div class="slds-truncate" title="{!columnName}">{!columnName}</div>
+                        </th>
+                    </aura:iteration>
+                    <th scope="col" class="slds-cell-wrap" style="width: 20%;">
+                        <div class="slds-truncate" title="Price">Price</div>
+                    </th>
+                    <th scope="col" class="slds-cell-wrap" style="width: 20%;">
+                        <div class="slds-truncate" title=""></div>
+                    </th>
+                    <th scope="col" class="slds-cell-wrap" style="width: 5%;">
+                        <div class="slds-truncate" title="Add"></div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <aura:iteration items="{!v.selectionChoices}" var="data" indexVar="index">
+                    <tr aura:id="rows" id="{!'row' + index}">
+                        <td data-label="Action" class="" scope="row" data-index="{!index}">
+                            <lightning:buttonIcon iconName="utility:delete" variant="bare" name="{!index}"
+                                onclick="{!c.deleteRow}" alternativeText="delete" />
+                        </td>
+                        <td data-label="Required">
+                            <div class="slds-required" style="float:left">*</div>
+                        </td>
+                        <td data-label="Column Header" class="">
+                            <lightning:input aura:id="columnHeaders" type="text" variant="label-hidden" name="{!index}"
+                                value="{!data.buildertek__Choice_Text__c}"
+                                messageWhenValueMissing="Field is required" />
+                        </td>
+                        <td data-label="Price" class="" scope="row">
+                            <ui:inputCurrency aura:id="amount" value="{!data.buildertek__Additional_Cost__c}"
+                                updateOn="keyup" />
+                        </td>
+                        <td data-label="Upload Image" class="" scope="row">
+                            <aura:if isTrue="{!not(empty(data.buildertek__Image_Id__c))}">
+                                <div style="display:inline;">
+                                    <span data-id="{!index}" data-checkId="{!data.Id}" onclick="{!c.onReuploadPhoto}">
+                                        <lightning:icon iconName="utility:edit" size="xx-small" title="Edit" />
+                                    </span>
+                                </div>
+                            </aura:if>
+                            <div>
+                                <aura:if isTrue="{!not(empty(data.buildertek__Image_Id__c))}">
+                                    <img src="{!'/sfc/servlet.shepherd/version/download/'+data.buildertek__Image_Id__c}"
+                                        width="150" height="150" data-id="{!index}" data-checkId="{!data.Id}" />
+                                </aura:if>
+                                <aura:if isTrue="{!empty(data.buildertek__Image_Id__c)}">
+                                    <lightning:fileUpload name="{!index}" title="{!data.Id}" recordId="{!data.Id}"
+                                        onuploadfinished="{!c.handleUploadFinished}" variant="label-hidden" />
+                                </aura:if>
+                            </div>
+                        </td>
+                        <td data-label="Add" data-index="{!index}">
+                            <lightning:button label="Add" name="{!index}" title="Add" variant="Brand"
+                                class="slds-m-top_x-small" onclick="{!c.addDependentResponseType}" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="5">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col">
+                                    <lightning:accordion aura:id="accordion" allowMultipleSectionsOpen="true">
+                                        <aura:iteration items="{!data.children}" var="childData" indexVar="childIndex">
+                                            <lightning:accordionSection
+                                                name="{!childData.responseTypeName==null?'New Attribute':childData.responseTypeName}"
+                                                label="{!childData.responseTypeName==null?'New Attribute':childData.responseTypeName}">
+                                                <aura:set attribute="actions">
+                                                    <lightning:buttonIcon iconName="utility:delete"
+                                                        name="{!parentIndex+'-'+index+'-'+childIndex}"
+                                                        alternativeText="delete" title="delete"
+                                                        onclick="{!c.onDeleteHandler}" />
+                                                </aura:set>
+                                                <lightning:layout verticalAlign="stretch" multipleRows="true"
+                                                    class="x-large">
+                                                    <lightning:layoutItem flexibility="auto" padding="around-small"
+                                                        size="6" class="custom-box">
+
+                                                        <lightning:input label='Attribute Name' Name='Attribute Name'
+                                                            value="{!childData.responseTypeName}" />
+                                                        <lightning:combobox aura:id="responsetype" name="{!childIndex}"
+                                                            label="Attribute Type" options="{! v.responsetypeOptions }"
+                                                            value="{!childData.selectedResponsetypeValue}"
+                                                            onchange="{! c.responsetype }" />
+                                                        <lightning:inputField aura:id="buildertek__choice_template__c"
+                                                            fieldName="buildertek__Choice_Template__c"
+                                                            class="slds-p-top_small slds-hide" />
+                                                    </lightning:layoutItem>
+
+                                                    <lightning:layoutItem aura:id="rich_table" size="12"
+                                                        padding="around-small" class="slds-hide">
+                                                        <c:BT_RichTable aura:id="rich_table_Component"
+                                                            richTableData="{!v.richTableData}" />
+                                                    </lightning:layoutItem>
+
+                                                    <lightning:layoutItem aura:id="NewSelectionChoices" size="12"
+                                                        padding="around-small" class="">
+                                                        <c:BT_NewSelectionChoices
+                                                            aura:id="NewSelectionChoices_Component1"
+                                                            selectedResponsetypeValue="{!childData.selectedResponsetypeValue}"
+                                                            selectionChoices="{!childData.selectionChoices}" />
+                                                    </lightning:layoutItem>
+                                                </lightning:layout>
+                                            </lightning:accordionSection>
+                                        </aura:iteration>
+                                    </lightning:accordion>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </aura:iteration>
+            </tbody>
+        </table>
+        <div>
+            <lightning:button label="Add New Choice" title="Add New Choice" variant="Brand" class="slds-m-top_x-small"
+                name="{!v.parentIndex}" onclick="{!c.addNewRow}" />
+        </div>
+    </div>
+</aura:component>

@@ -1,0 +1,130 @@
+<aura:component controller="ProjectScheduleDashboardController"
+    implements="force:appHostable,flexipage:availableForAllPageTypes,force:hasRecordId" access="global">
+    <ltng:require styles="{!$Resource.ResourceCss3}" />
+    <ltng:require styles="{!join(',',
+                          $Resource.FaFaFont + '/css2.css',
+                          $Resource.FaFaFont + '/datepicker.css',
+                          $Resource.Sprites + '/css/fontawesome.min.css',
+                          $Resource.FaFaFont + '/owl.carousel.css')}" scripts="{!join(',',
+                           $Resource.FaFaFont + '/bootstrap.min.js',
+                           $Resource.FaFaFont + '/bootstrap-datepicker.js',
+                           $Resource.FaFaFont + '/jquery.aCollapTable.js',
+                           $Resource.FaFaFont + '/jquery-1.12.3.mindata analysis .js',
+                           $Resource.FaFaFont + '/owl.carousel.min.js')}" />
+    <lightning:workspaceAPI aura:id="workspacetask" />
+    <aura:attribute type="String" name="isConflictview" default="Standard" />
+    <aura:attribute type="String" name="calendarView" default="Dayview" />
+    <aura:attribute name="showSpinner" type="boolean" default="false" />
+    <aura:attribute type="String" name="displayView" default="project" />
+    <!-- <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> -->
+    <aura:attribute name="type" type="String" default="info" />
+    <aura:attribute name="color" type="String" default="white" />
+    <aura:attribute name="index" type="String" default="" />
+    <aura:attribute name="contactList" type="contact[]" />
+
+    <aura:attribute type="String" name="headerDate" />
+    <aura:attribute type="String" name="ColorName1" />
+    <aura:attribute type="String" name="ColorName2" />
+    <aura:attribute name="weekDates" type="list" />
+    <aura:attribute name="beforeweekDate" type="list" />
+    <aura:attribute name="weekfirstDate" type="list" />
+    <aura:attribute name="weeklastDate" type="list" />
+    <aura:attribute name="currentDate" type="list" />
+    <aura:attribute name="nextDate" type="list" />
+    <aura:attribute name="previousDate" type="list" />
+    <aura:attribute type="String" name="weekName" default="Monday" />
+    <aura:attribute name="eventList" type="list" />
+    <aura:attribute type="boolean" name="NoSchedules" />
+
+    <aura:attribute name="currentYear" type="list" />
+    <aura:attribute name="fristMonth" type="list" />
+    <aura:attribute name="secondMonth" type="list" />
+
+
+
+    <aura:attribute name="projecttaskcontactlist" type="list" />
+    <aura:attribute name="SelectedOptions" type="list" default="[]" />
+    <aura:attribute name="childslectedOptions" type="list" default="[]" />
+    <aura:attribute name="ResslectedOptions" type="list" default="[]" />
+    <aura:attribute name="selectedLocations" type="list" />
+    <aura:attribute name="selectedContact" type="sObject" default="{}" />
+    <aura:attribute name="selectedproject" type="sObject" default="{}" />
+    <aura:attribute name="selectedTradetype" type="sObject" default="{}" />
+
+    <aura:handler name="oSelectedRecordEvent" event="c:selectedsObjectRecordEvent" action="{!c.handleComponentEvent}" />
+
+    <aura:handler event="c:ClearLookupvalueEvent" action="{!c.ClearhandleComponentEvent}" />
+
+    <aura:method name="taskdrawTable" action="{!c.taskdrawTable}" description="drawTable">
+        <aura:attribute name="index" type="String" default="" />
+    </aura:method>
+
+
+
+    <body style="font-family: 'Poppins', sans-serif;">
+        <div class="wrapper" style="background-color:white">
+            <header style="background: #1b5297;padding: 11px 20px;">
+                <div class="left-box" style="display: inline-block;vertical-align: middle;width: 25%;">
+                    <h1 style="margin: 0;color: #fff;font-size: 18px;">Project Dashboard</h1>
+
+                </div>
+                <div class="right-box"
+                    style="display: inline-block;vertical-align: middle;width: 75%;margin-left: -5px;text-align: right;background-color:white;">
+                    <div
+                        style="margin-left: -4px !important;background: #fff;border-right: 1px solid #dedede !important;padding:4px;">
+                        <div class="slds-grid slds-wrap" style="text-align: left">
+                            <div class="slds-col slds-size_2-of-12">
+                            </div>
+
+                            <div class="slds-col slds-size_3-of-12">
+                                <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon--left"
+                                    style="margin: 10px;">
+                                    <b> Project :</b>
+                                    <c:customLookup aura:id="projectId" objectAPIName="buildertek__Project__c"
+                                        IconName="standard:Contact" selectedRecord="{!v.selectedproject}" />
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-12">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="inner-wrapper-box">
+                <div class="side-detail-box" style="width: 450px;position: absolute;background-color:white">
+                    <div class="inner-header-left">
+                        <h2 style="width: 100%;text-align: center;padding: 10px 15px;font-size: 14px;">Work</h2>
+                    </div>
+                    <div class="tab-content">
+                        <div class="tab-content" id="project-div">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="task-detail-box" style="width: 100%;height: 100%;padding-left: 450px;">
+                    <div class="inner-box clearfix">
+                        <div style="width: 100%;">
+                            <table>
+                                <tr>
+                                    <td style="width:30px;text-align:center;vertical-align: top;background: #f8f8f8;">
+                                        <span aria-label="Previous" style="font-size: 30px;cursor:pointer"
+                                            onclick="{!c.previousWeek}">‹</span>
+                                    </td>
+                                    <td>
+                                        <div id="taskdata-div" style="background-color:white">
+                                        </div>
+                                    </td>
+                                    <td style="width:35px;text-align:center;vertical-align: top;background: #f8f8f8;">
+                                        <span aria-label="Next" style="font-size: 30px;cursor:pointer"
+                                            onclick="{!c.nextWeek}">›</span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</aura:component>

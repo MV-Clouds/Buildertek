@@ -1,0 +1,37 @@
+.THIS .inputText {
+    text-align: right;
+}
+.THIS .page1 {
+    position:relative;
+}
+.THIS .innertext {
+  color: #101010;
+    font-size:20px;
+    padding-top : 15px;
+    
+}
+.THIS .vertical-center {
+  margin: 0;
+  position: absolute;
+  
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+.THIS.changeStyle{
+border-color: red;
+    
+}
+.THIS .label-hidden > label {
+    display: none;
+}
+.THIS .myUniqueClass svg {
+width: .75rem;
+height: .75rem;
+fill:red;
+
+}
+.THIS .myclass {
+width : 40%;
+border-bottom: 1px solid;
+
+}

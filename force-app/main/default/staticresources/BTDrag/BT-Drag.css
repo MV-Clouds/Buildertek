@@ -1,0 +1,76 @@
+
+.av-list {
+	display: block;
+	position: relative;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.av-list .av-list {
+	padding-left: 30px;
+}
+
+.av-collapsed .av-list {
+	display: none;
+}
+
+.av-item,
+.av-empty,
+.av-placeholder {
+	display: block;
+	position: relative;
+	margin: 0;
+	padding: 0;
+	min-height: 20px;
+	font-size: 13px;
+	line-height: 20px;
+	
+}
+
+.av-placeholder {
+	background: #faffbd;
+	
+}
+
+.av-item>button {
+	display: none;
+}
+
+.av-item>button:before {
+	display: none;
+}
+
+.av-item>button[data-action="collapse"]:before {
+	content: '';
+	display: none;
+}
+
+.av-placeholder,
+.av-empty {
+	margin: 5px 0;
+	padding: 0;
+	min-height: 30px;
+	background: #f3f2f2;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-shadow: 0 0 3px #0070D2;
+}
+
+.av-empty {
+	border: none;
+	min-height: 100px;
+	background-color: #f3f2f2;
+	background-size: 60px 60px;
+	background-position: 0 0, 30px 30px;
+}
+
+.av-dragel {
+	position: absolute;
+	pointer-events: none;
+	z-index: 9999;
+}
+
+.av-dragel>.av-item .av-handle {
+	margin-top: 0;
+}

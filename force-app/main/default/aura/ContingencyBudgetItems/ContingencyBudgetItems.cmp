@@ -1,0 +1,162 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId" access="global" controller="BudgetDAO">
+    
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="budgetLineItemId" type="String" />
+    <aura:attribute name="amountToTransfer" type="String" />
+    <aura:attribute name="enteredAmount" type="String" />
+    <aura:attribute name="isContingencyItemListSelected" type="Boolean" default="false" />
+    <aura:attribute name="isContingency" type="Boolean" default="false" />
+    <aura:attribute name="isLeftToRight" type="Boolean" default="false" />
+    <aura:attribute name="isRightToLeft" type="Boolean" default="false" />
+    <aura:attribute name="selectedContingencyId" type="String" />
+    <aura:attribute name="contingencyBudgetItem" type="Object" />
+    <aura:attribute name="budgetLineItem" type="Object" />
+    <aura:attribute name="note" type="String" default="" />
+    <aura:attribute name="customModalCss" type="string" />
+    <aura:attribute name="transferFrom" type="string" />
+    <aura:attribute name="transferTo" type="string" />
+    <aura:attribute name="isAmountToTransferOpen" type="Boolean" default="false" />
+    <aura:attribute name="contingencyItemList" type="List" default="[]" />
+    <aura:attribute name="budgetItemList" type="List" default="[]" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <aura:if isTrue="{!!v.isAmountToTransferOpen}">
+        <div class="slds-grid slds-gutters">
+            <!-- Budget Line Items -->
+            <div class="slds-col slds-scrollable_y" style="height:100%;">
+                <h1>Budget Line Items</h1>
+                <div class="slds-table--header-fixed_container" style="height:450px;">
+                    <div class="slds-scrollable_y" style="height:100%;">
+                        <table class="slds-table slds-table_bordered slds-table--header-fixed">
+                            <thead>
+                                <tr>
+                                    <th style="font-size: 12px;white-space: pre-line;">Description
+                                    </th>
+                                    <th style="font-size: 12px;white-space: pre-line;">Budget Amount
+                                    </th>
+                                    <th style="font-size: 12px;white-space: pre-line;">Purchase Order
+                                    </th>
+                                    <th style="font-size: 12px;white-space: pre-line;">Budget MOD'S
+                                    </th>
+                                    <th style="font-size: 12px;white-space: pre-line;">Eligible Amount
+                                    </th>
+                                    <th style="font-size: 12px;white-space: pre-line;">Move</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.budgetItemList}" var="budgetItems" indexVar="index">
+                                    <tr>
+                                        <td>
+                                            <ui:outputURL value="{!'/one/one.app?#/sObject/'+ budgetItems.Id + '/view'}"
+                                                          target="_blank" label="{!budgetItems.Name}" />
+                                        </td>
+                                        <td>{!budgetItems.buildertek__Revised_Budget1__c}</td>
+                                        <td>{!budgetItems.buildertek__Committed_Costs1__c}</td>
+                                        <td>{!budgetItems.buildertek__Budget_Modification1__c}</td>
+                                        <td>
+                                            {!budgetItems.buildertek__Eligible_Costs1__c}
+                                        </td>
+                                        <td>
+                                            <aura:if
+                                                     isTrue="{!budgetItems.buildertek__Revised_Budget__c - budgetItems.buildertek__Committed_Costs__c > 0}">
+                                                <img src="{!$Resource.JoesNewLeftArrow}" style="width:20px;margin-right:10px;"
+                                                     onclick="{!c.onLeftClick}" data-index="{!index}" />
+                                                <img src="{!$Resource.JoesNewRightArrow}" style="width:20px"
+                                                     onclick="{!c.onRightClick}" data-index="{!index}" />
+                                                <aura:set attribute="else">
+                                                    <img src="{!$Resource.JoesNewLeftArrow}" style="width:20px"
+                                                         onclick="{!c.onLeftClick}" data-index="{!index}" />
+                                                </aura:set>
+                                            </aura:if>
+                                        </td>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- Contingency Budget Line Items -->
+            <div class="slds-col">
+                <h1>Contingency Item List</h1>
+                <div class="slds-table--header-fixed_container" style="height:450px;">
+                    <div class="slds-scrollable_y" style="height:100%;">
+                        <table class="slds-table slds-table_bordered slds-table--header-fixed">
+                            <thead>
+                                <tr>
+                                    <th style="font-size: 12px;white-space: pre-line;">Select</th>
+                                    <th style="font-size: 12px;white-space: pre-line;">Description
+                                    </th>
+                                    <th style="font-size: 12px;white-space: pre-line;">Original
+                                        Contingency
+                                        Amount</th>
+                                    <th style="font-size: 12px;white-space: pre-line;">Contingency
+                                        Remaining
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.contingencyItemList}" var="contingencyItems"
+                                                indexVar="index">
+                                    <tr>
+                                        <td>
+                                            <input type="radio" id="contingencyItems" name="contingencyItems"
+                                                   value="{!contingencyItems.buildertek__Is_Selected__c}"
+                                                   data-id='{!contingencyItems.Id}' onclick="{!c.onItemSelect}"
+                                                   data-index="{!index}" />
+                                        </td>
+                                        <td>
+                                            <ui:outputURL
+                                                          value="{!'/one/one.app?#/sObject/'+ contingencyItems.Id + '/view'}"
+                                                          target="_blank" label="{!contingencyItems.Name}" />
+                                        </td>
+                                        <td>{!contingencyItems.buildertek__Eligible_Contingency_Amount1__c}</td>
+                                        <td>{!contingencyItems.buildertek__Revised_Budget1__c}</td>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aura:if>
+    <aura:if isTrue="{!v.isAmountToTransferOpen}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="max-width: 80rem !important;min-width: 40rem !important;">
+                <div aura:id="poContainer" class="c-container">
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeModel }"
+                                              alternativeText="close" variant="bare-inverse" class="slds-modal__close" />
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Please Enter an Amount
+                            to
+                            Transfer</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <div class="slds-p-bottom_medium" >
+                            Moving money from {!v.transferFrom} to {!v.transferTo}
+                        </div>
+                        <div>
+                            Eligible Amount: &nbsp;<b><ui:outputCurrency value="{!v.amountToTransfer}"></ui:outputCurrency></b>
+                        </div>
+                        &nbsp;
+                        <div>
+                            Amount to Transfer:
+                            <ui:inputCurrency aura:id="amount" class="field label-hidden" value="{!v.enteredAmount}" />
+                        </div>
+                        <div>
+                            Notes:
+                            <lightning:textarea name="input1" value="{!v.note}" class="field label-hidden" />
+                        </div>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning:button variant="neutral" label="Cancel" title="Cancel" onclick="{! c.closeModel}" />
+                        <lightning:button variant="brand" label="Move" title="Move" onclick="{! c.moveAmount}" />
+                    </footer>
+                </div>
+            </div>
+        </section>
+    </aura:if>
+</aura:component>

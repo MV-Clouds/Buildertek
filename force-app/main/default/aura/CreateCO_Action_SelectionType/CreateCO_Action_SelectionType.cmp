@@ -1,0 +1,121 @@
+<aura:component
+	implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader"
+	access="global" controller="createCO_selectionType">
+	<!-- attributes -->
+	<aura:attribute name="myData" type="Object" />
+	<aura:attribute name="myColumns" type="List" />
+	
+	<aura:attribute name="changeOrder" type="Change_Order__c" default="{'sobjectType':'Change_Order__c',
+                                                                        'Name':'',
+                                                                        'buildertek__Due_Date__c':''}" />
+	<aura:attribute name="selectedRowList" type="object" default="" />
+	<aura:attribute name="Spinner" type="Boolean" default="false"/>
+	<aura:attribute name="COData" type="Boolean" default="false"/>
+	<aura:attribute name="Upgrade" type="Boolean" default="false"/>
+	<aura:attribute name="UpgradeBTN" type="Boolean" default="true"/>
+
+	<!-- handlers-->
+	<aura:handler name="init" value="{! this }" action="{! c.init }" />
+
+	<aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </aura:if> 
+
+	<ltng:require styles="{!$Resource.ModalPreviewCSS}" />
+	<!-- the container element determine the height of the datatable -->
+	<aura:html tag="style">
+		.container {
+			height: auto !important;
+		}
+		.slds-modal__content {
+			overflow: hidden !important;
+		}
+		.slds-modal__close {
+			display: block !important;
+		}
+		.slds-docked-form-footer {
+			bottom: auto;
+		}
+		.slds-p-around--medium {
+			padding: 0;
+		}
+		.forceChatterBasePublisher :not(.PHONE) .cuf-content {
+			padding: 0;
+		}
+		.modalBodyDiv {
+			text-align: center;
+			font-weight: 600;
+			line-height: 10rem;
+			font-size: 18px;
+		}
+	</aura:html>
+
+	<aura:if isTrue="{!v.COData}">
+		<div class="slds-modal__content">
+    	    <div class="slds slds-scope">
+    	        <header class="slds-modal__header">
+    	            <div class="" id="header" style="font-size:20px;">
+    	                Create Change Order
+    	            </div>
+    	        </header> 
+    	        <div class=" slds-p-around_medium slds-scrollable--y" id="pageTop" style="height:auto;overflow-y:auto">
+    	            <div class="slds-modal__content slds-p-around_small slds-scrollable_y" style="width:100%;height:100%;">
+    	                <div class="slds-scrollable_y" >
+    	                    <aura:if isTrue="{!v.Spinner}">
+    	                        <div aura:id="spinnerId" class="slds-spinner_container">
+    	                            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+    	                                <span class="slds-assistive-text">Loading</span>
+    	                                <div class="slds-spinner__dot-a"></div>
+    	                                <div class="slds-spinner__dot-b"></div>
+    	                            </div>
+    	                        </div>
+    	                    </aura:if>   
+    	                    <h2 style="font-size:17px;"><center>Do you want include all Options in your Change Order or just the Upgraded Options?</center></h2>
+    	                </div>
+    	            </div>
+    	        </div>
+    	        <footer role="contentinfo" class="slds-docked-form-footer fixedFooter" style="display:block;text-align:right;padding-right:5px;">
+    	            <center><button class="slds-button slds-button--brand" onclick="{!c.upgradeOption}"> Upgraded Options </button>
+    	            <button class="slds-button slds-button--brand" onclick="{!c.upgradeAllOption}" style="margin: 0 0.5rem;"> All Options </button></center>
+    	        </footer>
+    	    </div>
+    	</div>
+	</aura:if>
+
+	<aura:if isTrue="{!v.Upgrade}">
+		<div class="slds-modal__content" style="min-height: 50px">
+			<div class="slds">
+				<header class="slds-modal__header">
+					<div class="" id="header" style="font-size: 20px">
+						Create Change Order
+					</div>
+				</header>
+				<div style="max-height: 75vh;overflow:auto;" >
+					<div style="padding: 10px 10px 0px;">
+    	                <lightning:recordEditForm objectApiName="buildertek__Change_Order__c">
+    	                    <lightning:inputField fieldName="Name" value="{!v.changeOrder.Name}" required = "true"/>
+    	                    <lightning:inputField fieldName="buildertek__Due_Date__c" value="{!v.changeOrder.buildertek__Due_Date__c}" />
+    	                </lightning:recordEditForm>
+    	            </div>
+					<div style="margin: 15px 5px;">
+						<lightning:datatable columns="{! v.myColumns }" data="{! v.myData }" keyField="id" selectedRows="{!v.selectedRows}" onrowselection="{!c.updateSelectedText}"/>
+						<aura:if isTrue="{!empty(v.myData)}">
+							<div class="modalBodyDiv">No Data Found</div>
+						</aura:if>
+					</div>
+				</div>
+				<footer role="contentinfo" class="slds-docked-form-footer fixedFooter"
+					style="display: block; text-align: right; padding-right: 5px">
+					<button class="slds-button slds-button--neutral" onclick="{!c.closeModal}"> Cancel </button>
+					<button class="slds-button slds-button--brand" onclick="{!c.createRecord}" style="margin: 0 0.5rem"> Create </button>
+				</footer>
+			</div>
+		</div>
+	</aura:if>
+</aura:component>

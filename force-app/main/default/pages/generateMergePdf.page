@@ -1,0 +1,163 @@
+<apex:page controller="BT_SendEmailController" renderAs="Pdf">
+
+    <head>
+        <meta charset="UTF-8"></meta>
+        <title>Change Order</title>
+        <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet"></link>
+        <link rel="stylesheet" href="css/pixie-main.css"></link>
+    </head>
+
+    <body style="font-family: Arial, Helvetica, sans-serif;">
+
+        <apex:variable var="cnt" value="{!0}" />
+        <apex:repeat value="{!changeOdrList}" var="co">
+            <div class="wrapper-box" style="margin: 0 auto;background: #fcfcfc; {!if(cnt < 1, 'page-break-before:avoid;','page-break-before:always;')}">
+                <apex:variable var="cnt" value="{!cnt+1}" />
+                <div class="top-box" style="clear: both; overflow: hidden;padding: 22px 40px;">
+                    <div class="logo-box" style="float: left;">
+                        <c:DisplayImageInTemplate />
+                    </div>
+                    <div class="right-box" style="float: right;text-align: right;">
+                        <span style="font-size: 15px;margin-right: 5px; display: block;font-weight: normal; ">
+                            <b>CO No :</b>{!co.buildertek__CO_Number__c}</span>
+                        <span style="font-size: 15px;margin-right: 5px; display: block;color: #666;font-weight: normal; ">
+                            <b>Date : </b>&nbsp;
+                            <apex:outputText value="{0,date,dd' 'MMMMM' 'yyyy}">
+                                <apex:param value="{!today()}" />
+                            </apex:outputText>
+                        </span>
+                    </div>
+                </div>
+                <div class="middle-box" style="position: relative; background: #f1f1f1;padding: 20px 40px;clear: both;overflow: hidden;">
+                    <div class="left-box" style="float: left;width: 40%;">
+                        <h3 style="font-size: 15px;font-weight: bold;">CO From :</h3>
+                        <span style="font-size: 14px;color: #333;display: block">
+                            <apex:outputText value="{!$Organization.Name}" />
+                        </span>
+                        <span style="font-size: 14px;color: #333;display: block">{!$Organization.Street}</span>
+                        <span style="font-size: 14px;color: #333;display: block">{!$Organization.City}, {!$Organization.State}, {!$Organization.PostalCode}</span>
+                        <span style="font-size: 14px;color: #333;display: block">{!$Organization.Country}</span>
+                        <span style="font-size: 14px;color: #333;">Mobile No :
+                            <a href="tel:{!$Organization.Phone}" style="text-decoration: none;color: #006be1;font-size: 14px;padding-left: 3px;">{!$Organization.Phone}</a>
+                        </span>
+                    </div>
+
+                    <div class="right-box" style="float: right;width: 40%;">
+                        <h3 style="font-size: 15px;font-weight: bold;">CO To :</h3>
+                        <span style="font-size: 14px;color: #333;display: block; ">{!co.buildertek__Project__r.buildertek__Customer__r.Name}</span>
+                        <span style="font-size: 14px;color: #333;display: block">{!co.buildertek__Project__r.buildertek__Customer__r.billingstreet}</span>
+
+                        <apex:outputPanel rendered="{!OR(co.buildertek__Project__r.buildertek__Customer__r.billingcity != null,co.buildertek__Project__r.buildertek__Customer__r.billingstate !=null)}">
+                            <span style="font-size: 14px;color: #333;display: block">{!co.buildertek__Project__r.buildertek__Customer__r.billingcity}, {!co.buildertek__Project__r.buildertek__Customer__r.billingstate},
+                                {!co.buildertek__Project__r.buildertek__Customer__r.billingpostalcode}
+                            </span>
+                        </apex:outputPanel>
+                        <span style="font-size: 14px;color: #333;display: block">{!co.buildertek__Project__r.buildertek__Customer__r.billingCountry}</span>
+                        <span style="font-size: 14px;color: #333;display: block">Mobile No :
+                            <a href="tel:{!co.buildertek__Project__r.buildertek__Customer__r.Phone}" style="text-decoration: none;color: #006be1;font-size: 14px;padding-left: 3px;">{!co.buildertek__Project__r.buildertek__Customer__r.Phone}</a>
+                        </span>
+                    </div>
+                </div>
+
+
+                <div class="middle-box" style="position: relative; padding: 20px 40px;clear: both;overflow: hidden;">
+                    <div class="left-box" style="float: left;width: 40%;">
+                        <span style="font-size: 14px;font-weight: normal;display:block;line-height: 1.6">
+                            <b>CO Title :</b> {!co.Name} </span>
+                        <span style="font-size: 14px;font-weight: normal;display:block;line-height: 1.6">
+                            <b>CO # :</b> {!co.CO_Number__c} </span>
+                        <span style="font-size: 14px;font-weight: normal;display:block;line-height: 1.6">
+                            <b>CO Amount :</b>
+                            <apex:outputField value=" {!co.Total_Amount_Tax__c}" /> </span>
+                    </div>
+
+
+
+                    <div class="right-box" style="float: right;width: 40%;">
+                        <span style="font-size: 14px;font-weight: normal;display:block;line-height: 1.6">
+                            <b>Project Name :</b> {!co.buildertek__Project__r.Name} </span>
+                        <span style="font-size: 14px;font-weight: normal;display:block;line-height: 1.6">
+                            <b>Status :</b> {!co.Status__c} </span>
+
+                    </div>
+                </div>
+
+
+                <table style="width: 100%;text-align: left;border-spacing: 0;">
+                    <thead style="background: #ddd;">
+                        <tr>
+                            <th style="font-size: 15px;border-bottom: 1px solid #ccc; border-right: 1px solid #ccc;padding: 5px 15px;">Name</th>
+                            <th style="font-size: 15px;border-bottom: 1px solid #ccc; border-right: 1px solid #ccc;padding: 5px 15px;">Description</th>
+                            <th style="font-size: 15px;border-bottom: 1px solid #ccc; border-right: 1px solid #ccc;padding: 5px 15px;">Quantity</th>
+                            <th style="font-size: 15px;border-bottom: 1px solid #ccc; border-right: 1px solid #ccc;padding: 5px 15px;text-align: right">Price</th>
+                            <th style="font-size: 15px;border-bottom: 1px solid #ccc; border-right: 1px solid #ccc;padding: 5px 15px;text-align: right">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <apex:repeat value="{!co.Change_Order_Items__r}" var="ChangeOrderItem">
+                            <tr style="line-height: 1.6;">
+                                <td style="font-size: 14px;padding: 5px 15px;color:black;text-align: left;border-bottom:  1px solid  #ccc;border-right:  1px solid  #ccc;">
+                                    <apex:outputField value="{!ChangeOrderItem.Name}" />
+                                </td>
+                                <td style="font-size: 14px;padding: 5px 15px;color:black;text-align: left;border-bottom:  1px solid  #ccc;border-right:  1px solid  #ccc;">
+                                    <apex:outputField value="{!ChangeOrderItem.Description__c}" />
+                                </td>
+                                <td style="font-size: 14px;padding: 5px 15px;color:black;text-align: left;border-bottom:  1px solid  #ccc;border-right:  1px solid  #ccc;">{!ChangeOrderItem.Quantity__c}</td>
+                                <td style="font-size: 14px;padding: 5px 15px;color:black;text-align: right;border-bottom:  1px solid  #ccc;border-right:  1px solid  #ccc;">
+                                    <apex:outputField value="{!ChangeOrderItem.Unit_Sales_Price__c}" />
+                                </td>
+                                <td style="font-size: 14px;padding: 5px 15px;color:black;text-align: right;border-bottom:  1px solid  #ccc;border-right:  1px solid  #ccc;">
+                                    <apex:outputField value="{!ChangeOrderItem.Total__c}" />
+                                </td>
+                            </tr>
+                        </apex:repeat>
+
+                        <tr>
+                            <td colspan="4" style="font-size: 15px;padding: 5px 15px;font-weight: bold;text-align: right;color:black;border-bottom:  1px solid  #ccc;border-right:1px solid #ccc;">Subtotal :</td>
+                            <td style="font-size: 14px;padding: 5px 15px;text-align: right;color:black;border-bottom:1px solid #ccc;border-right: 1px solid  #ccc;">
+                                <apex:outputField value="{!co.Total_Amount__c}" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" style="font-size: 15px;padding: 5px 15px;font-weight: bold;text-align: right;color:black;border-bottom:  1px solid  #ccc;border-right:  1px solid  #ccc;">Tax % :</td>
+                            <td style="font-size: 14px;padding: 5px 15px;text-align: right;color:black;border-bottom:  1px solid  #ccc;border-right:  1px solid  #ccc;">
+                                <apex:outputField value="{!co.Tax_Rate__c}" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" style="font-size: 15px;padding: 5px 15px;font-weight: bold;text-align: right;color:black;border-bottom:  1px solid  #ccc;border-right:  1px solid  #ccc;">Total :</td>
+                            <td style="font-size: 14px;padding: 5px 15px;text-align: right;background: #7fb601;color: #fff;font-weight: bold;border-bottom:  1px solid  #ccc;border-right:  1px solid  #ccc;">
+                                <apex:outputField value="{!co.Total_Amount_Tax__c}" />
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+                <div style="padding: 30px 20px 20px;">
+                    <h3 style="font-size: 15px;">
+                        <b>ChangeOrder Terms and Conditions:</b>
+                    </h3>
+                    <ul class="terms-box">
+                        <li style="font-size: 14px;margin-bottom: 10px;color: #515151;">
+                            Payments are accepted only through account payee DD or Cheque, Credit Card, internet banking, online transfer or any other
+                            payment option communicated by the company. Charges for all services are payable in advance i.e.
+                            prior to the beginning of each service period.
+                        </li>
+                        <li style="font-size: 14px;margin-bottom: 10px;color: #515151;">By paying the ChangeOrder, Customer/Subscriber acknowledges that the nature of the service furnished
+                            and the rates and charges have been communicated to him and the same are accepted by the Customer.
+                            Customer/Subscriber is aware that the company prospectively, at its sole discretion, may change
+                            the specified rates and charges from time to time.</li>
+                    </ul>
+                </div>
+                <div style="padding: 0 20px">
+                    <h4 style="font-size: 14px;margin-bottom: 10px;font-weight:normal">Sincerely,</h4>
+                    <span style="font-size: 14px;font-weight: bold;padding-left: 2px;display: block;">{!$Organization.Name}</span>
+                    <span style="font-size: 14px;font-weight: bold;padding-left: 2px;display: block;"> {!$Organization.Street}</span>
+                    <span style="font-size: 14px;font-weight: bold;padding-left: 2px;display: block;">{!$Organization.City}, {!$Organization.State}. {!$Organization.PostalCode}</span>
+                    <span style="font-size: 14px;font-weight: bold;padding-left: 2px;display: block;">{!$Organization.Phone}</span>
+                </div>
+
+            </div>
+        </apex:repeat>
+    </body>
+</apex:page>

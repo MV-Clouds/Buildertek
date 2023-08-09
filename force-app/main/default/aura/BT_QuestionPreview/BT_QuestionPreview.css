@@ -1,0 +1,97 @@
+.THIS .horizontal_radio .slds-radio{
+    float: left;
+    margin-top: 0px;
+}
+
+.THIS .slds-modal__content{
+    overflow: initial;
+}
+
+.THIS .slds-form-element__control{
+    padding:0px !important;
+}
+.THIS .forceContentFileCard{
+    width: 34rem!important;
+}
+
+.THIS .marginBottom{
+    margin-bottom: 10px;
+}
+.THIS .slds-image_card .slds-image--card .slds-file_card .slds-file--card{
+    background:transparent;
+}
+.THIS .radio {
+	margin-top: 0px !important;
+}
+.THIS .slds-table th .slds-table td {
+    position: relative !important;
+}
+
+.THIS .slds-table th .slds-table td {
+    white-space: normal !important;
+    position: relative !important;
+}
+.THIS .horizontal_radio {
+    width:80% !important;
+}
+
+.THIS .horizontal_checkbox {
+    width:80% !important;
+    
+}
+.THIS .slds-truncate{
+    white-space: normal !important;
+}
+.THIS .checkbox {
+	margin-top: 0px !important;
+}
+
+.THIS .horizontal_checkbox .slds-checkbox{
+    float: left;
+}
+
+.THIS .avQuestionInput {
+	line-height: 10px;
+	width:30%;
+} 
+
+.THIS .avQuestionInput .slds-radio .slds-form-element__label {
+	padding-left: 7px;
+}
+
+.THIS .avQuestionInput .slds-required{
+    display:none;
+}
+
+.THIS .slds-file__title_card{
+    display:none;
+}
+.THIS .sldsmodalcontainer{
+    min-width: 55rem;
+    max-width: 75rem;
+}
+
+.THIS .accordion_edit{
+  visibility:hidden;
+    float:right;
+}
+
+.THIS .fileUpload{
+    display: none;
+}
+.THIS .mt30{
+    margin-top:30px;
+}
+
+.THIS .nolabel .slds-form-element__label{
+    display: none; 
+    visibility: hidden;
+}
+
+.THIS .slds-carousel__content{
+    display: none; 
+    visibility: hidden;
+}
+
+.THIS .tr:hover {background-color:#f5f5f5;}
+.THIS .td:hover {background-color:#f5f5f5;}

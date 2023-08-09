@@ -1,0 +1,604 @@
+<apex:page controller="ConfirmationController" action="{!createconfirmationPage}" standardStylesheets="false" applyHtmlTag="false"
+    applyBodyTag="false" showHeader="false" cache="false">
+
+    <apex:slds />
+    <c:BT_JsAndCssIncludeComponent importJquery="true" importAppurinUtil="true" importJQueryLayout="true" importFancyTree="false"
+        importJqGrid="false" importEasyTooltip="true" importAppurinCss="true" importCkEditor="false" importGnattChart="false"
+        importLightningDesign="true" />
+
+
+    <style>
+        .hideListButton {
+            float: left;
+        }
+
+        .showListButton {
+            float: left;
+        }
+
+        .bPageBlock {
+            border-top: unset;
+        }
+
+        .pbHeader {
+            display: none;
+        }
+
+        .helpOrb {
+            display: none;
+        }
+
+        .custom-loading-text {
+            transform: rotate(-90deg);
+            position: absolute;
+            top: -0.5rem;
+            left: 1rem;
+            white-space: nowrap;
+            font-size: 20px;
+        }
+
+        .slds-spinner_container{
+            position: fixed !important;
+        }
+
+        ul{
+            margin-top: 1% !important;
+        }
+
+        li{
+            list-style: disc;
+            margin-left: 2% !important;
+        }
+    </style>
+    <script>
+        function scrolldown() {
+            //alert('hiii');
+            //document.getElementById('footer').scrollIntoView();
+            //window.onload = document.getElementById('footer').scrollIntoView(true);
+            window.scrollTo(0, 2800);
+        }
+        function scrollup() {
+            //alert('hiii');
+            //document.getElementById('footer').scrollIntoView();
+            //window.onload = document.getElementById('footer').scrollIntoView(true);
+            window.scrollTo(0, 0);
+        }
+        function openPopupForQuotelines() {
+
+            document.getElementById("tstpopup5").className =
+                document.getElementById("tstpopup5").className.replace(/(?:^|\s)slds-fade-in-closed(?!\S)/g, ' slds-fade-in-open')
+
+            return true;
+        }
+
+
+        function closePopupForQuotelines() {
+            displayquotelinesdata();
+            window.location.reload();
+            document.getElementById("tstpopup5").className =
+                document.getElementById("tstpopup5").className.replace(/(?:^|\s)slds-fade-in-open(?!\S)/g, ' slds-fade-in-closed')
+            return true;
+        }
+
+        $('#tstpopup5').dialog({
+            autoOpen: false,
+            modal: false
+        });
+
+        function displayquotelinedata() {
+            displayquotelinesdata();
+        }
+
+        function updateQuotelinestatus() {
+            updateQuotelinestatus();
+        }
+    </script>
+    <script>
+
+        function reloadPage() {
+            // const x ='{!RejectResult}';
+            //     if(x == 'Accepted' || x == 'Rejected'){
+            //       document.getElementById('acceptrejectid').style.display = "block";
+            // }else{
+            //     displayquotelinesdata();
+            //     window.location.reload();
+            // }
+
+        }
+        function closeModal() {
+            ClosePopup();
+        }
+    </script>
+
+    <div class="slds-scope">
+        <div id="spinner" class="slds-spinner_container" >
+
+            <div class="slds-spinner--brand slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                    <b>Processing, Please Wait</b>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('spinner').className += ' slds-hide';
+    </script>
+
+    <apex:outputPanel rendered="{!isAccepted}" id="acceptquote">
+        <div style='text-align: center;padding:20px;font-size:20px;'>
+        <h1 class="slds-text-heading--medium" style="font-size: 20px;text-align:center;background-color: Green;color: white;">
+            {!quoteMessage} </h1>
+        </div>
+    </apex:outputPanel>
+    <apex:form id="frmid">
+        <apex:actionFunction name="displayquotelinesdata" action="{!displayQuotelinerecords}" rerender="tstpopup5">
+        </apex:actionFunction>
+        <image src="{!URLFOR($Resource.buildertek__ScrollDown)}" style="float:right; height: 50px" onclick="scrolldown()" />
+        <!-- <apex:actionFunction name="updateQuotelinestatus" action="{!updateQuotelinestatus}" rerender="tstpopup5" oncomplete="reloadPage()" >
+        </apex:actionFunction> -->
+        <div class="slds">
+            <div aria-hidden="true" role="dialog" class="slds-modal slds-modal--large slds-fade-in-closed slds-modal-backdrop slds-modal-backdrop--closed "
+                id="tstpopup5">
+                <apex:outputPanel rendered="{!isAccepted}" id="acceptquote">
+                </apex:outputPanel>
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Quote Lines</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <apex:outputPanel id="outId">
+                            <div class="slds-scrollable_x">
+                                <table class="slds-table slds-table_bordered slds-table_cell-buffer" style="border:1px solid grey;border-radius: 5px;">
+                                    <thead style="border:1px solid rgb(216, 237, 255);">
+                                        <tr class="slds-text-title_caps">
+                                            <th scope="col" style="background-color:grey; color:white;border-right: 1px solid grey;width: 3.5rem;">
+                                                <div class="slds-truncate" title="">Accept</div>
+                                            </th>
+                                            <th scope="col" style="background-color:grey; color:white;border-right: 1px solid grey;width: 3.5rem;">
+                                                <div class="slds-truncate" title="">Reject</div>
+                                            </th>
+                                            <th scope="col" style="background-color:grey; color:white;border-right: 1px solid grey;">
+                                                <div class="slds-truncate" title="Product Description">Product Description </div>
+                                            </th>
+                                            <th scope="col" style="background-color:grey; color:white;border-right: 1px solid grey;">
+                                                <div class="slds-truncate" title="Total List price">Total List Price</div>
+                                            </th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        <apex:repeat value="{!wraplst}" var="items">
+                                            <tr>
+
+                                                <td style="color:white;text-align: left;border-bottom:  1px solid  #ccc;border-right:  1px solid  #ccc;background-color:rgb(27 82 151);">
+                                                </td>
+                                                <td style="color:white;text-align: left;border-bottom:  1px solid  #ccc;border-right:  1px solid  #ccc;background-color:rgb(27 82 151);">
+                                                </td>
+                                                <td style="color:white;text-align: left;border-bottom:  1px solid  #ccc;border-right:  1px solid  #ccc;background-color:rgb(27 82 151);">
+                                                    <apex:outputText value="{!items.groupName}" />
+                                                </td>
+                                                <td style="color:white;text-align: right;border-bottom:  1px solid  #ccc;border-right:  1px solid  #ccc;background-color:rgb(27 82 151);">
+                                                    <!--  <apex:outputText value="{0, number, $###,###,###,##0.00}">
+                                                        <apex:param value="{!items.listTotal}" />
+                                                    </apex:outputText> -->
+                                                </td>
+                                            </tr>
+                                            <apex:repeat value="{!items.warapperrec}" var="item">
+                                                <tr class="slds-hint-parent" style="border-top: 1px solid #dddbda;border-bottom: 1px solid #dddbda;">
+
+
+                                                    <td scope="row" data-label="Name" style="border-right: 1px solid grey;text-align:center">
+
+                                                        <apex:inputCheckbox value="{!item.isApproved}">
+                                                            <apex:actionSupport event="onclick" action="{!UnCheckSelectAll}" rerender="outId">
+
+                                                            </apex:actionSupport>
+                                                        </apex:inputCheckbox>
+                                                    </td>
+
+                                                    <td scope="row" data-label="Name" style="border-right: 1px solid grey;text-align:center">
+                                                        <apex:inputCheckbox value="{!item.isRejected}">
+                                                            <apex:actionSupport event="onclick" action="{!RjectUnCheckSelectAll}" rerender="outId">
+
+                                                            </apex:actionSupport>
+                                                        </apex:inputCheckbox>
+                                                    </td>
+
+                                                    <td scope="row" data-label="Name" style="border-right: 1px solid grey;">
+                                                        <div class="slds-truncate">
+                                                            <apex:outputText value="{!item.Qlinerec.Name}" />
+                                                        </div>
+                                                    </td>
+                                                    <td scope="row" data-label=" " style="border-right: 1px solid grey;">
+                                                        <div class="slds-truncate">
+                                                            <apex:outputText value="{0, number, $###,###,###,##0.00}">
+                                                                <apex:param value="{!item.Qlinerec.Net_Total_Price__c}" />
+                                                            </apex:outputText>
+                                                        </div>
+                                                    </td>
+
+                                                </tr>
+                                            </apex:repeat>
+                                        </apex:repeat>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </apex:outputPanel>
+                    </div>
+                    <footer class="slds-modal__footer" id="footer">
+                        <center>
+                            <div id="acceptrejectid" class="validErrormsg" style="color:red;font-size:18px; display: none;">
+                                You cannot change the status of this Quote Line as the Quote has already been {!RejectResult}.  Please contact us with any questions.</div>
+                        </center>
+                        <br/>
+                        <!--<apex:commandbutton value="Save" action="{!updateQuotelinestatus}" style="padding-left: 1rem;padding-right: 1rem;text-align: center;vertical-align: middle;background-color: #0070d2;border: 1px solid #0070d2;color:white"
+                                            styleclass="slds-button slds-button_brand" oncomplete="reloadPage()" rerender="frmid" status="status"
+                        />-->
+                        <apex:commandbutton value="Save" onclick="saveacceptRejectlines();"  style="padding-left: 1rem;padding-right: 1rem;text-align: center;vertical-align: middle;background-color: #0070d2;border: 1px solid #0070d2;color:white"
+                                            styleclass="slds-button slds-button_brand" oncomplete="reloadPage()" status="status"
+                        />
+                        <button type="button" Class="slds-button slds-button--neutral" onclick="closePopupForQuotelines()" immediate="true" html-formnovalidate="formnovalidate">Close</button>
+
+                    </footer>
+                </div>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </div>
+        </div>
+
+
+        <div class="slds-scope" style="width:80%;margin: 0 auto;padding: 50px;">
+            <apex:actionStatus id="status">
+                <apex:facet name="start">
+                    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.25; z-index: 1000; background-color: black;">
+
+                    </div>
+                    <center>
+                        <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 15% 50%">
+                            <div style="display: inline-block; padding: 2px; background-color: #fff; width: 125px;">
+                                <img src="/img/Spinnerforstatus.gif" style="float: left; margin: 8px;" />
+                                <span style="display: inline-block; padding: 10px 0px;">Please Wait...</span>
+                            </div>
+                        </div>
+
+                    </center>
+                </apex:facet>
+            </apex:actionStatus>
+            <div style="margin-bottom:20px;">
+                <!-- <span>
+                    <img src="{!$Resource.buildertek__Company_Logo}" width="20%" height="15%"/>
+                </span> -->
+
+                <apex:outputPanel rendered="{!If(objectAPIName =='buildertek__Quote__c',true,false)}">
+                    <apex:outputPanel rendered="{!!customSignature}">
+                        <!--  <apex:outputPanel rendered="{!If(Checkcustomerview =='customerview',true,false)}"> -->
+                            <apex:outputPanel rendered="{!IF(reject_Quote_on_Rejected_Lines  == false, true, false)}">
+                                <button type="button" style="float:right" class="slds-button slds-button_brand" onclick="openPopupForQuotelines()" status="status">
+                                    Accept/Reject Lines </button>
+                            </apex:outputPanel>
+                    </apex:outputPanel>
+                </apex:outputPanel>
+                <!--  </apex:outputPanel> -->
+            </div>
+            <br/>
+            <apex:outputPanel rendered="{!!customSignature}">
+                <div>
+                    <div class="slds-box">
+                        <div class="slds-col slds-size_12-of-12">
+
+                            <!--<apex:actionFunction name="loadData" action="{!createPDF}" /> -->
+                            <apex:outputText value="{!strBody}" escape="false" />
+                            <br/>
+                            <div class="slds-grid--pull-padded slds-p-horizontal--small">
+                                <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1">
+                                    <div class="slds-form slds-form_horizontal">
+                                        <div class="">
+                                            <div class="slds-form-element__control">
+                                                <!-- <span style="font-weight:bold;color: #444444;">SIGNATURE(Not Required)</span> -->
+                                                <label class="slds-form-element__label" style="font-weight:bold;color: #444444;"> SIGNATURE</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1">
+                                    <div class="">
+                                        <div class="slds-form-element__control">
+
+                                            <div id="signature-pad">
+                                                <canvas style="border:1px solid lightgray;width:100%;height:100%;margin-top:10px;" id="demo"></canvas>
+                                                <!-- <canvas id="demo" style="touch-action: none;margin: 0px;"></canvas>
+                                                <canvas id="emptycanvas" style="touch-action: none;margin: 0px;display:none"></canvas> -->
+
+                                                <div style="float:right;margin-right:18px;" onclick="clearsignaturePad()">
+                                                    <a href="#" style="text-decoration:none;" id="btnClear">Clear Signature</a>
+                                                </div>
+                                                <script src="{!URLFOR($Resource.signatureForSF1,'signature/js/signature_pad.js')}"></script>
+                                                <script src="{!URLFOR($Resource.signatureForSF1,'signature/js/app.js')}"></script>
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <br/>
+                            <center>
+                                <div id="signid" class="validErrormsg" style="color:red;font-size:18px; display: none;">Please sign &amp; click the Accept </div>
+                                <div id="rejectId" class="validErrormsg" style="color:red;font-size:18px; display: none;">Please sign &amp; click the Reject </div>
+                            </center>
+
+                            <br/>
+                            <br/>
+
+                        </div>
+                    </div>
+                    <br/>
+                <center>
+                       <div id="acceptid" class="validErrormsg" style="color:red;font-size:18px; display: none;">
+                       You have already Accepted/Rejected this Quote. Please contact your Sales Representative for assistance. </div>
+                       <!--<div id="acceptid" class="validErrormsg" style="color:red;font-size:18px; display: none;">
+                       This Quote has already been Accepted, please contact your Sales Representative with any questions. </div>-->
+                        </center>
+                        <br/>
+                    <div style="height: 180px;">
+                        <center>
+                            <apex:outputPanel rendered="{!If(Checkcustomerview =='customerview',true,false)}">
+                                <button type="button" class="slds-button slds-button_neutral" onclick="testGetFocusedSubtabId();return false">Close</button>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!If(Checkcustomerview !='customerview',true,false)}">
+                                <button type="button" class="slds-button slds-button_neutral" onclick="closeWindow();">Close</button>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!If(isOrderLien == false,true,false)}">
+                                <button type="button" class="slds-button slds-button_destructive" onclick="showRejectPopup();" style="margin-left:0.25rem;"
+                                    status="status"> Reject </button>
+                            </apex:outputPanel>
+
+                            <apex:outputPanel rendered="{!IF(reject_Quote_on_Rejected_Lines == true, true, false)}">
+                                <button type="button" class="slds-button slds-button_brand" onclick="saveImage();" status="status" style="{!IF(allQuoteLineAccepted, '', 'display:none;')}"> Accept </button>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!IF(reject_Quote_on_Rejected_Lines  == false, true, false)}">
+                                <button type="button" class="slds-button slds-button_brand" onclick="saveImage();" status="status"> Accept </button>
+                            </apex:outputPanel>
+
+                        </center>
+                    </div>
+                </div>
+            </apex:outputPanel>
+            <apex:outputPanel id="rejectionPopup" rendered="{! IF(displayPopup == true, true, false) }">
+                <div role="dialog" tabindex="-1" aria-labelledby="header43" class="slds-modal slds-fade-in-open slds-modal--medium">
+                    <div class="modal-container slds-modal__container">
+                        <div class="slds-modal__header">
+                            <button class="slds-button slds-modal__close slds-button--icon-inverse" title="Close">
+                            </button>
+                            <h2 id="header43" class="slds-text-heading--medium">Rejection Reason</h2>
+                        </div>
+                        <div class="slds-modal__content slds-p-around--medium">
+                            <apex:inputTextarea id="rejectionreasonId" label="Enter rejection reason" html-placeholder="Enter reason" styleClass="slds-textarea textareaStyleClass"
+                                value="{!rejectionReason}" required="true">Enter Rejection Reason</apex:inputTextarea>
+                        </div>
+                        <div class="slds-modal__footer">
+                            <button type="button" class="slds-button slds-button_neutral" onclick="closeRejectPopup();" status="status"> Cancel </button>
+                            <button type="button" class="slds-button slds-button_brand" onclick="saveRejectPopup();" status="status"> Reject </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-backdrop slds-backdrop--open"></div>
+            </apex:outputPanel>
+            <apex:outputPanel rendered="{!customSignature}">
+                <div class="slds banerwidth">
+                    <div>
+                        <div class="slds-grid ">
+                            <div class="slds-col">
+                                <div class="slds-media">
+                                    <div class="slds-media__body">
+                                        <p class="slds-text-heading--label"></p>
+                                        <apex:outputPanel rendered="{! IF(orderRejected==true, false, true) }">
+                                            <center>
+                                                <h1 class="slds-text-heading--medium" style="font-size: 20px;text-align:center;background-color: Green;color: white;">You have successfully signed and accepted your Quote. Thank you for your business.</h1>
+                                            </center>
+                                        </apex:outputPanel>
+                                        <apex:outputPanel rendered="{!IF(orderRejected==true, true, false)}">
+                                            <center>
+                                                <h1 class="slds-text-heading--medium" style="font-size: 18px;text-align:center;background-color: #c23934;color: white;">You have rejected this Quote. Thank-you for your reply.</h1>
+                                            </center>
+                                        </apex:outputPanel>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <br/>
+                    <center>
+                        <apex:outputPanel rendered="{!If(Checkcustomerview =='customerview',true,false)}">
+                            <button type="button" class="slds-button slds-button_neutral" onclick="testGetFocusedSubtabId();return false">Close</button>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!If(Checkcustomerview !='customerview',true,false)}">
+                            <button type="button" class="slds-button slds-button_neutral" onclick="window.close();">Close</button>
+                        </apex:outputPanel>
+
+                    </center>
+                </div>
+            </apex:outputPanel>
+
+        </div>
+        <image src="{!URLFOR($Resource.buildertek__ScrollUp)}" style="float:right;height: 50px" onclick="scrollup()" />
+        <apex:includeScript value="/support/console/49.0/integration.js" />
+        <script type="text/javascript">
+            function testGetFocusedSubtabId() {
+                sforce.console.getFocusedSubtabId(showTabId);
+            }
+            var showTabId = function showTabId(result) {
+                //Display the tab ID
+                // alert('Tab ID: ' + result.id);
+                var tabId = result.id;
+                sforce.console.closeTab(tabId);
+            };
+        </script>
+        <script>
+            var canvas = document.getElementById("demo");
+            var context = canvas.getContext("2d");
+            var mouseButton = 0;
+            var lastX = lastY = null;
+
+            setTimeout(function() {
+                context.fillStyle = '#fff';
+                context.fillRect(0, 0, canvas.width, canvas.height);
+            }, 1000);
+
+            function showRejectPopup() {
+            const x ='{!Result}';
+               if(x == 'Accepted'){
+                  document.getElementById('acceptid').style.display = "block";
+                }
+                 else{
+                    if (signaturePad.isEmpty()) {
+                        document.getElementById('rejectId').style.display = "block";
+                    } else {
+                        //Start :: BUIL-3389 -
+                        document.getElementById('spinner').className -= ' slds-hide';
+                        document.getElementById('spinner').className += ' slds-spinner_container';
+                        //End:: BUIL-3389 -
+                        var image = canvas.toDataURL().split(',')[1];
+                        document.getElementById('rejectId').style.display = "none";
+                        callRejectPopup(image);
+                    }
+                }
+                return;
+            }
+
+            function closeWindow() {
+                self.close();
+            }
+
+            function saveRejectPopup() {
+                var rejectionReason = document.getElementsByClassName("textareaStyleClass")[0].value;
+                if (rejectionReason) {
+                        //Start :: BUIL-3389 -
+                        document.getElementById('spinner').className -= ' slds-hide';
+                        document.getElementById('spinner').className += ' slds-spinner_container';
+                        //End:: BUIL-3389 -
+
+                    saveRejectionReasonPopup();
+                } else {
+                       alert('Please enter rejection reason');
+                }
+            }
+            function saveacceptRejectlines() {
+                document.getElementById('spinner').className -= ' slds-hide';
+                document.getElementById('spinner').className += ' slds-spinner_container';
+
+                const x ='{!RejectResult}';
+                if(x == 'Accepted' || x == 'Rejected'){
+                    document.getElementById('acceptrejectid').style.display = "block";
+                }else{
+                    saveacceptandRejectlines();
+                }
+
+                setTimeout(
+                    function(){
+                        window.location.reload();
+                        // document.getElementById('spinner').className += ' slds-hide';
+                     }, 5000
+                );
+
+                return;
+            }
+
+            function closeRejectPopup() {
+                window.location.reload()
+                closeRejectReasonPopup();
+            }
+
+            function saveImage() {
+             const x ='{!Result}';
+               if(x == 'Accepted'){
+                  document.getElementById('acceptid').style.display = "block";
+                }else{
+                if (signaturePad.isEmpty()) {
+                    document.getElementById('signid').style.display = "block";
+                } else {
+                    //Start :: BUIL-3389 -
+                    document.getElementById('spinner').className -= ' slds-hide';
+                    document.getElementById('spinner').className += ' slds-spinner_container';
+                    //End:: BUIL-3389 -
+
+                    var image = canvas.toDataURL().split(',')[1];
+                    document.getElementById('signid').style.display = "none";
+                    callSaveSigMethod(image);
+
+                }
+                }
+                return;
+            }
+
+            function createAttachment() {
+                //Start :: BUIL-3389 -
+                document.getElementById('spinner').className += ' slds-hide';
+                //End:: BUIL-3389 -
+                insertAttachment();
+            }
+            function hideSpinner(){
+                //Start :: BUIL-3389 -
+                document.getElementById('spinner').className += ' slds-hide';
+                //End:: BUIL-3389 -
+            }
+
+
+        </script>
+        <apex:actionFunction name="callSaveSigMethod" action="{!uploadSignature}" oncomplete="createAttachment()" rerender="frmid">
+            <apex:param name="imageValue" assignTo="{!imageContent}" value="" />
+        </apex:actionFunction>
+        <apex:actionFunction name="insertAttachment" action="{!insertAttachment}" rerender="frmid">
+        </apex:actionFunction>
+
+        <apex:actionFunction name="callRejectPopup" action="{!showRejectReasonPopup}" rerender="frmid,rejectionPopup" oncomplete="hideSpinner()">
+            <apex:param name="imageValue" assignTo="{!imageContentforReject}" value="" />
+        </apex:actionFunction>
+        <apex:actionFunction name="saveRejectionReasonPopup" action="{!saveRejectionReason}" rerender="frmid,rejectionPopup" oncomplete="hideSpinner()">
+        </apex:actionFunction>
+        <apex:actionFunction name="saveacceptandRejectlines" action="{!updateQuotelinestatus}" rerender="frmid">
+        </apex:actionFunction>
+
+        <apex:actionFunction name="closeRejectReasonPopup" action="{!closeRejectReason}" rerender="frmid,rejectionPopup" oncomplete="window.location.reload()">
+        </apex:actionFunction>
+
+        <apex:actionFunction name="callPDFGenerator" action="{!generatePDF}" rerender="frmid" oncomplete="Returnpage()">
+        </apex:actionFunction>
+
+
+
+        <script>
+            function callPDFPage() {
+                callPDFGenerator();
+            }
+        </script>
+
+        <apex:outputPanel id="oppScript">
+            <script src="{!URLFOR($Resource.signatureForSF1,'signature/js/signature_pad.js')}"></script>
+            <script src="{!URLFOR($Resource.signatureForSF1,'signature/js/app.js')}"></script>
+        </apex:outputPanel>
+        <script>
+            function canfunction() {
+                // alert('Heloo');
+                var x = document.getElementById("pageid:frmid:mySelect").value;
+                //alert(x);
+                if (x == '') {
+                    document.getElementById("canvasid").style.display = "inline-flex"
+                }
+                else {
+                    document.getElementById("canvasid").style.display = "none"
+                }
+                //cansig();
+            }
+            function clearsignaturePad() {
+                location.reload();
+            }
+        </script>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,21 @@
+<aura:component>
+	<ltng:require scripts="{!join(',', $Resource.insite + '/insite/flot/jquery-3.4.1.min.js', $Resource.insite + '/insite/flot/jquery.flot.js', $Resource.insite + '/insite/flot/jquery.flot.pie.js')}" afterScriptsLoaded="{!c.afterScriptsLoaded}"/>
+
+	<aura:attribute name="header" type="String" default="InSite Chart"/>
+	<aura:attribute name="data" type="Object[]" default="[]"/>
+
+	<div style="width: 100%;">
+		<h3 class="slds-text-heading_small">{!v.header}</h3>
+		<aura:if isTrue="{!empty(v.data)}">
+			<div class="slds-p-horizontal_small">
+				<ui:message title="No Data Available" severity="warning" closable="false">
+					This user has no data available.
+				</ui:message>
+			</div>
+			<aura:set attribute="else">
+				<div class="slds-m-top_medium" aura:id="chart-container" style="width: 220px; height: 180px;" lwc:dom="manual"></div>
+				<div class="slds-m-top_medium pie-chart-legend" aura:id="legend-container" style="width: 80%;" lwc:dom="manual"></div>
+			</aura:set>
+		</aura:if>
+	</div>
+</aura:component>

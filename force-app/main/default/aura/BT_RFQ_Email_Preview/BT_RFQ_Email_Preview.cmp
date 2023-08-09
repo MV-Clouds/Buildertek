@@ -1,0 +1,34 @@
+<aura:component controller="RFQDAO">
+    <aura:attribute name="rfqId" type="String" />
+    <aura:attribute name="vendorIds" type="list" />
+    <aura:attribute name="onSuccess" type="Aura.Action" description="parent component method Reference action used to call from child components on record Save" />
+    <aura:attribute name="emailPreviewHTML" type="String" />
+    <aura:attribute name="emailSubject" type="String" />
+    <aura:attribute name="contactId" type="String" />
+    <aura:handler name="init" value="{! this }" action="{! c.init }" />
+    <aura:attribute name="IsSpinner" type="Boolean" default="false" />
+
+    <div style="pointer-events: none;">
+        <aura:unescapedHtml value="{!v.emailPreviewHTML}" />
+    </div>
+    <div class="slds-hide">
+        <div aura:id="footer">
+            <lightning:button name="cancel" variant="Neutral" label="Cancel" onclick="{!c.cancel}" />
+            <lightning:button class="slds-float_right" name="save" variant="brand" type="submit" label="Send" onclick="{!c.send}" />
+        </div>
+    </div>
+    <lightning:overlayLibrary aura:id="overlayLib" />
+    <aura:if isTrue="{!v.IsSpinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative"
+                    style="z-index: 1;" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                    <b>Processing, Please Wait</b>
+                </div>
+            </div>
+        </div>
+</aura:if>
+</aura:component>

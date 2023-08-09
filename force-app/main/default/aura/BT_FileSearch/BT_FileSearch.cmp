@@ -1,0 +1,49 @@
+<!-- 
+  Developer : Sachin Dond
+   Date : 17/07/2018
+   Purpose : This component is used for file search
+-->
+<aura:component  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    
+    <div class="slds-page-header">
+        <div class="slds-media">
+            <div class="slds-media__figure">
+                <span class="slds-icon_container slds-icon-standard-opportunity" title="Description of icon when needed">
+                   <lightning:icon iconName="standard:file" alternativeText="File" />
+                </span>
+            </div>
+            <div class="slds-media__body">
+              	<h1 class="slds-page-header__title slds-truncate slds-align-middle" title="">File Search</h1>
+            </div>
+        </div>
+    </div>
+    <lightning:card title="Search File">
+        <aura:set attribute="actions">
+            
+        </aura:set>
+        <div class="slds-grid slds-wrap">
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12">
+                <div style="padding-left:20px;padding-right:20px;border-right: 1px solid gray;" class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12">
+                    <lightning:select name="select1" label="Filters" required="false">
+                        <option value="none">Choose Filter</option>
+                        <option value="Name">Name</option>
+                        <option value="Type">Type</option>
+                        <option value="Date">Date Range</option>
+                        
+                    </lightning:select>
+                </div>
+            </div>
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12">
+                <div style="" class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12">
+                    <div style="float:left;" class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12">
+                        
+                    </div> 
+                    <div style="float:right;" class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12">
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </lightning:card>
+   
+</aura:component>

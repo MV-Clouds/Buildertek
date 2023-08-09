@@ -1,0 +1,137 @@
+<aura:component implements="force:hasRecordId,force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable,lightning:actionOverride,force:hasSObjectName"
+                access="global" controller="NewRecordCustomController">
+    
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="parentRecordId" type="String" default="" />
+    <aura:attribute name="todayDateTime" type="DateTime"/>
+    <aura:attribute name="isLoading" type="Boolean" />
+    <aura:attribute name="isSaveNew" type="Boolean" default="false" />
+    <aura:attribute name="listOfFields" type="List" />
+    <aura:attribute name="ismessage" type="boolean" default="false" />
+    <aura:attribute name="isnew" type="boolean" default="true" />
+    <aura:attribute name="timecardRecordId" type="String" default="" />
+    <aura:attribute name="timecardRecordName" type="String" default="" />
+    <aura:attribute name="btadminvalue" type="String" />
+    <aura:attribute name="sobjecttype" type="String" default="{!v.sObjectName}"/>
+    <aura:attribute name="parentprojectRecordId" type="String" default="" />
+    <aura:attribute name="parentprojecttaskRecordId" type="String" default="" />
+    <aura:attribute name="parentContactRecordId" type="String" default="" />
+    <aura:attribute name="parentbudgetRecordId" type="String" default="" />
+    <aura:attribute name="parentTradeTypeRecordId" type="String" default="" />
+    <aura:attribute name="parentbudgetlineRecordId" type="String" default="" />
+    <aura:attribute name="parentAccountRecordId" type="String" default="" />
+    <aura:attribute name="RecordTypeId" type="String" default="" /> 
+    <aura:attribute name="latitude" type="decimal" default="" />
+    <aura:attribute name="longitude" type="decimal" default="" />
+      <aura:attribute name="islocationaccess" type="boolean" default="true" />
+    
+    <ltng:require styles="{!$Resource.ModalWidthCSS}"/>    
+    <lightning:workspaceAPI aura:id="workspace" />
+    
+    
+    <aura:if isTrue="{!v.isnew}">
+        <div class="slds-m-around--xx-large" style="position:relative;height:30rem;">
+            <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__Check_In__c"
+                                      onsubmit="{!c.handleSubmit}" onsuccess="{!c.onRecordSuccess}" onerror = "{!c.handleError}">
+                <aura:html tag="style">
+                    .cuf-content {
+                    padding: 0 0rem !important;
+                    }
+                    .slds-p-around--medium {
+                    padding: 5rem !important;
+                    }       
+                     .slds-modal__content{
+                    overflow-y:hidden !important;
+                    height:unset !important;
+                    max-height:unset !important;
+                    }
+                </aura:html>
+                <div class="modal-header slds-modal__header slds-size_1-of-1">
+                    <h4 class="title slds-text-heading--medium">New Check-In</h4>
+                </div>
+                <div class="slds-modal__content" id="modal-content-id-1">
+                    <div style=" width:100%;padding: 0 1rem 0 1rem; height:25rem;overflow-y:scroll;" >
+                        <!-- <div class="slds-section slds-is-open" style="padding:5px;">
+                            <h3 class="slds-section__title slds-theme_shade">
+                                <span class="slds-truncate slds-p-horizontal_small" title="Information">Information</span>
+                            </h3>
+                        </div> -->
+                        <lightning:layout class="slds-m-top_large slds-m-bottom_large" horizontalAlign="space" verticalAlign="center" multipleRows="true">
+                            
+                            <aura:iteration items="{!v.listOfFields}" var="field" >
+                                <aura:if isTrue="{!field.name != 'OwnerId'}">
+                                    
+                                    <lightning:layoutItem flexibility="auto" size="12" smallDeviceSize="5" mediumDeviceSize="5" largeDeviceSize="5" >
+                                        
+                                        <aura:if  isTrue="{!and(and(and(and(field.name !='buildertek__Project__c',field.name !='buildertek__Schedule_Item__c')
+                                                          ,field.name != 'buildertek__Trade_Type__c'),field.name != 'buildertek__Vendor_Resource__c'),
+                                                          field.name != 'buildertek__Vendor__c')}" >     
+                                           <!-- <aura:if  isTrue="{!field.name == 'Name'}">
+                                                <lightning:inputField fieldName="{!field.name}"   required="true" value="{!if(field.name=='buildertek__Incident_Date__c',v.todayDateTime,null)}" />
+                                                <aura:set attribute="else">
+                                                    <lightning:inputField fieldName="{!field.name}"   required="{!field.Required}" value="{!if(field.name=='buildertek__Incident_Date__c',v.todayDateTime,null)}" />
+                                                </aura:set>
+                                            </aura:if>-->
+                                               <aura:if  isTrue="{!field.name == 'Name'}">
+                                                <lightning:inputField fieldName="{!field.name}"   required="true" value="{!if(field.name=='buildertek__Date_Created__c',v.todayDateTime,if(field.name=='buildertek__Incident_Date__c',v.todayDateTime,null))}" />
+                                                <aura:set attribute="else">
+                                                    <lightning:inputField fieldName="{!field.name}"   required="{!field.Required}" value="{!if(field.name=='buildertek__Date_Created__c',v.todayDateTime,if(field.name=='buildertek__Incident_Date__c',v.todayDateTime,null))}" />
+                                                </aura:set>
+                                            </aura:if>
+                                            
+                                            <aura:set attribute="else"> 
+                                                <aura:if  isTrue="{!field.name =='buildertek__Project__c'}" >                                            
+                                                    <lightning:inputField fieldName="{! field.name }" aura:id="project"  value = "{!v.parentprojectRecordId}"/>
+                                                </aura:if>
+                                                <aura:if  isTrue="{!field.name == 'buildertek__Trade_Type__c' }" >     
+                                                    
+                                                    <lightning:inputField fieldName="{! field.name }"  aura:id="tradeType"  value= "{!v.parentTradeTypeRecordId}"/>
+                                                </aura:if>
+                                                <aura:if  isTrue="{!field.name =='buildertek__Vendor_Resource__c'}" >                                            
+                                                    <lightning:inputField fieldName="{! field.name }" aura:id="contact"  value = "{!v.parentContactRecordId}"/>
+                                                </aura:if>
+                                                <aura:if  isTrue="{!field.name =='buildertek__Vendor__c'}" >                                            
+                                                    <lightning:inputField fieldName="{! field.name }"  aura:id="account"  value = "{!v.parentAccountRecordId}"/>
+                                                </aura:if>
+                                                
+                                            </aura:set>
+                                        </aura:if>
+                                    </lightning:layoutItem>
+                                </aura:if>
+                            </aura:iteration>
+                            
+                        </lightning:layout>
+                        
+                    </div>
+                    <!-- <div class="slds-section slds-is-open" style="padding:5px;">
+                                    <h3 class="slds-section__title slds-theme_shade">
+                                        <span class="slds-truncate slds-p-horizontal_small" title="System Information">System Information</span>
+                                    </h3>
+                                     <lightning:outputField fieldName="OwnerId"/>
+                                </div> -->
+                    <div class="modal-footer slds-modal__footer slds-size_1-of-1">
+                        <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{! c.closeModel }" />
+                        <lightning:button variant="neutral" type="submit" title="Save &amp; New" label="Save &amp; New" onclick="{!c.saveAndNew}"/>
+                        <lightning:button variant="brand" type="submit" name="save" label="Save" onclick="{!c.save}"/>
+                    </div>
+                </div>
+            </lightning:recordEditForm>
+            
+        </div>
+        
+    </aura:if>
+    
+    <aura:if isTrue="{!v.isLoading}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                    <b>Processing, Please Wait</b>
+                </div>
+            </div>
+        </div>
+    </aura:if>
+</aura:component>

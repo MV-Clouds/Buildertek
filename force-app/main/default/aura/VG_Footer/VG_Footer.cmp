@@ -1,0 +1,34 @@
+<aura:component controller="VG_ContentService" implements="forceCommunity:availableForAllPageTypes,force:appHostable,flexipage:availableForAllPageTypes">
+   <aura:attribute name="footerContent" type="Object[]" />
+     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <div class="footerContainer">
+        
+        <div class="footerLogo">
+            <img src="{!$Resource.ViewGlassLogo}" class="imgheight" />
+           
+        </div>
+        
+        <div>
+            <p class="footercontent">Create Delightful Human Environments</p> 
+        </div>
+        
+        <div class="footerlink">
+            <div class="footerPrivacyLink" >
+                ©&nbsp;Copyright 2019 View, Inc. &nbsp;&nbsp;<!-- | &nbsp;&nbsp;All Rights Reserved &nbsp;&nbsp;| &nbsp;&nbsp; 
+                <a style="color: white; text-decoration: none;" href="https://view.com/privacy/" >
+                    Privacy Policy
+                </a>&nbsp;&nbsp;--> | &nbsp;&nbsp; 
+                <a style="color: white; text-decoration: none;" href="{!$Label.c.Feedback_Mail}" target="_top">Feedback</a>
+            </div>
+            <div class="footerImage"> 
+                <aura:iteration items="{!v.footerContent}" var="footer">
+                  <a class ="footerLinkImages" href="{!footer.content.Action_URL__c}" >
+                    <img src="{!(and(not(empty(footer.content.ContentDocumentLinks.records)),footer.content.ContentDocumentLinks.records[0] != null))? '/sfc/servlet.shepherd/version/renditionDownload?rendition=ORIGINAL_Png&amp;versionId='+footer.content.ContentDocumentLinks.records[0].ContentDocument.LatestPublishedVersionId:''}" class="imgstyle" style=""/> 
+                  </a> 
+             
+                </aura:iteration>
+            </div>
+        </div>
+    </div>
+</aura:component>

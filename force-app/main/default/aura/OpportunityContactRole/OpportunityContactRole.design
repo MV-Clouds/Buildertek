@@ -1,0 +1,5 @@
+<design:component>
+    <design:attribute name="selectedRecordId" label="selectedRecordId" required="true"/>
+    <design:attribute name="object" label="object" required="true"/>
+    <design:attribute name="lookupField" label="lookupField" required="true"/>    
+</design:component>

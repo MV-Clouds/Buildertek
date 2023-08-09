@@ -1,0 +1,157 @@
+<aura:component implements="force:lightningQuickActionWithoutHeader" controller="LogIssuesCmpController"
+                access="global">
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <aura:attribute name="activeTabId" type="String" default="one" />
+    <aura:attribute name="issueWrapperdata" type="Object" />
+    <aura:attribute name="listOfIssueWrappers" type="Object[]" default="[]" />
+    <aura:attribute name="listOfIGUIssueWrappers" type="Object[]" default="[]" />
+    <aura:attribute name="listOfLogIssueWrappersCSS" type="Object[]" default="[]" />
+    <aura:attribute name="listOfIGUIssueWrappersClone" type="Object[]" default="[]" />
+    <aura:attribute name="listOfLogIssueWrappersCSSClone" type="Object[]" default="[]" />
+    <aura:attribute name="cloneRecords" type="Object[]" default="[]" />
+    <aura:attribute name="newIssues" type="Issue__c[]" />
+    <aura:attribute name="data" type="Object" />
+    <aura:attribute name="IGUColumns" type="List" />
+    <aura:attribute name="CSSColumns" type="List" />
+    
+    <aura:attribute name="areAllIssuesSelected" type="Boolean" default="false" />
+    <aura:attribute name="saveIssues" type="Boolean" default="false" />
+    <aura:attribute name="saveIssuescss" type="Boolean" default="false" />
+    <aura:attribute name="id" type="String" />
+    
+    <div class="css_table slds-scrollable_x">
+        <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+            <thead>
+                <tr>
+                    <th scope="col">
+                        <div class="slds-truncate" title="Action">
+                            <div style="display:inline-block;">
+                                <lightning:input type="checkbox" aura:id="selectAllcss"
+                                                 onchange="{!c.doSelectAllcss}" />
+                                
+                            </div>
+                        </div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate cssTableCol" title="Name">Issue Number</div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate cssTableCol" title="Description">Description</div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate cssTableCol" title="Issue Status">Issue Status</div>
+                    </th>
+                    <!--
+                    <th scope="col">
+                        <div class="slds-truncate cssTableCol" title="FA Status">FA Status</div>
+                    </th> -->
+                    <th scope="col">
+                        <div class="slds-truncate cssTableCol" title="Product">Product</div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate cssTableCol" title="RMA - Return Product">Product Return</div>
+                    </th>
+                    
+                    <th scope="col">
+                        <div class="slds-truncate cssTableCol" title="RMA / FA Status">RMA / FA Status</div>
+                        
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate cssTableCol" title="Reverse Shipment Info">Reverse Shipment Info</div>
+                    </th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                <aura:iteration items="{!v.listOfLogIssueWrappersCSS}" var="issueWrapper" indexVar="index">
+                    <aura:if isTrue="{! not( empty( issueWrapper.Name ) ) }">
+                        <tr>
+                            <td>
+                                <lightning:input type="checkbox" label="" name="input2"
+                                                 checked="{!issueWrapper.isSelected}" onchange="{!c.dosavecheckcss}" />
+                                
+                            </td>
+                            <td>
+                                <a id="{!issueWrapper.Id}" onclick="{!c.openRecordInNewConsoleTab}">
+                                    {!issueWrapper.Name}
+                                </a>
+                            </td>
+                            <td>
+                                {!issueWrapper.Description__c}
+                            </td>
+                            <td>
+                                <aura:if isTrue="{!issueWrapper.isSelected}">
+                                    
+                                    <lightning:select value="{!issueWrapper.Issue_Status__c}" onchange="{!c.statusChangedcss}" label="{!index}" variant="label-hidden" name="{!issueWrapper.Name}">
+                                        <!--<option value="{!issueWrapper.Issue_Status__c}">{!issueWrapper.Issue_Status__c}</option>-->
+                                        <option value="">Select</option>
+                                        <option value="Open">Open</option>
+                                        <option value="Resolved">Resolved</option>
+                                        <option value="Order Shipped">Order Shipped</option>
+                                        <option value="Replacement Rejected">Replacement Rejected</option>
+                                        <option value="Canceled">Canceled</option>
+                                    </lightning:select>
+                                    
+                                    
+                                    <aura:set attribute="else">
+                                        {!issueWrapper.Issue_Status__c}
+                                    </aura:set>
+                                </aura:if>
+                            </td>
+                            <!--
+                                <td>
+                                <ui:outputText value="{!issueWrapper.FA_Status__c}"/>
+                                </td> -->
+                            <td>
+                                <ui:outputText value="{!issueWrapper.Product__r.Name}" />
+                            </td>
+                            <td>
+                                <ui:outputCheckbox value="{!issueWrapper.Product_Return__c}" />
+                                
+                            </td>
+                            <td>
+                                <aura:if isTrue="{!issueWrapper.isSelected}">
+                                    
+                                    <lightning:select value="{!issueWrapper.RMA_FA_Status__c}" label="{!index}"
+                                                      variant="label-hidden" >
+                                        <option value="">Select</option>
+                                        <option value="Pending Return">Pending Return</option>
+                                        <option value="Returned">Returned</option>
+                                        <option value="Received">Received</option>
+                                        <option value="FA In Progress">FA In Progress</option>
+                                        <option value="FA Complete">FA Complete</option>
+                                    </lightning:select>
+                                    <aura:set attribute="else">
+                                        {!issueWrapper.RMA_FA_Status__c}
+                                    </aura:set>
+                                    
+                                </aura:if>
+                                
+                            </td>
+                            <td>
+                                <aura:if isTrue="{!issueWrapper.isSelected}">
+                                    <ui:inputText value="{!issueWrapper.Reverse_Shipment_Info__c}" />
+                                    <aura:set attribute="else">
+                                        {!issueWrapper.Reverse_Shipment_Info__c}
+                                    </aura:set>
+                                </aura:if>
+                            </td>
+                        </tr>
+                    </aura:if>
+                </aura:iteration>
+            </tbody>
+        </table>
+        <div class="slds-align_absolute-center">
+            <aura:if isTrue="{!v.saveIssuescss}">
+                <lightning:button variant="brand" label="Save" name="submit_continue" title="Save"
+                                  class="slds-m-around_small" onclick="{!c.dosaveIssuescss}" />
+                <lightning:button variant="brand" label="Cancel" name="submit_finish" title="Cancel"
+                                  class="slds-m-around_small" onclick="{!c.dosaveCancelcss}" />
+            </aura:if>
+        </div>
+        
+    </div>
+    
+</aura:component>

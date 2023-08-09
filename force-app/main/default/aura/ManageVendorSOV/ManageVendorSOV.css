@@ -1,0 +1,23 @@
+.THIS .iconClr svg{
+	fill:red;
+}
+.THIS .iconClr3 svg{
+	fill:#5500ff;
+}
+.THIS .iconClrforapp svg{
+	fill:green;
+}
+.THIS .bgm{
+    background-color: #cd0f0f;
+    width:90px;
+    color: white;
+    border-radius: 5px;
+   border: 1px solid #f00a0a!important;
+}
+.THIS .flex-container {
+    display: flex;
+}
+.THIS .btm{
+        border: 1px solid lightgrey;
+    border-radius: 5px;
+}

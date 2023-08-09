@@ -1,0 +1,26 @@
+<aura:component >
+	<aura:attribute name="additionalCost" type="String" access="public"/>
+    <aura:attribute name="options" type="Object[]" description="Options to show in multi select dropdown"/>
+    <aura:attribute name="infoText" type="String" default="Select an option..." />
+    <aura:attribute name="label" type="String" default="" description="label for multi select dropdown"/>
+    <aura:attribute name="variant" type="String" default="" description="to hide label, add 'label-hidden' as a variant" />
+    <aura:attribute name="width" type="String" default="240px;" description="dropdown width"/>
+    <aura:attribute name="class" type="String" default="" description="Additional class"/>
+    <aura:attribute name="dropdownLength" type="Integer" default="5" description="Additional class"/>
+    <aura:attribute name="dropdownOver" type="Boolean" default="false" description="Dropdown Over state"/>
+    <aura:attribute name="values" type="List" />
+    
+    <aura:iteration items="{!v.options}" var="option">
+        <li class="slds-checkbox"  onclick="{!c.handleSelection}" data-value="{!option.value}" data-selected="{!option.selected}">
+            <div class="{!' slds-media  slds-checkbox ' + (option.selected == true ? ' slds-is-selected' : '')}" role="option">
+                <span class="slds-media__figure">
+                    <lightning:icon iconName="utility:check" size="x-small" class="slds-icon-utility-check slds-current-color slds-listbox__icon-selected slds-icon_container" />
+                </span>
+                
+                <span class="slds-media__body">
+                    <span class="slds-truncate" title="{!option.label}">&nbsp;{!option.label}</span>
+                </span>
+            </div>
+        </li>
+    </aura:iteration>
+</aura:component>

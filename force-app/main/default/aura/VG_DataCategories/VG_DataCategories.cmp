@@ -1,0 +1,4 @@
+<aura:component controller="VG_DataCategoryService"
+                implements="forceCommunity:availableForAllPageTypes,force:appHostable,flexipage:availableForAllPageTypes" >
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+</aura:component>

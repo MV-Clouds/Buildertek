@@ -1,0 +1,520 @@
+<!--**********************************************************************************
+* Copyright © 2017-2016, BuilderTek.
+* All rights reserved
+*
+* VisualForce Page: BT_UploadFile
+* Created by Sagar: 14/06/2017
+*
+* - Used for browser based file upload to overcome 1MB file size limit.After fiel uploaded to AWS successfully it will 
+be redirected to this page so we can display success message and we can close the window in page action.
+
+* - Modifications:
+* - Sagar, 14/06/2017 – Initial Development
+***********************************************************************************-->
+<apex:page controller="BT_UploadFileController" showHeader="{!!isChildWindow}" standardStylesheets="false" cache="false" sidebar="false"   title="{!$Label.buildertek__new} {!$ObjectType.File__c.label}">
+    <c:BT_JsAndCssIncludeComponent importJquery="true"
+                              importAppurinUtil="true"
+                              importJQueryLayout="false"
+                              importFancyTree="false"
+                              importJqGrid="false"
+                              importEasyTooltip="true"
+                              importAppurinCss="true"
+                              importCkEditor="false"
+                              importGnattChart="false"
+                              importLightningDesign="true"/>
+    <style>
+        .apLightningOneTile{
+            margin-top: 25px !important;
+            margin-right: 20% !important;
+            margin-left: 20% !important;
+        }
+    </style>                          
+    <script>
+        function easyToolTipForAll() {
+            j$('.apHelpText').easyTooltip({width: '200px', isLightning:true, isFormatted:true});
+            return false;
+        }
+        
+        j$(document).ready(function(){
+            easyToolTipForAll();
+            if('{!JSENCODE($CurrentPage.parameters.success)}' == '1'){
+                var att = {};
+                att.Replace = '{!JSENCODE($CurrentPage.parameters.rpl)}' == 'true';
+                att.PublicOnAmazon = '{!JSENCODE($CurrentPage.parameters.pa)}' == 'true';
+                att.TrackDownload = '{!JSENCODE($CurrentPage.parameters.ftd)}' == 'true';
+                att.AllowCopy = '{!JSENCODE($CurrentPage.parameters.fcopy)}' == 'true';
+                att.AllowShareViaURL = '{!JSENCODE($CurrentPage.parameters.fsurl)}' == 'true';
+                att.AccessType = '{!JSENCODE($CurrentPage.parameters.at)}';
+                att.Size = '{!JSENCODE($CurrentPage.parameters.fsize)}';
+                att.Name = '{!JSENCODE($CurrentPage.parameters.fname)}';
+                att.Extension = '{!JSENCODE($CurrentPage.parameters.fext)}';
+                att.ContentType = '{!JSENCODE($CurrentPage.parameters.ftype)}';
+                att.Folder = '{!JSENCODE($CurrentPage.parameters.sf)}';
+                att.BucketName = '{!JSENCODE($CurrentPage.parameters.bucket)}';
+                createFileInSalesforce(JSON.stringify(att),'{!JSENCODE($CurrentPage.parameters.mofa)}', '{!JSENCODE($CurrentPage.parameters.moi)}', '{!JSENCODE($CurrentPage.parameters.clr)}');
+                resizeWindow();
+            }
+        });
+        
+        function showFileNameField(){
+            j$('#fileError').css('display','none');
+            j$("#fileNameField").val('');
+            var input = document.getElementById('fileToUpload');
+            if(input.files.length > 0 ){
+                var file = input.files[0];
+                j$("#fileNameField").val(file.name).parent().parent().parent().parent().css('display', '');
+                j$("div[id$='settingsSection']").css('display', '');
+            }
+            resizeWindow();
+        }
+        
+        function showReplaceMessage(){
+            j$("#fileNameField").data('duplicateFileName', j$("#fileNameField").val());
+            j$("#replaceField").removeAttr('checked').parent().parent().parent().css('display', '');
+            resizeWindow();
+            endSplash();
+        }
+        
+        function updateFormData(s3AccessKey, policy, signedPolicy, redirectUrl){
+           
+            j$("input[id$='AWSAccessKeyId']").val(s3AccessKey);
+            j$("input[id$='policy']").val(policy);
+            j$("input[id$='signature']").val(signedPolicy);
+            j$("input[id$='successActionRedirect']").val(redirectUrl);
+            j$("input[id$='acl']").val('{!JSENCODE($CurrentPage.parameters.isPublicOnAmazon)}' == 'true'? 'public-read': 'private');
+            j$("#uploadindMessage").css('display', 'block');
+            j$("#fileSubmitForm").css('display', 'none').submit();
+            resizeWindow();
+            return false;
+        }
+         
+        function uploadFile(selectedFolder){
+            var input = document.getElementById('fileToUpload');
+            if(input.files.length === 0 ){
+                j$('#fileError').html('{!$Label.buildertek__please_select_file}');
+                j$('#fileError').css('display','block');
+                return false;
+            }else{
+                var file = input.files[0];
+                var att = {};
+                att.Size = file.size;
+                if(('{!s3LinkConfig.configForMaxFileSize.Configured_Value__c}' != '') && ((file.size/1024) > parseFloat('{!s3LinkConfig.configForMaxFileSize.Configured_Value__c}'))){
+                    j$('#fileError').html('{!JSENCODE($Label.buildertek__max_file_size_error)}');
+                    j$('#fileError').css('display','block');
+                    return false;
+                }
+                if(j$("#fileNameField").val().trim() == ''){
+                    att.Name = file.name;
+                } else{
+                    att.Name = j$("#fileNameField").val();
+                }
+                att.Extension = '.'+file.name.split('.').pop();
+                setFileNameWithExtension(att);
+                if(att.Name.length > 80){
+                    j$('#fileError').html('{!JSENCODE($Label.buildertek__file_name_too_long_error)}');
+                    j$('#fileError').css('display','block');
+                    return false;
+                }
+                if(att.Name.indexOf('>') != -1 || att.Name.indexOf('<') != -1 || att.Name.indexOf('?') != -1 || att.Name.indexOf('&') != -1 || att.Name.indexOf('/') != -1){
+                    j$('#fileError').html('{!JSENCODE($Label.buildertek__invalid_file_name_message)}');
+                    j$('#fileError').css('display','block');
+                    return false;
+                }
+                att.ContentType = file.type;
+                j$("#fileNameField").val(att.Name);
+                att.Folder = selectedFolder;
+                att.AccessType = j$("#accessType").val();
+                att.PublicOnAmazon = j$("#publicOnAmazonField").attr('checked') == 'checked';
+                att.AllowCopy = j$("#allowToCopyMoveField").attr('checked') == 'checked';
+                att.AllowShareViaURL = j$("#allowToDownloadByPreSignedURLField").attr('checked') == 'checked';
+                att.TrackDownload = j$("#trackDownloadField").attr('checked') == 'checked';
+                if(att.Name == j$("#fileNameField").data('duplicateFileName')){
+                    att.Replace = j$("#replaceField").attr('checked') == 'checked';
+                } else{
+                    att.Replace = false;
+                }
+                if(j$("#fileNameField").data('duplicateFileName') == undefined || att.Name != j$("#fileNameField").data('duplicateFileName') || (att.Name == j$("#fileNameField").data('duplicateFileName') && j$("#replaceField").attr('checked') == 'checked')){
+                    j$("#filekey").val(j$("input[id$='folderPath']").val() + att.Name);
+                    
+                    setSuccessActionUrl(JSON.stringify(att));
+                } else{
+                    alert('fail');
+                    j$("#replaceField").parent().parent().parent().css('display', '');
+                }
+            }
+        }
+        
+        function setFileNameWithExtension(att){
+            var extension = '.undefined';
+            if(att.Name.indexOf('.') != -1){
+                extension = '.'+att.Name.split('.').pop();
+            } else{
+                extension = att.Extension;
+            }
+            if(extension == null || extension == '' || extension == '.'){
+                if(att.Extension == null){
+                    extension = '.undefiled';
+                } else{
+                    extension = att.Extension;
+                }
+            }
+            att.Extension = extension;
+            if(att.Name.indexOf('.') != -1){
+                if(att.Name.lastIndexOf('.') == att.Name.length - 1){
+                    att.Name = att.Name.substring(0, att.Name.length-1)+att.Extension;
+                }
+            } else{
+                att.Name = att.Name+att.Extension;
+            }
+        }
+        
+        function setFileFieldValues(file){
+            if(file.AccessType != ''){
+                j$("#accessType").val(file.AccessType);
+            }
+            if(file.PublicOnAmazon){
+                j$("#publicOnAmazonField").attr('checked', 'checked');
+            } else{
+                j$("#publicOnAmazonField").removeAttr('checked');
+            }
+            
+            if(file.AllowCopy){
+                j$("#allowToCopyMoveField").attr('checked', 'checked');
+            } else{
+                j$("#allowToCopyMoveField").removeAttr('checked');
+            }
+            
+            if(file.AllowShareViaURL){
+                j$("#allowToDownloadByPreSignedURLField").attr('checked', 'checked');
+            } else{
+                j$("#allowToDownloadByPreSignedURLField").removeAttr('checked');
+            }
+            
+            if(file.TrackDownload){
+                j$("#trackDownloadField").attr('checked', 'checked');
+            } else{
+                j$("#trackDownloadField").removeAttr('checked');
+            }
+        }
+        
+        function resizeWindow(){
+            var caller = '{!JSENCODE($CurrentPage.parameters.clr)}';
+            if({!isChildWindow}){
+                if(caller == '1'){
+                    window.parent.resizeUploadFileWindow();
+                }
+            }
+        }
+        
+        function closeWindow(newFileId){
+            var retURL = '{!JSENCODE($CurrentPage.parameters.retURL)}';
+            var caller = '{!JSENCODE($CurrentPage.parameters.clr)}';
+            var mainObjId = '{!JSENCODE($CurrentPage.parameters.moi)}';
+            sforce.one.navigateToSObject(newFileId,"RELATED");//('buildertek__Files__r', mainObjId);
+        }
+        
+        function cancelWindow(){
+            var mainObjId = '{!JSENCODE($CurrentPage.parameters.moi)}';
+            var mainObjName = '{!JSENCODE($CurrentPage.parameters.mofa)}';
+            var caller = '{!JSENCODE($CurrentPage.parameters.clr)}';
+            //sforce.one.navigateToRelatedList('buildertek__Files__r', mainObjId);  
+            //window.location.href = '/' + mainObjId;
+            //window.close('/apex/buildertek__BT_UploadFile');
+            //Appurin.lightning.hideModalPopup({'modalPopupId':'{!$Component.fileUploadDivId}'});
+            //console.log('Call');
+            //document.getElementById('uploadFileIframe').remove();
+            //Appurin.lightning.hideModalPopup({'modalPopupId':'{!$Component.uploadFilePopup}'});
+           debugger;
+         //  parent.window.postMessage("removetheiframe", "*");
+            //if({!isChildWindow}){
+            if(caller == '1'){
+                window.parent.closeWindowForNewFolder();
+            }else{
+                if(mainObjId != ''){
+                    //alert('uygukhl');
+                    window.open('/lightning/r/'+mainObjName+'/'+mainObjId+'/view','_self');
+                }else{
+                    // alert('HIHuh');
+                    window.open('/lightning/o/buildertek__File__c/list?filterName=Recent','_parent');
+                }
+            }
+        
+            //window.opener.popUpClosed();
+            //document.getElementById("fileUploadDivId").style.display = "none"  
+        }
+        function cancelSitesWindow(){
+            window.close('/apex/buildertek__BT_UploadFile');
+            //window.opener.location.reload();   
+        }
+    </script>
+     <script>
+        // start the process that create the crash images
+        window.onload = function(){
+            //loadData();
+        }
+  </script>  
+
+    <apex:actionStatus id="splashStatus" onstart="startSplash();" onstop="endSplash(); " />
+    <div class="slds">
+        <div id="splashDiv" class="apInitiallyDivDisplayNone" style="z-index:9998;">
+            <div class="slds-spinner_container apLightningSpinnerContainer">
+                <div role="status" class="slds-spinner slds-spinner--medium slds-spinner--brand">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--{!isChildWindow}-->
+    <div id="fileUploadDivId" style="background:#f4f6f9; {!IF(isChildWindow, '', 'padding: 1rem;')}">
+        <div class="slds-panel slds-nowrap" style="background:#f4f6f9;">
+            <div class="{!IF(isChildWindow, '', 'apLightningOneTile')}" style="{!IF(isChildWindow, '', 'padding: 0px;')}">
+                <apex:outputPanel id="errorSection">
+                    <apex:pagemessages id="errorMessages"/>
+                    <script>
+                        Appurin.lightning.createLightningPageMessage({'classicPageMessageId' : '{!$Component.errorMessages}'});   
+                    </script>
+                </apex:outputPanel>
+    
+                <apex:outputPanel id="panelGrid" styleClass="slds" layout="block" rendered="{!!isNoAmazonCredential}">
+                    <div id="uploadindMessage" style="display:none;{!IF(isChildWindow, 'padding: 0px;', 'padding: 50px;')}" class="slds">
+                        <div class="slds-grid" style="background:#f4f6f9;">
+                            <div class="slds-panel slds-grid slds-grid--vertical slds-nowrap slds-is-editing" style="box-shadow: none;">
+                                <div class="slds-form--stacked slds-grow slds-scrollable--y">
+                                    <div class="slds-panel__section slds-text-heading--small">
+                                        <div><img class="apCenterContent" src="{!$Resource.SLDS}/assets/icons/utility/upload_120.png"/></div>
+                                        <div style="margin-top: 30px;" class="apFileUploadMessageLabel"><apex:outputLabel value="{!$Label.buildertek__uploading}"/></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <apex:panelGroup rendered="{!NOT(OR(JSENCODE($CurrentPage.parameters.success) == '1',selectedFolder == null))}">
+                        <form id="fileSubmitForm" action="https://s3.amazonaws.com/{!selectedBucket}" method="post" enctype="multipart/form-data">
+                            <input type="hidden" id="filekey" name="key"/> 
+                            <input type="hidden" id="AWSAccessKeyId" name="AWSAccessKeyId"/> 
+                            <input type="hidden" id="policy" name="policy"/> 
+                            <input type="hidden" id="signature" name="signature"/> 
+                            <input type="hidden" id="acl" name="acl"/> 
+                            <input type="hidden" name="success_action_redirect" id="successActionRedirect"/>
+                            <div class="slds-grid" style="background:#f4f6f9;padding: 0px;">
+                                <div class="slds-panel slds-grid slds-grid--vertical slds-nowrap slds-is-editing" style="box-shadow: none;">
+                                    <div class="slds-form--stacked slds-grow slds-scrollable--y">
+                                        <div class="slds-panel__section slds-has-divider--bottom">
+                                            <div class="slds-media">
+                                                <div class="slds-media__body">
+                                                    <p class="slds-truncate slds-text-heading--small"><a href="javascript:void(0);">{!$Label.New} {!$Objecttype.File__c.label}</a></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="slds-panel__section">
+                                            <h3 class="slds-text-heading--small slds-m-bottom--medium">{!$Label.Detail}</h3>
+                                            <apex:outputPanel layout="block" styleClass="slds-form-element">
+                                                <apex:outputPanel layout="block" style="margin:0px;" styleClass="slds-form-element__label">
+                                                    <label id="fileLabel"><abbr class="slds-required">*</abbr>{!$ObjectType.File__c.Label}</label>
+                                                    <apex:outputLabel rendered="{!s3LinkConfig.configForMaxFileSize.Configured_Value__c != null}" value=" - {!$Label.buildertek__max_file_size_message} {!s3LinkConfig.configForMaxFileSize.Configured_Value__c} KB" />
+                                                </apex:outputPanel>
+                                                <c:BT_LightningHelpText helptext="{!$Label.buildertek__select_file_helptext}"/>
+                                                <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                                    <apex:outputPanel layout="block" styleClass="slds-file-selector slds-file-selector--files">
+                                                        <apex:outputPanel layout="block" styleClass="slds-file-selector__dropzone">
+                                                            <input id="fileToUpload" type="file" onChange="showFileNameField();" name="file" class="slds-file-selector__input slds-assistive-text" aria-describedby="fileLabel"/>
+                                                            <label class="slds-file-selector__body" for="fileToUpload">
+                                                                <apex:outputPanel styleClass="slds-file-selector__button slds-button slds-button_neutral">
+                                                                    <img class="slds-button__icon slds-button__icon--left" src="{!$Resource.SLDS}/assets/icons/utility/upload_60.png"/>
+                                                                    Upload Files
+                                                                </apex:outputPanel>
+                                                                <apex:outputPanel styleClass="slds-file-selector__text">or Drop Files</apex:outputPanel>
+                                                            </label>
+                                                            <div class="slds-has-error"><div id="fileError" style="display:none;" class="slds-form-element__help">{!$Label.Please_Select_File}</div></div>
+                                                        </apex:outputPanel>    
+                                                    </apex:outputPanel>        
+                                                </apex:outputPanel>
+                                            </apex:outputPanel>
+                                            <apex:outputPanel layout="block" styleClass="slds-grid slds-grid--pull-padded-medium" style="display:none;">
+                                                <apex:outputPanel layout="block" styleClass="slds-col slds-p-horizontal--medium slds-size--1-of-2">
+                                                    <apex:outputPanel layout="block" styleClass="slds-form-element">
+                                                        <apex:outputPanel layout="block" style="margin:0px;" styleClass="slds-form-element__label">
+                                                            <label><abbr class="slds-required">*</abbr>{!$ObjectType.File__c.Label} {!$Label.buildertek__name}</label>
+                                                        </apex:outputPanel>
+                                                        <c:BT_LightningHelpText rendered="{!$Label.buildertek__file_name_helptext != null}" helptext="{!$Label.buildertek__file_name_helptext}"/>
+                                                        <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                                            <input class="slds-input" id="fileNameField"/>
+                                                        </apex:outputPanel>
+                                                    </apex:outputPanel>
+                                                </apex:outputPanel>
+                                                <apex:outputPanel layout="block" styleClass="slds-col slds-p-horizontal--medium slds-size--1-of-2">
+                                                    <apex:outputPanel rendered="{!fileUploadConfiguration.isShowAccessType}" layout="block" styleClass="slds-form-element">
+                                                        <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                                            <apex:outputLabel title="{!$ObjectType.File__c.fields.Access_Type__c.inlineHelpText}" value="{!$ObjectType.File__c.fields.Access_Type__c.label}"></apex:outputLabel>
+                                                        </apex:outputPanel>
+                                                        <c:BT_LightningHelpText rendered="{!AND(!isChildWindow, $ObjectType.File__c.fields.Access_Type__c.inlineHelpText != null)}" helptext="{!$ObjectType.File__c.fields.Access_Type__c.inlineHelpText}"/>
+                                                        <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                                            <select size="1" class="slds-select" id="accessType">
+                                                                <apex:repeat value="{!accessTypeOptions}" var="accessTypeOption">
+                                                                <option value="{!accessTypeOption.value}">{!accessTypeOption.value}</option>
+                                                                </apex:repeat>
+                                                            </select>
+                                                        </apex:outputPanel>
+                                                    </apex:outputPanel>
+                                                </apex:outputPanel>
+                                            </apex:outputPanel>
+                                            <apex:outputPanel layout="block" styleClass="slds-form-element" style="display:none;">
+                                                <apex:outputPanel layout="block" style="margin:0px;" styleClass="slds-form-element__label">
+                                                    <label><abbr class="slds-required">*</abbr>{!$Label.buildertek__duplicate_replace_message}</label>
+                                                </apex:outputPanel>
+                                                <c:BT_LightningHelpText rendered="{!$Label.buildertek__duplicate_replace_helptext != null}" helptext="{!$Label.buildertek__duplicate_replace_helptext}"/>
+                                                <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                                    <apex:outputPanel styleClass="slds-checkbox">
+                                                        <input type="checkBox" id="replaceField"/>
+                                                        <label class="slds-checkbox__label" for="replaceField">
+                                                            <apex:outputPanel styleClass="slds-checkbox--faux"></apex:outputPanel>
+                                                            <apex:outputPanel styleClass="slds-form-element__label"></apex:outputPanel>
+                                                        </label>
+                                                    </apex:outputPanel>
+                                                </apex:outputPanel>
+                                            </apex:outputPanel>
+                                        </div>
+                                        <apex:outputPanel layout="block" rendered="{!fileUploadConfiguration.isShowSettings}" styleClass="slds-panel__section" style="display:none;" id="settingsSection">
+                                            <h3 class="slds-text-heading--small slds-m-bottom--medium">{!$Label.buildertek__settings}</h3>
+                                            <apex:outputPanel layout="block" styleClass="slds-grid slds-grid--pull-padded-medium">
+                                                <apex:outputPanel layout="block" styleClass="slds-col slds-p-horizontal--medium slds-size--1-of-2">
+                                                    <apex:outputPanel rendered="{!fileUploadConfiguration.isShowPublicOnAmazon}" layout="block" styleClass="slds-form-element">
+                                                        <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                                            <apex:outputLabel title="{!$ObjectType.File__c.fields.Public_On_Amazon__c.inlineHelpText}" value="{!$ObjectType.File__c.fields.Public_On_Amazon__c.label}"></apex:outputLabel>
+                                                        </apex:outputPanel>
+                                                        <c:BT_LightningHelpText rendered="{!AND(!isChildWindow, $ObjectType.File__c.fields.Public_On_Amazon__c.inlineHelpText != null)}" helptext="{!$ObjectType.File__c.fields.Public_On_Amazon__c.inlineHelpText}"/>
+                                                        <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                                            <label class="slds-checkbox">
+                                                                <input type="checkbox" id="publicOnAmazonField"/>
+                                                                <apex:outputPanel styleClass="slds-checkbox--faux"></apex:outputPanel>
+                                                                <apex:outputPanel styleClass="slds-form-element__label"></apex:outputPanel>
+                                                            </label>
+                                                        </apex:outputPanel>
+                                                    </apex:outputPanel>
+                                                    <apex:outputPanel rendered="{!fileUploadConfiguration.isShowAllowShareViaPresignedURL}" layout="block" styleClass="slds-form-element">
+                                                        <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                                            <apex:outputLabel title="{!$ObjectType.File__c.fields.Allow_to_Download_by_Presigned_URL__c.inlineHelpText}" value="{!$ObjectType.File__c.fields.Allow_to_Download_by_Presigned_URL__c.label}"></apex:outputLabel>
+                                                        </apex:outputPanel>
+                                                        <c:BT_LightningHelpText rendered="{!AND(!isChildWindow, $ObjectType.File__c.fields.Allow_to_Download_by_Presigned_URL__c.inlineHelpText != null)}" helptext="{!$ObjectType.File__c.fields.Allow_to_Download_by_Presigned_URL__c.inlineHelpText}"/>
+                                                        <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                                            <label class="slds-checkbox">
+                                                                <input type="checkbox" id="allowToDownloadByPreSignedURLField"/>
+                                                                <apex:outputPanel styleClass="slds-checkbox--faux"></apex:outputPanel>
+                                                                <apex:outputPanel styleClass="slds-form-element__label"></apex:outputPanel>
+                                                            </label>
+                                                        </apex:outputPanel>
+                                                    </apex:outputPanel>
+                                                </apex:outputPanel>
+                                                <apex:outputPanel layout="block" styleClass="slds-col slds-p-horizontal--medium slds-size--1-of-2">
+                                                    <apex:outputPanel rendered="{!fileUploadConfiguration.isShowAllowCopy}" layout="block" styleClass="slds-form-element">
+                                                        <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                                            <apex:outputLabel title="{!$ObjectType.File__c.fields.Allow_to_Copy_Move__c.inlineHelpText}" value="{!$ObjectType.File__c.fields.Allow_to_Copy_Move__c.label}"></apex:outputLabel>
+                                                        </apex:outputPanel>
+                                                        <c:BT_LightningHelpText rendered="{!AND(!isChildWindow, $ObjectType.File__c.fields.Allow_to_Copy_Move__c.inlineHelpText != null)}" helptext="{!$ObjectType.File__c.fields.Allow_to_Copy_Move__c.inlineHelpText}"/>
+                                                        <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                                            <label class="slds-checkbox">
+                                                                <input type="checkbox" id="allowToCopyMoveField"/>
+                                                                <apex:outputPanel styleClass="slds-checkbox--faux"></apex:outputPanel>
+                                                                <apex:outputPanel styleClass="slds-form-element__label"></apex:outputPanel>
+                                                            </label>
+                                                        </apex:outputPanel>
+                                                    </apex:outputPanel>
+                                                    <apex:outputPanel rendered="{!fileUploadConfiguration.isShowTrackDownload}" layout="block" styleClass="slds-form-element">
+                                                        <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                                            <apex:outputLabel title="{!$ObjectType.File__c.fields.Track_Download_History__c.inlineHelpText}" value="{!$ObjectType.File__c.fields.Track_Download_History__c.label}"></apex:outputLabel>
+                                                        </apex:outputPanel>
+                                                        <c:BT_LightningHelpText rendered="{!AND(!isChildWindow, $ObjectType.File__c.fields.Track_Download_History__c.inlineHelpText != null)}" helptext="{!$ObjectType.File__c.fields.Track_Download_History__c.inlineHelpText}"/>
+                                                        <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                                            <label class="slds-checkbox">
+                                                                <input type="checkbox" id="trackDownloadField"/>
+                                                                <apex:outputPanel styleClass="slds-checkbox--faux"></apex:outputPanel>
+                                                                <apex:outputPanel styleClass="slds-form-element__label"></apex:outputPanel>
+                                                            </label>
+                                                        </apex:outputPanel>
+                                                    </apex:outputPanel>
+                                                </apex:outputPanel>
+                                                <script>
+                                                    var file = JSON.parse('{!fileData}');
+                                                    setFileFieldValues(file);
+                                                </script>
+                                            </apex:outputPanel>
+                                        </apex:outputPanel>
+                                    </div>
+                                    <div class="slds-panel__actions slds-has-divider--top">
+                                        <div class="slds-grid slds-grid--align-center">
+                                            <apex:outputPanel rendered="{!isSitesURL}">
+                                                <button type="button" class="slds-button slds-button_neutral" onClick="cancelSitesWindow()">{!$Label.Cancel}</button>&nbsp;&nbsp;
+                                            </apex:outputPanel>
+                                            <apex:outputPanel rendered="{!!isSitesURL}">
+                                                <button type="button" class="slds-button slds-button_neutral" onClick="cancelWindow()">{!$Label.Cancel}</button>&nbsp;&nbsp;
+                                            </apex:outputPanel>
+                                            <button type="button" class="slds-button slds-button_brand" onClick="return uploadFile('{!selectedFolder}');">{!$Label.Upload}</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </apex:panelGroup>
+                </apex:outputPanel>
+    
+                <apex:form >
+                    <apex:actionFunction name="loadData" action="{!initData}" />
+                    <apex:inputHidden value="{!folderPath}" id="folderPath"/>
+                    <apex:actionFunction name="setSuccessActionUrl" action="{!setSuccessActionUrl}" status="splashStatus" rerender="errorSection" onComplete=" easyToolTipForAll(); if('{!isDuplicateFound}' == 'true'){return showReplaceMessage();} else{return updateFormData('{!s3Key}', '{!policy}', '{!signedPolicy}', '{!redirectUrl}');}">
+                        <apex:param name="jsonForFileDetail" value="" />
+                    </apex:actionFunction>
+                    <apex:actionFunction name="createFileInSalesforce" action="{!createFile}" rerender="fileUploadSuccessSection" >
+                        <apex:param name="jsonForFileDetail" value=""/>
+                        <apex:param name="mainObjectFieldAPI" value=""/>
+                        <apex:param name="mainObjectId" value=""/>
+                        <apex:param name="caller" value=""/>
+                    </apex:actionFunction>
+                    <apex:outputPanel styleClass="slds" layout="block" id="fileUploadSuccessSection">
+                        <apex:outputPanel layout="block" style="{!IF(isChildWindow, 'padding: 0px;', 'padding: 50px;')}" rendered="{!JSENCODE($CurrentPage.parameters.success) == '1'}">
+                            <div class="slds-grid" style="background:#f4f6f9; padding:0px;">
+                                <div class="slds-panel slds-grid slds-grid--vertical slds-nowrap slds-is-editing" style="box-shadow: none;">
+                                    <div class="slds-form--stacked slds-grow slds-scrollable--y">
+                                        <div class="slds-panel__section slds-has-divider--bottom">
+                                            <div class="slds-media">
+                                                <div class="slds-media__body">
+                                                    <p class="slds-truncate slds-text-heading--small"><a href="javascript:void(0);">{!IF(isNoAmazonCredential, $Label.buildertek__error, $Label.buildertek__success)}</a></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="slds-panel__section">
+                                            <apex:outputPanel id="postSuccessErrorSection">
+                                                <apex:pagemessages id="postSuccessErrorMessages"/>
+                                                <script>
+                                                    Appurin.lightning.createLightningPageMessage({'classicPageMessageId' : '{!$Component.postSuccessErrorMessages}'});   
+                                                </script>
+                                            </apex:outputPanel>
+                                            <div style="padding:5px 0px;" id="successMessageDiv"></div>
+                                            <script>
+                                                Appurin.lightning.createLightningPageMessage({'lightningPageMessageId' : 'successMessageDiv', 'severity' : 'success', 'summary' : '{!JSENCODE($Label.File_Uploaded_Succesfully)}'});   
+                                            </script>
+                                        </div>
+                                        <div class="slds-panel__actions slds-has-divider--top">
+                                            <div class="slds-grid slds-grid--align-center">
+                                                <apex:outputPanel rendered="{!isSitesURL}">
+                                                    <button type="button" style="width:100%;" class="slds-button slds-button_brand" onClick="cancelSitesWindow();">{!$Label.Ok}</button>    
+                                                </apex:outputPanel>
+                                                <apex:outputPanel rendered="{!!isSitesURL}">
+                                                    <button type="button" style="width:100%;" class="slds-button slds-button_brand" onClick="closeWindow('{!newFileId}');">{!$Label.Ok}</button>    
+                                                </apex:outputPanel>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </apex:outputPanel>
+                    </apex:outputPanel>
+                </apex:form>
+            </div>
+        </div>
+    </div>
+    <script>
+        j$("table[id$='bodyTable']").parent().css('background', '#f4f6f9');
+    </script>
+</apex:page>

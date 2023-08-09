@@ -1,0 +1,35 @@
+<aura:component controller="VG_UserDataService" >
+    <aura:registerEvent name="choose" type="c:autoCompleteChoose"/>
+
+	<aura:attribute name="record" type="String[]" description="Matching records based on typeahead"/>
+    <aura:attribute name="navigateToObject" type="boolean" default="true" description="Flag to indicate onclick navigate to object"/>
+    <aura:attribute name="url" type="String" description="URL of the object"/>
+
+   <!-- <li class="slds-dropdown__item slds-has-icon-left" role="menuitem option">
+
+        <a href="javascript:void(0);"  onclick="{!c.chooseItem}" class="slds-truncate">{!v.record[1]}</a>
+    </li> -->
+
+    <li class="slds-item  depdisplay">
+    <div class="slds-tile slds-media">
+      <div class="slds-media__body ">   
+          <ui:outputURL  label="{!v.record[1]}" class="slds-truncate auto_search namefield" value="{! 'profile/'+v.record[0]}" />
+                                    
+     <!--   <a href="javascript:void(0);" onclick="{!c.chooseItem}" ><h2 class="" ></h2></a>   -->
+        <div class="slds-tile__detail slds-text-body--small">
+          <ul>
+            <li class="slds-item depdisplay" style="">{!v.record[2]}</li>
+            
+          </ul>
+          <section class="slds-clearfix">
+              <div class="slds-float--left">
+                  <p style="font-family:Gotham-Medium;font-size:12px;">{!v.record[3]}</p>
+              </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </li>
+
+
+</aura:component>

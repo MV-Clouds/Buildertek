@@ -1,0 +1,72 @@
+<aura:component controller = "BT_Dashboard_Controller" 
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global" 
+                >
+    <aura:attribute name="coursefieldSetValues" type="List"  />
+    <aura:attribute type="Course_Session_Scheduling__c[]" name="coursesessionList"/>
+    <aura:attribute type="Session_Participant__c[]" name="participantsList"/>
+    <aura:attribute name="mycolumns" type="List"/>
+    <aura:handler name="init" value="{!this}" action="{!c.fetchCourseSessions}"/>
+    <table class="slds-table slds-table_bordered slds-table_striped slds-table_cell-buffer slds-table_fixed-layout">
+        <thead>
+            <tr class="slds-text-heading_label slds-text-title_caps" style="height:35px; !important" >
+                <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-left-radius:5px;;"></th>
+                <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-left-radius:5px;"><div class="slds-truncate" title="Name">Sesssion Name</div></th>
+                <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-left-radius:5px;"><div class="slds-truncate" title="Type">Course Name</div></th>
+                <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-left-radius:5px;" ><div class="slds-truncate" title="Billing State">Session Date</div></th>
+                <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-left-radius:5px;"><div class="slds-truncate" title="Billing City">Session Duration</div></th>
+                <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-left-radius:5px;"><div class="slds-truncate" title="Phone">Session Facilitator</div></th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Use the Apex model and controller to fetch server side data -->
+            <aura:iteration items="{!v.coursesessionList}" var="row" indexVar="index">
+                <tr>
+                    <td><aura:if isTrue="{!!row.rfqRowExpanded}">
+                                            <span style="display:inline-block;margin-left:1rem;" class="{!v.recordId+' expandGrpIcon_'+index}"  data-grpindex="{!index}" data-rowid="{!row.Id}" onclick="{!c.expandCollapseGroups}">
+                                                <lightning:icon
+                                                                iconName="utility:add"
+                                                                size="xx-small"
+                                                                alternativeText="add"  style="border: 1px solid #b9b9b9; padding: 0.1rem 0.3rem 0.3rem 0.3rem"/>
+                                            </span>
+                                            <span style="display:none;margin-left:1rem;" class="{!v.recordId+' collapseGrpIcon_'+index}"  data-grpindex="{!index}" data-rowid="{!row.Id}" onclick="{!c.expandCollapseGroups}">
+                                                <lightning:icon
+                                                                iconName="utility:dash"
+                                                                size="xx-small"
+                                                                alternativeText="dash"  style="border: 1px solid #b9b9b9; padding: 0.1rem 0.3rem 0.3rem 0.3rem"/>
+                                            </span> 
+                                        </aura:if>
+                                        <aura:if isTrue="{!row.rfqRowExpanded}">
+                                            <span style="display:none;margin-left:1rem;" class="{!v.recordId+' expandGrpIcon_'+index}"  data-grpindex="{!index}" data-rowid="{!row.Id}" onclick="{!c.expandCollapseGroups}">
+                                                <lightning:icon
+                                                                iconName="utility:add"
+                                                                size="xx-small"
+                                                                alternativeText="add"  style="border: 1px solid #b9b9b9; padding: 0.1rem 0.3rem 0.3rem 0.3rem"/>
+                                            </span>
+                                            <span style="display:inline-block;margin-left:1rem;" class="{!v.recordId+' collapseGrpIcon_'+index}"  data-grpindex="{!index}" data-rowid="{!row.Id}" onclick="{!c.expandCollapseGroups}">
+                                                <lightning:icon
+                                                                iconName="utility:dash"
+                                                                size="xx-small"
+                                                                alternativeText="dash"  style="border: 1px solid #b9b9b9; padding: 0.1rem 0.3rem 0.3rem 0.3rem"/>
+                                            </span> 
+                                        </aura:if></td>
+                    <td><div class="slds-truncate" title="{!row.Name}"><a href="{!'/lightning/r/buildertek__Course_Session_Scheduling__c/'+ row.Id +'/view'}" target="_blank">{!row.Name}</a></div></td>
+                    <td><div class="slds-truncate" title="{!row.Type}"><a href="{!'/lightning/r/buildertek__Course__c/'+ row.buildertek__Course_Name__c +'/view'}" target="_blank">{!row.buildertek__Course_Name__r.Name}</a></div></td>
+                    <td><div class="slds-truncate" title="{!row.BillingState}">{!row.buildertek__Session_Date__c}</div></td>
+                    <td><div class="slds-truncate" title="{!row.BillingCity}">{!row.buildertek__Session_Duration__c}</div></td>
+                    <td><div class="slds-truncate" title="{!row.Phone}">{!row.buildertek__Session_Facilitator__r.Name }</div></td>
+                    
+                </tr>
+                
+                <tr>
+                        <td colspan="6" >
+                        <Lightning:card class="{!row.Id}" >
+                        <c:participant_Updates recordId="{!row.Id}" CourseSchrecordId="{!row.Id}"/>
+                        </Lightning:card>
+                        </td>
+                  
+                </tr>
+            </aura:iteration>
+        </tbody>
+    </table>
+    
+</aura:component>

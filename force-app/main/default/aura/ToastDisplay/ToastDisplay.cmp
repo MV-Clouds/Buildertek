@@ -1,0 +1,51 @@
+<!-- <aura:component implements="flexipage:availableForAllPageTypes,force:appHostable" access="global" >
+    <aura:attribute name="messageType" type="string" default="success"/>
+    <aura:attribute name="message" type="string"/>
+    <aura:attribute name="autoCloseTime" type="Integer" default="3000"/>
+    <aura:attribute name="autoClose" type="Boolean" default="true"/>
+    <aura:attribute name="autoCloseErrorWarning" type="Boolean" default="true"/>
+    <aura:attribute name="status" type="String" default=""/>
+    
+    <aura:method name="showToastModel" action="{!c.showToast}" access="public">
+        <aura:attribute name="message" type="String" access="public"/>
+        <aura:attribute name="messageType" type="String" access="public"/>
+    </aura:method>
+    
+      <div aura:id="toastModel" style="height:0px;" class="slds-hide toast_ntf ">
+            <div class="slds-notify_container slds-is-relative ">
+                  <div class="slds-notify slds-notify_toast toast_shadow" aura:id="toast_bg" role="status" style="padding:none; ">
+                        <div style=" width:1px; height:40px; border-radius: 10px;" aura:id="border_line"></div>
+                        <span class="slds-icon_container slds-icon-utility-success slds-icon-utility-success  slds-no-flex slds-align-top" title="{!v.message}" style="margin:5px 10px; font-size:24px;">
+                              <aura:if isTrue="{!v.messageType == 'success'}">
+                                    <lightning:icon iconName="utility:success" size="small" variant="inverse" styleclass="slds-icon slds-icon_small" aura:id="line_status" style="fill: rgb(36, 146, 3) !important;"/>
+                                    <aura:set attribute="else">
+                                          <div style="height:26px; width:26px; background-color:rgb(252, 8, 8); border-radius:50%; color:white; margin:3px 0; padding:0 9px; font-weight:bold;">!</div>
+                                    </aura:set>
+                              </aura:if>
+                        </span>
+                        <div class="slds-notify__content" style="display:block;">
+                              <aura:if isTrue="{!v.messageType == 'success'}">
+                                    <h1 style="font-weight:bold;">Yay! Everything worked!</h1>
+                                    <aura:set attribute="else">
+                                          <h1 style="font-weight:bold;">Uh oh, something went wrong</h1>
+                                    </aura:set>
+                              </aura:if>
+                              <h2 class="slds-text-heading_small" > {!v.message}</h2>
+                        </div>
+                        <div class="slds-notify__close">
+                              <button class="slds-button slds-button_icon slds-button_icon-inverse" title="Close" onclick="{!c.closeModel}" style="margin: 7px 0;">
+                                    <lightning:icon iconName="utility:close" size="small" variant="inverse" class="my-icon"/>
+                                    <span class="slds-assistive-text">Close</span>
+                              </button>
+                        </div>
+                  </div>
+            </div>
+      </div>
+</aura:component> -->
+
+<aura:component implements="flexipage:availableForAllPageTypes" access="global" >
+    Testing Cmp
+    <aura:attribute name="vfPath" type="String"
+                    default="btservice360-dev-ed--buildertek.na75.visual.force.com"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+</aura:component>

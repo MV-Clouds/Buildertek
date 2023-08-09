@@ -1,0 +1,1684 @@
+<apex:page controller="ExportPaymentApplicationController"  
+           contentType="text/xml#PaymentApp.xls" cache="true">
+    <apex:outputText value="{!xlsHeader}"/>
+    
+    <Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+              xmlns:o="urn:schemas-microsoft-com:office:office"
+              xmlns:x="urn:schemas-microsoft-com:office:excel"
+              xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+              xmlns:html="http://www.w3.org/TR/REC-html40">
+        <Styles>
+            <Style ss:ID="s1">
+                <Alignment ss:WrapText="1"/>
+                <Borders />
+                <Font ss:Bold="1"/>
+                <Interior/>
+                <NumberFormat/>
+                <Protection/>
+            </Style>
+            
+            <Style ss:ID="s2">
+                <Alignment ss:WrapText="1" ss:Vertical="JustifyDistributed" />
+                <Borders/>
+                <Font ss:Size="11"/>
+                <Interior/>
+                <NumberFormat/>
+                <Protection/>
+            </Style>
+            <Style ss:ID="s3">
+                <Alignment/>
+                <Borders/>
+                <Font ss:Bold="1" ss:Size="10"/>
+            </Style>
+            <Style ss:ID="s4">
+                <Alignment ss:Horizontal = "Center" ss:Vertical="Center" ss:WrapText="1"/>
+                <Borders/>
+                <Font ss:Bold="1"/>
+                <Interior/>
+                <NumberFormat/>
+                <Protection/>
+            </Style>
+            <Style ss:ID="s5">
+                <Alignment ss:Horizontal = "Center" />
+                <Borders/>
+                <Font/>
+                <Interior/>
+                <NumberFormat/>
+                <Protection/>
+            </Style>
+            <Style ss:ID="s6">
+                <Alignment ss:Horizontal = "Center" ss:Vertical="Center" ss:WrapText="1"/>
+                <Borders/>
+                <Font ss:Bold="1"/>
+                <Interior  ss:Color = "#c8ccc9" ss:Pattern="Solid"/>
+                <NumberFormat/>
+                <Protection/>
+            </Style>
+             
+             <Style ss:ID="ss1">
+
+                <Font ss:Size="7"/>
+                <Interior/>
+                <NumberFormat/>
+                <Protection/>
+            </Style>
+            <Style ss:ID="ss2">
+                <Font ss:Bold="1" ss:Size="8"/>
+               
+            </Style>
+            <Style ss:ID="ss3">
+                <Font  ss:Size="10" ss:Face="Arial"/>
+               
+            </Style>
+            <Style ss:ID="ss4">
+                <Font ss:Size="8"/>
+               
+            </Style>
+            <Style ss:ID="ss5">
+                <Font  ss:Size="14" ss:Face="Arial"/>
+               
+            </Style>
+             <Style ss:ID="ss6">
+                <Font  ss:Size="11" ss:Bold="1" ss:Face="Arial"/>
+               
+            </Style>
+             <Style ss:ID="ss7">
+                <Font  ss:Size="10" ss:Bold="1" ss:Face="Arial"/>
+               
+            </Style>
+         
+            <Style ss:ID="ss8">
+                <Font  ss:Size="8"  ss:Face="Arial"/>
+               <Alignment ss:Horizontal = "Center" ss:Vertical="Center"/>
+            </Style>
+            <Style ss:ID="textcenter">
+                <Font  ss:Size="8"  ss:Face="Arial"/>
+               <Alignment ss:Horizontal = "Center" ss:Vertical="Center"/>
+            </Style>
+            <Style ss:ID="textright">
+                <Font  ss:Size="8"  ss:Face="Arial"/>
+               <Alignment ss:Horizontal = "Right" />
+            </Style>
+            <Style ss:ID="textleft">
+                <Font  ss:Size="8"  ss:Face="Arial"/>
+               <Alignment ss:Horizontal = "Left" ss:Vertical="Center"/>
+            </Style>
+            <Style ss:ID="bottomBorder">    
+            <Alignment ss:Horizontal="Right" ss:Vertical="Bottom"/>            
+                <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    
+                </Borders>
+            </Style>
+            
+            <Style ss:ID="s88">
+                <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+                <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:FontName="Arial" x:Family="Swiss" ss:Size="8" ss:Bold="1"/>
+                <Interior/>
+                <NumberFormat ss:Format="Standard"/>
+            </Style>
+             <Style ss:ID="s94">
+                <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+                <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:FontName="Arial" x:Family="Swiss" ss:Size="8"/>
+                <Interior/>
+                <NumberFormat ss:Format="Standard"/>
+            </Style>
+             <Style ss:ID="s96">
+                <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="2"/>
+                </Borders>
+                <Font ss:FontName="Arial" x:Family="Swiss" ss:Size="14"/>
+                <Interior/>
+                <Protection/>
+            </Style>
+            <Style ss:ID="s98">
+                <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+                <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:FontName="Arial" x:Family="Swiss"/>
+                <Interior/>
+                <Protection/>
+            </Style>
+            <Style ss:ID="s100">
+                <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+                <Borders>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:FontName="Arial" x:Family="Swiss" ss:Size="8" ss:Bold="1"/>
+                <Interior/>
+                <Protection/>
+            </Style>
+             
+            <Style ss:ID="s101">
+                <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+                <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:FontName="Arial" x:Family="Swiss" ss:Size="8"/>
+                <Interior/>
+                <Protection/>
+            </Style>
+            
+            <Style ss:ID="s1011">
+                <Alignment ss:Horizontal="Right" ss:Vertical="Bottom"/>
+                <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:FontName="Arial" x:Family="Swiss" ss:Size="8"/>
+                <Interior/>
+                <Protection/>
+            </Style>
+            
+            <Style ss:ID="s1012">
+                <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
+                <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:FontName="Arial" x:Family="Swiss" ss:Size="8"/>
+                <Interior/>
+                <Protection/>
+            </Style>
+            
+             <Style ss:ID="s143" >
+                <Alignment ss:Horizontal="Right" ss:Vertical="Bottom"/>
+                <Borders>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:FontName="Arial" x:Family="Swiss" ss:Size="9"/>
+                <Interior/>
+                <NumberFormat ss:Format="#,##0.00"/>
+                <Protection/>
+            </Style>
+            
+            
+             <Style ss:ID="s14311" >
+                <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
+                <Borders>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:FontName="Arial" x:Family="Swiss" ss:Size="9"/>
+                <Interior/>
+                <NumberFormat ss:Format="#,##0.00"/>
+                <Protection/>
+            </Style>
+            
+            <Style ss:ID="s1432">
+                <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
+                <Borders>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:FontName="Arial" x:Family="Swiss" ss:Size="9"/>
+                <Interior/>
+                <NumberFormat ss:Format="#,##0.00"/>
+                <Protection/>
+            </Style>
+              <Style ss:ID="s1433" ss:Name="Currency">
+                <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
+                <Borders>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:FontName="Arial" x:Family="Swiss" ss:Size="9"/>              
+                <Protection/>
+            </Style>
+            
+            
+                                                                               
+            <Style ss:ID="s156">
+                <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
+                <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:FontName="Arial" x:Family="Swiss" ss:Size="9"/>
+                <NumberFormat ss:Format="#,##0.00"/>
+                <Interior/>
+            </Style>
+            <Style ss:ID="s157">
+                <Alignment ss:Horizontal="Right" ss:Vertical="Bottom"/>
+                <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:FontName="Arial" x:Family="Swiss" ss:Size="9"/>
+                <NumberFormat ss:Format="#,##0.00"/>
+                <Interior/>
+            </Style>
+             <Style ss:ID="s161">
+                <Alignment ss:Horizontal = "Right" ss:Vertical="Center"/>
+                <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:FontName="Arial" x:Family="Swiss" ss:Size="9"/>
+                <NumberFormat ss:Format="#,##0.00"/>
+                <Interior/>
+                <Protection/>
+            </Style>
+             <Style ss:ID="b1">
+                <Alignment ss:WrapText="1"/>
+                <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:Bold="1"/>
+                <Interior/>
+                <NumberFormat/>
+                <Protection/>
+            </Style>
+            <Style ss:ID="b11">
+                <Alignment ss:WrapText="1"/>
+                <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    
+                    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:Bold="1"/>
+                <Interior/>
+                <NumberFormat/>
+                <Protection/>
+            </Style>
+             <Style ss:ID="b2">
+                 <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:Size="7"/>
+                <Interior/>
+                <NumberFormat/>
+                <Protection/>
+            </Style>
+            
+            <Style ss:ID="bR">
+                 <Borders>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                
+            </Style>
+            <Style ss:ID="bL">
+                 <Borders>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                
+            </Style>
+            <Style ss:ID="bT">
+                 <Borders>
+                    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                
+            </Style>
+            <Style ss:ID="bB">
+                 <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                
+            </Style>
+            <Style ss:ID="b100">
+             <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
+                 <Borders>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:Size="7"/>
+                
+            </Style>
+            <Style ss:ID="b101">
+             <Alignment ss:Horizontal="Right" ss:Vertical="Bottom"/>
+                 <Borders>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                     <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:Size="7"/>
+                
+            </Style>
+            
+            
+            <Style ss:ID="groupVal">
+             <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+                 <Borders>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                     
+                     <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+                     <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                 <Font ss:Bold="1" ss:Size="10"/>
+            </Style>
+            <Style ss:ID="groupVal1">
+             <Alignment ss:Horizontal="Right" ss:Vertical="Bottom"/>
+                 <Borders>
+                    
+                     <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+                     <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                 <Font ss:Bold="1" ss:Size="10"/>
+            </Style>
+            
+            <Style ss:ID="groupVal2">
+             <Alignment ss:Horizontal="Right" ss:Vertical="Bottom"/>
+                 <Borders>
+                   
+                     <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                     <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+                     <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                 <Font ss:Bold="1" ss:Size="10"/>
+            </Style>
+            
+        </Styles>
+        <Worksheet ss:Name="G702">
+            <Table x:FullColumns="1" x:FullRows="1">
+                <Column ss:Width="90"/>
+                <Column ss:Width="140"/> 
+                <Column ss:Width="80"/>
+                <Column ss:Width="70"/>
+                <Column ss:Width="100"/>
+                <Column ss:Width="70"/>
+                <Column ss:Width="70"/>
+                <Column ss:Width="250"/>
+                <Column ss:Width="100"/>
+                 <Column ss:Width="80"/>
+                 <Column ss:Width="50"/>
+                 <Column ss:Width="20"/>
+                 <Column ss:Width="80"/>
+                 <Column ss:Width="80"/>
+                 <Column ss:Width="80"/>
+                <Row ss:Height="12">
+                    <Cell ss:StyleID="s3"  ss:MergeAcross="2"><Data ss:Type="String" face="Arial"  >APPLICATION AND CERTIFICATE FOR PAYMENT</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s3" ><Data ss:Type="String" >AIA DOCUMENT G702</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" >Page 1 of 2</Data></Cell>
+                </Row>  
+                <Row ss:Height="8">
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    
+                </Row>           
+                <Row ss:Height="12">
+                    <Cell ss:StyleID="ss3" ><Data ss:Type="String" face="Arial" >TO:</Data></Cell>
+                    <Cell><Data ss:Type="String" >{!paymentApp.buildertek__Payment_Application_To__r.Name}</Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="ss3"><Data ss:Type="String" >Project:</Data></Cell>
+                    <Cell><Data ss:Type="String" >{!paymentApp.buildertek__Project__r.Name}</Data></Cell>
+                    <Cell ss:StyleID="ss3"><Data ss:Type="String" >APPLICATION NO.:</Data></Cell>
+                    <Cell><Data ss:Type="String" >{!paymentApp.Application__c}</Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="ss3"><Data ss:Type="String" >Distribution to:</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                </Row>
+                <Row ss:Height="12">
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" >{!paymentApp.buildertek__Payment_Application_To__r.BillingStreet}</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                      <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="ss3"><Data ss:Type="String" >PERIOD TO:</Data></Cell>
+                    <Cell><Data ss:Type="String" >
+                    
+                    <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
+                    <apex:param value="{!paymentApp.Period_To__c}" /> 
+                    </apex:outputText>
+                    
+                    </Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="ss3"><Data ss:Type="String" >OWNER</Data></Cell>
+                    <Cell><Data ss:Type="String" >{!paymentApp.buildertek__Owner_Name__c}</Data></Cell> 
+                </Row>
+                <Row ss:Height="12">
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" >{!paymentApp.buildertek__Payment_Application_To__r.BillingCity} </Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="ss3"><Data ss:Type="String" >PROJECT NOS.:</Data></Cell>
+                    <Cell><Data ss:Type="String" >{!paymentApp.buildertek__Project__r.Auto_Number__c}</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="ss3"><Data ss:Type="String" >ARCHITECT</Data></Cell>
+                    <Cell><Data ss:Type="String" >{!paymentApp.buildertek__Architect__r.Name}</Data></Cell>
+                </Row>
+                      <Row ss:Height="12">
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" > {!paymentApp.buildertek__Payment_Application_To__r.BillingState}</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="ss3"><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="ss3"><Data ss:Type="String" >CONTRACTOR</Data></Cell>
+                    <Cell><Data ss:Type="String" >{!paymentApp.buildertek__Contract_For__c}</Data></Cell>
+                </Row>
+                <Row ss:Height="12">
+                    <Cell ss:StyleID="ss3"><Data ss:Type="String" >FROM:</Data></Cell>
+                    <Cell><Data ss:Type="String"><apex:outputText rendered="{!IF(paymentApp.PA_Type__c=='AP',True,False)}" >{!paymentApp.buildertek__Vendor__r.Name}</apex:outputText></Data></Cell>
+                     <Cell><Data ss:Type="String"></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="ss3"><Data ss:Type="String" >VIA ARCHITECT:</Data></Cell>                    
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="ss3"><Data ss:Type="String" >CONTRACT DATE:</Data></Cell>
+                    <Cell><Data ss:Type="String" >
+                    <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
+                    <apex:param value="{!paymentApp.Contract_Date__c}" /> 
+                    </apex:outputText>
+                    </Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="ss3"><Data ss:Type="String" >LENDER</Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                </Row>
+                <Row ss:Height="12">
+                    <Cell ><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String"><apex:outputText rendered="{!IF(paymentApp.PA_Type__c=='AP',True,False)}" >{!paymentApp.buildertek__Vendor__r.BillingCity} {!paymentApp.buildertek__Vendor__r.BillingState}</apex:outputText></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                   
+                </Row>
+                <Row ss:Height="12">
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ><apex:outputText rendered="{!IF(paymentApp.PA_Type__c=='AP',True,False)}" >{!paymentApp.buildertek__Vendor__r.BillingCountry} {!paymentApp.buildertek__Vendor__r.BillingPostalCode}</apex:outputText></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                      <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="ss3"><Data ss:Type="String" >P.O. NUMBER:</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                </Row>                            
+                <Row ss:Height="12">
+                    <Cell ss:StyleID="ss3"><Data ss:Type="String" >CONTRACT FOR:</Data></Cell>
+                    <Cell><Data ss:Type="String" >{!paymentApp.buildertek__Contract_For__c}</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                </Row>
+                <Row ss:Height="12">
+                    <Cell ss:StyleID="s3"  ss:MergeAcross="2"><Data ss:Type="String" face="Arial" style="font-size:10px" >CONTRACTOR'S APPLICATION FOR PAYMENT</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                </Row>
+                <Row ss:Height="12">
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                     <Cell ss:StyleID="ss1"><Data ss:Type="String" face="Calibri" >The undersigned Contractor certifies that to the best of the Contractor's knowledge, </Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ><Data ss:Type="String" ></Data></Cell>
+                    
+                   
+                </Row>
+                 <Row ss:Height="12">
+                    <Cell   ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ><Data ss:Type="String" ></Data></Cell>
+                    <Cell   ><Data ss:Type="String" ></Data></Cell>
+                    <Cell   ><Data ss:Type="String" ></Data></Cell>
+                    <Cell   ><Data ss:Type="String" ></Data></Cell>
+                      <Cell><Data ss:Type="String" ></Data></Cell>
+                     <Cell  ss:StyleID="ss1"><Data ss:Type="String" face="Calibri"> information and belief, the Work covered by this Application for Payment has been </Data></Cell>
+                    <Cell   ><Data ss:Type="String" ></Data></Cell>
+                    <Cell   ><Data ss:Type="String" ></Data></Cell>
+                    <Cell   ><Data ss:Type="String" ></Data></Cell>
+                    <Cell   ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ><Data ss:Type="String" ></Data></Cell>
+                     
+                   
+                </Row>
+                 <Row ss:Height="12">
+                    <Cell  ss:StyleID="ss1"><Data ss:Type="String"  face="Calibri" style="text-size:2px" >Application is made for payment, as shown below, in connection with the Contract</Data> </Cell>
+                    <Cell   ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ><Data ss:Type="String" ></Data></Cell>
+                    <Cell   ><Data ss:Type="String" ></Data></Cell>
+                    <Cell   ><Data ss:Type="String" ></Data></Cell>
+                      <Cell><Data ss:Type="String" ></Data></Cell>
+                     <Cell  ss:StyleID="ss1"><Data ss:Type="String"  face="Calibri" style="text-size:2px" >completed in accordance with the Contract Documents, that all amounts have been  </Data></Cell>
+                    <Cell   ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ><Data ss:Type="String" ></Data></Cell>
+                    <Cell ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ><Data ss:Type="String" ></Data></Cell>
+                   
+                </Row>
+                 <Row ss:Height="12">
+                    <Cell   ss:StyleID="ss1"><Data ss:Type="String"  face="Calibri" style="text-size:2px" > Continuation Sheet, AIA Document G703, is attached.</Data></Cell>
+                    <Cell ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ><Data ss:Type="String" ></Data></Cell>
+                    <Cell   ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ><Data ss:Type="String" ></Data></Cell>
+                    <Cell   ><Data ss:Type="String" ></Data></Cell>
+                      <Cell   ><Data ss:Type="String" ></Data></Cell>
+                     <Cell ss:StyleID="ss1"><Data ss:Type="String"  face="Calibri" style="text-size:2px" >paid by the Contractor for Work for which previous Certificates for Payment were issued  </Data></Cell>
+                    <Cell  ><Data ss:Type="String" ></Data></Cell>
+                    <Cell   ><Data ss:Type="String" ></Data></Cell>
+                    <Cell ><Data ss:Type="String" ></Data></Cell>
+                    <Cell ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ><Data ss:Type="String" ></Data></Cell>
+                    <Cell   ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ><Data ss:Type="String" ></Data></Cell>
+                   
+                </Row>
+                 <Row ss:Height="12">
+                    <Cell><Data ss:Type="String" ></Data> </Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                       <Cell><Data ss:Type="String" ></Data></Cell>
+                     <Cell ss:StyleID="ss1"><Data ss:Type="String" face="Calibri" style="text-size:2px" >and payments received from the Owner, and that current payment shown herein is now due. </Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                   
+                </Row>
+                <Row ss:Height="12">
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                </Row>
+                <Row ss:Height="12">
+                    <Cell ss:StyleID="s4"><Data ss:Type="String" >1.</Data></Cell>
+                    <Cell ss:StyleID="ss2" ><Data ss:Type="String" >ORIGINAL CONTRACT SUM………………………………</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>                    
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="bottomBorder"><Data ss:Type="String" >
+                    <apex:outputText value="{!CurrencyCode} {0, number, #,##,###,###,##0.00}" >
+                            <apex:param value="{!paymentApp.Original_Contract_Sum__c}" />
+                            </apex:outputText></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                </Row>
+                <Row ss:Height="12">
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                </Row>
+                <Row ss:Height="12">
+                    <Cell ss:StyleID="s4"><Data ss:Type="String" ><center>2.</center></Data></Cell>
+                    <Cell ss:StyleID="ss2"><Data ss:Type="String" >Net Change By Change Orders……………………………</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>                    
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="bottomBorder"><Data ss:Type="String" >
+                    <apex:outputText value="{!CurrencyCode} {0, number, ###,###,###,##0.00}" >
+                            <apex:param value="{!paymentApp.Net_Change_by_Change_Orders__c}" />
+                            </apex:outputText></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data>CONTRACTOR:</Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                </Row>
+                <Row ss:Height="12">
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                </Row>
+                <Row ss:Height="12">
+                    <Cell ss:StyleID="s4"><Data ss:Type="String" ><center>3.</center></Data></Cell>
+                    <Cell ss:StyleID="ss2"><Data ss:Type="String" >CONTRACT SUM TO DATE…………………………………</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>                    
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="bottomBorder"><Data ss:Type="String" >
+                    <apex:outputText value="{!CurrencyCode} {0, number, ###,###,###,##0.00}" >
+                            <apex:param value="{!paymentApp.Contract_Sum_To_Date__c}" />
+                            </apex:outputText></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                  
+                </Row>
+                <Row ss:Height="12">
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                </Row>
+                <Row ss:Height="12">
+                    <Cell ss:StyleID="s4"><Data ss:Type="String" ><center>4.</center></Data></Cell>
+                    <Cell ss:StyleID="ss2"><Data ss:Type="String" >TOTAL COMPLETED and STORED TO DATE…………………</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>                    
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="bottomBorder"><Data ss:Type="String" >
+                    <apex:outputText value="{!CurrencyCode} {0, number, ###,###,###,##0.00}" >
+                            <apex:param value="{!paymentApp.Total_Completed_and_Stored_To_Date__c}" />
+                            </apex:outputText></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" >By:</Data></Cell>
+                    <Cell ss:StyleID="bB"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="bB"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="bB"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="bB"><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" >Date:</Data></Cell>
+                    <Cell ss:StyleID="bB"><Data ss:Type="String" ></Data></Cell>
+                </Row>
+                 <Row ss:Height="12">
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="ss1"><Data ss:Type="String" >(Column G on Form G703)</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                </Row>
+                 <Row ss:Height="12">
+                    <Cell   ><Data ss:Type="String" ></Data></Cell>
+                    <Cell   ><Data ss:Type="String" ></Data></Cell>
+                    <Cell   ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ><Data ss:Type="String" ></Data></Cell>
+                    <Cell   ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ><Data ss:Type="String" ></Data></Cell>
+                    <Cell   ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ><Data ss:Type="String" ></Data></Cell>
+                    <Cell ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ><Data ss:Type="String" ></Data></Cell>
+                    <Cell   ><Data ss:Type="String" ></Data></Cell>
+                    <Cell ><Data ss:Type="String" ></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                </Row>
+                <Row ss:Height="12">
+                    <Cell ss:StyleID="s4"><Data ss:Type="String" ><center>5.</center></Data></Cell>
+                    <Cell ss:StyleID="ss2"><Data ss:Type="String" >RETAINAGE:</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>                    
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                </Row>
+                
+                 <Row ss:Height="12">
+                    <Cell   ><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="textright"><Data ss:Type="String">a.</Data></Cell>
+                    <Cell  ss:StyleID="bottomBorder"><Data ss:Type="String" >{!paymentApp.buildertek__Retainage__c}
+                            </Data></Cell>
+                    <Cell ss:StyleID="ss4" ><Data ss:Type="String">% of Completed Work</Data></Cell>
+                    <Cell  ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="bottomBorder"><Data ss:Type="String" >
+                    <apex:outputText value="{!CurrencyCode} {0, number, ###,###,###,##0.00}" >
+                            <apex:param value="{!ratainageofCompletedwork}" />
+                            </apex:outputText></Data></Cell>
+                    <Cell   ><Data ss:Type="String" ></Data></Cell>
+                    <Cell   ><Data ss:Type="String" ></Data></Cell>
+                    <Cell   ><Data ss:Type="String" ></Data></Cell>
+                    <Cell   ><Data ss:Type="String" ></Data></Cell>
+                    <Cell   ><Data ss:Type="String" ></Data></Cell>
+                    <Cell   ><Data ss:Type="String" ></Data></Cell>
+                    <Cell   ><Data ss:Type="String" ></Data></Cell>
+                    <Cell   ><Data ss:Type="String" ></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                </Row>
+                <Row ss:Height="12">
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="ss1"><Data ss:Type="String" >(Columns D + E on G703: <apex:outputText value="{!CurrencyCode} {0, number, ###,###,###,##0.00}" >
+                            <apex:param value="{!workComp}" />
+                            </apex:outputText> )</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                </Row>
+               <Row ss:Height="12">
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="textright"><Data ss:Type="String" style="text-align:left">b.</Data></Cell>
+                    <Cell><Data ss:Type="String" >{!paymentApp.buildertek__Retainage__c}
+                     </Data></Cell>
+                    <Cell ss:StyleID="ss4" > <Data ss:Type="String" >% of Stored Material </Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="bottomBorder"><Data ss:Type="String" >
+                    <apex:outputText value="{!CurrencyCode} {0, number, ###,###,###,##0.00}" >
+                            <apex:param value="{!ratainageofStoredMatrial}" />
+                            </apex:outputText></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                   <Cell><Data ss:Type="String" ></Data></Cell>
+                </Row>
+                <Row ss:Height="12">
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    
+                    <Cell ss:StyleID="ss1"><Data ss:Type="String" >(Column F on G703 : 
+                     <apex:outputText value="{!CurrencyCode} {0, number, ###,###,###,##0.00}" >
+                            <apex:param value="{!materialpresentlystored}" />
+                            </apex:outputText>)</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                </Row>
+                <Row ss:Height="12">
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="ss2"><Data ss:Type="String" >Total Retainage (Line 5a + 5b or</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                </Row>
+                
+                  <Row ss:Height="12">
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="ss2"><Data ss:Type="String" >Total In Column I of G703)…………………………</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="bottomBorder"><Data ss:Type="String" >
+                    <apex:outputText value="{!CurrencyCode} {0, number, ###,###,###,##0.00}" >
+                            <apex:param value="{!total_retainage}" />
+                            </apex:outputText></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1"  ss:MergeAcross="2"><Data ss:Type="String" >CERTIFICATE FOR PAYMENT</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                      <Cell><Data ss:Type="String" ></Data></Cell>
+                  
+                </Row>
+                <Row ss:Height="12">
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="ss1"><Data ss:Type="String" >In accordance with the Contract Documents, based on on-site observations and the data</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                  
+                </Row>
+                <Row ss:Height="12">
+                    <Cell ss:StyleID="s4"><Data ss:Type="String" >6.</Data></Cell>
+                    <Cell ss:StyleID="ss2"><Data ss:Type="String">TOTAL EARNED LESS RETAINAGE………………………</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="bottomBorder"><Data ss:Type="String" ><apex:outputText value="{!CurrencyCode} {0, number, ###,###,###,##0.00}" >
+                            <apex:param value="{!TOTAL_EARNED_LESS_RETAINAGE}" />
+                            </apex:outputText></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="ss1"><Data ss:Type="String" >comprising this application, the Architect certifies t the Owner that to the best of the </Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                  
+                </Row>
+                <Row ss:Height="12">
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="ss1"><Data ss:Type="String" >(Line 4 less Line 5 Total)</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="ss1"><Data ss:Type="String">Architect's knowledge, information, and belief, the Work has progressed as indicated, the</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                  
+                </Row>
+                <Row ss:Height="12">
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="ss1"><Data ss:Type="String" >quality of the Work is in accordance with the Contract Documents, and the Contractor</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                  
+                </Row>
+                <Row ss:Height="12">
+                    <Cell ss:StyleID="s4"><Data ss:Type="String" >7.</Data></Cell>
+                    <Cell ss:StyleID="ss2"><Data ss:Type="String">LESS PREVIOUS CERTIFICATES FOR PAYMENT</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="bottomBorder"><Data ss:Type="String" >
+                    <apex:outputText value="{!CurrencyCode} {0, number, ###,###,###,##0.00}" >
+                            <apex:param value="{!paymentApp.Less__c}" />
+                            </apex:outputText></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="ss1"><Data ss:Type="String">is entitled to payment of the AMOUNT CERTIFIED.</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                  
+                </Row>
+                 <Row ss:Height="12">
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="ss1"><Data ss:Type="String">(Line 6 from prior Certificate)………………………………………………………………</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                  
+                </Row>
+                 <Row ss:Height="12">
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String"></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                  
+                </Row>
+                  <Row ss:Height="12">
+                    <Cell ss:StyleID="s4"><Data ss:Type="String" >8.</Data></Cell>
+                    <Cell ss:StyleID="ss2"><Data ss:Type="String" >CURRENT PAYMENT DUE…………………………………</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="bottomBorder"><Data ss:Type="String" >
+                    <apex:outputText value="{!CurrencyCode} {0, number, ###,###,###,##0.00}" >
+                            <apex:param value="{!paymentApp.Current_Payment_Due__c}" /> 
+                            </apex:outputText></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="ss2"><Data ss:Type="String" >AMOUNT CERTIFIED………………………………………………………………</Data></Cell>
+                    <Cell><Data ss:Type="String" >{!CurrencyCode}<apex:outputText value="{0, number, ###,###,###,##0.00}" >
+                            <apex:param value="{!paymentApp.Amount_Certified__c}" />    
+                            </apex:outputText></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    
+                  
+                </Row>
+                
+                 <Row ss:Height="12">
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="ss1" ><Data ss:Type="String" face="Arial" style="font-size:2px">(Attach explanation if amount certified differs from the amount applied for.  Initial all</Data> </Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                      <Cell><Data ss:Type="String" ></Data></Cell>
+                  
+                </Row>
+                 <Row ss:Height="12">
+                    <Cell ss:StyleID="s4"><Data ss:Type="String" >9.</Data></Cell>
+                    <Cell ss:StyleID="ss2"><Data ss:Type="String" face="Arial" style="font-size:2px">BALANCE TO FINISH, PLUS RETAINAGE</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="bottomBorder"><Data ss:Type="String" >
+                    <apex:outputText value="{!CurrencyCode} {0, number, ###,###,###,##0.00}" >
+                            <apex:param value="{!BALANCE_TO_FINISH_PLUS_RETAINAGE}" />
+                            </apex:outputText></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="ss1" ><Data ss:Type="String" face="Arial" style="font-size:2px">figures on the Application and on the Continuation Sheet that changed to conform to </Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                      <Cell><Data ss:Type="String" ></Data></Cell>
+                  
+                </Row>
+                 <Row ss:Height="12">
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="ss1"><Data ss:Type="String" >(Line 3 less Line 6) </Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data>$0.00</Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="ss1"><Data ss:Type="String" face="Arial" style="font-size:2px">the amount certified.)</Data> </Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                      <Cell><Data ss:Type="String" ></Data></Cell>
+                  
+                </Row>
+                  <Row ss:Height="12">
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ><Data ss:Type="String" face="Arial" style="font-size:2px">ARCHITECT:</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                      <Cell><Data ss:Type="String" ></Data></Cell>
+                  
+                </Row>
+                <Row ss:Height="12">
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="b1"><Data ss:Type="String" face="Arial" style="font-size:2px;">CHANGE ORDER SUMMARY</Data></Cell>
+                    <Cell ss:StyleID="b11"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="b11"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="b2"><Data ss:Type="String" >ADDITIONS ({!CurrencyCode})</Data></Cell>
+                    <Cell ss:StyleID="b2"><Data ss:Type="String" >DEDUCTIONS ({!CurrencyCode})</Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                      <Cell><Data ss:Type="String" ></Data></Cell>
+                  
+                </Row>
+                 <Row ss:Height="12">
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s1012"><Data ss:Type="String" face="Arial" style="font-size:2px">Total changes approved in previous months by Owner</Data></Cell>
+                    <Cell ss:StyleID="s1011"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s1011"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s1011"><Data ss:Type="String" style="align:right;" >
+                     <apex:outputText value="{0, number, ###,###,###,##0.00}" >
+                            <apex:param value="{!paymentApp.CO_Additions_Approved_This_Month__c}" />
+                            </apex:outputText></Data></Cell>
+                    <Cell ss:StyleID="s1011"><Data ss:Type="String">
+                     <apex:outputText value=" {0, number, ###,###,###,##0.00}" >
+                            <apex:param value="{!paymentApp.CO_Deductions_Approved_in_Previous_Month__c}" />
+                     </apex:outputText></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ><Data ss:Type="String">By:</Data></Cell>
+                    <Cell ss:StyleID="bB"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="bB"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="bB"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="bB"><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ><Data ss:Type="String" >Date:</Data></Cell>
+                      <Cell ss:StyleID="bB"><Data ss:Type="String" ></Data></Cell>
+                  
+                </Row>
+                
+                     <Row ss:Height="12">
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s1012"><Data ss:Type="String" face="Arial" style="font-size:2px">Total approved this Month</Data></Cell>
+                    <Cell ss:StyleID="s1011"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s1011"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s1011"><Data ss:Type="String"><apex:outputText value=" {0, number, ###,###,###,##0.00}" ><apex:param value="{!paymentApp.Change_Order_Additions__c}" /></apex:outputText></Data></Cell>
+                    <Cell ss:StyleID="s1011"><Data ss:Type="String"><apex:outputText value=" {0, number, ###,###,###,##0.00}" ><apex:param value="{!paymentApp.Change_Order_Decuctions__c}" /></apex:outputText></Data></Cell>
+                     <Cell ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="ss1"><Data ss:Type="String" face="Arial" style="font-size:2px">This Certificate is not negotiable.  The AMOUNT CERTIFIED is payable only to the </Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String"></Data></Cell>
+                      <Cell><Data ss:Type="String" ></Data></Cell>
+                  
+                </Row>
+                 <Row ss:Height="12">
+                    <Cell ><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s1012"><Data ss:Type="String" >TOTALS</Data></Cell>
+                    <Cell ss:StyleID="s1011"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s1011"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s1011"><Data ss:Type="String" ><apex:outputText value=" {0, number, ###,###,###,##0.00}" ><apex:param value="{!ADDITIONS}" /></apex:outputText></Data></Cell>
+                    <Cell ss:StyleID="s1011"><Data ss:Type="String" ><apex:outputText value=" {0, number, ###,###,###,##0.00}" ><apex:param value="{!DEDUCTIONS}" /></apex:outputText></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="ss1" ><Data ss:Type="String" face="Arial" style="font-size:2px">Contractor named herein.  Issuance, payment and acceptance of payment are without</Data> </Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                      <Cell><Data ss:Type="String" ></Data></Cell>
+                  
+                </Row>
+                 <Row ss:Height="12">
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s1012"><Data ss:Type="String" face="Arial" style="font-size:2px">NET CHANGES by Change Order</Data></Cell>
+                    <Cell ss:StyleID="s1011"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s1011"><Data ss:Type="String" ></Data>TOTALS</Cell>
+                    <Cell ss:StyleID="s1011"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s1011"><Data ss:Type="String" >
+                        <apex:outputText value=" {0, number, ###,###,###,##0.00}" >
+                            <apex:param value="{!paymentApp.Net_Change_by_Change_Orders__c}" />
+                            </apex:outputText></Data></Cell>
+                     <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="ss1" ><Data ss:Type="String" face="Arial" style="font-size:2px">prejudice to any rights of the Owner or Contractor under the Contract.</Data> </Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                      <Cell><Data ss:Type="String" ></Data></Cell>
+                  
+                </Row>
+            </Table>
+            <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+            <PageSetup>
+            <Layout x:Orientation="Landscape"/>
+            <Header x:Margin="0.17"/>
+            <Footer x:Margin="0.16"/>
+            <PageMargins x:Bottom="0.16" x:Left="0.56000000000000005" x:Right="0.17"
+            x:Top="0.32"/>
+            </PageSetup>
+            <Print>
+            <ValidPrinterInfo/>
+            <HorizontalResolution>600</HorizontalResolution>
+            <VerticalResolution>600</VerticalResolution>
+            </Print>
+            <TabColorIndex>10</TabColorIndex>
+            <Zoom>70</Zoom>
+            <Panes>
+            <Pane>
+            <Number>3</Number>
+            <ActiveRow>6</ActiveRow>
+            <ActiveCol>7</ActiveCol>
+            </Pane>
+            </Panes>
+            <ProtectObjects>False</ProtectObjects>
+            <ProtectScenarios>False</ProtectScenarios>
+            </WorksheetOptions>
+        </Worksheet>
+          
+        <Worksheet ss:Name="G703">
+            <Table x:FullColumns="1" x:FullRows="1" ss:Border="1">
+                <Column ss:Width="120"/>
+                <Column ss:Width="200"/> 
+                <Column ss:Width="80"/>
+                <Column ss:Width="90"/>
+                <Column ss:Width="100"/>
+                <Column ss:Width="100"/>
+                <Column ss:Width="100"/>
+                <Column ss:Width="50"/>
+                <Column ss:Width="80"/>
+                <Row ss:Height="15">
+                    <Cell ss:StyleID="s96" ss:MergeAcross="2"><Data ss:Type="String" >CONTINUATION SHEET</Data></Cell>
+                    <Cell ss:StyleID="s96"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s96"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s96"><Data ss:Type="String" >AIA DOCUMENT G703</Data></Cell>
+                    <Cell ss:StyleID="s96"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s96"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s96"><Data ss:Type="String" >Page 2 of 2</Data></Cell>
+                </Row>  
+                <Row ss:Height="2">
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell  ss:StyleID="s1" ><Data ss:Type="String" ></Data></Cell>
+                </Row>           
+               <Row ss:Height="15">
+                    <Cell ss:StyleID="ss4" ss:MergeAcross="2"><Data ss:Type="String" >AIA Document G702, APPLICATION AND CERTIFICATE FOR PAYMENT,</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="ss7"><Data ss:Type="String" >APPLICATION NO.:</Data></Cell>
+                    <Cell><Data ss:Type="String" >{!paymentApp.Application__c}</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                </Row>
+               <Row ss:Height="15">
+                    <Cell ss:StyleID="ss4" ss:MergeAcross="2"><Data ss:Type="String" >containing Contractor's signed Certification, is attached.</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="ss7"><Data ss:Type="String" >APPLICATION DATE:</Data></Cell>
+                    <Cell><Data ss:Type="String" >
+                    <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
+                    <apex:param value="{!paymentApp.Submission_Date__c}" /> 
+                    </apex:outputText>
+                    </Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                </Row>
+                 <Row ss:Height="15">
+                    <Cell ss:StyleID="ss4" ss:MergeAcross="2"><Data ss:Type="String" >In tabulations below, amounts are stated to the nearest dollar.</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="ss7"><Data ss:Type="String" >PERIOD TO:</Data></Cell>
+                    <Cell><Data ss:Type="String" >
+                    
+                    <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
+                    <apex:param value="{!paymentApp.Period_To__c}" /> 
+                    </apex:outputText>
+                    </Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                </Row>
+                <Row ss:Height="15">
+                    <Cell ss:StyleID="ss4" ss:MergeAcross="2"><Data ss:Type="String" >Use Column "I" on Contracts where variable retainage for line items may apply.</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="ss7"><Data ss:Type="String" >ARCHITECT'S PROJECT NO:</Data></Cell>
+                    <Cell><Data ss:Type="String" >{!paymentApp.buildertek__Project__r.Auto_Number__c}</Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                    <Cell><Data ss:Type="String" ></Data></Cell>
+                </Row>
+                <apex:repeat value="{!wrapList}" var="record">
+                <Row ss:Height="15">
+                    <Cell ss:StyleID="groupVal" ><Data ss:Type="String" >{!record.groupVal}</Data></Cell>
+                    <Cell ss:StyleID="groupVal1"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="groupVal1"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="groupVal1"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="groupVal1"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="groupVal1"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="groupVal1"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="groupVal1"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="groupVal1"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="groupVal2"><Data ss:Type="String" ></Data></Cell>
+                </Row>
+                <Row ss:Height="15">
+                    <Cell ss:StyleID="s98" ><Data ss:Type="String" >A</Data></Cell>
+                    <Cell ss:StyleID="s98" ><Data ss:Type="String" >B</Data></Cell>
+                    <Cell ss:StyleID="s98" ><Data ss:Type="String" >C</Data></Cell>
+                    <Cell ss:StyleID="s98" ><Data ss:Type="String" >D</Data></Cell>
+                    <Cell ss:StyleID="s98" ><Data ss:Type="String" >E</Data></Cell>
+                    <Cell ss:StyleID="s98" ><Data ss:Type="String" >F</Data></Cell>
+                    <Cell ss:StyleID="s98" ><Data ss:Type="String" >G</Data></Cell>
+                    <Cell ss:StyleID="s98" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s98" ><Data ss:Type="String" >H</Data></Cell>
+                    <Cell ss:StyleID="s98" ><Data ss:Type="String" >I</Data></Cell>
+                </Row>
+                <Row ss:Height="15">
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s88" ss:MergeAcross="1"><Data ss:Type="String" >WORK COMPLETED</Data></Cell>
+                   
+                    <Cell ss:StyleID="s100" ><Data ss:Type="String" >MATERIALS</Data></Cell>
+                    
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" >TOTAL</Data></Cell>
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" ></Data></Cell>
+                </Row>
+
+                <Row ss:Height="15">
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" >ITEM</Data></Cell>
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" >SCHEDULED</Data></Cell>
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" >ON PREVIOUS</Data></Cell>
+                    <Cell ss:StyleID="s100"> <Data ss:Type="String" >THIS PERIOD ({!CurrencyCode})</Data></Cell>
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" >PRESENTLY</Data></Cell>
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" >COMPLETED</Data></Cell>
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" >%</Data></Cell>
+                     <Cell ss:StyleID="s100"><Data ss:Type="String" >BALANCE</Data></Cell>
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" > RETAINAGE </Data></Cell>
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" >  </Data></Cell>
+                </Row>
+                <Row ss:Height="15">
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" >NO</Data></Cell>
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" >DESCRIPTION OF WORK</Data></Cell>
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" >VALUE ({!CurrencyCode})</Data></Cell>
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" >APPLICATION ({!CurrencyCode})</Data></Cell>
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" >STORED ({!CurrencyCode})</Data></Cell>
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" >AND STORED</Data></Cell>
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" >TO</Data></Cell>
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" >(may vary) ({!CurrencyCode})</Data></Cell>
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" ></Data></Cell>
+                </Row>
+                <Row ss:Height="15">
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s101"><Data ss:Type="String" >(NOT IN</Data></Cell>
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" >TO DATE ({!CurrencyCode})</Data></Cell>
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" >(G/C)</Data></Cell>
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" >FINISH ({!CurrencyCode})</Data></Cell>
+                    <Cell ss:StyleID="s100"><Data ss:Type="String" ></Data></Cell>
+                      <Cell ss:StyleID="s100"><Data ss:Type="String" ></Data></Cell>
+                </Row>
+                <Row ss:Height="15">
+                    <Cell ss:StyleID="s101"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s101"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s101"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s101"><Data ss:Type="String" >(D + E)</Data></Cell>
+                    <Cell ss:StyleID="s101"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s101"><Data ss:Type="String" >D or E)</Data></Cell>
+                    <Cell ss:StyleID="s101"><Data ss:Type="String" >(D+E+F)</Data></Cell>
+                    <Cell ss:StyleID="s101"><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s101"><Data ss:Type="String" >(C-G)</Data></Cell>
+                    <Cell ss:StyleID="s101"><Data ss:Type="String" ></Data></Cell>
+                </Row>
+                <apex:variable value="{!1}" var="quesNum"/>
+                 <apex:repeat value="{!record.sheetLines}" var="record1">
+                    <Row ss:Height="15">
+                        <Cell ss:StyleID="s100"><Data ss:Type="Number" >{!record1.buildertek__Item_No__c}</Data></Cell>
+                        <Cell ss:StyleID="s1432"><Data ss:Type="String" >{!record1.buildertek__Description_of_Work__c} </Data></Cell>
+                        <Cell ss:StyleID="s143"><Data ss:Type="String" >
+                            <apex:outputText value="{0, number, ###,###,###,##0.00}" >
+                             <apex:param value="{!record1.Scheduled_Value__c}" />
+                            </apex:outputText></Data></Cell>
+                        <Cell ss:StyleID="s143"><Data ss:Type="String" >
+                        <apex:outputText value="{0, number, ###,###,###,##0.00}" >
+                             <apex:param value="{!record1.Work_Completed_from_Previous_Application__c}" />
+                            </apex:outputText></Data></Cell>
+                        <Cell ss:StyleID="s143"><Data ss:Type="String" >
+                        <apex:outputText value="{0, number, ###,###,###,##0.00}" >
+                             <apex:param value="{!record1.Work_Completed__c}" />
+                            </apex:outputText></Data></Cell>
+                        <Cell ss:StyleID="s143"><Data ss:Type="String" > <apex:outputText value="{0, number, ###,###,###,##0.00}" >
+                             <apex:param value="{!record1.Material_Presently_Stored__c}" />
+                            </apex:outputText></Data></Cell>
+                        <Cell ss:StyleID="s143"><Data ss:Type="String" >
+                        <apex:outputText value="{0, number, ###,###,###,##0.00}" >
+                             <apex:param value="{!record1.Total__c}" />
+                            </apex:outputText></Data></Cell>
+                        <Cell ss:StyleID="s143"><Data ss:Type="String" >{!record1.G_C__c} %</Data></Cell>
+                        <Cell ss:StyleID="s143"><Data ss:Type="String" ><apex:outputText value="{0, number, ###,###,###,##0.00}" >
+                             <apex:param value="{!record1.Balance_To_Finish__c}" />
+                            </apex:outputText></Data></Cell>
+                        <Cell ss:StyleID="s143"><Data ss:Type="String" ><apex:outputText value="{0, number, ###,###,###,##0.00}" >
+                             <apex:param value="{!record1.New_Retainage__c}" />
+                            </apex:outputText></Data></Cell>
+                    </Row>
+                    <apex:variable var="quesNum" value="{!quesNum + 1}"/>
+                </apex:repeat>
+                
+                 <Row ss:Height="15">
+                    <Cell ss:StyleID="s157" ><Data ss:Type="String" ></Data></Cell>
+                    <Cell ss:StyleID="s157" ><Data ss:Type="String" >Sub Total</Data></Cell>
+                    <Cell ss:StyleID="s157" ><Data ss:Type="String" >
+                    <apex:outputText value="{0, number, ###,###,###,##0.00}" >
+                            <apex:param value="{!calcMap[record.groupVal].scheduleValueTotal1}" />
+                            </apex:outputText></Data></Cell>
+                    <Cell ss:StyleID="s157"><Data ss:Type="String" >
+                    <apex:outputText value="{0, number, ###,###,###,##0.00}" >
+                            <apex:param value="{!calcMap[record.groupVal].workFromPrevAppTotal1}" />
+                            </apex:outputText></Data></Cell>
+                    <Cell ss:StyleID="s157" ><Data ss:Type="String" >
+                     <apex:outputText value="{0, number, ###,###,###,##0.00}" >
+                            <apex:param value="{!calcMap[record.groupVal].workcompletedTotal1}" />
+                            </apex:outputText></Data></Cell>
+                    <Cell ss:StyleID="s157"><Data ss:Type="String" >
+                    <apex:outputText value="{0, number, ###,###,###,##0.00}" >
+                            <apex:param value="{!calcMap[record.groupVal].materialsStoredTotal1}" />
+                            </apex:outputText></Data></Cell>
+                    <Cell ss:StyleID="s157" ><Data ss:Type="String" >
+                    <apex:outputText value="{0, number, ###,###,###,##0.00}" >
+                            <apex:param value="{!calcMap[record.groupVal].totalCompletedStored1}" />
+                            </apex:outputText></Data></Cell>
+                   
+                     
+                     
+                     
+                     <Cell ss:StyleID="s157" ><Data ss:Type="String" >
+                     <apex:outputText value="{0, number, ###,###,###,##0.00} %" >
+                         <apex:param value="{!calcMap[record.groupVal].gcVal}" /> 
+                     </apex:outputText></Data></Cell>
+                
+                    <Cell ss:StyleID="s157"><Data ss:Type="String" >
+                    <apex:outputText value="{0, number, ###,###,###,##0.00}" >
+                            <apex:param value="{!calcMap[record.groupVal].balancetofinsh1}" />
+                            </apex:outputText></Data></Cell>
+                    <Cell ss:StyleID="s157"><Data ss:Type="String" >
+                    <apex:outputText value="{0, number, ###,###,###,##0.00}" >
+                            <apex:param value="{!calcMap[record.groupVal].retainage1}" />
+                            </apex:outputText></Data></Cell>
+                   
+                </Row>
+                </apex:repeat>
+                
+                 <Row ss:Height="15">
+                        <Cell ss:StyleID="s157"><Data ss:Type="String" ></Data></Cell>
+                        <Cell ss:StyleID="s157"><Data ss:Type="String" >Total</Data></Cell>
+                        <Cell ss:StyleID="s157"><Data ss:Type="String" >
+                            <apex:outputText value="{0, number, ###,###,###,##0.00}" >
+                            <apex:param value="{!scheduleValueTotal}" />
+                            </apex:outputText></Data></Cell>
+                              <Cell ss:StyleID="s157"><Data ss:Type="String" >
+                            <apex:outputText value="{0, number, ###,###,###,##0.00}" >
+                            <apex:param value="{!workFromPrevAppTotal}" />
+                            </apex:outputText></Data></Cell>
+                            
+                            <Cell ss:StyleID="s157"><Data ss:Type="String" >
+                            <apex:outputText value="{0, number, ###,###,###,##0.00}" >
+                            <apex:param value="{!workCompletedthisperiod}" />
+                            </apex:outputText></Data></Cell>
+                            
+                            
+                            <Cell ss:StyleID="s157"><Data ss:Type="String" >
+                            <apex:outputText value="{0, number, ###,###,###,##0.00}" >
+                            <apex:param value="{!materialpresentlystored}" />
+                            </apex:outputText></Data></Cell>
+                            
+                            <Cell ss:StyleID="s157"><Data ss:Type="String" >
+                            <apex:outputText value="{0, number, ###,###,###,##0.00}" >
+                                <apex:param value="{!completedandstored}" />
+                                </apex:outputText></Data></Cell>
+                     
+                     
+                     
+                     <Cell ss:StyleID="s157" ><Data ss:Type="String" >
+                         <apex:outputText value="{0, number, ###,###,###,##0.00} %" >
+                             <apex:param value="{!gc}" /> 
+                         </apex:outputText></Data></Cell>
+                     
+                            <Cell ss:StyleID="s157"><Data ss:Type="String" >
+                            <apex:outputText value="{0, number, ###,###,###,##0.00}" >
+                            <apex:param value="{!balancetofinsh}" />
+                            </apex:outputText></Data></Cell>
+                        
+                       
+                        <Cell ss:StyleID="s157"><Data ss:Type="String" >
+                            <apex:outputText value="{0, number, ###,###,###,##0.00}" >
+                            <apex:param value="{!retainage}" />
+                            </apex:outputText></Data></Cell>
+                    </Row>
+                
+            </Table>
+            
+        </Worksheet>
+          
+        
+        
+    </Workbook>
+</apex:page>

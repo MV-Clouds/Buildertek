@@ -1,0 +1,107 @@
+<aura:component implements="force:hasRecordId,force:lightningQuickActionWithoutHeader,lightning:actionOverride"
+    access="global" controller="NewRecordCustomController">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="parentRecordId" type="String" default="" />
+    <aura:attribute name="isLoading" type="Boolean" />
+    <aura:attribute name="isSaveNew" type="Boolean" default="false" />
+    <aura:attribute name="displayCmp" type="Boolean" default="true"/>
+    <aura:attribute name="listOfFields" type="List" />
+    <aura:attribute name="isdisabled" type="Boolean" default="false"/>
+    <aura:attribute name="parentprojectRecordId" type="String" default="" />
+    <lightning:workspaceAPI aura:id="workspace" />
+    <aura:html tag="style">
+        .slds-modal__container {
+        width:70% !important;      
+		max-width: 70% !important;    
+         
+        }
+         .slds-modal__content {
+         //overflow: hidden !important;
+         }
+    </aura:html>
+    
+  
+    <ltng:require styles="{!$Resource.ModalPreviewCSS}" />
+	
+    <aura:if isTrue="{!v.displayCmp}">
+        
+<div class="" style="position:relative">
+       <!--<lightning:recordEditForm aura:id="leadCreateForm" objectApiName="buildertek__Contract__c" onsubmit="{!c.handleOnSubmit}"
+                                  onsuccess="{!c.handleOnSuccess}">
+            <lightning:messages />-->
+            
+            <!--Custom Styles for Modal Header and Footer--> 
+            <aura:html tag="style">
+                .cuf-content {
+                padding: 0 0rem !important;
+                }
+                .slds-p-around--medium {
+                padding: 0rem !important;
+                }       
+                .slds-modal__content{
+                overflow-y:hidden !important;
+                height:unset !important;
+                max-height:unset !important;
+                }
+            </aura:html>
+            
+            
+            <div class="slds-modal__content ">
+            <div class="slds slds-scope">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" onclick="{! c.doCancel }" alternativeText="close"
+                                          variant="bare-inverse" class="slds-modal__close" />
+                    
+                                            
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New Receipt</h2>
+                </header>
+             
+            
+        <!-- <lightning:button variant="brand-outline" label="Cancel" title="Cancel" onclick="{! c.close }"/> -->
+       <div class="slds-modal__content" id="modal-content-id-1" style="height:100%">
+        <!--<div class="slds-modal__content slds-p-around-large" >-->
+              <lightning:recordEditForm aura:id="recordViewFormNew" objectApiName="buildertek__Receipt__c"
+                        onsubmit="{!c.handleSubmit}" onsuccess="{!c.onRecordSuccess}" onerror="{!c.handleError}">
+                        <lightning:layout multipleRows="true">
+                            <aura:iteration items="{!v.listOfFields}" var="field">
+                                <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                                    <aura:if  isTrue="{!and(field.name !='buildertek__Billing__c',field.name !='buildertek__Project__c')
+                                                     }" >    
+                                         <lightning:inputField fieldName="{!field.name}" value="" />
+                                        <aura:set attribute="else"> 
+                                            <aura:if  isTrue="{!field.name =='buildertek__Project__c'}" >                                            
+                                                <lightning:inputField fieldName="{! field.name }" value = "{!v.parentprojectRecordId}"/>
+                                            </aura:if>
+                                            <aura:if  isTrue="{!field.name =='buildertek__Billing__c'}" >                                            
+                                                <lightning:inputField fieldName="{! field.name }" value = "{!v.parentRecordId}"/>
+                                            </aura:if>
+                                        </aura:set>
+                                    </aura:if>
+                                        <!--<aura:if isTrue="{!and(field.name=='buildertek__Billing__c',v.parentRecordId)}">
+                                            <lightning:inputField fieldName="{!field.name}" value="{!v.parentRecordId}" />
+                                            <aura:set attribute="else">
+                                                <lightning:inputField fieldName="{!field.name}" value="" />
+                                            </aura:set>
+                                        </aura:if>-->
+                                </lightning:layoutItem>
+                            </aura:iteration>
+                        </lightning:layout>
+                  <div class="slds-col modal-footer slds-modal__footer slds-buttoncustom" >
+                      <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{! c.closeModel }" />
+                      <lightning:button variant="brand" type="submit" name="save" label="Save"  disabled="{!v.isdisabled}"/>
+                    </div> 
+                 <!-- <footer class="slds-modal__footer">
+                      <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{! c.closeModel }" />
+                      <lightning:button variant="neutral" title="Save &amp; New" label="Save &amp; New"
+                                onclick="{!c.saveAndNew}" />
+                      <lightning:button variant="brand" type="submit" name="save" label="Save" />
+                  </footer> -->
+                    </lightning:recordEditForm>
+        </div>
+        
+            </div>
+        </div>
+        <!--</lightning:recordEditForm>-->
+    </div>
+    </aura:if>
+</aura:component>

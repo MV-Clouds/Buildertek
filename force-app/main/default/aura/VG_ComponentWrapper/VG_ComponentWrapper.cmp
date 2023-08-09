@@ -1,0 +1,17 @@
+<aura:component >
+    <aura:attribute name="boxValue" type="Aura.Component[]"></aura:attribute>
+    <aura:attribute name="border" type="Boolean" default="True"></aura:attribute>
+    <aura:attribute name="customHeight" type="String" default=""></aura:attribute>
+    
+    <aura:if isTrue="{!v.border}">
+        <div class="custom-box" style="{!'Height:'+v.customHeight+'px'}">
+             {!v.boxValue}
+        </div>
+        
+        <aura:set attribute="else">
+            <div class="custom-box-header-comp" style="{!'Height:'+v.customHeight+'px'}">
+                 {!v.boxValue}
+            </div>
+        </aura:set>
+    </aura:if>
+</aura:component>

@@ -1,0 +1,6 @@
+<aura:component implements="lightning:isUrlAddressable" access="GLOBAL">
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="vrRedirectMethod" type="object" description="this attribute is for visualforce page javascript method"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <lightning:flow aura:id="flowData" onstatuschange="{!c.handleStatusChange}" />
+</aura:component>

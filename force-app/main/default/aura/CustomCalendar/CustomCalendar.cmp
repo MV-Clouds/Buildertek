@@ -1,0 +1,287 @@
+<aura:component controller="CustomCalendar_AC" implements="force:appHostable,flexipage:availableForAllPageTypes,force:hasRecordId" access="global">
+<aura:attribute type="String" name="displayView" default="project"/>
+<aura:attribute name="permissionSetAssigned" type="boolean" />
+ <aura:attribute name="isOpen" type="boolean" default="false"/>
+        <aura:attribute name="DateSelected" type="string"/>
+        <aura:attribute name="SerPrimaryAssignee" type="string"/>
+        <aura:attribute name="SerDescription" type="string"/>
+        <aura:attribute name="SerProjectId" type="string"/>
+        <aura:attribute name="ServiceRequestRecord" type="string" default=""/>
+        <aura:attribute name="Subject" type="string" default=""/>
+        <aura:attribute name="selectedLookUpRecord" type="sObject" default=""/> 
+        <aura:attribute name="PselectedLookUpRecord" type="sObject" default=""/> 
+        <aura:attribute name="ProjectIds" type="String" default="" />
+        <aura:attribute name="Timevalue" type="String" default="" />
+		  <aura:attribute name="showSpinner" type="boolean" default="false"/>
+          <aura:method name="reInit" action="{!c.doInit}" description="Runs the init method again " />
+      
+        <aura:registerEvent name="ClearSelectedRecordEvent" type="c:BT_CLearLightningLookupEvent"/>
+        <aura:handler name="oSelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.handleComponentEvent}"/>
+        <aura:handler name="SelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.handleComponentEvent}"/>
+<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+ <aura:attribute name="type" type="String" default="info"/>
+    <aura:attribute name="color" type="String" default="white"/>
+     <aura:attribute name="index" type="String" default="" />
+    
+
+
+<!-- modal-->   
+
+<aura:if isTrue="{!v.showSpinner}">
+        <div class="slds">
+            <div class="slds-spinner_container" style="background-color:black;opacity:0.5">
+                <div class="slds-spinner--inverse slds-spinner slds-spinner--large" role="alert">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                     <div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+                
+                </div>
+            </div>
+        </div>
+    </aura:if>
+    <div class="slds slds-grid slds-p-top--small">
+        <div class="slds-col slds-size--1-of-4">
+
+        </div>
+        <div class="slds-col slds-size--3-of-4 " style="margin-left: 12px;">
+                <div class="slds-grid slds-wrap">
+                    <div class="
+                                slds-col
+                                slds-order--3 slds-medium-order--1
+                                slds-size--1-of-1 slds-medium-size--2-of-3
+                                ">
+                        <lightning:buttonGroup class="">
+                           <!-- <lightning:button aura:id="project" onclick="{!c.changeComponent}" class="{!v.displayView == 'project' ? ' ':''}" label="Project" /> --> 
+                            <lightning:button aura:id="workorder" onclick="{!c.changeComponent}" class="{!v.displayView == 'workorder' ? 'slds-button--brand ':''}" label="Project&nbsp;Tasks "/>
+                            <lightning:button aura:id="resources" onclick="{!c.changeComponent}" class="{!v.displayView == 'resources' ? 'slds-button--brand ':''}" label="Resources" />
+                            <lightning:button aura:id="CreateSR" onclick="{!c.openpopup}" class="slds-button--neutral" label="Create SR" />
+                        </lightning:buttonGroup>
+                    </div>
+                    <div class="
+                                slds-col
+                                slds-order--2 slds-medium-order--2
+                                slds-align--absolute-center
+                                ">
+
+                    </div>
+                    <div class="
+                                slds-col
+                                slds-order--1 slds-medium-order--3
+                                slds-size--1-of-1 slds-medium-size--1-of-4
+                                " style="display: inline-flex;">
+                        <div class="slds-x-small-buttons--horizontal slds-m-bottom--small">
+                           
+                        </div>                        
+                    </div>
+                </div>            
+        </div>    
+    </div><br/>
+    <div class="slds slds-grid"> 
+         <div class="slds-col slds-size--1-of-1">
+             <aura:if isTrue="{!v.displayView == 'project'}" > 
+                 <c:CalendarProjectView recordId="{!v.recordId}"/>   
+             </aura:if>
+             <aura:if isTrue="{!v.displayView == 'workorder'}" > 
+                 <c:ProjectTaskViews recordId="{!v.recordId}"/> 
+             </aura:if>
+             <aura:if isTrue="{!v.displayView == 'resources'}" > 
+                 <c:CalendarResourceView recordId="{!v.recordId}" /> 
+             </aura:if>             
+
+        </div>
+    </div>
+    
+    <div class="slds-m-around_xx-large">
+        
+       <aura:if isTrue="{!v.isOpen}">
+            
+            <!--###### MODAL BOX Start######--> 
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container" style="height:550px">
+                    <!-- ###### MODAL BOX HEADER Start ######-->
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close"
+                                              onclick="{! c.closeModel }"
+                                              alternativeText="close"
+                                              variant="bare-inverse"
+                                              class="slds-modal__close"/>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New Service Request</h2>
+                    </header>
+                    
+                        <aura:if isTrue="{! (v.type != 'info')}"> 
+		               <div class="{!'slds-box slds-theme–alert-texture slds-theme–' + v.type}" style = "{!'color:white;font-weight:bold;background-color :'+v.color}">
+                            <lightning:icon iconName="{! 'utility:'+ v.type }" size="medium"
+                                alternativeText="{!v.type}" Class="iconContainer"/>&nbsp;
+                                <span class="slds-text-body–regular">
+                                    <aura:unescapedHtml value="{!v.message}"/>
+                                </span>
+                        </div>
+                        </aura:if>
+                    <!--###### MODAL BOX BODY Part Start######-->
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <div class="slds-form--stacked slds-p-around--medium slds-m-bottom--x-small">
+                          <div class="slds-form-element">
+                              <div class="demo-only demo-only--sizing slds-grid slds-wrap">
+                                  <div class="slds-size_1-of-2">
+                                        <div class="slds-m-around_x-small">
+                                             <label class="slds-form-element__label" for="inputNameSample1">Customer Name</label>
+                                        <div class="slds-form-element__control" style="    margin-top: 15px;">
+                                          <c:BT_LightningLookup objectAPIName="Contact"  selectedRecord="{!v.selectedLookUpRecord}" aura:id="productId"/>
+                                        </div>
+                                        </div>
+                                  </div>
+                                  <div class="slds-size_1-of-2">
+                                        <div class="slds-m-around_x-small">
+                                            <label class="slds-form-element__label" for="inputNameSample2">Subject</label>
+                                            <div class="slds-form-element__control">
+                                          <ui:inputText label="" class="slds-input" value="{!v.Subject}" />
+                                        </div>
+                                        </div>
+                                  </div>
+                                </div> 
+                                
+                            
+                           
+                          </div>
+                         
+                          <div class="slds-form-element">
+                              <div class="demo-only demo-only--sizing slds-grid slds-wrap">
+                                  <div class="slds-size_1-of-2">
+                                        <div class="slds-m-around_x-small">
+                                            <label class="slds-form-element__label" for="inputNameSample2">Primary Assignee</label>
+                                            <div class="slds-form-element__control">
+                                          <ui:inputText label="" class="slds-input" value="{!v.SerPrimaryAssignee}" />
+                                        </div>
+                                        </div>
+                                  </div>
+                                  
+                                  <div class="slds-size_1-of-2">
+                                        <div class="slds-m-around_x-small">
+                                            <label class="slds-form-element__label" for="inputNameSample2">Project</label>
+                                            <div class="slds-form-element__control" style="    margin-top: 15px;">
+                                                <c:BT_LightningLookup objectAPIName="Buildertek__Project__c"  selectedRecord="{!v.PselectedLookUpRecord}" aura:id="productId"/>
+                                            </div>
+                                        </div>
+                                  </div>
+                                  
+                                  
+                                </div> 
+                               
+                            
+                          </div>
+                         
+                          <div class="slds-form-element">
+                              <div class="demo-only demo-only--sizing slds-grid slds-wrap">
+                                  <div class="slds-size_1-of-2">
+                                        <div class="slds-m-around_x-small">
+                                            <div class="slds-form-element__control" style="    margin-top: 15px;" >
+                                                   <ui:inputDate aura:id="mySelectedDate"  class="slds-input"
+                                                            label="Date" displayDatePicker="true" 
+                                                            value="{!v.DateSelected}" format="MM/dd/yyyy"/>
+                                            </div>
+                                        </div>
+                                  </div>
+                                  
+                                   <div class="slds-size_1-of-2">
+                                        <div class="slds-m-around_x-small">
+                                               <lightning:select value="{!v.Timevalue}" label="Time">       
+                                                <option value="">Choose one...</option>
+                                                <option value="00:00">12:00 AM</option>
+                                                <option value="00:30">12:30 AM</option>
+                                                <option value="01:00">01:00 AM</option>
+                                                <option value="01:30">01:30 AM</option>
+                                                <option value="02:00">02:00 AM</option>
+                                                <option value="02:30">02:30 AM</option>
+                                                <option value="03:00">03:00 AM</option>
+                                                <option value="03:30">03:30 AM</option>
+                                                <option value="04:00">04:00 AM</option>
+                                                <option value="04:30">04:30 AM</option>
+                                                <option value="05:00">05:00 AM</option>
+                                                <option value="05:30">05:30 AM</option>
+                                                <option value="06:00">06:00 AM</option>
+                                                <option value="06:30">06:30 AM</option>
+                                                <option value="07:00">07:00 AM</option>
+                                                <option value="07:30">07:30 AM</option>
+                                                <option value="08:00">08:00 AM</option>
+                                                <option value="08:30">08:30 AM</option>
+                                                <option value="09:00">09:00 AM</option>
+                                                <option value="09:30">09:30 AM</option>
+                                                
+                                                <option value="10:00">10:00 AM</option>
+                                                <option value="10:30">10:30 AM</option>
+                                                <option value="11:00">11:00 AM</option>
+                                                <option value="11:30">11:30 AM</option>
+                                                <option value="12:00">12:00 PM</option>
+                                                
+                                                <option value="12:30">12:30 PM</option>
+                                                <option value="13:00">01:00 PM</option>
+                                                <option value="13:30">01:30 PM</option>
+                                                <option value="14:00">02:00 PM</option>
+                                                <option value="14:30">02:30 PM</option>
+                                                <option value="15:00">03:00 PM</option>
+                                                <option value="15:30">03:30 PM</option>
+                                                <option value="16:00">04:00 PM</option>
+                                                <option value="16:30">04:30 PM</option>
+                                                <option value="17:00">05:00 PM</option>
+                                                <option value="17:30">05:30 PM</option>
+                                                <option value="18:00">06:00 PM</option>
+                                                <option value="18:30">06:30 PM</option>
+                                                <option value="19:00">07:00 PM</option>
+                                                <option value="19:30">07:30 PM</option>
+                                                <option value="20:00">08:00 PM</option>
+                                                <option value="20:30">08:30 PM</option>
+                                                <option value="21:00">09:00 PM</option>
+                                                <option value="21:30">09:30 PM</option>
+                                                <option value="22:00">10:00 PM</option>
+                                                <option value="22:30">10:30 PM</option>
+                                                <option value="23:00">11:00 PM</option>
+                                                <option value="23:30">11:30 PM</option>
+                                                
+                                            </lightning:select>
+                                        </div>
+                                    </div>
+        
+        
+                                </div> 
+                            </div>
+                            
+                           <div class="slds-form-element">
+                              <div class="demo-only demo-only--sizing slds-grid slds-wrap">
+                                  <div class="slds-size_1-of-2">
+                                        <div class="slds-m-around_x-small">
+                                            <label class="slds-form-element__label" for="inputNameSample2">Description</label>
+                                            <div class="slds-form-element__control">
+                                                <ui:inputText label="" class="slds-input" value="{!v.SerDescription}"  />
+                                            </div>
+                                        </div>
+                                  </div>
+                                </div> 
+                            </div>
+                           
+                    </div>
+ 
+                        
+                        
+                    </div>
+                    <!--###### MODAL BOX FOOTER Part Start ######-->
+                    <footer class="slds-modal__footer">
+                        <lightning:button variant="neutral" 
+                                          label="Cancel"
+                                          title="Cancel"
+                                          onclick="{! c.closeModel }"/>
+                        <lightning:button variant="brand" 
+                                          label="Save"
+                                          title="Save"
+                                          onclick="{! c.SaveService }"/>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+            <!--###### MODAL BOX Part END Here ######-->
+            
+        </aura:if>
+    </div>
+</aura:component>

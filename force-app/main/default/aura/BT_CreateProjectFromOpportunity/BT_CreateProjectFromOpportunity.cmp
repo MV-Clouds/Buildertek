@@ -1,0 +1,52 @@
+<aura:component controller="BT_CreateProjectFromOpportunity" implements="flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader,lightning:actionOverride" access="global">
+    <aura:attribute name="record" type="Object" />
+    <aura:attribute name="projectRecord" type="Object" />
+    <aura:attribute name="type" type="String" />
+    <aura:attribute name="Spinner" type="boolean" default="false"/>
+    <aura:attribute name="projectName" type="String" default=""/>
+    <aura:attribute name="selectedLookUpRecord" type="sObject" default="{}"/>
+    <aura:attribute name="selectedUserRecord" type="sObject" default="{}"/>
+    <aura:attribute name="isAccount" type="Boolean" default="true"/>
+    <aura:attribute name="selectedLookUpRecordName" type="String" />
+    <aura:attribute name="projectManager" type="String" />
+    <aura:attribute name="contractDate" type="String" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> 
+    
+    
+    <ltng:require styles="{!$Resource.ModalPreviewCSS}"/>
+             <aura:html tag="style">
+        .cuf-content {
+        padding:  0rem !important;
+        }
+        .slds-p-around--medium {
+        padding: 0rem !important;
+        }
+    </aura:html>
+    <div class="slds-modal__header" style="font-size:17px;">
+        Create Project
+    </div>
+                <div class="slds-modal__content slds-p-around--large">
+                     <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__Project__c">
+                            <lightning:inputField aura:id="projectNameId" fieldName="Name"/>
+                            <lightning:inputField aura:id="accountId" fieldName="buildertek__Account__c" />
+                            <lightning:inputField aura:id="projectManagerId" fieldName="buildertek__Project_Manager__c" />
+                            <lightning:inputField aura:id="contractDateId" fieldName="buildertek__Contract_Date__c" />
+                     </lightning:recordEditForm>        
+                </div>
+                <div class="slds-modal__footer">
+                    <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}" >Cancel</button>
+                    <button class="slds-button slds-button--brand" onclick="{!c.saveModel}">Save</button>
+                </div>
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+           <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+             <span class="slds-assistive-text">Loading</span>
+             <div class="slds-spinner__dot-a"></div>
+             <div class="slds-spinner__dot-b"></div>
+               <div class="custom-loading-text">
+                           <b>Processing, Please Wait</b>
+                       </div>
+           </div>
+        </div>
+     </aura:if>
+</aura:component>

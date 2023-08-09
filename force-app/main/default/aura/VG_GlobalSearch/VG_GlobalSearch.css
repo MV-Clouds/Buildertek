@@ -1,0 +1,79 @@
+.THIS .globalsearchresults{
+    font-size:15px !important;
+    font-family:gotham-book !important;
+    text-align: inherit !important;
+    padding: 0px !important;
+    padding-left: 10px !important;
+    float: unset !important;
+    color: rgb(51, 64, 71) !important;
+}
+.THIS .searchDiv svg {
+    width: 1rem;
+    height: 1rem;
+    position: absolute;
+    top: 50%;
+    margin-top: -.5rem;
+    fill:#cacaca;
+    right: 1.25rem;
+}
+.THIS .searchDiv {  
+    
+    width: 219px;
+    position: absolute;
+    right: 35px;
+    margin-top:5px;
+}
+.THIS .slds-lookup__list {
+    overflow:hidden;
+}
+.THIS .slds-input{
+    padding-left: 4px;
+    border: 1.4px solid #e6e0e0;
+    
+}
+.THIS .slds-assistive-text{
+    float: left !important;
+    text-align: left !important;
+    font-weight: bold;
+}
+.THIS h1{
+    color:rgb(51, 64, 71);
+    font-size:15px;font-family:gotham-book;
+}
+
+.THIS h1:hover{
+    color:rgb(0, 180, 203);
+    font-size:15px;font-family:gotham-book;
+}
+.THIS .searchinput{
+    background-color: inherit;    
+}
+.THIS input::placeholder {
+    color:#cacaca ;
+    text-align: left !important;
+    
+    font-weight: bold;
+}
+
+.THIS#searchInputBox{
+    font-family:Gotham-Medium;
+    font-size:14px;
+    text-align: left !important;
+}
+.THIS.employee{
+    font-family:Gotham-Medium;
+    font-size:14px;
+}
+.THIS.icon{
+    display:none;
+}
+.THIS h2{
+    padding-left:10px;
+}
+.THIS .slds-lookup{
+    position:unset;
+}
+
+.THIS .slds-lookup__menu{
+    width: 40%;
+}

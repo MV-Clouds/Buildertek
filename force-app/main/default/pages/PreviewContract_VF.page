@@ -1,0 +1,15 @@
+<apex:page controller="PreviewContractController" >
+   
+ <script>
+        window.onload = onload;
+        function onload{
+            loadData();
+        }
+</script> 
+
+ <apex:form >
+        <apex:actionFunction name="loadData" action="{!ContractMethod}" />
+        <apex:outputText escape="false" Value="{!templateBody}" ></apex:outputText>
+    </apex:form> 
+     
+</apex:page>

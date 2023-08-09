@@ -1,0 +1,376 @@
+<aura:component
+                implements="force:appHostable,force:lightningQuickAction,flexipage:availableForRecordHome,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes"
+                access="global" controller="MassUpdateTakeScheduleItem">
+    <aura:attribute name="sObjectName" type="String" />
+    <aura:attribute name="fieldSetName" type="String" />
+    <aura:attribute name="fieldSetValues" type="List" />
+    <aura:attribute name="arrfieldNames" type="List" />
+    <aura:attribute name="tableRecords" type="List" />
+    <aura:attribute name="parentFieldName" type="String" />
+    <aura:attribute name="scheduleItem" type="String" />
+    <aura:attribute name="isModalOpen" type="Boolean" />
+    <aura:attribute name="selectedRecordIndex" type="Integer" />
+    <aura:attribute name="childObjectName" type="String" />
+    <aura:attribute name="parentRecordId" type="String" />
+    <aura:attribute name="fields" type="List" default="[]" />
+    <aura:attribute name="listOfRecords" type="Project__c[]" />
+    <aura:attribute name="cloneListOfRecords" type="Project__c[]" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="recordIdsToDelete" type="List" />
+    <aura:attribute name="recordName" type="String" />
+    <aura:attribute name="numberOfItems" type="Integer" />
+    <aura:attribute name="statusList" type="List" />
+    <aura:attribute name="priorityList" type="List" />
+    <aura:attribute name="massUpdateEnable" type="Boolean" default="true" />
+    <aura:attribute name="onSaveEnabled" type="Boolean" default="false" />
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+    
+    <aura:attribute name="PageNumber" type="integer" default="1" />
+    <aura:attribute name="pageSize" type="integer" default="25" />
+    <aura:attribute name="TotalPages" type="integer" default="0" />
+    <aura:attribute name="TotalRecords" type="Integer" default="0" />
+    <aura:attribute name="RecordStart" type="integer" default="0" />
+    <aura:attribute name="RecordEnd" type="integer" default="0" />
+    <aura:attribute name="isNextDisabled" type="Boolean" default="true" />
+    
+    <aura:attribute name="grpByPhaseValuesMassUpdate" type="List" />
+    <aura:attribute name="currentTab" type="String" />
+    <aura:attribute name="expandedCount" type="Integer" default="0"/>
+    <aura:attribute name="lastPhaseNum" type="Integer" default="1" />
+    <aura:attribute name="prevlastPhaseNum" type="Integer" default="1" />
+    <aura:attribute name="lastItemInPhaseNum" type="Integer" default="1" />
+    <aura:attribute name="lastPhaseName" type="String" />
+    <aura:attribute name="prevlastPhaseName" type="String" />
+    <aura:attribute name="prevlastItemInPhaseNum" type="Integer" default="1" />
+    <aura:attribute name="iPrevClicked" type="Boolean" default = "false" />
+    <aura:attribute name="firstPhaseName" type="String" />
+    <aura:attribute name="pageArr" type="List" />
+    <aura:attribute name="sPhaseList" type="List" />
+    <aura:attribute name="tempIndexList" type="List" />
+
+    
+    <!-- refresh gantt -->
+    <aura:registerEvent name="apprefreshEventfromTable" type="c:refresh_componenent_event"/>
+    
+    <lightning:workspaceAPI aura:id="workspace" />
+    <aura:dependency resource="markup://force:navigateToSObject" type="EVENT"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+    
+    <lightning:card aura:id="lightCard" class="slds-card_boundary slds-page-header" title="Schedule Items">
+        <aura:set attribute="actions">
+            <div class="slds-grid slds-wrap" style="text-align: end;display: block;">
+                <lightning:button iconName="utility:save" iconPosition="left" onclick="{!c.onMassUpdate}"
+                                  label="{!v.massUpdateEnable==true?'Save':'Mass Update'}" class="" />
+                <aura:if isTrue="{!v.massUpdateEnable}">
+                    <lightning:button iconName="utility:add" iconPosition="left" onclick="{!c.onAddClick}"
+                                      label="Add" />
+                    <lightning:button iconName="utility:close" iconPosition="left" onclick="{!c.onMassUpdateCancel}"
+                                      label="Cancel" />
+                    <lightning:button iconName="utility:delete" iconPosition="left" onclick="{!c.handleMassDelete}"
+                                      label="Delete" />
+                </aura:if>
+                <lightning:button iconName="utility:back" iconPosition="left" disabled="{!v.PageNumber == 1}"
+                                  aura:id="prevPage" label="Previous" onclick="{!c.handlePrev}" />
+                <lightning:button iconName="utility:forward" iconPosition="right" disabled="{!v.isNextDisabled}"
+                                  aura:id="nextPage" label="Next" onclick="{!c.handleNext}" />
+            </div>
+            <div class="slds-grid slds-wrap">
+                <lightning:input type="text" class=" slds-m-right_small" name="SearchPhase" aura:id="SearchPhase"
+                                 onchange="{!c.searchKeyChange}" placeholder="Search Phase" />
+                <lightning:input type="text" class="slds-m-right_small" name="searchContractor"
+                                 aura:id="searchContractor" onchange="{!c.searchKeyChange}" placeholder="Search Contractor" />
+                <lightning:input type="text" class="slds-m-right_small" name="searchContractorResources"
+                                 aura:id="searchContractorResources" onchange="{!c.searchKeyChange}"
+                                 placeholder="Search Contractor Resources" />
+                <lightning:input type="text" class="" name="searchTradeType" aura:id="searchTradeType"
+                                 onchange="{!c.searchKeyChange}" placeholder="Search Trade Type" />
+            </div>
+        </aura:set>
+        
+        <!-- <div class="slds slds-p-horizontal_medium slds-m-bottom_medium"
+            style="margin-top:0px !important; margin-bottom:0px !important">
+            {!v.numberOfItems} items
+        </div> -->
+        
+        
+        
+        <div class="slds-modal__content" style="padding:1rem 0;">
+            <div class="slds slds-m-top_medium slds-p-horizontal_medium slds-scrollable">
+                <!-- expand/collapse buttons -->
+                <div class="" style="margin:0.5rem 0 0.5em 0.5rem;">
+                    <aura:if isTrue="{!v.currentTab}">
+                        <span style="display:none;" class="{!v.currentTab+' massupdate expandAllBtn_'+v.recordId}" data-iconattr ="{!'expandAllBtn_'+v.recordId}" data-iconname="Expand All" onclick="{!c.expandCollapseAll}">
+                            <lightning:buttonIcon aura:id="expandCollapeseAllBtn" iconName="utility:add"  variant="border-filled" iconClass="dark" alternativeText="Expand All" title="Expand All"  />                       
+                        </span> 
+                        <span style="display:inline-block;" class="{!v.currentTab+' massupdate CollapeseAllBtn_'+v.recordId}" data-iconattr ="{!'CollapeseAllBtn_'+v.recordId}" data-iconname="Collapse All"  onclick="{!c.expandCollapseAll}">
+                            <lightning:buttonIcon aura:id="expandCollapeseAllBtn2" iconName="utility:dash"  variant="border-filled" iconClass="dark" alternativeText="Collapse All" title="Collapse All"/>                       
+                        </span>
+                        <aura:set attribute="else">
+                            <span style="display:none;" class="{!'massupdate expandAllBtn_'+v.recordId}" data-iconattr ="{!'expandAllBtn_'+v.recordId}" data-iconname="Expand All" onclick="{!c.expandCollapseAll}">
+                                <lightning:buttonIcon aura:id="expandCollapeseAllBtn" iconName="utility:add"  variant="border-filled" iconClass="dark" alternativeText="Expand All" title="Expand All"  />                       
+                            </span> 
+                            <span style="display:inline-block;" class="{!'massupdate CollapeseAllBtn_'+v.recordId}" data-iconattr ="{!'CollapeseAllBtn_'+v.recordId}" data-iconname="Collapse All"  onclick="{!c.expandCollapseAll}">
+                                <lightning:buttonIcon aura:id="expandCollapeseAllBtn2" iconName="utility:dash"  variant="border-filled" iconClass="dark" alternativeText="Collapse All" title="Collapse All"/>                       
+                            </span>
+                        </aura:set>
+                    </aura:if>
+                </div>
+                
+                <aura:if isTrue="{!v.grpByPhaseValuesMassUpdate}">
+                    <aura:iteration items="{!v.grpByPhaseValuesMassUpdate}" var="mapKey" indexVar="Phaseindex">
+                        <div class="slds-modal__header slds-p-around_x-small" style="font-size:15px;border-top: 2px solid #dddbda; font-weight:bold;text-align : left; background:#f3f2f2;">
+                            <div class="slds-grid slds-gutters" >
+                                <!-- using value from list -->
+                                <aura:if isTrue="{!v.currentTab}">
+                                    <aura:if isTrue="{!!mapKey.expanded}">
+                                        <span style="display:inline-block;margin-left:1rem;" class="{!v.currentTab+' '+v.recordId+' massupdate expandGrpIcon_'+Phaseindex}"  data-grpindex="{!Phaseindex}" onclick="{!c.expandCollapseGroups}">
+                                            
+                                            <lightning:icon
+                                                            iconName="utility:add"
+                                                            size="xx-small"
+                                                            alternativeText="add"  style="border: 1px solid #b9b9b9; padding: 0.1rem 0.3rem 0.3rem 0.3rem"/>
+                                        </span>
+                                    </aura:if>
+                                    
+                                    <aura:if isTrue="{!mapKey.expanded}">
+                                        <span style="margin-left:1rem;" class="{!v.recordId+' hideCollapseIcon massupdate collapseGrpIcon_'+Phaseindex}" data-grpindex="{!Phaseindex}" data-grpName="{!mapKey.key}"
+                                              onclick="{!c.expandCollapseGroups}">
+                                            <lightning:icon
+                                                            iconName="utility:dash"
+                                                            size="xx-small"
+                                                            alternativeText="dash"  style="border: 1px solid #b9b9b9; padding: 0.1rem 0.3rem 0.3rem 0.3rem"/>
+                                        </span>
+                                    </aura:if>
+                                    <aura:set attribute="else">
+                                        <aura:if isTrue="{!!mapKey.expanded}">
+                                            <span style="display:inline-block;margin-left:1rem;" class="{!v.currentTab+' '+v.recordId+' massupdate expandGrpIcon_'+Phaseindex}"  data-grpindex="{!Phaseindex}" onclick="{!c.expandCollapseGroups}">
+                                                
+                                                <lightning:icon
+                                                                iconName="utility:add"
+                                                                size="xx-small"
+                                                                alternativeText="add"  style="border: 1px solid #b9b9b9; padding: 0.1rem 0.3rem 0.3rem 0.3rem"/>
+                                            </span>
+                                        </aura:if>
+                                        <aura:if isTrue="{!mapKey.expanded}">
+                                            <span style="margin-left:1rem;" class="{!v.recordId+' hideCollapseIcon massupdate collapseGrpIcon_'+Phaseindex}" data-grpindex="{!Phaseindex}" data-grpName="{!mapKey.key}"
+                                                  onclick="{!c.expandCollapseGroups}">
+                                                <lightning:icon
+                                                                iconName="utility:dash"
+                                                                size="xx-small"
+                                                                alternativeText="dash"  style="border: 1px solid #b9b9b9; padding: 0.1rem 0.3rem 0.3rem 0.3rem"/>
+                                            </span>
+                                        </aura:if>
+                                    </aura:set>
+                                    
+                                </aura:if>
+                                
+                                <div class="slds-col slds-size_6-of-12 slds-float_right">
+
+                                    {!mapKey.key}
+                                    <!-- <aura:if isTrue="{!mapKey.key == 'No Phase'}">
+                                        No Phase
+                                        <aura:set attribute="else">
+                                            {!mapKey.key}
+                                        </aura:set>
+                                    </aura:if> -->
+                                    
+                                </div>
+                                
+                            </div>
+                        </div>  
+                        <aura:if isTrue="{!v.currentTab}">
+                            <div id="{!mapKey.key+'_'+Phaseindex}" class="{!v.currentTab+' '+v.recordId+' massupdate mapKey_'+Phaseindex}" style="{!mapKey.expanded ? 'display:block;' : 'display:none;' }">
+                                <table class="{!v.massUpdateEnable ? 'slds-table slds-table--bordered ':'slds-table--bordered'}">
+                                    <thead>
+                                        <tr style="{!v.massUpdateEnable ? '':'height:35px; !important'}">
+                                            <aura:if isTrue="{!v.massUpdateEnable}">
+                                                <th style="width:4%;">
+                                                </th>
+                                                <th style="width:4%;">
+                                                    Wbs-
+                                                </th>
+                                            </aura:if>
+                                            <aura:iteration items="{!v.fieldSetValues}" var="field" indexVar="index">
+                                                <th> {!field.label}</th>
+                                            </aura:iteration>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!mapKey.value}" var="row" indexVar="index"> <!-- {!v.listOfRecords} -->
+                                            <aura:if isTrue="{!row}">
+                                                
+                                                <tr style="{!v.massUpdateEnable ? '':'height:35px; !important; line-height: 1;'}">
+                                                    <aura:if isTrue="{!v.massUpdateEnable}">
+                                                        <td style="padding:5px; margin:5px;line-height:5;">
+                                                            <lightning:input type="checkbox" name="{!row.Id}" checked="{!row.isSelected}"
+                                                                             onclick="{!c.onCheckBoxSelect}" class="customCheckBoxCss" />
+                                                        </td>
+                                                        <td style="padding:5px; margin:5px;line-height:5;">
+                                                            <aura:if isTrue="{!v.PageNumber == 1}">
+                                                                1.{!Phaseindex+1}.{!index+1}
+                                                                
+                                                                <aura:set attribute="else">
+                                                                    <aura:if isTrue="{!v.firstPhaseName == v.prevlastPhaseName}">
+                                                                        <aura:if isTrue="{!mapKey.key == v.prevlastPhaseName}">
+                                                                            1.{!v.prevlastPhaseNum+Phaseindex}.{!v.prevlastItemInPhaseNum+index+1}
+                                                                            <aura:set attribute="else">
+                                                                                <aura:if isTrue="{!Phaseindex == 0}">
+                                                                                    1.{!v.prevlastPhaseNum+Phaseindex+1}.{!v.prevlastItemInPhaseNum+index+1}
+                                                                                     <aura:set attribute="else">
+                                                                                        1.{!v.prevlastPhaseNum+Phaseindex}.{!index+1}
+                                                                                    </aura:set>
+                                                                                </aura:if>
+                                                                                
+                                                                            </aura:set>
+                                                                        </aura:if>
+                                                                        
+                                                                        <aura:set attribute="else">
+                                                                            <aura:if isTrue="{!Phaseindex == 0}">
+                                                                                1.{!v.prevlastPhaseNum+Phaseindex+1}.{!index+1}
+                                                                                <aura:set attribute="else">
+                                                                                    1.{!v.prevlastPhaseNum+Phaseindex+1}.{!index+1}
+                                                                                </aura:set>
+                                                                            </aura:if>
+                                                                            
+                                                                        </aura:set>
+                                                                    </aura:if>
+                                                                </aura:set>
+                                                            </aura:if>
+                                                            
+                                                            
+                                                           <!-- <aura:if isTrue="{!mapKey.key == 'No Phase'}">
+                                                                {!index+1}
+                                                                <aura:set attribute="else">
+                                                                    {!Phaseindex+1}.{!index+1}
+                                                                </aura:set>
+                                                            </aura:if> -->
+                                                        </td>
+                                                    </aura:if>
+                                                    <aura:iteration items="{!v.fieldSetValues}" var="field"> <!-- scheduleId="{!v.recordId}" -->
+                                                        <td style="padding:5px; margin:5px;">
+                                                            <c:BT_FieldSetMassUpdate record="{!row}" index="{!index}" field="{!field}"  scheduleId="{!v.recordId}"
+                                                                                     isMassUpdateEnable="{!v.massUpdateEnable}"
+                                                                                     childObjectName="buildertek__Project_Task__c"/>
+                                                        </td>
+                                                    </aura:iteration>
+                                                </tr>
+                                            </aura:if>
+                                        </aura:iteration>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <aura:set attribute="else">
+                                <div id="{!mapKey.key+'_'+Phaseindex}" class="{!v.recordId+' massupdate mapKey_'+Phaseindex}" style="{!mapKey.expanded ? 'display:block;' : 'display:none;' }"><!-- aura:id = "tableByGroup" aura:id="poTable"-->
+                                    
+                                    <table class="{!v.massUpdateEnable ? 'slds-table slds-table--bordered ':'slds-table--bordered'}">
+                                        <thead>
+                                            <tr style="{!v.massUpdateEnable ? '':'height:35px; !important'}">
+                                                <aura:if isTrue="{!v.massUpdateEnable}">
+                                                    <th style="width:4%;">
+                                                    </th>
+                                                    <th style="width:4%;">
+                                                        WBS
+                                                    </th>
+                                                </aura:if>
+                                                <aura:iteration items="{!v.fieldSetValues}" var="field" indexVar="index">
+                                                    <th> {!field.label}</th>
+                                                </aura:iteration>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <aura:iteration items="{!v.listOfRecords}" var="row" indexVar="index">
+                                                <aura:if isTrue="{!or(and((mapKey.key == 'No Phase'), (row.buildertek__Phase__c == null)), (mapKey.key == row.buildertek__Phase__c))}">
+
+                                                    <aura:if isTrue="{!row}">
+                                                        
+                                                        <tr style="{!v.massUpdateEnable ? '':'height:35px; !important; line-height: 1;'}">
+                                                            <aura:if isTrue="{!v.massUpdateEnable}">
+                                                                <td style="padding:5px; margin:5px;line-height:5;">
+                                                                    <lightning:input type="checkbox" name="{!row.Id}" checked="{!row.isSelected}"
+                                                                                    onclick="{!c.onCheckBoxSelect}" class="customCheckBoxCss" />
+                                                                </td>
+                                                                <td style="padding:5px; margin:5px;line-height:5;">
+                                                                <aura:if isTrue="{!v.PageNumber == 1}">
+                                                                    1.{!Phaseindex+1}.{!row.tempIndex}
+                                                                    <aura:set attribute="else">
+                                                                        <aura:if isTrue="{!v.firstPhaseName == v.prevlastPhaseName}">
+                                                                            <aura:if isTrue="{!mapKey.key == v.prevlastPhaseName}">
+                                                                                1.{!v.prevlastPhaseNum+Phaseindex}.{!row.tempIndex}
+                                                                                <aura:set attribute="else">
+                                                                                    <aura:if isTrue="{!Phaseindex == 0}">
+                                                                                        1.{!v.prevlastPhaseNum+Phaseindex+1}.{!row.tempIndex}
+                                                                                        <aura:set attribute="else">
+                                                                                            1.{!v.prevlastPhaseNum+Phaseindex}.{!row.tempIndex}
+                                                                                        </aura:set>
+                                                                                    </aura:if>
+                                                                                    
+                                                                                </aura:set>
+                                                                            </aura:if>
+                                                                            
+                                                                            <aura:set attribute="else">
+                                                                                1.{!v.prevlastPhaseNum+Phaseindex+1}.{!row.tempIndex}
+                                                                            </aura:set>
+                                                                        </aura:if>
+                                                                    </aura:set>
+                                                                </aura:if>
+                                                                
+                                                                
+                                                            <!-- <aura:if isTrue="{!mapKey.key == 'No Phase'}">
+                                                                    {!index+1}
+                                                                    <aura:set attribute="else">
+                                                                        {!Phaseindex+1}.{!index+1}
+                                                                    </aura:set>
+                                                                </aura:if> -->
+                                                                    
+                                                                </td>
+                                                            </aura:if>
+                                                            <aura:iteration items="{!v.fieldSetValues}" var="field"> <!-- scheduleId="{!v.recordId}" -->
+                                                                <td style="padding:5px; margin:5px;">
+                                                                    <c:BT_FieldSetMassUpdate record="{!row}" index="{!index}" field="{!field}"  scheduleId="{!v.recordId}"
+                                                                                            isMassUpdateEnable="{!v.massUpdateEnable}"
+                                                                                            childObjectName="buildertek__Project_Task__c"/>
+                                                                </td>
+                                                            </aura:iteration>
+                                                        </tr>
+                                                    </aura:if>
+                                                </aura:if>
+                                            </aura:iteration>
+                                        </tbody>
+                                    </table>
+                                    
+                                </div>
+                            </aura:set>
+                        </aura:if>
+                    </aura:iteration>
+                </aura:if>
+                
+            </div>
+        </div>
+    </lightning:card>
+    <aura:if isTrue="{!v.isModalOpen}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" onclick="{!c.handleCancel}" alternativeText="close"
+                                          size="medium" variant="bare-inverse" class="slds-modal__close" />
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Delete Confirmation
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="text-align:center;">
+                    <p>Are you sure you want to delete Tasks ?</p>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral" label="Cancel" title="Cancel" onclick="{! c.handleCancel }" />
+                    <lightning:button variant="brand" label="Delete" title="Delete" onclick="{!c.handleDelete}" />
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    <lightning:overlayLibrary aura:id="overlayLib" />
+    <aura:if isTrue="{!v.isLoading}">
+        <lightning:spinner alternativeText="Loading" variant="brand" size="large" />
+    </aura:if>
+</aura:component>

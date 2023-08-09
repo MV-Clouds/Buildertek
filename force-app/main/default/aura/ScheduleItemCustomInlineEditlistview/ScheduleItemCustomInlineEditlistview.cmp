@@ -1,0 +1,207 @@
+<aura:component controller="ScheduleIteminlineEditcontroller"  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global">
+    
+    <aura:attribute name="lstOfRecords" type="Object"/>
+    <aura:attribute name="columnsHeader" type="List"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <aura:handler event="force:refreshView" action="{! c.doInit}" />
+    <!-- <aura:handler event="c:GanttAndTableEvent" action="{!c.handleApplicationEvent}"/> -->
+	<!-- <aura:handler event="aura:locationChange" action="{!c.update}"/> -->
+	<aura:attribute name="setIntervalId" type="Integer"/>    
+    
+    <lightning:workspaceAPI aura:id="workspace" />	
+    <!-- <aura:handler event="lightning:tabFocused" action="{! c.onTabFocused }"/> -->
+    
+    <aura:attribute name="Spinner" type="Boolean" />
+    <aura:attribute name="isTaskName" type="Boolean" default = "false"/>
+    <aura:attribute name="recordId" type="string"/> 
+    <aura:attribute name="ProejectrecordId" type="string"/> 
+    <aura:attribute name="schedulerecid" type="string"/> 
+    <aura:attribute  name="scheduleitemlst" type="Project_Task__c[]"/>    
+    <aura:attribute name="mycolumns" type="List"/>  
+    <aura:attribute name="mycolumns1" type="List"/>  
+    <aura:attribute name="allData" type="List"/>
+    <aura:attribute name="currentPageNumber" type="Integer" default="1"/>
+    <aura:attribute name="pageSize" type="Integer" default="25"/>
+    <aura:attribute name="totalPages" type="Integer" default="0"/>
+    <aura:attribute name="pageList" type="List"/>
+    <aura:attribute name="dataByGroup" type="Object" />
+    <aura:attribute name="currentTab" type="String" />
+    
+    <aura:attribute name="deleteConfirmModal" type="Boolean" default="false" />
+    <aura:attribute name="deleteAction" type="Object" default="" />
+    <aura:attribute name="deleteRow" type="Object" default="" />
+    
+    <!-- <aura:handler name="init" value="{!this}" action="{!c.onInit}"/>    
+    
+    <lightning:datatable aura:id="tasksTable"  
+                         data="{! v.scheduleitemlst }"     
+                         columns="{! v.mycolumns }"     
+                         keyField="Id"    
+                         hideCheckboxColumn="true"  
+                         onsave="{! c.onSave }"/>    -->
+  
+    
+    <div class="slds-m-around_xx-large" style=" border: 1px solid lightgray;border-radius: 5px; ">
+        <div class="slds-clearfix slds-theme_shade" style="padding-bottom:0.5rem;">
+        <!--<div class="slds-clearfix">-->
+            <div class="slds-page-header" role="banner">
+                <p class="slds-page-header__title">Schedule Items</p>
+                <div class="slds-float_right" style="margin-top: -25px;"> 
+                    <lightning:button label="Reload Data" iconName="utility:refresh" iconPosition="right"
+                                      onclick="{!c.reloadtable}" />
+                   <!-- <lightning:buttonGroup>-->
+                        
+                        <lightning:button label="New" onclick="{!c.CreateNewScheduleitemrec}"/>
+                        
+                        
+                    <!--</lightning:buttonGroup>-->
+                    
+                    <lightning:button label="Prev" iconName="utility:chevronleft" iconPosition="left"
+                                      onclick="{!c.onPrev}" disabled="{! v.currentPageNumber == 1}"/>
+                    <lightning:button label="Next" iconName="utility:chevronright" iconPosition="right"
+                                      disabled="{! v.currentPageNumber == v.totalPages}" onclick="{!c.onNext}"/>
+                    <lightning:button label="Mass Update" onclick="{!c.MassUpdateScheduleItem}"/>
+                </div>
+            </div>
+        </div>
+        <!--  <lightning:datatable aura:id="tasksTable"  
+                             data="{! v.scheduleitemlst }"     
+                             columns="{! v.mycolumns }"     
+                             keyField="Id"    
+                             hideCheckboxColumn="true" 
+                             onrowaction="{!c.handleRowAction}"
+                             onsave="{! c.onSave }"/> -->
+        
+        <!-- expand/collapse buttons --> 
+        <div class="" style="margin:0.5rem 0 0.5em 0.5rem;">
+            <span style="display:inline-block;" class="{!v.currentTab+' expandAllBtn_'+v.recordId}" data-iconattr ="{!'expandAllBtn_'+v.recordId}" data-iconname="Expand All" onclick="{!c.expandCollapseAll}">
+                <lightning:buttonIcon aura:id="expandCollapeseAllBtn" iconName="utility:add"  variant="border-filled" iconClass="dark" alternativeText="Expand All" title="Expand All"  />                       
+            </span> 
+            <span style="display:none;" class="{!v.currentTab+' CollapeseAllBtn_'+v.recordId}" data-iconattr ="{!'CollapeseAllBtn_'+v.recordId}" data-iconname="Collapse All"  onclick="{!c.expandCollapseAll}">
+                <lightning:buttonIcon aura:id="expandCollapeseAllBtn2" iconName="utility:dash"  variant="border-filled" iconClass="dark" alternativeText="Collapse All" title="Collapse All"/>                       
+            </span> 
+            <!-- <lightning:button aura:id="expandCollapeseAllBtn" variant="neutral" label="" title="Expand All"  iconName="utility:add" iconPosition="left" onclick="{!c.expandCollapeAll}"/> -->
+        </div>
+        
+        <!-- table -->
+        <aura:iteration items="{!v.dataByGroup}" var="groupItem" indexVar="groupIndex">
+            
+           <!-- <div class="slds-grid slds-gutters">
+                <span style="display:inline-block;" >
+                    <lightning:icon
+                                    iconName="utility:add"
+                                    size="xx-small"
+                                    alternativeText="add"  />
+                </span>
+                <span style="display:none;" >
+                    <lightning:icon
+                                    iconName="utility:dash"
+                                    size="xx-small"
+                                    alternativeText="dash"  />
+                </span>
+                <div class="slds-modal__header slds-p-around_x-small" style="font-size:15px;border-top: 2px solid #dddbda; font-weight:bold;text-align : left; !important">
+                    {!groupItem.groupName}
+                </div>
+                <div class="slds-col slds-size_6-of-12 slds-float_right">
+                </div>
+            </div> -->
+           <div class="slds-modal__header slds-p-around_x-small" style="font-size:15px;border-top: 2px solid #dddbda; font-weight:bold;text-align : left; !important">
+            <div class="slds-grid slds-gutters">
+               <span style="display:inline-block;margin-left:1rem;" class="{!v.currentTab+' '+v.recordId+' expandGrpIcon_'+groupIndex}"  data-grpindex="{!groupIndex}" onclick="{!c.expandCollapseGroups}">
+                <!--<span style="display:inline-block; padding-left: 1%">-->
+                    <lightning:icon
+                                    iconName="utility:add"
+                                    size="xx-small"
+                                    alternativeText="add"  style="border: 1px solid #b9b9b9; padding: 0.1rem 0.3rem 0.3rem 0.3rem"/>
+                </span>
+                <span style="display:none;margin-left:1rem;" class="{!v.currentTab+' '+v.recordId+' hideCollapseIcon collapseGrpIcon_'+groupIndex}" data-grpindex="{!groupIndex}" data-grpName="{!groupItem.groupName}"
+                      onclick="{!c.expandCollapseGroups}">
+                    <lightning:icon
+                                    iconName="utility:dash"
+                                    size="xx-small"
+                                    alternativeText="dash"  style="border: 1px solid #b9b9b9; padding: 0.1rem 0.3rem 0.3rem 0.3rem"/>
+                </span>
+                <div class="slds-col slds-size_6-of-12 slds-float_right">
+                    {!groupItem.groupName}
+                </div>
+               <!-- <div class="slds-col slds-size_6-of-12 slds-float_right">
+                </div> -->
+                </div>
+            </div>
+            
+            
+          <!--  <div class="slds-modal__header slds-p-around_x-small" style="font-size:15px;border-top: 2px solid #dddbda; font-weight:bold;text-align : left; !important">
+                {!groupItem.groupName}
+            </div> -->
+            <div id="{!groupItem.groupName+'_'+groupIndex}" class="{!v.currentTab+' '+v.recordId+'  groupRows_'+groupIndex}" style="margin-top: 15px;display:none;"><!-- aura:id = "tableByGroup" aura:id="poTable"-->
+              <!---  <lightning:datatable 
+                                     
+                                     keyField="id"
+                                     columns="{!v.columns }"
+                                     data="{!groupItem.groupData}"
+                                     hideCheckBoxColumn="true"
+                                     showRowNumberColumn="true"
+                                     onrowselection="{! c.getSelectedRow }"
+                                     selectedRows="{! v.selectedRows }"
+                                     defaultSortDirection="{!v.defaultSortDirection}"
+                                     sortedDirection=""
+                                     sortedBy=""
+                                     onsort="{!c.handleSort}" > 
+                </lightning:datatable> -->
+                <lightning:datatable aura:id="tasksTable"
+                             data="{!groupItem.groupData}"
+                             columns="{!v.mycolumns}"
+                             keyField="Id"
+                             hideCheckboxColumn="true"
+                             onrowaction="{!c.handleRowAction}"
+                             onsave="{! c.onSave }"/>
+                
+            </div>
+        </aura:iteration>
+        
+    </div>
+    <aura:if isTrue="{!v.deleteConfirmModal}">
+        <!--Modal Box Start-->
+        <div role="dialog" class="slds-modal slds-fade-in-open ">
+            <div class="slds-modal__container">
+                <!--Modal Box Header Start-->
+                <header class="slds-modal__header">
+                    <h1 class="slds-text-heading--medium">Delete Schedule Item</h1>
+                </header>
+                <!--Modal Box Header End-->
+                
+                <!--Modal Box Content Start-->
+                <div class="slds-modal__content slds-p-around--medium">
+                    <center><b>Are you sure you want to delete this item?</b></center>
+                </div>
+                <!--Modal Box Content End-->
+                
+                <!--Modal Box Button Start-->
+                <footer class="slds-modal__footer">
+                    <lightning:button name='Cancel' label='Cancel' onclick='{!c.handleConfirmDialogNo}'/>
+                    <lightning:button variant="brand" name='Delete' label='Delete' onclick='{!c.handleConfirmDialogYes}'/>
+                </footer>
+                <!--Modal Box Button End-->
+            </div>
+        </div>
+        <div class="slds-backdrop slds-backdrop--open"></div>            
+    </aura:if>
+    
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container" style="position:fixed;">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                    <!-- <aura:if isTrue="{!v.showMessage}"> -->
+                    <!--<b>Importing Schedule Lines... </b>-->
+                    <b>Processing, Please Wait</b>
+                    <!-- </aura:if> -->
+                </div>
+            </div>
+        </div>
+    </aura:if>
+    
+</aura:component>

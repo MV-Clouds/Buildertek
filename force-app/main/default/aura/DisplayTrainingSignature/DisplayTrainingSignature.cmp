@@ -1,0 +1,6 @@
+<aura:component controller="DisplayTrainingSignatureController"  access="GLOBAL"  >
+    <aura:attribute name="imgUrl" type="String" default=""/>
+    <div style="width: 100%;text-align: center;margin-bottom: 20px;">
+        <img src="{!v.imgUrl}" id="logoImg" />
+    </div>
+</aura:component>

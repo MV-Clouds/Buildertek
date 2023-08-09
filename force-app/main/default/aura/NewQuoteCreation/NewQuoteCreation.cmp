@@ -1,0 +1,87 @@
+<aura:component controller="NewQuoteCreation" implements="flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader">
+    <aura:attribute name="quote" type="SBQQ__Quote__c"></aura:attribute>
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="recordTypeId" type="Id"/>
+    <aura:attribute name="recordTypeName" type="String"/>
+    
+    <aura:attribute name="title" type="String" />
+    <aura:attribute name="severity" type="String" />
+    <aura:attribute name="errorMessage" type="String" />
+    <aura:attribute name="showMessage" type="Boolean" />
+    <aura:attribute name="layoutStructure" type="map" />
+    <aura:handler   name="init" action="{!c.doInit}" value="{!this}" />
+    <aura:attribute name="mapValues" type="object" /> 
+    <aura:attribute name="customers" type="List" />
+    <aura:attribute name="currentPageURL" type="URL" />
+    <aura:attribute name="pageLayout" type="String"/>
+    <aura:attribute name="sobjectName" type="String"/>
+    <aura:attribute name="disableButton" type="Boolean" default="false"/>
+
+    
+    <lightning:recordEditForm aura:id="editForm"
+                              objectApiName="SBQQ__Quote__c"
+                              onsubmit="{!c.verifyData}"
+                              onsuccess="{!c.handleSuccess}"
+                              >
+        <lightning:messages/>
+        <aura:if isTrue="{!v.showMessage}">
+            <ui:message title="{!v.title}" severity="error" closable="true">
+                {!v.errorMessage}
+            </ui:message>
+        </aura:if>
+        <ul class="slds-button-group-row slds-align_absolute-center">
+            <li class="slds-button-group-item">
+                <lightning:button variant="brand" disabled ="{!v.disableButton}" class="slds-button uiButton--brand uiButton slds-align_absolute-center" name="save" label="Save" type="Submit"/>
+            </li>
+            <li class="slds-button-group-item">
+                <lightning:button variant="brand" disabled ="{!v.disableButton}" class="slds-button uiButton--brand slds-align_absolute-center"  name="cancel" label="Cancel" onclick="{!c.navigateToDetailPage}"/>
+            </li>
+        </ul>
+        <lightning:inputField aura:id="titleField" fieldName="Title" class="slds-hidden" /> 
+        <aura:iteration items="{!v.mapValues}"  var="mapKey" indexVar="key">  
+            <h3 class="slds-section__title slds-theme--shade primaryPaletteBorder">{!mapKey.key}</h3>
+            <div class="slds-form--stacked slds-p-around--medium slds-m-bottom--x-small">
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col slds-size_6-of-12"> 
+                        <aura:iteration items="{!mapKey.value}"  var="mapVal"> 
+                            <aura:if isTrue="{!mapVal.isLeft}">
+                                <lightning:inputField fieldName="{!mapVal.fieldName}" 
+                                                      disabled="{!mapVal.readOnly}"
+                                                      value="{!mapVal.defaultValue}"
+                                                      data-id="{!mapVal.fieldName}"
+                                                      class="{! mapVal.required ? 'customRequired' : '' }"/>
+                            </aura:if>
+                        </aura:iteration>
+                    </div>
+                    <div class="slds-col slds-size_6-of-12">   
+                        <aura:iteration items="{!mapKey.value}"  var="mapVal"> 
+                            <aura:if isTrue="{!mapVal.isRight}">
+                                <lightning:inputField fieldName="{!mapVal.fieldName}"
+                                                      disabled="{!mapVal.readOnly}"
+                                                      value="{!mapVal.defaultValue}"
+                                                      aura:id="{!mapVal.fieldName}"
+                                                      class="{! mapVal.required ? 'customRequired' : '' }"/>
+                            </aura:if>
+                        </aura:iteration>
+                    </div>
+                    
+                </div>
+            </div>        
+        </aura:iteration>
+        <lightning:messages/>
+        <aura:if isTrue="{!v.showMessage}">
+            <ui:message title="{!v.title}" severity="error" closable="true">
+                {!v.errorMessage}
+            </ui:message>
+        </aura:if>
+        <ul class="slds-button-group-row slds-align_absolute-center">
+            <li class="slds-button-group-item">
+                <lightning:button variant="brand" disabled ="{!v.disableButton}" class="slds-button uiButton--brand uiButton slds-align_absolute-center" name="save" label="Save" type="Submit"/>
+            </li>
+            <li class="slds-button-group-item">
+                <lightning:button variant="brand" disabled ="{!v.disableButton}" class="slds-button uiButton--brand slds-align_absolute-center"  name="cancel" label="Cancel" onclick="{!c.navigateToDetailPage}"/>
+            </li>
+        </ul>
+        <lightning:inputField aura:id="titleField" fieldName="Title" class="slds-hidden" />    
+    </lightning:recordEditForm>
+</aura:component>

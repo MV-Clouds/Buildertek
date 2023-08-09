@@ -1,0 +1,59 @@
+.THIS .Header{
+    background: white;
+    padding: 10px;
+}
+
+.THIS .innerIcon .slds-icon--xx-small{
+    margin-bottom: 40% !important;
+}
+
+.THIS .Menu{
+    padding: 10px ;
+    background-color: #C7DFE9;
+    color: black ;
+    margin: 6px;
+    border-radius: 5px;
+}
+.THIS .Menu:hover{
+    	background-color:black;
+    	color:White;
+}
+.THIS .scrollbar{
+
+	float: left;
+	background: #F5F5F5;
+	overflow-y: scroll;
+	margin-bottom: 25px;
+}
+.THIS .style-4::-webkit-scrollbar-track{
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	background-color: #F5F5F5;
+}
+
+.THIS .style-4::-webkit-scrollbar{
+	width: 15px;
+	background-color: #F5F5F5;
+}
+
+.THIS .style-4::-webkit-scrollbar-thumb{
+	background-color: #c1c1c1;
+	
+}
+.THIS .slds-theme--info {
+    background-color: #969696;
+}
+
+.THIS .texticon{
+    padding-top: 7px;
+    padding-right: 5px;
+}
+@media (min-width: 48em){
+.THIS .Cslds-box{
+        margin-top:20px;
+    }
+}
+@media (max-width: 47em){
+.THIS .Cslds-box{
+        margin-top:0px;
+    }
+}

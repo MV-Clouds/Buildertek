@@ -1,0 +1,158 @@
+<aura:component controller="BT_Lightning_Utils">
+	
+    <!-- Attributes -->
+    <aura:attribute name="currentUser" type="String" description="Current Logged in user id"/>
+    <aura:attribute name="namespace" type="String" description="Current Logged in user id"/>
+    <aura:attribute name="isPortalUser" type="Boolean" description="true if user is Portal User" default="false"/>
+    <aura:attribute name="UiThemeDisplayed" type="string" default="Theme4d"/>
+    <aura:attribute name="sessionId" type="string"/>  
+    
+    
+    <!-- Additional attributes for parent -->
+    <aura:attribute name="filterConditions" type="String" description="This will be queary string to apply in SOQL" default=""/>
+    <aura:attribute name="objectName" type="String" description="This will be target object to get record data" default="Account"/>
+    <aura:attribute name="fieldSetName" type="String" description="Field set name for grid columns" default="BT_Filter_Criteria_Fields"/>
+    <aura:attribute name="gridType" type="String" default="LIST" description="defaine grid type, you can pass picker name heare"/>
+    <aura:attribute name="parentId" type="String" default="" description="parent record id for child records"/>
+    <aura:attribute name="showSpinner" type="Boolean" default="true"/>
+    
+    <!-- Table Attributes -->
+    <aura:attribute name="TableId" description="Table element id." type="String" default="table" />
+    <aura:attribute name="PagerId" description="Pager element id." type="String" default="pager" />
+    <aura:attribute name="AutoWidth" description="Table width." type="Boolean" default="true" />
+    <aura:attribute name="TableWidth" description="Table width." type="Integer" />
+    <aura:attribute name="gridLoad" description="Table element id." type="Boolean" default="false" />
+    
+    <!-- Pagination Attributes -->
+    <aura:attribute name="Pagination" description="Allow pagination in table." type="Boolean" default="true" />
+    <aura:attribute name="RecordsToShowPerPage" description="Number of rows per page." type="Integer" default="10" />
+    <aura:attribute name="ViewRecordsInfo" description="Display text of view records information." type="Boolean" default="true" />
+    
+    <!-- Grouping Attributes -->
+    <aura:attribute name="Grouping" description="Allow column grouping." type="Boolean" default="true" />
+    <aura:attribute name="groupingOrder" description="Grouping column Order." type="string" default="asc" />
+    <aura:attribute name="groupText" description="Grouping Header Text." type="String[]" default="['{0} ({1} Records)']" />
+    <aura:attribute name="GroupingSummaryFields" description="Show number of fields from Field set." type="string" default="" />
+    <aura:attribute name="GroupingColumns" description="List of default grouping columns." type="String[]" default="[]"/>
+    <aura:attribute name="ShowGroupingColumns" description="Show/hide grouping columns." type="Boolean[]" default="[true]" />
+    <aura:attribute name="GroupingCollapse" description="Collapse all grouping sections." type="Boolean" default="true" />
+    <aura:attribute name="SetTopFocus" description="pagination will set focus to top" type="Boolean" default="false" />
+    <aura:attribute name="AllowExpandAllCollapseAll" description="Expand / Collapse all grouping node" type="Boolean" default="false" />
+    <aura:attribute name="rowList" description="List of default number of rows." type="String[]" default="[]" />
+    <aura:attribute name="editableColumnList" description="List of default editable columns." type="String[]" default="[]" />
+    <aura:attribute name="multiselect" description="Allow to select JqGrid Row." type="Boolean" default="true" />
+    <aura:attribute name="defaultSelectAll" description="JqGrid Row will be selected on page load" type="Boolean" default="true" />
+    <aura:attribute name="showGroupingsummery" type="Boolean" default="false"/>
+    <aura:attribute name="loadData" type="Boolean" default="true"/>
+    <aura:attribute name="groupSummaryPos" type="string[]" default="['footer']"/>
+    
+    
+    <aura:attribute name="actions" description="Table width." type="String[]" default="[]"/>
+    
+    <!-- TreeView Attributes -->
+    <aura:attribute name="TreeView" description="Display tree view structure." type="Boolean" default="false" />
+    <aura:attribute name="ExpandColumn" description="Expanded column name for tree view." type="String" />
+    
+    <!-- Searching Attributes -->
+    <aura:attribute name="Searching" description="Allow searching in column." type="Boolean" default="true" />
+    <aura:attribute name="SearchingConfigurations" description="JSON string of searching column configuration details." type="String" />
+
+    <!-- Default shorting -->
+    <aura:attribute name="Shortingcolumnname" description="Default shorting column name" type="String" default="" />
+    
+    <!-- Other Attributes -->
+    <aura:attribute name="ColumnChooser" description="Allow to display column chooser icon." type="Boolean" default="true" />
+    
+    <aura:attribute name="CheckAll" description="Allow to check All in JqGrid Rows." type="Boolean" default="false" />
+    <aura:attribute name="Height" description="Set JqGrid Height." type="String" default="auto" />
+    <aura:attribute name="Frozen" type="Boolean" default="false" description="First you will need to setup which columns will be frozen/locked.This is done in colModel setting the property frozen:true." />
+    <aura:attribute name="callerName" type="String" default=""/>
+    <aura:attribute name="shrinkToFit" type="Boolean" default="true" description="The width of the grid will be changed, and it depends on shrinkToFit option." />
+    <aura:attribute name="isCheckboxEditable" type="Boolean" default="false" description="We can update the data of jqgrid checkboxes like (true or false)."/>
+    <aura:attribute name="isGridDefaultValuesToCheck" description="Allow to check default values in grid." type="Boolean" default="false" />
+    <aura:attribute name="gridDefaultCheckValues" description="Set of comma separated Ids for whic default values can set" type="String" default=""/>
+    <aura:attribute name="singleSelectGrouping" description="if selected then check box will work like single select under grouping" type="Boolean" default="false"/>
+    
+    <aura:attribute name="idsToDelete" description="Selected record id will delete." type="string[]" default="[]" />
+    
+    <!-- Column and Data Attributes -->
+    <aura:attribute name="ColumnHeaders"
+        description="JSON string of column header deatils to use in jqgrid script."
+        type="String" />
+    <aura:attribute name="ColumnModels"
+        description="JSON string of column model deatils to use in jqgrid script."
+        type="String" />
+    <aura:attribute name="RecordDetails"
+        description="JSON string of all records which needs to display in grid."
+        type="String" default="[]"/>
+    <aura:attribute name="retURL"
+        description="String for the return url"
+        type="String" />
+    <aura:handler event="aura:locationChange" action="{!c.handlelocationchange}" />
+    
+	<aura:if isTrue="{! v.showSpinner }">
+		<lightning:spinner variant="brand" size="medium" aura:id="BTSpinner" class="slds-hide slds-is-relative"/>
+	</aura:if>
+    <aura:if isTrue="{!v.AllowExpandAllCollapseAll}">
+        <div id="{!globalId+'_expandCollapse'}" style="background: none; padding-bottom:5px;">
+            <a onclick="{!c.expandAll}" class="avBlueLink">Expand All</a> | <a onclick="{!c.collapseAll}" class="avBlueLink"><span>Collapse All</span></a>
+        </div>
+    </aura:if>
+    
+    <div id="{!globalId+'_deleteConform'}" style="display:none;">
+	  <section role="dialog" aria-modal="true" class="slds-modal slds-fade-in-open">
+	    <div class="slds-modal__container">
+	      <header class="slds-modal__header">
+	        <h2 class="slds-text-heading_medium slds-hyphenate">Delete</h2>
+	      </header>
+	      <div class="slds-modal__content slds-p-around_medium" >
+	        <center>Are you sure you want to delete?</center>
+	      </div>
+	      <footer class="slds-modal__footer">
+	        <button class="slds-button slds-button_brand" onclick="{!c.hideDeleteConform}">Cancel</button>
+	        <button class="slds-button slds-button_brand" onclick="{!c.deleteRecord}">Delete</button>
+	      </footer> 
+	    </div>
+	  </section>
+	  <div class="slds-backdrop slds-backdrop_open"></div>
+	</div>
+	
+	
+    <!-- Grid -->
+    <div id="{!'gridDiv_'+v.TableId}" class="slds jqSLDS" style="border: 1px solid rgb(221, 219, 218);border-radius: .25rem;">
+    </div>
+    
+    <!-- Hidden filed for storing selected check box Id's -->
+    <input type="hidden" id="{!v.TableId+'_gridslectedIds'}" />
+    
+    <!-- aura waiting/doneWaiting hendler -->
+    
+    
+    <aura:method name="initializeJQGridFormattter" action="{!c.initializeJQGridFormattter}"></aura:method>
+    <aura:method name="refreshData" action="{!c.initializeData}"></aura:method>
+    <aura:method name="reInitializeGrid" action="{!c.initialize}"></aura:method>
+    
+    <aura:method name="saveGrid" action="{!c.save}" />
+    
+    <aura:method name="getSelectedRecords" action="{!c.getSelectedIds}">
+    	<aura:attribute name="param1" type="object" default="parameter 1" /> 
+    </aura:method>
+    
+    <aura:method name="addSelectedRecords" action="{! c.addSelectedRecords }" />
+    <aura:method name="deleteSelectedRecord" action="{! c.deleteRHS}" />
+    
+    <aura:method name="deleteRecord" action="{!c.deleteRecord}">
+    	<aura:attribute name="param1" type="string[]" default="parameter 1" /> 
+    </aura:method>
+    
+    <aura:registerEvent name="RFQToVendorStatusUpdateEvent" type="c:BT_RFQToVendorStatusUpdateEvent"/>
+    <aura:registerEvent name="editQuoteItemEvent" type="c:BT_Edit_Quote_Item_Component_Event"/>
+    <aura:registerEvent name="budgetItemEvent" type="c:BT_Budget_Item_Component_Event"/>
+    
+    <aura:handler event="aura:waiting" action="{!c.showSpinner}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>
+    <aura:handler name="init" value="{!this}" action="{!c.initializeData}"/>
+    <aura:handler name="onSaveSuccess" event="force:showToast" action="{!c.handleSaveSuccess}"/>
+    
+    <!-- <aura:handler event="aura:doneRendering" value="{!this}" action="{!c.initialize}"/> -->
+</aura:component>

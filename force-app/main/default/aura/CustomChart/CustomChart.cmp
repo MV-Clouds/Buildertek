@@ -1,0 +1,16 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId" access="global">
+    
+    <aura:attribute name="chartHeader" type="String" default=""/>
+    <aura:attribute name="chartDataArray" type="List" />
+    <aura:attribute name="datasetIndex" type="String" default="" />
+
+    <aura:handler name="change" value="{!v.datasetIndex}" action="{!c.onchangeDatasetIndex}"/>
+    
+    <ltng:require scripts="{!$Resource.ChartJs}" afterScriptsLoaded="{!c.doInit}"/>
+    
+    <div class="slds-box" style="background: white;">
+        <div>
+            <canvas aura:id="stackedGroupChart" id="stackedGroupChart" width="1" height="1" />
+        </div>
+    </div>
+</aura:component>

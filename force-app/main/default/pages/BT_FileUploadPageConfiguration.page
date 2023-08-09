@@ -1,0 +1,312 @@
+<!--**********************************************************************************
+* Copyright © 2017-2016, BuilderTek.
+* All rights reserved
+*
+* VisualForce Page: BT_FileUploadPageConfiguration
+* Created by Sagar: 26/11/2016
+
+* - File upload page configuration
+
+* - Modifications:
+* - Sagar : 26/11/2016 - Initial Development 
+***********************************************************************************-->
+<apex:page controller="BT_FileUploadPageConfigurationController">
+    <c:BT_JsAndCssIncludeComponent importJquery="true"
+                              importAppurinUtil="true"
+                              importJQueryLayout="false"
+                              importFancyTree="false"
+                              importJqGrid="false"
+                              importEasyTooltip="true"
+                              importAppurinCss="true"
+                              importCkEditor="false"
+                              importGnattChart="false"
+                              importLightningDesign="true"/>
+                              
+	<script>
+        var twistyLightningSectionStatus = {};
+        j$(document).ready(function() {
+			easyToolTipForAll();
+			
+		});
+		
+        function easyToolTipForAll() {
+            j$('.apHelpText').easyTooltip({width: '200px', isLightning:true, isFormatted:true});
+            return false;
+        }
+    </script>
+                              
+    <apex:actionStatus id="splashStatus" onstart="startSplash();" onstop="endSplash(); " />
+	<div class="slds">
+        <div id="splashDiv" class="apInitiallyDivDisplayNone" style="z-index:9998;">
+            <div class="slds-spinner_container apLightningSpinnerContainer">
+                <div role="status" class="slds-spinner slds-spinner--medium slds-spinner--brand">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <apex:outputPanel rendered="{!isError}">
+        <apex:pagemessages id="pageLoadErrorMessage"/>
+        <script>
+            Appurin.lightning.createLightningPageMessage({'classicPageMessageId' : '{!$Component.pageLoadErrorMessage}'});   
+        </script>
+    </apex:outputPanel>
+    
+	<apex:form id="form" rendered="{!!isError}">
+	    <apex:outputPanel styleClass="slds">
+    		<div class="apPageHeader" id="PageHeader">
+    			<div class="apPageHeaderMedia">
+    	          	<div id="pageHeaderMedia" class="apPageHeaderMediaFigure">
+    	          	    <c:BT_LightningSvg parentId="pageHeaderMedia" styleClass="apLightningPageHeaderIcon slds-button__icon" path="/assets/icons/utility-sprite/svg/symbols.svg#settings"/>
+    	            </div>
+    	            <div class="apPageHeaderMediaBody">
+    	                <p class="slds-text-title--caps slds-line-height--reset">{!$Label.Configuration}</p>
+    					<div class="apPageHeaderTitle" title="{!$Label.File_Explorer_Configuration_Subtitle}">{!$Label.File_Upload_Configuration_Subtitle}</div>
+    	              	<div class="apPageHeaderInfo">
+    	              		<label>{!$Label.File_Upload_Configuration_Page_Description}</label>
+    	              	</div>
+              		</div>
+    	            <div style="float:right;" class="apPageHeaderMediaButtons">
+    	                <apex:commandButton styleClass="slds-button slds-button--neutral" value="{!$Label.buildertek__Reset_to_System_Default_Button}" action="{!initialize}" onComplete="easyToolTipForAll();" reRender="fielUploadConfigurationPanel" status="splashStatus"/>
+    	                <apex:commandButton styleClass="slds-button slds-button--brand" value="{!$Label.buildertek__Save}" action="{!Save}" status="splashStatus" onComplete="easyToolTipForAll();" reRender="fielUploadConfigurationPanel"/>
+    	            </div>
+    	           <script>
+    	           		Appurin.lightning.createPageHeader('PageHeader');
+    	           </script>
+    	        </div>
+            </div>
+	    </apex:outputPanel>
+	    
+	    <apex:outPutPanel layout="block" styleClass="slds" id="fielUploadConfigurationPanel">
+	        
+	        <apex:outputPanel >
+                <apex:pagemessages id="errorMessages"/>
+                <script>
+                    Appurin.lightning.createLightningPageMessage({'classicPageMessageId' : '{!$Component.errorMessages}'});   
+                </script>
+            </apex:outputPanel>
+            
+	        <apex:outputPanel layout="block">
+                <apex:outPutPanel layout="block" styleClass="slds-section slds-is-open" id="defaultFileValuesSection">
+                    <h3 class="slds-section__title">
+                        <apex:outputPanel id="defaultFileValuesHeader" layout="block" styleclass="slds-button slds-section__title-action">
+                            <c:BT_LightningSvg parentId="defaultFileValuesHeader" parentType="div" styleClass="slds-section__title-action-icon slds-button__icon slds-button__icon--left" path="/assets/icons/utility-sprite/svg/symbols.svg#switch"/>
+                            <label class="avLightningFormElementLabel">Default field values for New file</label>
+                        </apex:outputPanel>
+                    </h3>
+                    <apex:outputPanel layout="block" styleClass="slds-section__content">
+                        <apex:outputPanel layout="block" styleClass="slds-grid slds-grid--pull-padded-medium">
+                            <apex:outputPanel layout="block" styleClass="slds-col slds-p-horizontal--medium slds-size--1-of-2">
+                                <apex:outputPanel layout="block" styleClass="slds-form-element">
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                        <apex:outputLabel value="{!$ObjectType.File_Upload_Page_Configuration__c.fields.Default_Public_on_Amazon__c.label}"></apex:outputLabel>
+                                    </apex:outputPanel>
+                                    <c:BT_LightningHelpText rendered="{!$ObjectType.File_Upload_Page_Configuration__c.fields.Default_Public_on_Amazon__c.inlineHelpText != null}" helptext="{!$ObjectType.File_Upload_Page_Configuration__c.fields.Default_Public_on_Amazon__c.inlineHelpText}"/>
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                        <apex:outputPanel styleClass="slds-checkbox">
+                                            <apex:inputField value="{!uploadPageConfiguration.Default_Public_on_Amazon__c}" id="defaultPublicOnAmazonField"/>
+                                            <apex:outputlabel styleClass="slds-checkbox__label" for="defaultPublicOnAmazonField">
+                                                <apex:outputPanel styleClass="slds-checkbox--faux"></apex:outputPanel>
+                                                <apex:outputPanel styleClass="slds-form-element__label"></apex:outputPanel>
+                                            </apex:outputlabel>
+                                        </apex:outputPanel>
+                                    </apex:outputPanel>
+                                </apex:outputPanel> 
+                            </apex:outputPanel>
+                            
+                            <apex:outputPanel layout="block" styleClass="slds-col slds-p-horizontal--medium slds-size--1-of-2">
+                                <apex:outputPanel layout="block" styleClass="slds-form-element">
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+            						    <apex:outputLabel value="{!$ObjectType.File_Upload_Page_Configuration__c.Fields.Default_Salesforce_Access_Type__c.label}"></apex:outputLabel>
+            						</apex:outputPanel>
+            						<c:BT_LightningHelpText rendered="{!$ObjectType.File_Upload_Page_Configuration__c.fields.Default_Salesforce_Access_Type__c.inlineHelpText != null}" helptext="{!$ObjectType.File_Upload_Page_Configuration__c.fields.Default_Salesforce_Access_Type__c.inlineHelpText}"/>
+            						<apex:outputPanel layout="block" styleClass="slds-form-element__control">
+            							<apex:selectList size="1" value="{!uploadPageConfiguration.Default_Salesforce_Access_Type__c}" styleClass="slds-select">
+            								<apex:selectOptions value="{!salesforceAccessTypePickListValue}"></apex:selectOptions>
+            							</apex:selectList>
+            						</apex:outputPanel>
+                                </apex:outputPanel> 
+                            </apex:outputPanel>
+                        </apex:outputPanel>
+                        <apex:outputPanel layout="block" rendered="{!isFileDownloadHistoryActivate}" styleClass="slds-grid slds-grid--pull-padded-medium">
+                            <apex:outputPanel layout="block" styleClass="slds-col slds-p-horizontal--medium slds-size--1-of-2">
+                                <apex:outputPanel layout="block" styleClass="slds-form-element">
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                        <apex:outputLabel value="{!$ObjectType.File_Upload_Page_Configuration__c.fields.Default_Track_Download_History__c.label}"></apex:outputLabel>
+                                    </apex:outputPanel>
+                                    <c:BT_LightningHelpText rendered="{!$ObjectType.File_Upload_Page_Configuration__c.fields.Default_Track_Download_History__c.inlineHelpText != null}" helptext="{!$ObjectType.File_Upload_Page_Configuration__c.fields.Default_Track_Download_History__c.inlineHelpText}"/>
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                        <apex:outputPanel styleClass="slds-checkbox">
+                                            <apex:inputField value="{!uploadPageConfiguration.Default_Track_Download_History__c}" id="defaultTrackDownloadField"/>
+                                            <apex:outputlabel styleClass="slds-checkbox__label" for="defaultTrackDownloadField">
+                                                <apex:outputPanel styleClass="slds-checkbox--faux"></apex:outputPanel>
+                                                <apex:outputPanel styleClass="slds-form-element__label"></apex:outputPanel>
+                                            </apex:outputlabel>
+                                        </apex:outputPanel>
+                                    </apex:outputPanel>
+                                </apex:outputPanel> 
+                            </apex:outputPanel>
+                            <apex:outputPanel layout="block" styleClass="slds-col slds-p-horizontal--medium slds-size--1-of-2">
+                                <apex:outputPanel layout="block" styleClass="slds-form-element">
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                        <apex:outputLabel value="{!$ObjectType.File_Upload_Page_Configuration__c.fields.Default_Allow_Download_by_Presigned_URL__c.label}"></apex:outputLabel>
+                                    </apex:outputPanel>
+                                    <c:BT_LightningHelpText rendered="{!$ObjectType.File_Upload_Page_Configuration__c.fields.Default_Allow_Download_by_Presigned_URL__c.inlineHelpText != null}" helptext="{!$ObjectType.File_Upload_Page_Configuration__c.fields.Default_Allow_Download_by_Presigned_URL__c.inlineHelpText}"/>
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                        <apex:outputPanel styleClass="slds-checkbox">
+                                            <apex:inputField value="{!uploadPageConfiguration.Default_Allow_Download_by_Presigned_URL__c}" id="defaultAllowDownloadByPresignedField"/>
+                                            <apex:outputlabel styleClass="slds-checkbox__label" for="defaultAllowDownloadByPresignedField">
+                                                <apex:outputPanel styleClass="slds-checkbox--faux"></apex:outputPanel>
+                                                <apex:outputPanel styleClass="slds-form-element__label"></apex:outputPanel>
+                                            </apex:outputlabel>
+                                        </apex:outputPanel>
+                                    </apex:outputPanel>
+                                </apex:outputPanel> 
+                            </apex:outputPanel>
+                        </apex:outputPanel>
+                        <apex:outputPanel layout="block" rendered="{!isFileDownloadHistoryActivate}" styleClass="slds-grid slds-grid--pull-padded-medium">
+                            <apex:outputPanel layout="block" styleClass="slds-col slds-p-horizontal--medium slds-size--1-of-2">
+                                <apex:outputPanel layout="block" styleClass="slds-form-element">
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                        <apex:outputLabel value="{!$ObjectType.File_Upload_Page_Configuration__c.fields.Default_Copy_Move__c.label}"></apex:outputLabel>
+                                    </apex:outputPanel>
+                                    <c:BT_LightningHelpText rendered="{!$ObjectType.File_Upload_Page_Configuration__c.fields.Default_Copy_Move__c.inlineHelpText != null}" helptext="{!$ObjectType.File_Upload_Page_Configuration__c.fields.Default_Copy_Move__c.inlineHelpText}"/>
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                        <apex:outputPanel styleClass="slds-checkbox">
+                                            <apex:inputField value="{!uploadPageConfiguration.Default_Copy_Move__c}" id="defaultCopyAndMove"/>
+                                            <apex:outputlabel styleClass="slds-checkbox__label" for="defaultCopyAndMove">
+                                                <apex:outputPanel styleClass="slds-checkbox--faux"></apex:outputPanel>
+                                                <apex:outputPanel styleClass="slds-form-element__label"></apex:outputPanel>
+                                            </apex:outputlabel>
+                                        </apex:outputPanel>
+                                    </apex:outputPanel>
+                                </apex:outputPanel> 
+                            </apex:outputPanel>
+                            <apex:outputPanel layout="block" styleClass="slds-col slds-p-horizontal--medium slds-size--1-of-2">
+                                <apex:outputPanel layout="block" styleClass="slds-form-element">
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                        <apex:outputLabel value="{!$ObjectType.File_Upload_Page_Configuration__c.fields.Default_Presigned_URL_Frequency__c.label}"></apex:outputLabel>
+                                    </apex:outputPanel>
+                                    <c:BT_LightningHelpText rendered="{!$ObjectType.File_Upload_Page_Configuration__c.fields.Default_Presigned_URL_Frequency__c.inlineHelpText != null}" helptext="{!$ObjectType.File_Upload_Page_Configuration__c.fields.Default_Presigned_URL_Frequency__c.inlineHelpText}"/>
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                        <apex:selectList styleClass="slds-select" value="{!uploadPageConfiguration.Default_Presigned_URL_Frequency__c}" size="1" multiselect="false">
+                                            <apex:selectOptions value="{!presignedURLFrequencyOptions}"/>
+                                        </apex:selectList>
+                                    </apex:outputPanel>
+                                </apex:outputPanel> 
+                            </apex:outputPanel>
+                        </apex:outputPanel>
+                    </apex:outputPanel>
+                    <script>
+    				    Appurin.lightning.createLightningSection('{!$Component.defaultFileValuesSection}');
+    				</script>
+                </apex:outputPanel>
+            </apex:outputPanel>
+            <apex:outputPanel layout="block">
+                <apex:outPutPanel layout="block" styleClass="slds-section slds-is-open" id="administrativeFieldsSection">
+                    <h3 class="slds-section__title">
+                        <apex:outputPanel id="administrativrFieldHeader" layout="block" styleclass="slds-button slds-section__title-action">
+                            <c:BT_LightningSvg parentId="administrativrFieldHeader" parentType="div" styleClass="slds-section__title-action-icon slds-button__icon slds-button__icon--left" path="/assets/icons/utility-sprite/svg/symbols.svg#switch"/>
+                            <label class="avLightningFormElementLabel">{!$ObjectType.File_Upload_Page_Configuration__c.Fields.File_Administrative_Fields__c.label}</label>
+                            <c:BT_LightningHelpText rendered="{!$ObjectType.File_Upload_Page_Configuration__c.fields.File_Administrative_Fields__c.inlineHelpText != null}" helptext="{!$ObjectType.File_Upload_Page_Configuration__c.fields.File_Administrative_Fields__c.inlineHelpText}"/>
+                        </apex:outputPanel>
+                    </h3>
+                    <apex:outPutPanel layout="block" styleClass="slds-section__content">
+                        <apex:outputPanel layout="block" styleClass="slds-grid">
+                            <apex:outputPanel layout="block" style="padding-left:0px;" styleClass="slds-p-horizontal--medium">
+                                <apex:outputPanel layout="block" styleClass="slds-form-element">
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                        <apex:outputLabel value="{!$Label.buildertek__Available} {!$Label.buildertek__File_Administrative_Fields}"></apex:outputLabel>
+                                    </apex:outputPanel>
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                        <apex:selectList styleClass="selectListStyle slds-select" style="width:200px; height: 200px;" multiselect="true" size="7"
+                                                value="{!leftSelectedAdministrativeFields}">
+                                            <apex:selectOptions value="{!leftAvailableAdministrativeFields}"></apex:selectOptions>
+                                        </apex:selectList>
+                                    </apex:outputPanel>
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                            <apex:outputPanel layout="block" styleClass="slds-grid slds-grid--vertical-align-center">
+                                <apex:outputPanel layout="block" style="display: table;">
+                                    <apex:commandButton style="display: table-row; width:20px; height:20px;" image="{!URLFOR($Resource.SLDS, 'assets/icons/utility/right_60.png')}" action="{!movingAdministrativeFieldsToRight}" onComplete="easyToolTipForAll();" reRender="administrativeFieldsSection"/>
+                                    <br/>
+                                    <apex:commandButton style="display: table-row; width:20px; height:20px;" image="{!URLFOR($Resource.SLDS, 'assets/icons/utility/left_60.png')}" action="{!movingAdministrativeFieldsToLeft}" onComplete="easyToolTipForAll();" reRender="administrativeFieldsSection"/>
+                                </apex:outputPanel>
+                            </apex:outputPanel>   
+                            <apex:outputPanel layout="block" styleClass="slds-p-horizontal--medium">
+                                <apex:outputPanel layout="block" styleClass="slds-form-element">
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                        <apex:outputLabel value="{!$Label.buildertek__Selected} {!$Label.buildertek__File_Administrative_Fields}"></apex:outputLabel>
+                                    </apex:outputPanel>
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                         <apex:selectList styleClass="selectListStyle slds-select" style="width:200px; height: 200px;" multiselect="true" size="7"
+                                                value="{!rightSelectedAdministrativeFields}">
+                                            <apex:selectOptions value="{!rightAvailableAdministrativeFields}"></apex:selectOptions>
+                                        </apex:selectList>
+                                    </apex:outputPanel>
+                                </apex:outputPanel> 
+                            </apex:outputPanel>
+                        </apex:outputPanel>
+                    </apex:outputPanel>
+                    <script>
+    				    Appurin.lightning.createLightningSection('{!$Component.administrativeFieldsSection}');
+    				</script>
+                </apex:outputPanel>
+            </apex:outputPanel>
+            <apex:outputPanel layout="block">
+                <apex:outPutPanel layout="block" styleClass="slds-section slds-is-open" id="defaultGranteeSection">
+                    <h3 class="slds-section__title">
+                        <apex:outputPanel id="defaultGranteeHeader" layout="block" styleclass="slds-button slds-section__title-action">
+                            <c:BT_LightningSvg parentId="defaultGranteeHeader" parentType="div" styleClass="slds-section__title-action-icon slds-button__icon slds-button__icon--left" path="/assets/icons/utility-sprite/svg/symbols.svg#switch"/>
+                            <label class="avLightningFormElementLabel">{!$ObjectType.File_Upload_Page_Configuration__c.Fields.Default_Grantees_for_Private_Files__c.label}</label>
+                            <c:BT_LightningHelpText rendered="{!$ObjectType.File_Upload_Page_Configuration__c.fields.Default_Grantees_for_Private_Files__c.inlineHelpText != null}" helptext="{!$ObjectType.File_Upload_Page_Configuration__c.fields.Default_Grantees_for_Private_Files__c.inlineHelpText}"/>
+                        </apex:outputPanel>
+                    </h3>
+                    <apex:outPutPanel layout="block" styleClass="slds-section__content">
+                        <apex:outputPanel layout="block" styleClass="slds-grid">
+                            <apex:outputPanel layout="block" style="padding-left:0px;" styleClass="slds-p-horizontal--medium">
+                                <apex:outputPanel layout="block" styleClass="slds-form-element">
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                        <apex:outputLabel value="{!$Label.buildertek__Available} {!$Label.buildertek__Grantees}"></apex:outputLabel>
+                                    </apex:outputPanel>
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                        <apex:selectList styleClass="selectListStyle slds-select" style="width:200px; height: 200px;" multiselect="true" size="7"
+                                                value="{!leftSelectedGrantees}">
+                                            <apex:selectOptions value="{!leftAvailableGrantees}"></apex:selectOptions>
+                                        </apex:selectList>
+                                    </apex:outputPanel>
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                            <apex:outputPanel layout="block" styleClass="slds-grid slds-grid--vertical-align-center">
+                                <apex:outputPanel layout="block" style="display: table;">
+                                    <apex:commandButton style="display: table-row; width:20px; height:20px;" image="{!URLFOR($Resource.SLDS, 'assets/icons/utility/right_60.png')}" action="{!movingGranteesToRight}" onComplete="easyToolTipForAll();" reRender="defaultGranteeSection"/>
+                                    <br/>
+                                    <apex:commandButton style="display: table-row; width:20px; height:20px;" image="{!URLFOR($Resource.SLDS, 'assets/icons/utility/left_60.png')}" action="{!movingGranteesToLeft}" onComplete="easyToolTipForAll();" reRender="defaultGranteeSection"/>
+                                </apex:outputPanel>
+                            </apex:outputPanel>   
+                            <apex:outputPanel layout="block" styleClass="slds-p-horizontal--medium">
+                                <apex:outputPanel layout="block" styleClass="slds-form-element">
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__label avLightningFormElementLabel">
+                                        <apex:outputLabel value="{!$Label.buildertek__Selected} {!$Label.buildertek__Grantees}"></apex:outputLabel>
+                                    </apex:outputPanel>
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element__control">
+                                         <apex:selectList styleClass="selectListStyle slds-select" style="width:200px; height: 200px;" multiselect="true" size="7"
+                                                value="{!rightSelectedGrantees}">
+                                            <apex:selectOptions value="{!rightAvailableGrantees}"></apex:selectOptions>
+                                        </apex:selectList>
+                                    </apex:outputPanel>
+                                </apex:outputPanel> 
+                            </apex:outputPanel>
+                        </apex:outputPanel>
+                    </apex:outputPanel>
+                    <script>
+    				    Appurin.lightning.createLightningSection('{!$Component.defaultGranteeSection}');
+    				</script>
+                </apex:outputPanel>
+            </apex:outputPanel>
+	    </apex:outPutPanel>
+	</apex:form>
+</apex:page>

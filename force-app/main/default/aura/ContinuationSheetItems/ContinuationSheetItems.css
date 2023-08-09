@@ -1,0 +1,143 @@
+.THIS.slds-modal {
+    width: 190%;
+    left: -45%;
+}
+.THIS.slds-modal:focus {
+    outline: none !important;
+}
+.THIS .slds-modal__content {
+    min-height: 16rem;
+}
+.THIS .slds-modal__container{
+    width:100%;
+}
+.THIS .nameClass{
+    width: max-content;
+}
+@media only screen and (max-width: 2560px) and (min-width: 1920px){
+	.THIS.mainDiv{
+        height: 90vh !important;
+        background: white !important;
+    }
+   
+}
+@media only screen and (max-width: 1920px) and (min-width: 1681px){
+	.THIS.mainDiv{
+        height: 87vh !important;
+        background: white !important;
+    }	   
+}
+@media only screen and (max-width: 1680px) and (min-width: 1661px){
+	.THIS.mainDiv{
+        height: 70vh !important;
+        background: white !important;
+    }
+}
+@media only screen and (max-width: 1600px) and (min-width: 1441px){
+	.THIS.mainDiv{
+        height: 70vh !important;
+        background: white !important;
+    }
+}
+@media only screen and (max-width: 1440px) and (min-width: 1281px){
+	.THIS.mainDiv{
+        height: 70vh !important;
+        background: white !important;
+    }
+}
+@media only screen and (max-width: 1280px) and (min-width: 1180px){
+	.THIS.mainDiv{
+        height: 50vh !important;
+        background: white !important;
+    }	    
+}
+@media only screen and (max-width: 1179px) and (min-width: 1080px){
+	.THIS .inputBox{
+        width: 90% !important;
+    }
+    .THIS .dropDownClass {
+        width: 82% !important;
+    }	    
+}
+@media only screen and (max-width: 1079px) and (min-width: 980px){
+	.THIS.mainDiv{
+        height: 70vh !important;
+        background: white !important;
+    }	    
+}
+@media only screen and (max-width: 979px) and (min-width: 720px){
+	.THIS.mainDiv{
+        height: 70vh !important;
+        background: white !important;
+    }	    
+}
+
+
+
+.THIS .groupHeader {
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    background-color: #fafaf9;
+    font-family: 'Salesforce Sans','Open Sans',Arial,sans-serif;
+    font-size: 18px;
+    color: #6b6d70;
+    font-weight: 400;
+    font-style: normal;
+    text-decoration: none;
+    margin: 0;
+    border: 0;
+    padding: 10px 15px 5px;
+    border-bottom-color: #dedbd7;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    line-height: 1.7;
+}
+
+.THIS .custom-loading-text {
+    transform: rotate(-90deg);
+    position: absolute;
+    top: -0.5rem;
+    left: 1rem;
+    white-space: nowrap;
+    font-size: 20px;
+}
+.THIS .slds-modal__container{
+   max-width: 80rem !important;
+   width:72% !important;
+}
+.THIS .cuf-content {
+padding: 0 0rem !important;
+}
+.THIS .slds-p-around--medium {
+padding: 0rem !important;
+}
+.THIS .slds-modal__content {
+	height: unset !important;
+	max-height: unset !important;
+	box-shadow: none !important;
+} 
+.THIS .slds-modal__container{
+   max-width: 72rem !important;
+   width:72% !important;
+
+}
+.THIS .scrollable {
+	
+	overflow-y:scroll; 
+}
+.THIS .iconClr svg{
+	fill:red;
+}
+.THIS .iconClrforapp svg{
+    
+	fill:green;
+}
+
+.THIS .slds-grid_align-end{
+  display: inline-block;
+}
+
+
+.THIS .hide-label .slds-form-element__label {
+display: none !important;
+}

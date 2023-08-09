@@ -1,0 +1,198 @@
+<aura:component implements="force:appHostable,force:hasSObjectName,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction,lightning:actionOverride" access="global"
+                controller="NewBillofMaterialController">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="parentprojectId" type="String" default="" />
+    <aura:attribute name="parenttakeoffId" type="String" default="" />
+    <aura:attribute name="parentRecordId" type="String" default="" />
+     <aura:attribute name="BOMRecordId" type="String" default="" />
+    <aura:attribute name="isLoading" type="Boolean" />
+    <aura:attribute name="listOfFields" type="List" />
+     <aura:attribute name="ImportVendorPaymentAppsList" type="List" />
+    <aura:attribute name="listOfSelectedRFQIds" type="List" default="[]"/>
+ 
+    <aura:attribute name="NameOfVendor" type="String"/>
+    <aura:attribute name="NameOfVendorReview" type="String"/>
+    <aura:attribute name="sobjecttype" type="String" default="{!v.sObjectName}"/>
+    <aura:attribute name="isImporttakeoff" type="Boolean" default="false"/>
+    <aura:attribute name="isBOM" type="Boolean" default="false"/>
+     <aura:attribute name="islines" type="Boolean"/>
+    <aura:attribute name="BOMRecordName" type="String"/>
+    <aura:attribute name="bomName" type="String"/>
+    <lightning:workspaceAPI aura:id="workspace" />
+    <ltng:require styles="{!$Resource.ModalWidthCSS}"/>
+   <aura:if isTrue="{!v.isBOM}">
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+             aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+            <header class="slds-modal__header">
+                <lightning:buttonIcon iconName="utility:close"
+                                      onclick="{! c.closeModel }"
+                                      alternativeText="close"
+                                      variant="bare-inverse"
+                                      class="slds-modal__close"/>
+                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New Bill of Material</h2>
+                <p></p>
+            </header>
+            <div class="slds-modal__content " id="modal-content-id-1">
+                <br />
+                <lightning:recordEditForm aura:id="recordViewForm"  recordId="{!v.BOMRecordId}" objectApiName="buildertek__Project_Selection_Sheet_Takeoff__c"
+                                          onsubmit="{!c.handleSubmit}" onsuccess="{!c.onRecordSuccess}">
+                    <h3 class="slds-section__title slds-theme--shade primaryPaletteBorder test-id__section-header-container">
+                        <span class="test-id__section-header-title section-header-title slds-p-horizontal--small slds-truncate">Information</span>
+                    </h3>
+                    <lightning:layout multipleRows="true">
+                        <aura:iteration items="{!v.listOfFields}" var="field">
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                                <div style="">
+                                    <aura:if  isTrue="{!and(and(and(field.name !='buildertek__Project__c',field.name !='Name'),
+                                                      field.name != 'buildertek__Takeoff__c'),field.name != 'buildertek__Name__c')}" >                                 
+                                        <lightning:inputField fieldName="{! field.name }" />  
+                                        <aura:set attribute="else"> 
+                                            <aura:if  isTrue="{!field.name =='buildertek__Project__c'}"  >                                            
+                                                <lightning:inputField fieldName="{! field.name }"  value = "{!v.parentprojectId}"  />
+                                            </aura:if>
+                                            <aura:if  isTrue="{!field.name =='Name'}" >
+                                                <lightning:inputField fieldName="{! field.name }" value = "{!v.bomName}"/>
+                                            </aura:if>
+                                             <aura:if  isTrue="{!field.name =='buildertek__Name__c'}" >
+                                                <lightning:inputField fieldName="{! field.name }" value = "{!v.bomName}"  required="true"/>
+                                            </aura:if>
+                                            <!--<aura:if  isTrue="{!field.name =='buildertek__Takeoff__c'}" >
+                                                <lightning:inputField fieldName="{! field.name }" value = "{!v.parenttakeoffId}"/>
+                                            </aura:if>-->
+                                            <aura:if  isTrue="{!and(field.name =='buildertek__Takeoff__c',v.parenttakeoffId != '')}" >
+                                                <lightning:inputField fieldName="{! field.name }" value = "{!v.parenttakeoffId}"/>
+                                            </aura:if>
+                                        </aura:set>
+                                    </aura:if>
+                                </div>
+                            </lightning:layoutItem>
+                            <br />
+                        </aura:iteration>
+                    </lightning:layout>
+                    <br />
+                    <footer class="slds-modal__footer">
+           
+                        <center>
+                            <!-- <aura:if  isTrue="{(v.parenttakeoffId == '')}">-->
+                            <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{! c.closeModel }" />
+                            <aura:if  isTrue="{!v.parenttakeoffId != ''}">
+                            <lightning:button variant="neutral" title="Save &amp; New" label="Save &amp; New"
+                                              onclick="{!c.saveAndNew}" />
+                            </aura:if>
+                            <aura:if  isTrue="{!v.parenttakeoffId == ''}">
+                            <lightning:button variant="neutral" title="Save &amp; Next"  label="Save &amp; Next"
+                                            onclick="{!c.saveAndNext}" />
+                            </aura:if>
+                            <lightning:button variant="brand" type="submit" name="save" label="Save" />
+                        </center>
+                    </footer>
+                </lightning:recordEditForm>
+            </div>
+        </div>
+    </section>
+   </aura:if>
+   <aura:if isTrue="{!v.isImporttakeoff}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="width: 50%">
+                <aura:if isTrue="{!v.Spinner2}">
+                    <div aura:id="spinnerId" class="slds-spinner_container">
+                        <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                            <span class="slds-assistive-text">Loading</span>
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                            <div class="custom-loading-text">
+                                <b>Processing, Please Wait</b>
+                            </div>
+                        </div>
+                    </div>
+                </aura:if>
+                <div aura:id="poContainer" class="c-container" style="height:40rem !important" ><!-- height:100% -->
+                    <header class="slds-modal__header">
+                        <p></p>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Approved Takeoffs</h2>
+                        <p></p>
+                    </header>
+                    <aura:if isTrue="{!v.islines}">
+                                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="height:40% !important;">
+                                        <br/>
+                                        <br/>
+                                        <p class="slds-text-title_bold" style="text-align: center;">
+                                            No Approved Takeoffs for this project.
+                                        </p>
+                                    </div>
+                         <div class="slds-modal__footer">
+                             <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}">Cancel</button>
+                         </div>
+                                </aura:if>
+                                <aura:if isTrue="{!!v.islines}">
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="height:75% !important;">
+                        <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                            <thead>
+                                <tr class="slds-text-heading--label">
+                                    <th class="slds-is-sortable" scope="col" width="5px" style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-left-radius:5px;vertical-align: top;line-height: 2;width: 30px !important;padding-top: 8px;">
+                                        <lightning:input type="checkbox" aura:id="headCheckPayApp"  checked="false" onchange="{!c.selectAllPayApp}"/> 
+                                    </th>
+                                    <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;width: 30px !important;padding-top: 8px;">
+                                        <div class="slds-truncate" >
+                                            Takeoff #
+                                        </div>
+                                    </th>
+                                    <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;width: 30px !important;padding-top: 8px;">
+                                        <div class="slds-truncate">
+                                            Name
+                                        </div>
+                                    </th>
+                                    <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;width: 30px !important;padding-top: 8px;">
+                                        <div class="slds-truncate">
+                                            Status 
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                    <aura:iteration items="{!v.ImportVendorPaymentAppsList}" var="item" indexVar="index">
+                                        
+                                        <tr>
+                                            <td>
+                                                <lightning:input type="checkbox" aura:id="checkPayApp" checked="false" name="{!item.Id}" onchange="{!c.selectPayApp}"/>
+                                            </td>
+                                            <td>
+                                                <div class="slds-truncate" title="{!item.Name}" >
+                                                    {!item.Name}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="slds-truncate" title="{!item.buildertek__Name__c}" >
+                                                    {!item.buildertek__Name__c}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="slds-truncate" title="{!item.buildertek__Status__c}" >
+                                                    {!item.buildertek__Status__c}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="slds-modal__footer">
+                        <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}">Cancel</button>
+                        <lightning:button aura:id="nextPage" variant="neutral"
+                                          label="Save" onclick="{!c.importtakeoff}" />
+                    </div> 
+                    </aura:if>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+</aura:component>

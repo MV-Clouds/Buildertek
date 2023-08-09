@@ -1,0 +1,5 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global">
+    <aura:attribute name="BaseURL" type="String"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+	<iframe class="BT_GanttChart" src="{!v.BaseURL+'/apex/buildertek__InspectionLineReport?Id=' + v.recordId }" width="100%" height="500px" frameBorder="0"/>
+</aura:component>

@@ -1,0 +1,148 @@
+<apex:page standardController="DocTemplate_Page__c" extensions="QuoteTemplatePageEdit_AC" sidebar="false" standardStyleSheets="true"> 
+<apex:form id="frm">
+
+<apex:includeScript value="{!URLFOR($Resource.Doc_js, '/js/1.9.1-jquery.min.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.Doc_js, '/js/jquery-1.10.2.min.js')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.Doc_css, '/css/3.0.0-bootstrap.min.css')}"/>  
+<apex:includeScript value="{!URLFOR($Resource.Doc_js, '/js/jquery.js')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.Doc_css, '/css/3.3.5-bootstrap.min.css')}"/>
+<apex:includeScript value="{!URLFOR($Resource.Doc_js, '/js/3.3.5-bootstrap.min.js')}"/>
+
+<apex:includescript value="{!URLFOR($Resource.CKEditor, 'ckeditor/ckeditor.js')}" />
+<c:QuotePDF_Styles />
+
+<style>
+.row{
+margin-bottom:10px;
+}
+input[type=checkbox]{
+margin: 2px 0 0;
+height: 20px;
+width: 20px;
+}
+</style>
+
+
+<apex:pageblock id="pb">
+<apex:pagemessages />
+
+<apex:pageblockButtons >
+<P class="goright">
+<apex:commandButton action="{!UpdateTemplatePageInfo}" onclick="beforeTextSave()" value="Save" style="font-size:13px;">
+
+<script type="text/javascript">
+CKEDITOR.replace( '{!$Component.msgpost}',
+    {    
+     filebrowserBrowseUrl : '{!$Page.SiteFileBrowser}',   
+     filebrowserImageBrowseUrl: '{!$Page.SiteFileBrowser}'
+     //filebrowserImageUploadUrl: '{!$Page.FileUpload_VF}'       
+    });
+     
+function beforeTextSave() {
+var objEditor = CKEDITOR.instances['{!$Component.msgpost}'];
+document.getElementById('{!$Component.msgpost}').value = objEditor.getData();
+}
+</script>
+</apex:commandButton> 
+<apex:commandButton action="{!doCancel}" value="Cancel" immediate="true" style="font-size:13px;"/>
+</P>
+</apex:pageblockButtons>
+
+
+<div class="container">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-4">
+            <label style="float:left;font-size:12px;padding:5px" class="control-label"  for="leadCompany">Sort Order</label>
+            <apex:inputField value="{!QuoteTemplatePageInfo.Page_Sort_order__c}" style="font-size: 13px;"/>
+            </div>
+            <div class="col-sm-4">
+            <label style="float:left;font-size:12px;padding:5px" class="control-label"  for="leadCompany">Page Brake</label>
+            <apex:inputField value="{!QuoteTemplatePageInfo.Template_Page_Brake__c}"/>
+            </div>
+           <!-- <div class="col-sm-4">
+            <label style="float:left;font-size:12px;padding:5px" class="control-label"  for="leadCompany">Attachments</label>
+            <apex:inputCheckBox value="{!QuoteTemplatePageInfo.Attachments__c}"/>
+            </div>-->
+            <apex:outputPanel rendered="{!LineItemsList.size == 0 && QuoteTemplatePageInfo.DocTemplate_Page__c == null}" >
+            <div class="col-sm-4">
+            <label style="float:left;font-size:12px;padding:5px" class="control-label"  for="leadCompany">For LineItem</label>
+            <apex:inputCheckBox value="{!islineItem}">
+            <apex:actionSupport event="onchange" />
+            </apex:inputCheckBox>
+            </div>
+            </apex:outputPanel>
+        </div>  
+        
+        <apex:outputPanel rendered="{!!islineItem}">
+        <div class="row">
+            <div class="col-sm-12">
+            <apex:inputtextarea id="msgpost" styleClass="ckeditor" richtext="false" value="{!QuoteTemplatePageInfo.DocTemplate_Page__c}" />
+            </div>
+        </div>
+        </apex:outputPanel>
+    </div>
+</div>
+
+
+
+<div class="row">
+<div class="col-sm-12">
+<apex:outputPanel rendered="{!islineItem}">
+<apex:pageblocksection >
+ <apex:pageBlockSectionItem >                      
+        <!--<apex:panelGrid columns="4" id="abcd">
+        
+            <apex:selectList id="sel1" value="{!leftselected}" multiselect="true" style="width:160px;height:205px;font-size:14px;">
+                <apex:selectOptions value="{!unselectedvalues}" />
+            </apex:selectList>
+                <apex:panelGroup >
+                <center>
+                    <br/> <br/> <br/>
+                    <apex:outputText value="Add" style="font-size:13px;"/><br/>
+                    <apex:image value="{!$Resource.multiselected}">
+                        <apex:actionSupport event="onclick" action="{!selectclick}" reRender="abcd"/>
+                    </apex:image>
+                    <br/> <br/> 
+                    <apex:image value="{!$Resource.multiunselected}">
+                        <apex:actionSupport event="onclick" action="{!unselectclick}" reRender="abcd"/>
+                    </apex:image>
+                    <br/><apex:outputText value="Remove" style="font-size:13px;" />
+                    </center>
+                </apex:panelGroup>
+            <apex:selectList id="sel2" value="{!rightselected}" multiselect="true" style="width:160px;height:205px;font-size:14px;">
+                <apex:selectOptions value="{!SelectedValues}" />
+            </apex:selectList>
+             <apex:panelGroup >
+                <center>
+                    <br/> <br/> <br/>
+                    <apex:outputText value="Up" style="font-size:13px;"/><br/>
+                    <apex:image value="{!$Resource.multiselected}">
+                        <apex:actionSupport event="onclick" action="{!SwapUp}" reRender="abcd"/>
+                    </apex:image>
+                    <br/> <br/> 
+                    <apex:image value="{!$Resource.multiunselected}">
+                        <apex:actionSupport event="onclick" action="{!SwapDown}" reRender="abcd"/>
+                    </apex:image>
+                    <br/><apex:outputText value="Down" style="font-size:13px;" />
+                    </center>
+                </apex:panelGroup>
+        </apex:panelGrid>-->
+        <c:MultiselectPicklist leftOption="{!allContacts}"
+                                rightOption="{!selectedContacts}"
+                                size="15"
+                                width="185px"/> 
+        
+        
+                 
+ </apex:pageBlockSectionItem>
+ </apex:pageblocksection>
+ </apex:outputPanel>
+</div>
+</div>
+        
+        
+</apex:pageblock>
+</apex:form>
+
+</apex:page>

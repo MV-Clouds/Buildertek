@@ -1,0 +1,24 @@
+<apex:page controller="BT_PurchaseOrderConfiguration" sidebar="false" lightningStylesheets="true">
+    <apex:slds />
+    <apex:form >
+        <apex:pageBlock mode="maindetail">
+            <apex:pageMessages />
+            <apex:pageblocksection >
+                <apex:inputcheckbox value="{!sendVendorLienReleaseOnApproval}" label="Send Vendor Lien Release On Approval">
+                </apex:inputcheckbox>
+                <apex:inputcheckbox value="{!sendEmailOnApproval}" label="Send PO On Approval">
+                </apex:inputcheckbox>
+                <apex:inputtext value="{!emailsubject}" label="Email Subject" />
+                 <apex:inputcheckbox value="{!CreateInvoiceApproval}" label="Create Invoice on Approval">
+                </apex:inputcheckbox>
+
+                 <apex:selectList label="Custom New Button" value="{!CreatePO}" multiselect="false" size="1">
+                    <apex:selectOption itemValue="Without PO Lines" itemLabel="Standard Button"/>
+                    <apex:selectOption itemValue="With PO Lines	" itemLabel="Custom Button"/>
+                </apex:selectList>
+
+                <apex:commandButton value="Save" id="onCreateChangeOrderonOverage" styleClass="slds-button slds-button_brand" action="{!onCreateChangeOrderonOverage}"></apex:commandButton>
+            </apex:pageblocksection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

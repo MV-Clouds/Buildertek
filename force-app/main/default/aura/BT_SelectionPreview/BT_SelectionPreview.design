@@ -1,0 +1,3 @@
+<design:component label="Selection Sheet">
+    <design:attribute name="recordId" label="recordId" description="Record Id" /> 
+</design:component>

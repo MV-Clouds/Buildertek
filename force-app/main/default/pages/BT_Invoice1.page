@@ -1,0 +1,10 @@
+<apex:page controller="InvoicePDFController" renderAs="pdf" action="{!PDFInvoice}">
+    <head>
+        
+        <title>BT Invoice</title>
+    </head>
+    <apex:form id="frmid" >
+        <apex:outputText value="{!templateBody}" escape="false" />
+    </apex:form>
+    
+</apex:page>

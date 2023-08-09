@@ -1,0 +1,1254 @@
+<aura:component
+    implements="flexipage:availableForRecordHome,forceCommunity:availableForAllPageTypes,force:hasRecordId,force:lightningQuickAction"
+    access="global" controller="BudgetDAO">
+
+
+
+    <aura:attribute name="isBudgetlinedelete" type="Boolean" default="false" />
+    <aura:attribute name="pendingLabel" type="String" default="Pending Po's" access="global" />
+    <aura:attribute name="BudgetlinePopupHeader" type="String" default="" />
+    <aura:attribute name="budgetItemId" type="String" default="" />
+    <aura:attribute name="BudgetlinePopupDescription" type="String" default="" />
+
+    <aura:handler name="budgetItemEvent" event="c:BT_Budget_Item_Component_Event" action="{!c.eventAction}" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler event="force:showToast" action="{!c.handleSaveSuccess}" />
+    <aura:handler name="onSaveSuccess" event="force:recordSaveSuccess" action="{!c.handleSaveSuccess}" />
+    <aura:attribute name="recordId" type="string" />
+    <aura:attribute name="groupFilter" type="string" />
+    <aura:attribute name="budgetlineId" type="string" access="public" />
+    <aura:handler name="onSelectEvt" event="c:BT_LookupEvent" action="{!c.handleLookUpEvent}" />
+
+    <aura:attribute name="refreshGridAction" type="Aura.Action" default="{!c.refreshList}" />
+
+    <aura:attribute name="newBi" type="Budget_Item__c" default="{ 'sobjectType': 'Budget_Item__c' }" access="public" />
+    <aura:attribute name="newbudgetgrouprec" type="Budget_Line_Group__c"
+        default="{ 'sobjectType': 'Budget_Line_Group__c'}" access="global" />
+
+    <aura:attribute name="newBudgetLine" type="Budget_Item__c" default="{ 'sobjectType':'Budget_Item__c',
+                                                                        'buildertek__Quantity__c':1}"
+        access="global" />
+    <aura:attribute name="selectedLookUpRecord" type="sObject" default="{}" />
+
+
+    <aura:attribute name="newRFQ" type="RFQ__c" default="{ 'sobjectType': 'RFQ__c' }" access="public" />
+    <aura:attribute name="newRFQItems" type="RFQ_Item__c[]" access="public" />
+
+    <aura:attribute name="newPO" type="Purchase_Order__c" default="{ 'sobjectType': 'Purchase_Order__c' }"
+        access="public" />
+    <aura:attribute name="newPOItems" type="Purchase_Order_Item__c[]" access="public" />
+
+    <aura:attribute name="newCO" type="Change_Order__c" default="{ 'sobjectType': 'Change_Order__c' }"
+        access="public" />
+    <aura:attribute name="newCOItems" type="Change_Order_Item__c[]" access="public" />
+
+    <aura:attribute name="newInvoice" type="Billings__c" default="{ 'sobjectType': 'Billings__c' }" access="public" />
+    <aura:attribute name="newInvoiceItems" type="Billable_Lines__c[]" access="public" />
+
+    <aura:attribute name="newBill" type="Account_Payable__c" default="{ 'sobjectType': 'Account_Payable__c' }"
+        access="public" />
+    <aura:attribute name="newBilllineitems" type="Account_Payable_Item__c[]" access="public" />
+
+    <aura:attribute name="newExpense" type="Expense__c" default="{ 'sobjectType': 'Expense__c' }" access="public" />
+
+
+    <aura:attribute name="newSubContract" type="Contract__c" default="{ 'sobjectType': 'Contract__c' }"
+        access="public" />
+    <aura:attribute name="newSubContractItems" type="Contract__c[]" access="public" />
+
+    <aura:attribute name="newRecord" type="Object" access="private" />
+    <aura:attribute name="sampleNewRecord" type="Object" access="private" />
+    <aura:attribute name="newRecordError" type="String" access="private" />
+    <aura:attribute name="options" type="List" />
+    <aura:attribute name="priorityOptions" type="List" />
+    <aura:attribute name="pricebookoptions" type="List" />
+    <aura:attribute name="pricebookName" type="string" />
+    <aura:attribute name="productfamily" type="string" />
+    <aura:attribute name="productfamilyoptions" type="List" />
+    <aura:attribute name="listofproductfamily" type="List" />
+    <aura:attribute name="Message" type="String" default="" />
+    <aura:attribute name="costttypeoptions" type="List" />
+    <aura:attribute name="budgetLineSubGroupName" type="String" />
+    <aura:attribute name="budgetLineSubGroupDescription" type="String" />
+
+    <!-- <aura:handler name="oSelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.handleComponentEvent}"/> -->
+    <aura:attribute name="productId" type="string" />
+    <aura:attribute name="productName" type="string" />
+
+    <aura:attribute name="selectedRows" type="List" />
+    <aura:attribute name="groupListSize" type="Integer" default="0" description="Section list size" />
+    <aura:attribute name="deleteRecords" type="list" />
+    <aura:attribute name="selectedCol" type="list" />
+    <aura:attribute name="selectedList" type="list" />
+    <aura:attribute name="selectedListCol" type="list" />
+
+    <aura:attribute name="groups" type="List" description="section detail list" />
+    <aura:attribute name="isContingency" type="Boolean" default="false" />
+    <aura:attribute name="groupLoaded" type="Boolean" default="false"
+        description="This boolean will be true once all section list loaded through aura itration." />
+    <aura:attribute name="save" type="Aura.Action" description="Save action Reference action" />
+    <aura:attribute name="columns" type="List" />
+    <aura:attribute name="dummyData" type="List" />
+    <aura:registerEvent name="ClearSelectedRecordEvent" type="c:BT_CLearLightningLookupEvent" />
+
+
+    <aura:attribute name="budgetllinegroupName" type="string" />
+    <aura:attribute name="budgetllinegroupdescription" type="string" />
+    <aura:attribute name="costCodeFilter" type="string" />
+    <aura:attribute name="selectedGroupRecord" type="sObject" default="{}" />
+    <aura:attribute name="selectedTradeType" type="sObject" default="{}" />
+    <aura:attribute name="selectedContractor" type="sObject" default="{}" />
+    <aura:attribute name="listOfSearchRecords" type="List"
+        description="Use,for store the list of search records which returns from apex class" />
+    <aura:attribute name="SearchKeyWord" type="string" />
+    <!-- <aura:handler name="SelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.doInit}"/> -->
+    <aura:handler name="oSelectedCheckboxValue" event="c:SelectedCheckboxValue" action="{!c.handleCheckboxEvent}" />
+    <aura:handler name="oSelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.handleComponentEvent}" />
+    <aura:attribute name="activeFilter" type="string" default="all" />
+    <aura:attribute name="rawData" type="Object" />
+    <aura:attribute name="checkboxValue" type="Boolean" default="false" />
+    <aura:attribute name="Spinner" type="Boolean" default="false" />
+    <!--<aura:registerEvent name="checkboxSelect" type="c:SelectAllCheckBoxes"/>-->
+    <aura:attribute name="parentAttribute" type="Boolean" default="false" />
+    <aura:attribute name="clearLookupValue" type="Aura.Action" />
+    <!-- Handler -->
+    <aura:attribute name="FinalSelectedList" type="List" />
+    <aura:attribute name="selectedColumns" type="List" />
+    <aura:method name="refreshData" action="{!c.doInit}" access="global" />
+    <aura:attribute name="InnerList" type="Object" />
+    <aura:attribute name="isSelectAll" type="boolean" default="false" />
+    <aura:attribute name="Table_header_Records" type="object" access="global" />
+    <aura:attribute name="TotalRecords" type="object" access="global" />
+    <aura:attribute name="isOpen" type="boolean" default="false" />
+    <aura:attribute name="isremovegroup" type="boolean" default="false" />
+    <aura:attribute name="isnewbudgetgroup" type="boolean" default="false" />
+    <aura:attribute name="isNewBudgetSubGroup" type="boolean" default="false" />
+
+    <aura:attribute name="quoteItemId" type="String" />
+    <aura:attribute name="groupingid" type="String" />
+    <aura:attribute name="budgetrecid" type="String" />
+    <aura:attribute name="isEditMode" type="boolean" default="false" />
+    <aura:attribute name="fieldName" type="String" />
+    <aura:attribute name="datalist" type="list" />
+    <aura:attribute name="fieldslist" type="list" />
+    <aura:attribute name="editedGroupId" type="String" />
+    <aura:attribute name="QuoteString" type="String" />
+    <aura:attribute name="showButtons" type="boolean" default="false" />
+    <aura:attribute name="budgetList" type="Budget_Item__c[]" />
+    <aura:attribute name="fieldType" type="String" />
+    <aura:attribute name="previousId" type="string" />
+    <aura:attribute name="allFields" type="list" />
+    <aura:attribute name="fieldsType" type="string" />
+    <aura:attribute name="customModalCss" type="string" />
+    <aura:attribute name="groupIds" type="list" />
+    <aura:attribute name="allFieldsList" type="list" />
+    <aura:attribute name="newItemList" type="list" />
+    <aura:attribute name="finalList" type="list" />
+    <aura:attribute name="recordIdList" type="list" />
+    <aura:attribute name="finalString" type="object" />
+
+    <!-- Mass Functionality Start -->
+    <aura:attribute name="currentId" type="String" />
+    <aura:attribute name="isDuplicate" type="Boolean" default="false" />
+    <aura:attribute name="isMassDuplicate" type="Boolean" default="false" />
+    <aura:attribute name="duplicateRecs" type="List" default="[]" />
+    <aura:attribute name="enableMassUpdate" type="boolean" default="false" />
+    <aura:attribute name="isChangeData" type="Boolean" default="false" />
+    <aura:attribute name="isExpenseUpdate" type="Boolean" default="false" />
+
+    <!-- Mass Functionality End --> 
+    <aura:attribute name="isNewExpense" type="Boolean" default="false" />
+    <aura:attribute name="expenseDescription" type="String" />
+    <aura:attribute name="expensebudget" type="String" />
+    <aura:attribute name="expenseType" type="String" />
+    <aura:attribute name="expenseCostCode" type="String" />
+    <aura:attribute name="expensePaymentMethod" type="String" />
+    <aura:attribute name="expenseRefNo" type="String" />
+    <aura:attribute name="expenseAmount" type="String" />
+    <aura:attribute name="expenseNote" type="String" />
+
+
+    <!-- Pagination Start -->
+
+    <aura:attribute name="page" type="integer" description="using for store page Number" />
+    <aura:attribute name="pages" type="integer" description="using for store All Pages page Number" />
+    <aura:attribute name="total" type="integer" description="total records count store " />
+
+    <!-- Pagination End -->
+
+    <force:recordData aura:id="newforcerecord" layoutType="FULL" recordId="{!v.recordId}" targetRecord="{!v.newRecord}"
+        targetFields="{!v.sampleNewRecord}" targetError="{!v.newRecordError}" />
+
+    <c:BT_Spinner />
+
+    <div>
+        <div style="float: right;" class="slds-m-top_medium slds-m-bottom_medium slds-m-right_small">
+            <lightning:buttonGroup>
+                <aura:if isTrue="{!v.enableMassUpdate}">
+                    <lightning:button iconName="utility:save" iconPosition="left" onclick="{!c.onClickMassUpdate}"
+                        label="Save" class="sldsButtonGroup" />
+                    <lightning:button iconName="utility:close" iconPosition="left"
+                        onclick="{!c.onClickMassUpdateCancel}" label="Cancel" class="sldsButtonGroup" />
+                    <aura:set attribute="else">
+                        <lightning:button iconName="utility:edit" iconPosition="left" onclick="{!c.onClickMassUpdate}"
+                            label="Mass Update" class="sldsButtonGroup" />
+                        <lightning:button iconName="utility:copy" iconPosition="left"
+                            onclick="{!c.onClickMassDuplicate}" label="Duplicate Lines" class="sldsButtonGroup" />
+                        <lightning:button onclick="{!c.newbudgetGroup}" label="Add Group" class="sldsButtonGroup" />
+                        <lightning:button onclick="{!c.newBudgetSubGroup}" label="Add Sub Group"
+                            class="sldsButtonGroup" />
+                        <!-- commented on 26thmay DFL <lightning:button iconName="utility:add" iconPosition="left" onclick="{!c.newGroup}" label="Add Group" class="sldsButtonGroup"/>-->
+                        <!--<aura:if isTrue="{!v.groupListSize > 0}">-->
+                        <lightning:button label="Add Product" onclick="{!c.addProduct}" class="sldsButtonGroup" />
+                        <lightning:button label="New RFQ" onclick="{!c.newRFQ}" class="sldsButtonGroup" />
+                        <lightning:button label="New CO" onclick="{!c.newCO}" class="sldsButtonGroup" />
+                        <lightning:button label="New PO" onclick="{!c.newPO}" class="sldsButtonGroup" />
+                        <lightning:button label="New Expense" onclick="{!c.newExpense}" class="sldsButtonGroup" />
+                        <lightning:button label="Contingency" onclick="{!c.onContingency}" class="sldsButtonGroup" />
+                        <!-- commented on 26thmay DFL <lightning:button label="New Sub-Contract" onclick="{!c.newSubContract}" class="sldsButtonGroup"/>-->
+                        <!-- <lightning:button label="Import CSV" onclick="{!c.importCSV}"/> -->
+                        <!--  <lightning:button label="Save" onclick="{!c.saveQuoteItems}"/> -->
+                        <lightning:button label="Delete Lines" onclick="{!c.deleteSelectedBudgetItem}"
+                            class="sldsButtonGroup" />
+                        <!--</aura:if>-->
+                        <!--<div class="slds-align_absolute-center">-->
+                        <aura:if isTrue="{!v.showButtons}">
+                            <center>
+                                <!-- <lightning:buttonGroup class="slds-m-around_medium">-->
+                                <lightning:button label="Cancel" onclick="{!c.closeInlineEditForm}"
+                                    class="sldsButtonGroup" />
+                                <lightning:button label="Save" onclick="{!c.SaveEditedValues}" variant="brand"
+                                    class="sldsButtonGroup" />
+                                <!--</lightning:buttonGroup>  -->
+                            </center>
+                        </aura:if>
+                        <!-- </div>-->
+                    </aura:set>
+                </aura:if>
+            </lightning:buttonGroup>
+
+        </div>
+
+        <div aura:id="budgetItem" />
+        <div class="av slds-box" id="{!v.recordId + 'groups'}" style="min-height:50vh;padding:0px !important;">
+            <div>
+                <aura:if isTrue="{!v.recordId != null}">
+                    <div style="padding:10px;">
+                        <div aura:id="inlineEditQuote" class="slds-m-top_medium slds-m-bottom_medium">
+                            <table class="slds-table slds-table_bordered slds-table_cell-buffer"
+                                style="border:1px solid grey;border-radius: 5px;">
+                                <thead style="border:1px solid rgb(216, 237, 255);">
+                                    <tr class="slds-text-title_caps">
+                                        <th scope="col"
+                                            style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-left-radius:5px;">
+                                            <div class="slds-truncate" title="Pricebook">Pricebook</div>
+                                        </th>
+                                        <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; ">
+                                            <div class="slds-truncate" title="Product Family">Product Family</div>
+                                        </th>
+                                        <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; ">
+                                            <div class="slds-truncate" title="Product">Product</div>
+                                        </th>
+                                        <th style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+                                            <div class="slds-truncate" title="Quote Line Description"> Description
+                                            </div>
+                                        </th>
+                                        <!-- comment by laxman 08/07/2020
+           <th style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+                                            <div class="slds-truncate" title="Quote Line">Cost Code Name</div>
+                                        </th> -->
+                                        <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+                                            <div class="slds-truncate" title="Grouping">Group</div>
+                                        </th>
+                                        <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+                                            <div class="slds-truncate" title="Sub Grouping">Sub Group</div>
+                                        </th>
+                                        <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+                                            <div class="slds-truncate" title="UOM">UOM</div>
+                                        </th>
+                                        <!--  comment by laxman 08/07/2020
+          <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+                                            <div class="slds-truncate" title="TradeType">Trade Type</div>
+                                        </th> -->
+                                        <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+                                            <div class="slds-truncate" title="Contractor">Vendor</div>
+                                        </th>
+                                        <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+                                            <div class="slds-truncate" title="Quantity">Quantity</div>
+                                        </th>
+                                        <th style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+                                            <div class="slds-truncate" title="Unit Cost">Unit Cost</div>
+                                        </th>
+                                        <th scope="col"
+                                            style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-right-radius:5px;">
+                                            <div class="slds-truncate" title="Save">Save</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <ui:inputSelect value="{!v.pricebookName }" change="{!c.changeEvent}"
+                                                class="pricebook-class">
+                                                <aura:iteration var="option" items="{! v.pricebookoptions }">
+                                                    <option value="{! option.value }"
+                                                        selected="{!option.value == v.pricebookName}">{! option.key }
+                                                    </option>
+                                                </aura:iteration>
+                                            </ui:inputSelect>
+                                        </td>
+
+                                        <td>
+                                            <ui:inputSelect value="{!v.productfamily}" change="{!c.changefamily}"
+                                                class="pricebook-class">
+                                                <aura:iteration var="option" items="{!v.listofproductfamily}">
+                                                    <option value="{!option.productfamilyvalues}"
+                                                        selected="{!option.productfamilyvalues == v.productfamily}">
+                                                        {!option.productfamilyvalues}</option>
+                                                </aura:iteration>
+                                            </ui:inputSelect>
+
+                                        </td>
+                                        <td>
+                                            <c:BT_LightningLookup aura:id="productId" objectAPIName="Product2"
+                                                IconName="standard:product" selectedRecord="{!v.selectedLookUpRecord}"
+                                                parentId="{!v.pricebookName }" prodctfamly="{!v.productfamily}" />
+                                        </td>
+                                        <td>
+                                            <!--	<force:inputField value="{!v.newBudgetLine.Name}"/>-->
+                                            <ui:inputText value="{!v.newBudgetLine.Name}" aura:id="budgetLineID" />
+                                        </td>
+                                        <!--  <td>
+                                            <c:BT_LookUp aura:id="costCodeId" _field="buildertek__Cost_Code__c" 
+                                                         _sobject="buildertek__Budget_Item__c" 
+                                                         _target_sobject="buildertek__Cost_Codes__c"
+                                                         _value="{!v.newBudgetLine.buildertek__Cost_Code__c}"
+                                                         _label=""
+                                                         _filter="{!v.costCodeFilter}"
+                                                         />
+                                        </td> -->
+                                        <td>
+                                            <c:BT_LookUp aura:id="groupId" _field="buildertek__Group__c"
+                                                _sobject="buildertek__Budget_Item__c"
+                                                _value="{!v.newBudgetLine.buildertek__Group__c}" _label="" _filter="" />
+                                        </td>
+                                        <td>
+                                            <c:BT_LookUp aura:id="subGroupId" _field="buildertek__Sub_Grouping__c"
+                                                _sobject="buildertek__Budget_Item__c"
+                                                _value="{!v.newBudgetLine.buildertek__Sub_Grouping__c}" _label=""
+                                                _filter="" />
+                                        </td>
+                                        <td>
+                                            <ui:inputSelect value="{! v.newBudgetLine.buildertek__UOM__c }"
+                                                class="select-class">
+                                                <aura:iteration var="option" items="{! v.options }">
+                                                    <option value="{! option.value }">{! option.key }</option>
+                                                </aura:iteration>
+                                            </ui:inputSelect>
+
+                                        </td>
+                                        <!--  <td>
+                                            <c:customLookup aura:id="tradeTypeId" objectAPIName="buildertek__Trade_Type__c" IconName="custom:custom67" selectedRecord="{!v.selectedTradeType}"/>
+                                        </td> -->
+                                        <td>
+                                            <c:customLookup aura:id="accountId" objectAPIName="Account"
+                                                IconName="standard:account" selectedRecord="{!v.selectedContractor}" />
+                                            <!--<force:inputField aura:id="accountId" value="{!v.newBudgetLine.buildertek__Contractor__c}" />-->
+                                        </td>
+                                        <td>
+                                            <!--<force:inputField value="{!v.newBudgetLine.buildertek__Quantity__c}"/>-->
+                                            <ui:inputNumber value="{!v.newBudgetLine.buildertek__Quantity__c}" />
+                                        </td>
+                                        <td>
+                                            <!--<force:inputField value="{!v.newBudgetLine.buildertek__Unit_Price__c}" />-->
+                                            <ui:inputCurrency value="{!v.newBudgetLine.buildertek__Unit_Price__c}"
+                                                aura:id="unitPriceId" />
+                                        </td>
+                                        <td>
+                                            <lightning:buttonIcon iconName="utility:save" alternativeText="save"
+                                                onclick="{!c.saveBudgetItemRecord}" />
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!--<aura:if isTrue="{!and(v.groupListSize == 0, v.groupLoaded)}">-->
+                    <!--<div class="av-list">
+                            <div style="margin-top:5rem;">
+                                <c:BT_Illustration name="Setup" title="Add Group to Start Budget"/>
+                                
+                            </div>
+                        </div>-->
+                    <!--<aura:set attribute="else">-->
+                    <aura:if isTrue="{!v.isOpen}">
+                        <div class="slds-m-around_xx-large">
+                            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                                aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                                <div class="slds-modal__container">
+                                    <header class="slds-modal__header">
+                                        <lightning:buttonIcon iconName="utility:close" onclick="{!c.closeModel}"
+                                            alternativeText="close" variant="bare-inverse" class="slds-modal__close" />
+                                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Delete
+                                            Budget Line</h2>
+                                    </header>
+                                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                                        <center>
+                                            <h2>Are you sure you want to delete this Budget Line?</h2>
+                                        </center>
+                                    </div>
+                                    <footer class="slds-modal__footer">
+                                        <lightning:button variant="neutral" label="Cancel" title="Cancel"
+                                            onclick="{!c.closeModel}" />
+                                        <lightning:button variant="brand" label="Delete" title="Delete"
+                                            onclick="{!c.deleteBudgetItems}" />
+                                    </footer>
+                                </div>
+                            </section>
+                            <div class="slds-backdrop slds-backdrop_open"></div>
+                        </div>
+                    </aura:if>
+
+                    <aura:if isTrue="{!v.isremovegroup}">
+                        <div class="slds-m-around_xx-large">
+                            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-0111" aria-modal="true"
+                                aria-describedby="modal-content-id-11" class="slds-modal slds-fade-in-open">
+                                <div class="slds-modal__container">
+                                    <header class="slds-modal__header">
+                                        <lightning:buttonIcon iconName="utility:close"
+                                            onclick="{!c.removegroupingcloseModel}" alternativeText="close"
+                                            variant="bare-inverse" class="slds-modal__close" />
+                                        <h2 id="modal-heading-0111" class="slds-text-heading_medium slds-hyphenate">
+                                            Remove Grouping</h2>
+                                    </header>
+                                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-11">
+                                        <center>
+                                            <h2>Are you sure you want to remove the Grouping for these Budget Line?</h2>
+                                        </center>
+                                    </div>
+                                    <footer class="slds-modal__footer">
+                                        <lightning:button variant="neutral" label="No" title="No"
+                                            onclick="{!c.removegroupingcloseModel}" />
+                                        <lightning:button variant="brand" label="Yes" title="Yes"
+                                            onclick="{!c.removegroupingBudgetItems}" />
+                                    </footer>
+                                </div>
+                            </section>
+                            <div class="slds-backdrop slds-backdrop_open"></div>
+                        </div>
+                    </aura:if>
+
+
+                    <aura:if isTrue="{!v.isnewbudgetgroup}">
+                        <div class="slds-m-around_xx-large">
+                            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-0222" aria-modal="true"
+                                aria-describedby="modal-content-id-222" class="slds-modal slds-fade-in-open">
+                                <div class="slds-modal__container newbudgetgroupingclass">
+                                    <header class="slds-modal__header">
+                                        <lightning:buttonIcon iconName="utility:close" onclick="{!c.newgroupcloseModel}"
+                                            alternativeText="close" variant="bare-inverse" class="slds-modal__close" />
+                                        <h2 id="modal-heading-0222" class="slds-text-heading_medium slds-hyphenate">
+                                            Budget Line Group</h2>
+                                    </header>
+                                    <div class="slds-modal__content slds-p-around_large" id="modal-content-id-222">
+                                        <lightning:layout multipleRows="true">
+
+                                            <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                                                <lightning:input type="textarea" aura:id="gpnameid"
+                                                    value="{!v.budgetllinegroupName}" label="Name" />
+                                            </lightning:layoutItem>
+
+                                            <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                                                <lightning:textarea aura:id="gpdescid"
+                                                    value="{!v.budgetllinegroupdescription}" label="Description" />
+                                            </lightning:layoutItem>
+
+                                        </lightning:layout>
+                                    </div>
+                                    <footer class="slds-modal__footer">
+                                        <lightning:button variant="neutral" label="Cancel" title="Cancel"
+                                            onclick="{!c.newgroupcloseModel}" />
+                                        <lightning:button variant="brand" label="Save" title="Save"
+                                            onclick="{!c.createnewbudgetlinegroup}" />
+                                    </footer>
+                                </div>
+                            </section>
+                            <div class="slds-backdrop slds-backdrop_open"></div>
+                        </div>
+                    </aura:if>
+
+                    <aura:if isTrue="{!v.isNewBudgetSubGroup}">
+                        <div class="slds-m-around_xx-large">
+                            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-0222" aria-modal="true"
+                                aria-describedby="modal-content-id-222" class="slds-modal slds-fade-in-open">
+                                <div class="slds-modal__container newbudgetgroupingclass">
+                                    <header class="slds-modal__header">
+                                        <lightning:buttonIcon iconName="utility:close"
+                                            onclick="{!c.newGroupBudgetSubGroupClose}" alternativeText="close"
+                                            variant="bare-inverse" class="slds-modal__close" />
+                                        <h2 id="modal-heading-0222" class="slds-text-heading_medium slds-hyphenate">
+                                            Budget Line Sub Group</h2>
+                                    </header>
+                                    <div class="slds-modal__content slds-p-around_large" id="modal-content-id-222">
+                                        <lightning:layout multipleRows="true">
+
+                                            <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                                                <lightning:input type="textarea" aura:id="budgetLineSubGroupName"
+                                                    value="{!v.budgetLineSubGroupName}" label="Name" />
+                                            </lightning:layoutItem>
+
+                                            <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                                                <lightning:textarea aura:id="budgetLineSubGroupDescription"
+                                                    value="{!v.budgetLineSubGroupDescription}" label="Description" />
+                                            </lightning:layoutItem>
+
+                                        </lightning:layout>
+                                    </div>
+                                    <footer class="slds-modal__footer">
+                                        <lightning:button variant="neutral" label="Cancel" title="Cancel"
+                                            onclick="{!c.newGroupBudgetSubGroupClose}" />
+                                        <lightning:button variant="brand" label="Save" title="Save"
+                                            onclick="{!c.createNewBudgetSubGroup}" />
+                                    </footer>
+                                </div>
+                            </section>
+                            <div class="slds-backdrop slds-backdrop_open"></div>
+                        </div>
+                    </aura:if>
+
+                    <aura:if isTrue="{!or(v.isDuplicate,v.isMassDuplicate)}">
+                        <div class="slds-m-around_xx-large">
+                            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                                aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                                <div class="slds-modal__container">
+                                    <header class="slds-modal__header">
+                                        <lightning:buttonIcon iconName="utility:close"
+                                            onclick="{!c.closeDuplicateModel}" alternativeText="close"
+                                            variant="bare-inverse" class="slds-modal__close" />
+                                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">
+                                            <aura:if isTrue="{!v.isDuplicate}">
+                                                Duplicate Budget Line
+                                                <aura:set attribute="else">
+                                                    Duplicate Budget Lines
+                                                </aura:set>
+                                            </aura:if>
+                                        </h2>
+                                    </header>
+                                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                                        <center>
+                                            <h2>
+                                                <aura:if isTrue="{!v.isDuplicate}">
+                                                    Are you sure you want to duplicate this Budget Line?
+                                                    <aura:set attribute="else">
+                                                        Are you sure you want to duplicate this Budget Lines?
+                                                    </aura:set>
+                                                </aura:if>
+                                            </h2>
+                                        </center>
+                                    </div>
+                                    <footer class="slds-modal__footer">
+                                        <lightning:button variant="neutral" label="Cancel" title="Cancel"
+                                            onclick="{!c.closeDuplicateModel}" />
+                                        <aura:if isTrue="{!v.isDuplicate}">
+                                            <lightning:button variant="brand" label="Duplicate" title="Duplicate"
+                                                onclick="{!c.duplicateBudget}" />
+                                            <aura:set attribute="else">
+                                                <lightning:button variant="brand" label="Duplicate" title="Duplicate"
+                                                    onclick="{!c.onMassDuplicate}" />
+                                            </aura:set>
+                                        </aura:if>
+                                    </footer>
+                                </div>
+                            </section>
+                            <div class="slds-backdrop slds-backdrop_open"></div>
+                        </div>
+                    </aura:if>
+
+                    <aura:if isTrue="{!v.isBudgetlinedelete}">
+                        <div class="slds-m-around_xx-large">
+                            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                                aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                                <div class="slds-modal__container">
+                                    <header class="slds-modal__header">
+                                        <aura:if isTrue="{!v.isBudgetlinedelete}">
+                                            <lightning:buttonIcon iconName="utility:close"
+                                                onclick="{!c.closeBudgetlineModel}" alternativeText="close"
+                                                variant="bare-inverse" class="slds-modal__close" />
+                                        </aura:if>
+
+                                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">
+                                            {!v.BudgetlinePopupHeader}</h2>
+                                    </header>
+                                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                                        <center>
+                                            <h2>{!v.BudgetlinePopupDescription}</h2>
+                                        </center>
+                                    </div>
+                                    <footer class="slds-modal__footer">
+                                        <aura:if isTrue="{!v.isBudgetlinedelete}">
+                                            <lightning:button variant="neutral" label="Cancel" title="Cancel"
+                                                onclick="{!c.closeBudgetlineModel}" />
+                                            <lightning:button variant="brand" label="Delete" title="Delete"
+                                                onclick="{!c.deleteSelectedBudgetItemlines}" />
+                                        </aura:if>
+                                    </footer>
+                                </div>
+                            </section>
+                            <div class="slds-backdrop slds-backdrop_open"></div>
+                        </div>
+                    </aura:if>
+                    <div class="slds">
+
+                        <div class="slds-scrollable" style="height:30rem">
+                            <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal">
+                                <thead>
+                                    <tr class="slds-text-heading--label" style="line-height: 2">
+                                        <th></th>
+                                        <th class="slds-is-sortable" scope="col" width="5px">
+                                            <div class="slds-form-element">
+                                                <div class="slds-form-element__control">
+                                                    <label class="slds-checkbox" style="width:10px;">
+                                                        <ui:inputCheckbox value="{!v.isSelectAll}"
+                                                            change="{!c.handleSelectAll}" aura:id="selectAll" />
+                                                        <span class="slds-checkbox--faux" style="top:-2px;"></span>
+                                                        <span class="slds-form-element__label text"></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </th>
+                                        <aura:iteration items="{!v.columns}" var="col">
+                                            <th class="{!and(and(and(col.fieldName!='Name',and(col.fieldName!='buildertek__Notes__c',col.fieldName!='buildertek__Cost_Code__c'),col.fieldName!='buildertek__UOM__c'),col.fieldName!='buildertek__Quantity__c'))?'slds-is-sortable inputCss':'slds-is-sortable'}"
+                                                scope="col">
+                                                <aura:if isTrue="{!col.title}">
+                                                    <div class="slds-truncate" title="{!col.title}">{!col.label}</div>
+                                                    <aura:set attribute="else">
+                                                        <div class="slds-truncate" title="{!col.label}">{!col.label}
+                                                        </div>
+                                                    </aura:set>
+                                                </aura:if>
+                                            </th>
+                                        </aura:iteration>
+                                        <th>
+                                        </th>
+                                        <th>
+                                        </th>
+                                        <th>
+                                        </th>
+                                        <th>
+                                        </th>
+                                        <th>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{!v.TotalRecords.groupHierarchy}" var="groups">
+                                        <tr class="groupHeader">
+                                            <th>
+                                            </th>
+                                            <th>
+                                                <div class="slds-truncate">
+                                                    <span data-id="{!groups.groupId}" onclick="{!c.removegrouping}">
+                                                        <lightning:icon
+                                                            style="fill: white !important;background-color:white;"
+                                                            iconName="utility:close" size="xx-small" />
+                                                    </span>
+                                                </div>
+                                            </th>
+                                            <th>
+                                                {!groups.groupName}
+                                            </th>
+                                            <aura:iteration items="{!v.TotalRecords.wrapperList}" var="rec">
+                                                <aura:if
+                                                    isTrue="{!groups.groupName == rec.groupName &amp;&amp; rec.fieldType != 'false'}">
+                                                    <aura:if isTrue="{!rec.fieldType == 'CURRENCY'}">
+                                                        <th>
+                                                            <aura:if isTrue="{!rec.totalValue != null}">
+                                                                <lightning:formattedNumber value="{!rec.totalValue}"
+                                                                    style="currency" />
+                                                                <aura:set attribute="else">
+                                                                    $0.00
+                                                                </aura:set>
+                                                            </aura:if>
+                                                            <button
+                                                                class="slds-button slds-button_icon slds-cell-edit__button slds-m-left_x-small"
+                                                                tabindex="-1" title="">
+                                                                <span style="display:none;">
+
+                                                                </span>
+                                                                <span class="slds-assistive-text">Edit</span>
+                                                            </button>
+                                                        </th>
+                                                    </aura:if>
+                                                </aura:if>
+                                                <aura:if
+                                                    isTrue="{!groups.groupName == rec.groupName &amp;&amp; rec.fieldType == 'false'}">
+                                                    <th style="text-align:right">
+
+                                                    </th>
+                                                </aura:if>
+                                            </aura:iteration>
+                                        </tr>
+                                        <aura:if isTrue="{!groups.parentGroup.length>0}">
+                                            <tr>
+                                                <td colspan="2"></td>
+                                                <td colspan="2" class="subGroupHeader">
+                                                    No Sub Grouping
+                                                </td>
+                                                <td colspan="6" class="subGroupHeader"></td>
+                                                <td colspan="8" class="subGroupHeader"></td>
+                                            </tr>
+                                        </aura:if>
+                                        <aura:iteration items="{!groups.parentGroup}" var="parentGroup">
+                                            <aura:iteration items="{!parentGroup}" var="parentGroupRec">
+                                                <tr>
+                                                    <td></td>
+                                                    <td>
+                                                        <div class="slds-form-element">
+                                                            <div class="slds-form-element__control">
+                                                                <label class="slds-checkbox" style="width:2px;">
+                                                                    <ui:inputCheckbox text="{!parentGroupRec.recordId}"
+                                                                        aura:id="checkQuoteItem" value=""
+                                                                        change="{!c.unCheckAll}" />
+                                                                    <span class="slds-checkbox--faux"
+                                                                        style="top:-2px;"></span>
+                                                                    <span class="slds-form-element__label text"></span>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <a href="javascript:void(0);" role="menuitem" tabindex="-1"
+                                                            data-record="{!parentGroupRec.recordId}"
+                                                            onclick="{!c.doView}">
+                                                            {!parentGroupRec.recordName}
+                                                        </a>
+                                                    </td>
+                                                    <aura:iteration items="{!parentGroupRec.recordList}" var="value">
+                                                        <td class="ShowIconClass" data-myvalue="{!value}">
+                                                            <!-- aura:if isTrue="{!or(and(and(v.isEditMode, v.fieldName == value.fieldName), v.quoteItemId == tar.recordId),enableMassUpdate)}" -->
+                                                            <aura:if
+                                                                isTrue="{!or(and(and(v.isEditMode, v.fieldName == value.fieldName), v.quoteItemId == parentGroupRec.recordId),and(v.enableMassUpdate,
+                                                                            or(or(or(or(or(or(or(or(or(or(or(or(or(or(or(or(or(or(or(or(or(or(
+                                                                            value.fieldName=='buildertek__Sales_Price__c',value.fieldName=='buildertek__Unit_Price__c'),
+                                                                            value.fieldName=='buildertek__Notes__c'),value.fieldName == 'buildertek__UOM__c'),
+                                                                            value.fieldName == 'buildertek__Cost_Code__c'),value.fieldName=='buildertek__Quantity__c'),
+                                                                            value.fieldName=='buildertek__Amount_In__c'),value.fieldName=='buildertek__Amount_Out_2__c'),
+                                                                            value.fieldName=='buildertek__Base_Sq_Feet__c'),value.fieldName=='buildertek__Budget__c'),
+                                                                            value.fieldName=='buildertek__Item_Name__c'),value.fieldName=='buildertek__Forecast_To_Complete__c'),
+                                                                            value.fieldName=='buildertek__Cost_Type__c'),value.fieldName=='buildertek__Description__c'),
+                                                                            value.fieldName=='buildertek__Discount__c'),value.fieldName=='buildertek__Eligible_Amount__c'),
+                                                                            value.fieldName=='buildertek__Group__c'),
+                                                                            value.fieldName=='buildertek__Previously_Billed__c'),value.fieldName=='buildertek__Product__c'),
+                                                                            value.fieldName=='buildertek__Regional_Factor__c'),value.fieldName=='buildertek__Trade_Type__c'),
+                                                                            value.fieldName=='buildertek__Upgrades__c'),value.fieldName=='buildertek__Contractor__c')))}">
+                                                                <aura:if isTrue="{!value.fieldType != 'picklist'}">
+                                                                    <aura:if isTrue="{!value.fieldType == 'reference'}">
+                                                                        <c:BT_LookupFields
+                                                                            childObjectName="buildertek__Budget_Item__c"
+                                                                            selectedRecordId="{!value.originalValue}"
+                                                                            fieldName="{!value.fieldName}"
+                                                                            index="{!quoteIndex}" />
+                                                                        <aura:set attribute="else">
+                                                                            <ui:inputText aura:id="inputId"
+                                                                                value="{!value.originalValue}"
+                                                                                change="{!c.updateQuoteData}"
+                                                                                blur="{!c.onblur}" />
+                                                                        </aura:set>
+                                                                    </aura:if>
+
+                                                                    <aura:set attribute="else">
+                                                                        <aura:if
+                                                                            isTrue="{!value.fieldName == 'buildertek__UOM__c'}">
+                                                                            <ui:inputSelect
+                                                                                value="{! value.originalValue }"
+                                                                                class="select-class"
+                                                                                change="{!c.updateQuoteData}">
+                                                                                <aura:iteration var="option"
+                                                                                    items="{! v.options }">
+                                                                                    <option value="{! option.value }"
+                                                                                        selected="{!value.originalValue == option.value}">
+                                                                                        {! option.key }</option>
+                                                                                </aura:iteration>
+                                                                            </ui:inputSelect>
+                                                                        </aura:if>
+                                                                        <aura:if
+                                                                            isTrue="{!value.fieldName == 'buildertek__Priority__c'}">
+                                                                            <ui:inputSelect
+                                                                                value="{! value.originalValue }"
+                                                                                class="select-class"
+                                                                                change="{!c.updateQuoteData}">
+                                                                                <aura:iteration var="option"
+                                                                                    items="{! v.priorityOptions }">
+                                                                                    <option value="{! option.value }"
+                                                                                        selected="{!value.originalValue == option.value}">
+                                                                                        {! option.key }</option>
+                                                                                </aura:iteration>
+                                                                            </ui:inputSelect>
+                                                                        </aura:if>
+                                                                        <aura:if
+                                                                            isTrue="{!value.fieldName == 'buildertek__Cost_Type__c'}">
+                                                                            <ui:inputSelect
+                                                                                value="{! value.originalValue }"
+                                                                                class="select-class"
+                                                                                change="{!c.updateQuoteData}">
+                                                                                <aura:iteration var="option"
+                                                                                    items="{! v.costttypeoptions }">
+                                                                                    <option value="{! option.value }"
+                                                                                        selected="{!value.originalValue == option.value}">
+                                                                                        {! option.key }</option>
+                                                                                </aura:iteration>
+                                                                            </ui:inputSelect>
+                                                                        </aura:if>
+                                                                    </aura:set>
+                                                                </aura:if>
+                                                                <aura:set attribute="else">
+                                                                    <div class="slds-truncate">
+                                                                        <aura:if
+                                                                            isTrue="{!value.fieldType == 'currency'}">
+
+                                                                            <aura:if
+                                                                                isTrue="{!value.originalValue != ''}">
+                                                                                <lightning:formattedNumber
+                                                                                    value="{!value.originalValue}"
+                                                                                    style="currency" />
+                                                                                <aura:set attribute="else">
+                                                                                    <lightning:formattedNumber
+                                                                                        value="0.00" style="currency" />
+                                                                                </aura:set>
+                                                                            </aura:if>
+                                                                        </aura:if>
+                                                                        <aura:if
+                                                                            isTrue="{!value.fieldType == 'number'}">
+
+                                                                            <lightning:formattedNumber
+                                                                                value="{!value.originalValue}" />
+                                                                        </aura:if>
+                                                                        <aura:if
+                                                                            isTrue="{!and(value.fieldType == 'string', value.fieldName !='buildertek__Item_Name__c')}">
+
+                                                                            <lightning:formattedNumber
+                                                                                value="{!value.originalValue/100}"
+                                                                                style="percent"
+                                                                                minimumFractionDigits="2" />
+                                                                        </aura:if>
+                                                                        <aura:if
+                                                                            isTrue="{!value.fieldName == 'buildertek__Item_Name__c'}">
+                                                                            <lightning:formattedText
+                                                                                value="{!value.originalValue}" />
+                                                                        </aura:if>
+                                                                        <!-- <aura:if isTrue="{!value.fieldName=='textarea'}">
+                                                                            <lightning:formattedRichText
+                                                                                                         value="{!value.originalValue}"
+                                                                                                          />
+                                                                        </aura:if> -->
+                                                                        <aura:if
+                                                                            isTrue="{!value.fieldType == 'textarea'}">
+                                                                            <lightning:formattedRichText
+                                                                                value="{!value.originalValue}"
+                                                                                class="textAreaCss" />
+                                                                        </aura:if>
+                                                                        <aura:if
+                                                                            isTrue="{!value.fieldType == 'picklist'}">
+                                                                            {!value.originalValue}
+                                                                        </aura:if>
+                                                                        <aura:if isTrue="{!value.referenceValue}">
+                                                                            <ui:outputURL
+                                                                                value="{!'/one/one.app?#/sObject/'+ value.originalValue + '/view'}"
+                                                                                target="_blank"
+                                                                                label="{!value.referenceValue}" />
+                                                                        </aura:if>
+                                                                        <!--{!value.recordValue}-->
+                                                                        <button
+                                                                            class="slds-button slds-button_icon slds-cell-edit__button slds-m-left_x-small"
+                                                                            tabindex="-1" title="">
+                                                                            <aura:if
+                                                                                isTrue="{!value.isEditable == true}">
+                                                                                <span style="display:none;"
+                                                                                    data-id="{!parentGroupRec.recordId}"
+                                                                                    data-label="{!value.fieldName}"
+                                                                                    data-group="{!parentGroupRec.groupId}"
+                                                                                    onclick="{!c.inlineEdit}">
+                                                                                    <lightning:icon
+                                                                                        iconName="utility:edit"
+                                                                                        size="xx-small"
+                                                                                        alternativeText="edit" />
+                                                                                </span>
+                                                                            </aura:if>
+                                                                            <span
+                                                                                class="slds-assistive-text">Edit</span>
+                                                                        </button>
+                                                                    </div>
+                                                                </aura:set>
+                                                            </aura:if>
+                                                        </td>
+                                                    </aura:iteration>
+                                                    <td style="text-align:right">
+                                                        <div class="slds-truncate">
+                                                            <span data-id="{!parentGroupRec.recordId}"
+                                                                onclick="{!c.onclickDuplicate}">
+                                                                <lightning:icon iconName="utility:copy"
+                                                                    size="xx-small" /> &nbsp;
+                                                            </span>
+                                                            <span data-id="{!parentGroupRec.recordId}"
+                                                                onclick="{!c.editBudget}">
+                                                                <lightning:icon iconName="utility:edit"
+                                                                    size="xx-small" /> &nbsp;
+                                                            </span>
+                                                            <span data-id="{!parentGroupRec.recordId}"
+                                                                onclick="{!c.deleteBudget}">
+                                                                <lightning:icon iconName="utility:delete"
+                                                                    size="xx-small" />
+                                                            </span>
+                                                        </div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>
+                                            </aura:iteration>
+                                        </aura:iteration>
+                                        <aura:iteration items="{!groups.subGroups}" var="subGroup">
+                                            <tr>
+                                                <td colspan="2"></td>
+                                                <td colspan="2" class="subGroupHeader">
+                                                    {!subGroup.groupName}
+                                                </td>
+                                                <td colspan="6" class="subGroupHeader"></td>
+                                                <td colspan="8" class="subGroupHeader"></td>
+                                            </tr>
+                                            <aura:iteration items="{!subGroup}" var="subGroupRec">
+                                                <tr>
+                                                    <td></td>
+                                                    <td>
+                                                        <div class="slds-form-element">
+                                                            <div class="slds-form-element__control">
+                                                                <label class="slds-checkbox" style="width:2px;">
+                                                                    <ui:inputCheckbox text="{!subGroupRec.recordId}"
+                                                                        aura:id="checkQuoteItem" value=""
+                                                                        change="{!c.unCheckAll}" />
+                                                                    <span class="slds-checkbox--faux"
+                                                                        style="top:-2px;"></span>
+                                                                    <span class="slds-form-element__label text"></span>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <a href="javascript:void(0);" role="menuitem" tabindex="-1"
+                                                            data-record="{!subGroupRec.recordId}" onclick="{!c.doView}">
+                                                            {!subGroupRec.recordName}
+                                                        </a>
+                                                    </td>
+                                                    <aura:iteration items="{!subGroupRec.recordList}" var="value">
+                                                        <td class="ShowIconClass" data-myvalue="{!value}">
+                                                            <!-- aura:if isTrue="{!or(and(and(v.isEditMode, v.fieldName == value.fieldName), v.quoteItemId == tar.recordId),enableMassUpdate)}" -->
+                                                            <aura:if
+                                                                isTrue="{!or(and(and(v.isEditMode, v.fieldName == value.fieldName), v.quoteItemId == subGroupRec.recordId),and(v.enableMassUpdate,
+                                                                            or(or(or(or(or(or(or(or(or(or(or(or(or(or(or(or(or(or(or(or(or(or(
+                                                                            value.fieldName=='buildertek__Sales_Price__c',value.fieldName=='buildertek__Unit_Price__c'),
+                                                                            value.fieldName=='buildertek__Notes__c'),value.fieldName == 'buildertek__UOM__c'),
+                                                                            value.fieldName == 'buildertek__Cost_Code__c'),value.fieldName=='buildertek__Quantity__c'),
+                                                                            value.fieldName=='buildertek__Amount_In__c'),value.fieldName=='buildertek__Amount_Out_2__c'),
+                                                                            value.fieldName=='buildertek__Base_Sq_Feet__c'),value.fieldName=='buildertek__Budget__c'),
+                                                                            value.fieldName=='buildertek__Item_Name__c'),value.fieldName=='buildertek__Forecast_To_Complete__c'),
+                                                                            value.fieldName=='buildertek__Cost_Type__c'),value.fieldName=='buildertek__Description__c'),
+                                                                            value.fieldName=='buildertek__Discount__c'),value.fieldName=='buildertek__Eligible_Amount__c'),
+                                                                            value.fieldName=='buildertek__Group__c'),
+                                                                            value.fieldName=='buildertek__Previously_Billed__c'),value.fieldName=='buildertek__Product__c'),
+                                                                            value.fieldName=='buildertek__Regional_Factor__c'),value.fieldName=='buildertek__Trade_Type__c'),
+                                                                            value.fieldName=='buildertek__Upgrades__c'),value.fieldName=='buildertek__Contractor__c')))}">
+                                                                <aura:if isTrue="{!value.fieldType != 'picklist'}">
+                                                                    <aura:if isTrue="{!value.fieldType == 'reference'}">
+                                                                        <c:BT_LookupFields
+                                                                            childObjectName="buildertek__Budget_Item__c"
+                                                                            selectedRecordId="{!value.originalValue}"
+                                                                            fieldName="{!value.fieldName}"
+                                                                            index="{!quoteIndex}" />
+                                                                        <aura:set attribute="else">
+                                                                            <ui:inputText aura:id="inputId"
+                                                                                value="{!value.originalValue}"
+                                                                                change="{!c.updateQuoteData}"
+                                                                                blur="{!c.onblur}" />
+                                                                        </aura:set>
+                                                                    </aura:if>
+
+                                                                    <aura:set attribute="else">
+                                                                        <aura:if
+                                                                            isTrue="{!value.fieldName == 'buildertek__UOM__c'}">
+                                                                            <ui:inputSelect
+                                                                                value="{! value.originalValue }"
+                                                                                class="select-class"
+                                                                                change="{!c.updateQuoteData}">
+                                                                                <aura:iteration var="option"
+                                                                                    items="{! v.options }">
+                                                                                    <option value="{! option.value }"
+                                                                                        selected="{!value.originalValue == option.value}">
+                                                                                        {! option.key }</option>
+                                                                                </aura:iteration>
+                                                                            </ui:inputSelect>
+                                                                        </aura:if>
+                                                                        <aura:if
+                                                                            isTrue="{!value.fieldName == 'buildertek__Priority__c'}">
+                                                                            <ui:inputSelect
+                                                                                value="{! value.originalValue }"
+                                                                                class="select-class"
+                                                                                change="{!c.updateQuoteData}">
+                                                                                <aura:iteration var="option"
+                                                                                    items="{! v.priorityOptions }">
+                                                                                    <option value="{! option.value }"
+                                                                                        selected="{!value.originalValue == option.value}">
+                                                                                        {! option.key }</option>
+                                                                                </aura:iteration>
+                                                                            </ui:inputSelect>
+                                                                        </aura:if>
+                                                                        <aura:if
+                                                                            isTrue="{!value.fieldName == 'buildertek__Cost_Type__c'}">
+                                                                            <ui:inputSelect
+                                                                                value="{! value.originalValue }"
+                                                                                class="select-class"
+                                                                                change="{!c.updateQuoteData}">
+                                                                                <aura:iteration var="option"
+                                                                                    items="{! v.costttypeoptions }">
+                                                                                    <option value="{! option.value }"
+                                                                                        selected="{!value.originalValue == option.value}">
+                                                                                        {! option.key }</option>
+                                                                                </aura:iteration>
+                                                                            </ui:inputSelect>
+                                                                        </aura:if>
+                                                                    </aura:set>
+                                                                </aura:if>
+                                                                <aura:set attribute="else">
+                                                                    <div class="slds-truncate">
+                                                                        <aura:if
+                                                                            isTrue="{!value.fieldType == 'currency'}">
+
+                                                                            <aura:if
+                                                                                isTrue="{!value.originalValue != ''}">
+                                                                                <lightning:formattedNumber
+                                                                                    value="{!value.originalValue}"
+                                                                                    style="currency" />
+                                                                                <aura:set attribute="else">
+                                                                                    <lightning:formattedNumber
+                                                                                        value="0.00" style="currency" />
+                                                                                </aura:set>
+                                                                            </aura:if>
+                                                                        </aura:if>
+                                                                        <aura:if
+                                                                            isTrue="{!value.fieldType == 'number'}">
+
+                                                                            <lightning:formattedNumber
+                                                                                value="{!value.originalValue}" />
+                                                                        </aura:if>
+                                                                        <aura:if
+                                                                            isTrue="{!and(value.fieldType == 'string', value.fieldName !='buildertek__Item_Name__c')}">
+
+                                                                            <lightning:formattedNumber
+                                                                                value="{!value.originalValue/100}"
+                                                                                style="percent"
+                                                                                minimumFractionDigits="2" />
+                                                                        </aura:if>
+                                                                        <aura:if
+                                                                            isTrue="{!value.fieldName == 'buildertek__Item_Name__c'}">
+                                                                            <lightning:formattedText
+                                                                                value="{!value.originalValue}" />
+                                                                        </aura:if>
+                                                                        <!-- <aura:if isTrue="{!value.fieldName=='textarea'}">
+                                                                            <lightning:formattedRichText
+                                                                                                         value="{!value.originalValue}"
+                                                                                                          />
+                                                                        </aura:if> -->
+                                                                        <aura:if
+                                                                            isTrue="{!value.fieldType == 'textarea'}">
+                                                                            <lightning:formattedRichText
+                                                                                value="{!value.originalValue}"
+                                                                                class="textAreaCss" />
+                                                                        </aura:if>
+                                                                        <aura:if
+                                                                            isTrue="{!value.fieldType == 'picklist'}">
+                                                                            {!value.originalValue}
+                                                                        </aura:if>
+                                                                        <aura:if isTrue="{!value.referenceValue}">
+                                                                            <ui:outputURL
+                                                                                value="{!'/one/one.app?#/sObject/'+ value.originalValue + '/view'}"
+                                                                                target="_blank"
+                                                                                label="{!value.referenceValue}" />
+                                                                        </aura:if>
+                                                                        <!--{!value.recordValue}-->
+                                                                        <button
+                                                                            class="slds-button slds-button_icon slds-cell-edit__button slds-m-left_x-small"
+                                                                            tabindex="-1" title="">
+                                                                            <aura:if
+                                                                                isTrue="{!value.isEditable == true}">
+                                                                                <span style="display:none;"
+                                                                                    data-id="{!subGroupRec.recordId}"
+                                                                                    data-label="{!value.fieldName}"
+                                                                                    data-group="{!subGroupRec.groupId}"
+                                                                                    onclick="{!c.inlineEdit}">
+                                                                                    <lightning:icon
+                                                                                        iconName="utility:edit"
+                                                                                        size="xx-small"
+                                                                                        alternativeText="edit" />
+                                                                                </span>
+                                                                            </aura:if>
+                                                                            <span
+                                                                                class="slds-assistive-text">Edit</span>
+                                                                        </button>
+                                                                    </div>
+                                                                </aura:set>
+                                                            </aura:if>
+                                                        </td>
+                                                    </aura:iteration>
+                                                    <td style="text-align:right">
+                                                        <div class="slds-truncate">
+                                                            <span data-id="{!subGroupRec.recordId}"
+                                                                onclick="{!c.onclickDuplicate}">
+                                                                <lightning:icon iconName="utility:copy"
+                                                                    size="xx-small" /> &nbsp;
+                                                            </span>
+                                                            <span data-id="{!subGroupRec.recordId}"
+                                                                onclick="{!c.editBudget}">
+                                                                <lightning:icon iconName="utility:edit"
+                                                                    size="xx-small" /> &nbsp;
+                                                            </span>
+                                                            <span data-id="{!subGroupRec.recordId}"
+                                                                onclick="{!c.deleteBudget}">
+                                                                <lightning:icon iconName="utility:delete"
+                                                                    size="xx-small" />
+                                                            </span>
+                                                        </div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>
+                                            </aura:iteration>
+                                        </aura:iteration>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                        </div>
+                        <br />
+                        <aura:if isTrue="{!v.total > 50}">
+                            <div class="slds-align_absolute-center">
+                                <lightning:button disabled="{!v.page == 1}" variant="brand" label="Previous"
+                                    onclick="{! c.navigate }" />
+                                <lightning:button disabled="{!v.page == v.pages}" aura:id="previousPage" variant="brand"
+                                    label="Next" onclick="{! c.navigate }" />
+                            </div>
+                        </aura:if>
+                        <br />
+                    </div>
+                    <!--<div class="slds-align_absolute-center">
+                        <aura:if isTrue="{!v.showButtons}">
+                            <center>
+                                <lightning:buttonGroup class="slds-m-around_medium">
+                                    <lightning:button label="Cancel" onclick="{!c.closeInlineEditForm}" />
+                                    <lightning:button label="Save" onclick="{!c.SaveEditedValues}" variant="brand"/>
+                                </lightning:buttonGroup>    
+                            </center>
+                        </aura:if>
+                    </div>-->
+                    <!--</aura:set>    
+                    </aura:if>    -->
+                </aura:if>
+            </div>
+        </div>
+    </div>
+    <!-- start New Expense popup -->
+    <aura:if isTrue="{!v.isNewExpense}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+            aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container Expensemodal">
+                <div aura:id="poContainer" class="c-container">
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close" onclick="{! c.doCancel }" alternativeText="close"
+                            variant="bare-inverse" class="slds-modal__close" />
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New Expense</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="height:100%">
+                        <h3
+                            class="slds-section__title slds-theme--shade primaryPaletteBorder test-id__section-header-container">
+                            <span
+                                class="test-id__section-header-title section-header-title slds-p-horizontal--small slds-truncate">Information</span>
+                        </h3>
+                        <br />
+                        <lightning:recordEditForm aura:id="expense" objectApiName="buildertek__Expense__c">
+                            <lightning:messages />
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col">
+                                    <label >Description</label>
+                                    <lightning:inputField fieldName="buildertek__Description__c" 
+                                                          value="{!v.expenseDescription}" variant="label-hidden" /><br/>
+                                    <label class="labelbottom">Budget</label>
+                                    <lightning:inputField fieldName="buildertek__Budget__c"
+                                        value="{!v.expensebudget}" variant="label-hidden"/><br/>
+                                    <label class="labelbottom">Budget Line</label>
+                                    <lightning:inputField fieldName="buildertek__Budget_Line__c"
+                                        value="{!v.budgetItemId}" variant="label-hidden"/><br/>
+                                    <label class="labelbottom">Type</label>
+                                    <lightning:inputField fieldName="buildertek__Type__c" value="{!v.expenseType}"  variant="label-hidden"/><br/>
+                                    <label class="labelbottom">Cost Code</label>
+                                    <lightning:inputField fieldName="buildertek__Cost_Code__c"
+                                        value="{!v.expenseCostCode}" variant="label-hidden" /><br/>
+                                </div>
+                                <div class="slds-col">
+                                    <label class="labelbottom">Payment Method</label> 
+                                    <lightning:inputField fieldName="buildertek__Payment_Method__c"
+                                        value="{!v.expensePaymentMethod}" variant="label-hidden" /><br/>
+                                    <label>Ref No.</label>
+                                    <lightning:inputField fieldName="buildertek__Ref_No__c" value="{!v.expenseRefNo}" variant="label-hidden" /><br/>
+                                    <label>Amount</label>
+                                    <lightning:inputField fieldName="buildertek__Amount__c"
+                                        value="{!v.expenseAmount}"  variant="label-hidden"/><br/>
+                                    <label>Notes</label>
+                                    <lightning:inputField fieldName="buildertek__Notes__c" value="{!v.expenseNote}" variant="label-hidden" />
+                                </div>
+                            </div>
+                        </lightning:recordEditForm>
+                        <!--<lightning:inputField aura:id="povendor" fieldName="buildertek__Vendor__c" value="{!v.newPO.buildertek__Vendor__c}" required="true" />-->
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning:button variant="neutral" label="Cancel" title="Cancel" onclick="{! c.doCancel }" />
+                        <lightning:button variant="brand" label="Save" title="Save" onclick="{! c.doSave }" />
+                    </footer>
+
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+
+    <aura:if isTrue="{!v.isContingency}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+            aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container contingencyModal" style="{!v.customModalCss}">
+                <div aura:id="poContainer" class="c-container">
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeContingencyModel }"
+                            alternativeText="close" variant="bare-inverse" class="slds-modal__close" />
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Contingency Management
+                        </h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <c:ContingencyBudgetItems recordId="{!v.recordId}" customModalCss="{!v.customModalCss}"
+                            isContingency="{!v.isContingency}" />
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning:button variant="neutral" label="Cancel" title="Cancel"
+                            onclick="{! c.closeContingencyModel }" />
+                    </footer>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+
+    <!-- End New Expense popup -->
+    <lightning:notificationsLibrary aura:id="notifLib" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+
+    <div aura:id="newItem" />
+
+</aura:component>

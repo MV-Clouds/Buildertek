@@ -1,0 +1,121 @@
+<aura:component controller="BTServiceRequestAssignment"  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" access="global" >
+    <aura:attribute name="map" type="Object"/>
+    <aura:attribute name="resources" type="user[]"/>
+    <aura:attribute name="serviceRequest" type="Service_Request__c" default="{'sobjectType':'Service_Request__c'}" />
+    <aura:attribute name="productFamily" type="String[]" />
+    <!--<aura:attribute name="productList" type="BTServiceRequestAssignment.productList[]" /> -->
+    
+    <ltng:require styles="{!join(',',
+                          $Resource.BTjquery + '/jquery/css/ui-smoothness/jquery-ui.min.css',
+                          $Resource.BTjquery + '/jquery/css/ui-smoothness/jqgrid-ui-custom.min.css',
+                          $Resource.BT + '/leaflet/leaflet.css',
+                          $Resource.BT + '/leaflet/MarkerCluster.css',$Resource.BT + '/leaflet/MarkerCluster.Default.css')}"
+                  scripts="{!join(',',
+                           $Resource.BTjquery + '/jquery/js/jquery-2.2.4.min.js',
+                           $Resource.BTjquery + '/jquery/js/jquery-migrate-1.3.0.min.js',
+                           $Resource.BTjquery + '/jquery/js/jquery-ui-1.11.4.min.js',
+                           $Resource.BTjquery + '/jquery/jlayout/jquery.layout-latest.js',
+                           $Resource.BT + '/leaflet/leaflet.js',
+                           $Resource.BT + '/leaflet/leaflet.markercluster-src.js')}" 
+                  afterScriptsLoaded="{!c.jsLoaded}"/>
+    
+    <aura:method name="resourceAssigned" action="{!c.doAssigned}" description="this method is used to assinged resources to service request"> 
+	    <aura:attribute name="srId" type="String" /> 
+	    <aura:attribute name="resourceId" type="String" /> 
+	</aura:method>
+	 <!-- aura waiting/doneWaiting hendler -->
+    <aura:handler event="aura:waiting" action="{!c.showSpinner}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>
+    
+    
+	<lightning:spinner variant="brand" size="medium" aura:id="BTSpinner" />
+	
+	<div class="slds-page-header slds-page-header--object-home" style="position: absolute;width:100%;z-index: 1000;">
+	  <div class="slds-grid">
+	    <div class="slds-col slds-has-flexi-truncate">
+	      <div class="slds-media slds-no-space slds-grow">
+	        <div class="slds-media__figure">
+	          <span class="slds-icon_container">
+	           
+	          </span>
+	        </div>
+	        <div class="slds-media__body">
+	          <p class="slds-text-title--caps slds-line-height--reset">SERVICE REQUESTS</p>
+	          <h1 class="slds-page-header__title slds-p-right--x-small">
+	            <div class="slds-dropdown-trigger slds-dropdown-trigger--click">
+		            <button class="slds-button slds-button--reset slds-type-focus slds-truncate" aria-haspopup="true" title="Service Request on map" onclick="{!c.showOptions}">
+		              <span class="slds-grid slds-has-flexi-truncate slds-grid--vertical-align-center">
+		                <span class="slds-truncate">Map View</span>
+	                   <!--  &nbsp;&nbsp;<lightning:icon iconName="utility:down" size="x-small"/> -->
+		              </span>
+		            </button>
+	            </div>
+	          </h1>
+	        </div>
+	      </div>
+	    </div>
+	  </div>
+	  
+	</div>
+    <div id="map" style="width:100%;height:100%;min-height: 100%;"></div>
+    
+    <!-- 
+    <div id="resourses" style="position: absolute; background-color: white; padding-left: 10px; z-index: 1000;">
+        <footer class="slds-utility-bar_container" role="footer" aria-label="Resources">
+            <h2 class="slds-assistive-text">Available Resources</h2>
+            <ul class="slds-utility-bar">
+                <li class="slds-utility-bar__item">
+                    <button class="slds-button slds-utility-bar__action slds-is-inactive" aura:id="resourceTab" onclick="{!c.showResourceUtilityPanel}">
+                        <span class="slds-button__icon slds-button__icon_left drag">
+                            <lightning:icon iconName="utility:user" size="x-small"/>
+                        </span>
+                        Available Resources
+                    </button>
+                </li>
+            </ul>
+            <div aura:id="resourcePanel" class="slds-utility-panel slds-grid slds-grid_vertical slds-is-close" role="dialog" aria-labelledby="panel-heading-01">
+                <div class="slds-utility-panel__header slds-grid slds-shrink-none" style="cursor:pointer" onclick="{!c.hideResourceUtilityPanel}">
+                    <div class="slds-media slds-media_center">
+                        <div class="slds-media__figure slds-m-right_x-small">
+                            <span class="slds-button__icon slds-button__icon_left drag">
+                                <lightning:icon iconName="standard:user" size="small"/>
+                            </span>
+                        </div>
+                        <div class="slds-media__body">
+                            <h2 id="panel-heading-01"> Available Resources</h2>
+                        </div>
+                    </div>
+                    <div class="slds-col_bump-left">
+                        <button class="slds-button slds-button_icon" title="Minimize" onclick="{!c.hideResourceUtilityPanel}">
+                            <span class="slds-button__icon slds-button__icon_left drag">
+                                <lightning:icon iconName="utility:minimize_window" size="x-small"/>
+                            </span>
+                            <span class="slds-assistive-text">Minimize</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="slds-utility-panel__body" style="background-color: white;padding: 12px;">
+                	<aura:iteration items="{!v.resources}" var="user">
+	                    <div class="slds-align_absolute-left drag" style="padding-top:10px;" id="{!user.Id}">
+	                        <div class="slds-media slds-comment slds-hint-parent" >
+	                            <div class="slds-media__figure slds-m-right_small">
+	                                <span class="slds-button__icon slds-button__icon_left " style="padding-bottom:5px;">
+	                                    <lightning:icon iconName="standard:user" size="small"/>
+	                                </span>
+	                            </div>
+	                            <div class="slds-media__body">
+	                                <div class="slds-grid slds-grid_align-spread slds-has-flexi-truncate">
+	                                    <p class="slds-truncate">
+                                            <a href="{!'/'+user.Id}" title="{!user.Name}">{!user.Name}</a> &nbsp;<span style="font-size: 12px;"><i>({!user.Title})</i></span>
+	                                    </p>
+	                                </div>
+	                            </div>
+	                        </div>
+	                    </div>
+                    </aura:iteration>
+                </div>
+            </div>
+        </footer>
+    </div>
+     -->
+</aura:component>

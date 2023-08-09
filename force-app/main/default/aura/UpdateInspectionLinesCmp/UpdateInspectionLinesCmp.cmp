@@ -1,0 +1,82 @@
+<!-- <aura:component controller="UpdateInspectionLinesController" implements="force:appHostable,force:lightningQuickAction,force:hasRecordId,flexipage:availableForAllPageTypes,force:lightningQuickAction,lightning:isUrlAddressable,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global"> -->
+    <aura:component>
+    <aura:attribute name="data" type="Object"/>
+    <aura:attribute name="mycolumns" type="List"/>
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="picklistVal" type="List" />
+    <aura:attribute name="mylist" type="List" />
+    <aura:attribute name="inspMap" type="Map"  default="{}"/>
+    <aura:attribute name="ids" type="List" />
+    <aura:attribute name="vals" type="List" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.fetchInsp}"/>
+      
+    {!v.recordId}
+    {!v.data}
+    <!-- <lightning:datatable data="{!v.data}"
+                         columns="{! v.mycolumns }"
+                         keyField="id"
+                         hideCheckboxColumn="true"/> -->
+
+            <lightning:card title="Custom Data Table">
+
+            <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                <thead>
+                    <tr class="slds-line-height_reset">
+                        <th class="slds-text-title_caps" scope="col">
+                            <div class="slds-truncate" title="ISL#">ISL#</div>
+                        </th>
+                        <th class="slds-text-title_caps" scope="col">
+                            <div class="slds-truncate" title="Date Inspected">Date Inspected</div>
+                        </th>
+                        <th class="slds-text-title_caps" scope="col">
+                            <div class="slds-truncate" title="Status">Status</div>
+                        </th>
+                        <th class="slds-text-title_caps" scope="col">
+                            <div class="slds-truncate" title="Description">Description</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                        <!-- We are not trying to display the records related information
+                        here, rather, we are trying to pass every snigle record to 
+                        another child component <c:customDataTableRow /> and this child component will take 
+                        care of getting the fields of a record displayed. -->
+    
+                    <aura:iteration items="{!v.data}" var="dataRec">
+                        <tr>
+                            <td scope="col">
+                                <div class="slds-truncate" title="Description">{!dataRec.buildertek__Inspection_Item_Name__c}</div>
+                            </td>
+                            <td scope="col">
+                                <div class="slds-truncate" title="Description">{!dataRec.buildertek__Date_Inspected__c}</div>
+                            </td>
+                            <td scope="col">
+                                <!-- <div class="slds-truncate" title="Description">{!dataRec.buildertek__Status__c}</div> -->
+                                <!-- <ui:inputSelect  aura:id="pl" change="{!c.onSelectChange}" >
+                                    <aura:iteration items="{!v.picklistVal}" var="source">
+                                        <ui:inputSelectOption text="{!source}" label="{!source.label}"/>
+                                     </aura:iteration>
+                                </ui:inputSelect> -->
+                                <lightning:select aura:id="{!dataRec.Id}" name="{!dataRec.Id}" value="{!dataRec.buildertek__Status__c}"  onchange="{!c.onSelectChange}">
+									<aura:iteration items="{!v.picklistVal}" var="source">
+                                        <option value="{!source.value}">{!source.label}</option>
+                                    </aura:iteration>
+                                </lightning:select>
+                            </td>
+                            <td scope="col">
+                                <div class="slds-truncate" title="Description">{!dataRec.buildertek__Description__c}</div>
+                            </td>
+                        </tr>
+                    </aura:iteration>
+                    <!-- <tr> -->
+                        <!-- <div class="slds-modal__footer"> -->
+                            <!-- <lightning:button label="Cancel" name="editDialog" onclick="{!c.closeEditModal}" /> -->
+                            <!-- <lightning:button variant="brand" label="Save" name="confirmEditRecord" onclick="{!c.saveEditModal}" />                                 -->
+                        <!-- </div> -->
+                    <!-- </tr> -->
+                </tbody>
+            </table>
+            
+        </lightning:card>                     
+</aura:component>

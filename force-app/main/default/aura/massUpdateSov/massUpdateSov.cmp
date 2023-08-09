@@ -1,0 +1,21 @@
+<aura:component controller="newPaymentAppOverrideController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,forceCommunity:layout,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" 
+                access="global"  >
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="Iscommunity" type="Boolean" default = "false"/>
+    <aura:attribute name="recordId" type="String" />
+    
+<aura:attribute name="IsSubmitted" type="Boolean"/>    
+    
+    <aura:if isTrue="{!v.Iscommunity}">
+        <aura:if isTrue="{!v.IsSubmitted}">
+            <!--Modal Body-->   
+            <div class="slds-modal__content slds-p-around--x-small slds-align_absolute-center slds-size_1-of-1 slds-is-relative">
+                <form class="slds-form--stacked">
+                    <h3 class="title slds-text-heading--medium" style="color:red;font-weight: bold;">This SOV Is Under Review</h3>
+                </form> 
+            </div>
+            <!--End of Modal Body--> 
+        </aura:if> 
+    </aura:if> 
+    
+</aura:component>

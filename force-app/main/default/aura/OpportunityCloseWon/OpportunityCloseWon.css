@@ -1,0 +1,16 @@
+.THIS {
+}
+.THIS .custom-loading-text {
+    transform: rotate(-90deg);
+    position: absolute;
+    top: -0.5rem;
+    left: 1rem;
+    white-space: nowrap;
+    font-size: 20px;
+}
+.THIS.slds-modal__container {
+    width: 150% !important;
+}
+.THIS.slds-modal__header{
+   width: 150%;  
+}

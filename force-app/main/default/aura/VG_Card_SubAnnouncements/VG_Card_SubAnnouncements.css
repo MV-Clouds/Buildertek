@@ -1,0 +1,70 @@
+.THIS .content {
+    max-width: 768px;
+    color: #3c3d3e;
+}
+.THIS .fontcolor{
+    color:#F06C5C;
+    font-family:gotham-medium;
+    font-size:12px;
+    padding-right: 4%;
+}
+.THIS .marker{
+    border-left:4px solid #44B4C8;
+    height:18px ;
+    font-size:16px;
+    font-family:gotham-medium;
+}
+.THIS .ellipsisContainer{
+    width: 300px;
+}
+
+.THIS .linetruncate{
+    display:-webkit-box !important;
+    -webkit-box-orient:vertical;
+    -webkit-line-clamp:2; 
+    overflow:hidden;
+    padding-left:3%;padding-right: 2px;
+}
+.THIS .ellipsis {
+    
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.THIS .bg-img {
+    height: 150px;
+    
+    /* Center and scale the image nicely */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    
+    /* Needed to position the navbar */
+    position: relative;
+}
+.THIS.subAnnouncement{
+    height:279px;
+    margin-left:1px;
+    margin-right:7px;
+    padding:0px;
+    margin-top:0px;
+    border-radius:0px;
+}
+@media screen and (max-width: 767px) {
+    .THIS.subAnnouncement{
+        height:289px;margin-left:-1px;padding:0px;margin-right:0px;border-radius:0px;
+    }
+    .THIS .mobileCardBody {
+        margin-bottom: 3rem;
+    }
+}
+@media screen and (min-width: 768px) {
+    
+    .THIS .mobileCardBody {
+        margin-bottom: 1rem;
+    }
+}
+.THIS .slds-theme--default{
+    
+    border: 1px solid #92a0b9;
+    
+}

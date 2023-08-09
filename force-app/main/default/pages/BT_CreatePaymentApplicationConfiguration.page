@@ -1,0 +1,30 @@
+<apex:page controller="BT_PaymentApplicationConfiguration" sidebar="false" lightningStylesheets="true">
+     <apex:slds />
+    <apex:form >
+        <apex:pageBlock mode="maindetail">
+            <apex:pageMessages />
+            <apex:pageblocksection >
+                <apex:inputcheckbox value="{!vendorlienreleasevalue}" label="Require Vendor to Sign Lien Release?">
+                </apex:inputcheckbox>
+                
+                <apex:inputcheckbox value="{!getLinesFromCO}" label="Enable Change Orders">
+                </apex:inputcheckbox>
+                     
+                <apex:inputField value="{!newrfi.Default_Account_for_PA__c}" styleClass="slds-input" style="width:320px;"/>
+
+
+                <apex:inputcheckbox value="{!newPaymeAppnt}" label="New Payment Application">
+                </apex:inputcheckbox>
+                <apex:inputcheckbox value="{!importCAV}" label="Import Company Accepted Vendor Payment Apps">
+                </apex:inputcheckbox>
+                <apex:inputcheckbox value="{!importCACASOV}" label="Import Company Approved/Import Customer Approved SOV’s">
+                </apex:inputcheckbox>
+                
+                
+                <apex:commandButton value="Save" id="onupdatepaymentapplication" styleClass="slds-button slds-button_brand" action="{!onupdatepaymentapplication}"></apex:commandButton>
+            </apex:pageblocksection>
+            
+             
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>
