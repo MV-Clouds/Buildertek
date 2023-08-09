@@ -34,8 +34,12 @@ local.properties
 mm.log
 
 # OSX-specific exclusions
+<<<<<<< HEAD
 .[dD][sS]_[sS]tore
 
 **/jsconfig.json
 
 **/.eslintrc.json
+=======
+.[dD][sS]_[sS]tore
+>>>>>>> origin/master

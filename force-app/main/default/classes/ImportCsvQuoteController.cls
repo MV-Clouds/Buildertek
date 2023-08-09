@@ -50,22 +50,26 @@ public with sharing class ImportCsvQuoteController {
                     Map<String,Product2> productMap=new Map<String,Product2>();
                     Map<String,buildertek__Cost_Codes__c> costCodeMap=new Map<String,buildertek__Cost_Codes__c>();
                     Map<String,buildertek__Quote_Line_Group__c> groupingMap=new Map<String,buildertek__Quote_Line_Group__c>();
-                    
+
                     for(Integer intIndex = 1; intIndex < listCSVData.size(); intIndex++) {
+                        // System.debug('If 4 ::: listCSVData.get(0).get(intInnerIndex : ' + listCSVData.get(0).get(0));
                         for(Integer intInnerIndex = 0; intInnerIndex < listCSVData.get(intIndex).size(); intInnerIndex++) {
                             switch on listCSVData.get(0).get(intInnerIndex) {
                                 when 'Product Description' {
+                                    // system.debug(' when Product Description :: ' + listCSVData.get(intIndex).get(intInnerIndex));
                                     if(String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))) {
                                         productList.add(listCSVData.get(intIndex).get(intInnerIndex).replace('\n',''));
                                     }
                                 }
                                 when 'Cost Code' {
+                                    // system.debug(' when Cost Code :: ' + listCSVData.get(intIndex).get(intInnerIndex));
                                     if(String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))) {
                                         //quote.buildertek__Cost_Code__c = listCSVData.get(intIndex).get(intInnerIndex);
                                         costCodeList.add(listCSVData.get(intIndex).get(intInnerIndex).replace('\n',''));
                                     }
                                 }
                                 when 'Grouping' {
+                                    // system.debug(' when Grouping :: ' + listCSVData.get(intIndex).get(intInnerIndex));
                                     if(String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))) {
                                        // quote.buildertek__Grouping__c = listCSVData.get(intIndex).get(intInnerIndex).trim();
                                        groupingList.add(listCSVData.get(intIndex).get(intInnerIndex).replace('\n',''));
@@ -101,10 +105,17 @@ public with sharing class ImportCsvQuoteController {
                     
                     //get quote Items
                     
+                    // System.debug('If 1 ::: ');
+                    // System.debug('If 3.5 ::: listCSVData.get(0) : ' + listCSVData.get(0));
+
                     for(Integer intIndex = 1; intIndex < listCSVData.size(); intIndex++) {
                         buildertek__Quote_Item__c  quote = new buildertek__Quote_Item__c (Quote__c = budgetId);
-                        
+                        // System.debug('If 4.5 ::: listCSVData.get('+intIndex+').size() : ' + listCSVData.get(intIndex));
+
                         for(Integer intInnerIndex = 0; intInnerIndex < listCSVData.get(intIndex).size(); intInnerIndex++) {
+
+                            System.debug('If 4 ::: listCSVData.get('+intIndex+').get('+intInnerIndex+')) ' + listCSVData.get(intIndex).get(intInnerIndex).replace('\n',''));
+
                             switch on listCSVData.get(0).get(intInnerIndex) {
                                 when 'Grouping' {
                                     if(String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))) {
@@ -117,6 +128,7 @@ public with sharing class ImportCsvQuoteController {
                                 }
                                 
                                 when 'Product Description' {
+                                    System.debug('productName :: ' + listCSVData.get(intIndex).get(intInnerIndex).replace('\n',''));
                                     if(String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))) {
                                     	//quote.buildertek__Product__c =listCSVData.get(intIndex).get(intInnerIndex).trim();
                                         String productName=listCSVData.get(intIndex).get(intInnerIndex).replace('\n','');
@@ -131,7 +143,8 @@ public with sharing class ImportCsvQuoteController {
                                 
                                 when 'Quantity' {
                                     if(String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))) {
-                                        quote.buildertek__Quantity__c = Decimal.valueOf(listCSVData.get(intIndex).get(intInnerIndex));
+                                        Decimal dec = Decimal.valueOf(listCSVData.get(intIndex).get(intInnerIndex));
+                                        quote.buildertek__Quantity__c = (Integer)Math.round(dec);
                                     }
                                 }
                                 
@@ -160,6 +173,8 @@ public with sharing class ImportCsvQuoteController {
                                 when 'Markup' {
                                     if(String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))) {
                                         quote.buildertek__Markup__c = Decimal.valueOf(listCSVData.get(intIndex).get(intInnerIndex).replace('%',''));
+                                        System.debug('quote.buildertek__Markup__c' + quote.buildertek__Markup__c);
+                                        System.debug(' Decimal.valueOf(listCSVData.get(intIndex).get(intInnerIndex)' +  Decimal.valueOf(listCSVData.get(intIndex).get(intInnerIndex)));
                                     }
                                 }
                                 
@@ -170,6 +185,10 @@ public with sharing class ImportCsvQuoteController {
                                 when 'Projected Costs' {
                                     // quote.Product__c = listCSVData.get(intIndex).get(intInnerIndex);
                                 }
+
+                                // when else {
+                                //     response.isSuccess = false;
+                                // }
                             }
                         }
                         listQuotes.add(quote);
@@ -178,23 +197,29 @@ public with sharing class ImportCsvQuoteController {
                     
                     
                     if(!listQuotes.isEmpty()) {
-                        if(Schema.sObjectType.buildertek__Quote_Item__c.isCreateable()&&
-                            Schema.sObjectType.buildertek__Quote_Item__c.fields.Name.isCreateable()&&
-                            Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Quote__c.isCreateable() &&
-                			Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Cost_Code__c.isCreateable() &&
-                			Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Additional_Discount__c.isCreateable() &&
-                            Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Description__c.isCreateable()&&
-                            Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Applied_Markup__c.isCreateable() &&
-                			Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Grouping__c.isCreateable() &&
-                			Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Markup__c.isCreateable() &&
-                            Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Product__c.isCreateable()&&
-                            Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Quantity__c.isCreateable() &&
-                			Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Unit_Cost__c.isCreateable() &&
-                			Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__UOM__c.isCreateable() &&
-                			Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Vendor__c.isCreateable() ){
-                                insert listQuotes;
-                			}
-                        response.strMessage = 'Quote line items inserted successfully.';
+                        // if(response.isSuccess){
+                            if(Schema.sObjectType.buildertek__Quote_Item__c.isCreateable()&&
+                                Schema.sObjectType.buildertek__Quote_Item__c.fields.Name.isCreateable()&&
+                                Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Quote__c.isCreateable() &&
+                                Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Cost_Code__c.isCreateable() &&
+                                Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Additional_Discount__c.isCreateable() &&
+                                Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Description__c.isCreateable()&&
+                                Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Applied_Markup__c.isCreateable() &&
+                                Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Grouping__c.isCreateable() &&
+                                Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Markup__c.isCreateable() &&
+                                Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Product__c.isCreateable()&&
+                                Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Quantity__c.isCreateable() &&
+                                Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Unit_Cost__c.isCreateable() &&
+                                Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__UOM__c.isCreateable() &&
+                                Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Vendor__c.isCreateable() ){
+                                    System.debug('listQuotes :: '+ listQuotes);
+                                    insert listQuotes;
+                                }
+                            response.strMessage = 'Quote line items inserted successfully.';
+                        // } else{
+                        //         response.isSuccess = false;
+                        //             response.strMessage = 'Your file header are not Corrects. Please Review it Once.';
+                        // }
                     }
                     else {
                         response.isSuccess = false;
@@ -210,6 +235,7 @@ public with sharing class ImportCsvQuoteController {
         catch(Exception ex) {
             response.isSuccess = false;
             response.strMessage = ex.getMessage();
+            System.debug('Error in importBudgets => ' + ex + '\n at line no ==> ' + ex.getLineNumber());
         }
         
         return response;
@@ -222,17 +248,21 @@ public with sharing class ImportCsvQuoteController {
     */
     public static List<List<String>> getListOfFileContentsAsStrings(String strContents) {
         List<List<String>> listOfFileContentsAsStrings;
+        // try{
         if(String.isNotBlank(strContents)) {
             List<String> listLines;
-            
             if(strContents.contains('\r')) {
                 // Split up the file contents into List of rows [ Using new line ].
-                listLines = strContents.split('\r');
+                // listLines = strContents.split('\r');
+                listLines = strContents.split('\r\n');  // ===> Chages For Ticket No : AC-28
+
             }
             else if(strContents.contains('\n')) {
                 // Split up the file contents into List of rows [ Using new line ].
                 listLines = strContents.split('\n');
             }
+
+            // listLines = strContents.split('\n');
             
             if(listLines != Null && !listLines.isEmpty()) {
                 // Appending cell values separated by New Lines.
@@ -259,6 +289,9 @@ public with sharing class ImportCsvQuoteController {
                 }
             }
         }
+    // }catch(Exception e){
+    //     System.debug('error in => getListOfFileContentsAsStrings' + e);
+    // }
         
         system.debug('listOfFileContentsAsStrings:-\n' + JSON.serialize(listOfFileContentsAsStrings));
         return listOfFileContentsAsStrings;
@@ -280,7 +313,7 @@ public with sharing class ImportCsvQuoteController {
             Integer intCountDoubleQuotes;
             
             for(String strValue : listValues) {
-                
+
                 if(!isNewLineFound) {
                     intCountDoubleQuotes = strValue.countMatches('\"');
                     if(intCountDoubleQuotes == 1) {

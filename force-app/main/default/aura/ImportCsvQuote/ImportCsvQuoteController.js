@@ -7,10 +7,13 @@
 	},
     
     onSelectFileHandler : function(component,event,helper){
+        try{
         console.log('onfile select');
         var MAX_FILE_SIZE = 750000; 
         var fileInput = component.find("file").getElement();
         var file = fileInput.files[0];
+        // var file = event.getSource().get("v.files")[0];
+        console.log('file1 =: ', file);
         
         
          if(file != undefined){
@@ -24,13 +27,16 @@
              if(ext!='csv'){
                  helper.showToast(component, "warning",'Please Select .csv file.'); 
              }else{
-                 $A.util.addClass(component.find("btn").getElement(), "slds-hide");
-                 $A.util.removeClass(component.find("btn").getElement(), "slds-show");
+                //  $A.util.addClass(component.find("btn").getElement(), "slds-hide");
+                //  $A.util.removeClass(component.find("btn").getElement(), "slds-show");
                  component.set("v.selectedFile",file.name);
                  component.set("v.isSelect",true);
              }
              
          } 
+        } catch(error){
+            console.log('error => ', {error})
+        }
        
     },
     handleRemove :function(component,event,helper){
