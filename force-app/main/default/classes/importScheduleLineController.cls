@@ -69,7 +69,6 @@ public without sharing class importScheduleLineController {
                 DateTime sDate = DateTime.newInstance(schItem.buildertek__Start__c.year(), schItem.buildertek__Start__c.month(), schItem.buildertek__Start__c.day());
                 
                 schItem.buildertek__Duration__c = wrapper.Duration;
-                // schItem.buildertek__Finish__c = addDaysSkippingWeekends(schItem.buildertek__Start__c, Integer.valueOf(wrapper.Duration));
                 schItem.buildertek__Finish__c = System.BusinessHours.add(businessHourId, sDate, Integer.valueOf(wrapper.Duration)*(24 * 60 * 60 * 1000L)).date();
                 schItem.buildertek__Original_Start_Date__c = Date.valueOf(wrapper.StartDate);
                 schItem.buildertek__Original_End_Date__c = startDate.addDays(wrapper.Duration);
