@@ -788,6 +788,7 @@
                                                         width:100% !important;
                                                     }
                                                 </aura:html>
+                                                <label class="slds-form-element__label">{!v.label}</label>
                                                 <c:BT_LightningLookup objectAPIName="Product2"
                                                     IconName="standard:product"
                                                     selectedRecord="{!v.selectedLookUpRecord}" aura:id="productId"
