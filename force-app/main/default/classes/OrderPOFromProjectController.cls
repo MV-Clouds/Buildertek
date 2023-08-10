@@ -562,7 +562,7 @@ public class OrderPOFromProjectController {
 
                     Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
                     email.setToAddresses(new list<string>{myContact.buildertek__Vendor__r.buildertek__Email_Address__c});
-                    email.setSubject(lstMsgs[0].Subject);
+                    email.setSubject(lstMsgs[0].Subject + ' - ' + myContact.Name + ' [Ref:' + myContact.Id +']'); //Changes for BUIl-3463 
 
                     body += 'Hi, <br/><br/> ';
                     body += '</br> Please &nbsp;';
