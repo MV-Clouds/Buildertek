@@ -33,10 +33,10 @@ trigger ScheduleOfValueTrigger on  buildertek__Schedule_of_Values__c (before upd
 SOVHandler.OnBeforeupdate(Trigger.old, Trigger.new, Trigger.newMap, trigger.oldMap);
 }*/
     
-    /* if(Trigger.isDelete){
+     if(Trigger.isDelete){
 if (Trigger.isBefore){
 SOVHandler.isBeforeDelete(Trigger.old);
 }
-} */
+} 
     
 }

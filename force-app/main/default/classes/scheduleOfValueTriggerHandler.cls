@@ -566,7 +566,7 @@ sovLinesList.add(line);
         system.debug(userRec[0]);
         // if(userRec[0].IsPortalEnabled == true){
         if(portalCode != null && portalCode != ''){
-            if(boolean.valueof(portalCode) == true){
+            // if(boolean.valueof(portalCode) == true){
                 system.debug('PaymentToDelete'+PaymentToDelete);
                 for (buildertek__Schedule_of_Values__c payment : PaymentToDelete){
                     system.debug('hai');
@@ -576,7 +576,7 @@ sovLinesList.add(line);
                         
                     }
                 }
-            }
+            // }
             
         }
         
