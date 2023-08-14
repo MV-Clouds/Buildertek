@@ -42,9 +42,17 @@
     <lightning:overlayLibrary aura:id="overlayLib" />
     <lightning:workspaceAPI aura:id="workspace" />
     <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
+    <aura:attribute name="selectedRecordMap" type="String" />
+
+    <!-- <aura:attribute name="selectedLookUpRecord" type="sObject" default="{}" /> -->
+
    
-    <aura:handler name="datafromChild" event="c:senDatafromChild" action="{!c.handleComponentEvent}"/> 
-    
+    <!-- <aura:handler name="datafromChild" event="c:senDatafromChild" action="{!c.handleComponentEvent}"/>  -->
+    <aura:handler name="oSelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.handleComponentEvent}" />
+    <aura:registerEvent name="ClearSelectedRecordEvent" type="c:BT_CLearLightningLookupEvent" />
+
+
+
     <div class="slds-modal__content slds-scrollable" style="height:100% !important">
         <lightning:card aura:id="lightCard" class="slds-card_boundary slds-page-header slds-scrollable" title="Quote Lines">
             <aura:set attribute="actions">
@@ -116,17 +124,48 @@
                                         </aura:iteration>
                                     </lightning:select>
                                 </td>
-                                <td>
-                                    <lightning:select name="{!index}" value="{!quoteLineWrapper.productId}" class="product-class pointer1" onchange="{!c.gotProduct}">
-                                        <aura:iteration items="{!quoteLineWrapper.productOptionList}" var="productOption">
-                                            <option name="{!quoteLineWrapper}" value="{!productOption.value}">{!productOption.label}</option>
-                                        </aura:iteration>
-                                    </lightning:select>
+                                <td >
+                                    <aura:html tag="style">
+                                        .mainDiv{
+                                            padding-top:0% !important;
+
+                                        }
+                                        .pillSize{
+
+                                            padding-top: 2% !important;
+                                            padding-bottom: 2% !important;
+                                        }
+                                        .subDiv{
+                                            width:100% !important;
+                                            margin-top:17px !important;
+
+                                        }
+                                    </aura:html>                                   
+                                    <c:BT_LightningLookup objectAPIName="Product2"  IconName="standard:product" selectedRecord="{!quoteLineWrapper.selectedLookUpRecord}" aura:id="productId"   parentId="{!quoteLineWrapper.pricebookEntryId}" prodctfamly="{!quoteLineWrapper.productFamily != '' ? quoteLineWrapper.productFamily : 'All Families'}" />
+                                    
                                 </td>
                                 <td>
                                     <lightning:input name="{!index}" value="{!quoteLineWrapper.QuoteLine.Name}" class="description-class" />
                                 </td>
                                 <td>
+
+                                    <!-- <aura:html tag="style">
+                                        .slds-lookup__menu{
+                                        width: 100% !important;
+                                        height: 200px !important;
+                                        }
+
+                                        .slds-lookup__list{
+                                        width: auto !important;
+                                        height: 190px !important;
+                                        }
+                                    </aura:html>
+                                    <c:BT_LookUp aura:id="groupId" _field="buildertek__Grouping__c"
+                                        _sobject="buildertek__Quote_Item__c"
+                                        _value="{!quoteLineWrapper.QuoteLine.buildertek__Grouping__c}"
+                                        _text_value="{!quoteLineWrapper.QuoteLine.GroupName}"  _label=""
+                                        _filter="" /> -->
+
                                     <aura:if isTrue="{!quoteLineWrapper.QuoteLine.buildertek__Product__c != ''}">
                                         <lightning:select name="{!index}" value="{!quoteLineWrapper.QuoteLine.buildertek__Grouping__c}" class="grouping-class pointer1">
                                             <aura:iteration items="{!quoteLineWrapper.GroupingOptions}" var="groupingOption">
@@ -220,7 +259,5 @@
         <div class="slds-backdrop slds-backdrop_open"></div>
     </aura:if>
     <lightning:overlayLibrary aura:id="overlayLib" />
-    <aura:if isTrue="{!v.isLoading}">
-        <lightning:spinner alternativeText="Loading" variant="brand" size="large" />
-    </aura:if>
+    <c:BT_Spinner />
 </aura:component>

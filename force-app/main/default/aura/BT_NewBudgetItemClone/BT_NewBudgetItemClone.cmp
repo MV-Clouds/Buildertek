@@ -585,6 +585,22 @@
 
                                                 </td>
                                                 <td>
+                                                    <aura:html tag="style">
+                                                        <!-- .mainDiv{
+                                                            padding-top:0% !important;
+    
+                                                        }
+                                                        .pillSize{
+    
+                                                            padding-top: 2% !important;
+                                                            padding-bottom: 2% !important;
+                                                        } -->
+                                                        .subDiv{
+                                                            <!-- width:100% !important; -->
+                                                            margin-top:-23px !important;
+
+                                                        }
+                                                    </aura:html>
                                                     <c:BT_LightningLookup aura:id="productId" objectAPIName="Product2" IconName="standard:product" selectedRecord="{!v.selectedLookUpRecord}" parentId="{!v.pricebookName }" prodctfamly="{!v.productfamily}" />
                                                 </td>
                                                 <td>
