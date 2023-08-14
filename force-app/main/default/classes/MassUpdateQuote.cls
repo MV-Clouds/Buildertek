@@ -215,18 +215,18 @@ public with sharing class MassUpdateQuote{
         for (PriceBookEntry pEntry: pEntries) {
             productWrapper aProduct = new productWrapper();
             aProduct.Id = pEntry.Product2Id;
-            // aProduct.Name = pEntry.Product2.Name;
-            // aProduct.ProductCode = pEntry.Product2.ProductCode;
-            // aProduct.Description = pEntry.Product2.Description;
+            aProduct.Name = pEntry.Product2.Name;
+            aProduct.ProductCode = pEntry.Product2.ProductCode;
+            aProduct.Description = pEntry.Product2.Description;
             aProduct.Family = pEntry.Product2.Family;
-            // aProduct.IsActive = pEntry.Product2.IsActive;
+            aProduct.IsActive = pEntry.Product2.IsActive;
             aProduct.UnitPrice = pEntry.UnitPrice;            
             aProduct.Size = pEntry.Pricebook2.Name;
             aProduct.Selected = false;
             aProduct.MarkUp = pEntry.buildertek__Markup__c;
             aProduct.Discount = pEntry.buildertek__Discount__c;
             aProduct.UnitCost = pEntry.buildertek__Unit_Cost__c;
-            // aProduct.Phase = pEntry.Product2.buildertek__Quote_Group__c;
+            aProduct.Phase = pEntry.Product2.buildertek__Quote_Group__c;
             products.add(aProduct);
         }
 
@@ -336,7 +336,6 @@ public with sharing class MassUpdateQuote{
         public string productfamilyvalues{ get; set; }
     }
 
-
     @AuraEnabled
     public list<productfamilyClass> pfwrapperlst{ get; set; }
 
@@ -350,8 +349,7 @@ public with sharing class MassUpdateQuote{
         list<string> ProdIds = new list<string>();
         if (ObjectName == 'Product2' && parentId != null){
 
-            list<pricebookEntry> PElist;
-            PElist = [select id, Product2Id   from pricebookEntry  where pricebook2Id = :parentId];
+            list<pricebookEntry> PElist =[select id, Product2Id   from pricebookEntry  where pricebook2Id = :parentId];
             for (pricebookEntry PE : PElist){
                 ProdIds.add(PE.Product2Id);
             }
@@ -369,7 +367,44 @@ public with sharing class MassUpdateQuote{
         return pfwrapperlst;
     }
 
+    public class wrapperClass{
+        @AuraEnabled
+         public  list<PricebookEntry> priceBookList{get;set;}
 
+         @AuraEnabled
+         public  list<Product2> productList{get;set;}
+    }
+
+    @AuraEnabled
+    public static wrapperClass getProductPrice(String productId, List<String> pricebookId){
+        Boolean containsEmptyString = false;
+        list<string> ProdIds = new list<string>();
+        wrapperClass wrapper= new wrapperClass();
+        wrapper.priceBookList= new List<PricebookEntry>();
+        wrapper.productList= new List<Product2>();
+
+        for (String id : pricebookId) {
+            if (String.isBlank(id)) { // Check if the string is empty or only whitespace
+                containsEmptyString = true;
+                break; // Exit the loop if an empty string is found
+            }
+        }
+        
+        if (containsEmptyString) {
+            System.debug('The pricebookId list contains empty strings.');
+            list<PricebookEntry> price = [select id, Product2Id, product2.family from pricebookEntry];
+            for (pricebookEntry PE :  price){
+                ProdIds.add(PE.Product2Id);
+            } 
+            wrapper.productList=[Select Id , Name From Product2 WHERE ID NOT IN:ProdIds LIMIT 800];
+
+        } else {
+            wrapper.priceBookList = [select id, UnitPrice, pricebook2Id, buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Discount__c, Product2Id, Product2.Name ,Product2.buildertek__Quote_Group__r.Name, Product2.QuantityUnitOfMeasure	
+                    FROM PricebookEntry where product2Id = :productId and pricebook2Id =: pricebookId LIMIT 800];
+        }
+        return wrapper;
+
+    }
 
 
 }

@@ -85,7 +85,9 @@
                     component.set("v.RecordEnd", 0);
                     component.set("v.TotalPages", 0);
                     component.set("v.isNextVisible", true);
-                    component.set('v.isLoading', false);
+                    $A.get("e.c:BT_SpinnerEvent").setParams({
+                        "action": "HIDE"
+                    }).fire();
                     var fields = component.get('v.fieldSetValues');
                     var list = component.get('v.listOfRecords');
                     for(var i=0 ;i<5;i++){
@@ -107,7 +109,10 @@
                     component.set("v.RecordEnd", 0);
                     component.set("v.TotalPages", 0);
                     component.set("v.isNextVisible", true);
-                    component.set('v.isLoading', false);
+                    $A.get("e.c:BT_SpinnerEvent").setParams({
+                        "action": "HIDE"
+                    }).fire();
+
                     var fields = component.get('v.fieldSetValues');
                     var list = component.get('v.listOfRecords');
                     for(var i=0 ;i<5;i++){
@@ -137,13 +142,19 @@
                     component.set('v.listOfRecords', list);
             }
             
-            component.set('v.isLoading', false);
-        })
+                    
+                    $A.get("e.c:BT_SpinnerEvent").setParams({
+                        "action": "HIDE"
+                    }).fire();      
+      })
         $A.enqueueAction(action);
     },
     
     updateMassRecords: function (component, event, helper) {
-        component.set('v.isLoading', true);
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "SHOW"
+        }).fire();   
+
         var listOfRecords = component.get('v.listOfRecords');
         var pageNumber = component.get("v.PageNumber");
         var pageSize = component.get("v.pageSize");
@@ -181,9 +192,15 @@
                 component.set("v.RecordStart", (pageNumber - 1) * pageSize + 1);
                 component.set("v.RecordEnd", (list.length + 3) * pageNumber);
                 component.set("v.TotalPages", Math.ceil(list.length / component.get('v.TotalRecords')));
-                component.set('v.isLoading', false);
+                $A.get("e.c:BT_SpinnerEvent").setParams({
+                "action": "HIDE"
+            }).fire();
+
             } else if (state === "ERROR") {
-                component.set('v.isLoading', false);
+                $A.get("e.c:BT_SpinnerEvent").setParams({
+                     "action": "HIDE"
+                }).fire();
+
                 console.log('A Problem Occurred: ' + JSON.stringify(response.error));
             }
         });
@@ -213,9 +230,15 @@
                 component.set("v.RecordStart", (pageNumber - 1) * pageSize + 1);
                 component.set("v.RecordEnd", (list.length + 3) * pageNumber);
                 component.set("v.TotalPages", Math.ceil(list.length / component.get('v.TotalRecords')));
-                component.set('v.isLoading', false);
+                $A.get("e.c:BT_SpinnerEvent").setParams({
+                    "action": "HIDE"
+                }).fire();
+
             } else if (state === "ERROR") {
-                component.set('v.isLoading', false);
+                 $A.get("e.c:BT_SpinnerEvent").setParams({
+                    "action": "HIDE"
+                }).fire();
+
                 console.log('A Problem Occurred: ' + JSON.stringify(response.error));
             }
         });
@@ -280,6 +303,8 @@
                 buildertek__Unit_Cost__c : '',
                 buildertek__Margin__c : '',
                 buildertek__Markup__c : '',
+                // GroupName: '',
+
             },
             productFamilyList : [],
             productList : [],
@@ -301,6 +326,10 @@
 
     getFamily : function(component, event, helper, priceBookId, index) {
         // console.log('helper.getFamily : PriceBookId : ', priceBookId , ' index : ', index);
+         $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "SHOW"
+        }).fire(); 
+        
         var action = component.get("c.getProductfamilyRecords");
         action.setParams({
                 'ObjectName': "Product2",
@@ -308,6 +337,7 @@
         });
         action.setCallback(this, function(response) {
             var state = response.getState();
+            console.log(response.getError());
             if (state === "SUCCESS") {
                 var result = response.getReturnValue();
                 console.log('result', result);
@@ -321,7 +351,7 @@
                 var familyList = [];
                 familyList.push({
                     label : '-- All Families --',
-                    value : ''
+                    value : 'All Families'
                 });
                 familySet.forEach(function(family) {
                     if(family){
@@ -335,6 +365,7 @@
                 // quoteLineWrapperList[index].GroupingOptions = component.get('v.GroupingOptions');
                 // quoteLineWrapperList[index].productList = result;
                 quoteLineWrapperList[index].productFamilyList = familyList;
+                quoteLineWrapperList[index].selectedLookUpRecord = {};
                 console.log(quoteLineWrapperList[index].productFamilyList);
                 // var productOptionList = [];
                 // if(result.length > 0) {
@@ -350,20 +381,23 @@
                 //     }
                 // }
                 // quoteLineWrapperList[index].productOptionList = productOptionList;
-                // quoteLineWrapperList[index].QuoteLine = {
-                //     buildertek__Quote__c : component.get('v.recordId'),
-                //     buildertek__Product__c : '',
-                //     Name : '',
-                //     buildertek__Grouping__c : '',
-                //     buildertek__Notes__c : '',
-                //     buildertek__Quantity__c : '',
-                //     buildertek__Unit_Cost__c : '',
-                //     buildertek__Margin__c : '',
-                //     buildertek__Markup__c : '',
-                // }
+                quoteLineWrapperList[index].QuoteLine = {
+                    buildertek__Quote__c : component.get('v.recordId'),
+                    buildertek__Product__c : '',
+                    Name : '',
+                    buildertek__Grouping__c : '',
+                    buildertek__Notes__c : '',
+                    buildertek__Quantity__c : '',
+                    buildertek__Unit_Cost__c : '',
+                    buildertek__Margin__c : '',
+                    buildertek__Markup__c : '',
+                }
                 component.set('v.quoteLineWrapperList', quoteLineWrapperList);
                 // console.log('quoteLineWrapperList', quoteLineWrapperList);
-                component.set('v.isLoading', false);
+                 $A.get("e.c:BT_SpinnerEvent").setParams({
+                    "action": "HIDE"
+                }).fire();
+
             } else if (state === "ERROR") {
                 console.log('A Problem Occurred: ' + JSON.stringify(response.error));
                 var toast = $A.get("e.force:showToast");
@@ -373,7 +407,9 @@
                     type: "error"
                 });
                 toast.fire();
-                component.set('v.isLoading', false);
+                 $A.get("e.c:BT_SpinnerEvent").setParams({
+                    "action": "HIDE"
+                }).fire();
             }
         }); 
         $A.enqueueAction(action);
@@ -411,7 +447,10 @@
         }
         component.set("v.quoteLineWrapperList", quoteLineWrapperList);
         console.log('quoteLineWrapperList', quoteLineWrapperList);
-        component.set('v.isLoading', false);
+         $A.get("e.c:BT_SpinnerEvent").setParams({
+                    "action": "HIDE"
+        }).fire();
+
     },
 
     QuoteLineGroups : function(component, event, helper) {
@@ -438,22 +477,28 @@
 
     getProduct : function(component, event, helper, family, index) {
         var quoteLineWrapperList = component.get("v.quoteLineWrapperList");
-        var productList = quoteLineWrapperList[index].productList;
-        var productOptionList = [
-            {
-                label : 'Please Select Product',
-                value : '',
-            }
-        ];
-        for(var i = 0; i < productList.length; i++){
-            if(productList[i].Family == family){
-                productOptionList.push({
-                    label : productList[i].Name,
-                    value : productList[i].Id,
-                })
-            }
-        }
-        quoteLineWrapperList[index].productOptionList = productOptionList;
+        // var productId = quoteLineWrapperList[index].Product;
+        // var productOptionList = [
+        //     {
+        //         label : 'Please Select Product',
+        //         value : '',
+        //     }
+        // ];
+        // for(var i = 0; i < productList.length; i++){
+        //     if(productList[i].Family == family){
+        //         productOptionList.push({
+        //             label : productList[i].Name,
+        //             value : productList[i].Id,
+        //         })
+        //     }
+        // }
+        // var compEvent = $A.get('e.c:BT_CLearLightningLookupEvent');
+        // compEvent.setParams({
+        //     "recordByEvent": productId
+        // });
+        // compEvent.fire();
+
+        quoteLineWrapperList[index].selectedLookUpRecord = {}
         quoteLineWrapperList[index].QuoteLine = {
             buildertek__Quote__c : component.get('v.recordId'),
             buildertek__Product__c : '',
@@ -467,7 +512,10 @@
         }
         component.set("v.quoteLineWrapperList", quoteLineWrapperList);
         console.log('quoteLineWrapperList',quoteLineWrapperList);
-        component.set('v.isLoading', false);
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+                    "action": "HIDE"
+        }).fire();
+
     },
 
     resetProductDetails : function(component, event, helper, index) {
@@ -485,7 +533,10 @@
         }
         component.set("v.quoteLineWrapperList", quoteLineWrapperList);
         console.log('quoteLineWrapperList', quoteLineWrapperList);
-        component.set('v.isLoading', false);
+         $A.get("e.c:BT_SpinnerEvent").setParams({
+                    "action": "HIDE"
+        }).fire();
+
     },
 
     saveQuoteLine : function(component, event, helper, quotelineList) {
@@ -496,6 +547,8 @@
         });
         action.setCallback(this, function(response) {
             var state = response.getState();
+            console.log(response.getError());
+            console.log({state});
             if (state === "SUCCESS") {
                 var result = response.getReturnValue();
                 console.log('result', result);
@@ -506,8 +559,10 @@
                     type: "success"
                 });
                 toast.fire();
-                component.set('v.isLoading', false);
-                helper.closeNrefresh(component, event, helper);
+                $A.get("e.c:BT_SpinnerEvent").setParams({
+                    "action": "HIDE"
+                }).fire();             
+               helper.closeNrefresh(component, event, helper);
             } else if (state === "ERROR") {
 
                 var error = response.getError();
@@ -522,7 +577,9 @@
                     type: "error"
                 });
                 toast.fire();
-                component.set('v.isLoading', false);
+                $A.get("e.c:BT_SpinnerEvent").setParams({
+                    "action": "HIDE"
+                }).fire();
             }
         });
         $A.enqueueAction(action);
@@ -555,4 +612,84 @@
         }
     },
 
+    getProductDetails: function(component, event, helper ,productId,  priceBookIdList) {
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "SHOW"
+        }).fire(); 
+
+
+        var quoteLineWrapperList = component.get("v.quoteLineWrapperList");
+        console.log({quoteLineWrapperList});
+        var action = component.get("c.getProductPrice");
+        action.setParams({
+            "productId": productId,
+            pricebookId: priceBookIdList
+        });
+        action.setCallback(this, function(response) {
+            var result = response.getReturnValue();
+            var state= response.getState();
+            var priceBookEntryWrap=result.priceBookList[0];
+            var productWrap=result.productList;
+            $A.get("e.c:BT_SpinnerEvent").setParams({
+                "action": "HIDE"
+            }).fire();
+            if(state === 'SUCCESS'){
+
+                const setQuoteLineWrapper= (pricebookList , index)=>{
+                    quoteLineWrapperList[index].QuoteLine.buildertek__Unit_Cost__c=pricebookList.UnitPrice;
+                    quoteLineWrapperList[index].QuoteLine.buildertek__Markup__c=pricebookList.buildertek__Markup__c;
+                    quoteLineWrapperList[index].QuoteLine.Name=pricebookList.Product2.Name;
+                    // quoteLineWrapperList[index].QuoteLine.buildertek__Product__c=pricebookList.Product2Id;
+                    quoteLineWrapperList[index].GroupingOptions = component.get('v.GroupingOptions');
+                    quoteLineWrapperList[index].QuoteLine.buildertek__Quantity__c = 1;
+
+                    if(pricebookList.Product2.buildertek__Quote_Group__c !=undefined && pricebookList.Product2.buildertek__Quote_Group__c !='') {
+                        quoteLineWrapperList[index].QuoteLine.buildertek__Grouping__c=pricebookList.Product2.buildertek__Quote_Group__c;
+                    }else {
+                        var GroupingOptions = component.get('v.GroupingOptions');
+                        for(var i = 0; i < GroupingOptions.length; i++) {
+                            if(GroupingOptions[i].Name == 'No Grouping') {
+                                quoteLineWrapperList[index].QuoteLine.buildertek__Grouping__c = GroupingOptions[i].Id;
+                            }
+                        }
+                    }
+                    component.set("v.quoteLineWrapperList" , quoteLineWrapperList);
+                }
+
+                if(priceBookEntryWrap != undefined){
+                    quoteLineWrapperList.forEach(function(value , index){
+                        if(value.pricebookEntryId===priceBookEntryWrap.Pricebook2Id && value.Product===priceBookEntryWrap.Product2Id){
+                            setQuoteLineWrapper(priceBookEntryWrap , index);
+                        }
+                    })
+                }else{
+                    quoteLineWrapperList.forEach(function(value , index){
+                        // console.log({value});
+                        // console.log(productWrap);
+                        const productWrapper = productWrap.find(subvalue => subvalue.Id === value.Product);
+                        if (productWrapper) {
+                            const createObj = {
+                                UnitPrice: '',
+                                buildertek__Markup__c: '0',
+                                Product2: {
+                                    Name: productWrapper.Name
+                                },
+                                Product2Id: productWrapper.Id
+                            };
+                            // console.log({ createObj });
+                            setQuoteLineWrapper(createObj, index);
+                        }          
+                    })
+
+                }
+            }
+            
+        });
+        $A.enqueueAction(action);
+      
+
+       
+    },
+
 })
+

@@ -2156,7 +2156,7 @@ public with sharing class QuoteDAO{
          if(pbookId != null && pbookId != 'None'){
              System.debug('If');
              //sort by Product2.Name
-             pEntries = [SELECT Id, Product2Id, Product2.Name,Product2.ProductCode,Product2.Description,toLabel(Product2.Family), Product2.IsActive,buildertek__Unit_Cost__c,Pricebook2.Name,UnitPrice FROM PricebookEntry WHERE Pricebook2Id=:pbookId AND IsActive = True];
+             pEntries = [SELECT Id, Product2Id, Product2.Name,Product2.ProductCode,Product2.Description,toLabel(Product2.Family), Product2.IsActive,buildertek__Unit_Cost__c,Pricebook2.Name,UnitPrice FROM PricebookEntry WHERE Pricebook2Id=:pbookId AND IsActive = True LIMIT 1000];
              System.debug('pEntries--->>>'+pEntries);
              List<Product2> products = new List<Product2>();
              for (PriceBookEntry pEntry: pEntries) {
@@ -2379,7 +2379,38 @@ public with sharing class QuoteDAO{
         List<PriceBookEntry> pEntries = [SELECT Id,Product2Id, Product2.buildertek__Quote_Group__c , Product2.Name, Product2.ProductCode, Product2.Description, toLabel(Product2.Family), 
                                             Product2.IsActive,buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Discount__c, Pricebook2.Name, UnitPrice, Product2.QuantityUnitOfMeasure  //----
                                             FROM PricebookEntry WHERE Pricebook2Id=:pbookId AND IsActive = True 
-                                            ORDER BY Product2.Family ASC NULLS LAST, Product2.Name ASC NULLS LAST];
+                                            ORDER BY Product2.Family ASC NULLS LAST, Product2.Name ASC NULLS LAST LIMIT 1000];
+
+        List<productWrapper> products = new List<productWrapper>();
+        for (PriceBookEntry pEntry: pEntries) {
+            productWrapper aProduct = new productWrapper();
+            aProduct.Id = pEntry.Product2Id;
+            aProduct.Name = pEntry.Product2.Name;
+            aProduct.ProductCode = pEntry.Product2.ProductCode;
+            aProduct.Description = pEntry.Product2.Description;
+            aProduct.Family = pEntry.Product2.Family;
+            aProduct.IsActive = pEntry.Product2.IsActive;
+            aProduct.UnitPrice = pEntry.UnitPrice;            
+            aProduct.Size = pEntry.Pricebook2.Name;
+            aProduct.Selected = false;
+            aProduct.MarkUp = pEntry.buildertek__Markup__c;
+            aProduct.Discount = pEntry.buildertek__Discount__c;
+            aProduct.UnitCost = pEntry.buildertek__Unit_Cost__c;
+            aProduct.Phase = pEntry.Product2.buildertek__Quote_Group__c;
+            aProduct.QuantityUnitOfMeasure = pEntry.Product2.QuantityUnitOfMeasure;     
+            products.add(aProduct);
+        }
+
+        return products;
+    }
+    @AuraEnabled
+    public static List<productWrapper> getProductsthroughProductFamily(string pbookId, string pfId) {
+
+
+        List<PriceBookEntry> pEntries = [SELECT Id,Product2Id, Product2.buildertek__Quote_Group__c , Product2.Name, Product2.ProductCode, Product2.Description, toLabel(Product2.Family), 
+                                            Product2.IsActive,buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Discount__c, Pricebook2.Name, UnitPrice, Product2.QuantityUnitOfMeasure  //----
+                                            FROM PricebookEntry WHERE Pricebook2Id=:pbookId AND IsActive = True AND toLabel(Product2.Family)=:pfId
+                                            ORDER BY Product2.Family ASC NULLS LAST, Product2.Name ASC NULLS LAST LIMIT 1000];
 
         List<productWrapper> products = new List<productWrapper>();
         for (PriceBookEntry pEntry: pEntries) {
@@ -2459,8 +2490,6 @@ public with sharing class QuoteDAO{
 
     @AuraEnabled
     public static List<sObject> getProductRecords(String searchKeyWord, String ObjectName, String filter, string parentId, string prodctfamly){
-        system.debug('ObjectName-->' + ObjectName);
-        // String searchKey = '%'+ searchKeyWord + '%';
         String[] searchTerms = searchKeyWord.split(' ');
         String searchKey = '';
         for (Integer i = 0; i < searchTerms.size(); i++) {
@@ -2473,60 +2502,127 @@ public with sharing class QuoteDAO{
         String sQuery;
         list<string> ProdIds = new list<string>();
         list<pricebookEntry> PElist;
-        System.debug('parentId'+parentId);
-        System.debug(parentId != '');
-        System.debug(parentId != null);
 
+            if (ObjectName == 'Product2' && parentId != null && parentId != ''){
 
-        if (ObjectName == 'Product2' && parentId != null && parentId != ''){
-            if(prodctfamly == '--None--'){
-                PElist = [select id, Product2Id, product2.family from pricebookEntry  where pricebook2Id = :parentId AND toLabel(product2.family) = :null];
-            }else{
+                String familyFilter = '';
+                if (prodctfamly != 'All Families') {
+                    familyFilter = (prodctfamly == '--None--') ? 'AND toLabel(product2.family) = null' : 'AND toLabel(product2.family) = :prodctfamly';
+                }
 
-                PElist = [select id, Product2Id, product2.family from pricebookEntry  where pricebook2Id = :parentId AND toLabel(product2.family) = :prodctfamly];
+                String peQuery = 'SELECT id, Product2Id, product2.family FROM PricebookEntry WHERE pricebook2Id = :parentId ' + familyFilter;
+                PElist = Database.query(peQuery);
+
+                for (pricebookEntry PE : PElist){
+                     ProdIds.add(PE.Product2Id);
+                }
+                if (filter != null){
+                     filter = filter + ' AND Id IN: ProdIds';
+                }else{
+                     filter = 'Id IN: ProdIds';
+                } 
+
+            }else if(ObjectName == 'Product2' && (parentId == null || parentId == '')){
+                System.debug('inisde 2nd if');
+     
+                 PElist = [select id, Product2Id, product2.family from pricebookEntry];   
+                 for (pricebookEntry PE : PElist){
+                     ProdIds.add(PE.Product2Id);
+                 } 
+                 
+                 if (filter != null){
+                     filter = filter + ' AND Id NOT IN: ProdIds';
+                 }else{
+                     filter = 'Id NOT IN: ProdIds';
+                 }      
             }
-            for (pricebookEntry PE : PElist){
-                ProdIds.add(PE.Product2Id);
-            }
-            if (filter != null){
-                filter = filter + ' AND Id IN: ProdIds';
-            }else{
-                filter = 'Id IN: ProdIds';
-            }
-            
-        // }else if(ObjectName == 'Product2' && prodctfamly == '--None--' && parentId == null){
-
-        //     PElist = [select id, Product2Id, product2.family from pricebookEntry where product2.family = null];   
-        //     for (pricebookEntry PE : PElist){
-        //         ProdIds.add(PE.Product2Id);
-        //     }   
-        //     if (filter != null){
-        //         filter = filter + ' AND Id NOT IN: ProdIds';
-        //     }else{
-        //         filter = 'Id NOT IN: ProdIds';
-        //     }      
-        }else if(ObjectName == 'Product2' && (parentId == null || parentId == '')){
-
-            PElist = [select id, Product2Id, product2.family from pricebookEntry];   
-            for (pricebookEntry PE : PElist){
-                ProdIds.add(PE.Product2Id);
-            }   
-            if (filter != null){
-                filter = filter + ' AND Id NOT IN: ProdIds';
-            }else{
-                filter = 'Id NOT IN: ProdIds';
-            }      
-        }
-
         sQuery = 'select id, Name from ' + ObjectName + ' WHERE ' + searchKey + ' AND ' + filter + ' order by Name ASC LIMIT 800';
+        // Query Log
+        System.debug(sQuery);
+        // Query Log
         List<sObject> lstOfRecords = Database.query(sQuery);
+
         for (sObject obj : lstOfRecords){
             returnList.add(obj);
         }
-        System.debug('returnList'+ returnList);
+
         return returnList;
     }
 
+    @AuraEnabled
+    public static List<productWrapper> getProductsbyName(string pbookId, string pName) {
+        String[] searchTerms = pName.split(' ');
+        List<String> searchKeyParts = new List<String>();
+        
+        for (String term : searchTerms) {
+            searchKeyParts.add('Product2.Name LIKE \'%' + term + '%\'');
+        }
+        
+        String searchKey = String.join(searchKeyParts, ' AND ');
+        
+        String sQuery = 'SELECT Id, Product2Id, Product2.buildertek__Quote_Group__c, Product2.Name, Product2.ProductCode, Product2.Description, toLabel(Product2.Family), Product2.IsActive, buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Discount__c, Pricebook2.Name, UnitPrice, Product2.QuantityUnitOfMeasure FROM PricebookEntry WHERE Pricebook2Id = :pbookId AND IsActive = True AND (' + searchKey + ') ORDER BY Product2.Family ASC NULLS LAST, Product2.Name ASC NULLS LAST LIMIT 1000';
+        
+        List<PriceBookEntry> pEntries = Database.query(sQuery);
     
+        List<productWrapper> products = new List<productWrapper>();
+        for (PriceBookEntry pEntry : pEntries) {
+            productWrapper aProduct = new productWrapper();
+            aProduct.Id = pEntry.Product2Id;
+            aProduct.Name = pEntry.Product2.Name;
+            aProduct.ProductCode = pEntry.Product2.ProductCode;
+            aProduct.Description = pEntry.Product2.Description;
+            aProduct.Family = pEntry.Product2.Family;
+            aProduct.IsActive = pEntry.Product2.IsActive;
+            aProduct.UnitPrice = pEntry.UnitPrice;
+            aProduct.Size = pEntry.Pricebook2.Name;
+            aProduct.Selected = false;
+            aProduct.MarkUp = pEntry.buildertek__Markup__c;
+            aProduct.Discount = pEntry.buildertek__Discount__c;
+            aProduct.UnitCost = pEntry.buildertek__Unit_Cost__c;
+            aProduct.Phase = pEntry.Product2.buildertek__Quote_Group__c;
+            aProduct.QuantityUnitOfMeasure = pEntry.Product2.QuantityUnitOfMeasure;
+            products.add(aProduct);
+        }    
+        return products;
+    }   
+
+
+    @AuraEnabled
+    public static List<productWrapper> getProductsbyNameandFamily(string pbookId, string pName, string pfId) {
+        String[] searchTerms = pName.split(' ');
+        List<String> searchKeyParts = new List<String>();
+        
+        for (String term : searchTerms) {
+            searchKeyParts.add('Product2.Name LIKE \'%' + term + '%\'');
+        }
+        
+        String searchKey = String.join(searchKeyParts, ' AND ');
+        
+        String sQuery = 'SELECT Id, Product2Id, Product2.buildertek__Quote_Group__c, Product2.Name, Product2.ProductCode, Product2.Description, toLabel(Product2.Family), Product2.IsActive, buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Discount__c, Pricebook2.Name, UnitPrice, Product2.QuantityUnitOfMeasure FROM PricebookEntry WHERE Pricebook2Id = :pbookId AND IsActive = True AND toLabel(Product2.Family)=:pfId AND (' + searchKey + ') ORDER BY Product2.Family ASC NULLS LAST, Product2.Name ASC NULLS LAST LIMIT 1000';
+        
+        List<PriceBookEntry> pEntries = Database.query(sQuery);
     
+        List<productWrapper> products = new List<productWrapper>();
+        for (PriceBookEntry pEntry : pEntries) {
+            productWrapper aProduct = new productWrapper();
+            aProduct.Id = pEntry.Product2Id;
+            aProduct.Name = pEntry.Product2.Name;
+            aProduct.ProductCode = pEntry.Product2.ProductCode;
+            aProduct.Description = pEntry.Product2.Description;
+            aProduct.Family = pEntry.Product2.Family;
+            aProduct.IsActive = pEntry.Product2.IsActive;
+            aProduct.UnitPrice = pEntry.UnitPrice;
+            aProduct.Size = pEntry.Pricebook2.Name;
+            aProduct.Selected = false;
+            aProduct.MarkUp = pEntry.buildertek__Markup__c;
+            aProduct.Discount = pEntry.buildertek__Discount__c;
+            aProduct.UnitCost = pEntry.buildertek__Unit_Cost__c;
+            aProduct.Phase = pEntry.Product2.buildertek__Quote_Group__c;
+            aProduct.QuantityUnitOfMeasure = pEntry.Product2.QuantityUnitOfMeasure;
+            products.add(aProduct);
+        }
+    
+        return products;
+    }   
+
 }

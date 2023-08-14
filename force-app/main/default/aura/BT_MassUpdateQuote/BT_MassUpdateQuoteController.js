@@ -1,6 +1,9 @@
 ({
     doInit: function (component, event, helper) {
-        component.set('v.isLoading', true);
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "SHOW"
+        }).fire(); 
+
         helper.getTableFieldSet(component, event, helper);
         helper.getAdminValues(component, event, helper);
         helper.nameTheTab(component, event, helper);
@@ -66,11 +69,39 @@
                 console.log('pricebookOptions',pricebookOptions);
                 component.set("v.pricebookOptions",pricebookOptions);
                 for(var key in quoteLineWrap){
-                    if(quoteLineWrap[key].pricebookEntryId != undefined){
+                    console.log('sakina', quoteLineWrap[key].pricebookEntryId != undefined && quoteLineWrap[key].pricebookEntryId != '');
+                    if(quoteLineWrap[key].pricebookEntryId != undefined){                            
                         helper.getFamily(component, event, helper, quoteLineWrap[key].pricebookEntryId, key);
-
                     }
-                    
+                    // else{
+                    //     console.log(quoteLineWrap[key]);
+                    //     console.log('key' , key);
+                    //     console.log(quoteLineWrap[key].productFamilyList);
+
+
+                    //     // quoteLineWrap[key].productFamilyList = [
+                    //     //     {
+                    //     //         label : 'Please Select Pricebook',
+                    //     //         value : '',
+                    //     //     }
+                    //     // ];
+                    //     // quoteLineWrap[key].QuoteLine = {
+                    //     //     buildertek__Quote__c : component.get('v.recordId'),
+                    //     //     buildertek__Product__c : '',
+                    //     //     Name : '',
+                    //     //     buildertek__Grouping__c : '',
+                    //     //     buildertek__Notes__c : '',
+                    //     //     buildertek__Quantity__c : '',
+                    //     //     buildertek__Unit_Cost__c : '',
+                    //     //     buildertek__Margin__c : '',
+                    //     //     buildertek__Markup__c : '',
+                    //     // }
+                    //     // component.set("v.quoteLineWrapperList", quoteLineWrap);
+                    //     $A.get("e.c:BT_SpinnerEvent").setParams({
+                    //         "action": "HIDE"
+                    //     }).fire();
+                       
+                    // }
                 }
 
                 // let getWrapperlength= component.get('v.quoteLineWrapperList').length;
@@ -79,7 +110,9 @@
                 //         helper.getFamily(component, event, helper, component.get('v.defaultPriceBookId'), index);
                 //     }
                 // }
-                component.set('v.isLoading', false);
+            //     $A.get("e.c:BT_SpinnerEvent").setParams({
+            //         "action": "HIDE"
+            //    }).fire();
 
                 
             }
@@ -98,25 +131,33 @@
 
     getFamily : function(component, event, helper) {
         var quoteLineWrapperList = component.get("v.quoteLineWrapperList");
-        component.set('v.isLoading', true);       
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "SHOW"
+        }).fire();        
         var priceBookId = event.getSource().get("v.value");
         var index = event.getSource().get("v.name");
         console.log({index});
         if(priceBookId != ''){
             helper.getFamily(component, event, helper, priceBookId, index);
         }else{
-            var quoteLineWrapperList = component.get("v.quoteLineWrapperList");
+            // var quoteLineWrapperList = component.get("v.quoteLineWrapperList");
+
             quoteLineWrapperList[index].productFamilyList = [
                 {
-                    label : 'Plese Select Pricebook',
+                    label : 'None',
                     value : '',
                 }];
-            quoteLineWrapperList[index].productOptionList = [
-                {
-                    label : 'Plese Select Family',
-                    value : '',
-                }];
-            quoteLineWrapperList[index].productList = [];
+
+            // quoteLineWrapper.pricebookEntryId[index]='No pricebook';
+
+            // quoteLineWrapperList[index].productOptionList = [
+            //     {
+            //         label : 'Plese Select Family',
+            //         value : '',
+            //     }];
+            // quoteLineWrapperList[index].productList = [];
+            quoteLineWrapperList[index].selectedLookUpRecord = {};
+
             quoteLineWrapperList[index].QuoteLine = {
                 buildertek__Quote__c : component.get('v.recordId'),
                 buildertek__Product__c : '',
@@ -129,34 +170,46 @@
                 buildertek__Markup__c : '',
             }
             component.set("v.quoteLineWrapperList", quoteLineWrapperList);
-            component.set('v.isLoading', false);
+            console.log({quoteLineWrapperList});
+            $A.get("e.c:BT_SpinnerEvent").setParams({
+                "action": "HIDE"
+           }).fire();
 
         }
 
     },
 
     getProduct : function(component, event, helper) {
-        component.set('v.isLoading', true);
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "SHOW"
+        }).fire();  
+
         var quoteLineWrapperList = component.get("v.quoteLineWrapperList");
         var index = event.getSource().get("v.name");
         var family = event.getSource().get("v.value");
         if(family != ''){
             helper.getProduct(component, event, helper, family, index);
         }else{
-            var productList = quoteLineWrapperList[index].productList;
-            var productOptionList = [
-                {
-                    label : 'Please Select Product',
-                    value : '',
-                }
-            ];
-            for(var i=0;i<productList.length;i++){
-                productOptionList.push({
-                    label : productList[i].Name,
-                    value : productList[i].Id,
-                });
-            }
-            quoteLineWrapperList[index].productOptionList = productOptionList;
+            var productId = quoteLineWrapperList[index].Product;
+            // var productOptionList = [
+            //     {
+            //         label : 'Please Select Product',
+            //         value : '',
+            //     }
+            // ];
+            // for(var i=0;i<productList.length;i++){
+            //     productOptionList.push({
+            //         label : productList[i].Name,
+            //         value : productList[i].Id,
+            //     });
+            // }
+            // quoteLineWrapperList[index].productOptionList = productOptionList;
+            // var compEvent = $A.get('e.c:BT_CLearLightningLookupEvent');
+            // compEvent.setParams({
+            //     "recordByEvent": productId
+            // });
+            // compEvent.fire();
+
             quoteLineWrapperList[index].QuoteLine = {
                 buildertek__Quote__c : component.get('v.recordId'),
                 buildertek__Product__c : '',
@@ -169,13 +222,17 @@
                 buildertek__Markup__c : '',
             }
             component.set("v.quoteLineWrapperList", quoteLineWrapperList);
-            component.set('v.isLoading', false);
+            $A.get("e.c:BT_SpinnerEvent").setParams({
+                "action": "HIDE"
+           }).fire();
         }
         
     },
 
     gotProduct : function(component, event, helper) {
-        component.set('v.isLoading', true);
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "SHOW"
+        }).fire();  
         var index = event.getSource().get("v.name");
         var productId = event.getSource().get("v.value");
         console.log('productId',productId);
@@ -188,7 +245,9 @@
 
     onAddClick: function (component, event, helper) {
         console.log('onAddClick:::::');
-        component.set('v.isLoading', true);
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "SHOW"
+        }).fire();  
 
         var quoteLineWrapperList = component.get("v.quoteLineWrapperList");
         for(var i = 0; i < 5; i++) {
@@ -204,8 +263,11 @@
     },
 
     onMassUpdate: function (component, event, helper) {
-        component.set('v.loading', true);
-        var quoteLineWrapperList = component.get("v.quoteLineWrapperList");
+        console.log('onMassUpdate');
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "SHOW"
+        }).fire();   
+         var quoteLineWrapperList = component.get("v.quoteLineWrapperList");
         var quotelineList = [];
         console.log('on Save quotelinewrapperlist: ',quoteLineWrapperList);
         for(var i=0;i<quoteLineWrapperList.length;i++){
@@ -213,33 +275,35 @@
                 quotelineList.push(quoteLineWrapperList[i].QuoteLine);                
             }
         }
-        console.log('quotelinelist',quotelineList);
-        
-        debugger;
+        console.log('quotelinelist',quotelineList.length);
 
+        
         //iterate over quotelineList and check if Name is blank then show error
-        var isNameBlank = false;
-        for(var i=0;i<quotelineList.length;i++){
-            if(quotelineList[i].Name == ''){
-                isNameBlank = true;
-                break;
-            }
-        }
-        if(isNameBlank){
-            var toastEvent = $A.get("e.force:showToast");
-            toastEvent.setParams({
-                title: 'Error',
-                message: 'Please enter Description for all Quote Lines.',
-                duration: ' 3000',
-                key: 'info_alt',
-                type: 'error',
-                mode: 'pester'
-            });
-            toastEvent.fire();
-            // helper.createQuoteLineWrapperList(component, event, helper);
-            component.set('v.loading', false);
-            return;
-        }
+        // var isNameBlank = false;
+        // for(var i=0;i<quoteLineWrapperList.length;i++){
+        //     if(quotelineList[i].Name == ''){
+        //         isNameBlank = true;
+        //         break;
+        //     }
+        // }
+        // if(isNameBlank){
+        //     var toastEvent = $A.get("e.force:showToast");
+        //     toastEvent.setParams({
+        //         title: 'Error',
+        //         message: 'Please enter Description for all Quote Lines.',
+        //         duration: ' 3000',
+        //         key: 'info_alt',
+        //         type: 'error',
+        //         mode: 'pester'
+        //     });
+        //     toastEvent.fire();
+        //     // helper.createQuoteLineWrapperList(component, event, helper);
+        //     $A.get("e.c:BT_SpinnerEvent").setParams({
+        //         "action": "HIDE"
+        //     }).fire();
+            
+        //     return;
+        // }
 
         if(quotelineList.length > 0){
             helper.saveQuoteLine(component, event, helper, quotelineList);
@@ -254,8 +318,9 @@
                 mode: 'pester'
             });
             toastEvent.fire();
-            // helper.createQuoteLineWrapperList(component, event, helper);
-            component.set('v.loading', false);
+            $A.get("e.c:BT_SpinnerEvent").setParams({
+                "action": "HIDE"
+           }).fire();
         }
     },
 
@@ -318,7 +383,9 @@
         component.set("v.deleteQuoteLines",recordList);
     },
     handleNext: function (component, event, helper) {
-        component.set('v.isLoading', true);
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "SHOW"
+        }).fire();   
         var pageNumber = component.get("v.PageNumber");
         var pageSize = component.get("v.pageSize");
         pageNumber++;
@@ -326,7 +393,9 @@
     },
 
     handlePrev: function (component, event, helper) {
-        component.set('v.isLoading', true);
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "SHOW"
+        }).fire();   
         var pageNumber = component.get("v.PageNumber");
         var pageSize = component.get("v.pageSize");
         pageNumber--;
@@ -356,15 +425,28 @@
         })
         $A.enqueueAction(action);
     },
-
     handleComponentEvent: function(component, event, helper) {
-        // get the selected Account record from the COMPONETN event
+        console.log('handleComponentEvent');
         var selectedAccountGetFromEvent = event.getParam("recordByEvent");
-        // component.set("v.productId", selectedAccountGetFromEvent.Id);
-        // component.set("v.productName", selectedAccountGetFromEvent.Name);
-        // helper.getProductDetails(component, event, helper);
-        // helper.getUOMValues(component, event, helper);
-        // var temp = component.get("v.newQuote.buildertek__Unit_Price__c");
-        console.log('temp varr ', JSON.stringify(selectedAccountGetFromEvent));
+        // console.log(selectedAccountGetFromEvent);
+        component.set('v.selectedRecordMap' , selectedAccountGetFromEvent.Id);
+        // console.log(component.get('v.selectedRecordMap'));
+
+        var productId=component.get('v.selectedRecordMap');
+        var priceBookIdList=[];
+        var quoteLineWrapperList = component.get("v.quoteLineWrapperList");
+
+        quoteLineWrapperList.forEach(function(value, index){
+            // console.log(value.selectedLookUpRecord);
+            // console.log(productId);
+            if(value.selectedLookUpRecord.Id == productId){
+                quoteLineWrapperList[index].Product=productId;
+                quoteLineWrapperList[index].QuoteLine.buildertek__Product__c=productId;
+                 priceBookIdList.push(value.pricebookEntryId);
+            }
+        })
+        console.log({productId});
+
+        helper.getProductDetails(component, event, helper , productId, priceBookIdList);
     },
 })
