@@ -11,6 +11,8 @@
     <aura:attribute name="selectedPricebook" type="String" />
     <aura:attribute name="DefaultproductFamilyList" type="List" />
     <aura:attribute name="DefaultproductOptionList" type="List" />
+    <aura:attribute name="selectedLookUpRecord" type="sObject" default="{}" />
+
     
 
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
@@ -73,15 +75,9 @@
                         <aura:iteration items="{!v.budgetLineWrapperList}" var="budgetLineWrapper" indexVar="index">
                             <tr class="slds-hint-parent">
                                 <td>
-                                    <lightning:select name="{!index}" value="{!budgetLineWrapper.pricebookEntryId}" class="pricebook-class pointer1" onchange="{!c.getFamily}">
+                                    <lightning:select  aura:id="selectedPricebookId"  name="{!index}" value="{!budgetLineWrapper.pricebookEntryId}" class="pricebook-class pointer1" onchange="{!c.getFamily}">
                                         <aura:iteration items="{!v.pricebookOptions}" var="pricebookOption">
-                                            <aura:if isTrue="{!pricebookOption.value == v.selectedPricebook}">
-                                                <option name="{!budgetLineWrapper}" value="{!pricebookOption.value}" selected="true">{!pricebookOption.label}</option>
-                                                <aura:set attribute="else">
-                                                    <option name="{!budgetLineWrapper}" value="{!pricebookOption.value}">{!pricebookOption.label}</option>
-                                                </aura:set>
-                                            </aura:if>
-                                            <!-- <option name="{!budgetLineWrapper}" value="{!pricebookOption.value}">{!pricebookOption.label}</option> -->
+                                            <option value="{!pricebookOption.value}" selected="{!pricebookOption.value == v.selectedPricebook}">{!pricebookOption.key}</option>
                                         </aura:iteration>
                                     </lightning:select>
                                 </td>
@@ -93,11 +89,6 @@
                                     </lightning:select>
                                 </td>
                                 <td>
-                                    <!-- <lightning:select name="{!index}" value="{!budgetLineWrapper.productId}" class="product-class pointer1" onchange="{!c.gotProduct}">
-                                        <aura:iteration items="{!budgetLineWrapper.productOptionList}" var="productOption">
-                                            <option name="{!budgetLineWrapper}" value="{!productOption.value}">{!productOption.label}</option>
-                                        </aura:iteration>
-                                    </lightning:select> -->
                                     <aura:html tag="style">
                                         .mainDiv{
                                             padding-top:0% !important;

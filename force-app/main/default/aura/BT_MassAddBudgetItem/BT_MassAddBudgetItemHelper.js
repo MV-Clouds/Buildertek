@@ -67,6 +67,7 @@
             "action": "SHOW"
         }).fire(); 
 
+        console.log('Helper....');
         var action = component.get("c.getProductfamilyRecords");
         action.setParams({
                 'ObjectName': "Product2",

@@ -324,7 +324,7 @@
         component.set('v.quoteLineWrapperList', quoteLineWrapperList);
     },
 
-    getFamily : function(component, event, helper, priceBookId, index) {
+    getFamilyRecords : function(component, event, helper, priceBookId, index) {
         // console.log('helper.getFamily : PriceBookId : ', priceBookId , ' index : ', index);
          $A.get("e.c:BT_SpinnerEvent").setParams({
             "action": "SHOW"
