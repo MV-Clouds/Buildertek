@@ -220,6 +220,7 @@ public with sharing class MassAddBudgetItemController {
             }
         }
         
+        
         if (containsEmptyString) {
             System.debug('The pricebookId list contains empty strings.');
             list<PricebookEntry> price = [select id, Product2Id, product2.family from pricebookEntry];
