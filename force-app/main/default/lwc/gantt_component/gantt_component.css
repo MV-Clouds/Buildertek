@@ -43,6 +43,27 @@
     animation-delay: -0.5s;
 }
 
+.b-sch-dependency {
+    stroke-width: 3;
+    cursor: pointer;
+}
+
+.b-sch-dependency-arrow {
+    fill: rgb(174, 168, 168);
+}
+
+.b-gantt-task {
+    border-radius: 10px
+}
+
+.b-indicator{
+    width: 16px !important;
+    height: 16px !important;
+}
+
+.b-indicator.b-bottom {
+    margin-top: calc(0.8em);
+}
 @keyframes loader--ripple {
     0% {
         top: 50px;

@@ -18,9 +18,9 @@ import getPickListValuesIntoList from "@salesforce/apex/bryntumGanttController.g
 import {
   formatApexDatatoJSData,
   recordsTobeDeleted,
+  makeComboBoxDataForContractor
 } from "./gantt_componentHelper";
 import { populateIcons } from "./lib/BryntumGanttIcons";
-import bryntum_gantt from "@salesforce/resourceUrl/bryntum_gantt";
 
 export default class Gantt_component extends NavigationMixin(LightningElement) {
   @track spinnerDataTable = false;
@@ -29,6 +29,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
   @track scheduleItemsDataList;
   @track scheduleData;
   @track scheduleItemsData;
+  @track contractorAndResources;
 
   @track error_toast = true;
 
@@ -239,9 +240,14 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
         var data = response.lstOfSObjs;
         console.log("data-->", data);
         this.scheduleItemsDataList = response.lstOfSObjs;
+        this.contractorAndResources = response.listOfContractorAndResources;
         console.log(
           "scheduleItemsDataList",
           JSON.parse(JSON.stringify(this.scheduleItemsDataList))
+        );
+        console.log(
+          "contractorAndResources",
+          JSON.parse(JSON.stringify(this.contractorAndResources))
         );
         this.scheduleData = response.scheduleObj;
         console.log("scheduleData", this.scheduleData);
@@ -596,15 +602,15 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     assignmentRowData = formatedSchData["assignmentRowData"];
 
     // //this.spinnerDataTable = false;
+    console.log('resourceRowData ',resourceRowData);
 
     const project = new bryntum.gantt.ProjectModel({
       calendar: data.project.calendar,
       // startDate: data.project.startDate,
       // tasksData: data.tasks.rows,
       tasksData: tasks.rows,
-      // resourcesData: data.resources.rows,
       skipNonWorkingTimeWhenSchedulingManually: true,
-      resourcesData: resourceRowData,
+      resourcesData: data.resources.rows,
       // assignmentsData: data.assignments.rows,
       assignmentsData: assignmentRowData,
       // dependenciesData: data.dependencies.rows,
@@ -614,6 +620,8 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
 
     project.hoursPerDay = 8;
     project.calendar = "business";
+
+    let contractorComboData = makeComboBoxDataForContractor(this.contractorAndResources);
 
     const gantt = new bryntum.gantt.Gantt({
       project,
@@ -838,49 +846,65 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
         //     }
         //   },
         // },
-        // {
-        //   type: "schedulingmodecolumn"
-        // },
-        // {
-        //   type: "calendar"
-        // },
-        // {
-        //   type: "constrainttype"
-        // },
-        // {
-        //   type: "addnew",
-        // },
-        // {
-        //   type: "widget",
-        //   text: "Contractor",
-        //   draggable: false,
-        //   width: 140,
-        //   readOnly: true,
+        {
+          type: "widget",
+          text: "Contractor",
+          draggable: false,
+          width: 180,
+          readOnly: true,
+          widgets: [
+            {
+              type: "Combo",
+              items: contractorComboData,
+              name: "contractorname",
+              listeners : {
+                change : 'up.onContractorInput'
+              },
+            },
+          ],
+          renderer: (record) => {
+            if (record.record._data.type == "Project") {
+              return {class: 'd-none'};
+            }
+            else if (record.record._data.type == "Phase") {
+              return {class: 'd-none'};
+            }
+            else if (record.record._data.name == "Milestone Complete") {
+              return {class: 'd-none'};
+            }
+          },
+        },
+        {
+          type : 'resourceassignment',
+          width : 120,
+          showAvatars : true,
+          draggable : false,
+          editor      : {
+            picker : {
+                height   : 350,
+                width    : 450,
+                features : {
+                    filterBar  : true,
+                    group      : 'resource.type',
+                    headerMenu : false,
+                    cellMenu   : false,
+                },
+                // The extra columns are concatenated onto the base column set.
+                columns : [{
+                    text       : 'Calendar',
+                    // Read a nested property (name) from the resource calendar
+                    field      : 'resource.calendar.name',
+                    filterable : false,
+                    editor     : false,
+                    width      : 85
+                }]
+            }
+          }
 
-        //   // editor: "Combo",
-        //   type: "widget",
-        //   widgets: [
-        //     {
-        //       type: "Combo",
-        //       items: ["test1", "test2"],
-        //       placeholder : 'Select Resource',
-        //       name: "contractorname",
-        //     },
-        //   ],
-        //   renderer: ({record}) => {
-        //     console.log('check record._data.type ',record._data.type);
-        //     console.log('check record._data.type ',record._data.name);
-        //     if (
-        //       record._data.type == "Project" ||
-        //       record._data.type == "Phase"   ||
-        //       record._data.name == "Milestone Complete"
-        //     ){
-        //       return {
-        //         class : '.d-none',
-        //       };
-        //     }
-        //   },
-        // },
+        },
+        {
+          type: "addnew",
+        },
         {
           type: "action",
           draggable: false,
@@ -988,6 +1012,8 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
       columnLines: false,
 
       features: {
+        dependencyEdit : true,
+        dependencies : {radius:10},
         rowReorder: false,
         rollups: {
           disabled: true,
@@ -1019,8 +1045,10 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
                 // Remove "% Complete","Effort", and the divider in the "General" tab
                 effort: false,
                 // flex:5,
-                // endDate: false,
                 startDate: {
+                  weight: 100,
+                },
+                endDate: {
                   weight: 100,
                 },
                 divider: false,
@@ -1035,7 +1063,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
             },
             // Remove all tabs except the "General" tab
             successorsTab: false,
-            resourcesTab: false,
+            resourcesTab: true,
             advancedTab: false,
           },
         },
@@ -1064,6 +1092,20 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           editNextOnEnterPress: false,
           addNewAtEnd: false,
         },
+        indicators : {
+            items : {
+                deadlineDate   : false,
+                earlyDates     : false,
+                lateDates      : false,
+                // display constraint indicators
+                constraintDate : true
+            }
+        },
+      },
+
+      //* this method is used for getting contractor Id to filter resources
+      onContractorInput(event){
+        console.log('onContractorInput method called',event.value);
       },
 
       listeners: {
@@ -1278,10 +1320,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
       childParentObj[element.to] = element.from;
     });
 
-    console.log('childParentObj ==> ',childParentObj);
-    console.log('projectTaskObj ==> ',projectTaskObj);
-
-    debugger;
     upsertDataOnSaveChanges({
       scheduleRecordStr: JSON.stringify(scheduleData),
       taskRecordsStr: JSON.stringify(newtasklistafterid),
