@@ -1,0 +1,22 @@
+<aura:component implements="force:appHostable,lightning:isUrlAddressable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction"  access="global" controller="AggregatedChildDocsController" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <!-- <aura:attribute name="conList" type="List"/> -->
+    <div class="slds-m-around_xx-large">
+        <!-- <lightning:accordion>
+            <aura:iteration items="{!v.conList}" var="con">
+                <lightning:accordionSection name="{!con.name}" label="{!con.Name}">
+                    <aura:set attribute="body">
+                        <p>Street : {!con.MailingStreet}</p>
+                        <p>City : {!con.MailingCity}</p>
+                        <p>State : {!con.MailingState}</p>
+                        <p>Postcode : {!con.MailingPostalcode}</p>
+                        <p>Country : {!con.MailingCountry}</p>
+                        <p>Email : {!con.Email}</p>
+                        <p>Phone : {!con.Phone}</p>
+                    </aura:set>
+                </lightning:accordionSection>
+            </aura:iteration>
+        </lightning:accordion> -->
+    </div>
+
+</aura:component>	
