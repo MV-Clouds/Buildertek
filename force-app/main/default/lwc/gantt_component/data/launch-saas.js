@@ -1127,16 +1127,16 @@ export default {
 
     "resources" : {
         "rows" : [
-            { "id" : 1, "name" : "Celia", "city" : "Barcelona", "calendar" : "general", "image" : "celia.jpg" },
-            { "id" : 2, "name" : "Lee", "city" : "London", "calendar" : "general", "image" : "lee.jpg"  },
-            { "id" : 3, "name" : "Macy", "city" : "New York","calendar" : "general", "image" : "macy.jpg"  },
-            { "id" : 4, "name" : "Madison", "city" : "Barcelona", "calendar" : "general","image" : "madison.jpg"  },
-            { "id" : 5, "name" : "Rob", "city" : "Rome", "calendar" : "business", "image" : "rob.jpg"  },
-            { "id" : 6, "name" : "Dave", "city" : "Barcelona", "calendar" : "night", "image" : "dave.jpg"  },
-            { "id" : 7, "name" : "Dan", "city" : "London", "calendar" : "night", "image" : "dan.jpg"  },
-            { "id" : 8, "name" : "George", "city" : "New York", "calendar" : "general", "image" : "george.jpg"  },
-            { "id" : 9, "name" : "Gloria", "city" : "Rome", "calendar" : "general", "image" : "gloria.jpg"  },
-            { "id" : 10, "name" : "Henrik", "city" : "London", "calendar" : "general", "image" : "henrik.jpg"  }
+            { "id" : 1, "name" : "Celia", "type" : "Vendor", "calendar" : "general", "image" : "celia.jpg" },
+            { "id" : 2, "name" : "Lee", "type" : "Vendor", "calendar" : "general", "image" : "lee.jpg"  },
+            { "id" : 3, "name" : "Macy", "type" : "Internal Resources","calendar" : "general", "image" : "macy.jpg"  },
+            { "id" : 4, "name" : "Madison", "type" : "Vendor", "calendar" : "general","image" : "madison.jpg"  },
+            { "id" : 5, "name" : "Rob", "type" : "Internal Resources", "calendar" : "business", "image" : "rob.jpg"  },
+            { "id" : 6, "name" : "Dave", "type" : "Vendor", "calendar" : "night", "image" : "dave.jpg"  },
+            { "id" : 7, "name" : "Dan", "type" : "Vendor", "calendar" : "night", "image" : "dan.jpg"  },
+            { "id" : 8, "name" : "George", "type" : "Internal Resources", "calendar" : "general", "image" : "george.jpg"  },
+            { "id" : 9, "name" : "Gloria", "type" : "Internal Resources", "calendar" : "general", "image" : "gloria.jpg"  },
+            { "id" : 10, "name" : "Henrik", "type" : "Vendor", "calendar" : "general", "image" : "henrik.jpg"  }
         ]
     },
 
