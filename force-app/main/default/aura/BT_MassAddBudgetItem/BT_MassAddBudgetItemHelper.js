@@ -62,88 +62,175 @@
     },
 
     getFamily : function(component, event, helper, priceBookId, index) {
-        var action = component.get("c.ProductsthroughPB");
+
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "SHOW"
+        }).fire(); 
+
+        var action = component.get("c.getProductfamilyRecords");
         action.setParams({
-            pbookId : priceBookId
+                'ObjectName': "Product2",
+                'parentId': priceBookId
         });
         action.setCallback(this, function(response) {
             var state = response.getState();
-            if(state === "SUCCESS") {
-                var productList = response.getReturnValue();
-                console.log('productList: ', productList);
-
+            console.log(response.getError());
+            if (state === "SUCCESS") {
+                var result = response.getReturnValue();
+                console.log('result', result);
+                
                 var familySet = new Set();
-                for(var i = 0; i < productList.length; i++) {
-                    familySet.add(productList[i].Family);
+                for(var i = 0; i < result.length; i++) {
+                    familySet.add(result[i].productfamilyvalues);
                 }
+                console.log({familySet});
+                //create a list of family where we have label and value
                 var familyList = [];
                 familyList.push({
-                    label: '--All Families--',
-                    value: ''
+                    label : '-- All Families --',
+                    value : 'All Families'
                 });
-                familySet.forEach(function(item) {
-                    if(item != null || item != undefined){
+                familySet.forEach(function(family) {
+                    if(family){
                         familyList.push({
-                            label: item,
-                            value: item
+                            label : family,
+                            value : family
                         });
                     }
-                }
-                );
-                console.log('familyList: ', familyList);
-                var budgetLineWrapperList = component.get("v.budgetLineWrapperList");
+                });
+                var budgetLineWrapperList = component.get('v.budgetLineWrapperList');
+                
                 budgetLineWrapperList[index].productFamilyList = familyList;
-                budgetLineWrapperList[index].ProductList = productList;
-                var productOptionList = [];
-                if(productList.length > 0) {
-                    productOptionList.push({
-                        label: 'Please Select Product',
-                        value: ''
-                    });
-                    for(var i = 0; i < productList.length; i++) {
-                        productOptionList.push({
-                            label: productList[i].Name,
-                            value: productList[i].Id
-                        });
-                    }
-                } 
-                budgetLineWrapperList[index].productOptionList = productOptionList;
+                budgetLineWrapperList[index].selectedLookUpRecord = {};
                 budgetLineWrapperList[index].BudgetLine = {
-                    buildertek__Budget__c : component.get("v.recordId"),
+                    buildertek__Budget__c : component.get('v.recordId'),
                     buildertek__Product__c : '',
                     Name : '',
                     buildertek__Group__c : '',
-                    buildertek__Quantity__c : '1',
                     buildertek__UOM__c : '',
-                    buildertek__Contractor__c : '',
+                    buildertek__Quantity__c : '',
                     buildertek__Unit_Price__c : '',
+                    buildertek__Contractor__c : '',
+                    // buildertek__Markup__c : '',
                 }
-                component.set("v.budgetLineWrapperList", budgetLineWrapperList);
-                console.log('budgetLineWrapperList: ', budgetLineWrapperList);
-                component.set("v.isLoading", false);
+                component.set('v.budgetLineWrapperList', budgetLineWrapperList);
+                // console.log('budgetLineWrapperList', budgetLineWrapperList);
+                 $A.get("e.c:BT_SpinnerEvent").setParams({
+                    "action": "HIDE"
+                }).fire();
+
+            } else if (state === "ERROR") {
+                console.log('A Problem Occurred: ' + JSON.stringify(response.error));
+                var toast = $A.get("e.force:showToast");
+                toast.setParams({
+                    title: "Error",
+                    message: "A Problem Occurred: " + JSON.stringify(response.error),
+                    type: "error"
+                });
+                toast.fire();
+                 $A.get("e.c:BT_SpinnerEvent").setParams({
+                    "action": "HIDE"
+                }).fire();
             }
-        });
+        }); 
         $A.enqueueAction(action);
+
+        // var action = component.get("c.ProductsthroughPB");
+        // action.setParams({
+        //     pbookId : priceBookId
+        // });
+        // action.setCallback(this, function(response) {
+        //     var state = response.getState();
+        //     if(state === "SUCCESS") {
+        //         var productList = response.getReturnValue();
+        //         console.log('productList: ', productList);
+
+        //         var familySet = new Set();
+        //         for(var i = 0; i < productList.length; i++) {
+        //             familySet.add(productList[i].Family);
+        //         }
+        //         var familyList = [];
+        //         familyList.push({
+        //             label: '--All Families--',
+        //             value: ''
+        //         });
+        //         familySet.forEach(function(item) {
+        //             if(item != null || item != undefined){
+        //                 familyList.push({
+        //                     label: item,
+        //                     value: item
+        //                 });
+        //             }
+        //         }
+        //         );
+        //         console.log('familyList: ', familyList);
+        //         var budgetLineWrapperList = component.get("v.budgetLineWrapperList");
+        //         budgetLineWrapperList[index].productFamilyList = familyList;
+        //         budgetLineWrapperList[index].ProductList = productList;
+        //         var productOptionList = [];
+        //         if(productList.length > 0) {
+        //             productOptionList.push({
+        //                 label: 'Please Select Product',
+        //                 value: ''
+        //             });
+        //             for(var i = 0; i < productList.length; i++) {
+        //                 productOptionList.push({
+        //                     label: productList[i].Name,
+        //                     value: productList[i].Id
+        //                 });
+        //             }
+        //         } 
+        //         budgetLineWrapperList[index].productOptionList = productOptionList;
+        //         budgetLineWrapperList[index].BudgetLine = {
+        //             buildertek__Budget__c : component.get("v.recordId"),
+        //             buildertek__Product__c : '',
+        //             Name : '',
+        //             buildertek__Group__c : '',
+        //             buildertek__Quantity__c : '1',
+        //             buildertek__UOM__c : '',
+        //             buildertek__Contractor__c : '',
+        //             buildertek__Unit_Price__c : '',
+        //         }
+        //         component.set("v.budgetLineWrapperList", budgetLineWrapperList);
+        //         console.log('budgetLineWrapperList: ', budgetLineWrapperList);
+        //         $A.get("e.c:BT_SpinnerEvent").setParams({
+        //             "action": "HIDE"
+        //         }).fire(); 
+        //     }
+        // });
+        // $A.enqueueAction(action);
     },
 
     getProduct : function(component, event, helper, family, index) {
+        // var budgetLineWrapperList = component.get("v.budgetLineWrapperList");
+        // var productList = budgetLineWrapperList[index].ProductList;
+        // var productOptionList = [
+        //     {
+        //         label: 'Please Select Product',
+        //         value: ''
+        //     }
+        // ];
+        // productList.forEach(function(item) {
+        //     if(item.Family == family) {
+        //         productOptionList.push({
+        //             label: item.Name,
+        //             value: item.Id
+        //         });
+        //     }
+        // });
+        // budgetLineWrapperList[index].productOptionList = productOptionList;
+        // budgetLineWrapperList[index].BudgetLine = {
+        //     buildertek__Budget__c : component.get("v.recordId"),
+        //     buildertek__Product__c : '',
+        //     Name : '',
+        //     buildertek__Group__c : '',
+        //     buildertek__Quantity__c : '1',
+        //     buildertek__UOM__c : '',
+        //     buildertek__Contractor__c : '',
+        //     buildertek__Unit_Price__c : '',
+        // }
         var budgetLineWrapperList = component.get("v.budgetLineWrapperList");
-        var productList = budgetLineWrapperList[index].ProductList;
-        var productOptionList = [
-            {
-                label: 'Please Select Product',
-                value: ''
-            }
-        ];
-        productList.forEach(function(item) {
-            if(item.Family == family) {
-                productOptionList.push({
-                    label: item.Name,
-                    value: item.Id
-                });
-            }
-        });
-        budgetLineWrapperList[index].productOptionList = productOptionList;
+        budgetLineWrapperList[index].selectedLookUpRecord = {}
         budgetLineWrapperList[index].BudgetLine = {
             buildertek__Budget__c : component.get("v.recordId"),
             buildertek__Product__c : '',
@@ -154,8 +241,11 @@
             buildertek__Contractor__c : '',
             buildertek__Unit_Price__c : '',
         }
+
         component.set("v.budgetLineWrapperList", budgetLineWrapperList);
-        component.set("v.isLoading", false);
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "HIDE"
+        }).fire(); 
     },
 
     getAccounts : function(component, event, helper) {
@@ -210,7 +300,9 @@
             }
         }
         component.set("v.budgetLineWrapperList", budgetlineWrapperList);
-        component.set("v.isLoading", false);
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "HIDE"
+        }).fire(); 
     },
 
     saveBudgetLine : function(component, event, helper,budgetLineList) {
@@ -234,10 +326,14 @@
                     mode: 'dismissible'
                 });
                 toastEvent.fire();
-                component.set("v.isLoading", false);
+                $A.get("e.c:BT_SpinnerEvent").setParams({
+                    "action": "HIDE"
+                }).fire(); 
                 helper.closeNrefresh(component, event, helper);
             } else {
-                component.set("v.isLoading", false);
+                $A.get("e.c:BT_SpinnerEvent").setParams({
+                    "action": "HIDE"
+                }).fire(); 
                 var toastEvent = $A.get("e.force:showToast");
                 toastEvent.setParams({
                     title : 'Error',
@@ -310,7 +406,87 @@
                 }), 1000
             );
     },
+    getProductDetails: function(component, event, helper , productId, priceBookIdList) {
 
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "SHOW"
+        }).fire(); 
+
+
+        var budgetLineWrapperList = component.get("v.budgetLineWrapperList");
+        console.log({budgetLineWrapperList});
+        var action = component.get("c.getProductPrice");
+        action.setParams({
+            "productId": productId,
+            pricebookId: priceBookIdList
+        });
+        action.setCallback(this, function(response) {
+            var result = response.getReturnValue();
+            var state= response.getState();
+            var priceBookEntryWrap=result.priceBookList[0];
+            var productWrap=result.productList;
+
+            console.log({result});
+            $A.get("e.c:BT_SpinnerEvent").setParams({
+                "action": "HIDE"
+            }).fire();
+            if(state === 'SUCCESS'){
+
+                const setBudgetLineWrapper= (pricebookList , index)=>{
+                    console.log(budgetLineWrapperList[index]);
+                    budgetLineWrapperList[index].BudgetLine.buildertek__Unit_Price__c=pricebookList.UnitPrice;
+                    budgetLineWrapperList[index].BudgetLine.Name=pricebookList.Product2.Name;
+                    budgetLineWrapperList[index].BudgetLine.buildertek__Quantity__c = 1;
+                    console.log(component.get("v.budgetLineGroups"));
+                    budgetLineWrapperList[index].GroupingOptions = component.get("v.budgetLineGroups");
+
+                    if(pricebookList.Product2.buildertek__Group__c !=undefined && pricebookList.Product2.buildertek__Group__c !='') {
+                        budgetLineWrapperList[index].BudgetLine.buildertek__Group__c=pricebookList.Product2.buildertek__Group__c;
+                    }else {
+                        var GroupingOptions = component.get('v.budgetLineGroups');
+                        for(var i = 0; i < GroupingOptions.length; i++) {
+                            if(GroupingOptions[i].Name == 'No Grouping') {
+                                budgetLineWrapperList[index].BudgetLine.buildertek__Group__c = GroupingOptions[i].Id;
+                            }
+                        }
+                    }
+
+                    
+                   
+                    
+                    component.set("v.budgetLineWrapperList" , budgetLineWrapperList);
+                }
+
+                if(priceBookEntryWrap != undefined){
+                    budgetLineWrapperList.forEach(function(value , index){
+                        if(value.pricebookEntryId===priceBookEntryWrap.Pricebook2Id && value.Product===priceBookEntryWrap.Product2Id){
+                            setBudgetLineWrapper(priceBookEntryWrap , index);
+                        }
+                    })
+                }else{
+                    budgetLineWrapperList.forEach(function(value , index){
+                        const productWrapper = productWrap.find(subvalue => subvalue.Id === value.Product);
+                        if (productWrapper) {
+                            const createObj = {
+                                UnitPrice: '',
+                                Product2: {
+                                    Name: productWrapper.Name
+                                },
+                                Product2Id: productWrapper.Id
+                            };
+                            setBudgetLineWrapper(createObj, index);
+                        }          
+                    })
+
+                }
+            }
+            
+        });
+        $A.enqueueAction(action);
+      
+
+       
+    },
     
 
 

@@ -1,6 +1,8 @@
 ({
     doInit : function(component, event, helper) {
-        component.set("v.isLoading", true);
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "SHOW"
+        }).fire(); 
         var recordId = component.get("v.recordId");
         console.log('recordId: ' + recordId);
         helper.nameTheTab(component, event, helper);
@@ -15,7 +17,6 @@
         action.setCallback(this, function(response) {
             var state = response.getState();
             if(state === "SUCCESS") {
-                // component.set("v.isLoading", false);
                 var pricebookList = response.getReturnValue();
                 console.log('pricebooks: ', pricebookList); 
                 var pricebookOptions = [];
@@ -84,13 +85,18 @@
                             component.set("v.DefaultproductFamilyList", familyList);
                             component.set("v.DefaultproductOptionList", productOptionList);
                             component.set("v.budgetLineWrapperList", budgetlineWrapperList);
-                            component.set("v.isLoading", false);
+
+                            $A.get("e.c:BT_SpinnerEvent").setParams({
+                                "action": "HIDE"
+                            }).fire(); 
                         }
                     });
                     $A.enqueueAction(action1);
                 }else{
                     component.set("v.selectedPricebook", '');
-                    component.set("v.isLoading", false);
+                    $A.get("e.c:BT_SpinnerEvent").setParams({
+                        "action": "HIDE"
+                    }).fire(); 
 
 
                 }
@@ -104,7 +110,11 @@
     },
 
     getFamily : function(component, event, helper) {
-        component.set("v.isLoading", true);
+        
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "SHOW"
+        }).fire(); 
+
         var index = event.getSource().get("v.name");
         console.log('index: ', index);
         var priceBookId = component.get("v.budgetLineWrapperList")[index].pricebookEntryId;
@@ -112,19 +122,26 @@
             helper.getFamily(component, event, helper, priceBookId, index);
         }else{
             var budgetlineWrapperList = component.get("v.budgetLineWrapperList");
+            // budgetlineWrapperList[index].productFamilyList = [
+            //     {
+            //         label : 'Please Select Pricebook',
+            //         value : ''
+            //     }
+            // ];
+            // budgetlineWrapperList[index].productOptionList = [
+            //     {
+            //         label: 'Please Select Pricebook',
+            //         value: ''
+            //     }
+            // ];
+            // budgetlineWrapperList[index].ProductList = [];
             budgetlineWrapperList[index].productFamilyList = [
                 {
-                    label : 'Please Select Pricebook',
-                    value : ''
-                }
-            ];
-            budgetlineWrapperList[index].productOptionList = [
-                {
-                    label: 'Please Select Pricebook',
-                    value: ''
-                }
-            ];
-            budgetlineWrapperList[index].ProductList = [];
+                    label : 'None',
+                    value : '',
+                }];
+            budgetlineWrapperList[index].selectedLookUpRecord = {};
+
             budgetlineWrapperList[index].BudgetLine = {
                 buildertek__Budget__c : component.get("v.recordId"),
                 buildertek__Product__c : '',
@@ -136,12 +153,16 @@
                 buildertek__Unit_Price__c : '',
             };
             component.set("v.budgetLineWrapperList", budgetlineWrapperList);
-            component.set("v.isLoading", false);       
+            $A.get("e.c:BT_SpinnerEvent").setParams({
+                "action": "HIDE"
+            }).fire();      
         }
     },
 
     getProduct : function(component, event, helper) {
-        component.set("v.isLoading", true);
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "SHOW"
+        }).fire(); 
         var budgetlineWrapperList = component.get("v.budgetLineWrapperList");
         var index = event.getSource().get("v.name");
         var family = budgetlineWrapperList[index].productFamily;
@@ -175,14 +196,20 @@
                 buildertek__Unit_Price__c : '',
             }
             component.set("v.budgetLineWrapperList", budgetlineWrapperList);
-            component.set("v.isLoading", false);
+
+            $A.get("e.c:BT_SpinnerEvent").setParams({
+                "action": "HIDE"
+            }).fire(); 
         }
 
 
     },
 
     gotProduct : function(component, event, helper) {
-        component.set("v.isLoading", true);
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "SHOW"
+        }).fire(); 
+
         var index = event.getSource().get("v.name");
         var productId = component.get("v.budgetLineWrapperList")[index].productId;
         if(productId != '') {
@@ -200,7 +227,9 @@
                 buildertek__Unit_Price__c : '',
             };
             component.set("v.budgetLineWrapperList", budgetlineWrapperList);
-            component.set("v.isLoading", false);
+            $A.get("e.c:BT_SpinnerEvent").setParams({
+                "action": "HIDE"
+            }).fire(); 
         }
     },
 
@@ -213,7 +242,9 @@
     },
 
     onAddClick : function(component, event, helper) {
-        component.set("v.isLoading", true);
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "SHOW"
+        }).fire(); 
         var budgetLineWrapperList = component.get("v.budgetLineWrapperList");
         let budgetLineWrapper = helper.createBudgetLineWrapper(component, event, helper);
         var selectedPricebook = component.get("v.selectedPricebook");
@@ -227,7 +258,9 @@
         // for(var i = 0; i < 1; i++) {
         // }
         component.set("v.budgetLineWrapperList", budgetLineWrapperList);
-        component.set("v.isLoading", false);
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "HIDE"
+        }).fire(); 
     },
 
     deleteRow : function(component, event, helper) {
@@ -238,7 +271,9 @@
     },
 
     onMassUpdate : function(component, event, helper) {
-        component.set("v.isLoading", true);
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "SHOW"
+        }).fire(); 
         var budgetLineWrapperList = component.get("v.budgetLineWrapperList");
         var budgetLineList = [];
         for(var i = 0; i < budgetLineWrapperList.length; i++) {
@@ -272,7 +307,9 @@
                 }
             }
             if(isDecimal) {
-                component.set("v.isLoading", false);
+                $A.get("e.c:BT_SpinnerEvent").setParams({
+                    "action": "HIDE"
+                }).fire(); 
                 var toastEvent = $A.get("e.force:showToast");
                 toastEvent.setParams({
                     title: 'Error',
@@ -286,7 +323,9 @@
                 return;
             }
             if(isUnitCostDecimal) {
-                component.set("v.isLoading", false);
+                $A.get("e.c:BT_SpinnerEvent").setParams({
+                    "action": "HIDE"
+                }).fire(); 
                 var toastEvent = $A.get("e.force:showToast");
                 toastEvent.setParams({
                     title: 'Error',
@@ -301,7 +340,9 @@
             }
             helper.saveBudgetLine(component, event, helper, budgetLineList);
         }else{
-            component.set("v.isLoading", false);
+            $A.get("e.c:BT_SpinnerEvent").setParams({
+                "action": "HIDE"
+            }).fire(); 
             var toastEvent = $A.get("e.force:showToast");
             toastEvent.setParams({
                 title: 'Error',
@@ -314,6 +355,27 @@
             toastEvent.fire();
         }
 
+    },
+    handleComponentEvent: function(component, event, helper) {
+        console.log('handleComponentEvent');
+        console.log( component.get("v.budgetLineWrapperList"));
+        var selectedAccountGetFromEvent = event.getParam("recordByEvent");
+        component.set('v.selectedRecordMap' , selectedAccountGetFromEvent.Id);
+
+        var productId=component.get('v.selectedRecordMap');
+        var priceBookIdList=[];
+        var budgetLineWrapperList = component.get("v.budgetLineWrapperList");
+
+        budgetLineWrapperList.forEach(function(value, index){
+            if(value.selectedLookUpRecord){
+                if(value.selectedLookUpRecord.Id == productId){
+                    budgetLineWrapperList[index].Product=productId;
+                    budgetLineWrapperList[index].BudgetLine.buildertek__Product__c=productId;
+                    priceBookIdList.push(value.pricebookEntryId);
+                }
+            }
+        });
+        helper.getProductDetails(component, event, helper , productId, priceBookIdList);
     },
 
 })

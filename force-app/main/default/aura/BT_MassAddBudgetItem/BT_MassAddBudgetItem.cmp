@@ -5,7 +5,7 @@
     <aura:attribute name="budgetLineWrapperList" type="Object" />
     <aura:attribute name="budgetLineGroups" type="List" />
     <aura:attribute name="pricebookOptions" type="List" />
-    <aura:attribute name="isLoading" type="Boolean" default="false" />
+    <!-- <aura:attribute name="isLoading" type="Boolean" default="false" /> -->
     <aura:attribute name="vendorList" type="List" />
     <aura:attribute name="uomOptionList" type="List" />
     <aura:attribute name="selectedPricebook" type="String" />
@@ -14,6 +14,10 @@
     
 
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler name="oSelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.handleComponentEvent}" />
+    <aura:attribute name="selectedRecordMap" type="String" />
+
+
 
     <lightning:workspaceAPI aura:id="workspace" />
     <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
@@ -89,11 +93,29 @@
                                     </lightning:select>
                                 </td>
                                 <td>
-                                    <lightning:select name="{!index}" value="{!budgetLineWrapper.productId}" class="product-class pointer1" onchange="{!c.gotProduct}">
+                                    <!-- <lightning:select name="{!index}" value="{!budgetLineWrapper.productId}" class="product-class pointer1" onchange="{!c.gotProduct}">
                                         <aura:iteration items="{!budgetLineWrapper.productOptionList}" var="productOption">
                                             <option name="{!budgetLineWrapper}" value="{!productOption.value}">{!productOption.label}</option>
                                         </aura:iteration>
-                                    </lightning:select>
+                                    </lightning:select> -->
+                                    <aura:html tag="style">
+                                        .mainDiv{
+                                            padding-top:0% !important;
+
+                                        }
+                                        .pillSize{
+
+                                            padding-top: 2% !important;
+                                            padding-bottom: 2% !important;
+                                        }
+                                        .subDiv{
+                                            width:100% !important;
+                                            margin-top:0 !important;
+                                        }
+                                    </aura:html>
+
+                                    <c:BT_LightningLookup objectAPIName="Product2"  IconName="standard:product" selectedRecord="{!budgetLineWrapper.selectedLookUpRecord}" aura:id="productId"   parentId="{!budgetLineWrapper.pricebookEntryId}" prodctfamly="{!budgetLineWrapper.productFamily != '' ? budgetLineWrapper.productFamily : 'All Families'}" />
+
                                 </td>
                                 <td>
                                     <lightning:input name="{!index}" value="{!budgetLineWrapper.BudgetLine.Name}" class="description-class" />
@@ -169,8 +191,11 @@
 
     </div>
 
-    <aura:if isTrue="{!v.isLoading}">
+    <!-- <aura:if isTrue="{!v.isLoading}">
         <lightning:spinner alternativeText="Loading" variant="brand" size="large" />
-    </aura:if>
+    </aura:if> -->
+    <c:BT_Spinner />
+
+
 
 </aura:component>

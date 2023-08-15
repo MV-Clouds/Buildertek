@@ -161,6 +161,80 @@ public with sharing class MassAddBudgetItemController {
         return picklistValues;
     }
 
+    public class productfamilyClass{
+        @AuraEnabled
+        public string productfamilyvalues{ get; set; }
+    }
+
+    @AuraEnabled
+    public list<productfamilyClass> pfwrapperlst{ get; set; }
+
+    //get product family Values
+    @AuraEnabled
+    public static list<productfamilyClass> getProductfamilyRecords(String ObjectName, string parentId){
+        system.debug('ObjectName-->' + ObjectName);
+        Map<String, String> options = new Map<String, String>();
+        List<sObject> returnList = new List<sObject>();
+
+        list<string> ProdIds = new list<string>();
+        if (ObjectName == 'Product2' && parentId != null){
+
+            list<pricebookEntry> PElist =[select id, Product2Id   from pricebookEntry  where pricebook2Id = :parentId];
+            for (pricebookEntry PE : PElist){
+                ProdIds.add(PE.Product2Id);
+            }
+        }
+        //list<Product2> productfamlylst = [select id, Name,family from Product2 where Id IN :ProdIds AND family != null order by family];
+        List<AggregateResult> productfamlylst = [SELECT toLabel(Family) familyLabel  FROM Product2 where (Id IN :ProdIds AND family != null) group by family];
+        list<productfamilyClass> pfwrapperlst = new list<productfamilyClass>();
+        if (productfamlylst.size() > 0){
+            for (AggregateResult agg : productfamlylst){
+                productfamilyClass pf = new productfamilyClass();
+                pf.productfamilyvalues = string.valueof(agg.get('familyLabel'));
+                pfwrapperlst.add(pf);
+            }
+        }
+        return pfwrapperlst;
+    }
+
+    public class wrapperClass{
+        @AuraEnabled
+         public  list<PricebookEntry> priceBookList{get;set;}
+
+         @AuraEnabled
+         public  list<Product2> productList{get;set;}
+    }
+
+    @AuraEnabled
+    public static wrapperClass getProductPrice(String productId, List<String> pricebookId){
+        Boolean containsEmptyString = false;
+        list<string> ProdIds = new list<string>();
+        wrapperClass wrapper= new wrapperClass();
+        wrapper.priceBookList= new List<PricebookEntry>();
+        wrapper.productList= new List<Product2>();
+
+        for (String id : pricebookId) {
+            if (String.isBlank(id)) { // Check if the string is empty or only whitespace
+                containsEmptyString = true;
+                break; // Exit the loop if an empty string is found
+            }
+        }
+        
+        if (containsEmptyString) {
+            System.debug('The pricebookId list contains empty strings.');
+            list<PricebookEntry> price = [select id, Product2Id, product2.family from pricebookEntry];
+            for (pricebookEntry PE :  price){
+                ProdIds.add(PE.Product2Id);
+            } 
+            wrapper.productList=[Select Id , Name From Product2 WHERE ID NOT IN:ProdIds LIMIT 800];
+
+        } else {
+            wrapper.priceBookList = [select id, UnitPrice, pricebook2Id, buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Discount__c, Product2Id, Product2.Name FROM PricebookEntry where product2Id = :productId and pricebook2Id =: pricebookId LIMIT 800];
+        }
+        return wrapper;
+
+    }
+
 
 
 }

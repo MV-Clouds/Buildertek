@@ -786,12 +786,16 @@
                                                     }
                                                     .subDiv{
                                                         width:100% !important;
+                                                        margin-top:0 !important;
                                                     }
                                                 </aura:html>
                                                 <c:BT_LightningLookup objectAPIName="Product2"
                                                     IconName="standard:product"
                                                     selectedRecord="{!v.selectedLookUpRecord}" aura:id="productId"
                                                     parentId="{! v.pricebookName }" prodctfamly="{!v.productfamily}" childValue="{!v.newQuote.Name}"  />
+
+                                                    <label class="slds-form-element__label" for="lookup-348"></label>
+
                                             </td>
                                             <!-- <td>
                                             <ui:inputText value="{!v.newQuote.Name}" aura:id="quoteLineID" />
