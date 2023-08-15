@@ -485,6 +485,17 @@ public with sharing class bryntumGanttController {
 
     }
 
+    @AuraEnabled
+    public static String getProjectName(String parentRecordId){
+        try {
+            String searchProjectName = [SELECT Name, Id FROM buildertek__Project__c WHERE Id =: parentRecordId].Name;
+            System.debug('searchProjectName: ' + searchProjectName);
+            return searchProjectName;
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+    
     /* @Author        Nishit Suthar
      * Date           14-8-23
      * Description :  This method is used to get Contractors(Account) of the current Org.

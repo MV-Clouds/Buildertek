@@ -4,6 +4,7 @@ import searchUsers from '@salesforce/apex/bryntumGanttController.searchUsers';
 import fetchScheduleList from '@salesforce/apex/bryntumGanttController.fetchScheduleList';
 import getScheduleItemList from '@salesforce/apex/bryntumGanttController.getScheduleItemList';
 import createNewSchedule from '@salesforce/apex/bryntumGanttController.createNewSchedule';
+import getProjectName from '@salesforce/apex/bryntumGanttController.getProjectName';
 import { NavigationMixin } from 'lightning/navigation';
 
 export default class CreateNewSchedule extends NavigationMixin(LightningElement) {
@@ -30,6 +31,32 @@ export default class CreateNewSchedule extends NavigationMixin(LightningElement)
     connectedCallback(event) {
         document.addEventListener('click', this.handleDocumentEvent.bind(this));
         this.getFields();
+        let name = 'inContextOfRef';
+        let url = window.location.href;
+        let regex = new RegExp("[?&]" + name + "(=1.([^&#]*)|&|#|$)");
+        let results = regex.exec(url);
+        console.log('results:', results);
+        let value = decodeURIComponent(results[2].replace(/\+/g, " "));
+        console.log('value:',value);
+        let context = JSON.parse(window.atob(value));
+        let parentRecordId = context.attributes.recordId;
+        if (parentRecordId) {
+            console.log(parentRecordId);
+            this.getProjectNameFromId(parentRecordId);
+        }
+
+    }
+
+    getProjectNameFromId(parentRecordId) {
+        console.log('parentRecordId:', parentRecordId);
+        getProjectName({ parentRecordId: parentRecordId })
+            .then((result) => {
+                this.searchProjectName = result;
+                console.log('result:', result);
+            })
+            .catch((error) => {
+                console.log('error:', JSON.stringify(error));
+            });
     }
 
     handleProjectSearch(event) {
