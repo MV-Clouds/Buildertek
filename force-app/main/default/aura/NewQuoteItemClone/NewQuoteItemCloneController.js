@@ -46,6 +46,12 @@
         component.set('v.runFirstTime' , true);
         var workspaceAPI = component.find("workspace");
 
+
+        // >>>>>>>>>>>>>>>> CHB - 78, 80 <<<<<<<<<<<<<<<<<<<<
+        // Check If User Have Access for Quote Line
+        helper.Check_Create_User_Access(component, event, helper);
+        helper.Check_Update_User_Access(component, event, helper);
+        helper.Check_Delete_User_Access(component, event, helper);
         // workspaceAPI.getEnclosingTabId().then((response) => {
         //     let opendTab = response.tabId;
         //     workspaceAPI.setTabLabel({
@@ -230,7 +236,24 @@
             let phaseValue=event.getSource().get('v.value');
             component.set('v.phaseName', phaseValue);
             console.log(component.get('v.phaseName'));
-            component.set('v.openProductBox', true);
+
+            // >>>>>>>>>>> Changes For CHB - 78 <<<<<<<<<<<<<<<<<<
+            // Check user have Create Access for BT_Quote_item__c
+            var HaveCreateAccess = component.get("v.HaveCreateAccess");
+            if(HaveCreateAccess){
+                component.set('v.openProductBox', true);
+            }
+            else{
+                var toastEvent = $A.get("e.force:showToast");
+                toastEvent.setParams({
+                    "type": "error",
+                    "title": "Error!",
+                    "message": 'You don\'t have the necessary privileges to create this record.'
+                });
+                toastEvent.fire();
+            }
+
+
             // console.log(component.get('v.runFirstTime'));
             // // if(component.get('v.runFirstTime') != true)){}
             // var groups = component.get('v.TotalRecords').groups;
@@ -615,7 +638,18 @@
     },
 
     addRFQ: function(component, event, helper) {
-        helper.createRFQPicker(component, event, helper);
+        if(component.get("v.HaveCreateAccess")){
+            helper.createRFQPicker(component, event, helper);
+        }
+        else{
+            var toastEvent = $A.get("e.force:showToast");
+                toastEvent.setParams({
+                    "type": "error",
+                    "title": "Error!",
+                    "message": 'You don\'t have the necessary privileges.'
+                });
+                toastEvent.fire();
+        }
     },
 
     refreshQuoteItemList: function(component, event, helper) {
@@ -664,101 +698,119 @@
             });
     },
     saveQuoteRecord: function(component, event, helper) {
-        console.log('========================Save method fire======================');
-        console.log(component.get('v.unitCost'));
-        $A.get("e.c:BT_SpinnerEvent").setParams({
-            "action": "SHOW"
-        }).fire();
-        var quoteObject = component.get("v.newQuote");
-        quoteObject.buildertek__Product_Family__c = component.get("v.productfamily");
-        var getDescription=component.get('v.newQuote.Name');
 
+        // >>>>>>>>>>> Changes For CHB - 78 <<<<<<<<<<<<<<<<<<
+            // Check user have Create Access for BT_Quote_item__c
+            var HasCreateAccess = component.get("v.HaveCreateAccess");
+            console.log('HasCreateAccess >> ', HasCreateAccess)
 
-        var jsonString =JSON.stringify(quoteObject);
-
-
-        console.log('*************************');
-
-        console.log(jsonString);
-        console.log(component.get("v.productfamily"));
-
-        console.log(component.get("v.newQuote"));
-        console.log(' Quote Data ==> ' + JSON.stringify(quoteObject));
-        debugger;
-
-        var recordId = component.get("v.recordId");
-        component.set("v.newQuote.buildertek__Quote__c", recordId);
-        var markup = quoteObject.buildertek__Markup__c;
-        var margin = quoteObject.buildertek__Margin__c;
-        console.log({margin} , '====margin=====');
-        // markup = markup * 100;
-        component.set("v.newQuote.buildertek__Margin__c", margin);
-        component.set("v.newQuote.buildertek__Markup__c", markup);
-
-
-        if(getDescription!= undefined && getDescription!= ''){
-
-            var action = component.get("c.saveQuoteLineItem");
-            action.setParams({
-                "quoteLineRecord": JSON.stringify(quoteObject)
-            });
-            action.setCallback(this, function(respo) {
-                var returnValue = respo.getReturnValue();
-                console.log('returnValue ===> ', { returnValue });
-                if (component.isValid() && respo.getState() === "SUCCESS") {
-                    var group = component.find('groupId');
-                    group.set("v._text_value", '');
-                    var product = component.get('v.selectedLookUpRecord');
-                    var compEvent = $A.get('e.c:BT_CLearLightningLookupEvent');
-                    compEvent.setParams({
-                        "recordByEvent": product
-                    });
-                    compEvent.fire();
-                    component.set('v.newQuote.Name', '');
-                    component.set('v.newQuote.buildertek__Description__c', '');
-                    component.set('v.newQuote.buildertek__Grouping__c', null);
-                    component.set('v.newQuote.buildertek__UOM__c', '');
-                    component.set('v.newQuote.buildertek__Unit_Cost__c', '');
-                    component.set('v.newQuote.buildertek__Notes__c', '');
-                    component.set('v.newQuote.buildertek__Quantity__c', 1);
-                    component.set('v.newQuote.buildertek__Margin__c', '');
-                    component.set('v.newQuote.buildertek__Markup__c', '');
-                    component.set('v.newQuote.buildertek__Product__c', '');
-                    component.set("v.listofproductfamily", '');
-                    $A.get('e.force:refreshView').fire();
-                    window.setTimeout(
-                        $A.getCallback(function() {
-                            var toastEvent = $A.get("e.force:showToast");
-                            toastEvent.setParams({
-                                mode: 'sticky',
-                                message: 'Quote Line created successfully',
-                                type: 'success',
-                                duration: '10000',
-                                mode: 'dismissible'
-                            });
-                            toastEvent.fire();
-                        }), 3000
-                    );
-    
-                    var page = component.get("v.page") || 1
-                    helper.getGroups(component, event, helper, page);
-                    helper.fetchpricebooks(component, event, helper);
-                    helper.fetchPickListVal(component, event, helper);
-                }
-            });
-            $A.enqueueAction(action);
-        }else{
+        if(HasCreateAccess){
+            // If User have Create Access...
+            console.log('========================Save method fire======================');
+            console.log(component.get('v.unitCost'));
             $A.get("e.c:BT_SpinnerEvent").setParams({
-                "action": "HIDE"
+                "action": "SHOW"
             }).fire();
-
+            var quoteObject = component.get("v.newQuote");
+            quoteObject.buildertek__Product_Family__c = component.get("v.productfamily");
+            var getDescription=component.get('v.newQuote.Name');
+    
+    
+            var jsonString =JSON.stringify(quoteObject);
+    
+    
+            console.log('*************************');
+    
+            console.log(jsonString);
+            console.log(component.get("v.productfamily"));
+    
+            console.log(component.get("v.newQuote"));
+            console.log(' Quote Data ==> ' + JSON.stringify(quoteObject));
+            debugger;
+    
+            var recordId = component.get("v.recordId");
+            component.set("v.newQuote.buildertek__Quote__c", recordId);
+            var markup = quoteObject.buildertek__Markup__c;
+            var margin = quoteObject.buildertek__Margin__c;
+            console.log({margin} , '====margin=====');
+            // markup = markup * 100;
+            component.set("v.newQuote.buildertek__Margin__c", margin);
+            component.set("v.newQuote.buildertek__Markup__c", markup);
+    
+    
+            if(getDescription!= undefined && getDescription!= ''){
+    
+                var action = component.get("c.saveQuoteLineItem");
+                action.setParams({
+                    "quoteLineRecord": JSON.stringify(quoteObject)
+                });
+                action.setCallback(this, function(respo) {
+                    var returnValue = respo.getReturnValue();
+                    console.log('returnValue ===> ', { returnValue });
+                    if (component.isValid() && respo.getState() === "SUCCESS") {
+                        var group = component.find('groupId');
+                        group.set("v._text_value", '');
+                        var product = component.get('v.selectedLookUpRecord');
+                        var compEvent = $A.get('e.c:BT_CLearLightningLookupEvent');
+                        compEvent.setParams({
+                            "recordByEvent": product
+                        });
+                        compEvent.fire();
+                        component.set('v.newQuote.Name', '');
+                        component.set('v.newQuote.buildertek__Description__c', '');
+                        component.set('v.newQuote.buildertek__Grouping__c', null);
+                        component.set('v.newQuote.buildertek__UOM__c', '');
+                        component.set('v.newQuote.buildertek__Unit_Cost__c', '');
+                        component.set('v.newQuote.buildertek__Notes__c', '');
+                        component.set('v.newQuote.buildertek__Quantity__c', 1);
+                        component.set('v.newQuote.buildertek__Margin__c', '');
+                        component.set('v.newQuote.buildertek__Markup__c', '');
+                        component.set('v.newQuote.buildertek__Product__c', '');
+                        component.set("v.listofproductfamily", '');
+                        $A.get('e.force:refreshView').fire();
+                        window.setTimeout(
+                            $A.getCallback(function() {
+                                var toastEvent = $A.get("e.force:showToast");
+                                toastEvent.setParams({
+                                    mode: 'sticky',
+                                    message: 'Quote Line created successfully',
+                                    type: 'success',
+                                    duration: '10000',
+                                    mode: 'dismissible'
+                                });
+                                toastEvent.fire();
+                            }), 3000
+                        );
+        
+                        var page = component.get("v.page") || 1
+                        helper.getGroups(component, event, helper, page);
+                        helper.fetchpricebooks(component, event, helper);
+                        helper.fetchPickListVal(component, event, helper);
+                    }
+                });
+                $A.enqueueAction(action);
+            }else{
+                $A.get("e.c:BT_SpinnerEvent").setParams({
+                    "action": "HIDE"
+                }).fire();
+    
+                var toastEvent = $A.get("e.force:showToast");
+                toastEvent.setParams({
+                    mode: 'sticky',
+                    message: 'Please Enter Description',
+                    type: 'error',
+                    duration: '10000',
+                    mode: 'dismissible'
+                });
+                toastEvent.fire();
+            }
+        }
+        else{
             var toastEvent = $A.get("e.force:showToast");
             toastEvent.setParams({
-                mode: 'sticky',
-                message: 'Please Enter Description',
-                type: 'error',
-                duration: '10000',
-                mode: 'dismissible'
+                "type": "error",
+                "title": "Error!",
+                "message": 'You don\'t have the necessary privileges to create this record.'
             });
             toastEvent.fire();
         }
@@ -811,37 +863,57 @@
     },
     editUnitPrice: function(component, event, helper) {
         var recordId = event.currentTarget.dataset.id;
+
         $A.get("e.c:BT_SpinnerEvent").setParams({
             "action": "SHOW"
         }).fire();
-        component.set("v.NetUnit", null);
-        //alert('NetUnit'+component.get("v.NetUnit"));
-        component.set("v.editedquoterec", recordId);
-        var action = component.get("c.getquote");
-        action.setParams({
-            "recordId": recordId
-        });
-        action.setCallback(this, function(response) {
-            var state = response.getState();
-            // alert('state'+state);
-            if (state === "SUCCESS") {
-                var result = response.getReturnValue();
-                if (result != null) {
-                    component.set("v.markup", result.buildertek__Markup__c);
-                    component.set("v.isunitcost", result.buildertek__Unit_Cost__c);
-                    component.set("v.isdiscount", result.buildertek__Additional_Discount__c);
-                    component.set("v.isSalesprice", result.buildertek__Net_Unit__c);
-                    component.set("v.listPrice", result.buildertek__Unit_Price__c);
-                    component.set("v.NetUnit", result.buildertek__Net_Unit__c)
+
+        var HaveEditAceess = component.get("v.HaveUpdateAccess");
+        // >>>>>>>>>>>>>>>>>>> CHB - 80 <<<<<<<<<<<<<<<<<<<<<<<,
+        // Check If User Have Edit Access Or Not 
+        if(HaveEditAceess){
+            component.set("v.NetUnit", null);
+            //alert('NetUnit'+component.get("v.NetUnit"));
+            component.set("v.editedquoterec", recordId);
+            var action = component.get("c.getquote");
+            action.setParams({
+                "recordId": recordId
+            });
+            action.setCallback(this, function(response) {
+                var state = response.getState();
+                // alert('state'+state);
+                if (state === "SUCCESS") {
+                    var result = response.getReturnValue();
+                    if (result != null) {
+                        component.set("v.markup", result.buildertek__Markup__c);
+                        component.set("v.isunitcost", result.buildertek__Unit_Cost__c);
+                        component.set("v.isdiscount", result.buildertek__Additional_Discount__c);
+                        component.set("v.isSalesprice", result.buildertek__Net_Unit__c);
+                        component.set("v.listPrice", result.buildertek__Unit_Price__c);
+                        component.set("v.NetUnit", result.buildertek__Net_Unit__c)
+                    }
+                    $A.get("e.c:BT_SpinnerEvent").setParams({
+                        "action": "HIDE"
+                    }).fire();
+                    component.set("v.editUnitPrice", true);
                 }
+            });
+    
+            $A.enqueueAction(action);
+        }
+        else{
+            var toastEvent = $A.get("e.force:showToast");
+                toastEvent.setParams({
+                    "type": "error",
+                    "title": "Error!",
+                    "message": 'You don\'t have the necessary privileges to Edit this record.'
+                });
+                toastEvent.fire();
+
                 $A.get("e.c:BT_SpinnerEvent").setParams({
                     "action": "HIDE"
                 }).fire();
-                component.set("v.editUnitPrice", true);
-            }
-        });
-
-        $A.enqueueAction(action);
+        }
     },
 
 
@@ -1372,163 +1444,184 @@
     },
 
     onClickMassUpdate: function(component, event, helper) {
-        component.set("v.enableMassUpdate", component.get("v.enableMassUpdate") == true ? false : true);
-        if (component.get("v.enableMassUpdate") == false && component.get('v.isChangeData')) {
-            $A.get("e.c:BT_SpinnerEvent").setParams({
-                "action": "SHOW"
-            }).fire();
-            var TotalRecords = component.get("v.TotalRecords");
-            console.log('TotalRecords--->>',{TotalRecords});
-            var ListOfEachRecord = TotalRecords.tarTable.ListOfEachRecord;
-            console.log('ListOfEachRecord--->>',{ListOfEachRecord});
-            var ListOfEachRecordLength = ListOfEachRecord.length;
-            console.log('ListOfEachRecordLength--->>',{ListOfEachRecordLength});
 
-            var newMassQi = [];
+         // >>>>>>>>>>> Changes For CHB - 80 <<<<<<<<<<<<<<<<<<
+            // Check user have Edit Access for BT_Quote_item__c
+            var HaveEditAccess = component.get("v.HaveUpdateAccess");
 
-            //console.log('@@ originalValue length :: ', ListOfEachRecordLength ,'   @@ originalValue :: ',JSON.stringify(ListOfEachRecord));
-            for (var i = 0; i < ListOfEachRecordLength; i++) {
-                var newMassQuoteItem = {};
-                newMassQuoteItem.sobjectType = 'buildertek__Quote_Item__c';
-                for (var j = 0; j < ListOfEachRecord[i].recordList.length; j++) {
-                    if (ListOfEachRecord[i].recordList[j].fieldName == 'buildertek__Quantity__c') {
-                        newMassQuoteItem.buildertek__Quantity__c = ListOfEachRecord[i].recordList[j].originalValue;
-                    } else if (ListOfEachRecord[i].recordList[j].fieldName == 'buildertek__Unit_Cost__c') {
-                        newMassQuoteItem.buildertek__Unit_Cost__c = ListOfEachRecord[i].recordList[j].originalValue;
-                    } else if (ListOfEachRecord[i].recordList[j].fieldName == 'buildertek__Margin__c') {
-                        // console.log('---MARGIN---');
-                        // console.log(ListOfEachRecord[i].recordList[j].originalValue.toFixed(4));
-                        let num = ListOfEachRecord[i].recordList[j].originalValue
-                        let formattedNumber = Number(num).toFixed(4);
-                        console.log(formattedNumber); // Output: 3.1416
-                        newMassQuoteItem.buildertek__Margin__c = formattedNumber;
-                    } else if (ListOfEachRecord[i].recordList[j].fieldName == 'buildertek__Markup__c') {
-                        newMassQuoteItem.buildertek__Markup__c = ListOfEachRecord[i].recordList[j].originalValue;
-                    } else if (ListOfEachRecord[i].recordList[j].fieldName == 'buildertek__Unit_Price__c') {
-                        newMassQuoteItem.buildertek__Unit_Price__c = ListOfEachRecord[i].recordList[j].originalValue;
-                    } else if (ListOfEachRecord[i].recordList[j].fieldName == 'buildertek__Additional_Discount__c') {
-                        newMassQuoteItem.buildertek__Additional_Discount__c = ListOfEachRecord[i].recordList[j].originalValue;
-                    } else if (ListOfEachRecord[i].recordList[j].fieldName == 'buildertek__Notes__c') {
-                        newMassQuoteItem.buildertek__Notes__c = ListOfEachRecord[i].recordList[j].originalValue;
-                    } else if (ListOfEachRecord[i].recordList[j].fieldName == 'buildertek__UOM__c') {
-                        newMassQuoteItem.buildertek__UOM__c = ListOfEachRecord[i].recordList[j].originalValue;
-                    } else if (ListOfEachRecord[i].recordList[j].fieldName == 'buildertek__Vendor__c') {
-                        newMassQuoteItem.buildertek__Vendor__c = ListOfEachRecord[i].recordList[j].originalValue;
-                    } else if (ListOfEachRecord[i].recordList[j].fieldName == 'buildertek__Priority__c') {
-                        // debugger;
-                        newMassQuoteItem.buildertek__Priority__c = ListOfEachRecord[i].recordList[j].originalValue;
+            if(HaveEditAccess){
+
+                component.set("v.enableMassUpdate", component.get("v.enableMassUpdate") == true ? false : true);
+                if (component.get("v.enableMassUpdate") == false && component.get('v.isChangeData')) {
+                    $A.get("e.c:BT_SpinnerEvent").setParams({
+                        "action": "SHOW"
+                    }).fire();
+        
+                    $A.enqueueAction(action1);
+                    var TotalRecords = component.get("v.TotalRecords");
+                    console.log('TotalRecords--->>',{TotalRecords});
+                    var ListOfEachRecord = TotalRecords.tarTable.ListOfEachRecord;
+                    console.log('ListOfEachRecord--->>',{ListOfEachRecord});
+                    var ListOfEachRecordLength = ListOfEachRecord.length;
+                    console.log('ListOfEachRecordLength--->>',{ListOfEachRecordLength});
+        
+                    var newMassQi = [];
+        
+                    //console.log('@@ originalValue length :: ', ListOfEachRecordLength ,'   @@ originalValue :: ',JSON.stringify(ListOfEachRecord));
+                    for (var i = 0; i < ListOfEachRecordLength; i++) {
+                        var newMassQuoteItem = {};
+                        newMassQuoteItem.sobjectType = 'buildertek__Quote_Item__c';
+                        for (var j = 0; j < ListOfEachRecord[i].recordList.length; j++) {
+                            if (ListOfEachRecord[i].recordList[j].fieldName == 'buildertek__Quantity__c') {
+                                newMassQuoteItem.buildertek__Quantity__c = ListOfEachRecord[i].recordList[j].originalValue;
+                            } else if (ListOfEachRecord[i].recordList[j].fieldName == 'buildertek__Unit_Cost__c') {
+                                newMassQuoteItem.buildertek__Unit_Cost__c = ListOfEachRecord[i].recordList[j].originalValue;
+                            } else if (ListOfEachRecord[i].recordList[j].fieldName == 'buildertek__Margin__c') {
+                                // console.log('---MARGIN---');
+                                // console.log(ListOfEachRecord[i].recordList[j].originalValue.toFixed(4));
+                                let num = ListOfEachRecord[i].recordList[j].originalValue
+                                let formattedNumber = Number(num).toFixed(4);
+                                console.log(formattedNumber); // Output: 3.1416
+                                newMassQuoteItem.buildertek__Margin__c = formattedNumber;
+                            } else if (ListOfEachRecord[i].recordList[j].fieldName == 'buildertek__Markup__c') {
+                                newMassQuoteItem.buildertek__Markup__c = ListOfEachRecord[i].recordList[j].originalValue;
+                            } else if (ListOfEachRecord[i].recordList[j].fieldName == 'buildertek__Unit_Price__c') {
+                                newMassQuoteItem.buildertek__Unit_Price__c = ListOfEachRecord[i].recordList[j].originalValue;
+                            } else if (ListOfEachRecord[i].recordList[j].fieldName == 'buildertek__Additional_Discount__c') {
+                                newMassQuoteItem.buildertek__Additional_Discount__c = ListOfEachRecord[i].recordList[j].originalValue;
+                            } else if (ListOfEachRecord[i].recordList[j].fieldName == 'buildertek__Notes__c') {
+                                newMassQuoteItem.buildertek__Notes__c = ListOfEachRecord[i].recordList[j].originalValue;
+                            } else if (ListOfEachRecord[i].recordList[j].fieldName == 'buildertek__UOM__c') {
+                                newMassQuoteItem.buildertek__UOM__c = ListOfEachRecord[i].recordList[j].originalValue;
+                            } else if (ListOfEachRecord[i].recordList[j].fieldName == 'buildertek__Vendor__c') {
+                                newMassQuoteItem.buildertek__Vendor__c = ListOfEachRecord[i].recordList[j].originalValue;
+                            } else if (ListOfEachRecord[i].recordList[j].fieldName == 'buildertek__Priority__c') {
+                                // debugger;
+                                newMassQuoteItem.buildertek__Priority__c = ListOfEachRecord[i].recordList[j].originalValue;
+                            }
+                            else if (ListOfEachRecord[i].recordList[j].fieldName == 'buildertek__Additional_Costs__c') {
+                                // debugger;
+                                newMassQuoteItem.buildertek__Additional_Costs__c = ListOfEachRecord[i].recordList[j].originalValue;
+                            }
+                            else if (ListOfEachRecord[i].recordList[j].fieldName == 'buildertek__Tax__c') {
+                                console.log(ListOfEachRecord[i].recordList[j].originalValue , ':::::::::;');
+                                newMassQuoteItem.buildertek__Tax__c = ListOfEachRecord[i].recordList[j].originalValue;
+                            }
+                        }
+                        newMassQuoteItem.Id = ListOfEachRecord[i].recordId;
+                        newMassQuoteItem.Name = ListOfEachRecord[i].recordName;
+                        newMassQi.push(newMassQuoteItem);
+                        console.log('newMassQi---->>>',newMassQi);
                     }
-                    else if (ListOfEachRecord[i].recordList[j].fieldName == 'buildertek__Additional_Costs__c') {
-                        // debugger;
-                        newMassQuoteItem.buildertek__Additional_Costs__c = ListOfEachRecord[i].recordList[j].originalValue;
-                    }
-                    else if (ListOfEachRecord[i].recordList[j].fieldName == 'buildertek__Tax__c') {
-                        console.log(ListOfEachRecord[i].recordList[j].originalValue , ':::::::::;');
-                        newMassQuoteItem.buildertek__Tax__c = ListOfEachRecord[i].recordList[j].originalValue;
+                    if (newMassQi.length > 0) {
+                        var action = component.get("c.massUpdateQuoteLineItem");
+                        action.setParams({
+                            "quoteLineRecords": JSON.stringify(newMassQi)
+                        });
+                        action.setCallback(this, function(respo) {
+                            console.log('response is : ', respo.getState());
+                            component.set("v.isChangeData", false);
+                            if (respo.getState() === "SUCCESS") {
+                                $A.get('e.force:refreshView').fire();
+                                window.setTimeout(
+                                    $A.getCallback(function() {
+                                        var toastEvent = $A.get("e.force:showToast");
+                                        toastEvent.setParams({
+                                            mode: 'sticky',
+                                            message: 'Quote Line Updated successfully',
+                                            type: 'success',
+                                            duration: '10000',
+                                            mode: 'dismissible'
+                                        });
+                                        toastEvent.fire();
+                                    }), 3000
+                                );
+                                var page = component.get("v.page") || 1
+                                helper.getGroups(component, event, helper, page);
+                            }
+                        });
+                        $A.enqueueAction(action);
                     }
                 }
-                newMassQuoteItem.Id = ListOfEachRecord[i].recordId;
-                newMassQuoteItem.Name = ListOfEachRecord[i].recordName;
-                newMassQi.push(newMassQuoteItem);
-                console.log('newMassQi---->>>',newMassQi);
-            }
-            if (newMassQi.length > 0) {
-                var action = component.get("c.massUpdateQuoteLineItem");
-                action.setParams({
-                    "quoteLineRecords": JSON.stringify(newMassQi)
-                });
-                action.setCallback(this, function(respo) {
-                    console.log('response is : ', respo.getState());
-                    component.set("v.isChangeData", false);
-                    if (respo.getState() === "SUCCESS") {
-                        $A.get('e.force:refreshView').fire();
-                        window.setTimeout(
-                            $A.getCallback(function() {
-                                var toastEvent = $A.get("e.force:showToast");
-                                toastEvent.setParams({
-                                    mode: 'sticky',
-                                    message: 'Quote Line Updated successfully',
-                                    type: 'success',
-                                    duration: '10000',
-                                    mode: 'dismissible'
-                                });
-                                toastEvent.fire();
-                            }), 3000
-                        );
-                        var page = component.get("v.page") || 1
-                        helper.getGroups(component, event, helper, page);
-                    }
-                });
-                $A.enqueueAction(action);
-            }
-        }
-        if (component.get("v.enableMassUpdate")) {
-            console.log(component.get("v.TotalRecords").groups);
-            var quoteId = component.get("v.quoteId");
-            // var spanEle = event.currentTarget.dataset.iconname;
-            // console.log(spanEle)
-            var expandallicon = document.getElementsByClassName('expandAllBtn_' + quoteId);
-            var collapeallIcon = document.getElementsByClassName('CollapeseAllBtn_' + quoteId);
-            //var labelName =spanEle
-
-            expandallicon[0].style.display = 'none';
-            collapeallIcon[0].style.display = 'inline-block';
-
-
-            var groups = component.get("v.TotalRecords").groups;
-            var quoteId = component.get("v.quoteId")
-            for (var j = 0; j < groups.length; j++) {
-                var grpIndex = j;
-                var expandicon = document.getElementsByClassName(quoteId + ' expandGrpIcon_' + grpIndex);
-                var collapeIcon = document.getElementsByClassName(quoteId + ' collapseGrpIcon_' + grpIndex);
-                var className = quoteId + " groupRows_" + grpIndex;
-                var grpRows = document.getElementsByClassName(className);
-                // if(labelName == 'Expand All') {
-                expandicon[0].style.display = 'none';
-                collapeIcon[0].style.display = 'inline-block';
-                for (var i = 0; i < grpRows.length; i++) {
-                    var item = grpRows[i];
-                    if (!expandicon[0].classList.contains('hideExpandIcon')) {
-                        expandicon[0].classList.add('hideExpandIcon')
-                    }
-                    if (expandicon[0].classList.contains('hideExpandIconhideCollapseIcon')) {
-                        expandicon[0].classList.remove('hideExpandIconhideCollapseIcon')
-                    }
-                    if (item.style.display == "none") {
-                        item.style.display = 'table-row';
-                    }
-                }
-
-            }
-
-            var TotalRecords = component.get("v.TotalRecords");
-            console.log('TotalRecords--->>',{TotalRecords});
-            var ListOfEachRecord = TotalRecords.tarTable.ListOfEachRecord;
-            console.log('ListOfEachRecord--->>',{ListOfEachRecord});
-            var ListOfEachRecordLength = ListOfEachRecord.length;
-            console.log('ListOfEachRecordLength--->>',{ListOfEachRecordLength});
-
-            for (var i = 0; i < ListOfEachRecordLength; i++){
-                var newMassQuoteItem = {};
-                newMassQuoteItem.sobjectType = 'buildertek__Quote_Item__c';
-                for (var j = 0; j < ListOfEachRecord[i].recordList.length; j++){
-                    if (ListOfEachRecord[i].recordList[j].fieldName == 'buildertek__Margin__c') {
-                        if (ListOfEachRecord[i].recordList[j].originalValue == '') {
-                            ListOfEachRecord[i].recordList[j].originalValue = 0;
+                if (component.get("v.enableMassUpdate")) {
+        
+                        console.log(component.get("v.TotalRecords").groups);
+                        var quoteId = component.get("v.quoteId");
+                        // var spanEle = event.currentTarget.dataset.iconname;
+                        // console.log(spanEle)
+                        var expandallicon = document.getElementsByClassName('expandAllBtn_' + quoteId);
+                        var collapeallIcon = document.getElementsByClassName('CollapeseAllBtn_' + quoteId);
+                        //var labelName =spanEle
+            
+                        expandallicon[0].style.display = 'none';
+                        collapeallIcon[0].style.display = 'inline-block';
+            
+            
+                        var groups = component.get("v.TotalRecords").groups;
+                        var quoteId = component.get("v.quoteId")
+                        for (var j = 0; j < groups.length; j++) {
+                            var grpIndex = j;
+                            var expandicon = document.getElementsByClassName(quoteId + ' expandGrpIcon_' + grpIndex);
+                            var collapeIcon = document.getElementsByClassName(quoteId + ' collapseGrpIcon_' + grpIndex);
+                            var className = quoteId + " groupRows_" + grpIndex;
+                            var grpRows = document.getElementsByClassName(className);
+                            // if(labelName == 'Expand All') {
+                            expandicon[0].style.display = 'none';
+                            collapeIcon[0].style.display = 'inline-block';
+                            for (var i = 0; i < grpRows.length; i++) {
+                                var item = grpRows[i];
+                                if (!expandicon[0].classList.contains('hideExpandIcon')) {
+                                    expandicon[0].classList.add('hideExpandIcon')
+                                }
+                                if (expandicon[0].classList.contains('hideExpandIconhideCollapseIcon')) {
+                                    expandicon[0].classList.remove('hideExpandIconhideCollapseIcon')
+                                }
+                                if (item.style.display == "none") {
+                                    item.style.display = 'table-row';
+                                }
+                            }
+            
                         }
-                    } else if (ListOfEachRecord[i].recordList[j].fieldName == 'buildertek__Markup__c') {
-                        if (ListOfEachRecord[i].recordList[j].originalValue == '') {
-                            ListOfEachRecord[i].recordList[j].originalValue = 0;
+            
+                        var TotalRecords = component.get("v.TotalRecords");
+                        console.log('TotalRecords--->>',{TotalRecords});
+                        var ListOfEachRecord = TotalRecords.tarTable.ListOfEachRecord;
+                        console.log('ListOfEachRecord--->>',{ListOfEachRecord});
+                        var ListOfEachRecordLength = ListOfEachRecord.length;
+                        console.log('ListOfEachRecordLength--->>',{ListOfEachRecordLength});
+            
+                        for (var i = 0; i < ListOfEachRecordLength; i++){
+                            var newMassQuoteItem = {};
+                            newMassQuoteItem.sobjectType = 'buildertek__Quote_Item__c';
+                            for (var j = 0; j < ListOfEachRecord[i].recordList.length; j++){
+                                if (ListOfEachRecord[i].recordList[j].fieldName == 'buildertek__Margin__c') {
+                                    if (ListOfEachRecord[i].recordList[j].originalValue == '') {
+                                        ListOfEachRecord[i].recordList[j].originalValue = 0;
+                                    }
+                                } else if (ListOfEachRecord[i].recordList[j].fieldName == 'buildertek__Markup__c') {
+                                    if (ListOfEachRecord[i].recordList[j].originalValue == '') {
+                                        ListOfEachRecord[i].recordList[j].originalValue = 0;
+                                    }
+                                } else if (ListOfEachRecord[i].recordList[j].fieldName == 'buildertek__Additional_Discount__c') {
+                                    if (ListOfEachRecord[i].recordList[j].originalValue == '') {
+                                        ListOfEachRecord[i].recordList[j].originalValue = 0;
+                                    }
+                                }
+                            }
                         }
-                    } else if (ListOfEachRecord[i].recordList[j].fieldName == 'buildertek__Additional_Discount__c') {
-                        if (ListOfEachRecord[i].recordList[j].originalValue == '') {
-                            ListOfEachRecord[i].recordList[j].originalValue = 0;
-                        }
-                    }
+                        component.set("v.TotalRecords", TotalRecords);
+                    
                 }
             }
-            component.set("v.TotalRecords", TotalRecords);
-        }
+            else{
+                var toastEvent = $A.get("e.force:showToast");
+                    toastEvent.setParams({
+                        "type": "error",
+                        "title": "Error!",
+                        "message": 'You don\'t have the necessary privileges to Edit this record.'
+                    });
+                    toastEvent.fire();
+            }
 
 
 
@@ -1971,14 +2064,32 @@
         }
     },
     onClickAddlines: function(component, event, helper) {
-        var evt = $A.get("e.force:navigateToComponent");
-        evt.setParams({
-            componentDef: "c:BT_MassUpdateQuote",
-            componentAttributes: {
-                recordId: component.get("v.recordId")
-            }
-        });
-        evt.fire();
+
+        // >>>>>>>>>>> Changes For CHB - 78 <<<<<<<<<<<<<<<<<<
+
+        var HaveCreateAccess = component.get("v.HaveCreateAccess");
+        if(HaveCreateAccess){
+            // If User Have Create Access Then and Then navigate to Add Mass Line Page...
+            var evt = $A.get("e.force:navigateToComponent");
+            evt.setParams({
+                componentDef: "c:BT_MassUpdateQuote",
+                componentAttributes: {
+                    recordId: component.get("v.recordId")
+                }
+            });
+            evt.fire();
+        }
+        else{
+            var toastEvent = $A.get("e.force:showToast");
+            toastEvent.setParams({
+                "type": "error",
+                "title": "Error!",
+                "message": 'You don\'t have the necessary privileges to create this record.'
+            });
+            toastEvent.fire();
+
+        }
+
     },
     onMassDuplicate: function(component, event, helper) {
         var checkvalue = component.find("selectAll");
@@ -2131,8 +2242,41 @@
         var markup = component.get("v.QuoteRec").buildertek__Markup__c;
         console.log({markup})
         
-        if ((markup != '' && markup != null && markup != undefined) || markup == 0) {
-            component.set("v.isMarkup", true);
+            // >>>>>>>>>>> Changes For CHB - 80 <<<<<<<<<<<<<<<<<<
+            // Check user have Edit Access for BT_Quote_item__c
+            var HaveEditAccess = component.get("v.HaveUpdateAccess");
+
+        if(HaveEditAccess){
+            // If User Have Edit Access of Quote Line...
+            if ((markup != '' && markup != null && markup != undefined) || markup == 0) {
+                component.set("v.isMarkup", true);
+                component.set("v.PopupHeader", "Update Markup");
+                component.set("v.PopupDescription", "Are you sure you want to Update Markup?");
+                component.set("v.isQuoteRecChange", true);
+            }
+                else {
+                    var toastEvent = $A.get("e.force:showToast");
+                    toastEvent.setParams({
+                        title: 'Error',
+                        message: 'Please enter the value of Markup.',
+                        duration: ' 5000',
+                        key: 'info_alt',
+                        type: 'error',
+                        mode: 'pester'
+                    });
+                    toastEvent.fire();
+                }
+        }
+        else{
+            var toastEvent = $A.get("e.force:showToast");
+                toastEvent.setParams({
+                    "type": "error",
+                    "title": "Error!",
+                    "message": 'You don\'t have the necessary privileges to Edit Global Markup.'
+                });
+                toastEvent.fire();
+
+        }
             //component.set("v.PopupHeader", "Save Quote Line");
             //component.set("v.PopupDescription", "Are you sure you want to update quote line markup?");
             // let labelval = '';
@@ -2145,11 +2289,6 @@
             // if(markup && margin) {
             //     labelval = 'Both';
             // }
-
-            component.set("v.PopupHeader", "Update Markup");
-            component.set("v.PopupDescription", "Are you sure you want to Update Markup?");
-            component.set("v.isQuoteRecChange", true);
-        }
         // } else {
         //     /*  component.find('notifLib').showNotice({
         //         "variant": "error",
@@ -2176,18 +2315,6 @@
         //     component.set("v.PopupDescription", "Are you sure you want to Update Margin?");
         //     component.set("v.isQuoteRecChange", true);
         // } 
-        else {
-            var toastEvent = $A.get("e.force:showToast");
-            toastEvent.setParams({
-                title: 'Error',
-                message: 'Please enter the value of Markup.',
-                duration: ' 5000',
-                key: 'info_alt',
-                type: 'error',
-                mode: 'pester'
-            });
-            toastEvent.fire();
-        }
 
 
         // 	var a = component.get("v.QuoteRec").Id;

@@ -2121,8 +2121,11 @@ public with sharing class QuoteDAO{
             newQline.buildertek__UOM__c = qql.buildertek__UOM__c;
             insertListofQuoteLines.add(newQline); 
         }
-        insert insertListofQuoteLines;
-        return insertListofQuoteLines;
+
+
+            insert insertListofQuoteLines;
+            return insertListofQuoteLines;
+
     }
     
   /*    @AuraEnabled
@@ -2624,5 +2627,45 @@ public with sharing class QuoteDAO{
     
         return products;
     }   
+
+
+
+    // >>>>>>>>>>> Changes For CHB - 78, 80 <<<<<<<<<<<<<<<<<<
+    @AuraEnabled
+    public static string CheckUserAccess(String AccessType){
+        // try {
+            switch on AccessType{
+                when 'Create'{
+                    if(Schema.sObjectType.buildertek__Quote_Item__c.isCreateable())
+                        {return 'True';}
+                    else{ return 'False'; }
+                }
+                when 'Update'{
+                    if(Schema.sObjectType.buildertek__Quote_Item__c.isUpdateable()){
+                        return 'True';
+                    }
+                    else{
+                        return 'False';
+                    }
+                }
+                when 'Delete'{
+                    if(Schema.sObjectType.buildertek__Quote_Item__c.isDeletable()){
+                        return 'True';
+                    }
+                    else{
+                        return 'False';
+                    }
+                }
+                when else{
+                    return null;
+                }
+            }
+            
+        // } catch (Exception e) {
+        //    System.debug('error in CheckUserHaveAcces >> ' + e);
+        //    return 'error';
+        // }
+    }
+    // >>>>>>>>>>> Changes For CHB - 78 <<<<<<<<<<<<<<<<<<
 
 }
