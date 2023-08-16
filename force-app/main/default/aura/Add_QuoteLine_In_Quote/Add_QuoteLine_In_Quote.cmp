@@ -5,6 +5,7 @@
     <aura:attribute name="columns" type="List" />
     <aura:attribute name="quoteLineList" type="List" />
     <aura:attribute name="tableDataList" type="List" />
+    <aura:attribute name="IdList" type="List" />
     <aura:attribute name="openProductBox" type="Boolean" />
     <aura:attribute name="selecteProducts" type="Boolean" default="true" />
     <aura:attribute name="Spinner" type="Boolean" default="false" />
@@ -18,6 +19,12 @@
     <aura:attribute name="quoteLineGroupOptions" type="List" />
     <aura:attribute name="selectedQuoteLineGroupId" type="Id" />
     <aura:attribute name="getPhase" type="String" />
+    <aura:attribute name="trueCheckBoxList" type="List"/>
+    <aura:attribute name="myTime" type="Date" />
+    <aura:attribute name="prevInput" type="String" />
+    <aura:attribute name="searchTimeout" type="Object" />
+    <aura:attribute name="selectedRecords" type="List" default="[]" />
+
     
 
 
@@ -62,7 +69,7 @@
                     <lightning:layoutItem padding="around-small" size="4">
                         <label class="slds-form-element__label slds-size_4-of-12" >Product Family</label>
                         <div >
-                            <ui:inputSelect aura:id="selectedProductFamily" value="{!v.sProductFamily}" change="{!c.searchInDatatable}" class="pricebook-class">
+                            <ui:inputSelect aura:id="selectedProductFamily" value="{!v.sProductFamily}" change="{!c.changeProductFamily}" class="pricebook-class">
                                 <aura:if isTrue="{!v.selectedPricebookId}">
                                     <aura:iteration items="{!v.productFamilyOptions}" var="option" >
                                         <option value="{!option.value}" selected="{!option.value == v.sProductFamily}">{!option.key}</option>
@@ -87,7 +94,7 @@
                         <thead>
                             <tr class="slds-line-height_reset">
                                 <th class="slds-text-align_right slds-cell_action-mode" scope="col" style="width:3.25rem;">
-                                    <lightning:input aura:id="selectAll" type="checkbox" name="checkAll" onchange="{!c.checkAllProduct}" />
+                                    <!-- <lightning:input aura:id="selectAll" type="checkbox" name="checkAll" onchange="{!c.checkAllProduct}" /> -->
                                 </th>
                                 <th class="" scope="col">
                                     <div class="slds-truncate" title="Product Family">Product Family</div>
