@@ -16,6 +16,7 @@
     },
 
     createBudgetLineWrapper : function(component, event, helper) {
+
         var budgetLineWrapper = {
             pricebookEntryId : '',
             productFamily : '',
@@ -35,7 +36,12 @@
             ProductList : [],
             productOptionList : [],            
         };
+
+    
+
+
         return budgetLineWrapper;
+        
     },
 
     createBudgetItemWrapperList : function(component, event, helper) {
@@ -203,33 +209,6 @@
     },
 
     getProduct : function(component, event, helper, family, index) {
-        // var budgetLineWrapperList = component.get("v.budgetLineWrapperList");
-        // var productList = budgetLineWrapperList[index].ProductList;
-        // var productOptionList = [
-        //     {
-        //         label: 'Please Select Product',
-        //         value: ''
-        //     }
-        // ];
-        // productList.forEach(function(item) {
-        //     if(item.Family == family) {
-        //         productOptionList.push({
-        //             label: item.Name,
-        //             value: item.Id
-        //         });
-        //     }
-        // });
-        // budgetLineWrapperList[index].productOptionList = productOptionList;
-        // budgetLineWrapperList[index].BudgetLine = {
-        //     buildertek__Budget__c : component.get("v.recordId"),
-        //     buildertek__Product__c : '',
-        //     Name : '',
-        //     buildertek__Group__c : '',
-        //     buildertek__Quantity__c : '1',
-        //     buildertek__UOM__c : '',
-        //     buildertek__Contractor__c : '',
-        //     buildertek__Unit_Price__c : '',
-        // }
         var budgetLineWrapperList = component.get("v.budgetLineWrapperList");
         budgetLineWrapperList[index].selectedLookUpRecord = {}
         budgetLineWrapperList[index].BudgetLine = {
@@ -267,44 +246,43 @@
                     });
                 }
                 component.set("v.vendorList", vendorList);
-                // console.log('vendorList: ', component.get("v.vendorList"));
             }
         }
         );
         $A.enqueueAction(action);
     },
 
-    gotProduct : function(component, event, helper, productId, index) {
-        var budgetLineGroups = component.get("v.budgetLineGroups");
-        var noGroupingId;
-        for(var i = 0; i < budgetLineGroups.length; i++) {
-            if(budgetLineGroups[i].Name == 'No Grouping') {
-                noGroupingId = budgetLineGroups[i].Id;
-            }
-        }
-        console.log('productId: ', productId);
-        var budgetlineWrapperList = component.get("v.budgetLineWrapperList");
-        var ProductList = budgetlineWrapperList[index].ProductList;
-        budgetlineWrapperList[index].GroupingOptions = component.get("v.budgetLineGroups");
-        for(var i = 0; i < ProductList.length; i++) {
-            if(ProductList[i].Id == productId) {
-                budgetlineWrapperList[index].BudgetLine = {
-                    buildertek__Budget__c : component.get("v.recordId"),
-                    buildertek__Product__c : productId,
-                    Name : ProductList[i].Name,
-                    buildertek__Group__c : noGroupingId,
-                    buildertek__Quantity__c : '1',
-                    buildertek__UOM__c : '',
-                    buildertek__Contractor__c : '',
-                    buildertek__Unit_Price__c : ProductList[i].UnitPrice,
-                }
-            }
-        }
-        component.set("v.budgetLineWrapperList", budgetlineWrapperList);
-        $A.get("e.c:BT_SpinnerEvent").setParams({
-            "action": "HIDE"
-        }).fire(); 
-    },
+    // gotProduct : function(component, event, helper, productId, index) {
+    //     var budgetLineGroups = component.get("v.budgetLineGroups");
+    //     var noGroupingId;
+    //     for(var i = 0; i < budgetLineGroups.length; i++) {
+    //         if(budgetLineGroups[i].Name == 'No Grouping') {
+    //             noGroupingId = budgetLineGroups[i].Id;
+    //         }
+    //     }
+    //     console.log('productId: ', productId);
+    //     var budgetlineWrapperList = component.get("v.budgetLineWrapperList");
+    //     var ProductList = budgetlineWrapperList[index].ProductList;
+    //     budgetlineWrapperList[index].GroupingOptions = component.get("v.budgetLineGroups");
+    //     for(var i = 0; i < ProductList.length; i++) {
+    //         if(ProductList[i].Id == productId) {
+    //             budgetlineWrapperList[index].BudgetLine = {
+    //                 buildertek__Budget__c : component.get("v.recordId"),
+    //                 buildertek__Product__c : productId,
+    //                 Name : ProductList[i].Name,
+    //                 buildertek__Group__c : noGroupingId,
+    //                 buildertek__Quantity__c : '1',
+    //                 buildertek__UOM__c : '',
+    //                 buildertek__Contractor__c : '',
+    //                 buildertek__Unit_Price__c : ProductList[i].UnitPrice,
+    //             }
+    //         }
+    //     }
+    //     component.set("v.budgetLineWrapperList", budgetlineWrapperList);
+    //     $A.get("e.c:BT_SpinnerEvent").setParams({
+    //         "action": "HIDE"
+    //     }).fire(); 
+    // },
 
     saveBudgetLine : function(component, event, helper,budgetLineList) {
         console.log('budgetLineList: ', budgetLineList);
@@ -316,20 +294,16 @@
         action.setCallback(this, function(response) {
             var state = response.getState();
             if(state === "SUCCESS") {
-                //close modal
-                var toastEvent = $A.get("e.force:showToast");
-                toastEvent.setParams({
-                    title : 'Success',
-                    message: 'Budget Line(s) Saved Successfully',
-                    duration:' 5000',
-                    key: 'info_alt',
-                    type: 'success',
-                    mode: 'dismissible'
+                var toast = $A.get("e.force:showToast");
+                toast.setParams({
+                    title: "Success",
+                    message: "Budget Line Saved Successfully",
+                    type: "success"
                 });
-                toastEvent.fire();
+                toast.fire();
                 $A.get("e.c:BT_SpinnerEvent").setParams({
                     "action": "HIDE"
-                }).fire(); 
+                }).fire();     
                 helper.closeNrefresh(component, event, helper);
             } else {
                 $A.get("e.c:BT_SpinnerEvent").setParams({
@@ -402,7 +376,7 @@
             $A.get("e.force:closeQuickAction").fire();
             window.setTimeout(
                 $A.getCallback(function () {
-                    // $A.get('e.force:refreshView').fire();
+                    $A.get('e.force:refreshView').fire();
                     window.location.reload();
                 }), 1000
             );
@@ -486,9 +460,5 @@
         $A.enqueueAction(action);
     
     },
-    
-
-
-
 
 })

@@ -246,33 +246,33 @@
 
     },
 
-    gotProduct : function(component, event, helper) {
-        $A.get("e.c:BT_SpinnerEvent").setParams({
-            "action": "SHOW"
-        }).fire(); 
+    // gotProduct : function(component, event, helper) {
+    //     $A.get("e.c:BT_SpinnerEvent").setParams({
+    //         "action": "SHOW"
+    //     }).fire(); 
 
-        var index = event.getSource().get("v.name");
-        var productId = component.get("v.budgetLineWrapperList")[index].productId;
-        if(productId != '') {
-            helper.gotProduct(component, event, helper, productId, index);
-        }else{
-            var budgetlineWrapperList = component.get("v.budgetLineWrapperList");
-            budgetlineWrapperList[index].BudgetLine = {
-                buildertek__Budget__c : component.get("v.recordId"),
-                buildertek__Product__c : '',
-                Name : '',
-                buildertek__Group__c : '',
-                buildertek__Quantity__c : '',
-                buildertek__UOM__c : '',
-                buildertek__Contractor__c : '',
-                buildertek__Unit_Price__c : '',
-            };
-            component.set("v.budgetLineWrapperList", budgetlineWrapperList);
-            $A.get("e.c:BT_SpinnerEvent").setParams({
-                "action": "HIDE"
-            }).fire(); 
-        }
-    },
+    //     var index = event.getSource().get("v.name");
+    //     var productId = component.get("v.budgetLineWrapperList")[index].productId;
+    //     if(productId != '') {
+    //         helper.gotProduct(component, event, helper, productId, index);
+    //     }else{
+    //         var budgetlineWrapperList = component.get("v.budgetLineWrapperList");
+    //         budgetlineWrapperList[index].BudgetLine = {
+    //             buildertek__Budget__c : component.get("v.recordId"),
+    //             buildertek__Product__c : '',
+    //             Name : '',
+    //             buildertek__Group__c : '',
+    //             buildertek__Quantity__c : '',
+    //             buildertek__UOM__c : '',
+    //             buildertek__Contractor__c : '',
+    //             buildertek__Unit_Price__c : '',
+    //         };
+    //         component.set("v.budgetLineWrapperList", budgetlineWrapperList);
+    //         $A.get("e.c:BT_SpinnerEvent").setParams({
+    //             "action": "HIDE"
+    //         }).fire(); 
+    //     }
+    // },
 
     onCancel : function(component, event, helper) {
         var workspaceAPI = component.find("workspace");
@@ -286,22 +286,20 @@
         $A.get("e.c:BT_SpinnerEvent").setParams({
             "action": "SHOW"
         }).fire(); 
+
         var budgetLineWrapperList = component.get("v.budgetLineWrapperList");
-        let budgetLineWrapper = helper.createBudgetLineWrapper(component, event, helper);
-        var selectedPricebook = component.get("v.selectedPricebook");
-        if(selectedPricebook != '') {
-            budgetLineWrapper.pricebookEntryId = selectedPricebook;    
-            budgetLineWrapper.productFamilyList = component.get("v.DefaultproductFamilyList");
-            budgetLineWrapper.productOptionList = component.get("v.DefaultproductOptionList");
-            budgetLineWrapper.ProductList = component.get("v.DefaultproductOptionList");
+        for(var i = 0; i < 2; i++) {
+            let budgetLineWrapper = helper.createBudgetLineWrapper(component, event, helper);
+            budgetLineWrapperList.push(budgetLineWrapper);
         }
-        budgetLineWrapperList.push(budgetLineWrapper);
-        // for(var i = 0; i < 1; i++) {
-        // }
         component.set("v.budgetLineWrapperList", budgetLineWrapperList);
-        $A.get("e.c:BT_SpinnerEvent").setParams({
-            "action": "HIDE"
-        }).fire(); 
+        let bugetLineWrap= component.get('v.budgetLineWrapperList');
+        for(var i=bugetLineWrap.length-2;i<bugetLineWrap.length;i++){
+            bugetLineWrap[i].pricebookEntryId = component.get('v.selectedPricebook');
+            helper.getFamily(component, event, helper, component.get('v.selectedPricebook'), i);
+        }
+       
+       
     },
 
     deleteRow : function(component, event, helper) {
