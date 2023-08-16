@@ -500,10 +500,10 @@
                     </div>
                 </div>
                 <div aura:id="budgetItem" />
-                <div class="av slds-box" id="{!v.recordId + 'groups'}" style="min-height:100%; padding-block:0px !important; padding-inline: 10px; margin-top: -5px;">
+                <div class="av slds-box" id="{!v.recordId + 'groups'}" style="min-height:100%; padding-block:0px !important; padding-inline: 0px; margin-top: -5px;">
                     <div>
                         <aura:if isTrue="{!v.recordId != null}">
-                            <div style="padding:0px; min-height:100%; height: 100%;">
+                            <div style="padding:0px; min-height:100%; height: 100%; padding-inline: 10px;">
                                 <div aura:id="inlineEditQuote" class="slds-m-top_medium slds-m-bottom_medium" style="margin-block: 10px !important">
                                     <table class="slds-table slds-table_bordered slds-table_cell-buffer" style="border:1px solid grey;border-radius: 5px;">
                                         <thead style="border:1px solid rgb(216, 237, 255);">
@@ -602,6 +602,8 @@
                                                         }
                                                     </aura:html>
                                                     <c:BT_LightningLookup aura:id="productId" objectAPIName="Product2" IconName="standard:product" selectedRecord="{!v.selectedLookUpRecord}" parentId="{!v.pricebookName }" prodctfamly="{!v.productfamily}" />
+                                                    <label class="slds-form-element__label" for="lookup-348"></label>
+
                                                 </td>
                                                 <td>
                                                     <!--	<force:inputField value="{!v.newBudgetLine.Name}"/>-->
@@ -711,7 +713,7 @@
 
                             <!--<aura:set attribute="else">-->
                             <aura:if isTrue="{!v.isOpen}">
-                                <div class="slds-m-around_xx-large">
+                                <!-- <div class="slds-m-around_xx-large"> -->
                                     <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
                                         <div class="slds-modal__container">
                                             <header class="slds-modal__header">
@@ -730,7 +732,7 @@
                                         </div>
                                     </section>
                                     <div class="slds-backdrop slds-backdrop_open"></div>
-                                </div>
+                                <!-- </div> -->
                             </aura:if>
 
                             <aura:if isTrue="{!v.isremovegroup}">
@@ -897,10 +899,10 @@
 
 
 
-                            <div class="slds-scrollable" style="height:100%; padding:0px !important;">
+                            <div class="slds-scrollable" style="height:47vh; padding:0px !important;">
                                 <div class="divcont" aura:id="headerDiv" style="">
                                     <!--height:30rem class="slds-scrollable"-->
-                                    <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-m-right_small" aura:id="budgetLineItemTable">
+                                    <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-m-right_small" aura:id="budgetLineItemTable" style="width: auto;">
                                         <thead></thead>
                                         <tbody>
                                             <aura:iteration items="{!v.TotalRecords.groupHierarchy}" var="group" indexVar="parentGroupIndex">

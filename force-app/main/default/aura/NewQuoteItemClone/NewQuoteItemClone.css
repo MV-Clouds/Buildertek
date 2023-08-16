@@ -249,7 +249,7 @@
     width: 45% !important;
 }
 .THIS .divcont{
-    min-height: 42vh;
+    /* min-height: 42vh; */
     max-height: 42vh;
     overflow: auto;
 }
@@ -296,7 +296,7 @@
 }    */
 @media only screen and (max-height: 1080px) {
     .THIS .divcont{
-        min-height: 42vh;
+        /* min-height: 42vh; */
         max-height: 42vh;
         overflow: auto;
     }
@@ -314,6 +314,6 @@
 }
 
 .THIS .divcount2{
-    min-height: 47vh !important;
+    /* min-height: 47vh !important; */
     max-height: 47vh !important;
 }

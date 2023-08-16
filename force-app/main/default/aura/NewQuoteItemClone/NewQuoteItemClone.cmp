@@ -773,8 +773,8 @@
                                                     </aura:iteration>
                                                 </ui:inputSelect>
                                             </td>
-                                            <td style="width:20%;">
-                                                <aura:html tag="style">
+                                            <td style="width:20%; ">
+                                                <!-- <aura:html tag="style">
                                                     .mainDiv{
                                                         padding-top:0% !important;
 
@@ -786,13 +786,16 @@
                                                     }
                                                     .subDiv{
                                                         width:100% !important;
+                                                        margin-top:0 !important;
                                                     }
-                                                </aura:html>
-                                                <label class="slds-form-element__label">{!v.label}</label>
+                                                </aura:html> -->
+                                                <!-- <label class="slds-form-element__label" for="lookup-348">{!v.label}</label> -->
                                                 <c:BT_LightningLookup objectAPIName="Product2"
                                                     IconName="standard:product"
                                                     selectedRecord="{!v.selectedLookUpRecord}" aura:id="productId"
                                                     parentId="{! v.pricebookName }" prodctfamly="{!v.productfamily}" childValue="{!v.newQuote.Name}"  />
+
+
                                             </td>
                                             <!-- <td>
                                             <ui:inputText value="{!v.newQuote.Name}" aura:id="quoteLineID" />
