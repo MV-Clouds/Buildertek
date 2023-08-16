@@ -56,14 +56,15 @@
     border-radius: 10px
 }
 
-.b-indicator{
+/* .b-indicator{
     width: 16px !important;
     height: 16px !important;
 }
 
 .b-indicator.b-bottom {
     margin-top: calc(0.8em);
-}
+} */
+
 @keyframes loader--ripple {
     0% {
         top: 50px;

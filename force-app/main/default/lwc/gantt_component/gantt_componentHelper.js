@@ -7,7 +7,7 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
     var taskData = scheduleItemsData;
     var taskDependencyData = [];
     var resourceRowData = [];
-    var resourceRowIdList = [];
+    var resourceRowIdList = []
     var assignmentRowData= [];
     var scheduleItemIdsList = [];
     var rows = [];
@@ -25,8 +25,8 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
     firstRowDup['customtype'] = 'Project'
     firstRowDup["endDate"] = ""
     firstRowDup["children"] = []
-    // firstRowDup["constraintType"] = 'startnoearlierthan'
-    // firstRowDup["constraintDate"] = ""
+    firstRowDup["constraintType"] = 'startnoearlierthan'
+    firstRowDup["constraintDate"] = scheduleData.buildertek__Initial_Start_Date__c;
     var newPhaseFlag = true;
     var taskWithphaseList = [];
     var taskPhaseRow;
@@ -113,8 +113,8 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
                 if(taskListForPhase[i].buildertek__Contractor__c){
                     rowChilObj["contractorname"] = taskListForPhase[i].buildertek__Contractor__r.Name;  //Added for contractor
                 }else{
-                    rowChilObj["contractorname"] = '';
-                }
+                rowChilObj["contractorname"] = '';
+            }
 
             rowChilObj['notes'] = taskListForPhase[i].buildertek__Notes__c;
                 if(taskListForPhase[i].buildertek__Lag__c != undefined && taskListForPhase[i].buildertek__Lag__c != null && taskListForPhase[i].buildertek__Lag__c != 0){
@@ -181,13 +181,22 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
                 assignmentRow['resource'] = taskListForPhase[i].buildertek__Contractor_Resource__c;
                 assignmentRowData.push(assignmentRow)
             }
-            if(rowChilObj["type"] == "Task"){
+            
+            if(taskListForPhase[i].buildertek__ConstraintType__c == 'None' || taskListForPhase[i].buildertek__ConstraintType__c == '--None--' || taskListForPhase[i].buildertek__ConstraintType__c == null || taskListForPhase[i].buildertek__ConstraintType__c == undefined){
+                rowChilObj["constraintDate"] =  scheduleData.buildertek__Initial_Start_Date__c;
+                rowChilObj["constraintType"] =  "startnoearlierthan";
+            } else{
                 rowChilObj["constraintDate"] =  taskListForPhase[i].buildertek__ConstraintDate__c;
                 rowChilObj["constraintType"] =  taskListForPhase[i].buildertek__ConstraintType__c;
-                // if(rowChilObj["predecessor"]){
-
-                // }
             }
+            
+            if(rowChilObj["customtype"] == "Milestone"){
+                rowChilObj["constraintDate"] =  taskListForPhase[i].buildertek__End_date__c;
+                rowChilObj["constraintType"] =  "muststarton";
+
+            }
+            
+
             taskPhaseRow["children"].push(rowChilObj);
 
             var found = false;
@@ -232,11 +241,11 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
             }
             console.log('taskListForPhase[i].buildertek__Phase__c ',taskListForPhase[i].buildertek__Phase__c);
             rowChilObj['phase'] = taskListForPhase[i].buildertek__Phase__c
-                if(taskListForPhase[i].buildertek__Dependency__c){
-                // rowChilObj["constraintType"] = ''
-                }else{
-                // rowChilObj["constraintType"] = 'startnoearlierthan'
-            }
+            //     if(taskListForPhase[i].buildertek__Dependency__c){
+            //     // rowChilObj["constraintType"] = ''
+            //     }else{
+            //     // rowChilObj["constraintType"] = 'startnoearlierthan'
+            // }
                 if(scheduleItemIdsList.indexOf(taskListForPhase[i].Id) < 0){
                 scheduleItemIdsList.push(taskListForPhase[i].Id)
             }
@@ -347,13 +356,15 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
                 assignmentRow['resource'] = taskListForPhase[i].buildertek__Contractor_Resource__c;
                 assignmentRowData.push(assignmentRow)
             }
-            if(rowChilObj["type"] == "Task"){
+            if(taskListForPhase[i].buildertek__ConstraintType__c == 'None' || taskListForPhase[i].buildertek__ConstraintType__c == '--None--' || taskListForPhase[i].buildertek__ConstraintType__c == null || taskListForPhase[i].buildertek__ConstraintType__c == undefined){
+                rowChilObj["constraintDate"] =  scheduleData.buildertek__Initial_Start_Date__c;
+                rowChilObj["constraintType"] =  "startnoearlierthan";
+            } else{
                 rowChilObj["constraintDate"] =  taskListForPhase[i].buildertek__ConstraintDate__c;
                 rowChilObj["constraintType"] =  taskListForPhase[i].buildertek__ConstraintType__c;
-                // if(rowChilObj["predecessor"]){
-
-                // }
             }
+
+
             taskPhaseRow["children"].push(rowChilObj);
             console.log('taskPhaseRow ',taskPhaseRow)
             firstRowDup['children'].push(taskPhaseRow);
@@ -432,18 +443,25 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
             }
             rowChilObj["duration"] = taskListForPhase[i].buildertek__Duration__c
 
+            
+            rowChilObj["expanded"] = true
+            rowChilObj["order"] = taskListForPhase[i].buildertek__Order__c
+            if(taskListForPhase[i].buildertek__ConstraintType__c == 'None' || taskListForPhase[i].buildertek__ConstraintType__c == '--None--' || taskListForPhase[i].buildertek__ConstraintType__c == null || taskListForPhase[i].buildertek__ConstraintType__c == undefined){
+                rowChilObj["constraintDate"] =  scheduleData.buildertek__Initial_Start_Date__c;
+                rowChilObj["constraintType"] =  "startnoearlierthan";
+            } else{
+                rowChilObj["constraintDate"] =  taskListForPhase[i].buildertek__ConstraintDate__c;
+                rowChilObj["constraintType"] =  taskListForPhase[i].buildertek__ConstraintType__c;
+            }
+
             if(taskListForPhase[i].buildertek__Milestone__c){
                 rowChilObj["duration"] = 0
                 rowChilObj["cls"] = 'milestoneCompleteColor'
                 rowChilObj['orgmilestone'] = taskListForPhase[i].buildertek__Milestone__c;
+                rowChilObj["constraintDate"] =  taskListForPhase[i].buildertek__End_date__c;
+                rowChilObj["constraintType"] =  'muststarton';
             }
-
-            rowChilObj["expanded"] = true
-            rowChilObj["order"] = taskListForPhase[i].buildertek__Order__c
-            if(rowChilObj["type"] == "Task"){
-                rowChilObj["constraintDate"] =  taskListForPhase[i].buildertek__ConstraintDate__c;
-                rowChilObj["constraintType"] =  taskListForPhase[i].buildertek__ConstraintType__c;
-            }
+            
             firstRowDup['children'].push(rowChilObj);
             var dependencyRow = {};
             if(taskListForPhase[i].buildertek__Dependency__c){
@@ -520,7 +538,7 @@ function convertJSONtoApexData(data, taskData, dependenciesData, resourceData) {
     let scheduleObj = {};
     var rowData = [];
     const phasedatamap = new Map();
-    // let milestonedataList = [];
+    // let milestonedataList = []; 
     console.log('data !-->', {data})
     if (data) {
         data.forEach(element => {
@@ -711,6 +729,21 @@ function recordsTobeDeleted(oldListOfTaskRecords, newListOfTaskRecords) {
     console.log('listOfRecordIdToBeDeleted:- ',listOfRecordIdToBeDeleted);
     return listOfRecordIdToBeDeleted;
 }
+
+// for converting into date time formate
+function convertDateTime(dateString) {
+    // Convert the date string to a JavaScript Date object
+    const date = new Date(dateString);
+    // Get the current time zone offset in milliseconds
+    const timeZoneOffset = date.getTimezoneOffset() * 60000;
+    // Convert the date to UTC
+    const utcDate = new Date(date.getTime() - timeZoneOffset);
+    // Format the UTC date to the desired format
+    const formattedDate = utcDate.toISOString();
+    // Remove the "Z" at the end of the formatted date
+    const newDate = formattedDate.slice(0, -1);
+    return newDate;
+  }
 
 function covertIntoDate(date) {
     var d = new Date(date),
