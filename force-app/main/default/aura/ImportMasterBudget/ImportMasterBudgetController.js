@@ -1,29 +1,48 @@
 ({
 	doInit : function(component, event, helper) {
 	    component.set("v.Spinner", true);
-        var action = component.get("c.getMasterBudgets");
-        action.setCallback(this, function(response){
-            console.log({response});
-            var state = response.getState();
-            if(state === "SUCCESS"){
-                var pageSize = component.get("v.pageSize");
-                var result = response.getReturnValue();
-                console.log({result});
-                component.set("v.masterBudgetsList", result);
-                component.set("v.totalRecords", component.get("v.masterBudgetsList").length);
-                component.set("v.startPage",0);
-                component.set("v.endPage",pageSize-1);
-                var PaginationList = [];
-                for(var i=0; i< pageSize; i++){
-                    if(component.get("v.masterBudgetsList").length> i)
-                        PaginationList.push(result[i]);
+
+                // >>>>>>>>>>>>>>>> CHB - 78, 80 <<<<<<<<<<<<<<<<<<<<
+        // Check If User Have Access for Quote Line
+        helper.Check_Create_User_Access(component, event, helper);
+
+        if(component.get("v.HaveCreateAccess")){
+            var action = component.get("c.getMasterBudgets");
+            action.setCallback(this, function(response){
+                console.log({response});
+                var state = response.getState();
+                if(state === "SUCCESS"){
+                    var pageSize = component.get("v.pageSize");
+                    var result = response.getReturnValue();
+                    console.log({result});
+                    component.set("v.masterBudgetsList", result);
+                    component.set("v.totalRecords", component.get("v.masterBudgetsList").length);
+                    component.set("v.startPage",0);
+                    component.set("v.endPage",pageSize-1);
+                    var PaginationList = [];
+                    for(var i=0; i< pageSize; i++){
+                        if(component.get("v.masterBudgetsList").length> i)
+                            PaginationList.push(result[i]);
+                    }
+                    //alert('PaginationList Length ------> '+PaginationList.length);
+                    component.set('v.PaginationList', PaginationList);
+                    component.set("v.Spinner", false);
                 }
-                //alert('PaginationList Length ------> '+PaginationList.length);
-                component.set('v.PaginationList', PaginationList);
+            });
+            $A.enqueueAction(action);
+        }
+        else{
+            var toastEvent = $A.get("e.force:showToast");
+                toastEvent.setParams({
+                    "type": "error",
+                    "title": "Error!",
+                    "message": 'You don\'t have the necessary privileges to create this record.'
+                });
+                toastEvent.fire();
                 component.set("v.Spinner", false);
-            }
-        });
-	    $A.enqueueAction(action);
+
+        }
+
 	},
 
 	handleCheck : function(component, event, helper) {

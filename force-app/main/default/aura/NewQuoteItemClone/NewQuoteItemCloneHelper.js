@@ -1547,7 +1547,7 @@
             // }
         }
     },
-// >>>>>>>>>>>>>> CHB - 78 <<<<<<<<<<<<<<<<<<<
+// >>>>>>>>>>>>>> CHB - 78, 80 <<<<<<<<<<<<<<<<<<<
     Check_Create_User_Access: function(component, event, helper){
         var action1 = component.get("c.CheckUserAccess");
         action1.setParams({

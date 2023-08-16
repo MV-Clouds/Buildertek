@@ -10,6 +10,9 @@
     <aura:attribute name="totalRecords" type="Integer"/>
     <aura:attribute name="pageSize" type="Integer" default="10"/>
 
+
+    <aura:attribute name="HaveCreateAccess" type="boolean" />
+
     <!-- Attribute Declration For Pagination End-->
 
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
