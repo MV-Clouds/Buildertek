@@ -1,9 +1,6 @@
-import insertUpdateTask from '@salesforce/apex/BT_NewGanttChartCls.insertUpdateTask';
-import {
-    ShowToastEvent
-} from "lightning/platformShowToastEvent";
-
-function formatData(scheduleData, scheduleItemsData, scheduleItemsDataList) {
+import  insertUpdateTask from '@salesforce/apex/BT_NewGanttChartCls.insertUpdateTask';
+import { ShowToastEvent } from "lightning/platformShowToastEvent";
+function formatData(scheduleData,scheduleItemsData,scheduleItemsDataList){
     var taskData = scheduleItemsData;
     var taskDependencyData = [];
     var resourceRowData = [];
@@ -15,7 +12,6 @@ function formatData(scheduleData, scheduleItemsData, scheduleItemsDataList) {
 
     var taskListForPhase = scheduleItemsDataList;
     var firstRowDup = {};
-    console.log('taskListForPhase :- ' + JSON.stringify(taskListForPhase));
     firstRowDup["id"] = scheduleData.Id;
     firstRowDup["name"] = scheduleData.Name
     firstRowDup["startDate"] = ""
@@ -46,25 +42,25 @@ function formatData(scheduleData, scheduleItemsData, scheduleItemsDataList) {
                 taskPhaseRow["endDate"] = ""
                 taskPhaseRow["children"] = []
                 taskPhaseRow["customtype"] = 'Phase'
-                // taskPhaseRow["children"].push(taskListForPhase[i])
+               // taskPhaseRow["children"].push(taskListForPhase[i])
                 taskPhaseRow["constraintType"] = 'none'
                 newPhaseFlag = false;
             }
-            var rowChilObj = {};
-            rowChilObj["type"] = 'Task'
-            rowChilObj["customtype"] = taskListForPhase[i].buildertek__Type__c
+                var rowChilObj = {};
+                rowChilObj["type"] = 'Task'
+                rowChilObj["customtype"] = taskListForPhase[i].buildertek__Type__c
                 if(taskListForPhase[i].buildertek__Type__c == 'Milestone'){
-                rowChilObj["cls"] = 'milestoneTypeColor'
-            }
-            rowChilObj["iconCls"] = "b-fa b-fa-arrow-right"
-            rowChilObj["indentVal"] = taskListForPhase[i].buildertek__Indent_Task__c;
+                    rowChilObj["cls"] = 'milestoneTypeColor'
+                }
+                rowChilObj["iconCls"] = "b-fa b-fa-arrow-right"
+                rowChilObj["indentVal"] = taskListForPhase[i].buildertek__Indent_Task__c;
                 if(taskListForPhase[i].buildertek__Indent_Task__c){
-                rowChilObj["iconCls"] = "b-fa b-fa-arrow-left indentTrue"
-                //rowChilObj["cls"] = 'indentTaskColor'
-            }
-            rowChilObj['phase'] = taskListForPhase[i].buildertek__Phase__c
+                    rowChilObj["iconCls"] = "b-fa b-fa-arrow-left indentTrue"
+                    //rowChilObj["cls"] = 'indentTaskColor'
+                }
+                rowChilObj['phase'] = taskListForPhase[i].buildertek__Phase__c
 
-            //rowChilObj["constraintType"] = 'startnoearlierthan'
+                //rowChilObj["constraintType"] = 'startnoearlierthan'
                 if(taskListForPhase[i].buildertek__Dependency__c){
                 rowChilObj["constraintType"] = ''
                 }else{

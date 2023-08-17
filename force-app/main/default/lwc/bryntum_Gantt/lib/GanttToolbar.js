@@ -393,10 +393,9 @@ export default base => class GanttToolbar extends base {
         }
     }
     onSaveClick(){
-        console.log('save changes',this.gantt)
+        console.log(this.gantt.data)
         var data = this.gantt.data;
         console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$');
-        debugger
         console.log('Data => ',{data});
         var ganttRowData = [];
         var taskData = JSON.parse(this.gantt.taskStore.json)
@@ -460,8 +459,7 @@ export default base => class GanttToolbar extends base {
                     }
                 }
                 getChildren(taskData[0])
-                console.log('rowData-->',rowData)
-                // console.log(rowData)
+                console.log(rowData)
                 var updateDataList = [];
                 var updateDataCloneList = [];
                 var insertData = [];
@@ -529,9 +527,9 @@ export default base => class GanttToolbar extends base {
                     for(var j=0;j<dependenciesData.length;j++){
                         if(dependenciesData[j]['to'] == rowData[i]['id']){
                             if(dependenciesData[j]['id'].indexOf('_generated') >= 0){
-                                updateData['buildertek__Dependency__c'] = dependenciesData[j]['to']
+                                updateData['buildertek__Dependency__c'] = dependenciesData[j]['from']
                             }else{
-                                updateData['buildertek__Dependency__c'] = dependenciesData[j]['to']
+                                updateData['buildertek__Dependency__c'] = dependenciesData[j]['from']
                             }
                             filledDependency = true;
                         }
@@ -563,8 +561,8 @@ export default base => class GanttToolbar extends base {
                     }
                     updateDataList.push(updateData)
                 }
-                console.log('updateDataList ==> ',{updateDataList});
                 debugger;
+                console.log('updateDataList ==> ',{updateDataList});
 
                 if(this.gantt.callGanttComponent){
                     if(this.gantt.callGanttComponent.scheduleData){
@@ -601,11 +599,6 @@ export default base => class GanttToolbar extends base {
 
                 // console.log('---------------------------------------');
                 // console.log('updateDataCloneList ==> ',{updateDataCloneList});
-                console.log('updateDataList ==> ',{updateDataList});
-                console.log('updateDataCloneList ==> ',{updateDataCloneList});
-                console.log('---------------------------------------');
-                debugger;
-
 
                 this.gantt.callGanttComponent.callinsertUpdateTaskList(updateDataCloneList)
                 this.gantt.callGanttComponent.scheduleItemsDataList = updateDataList;

@@ -645,7 +645,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
   droprow(e) {
     var taskIdList = this.scheduleItemIdsList;
     var taskList = this.scheduleItemsDataList;
-    console.log('takslist droprow:-'+taskList);
     var data = e.dataTransfer.getData("text");
     // Find the record ID by crawling up the DOM hierarchy
 
@@ -1509,16 +1508,12 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
   }
 
   populateIconsOnExpandCollapse(source) {
-    let id = source.record.id;
-    console.log('populateIconsOnExpandCollapse source ',{source});
-    console.log('id source ',id);
     var rowPhaseElement = this.template.querySelector(
       '[data-id="' + source.record.id + '"]'
     );
     if (rowPhaseElement && rowPhaseElement.innerHTML) {
       var iconElement = "";
       if (source.record.type == "Phase") {
-        console.log('in phase condition');
         iconElement = `<span class="slds-icon_container slds-icon-standard-task" >
                                     <svg aria-hidden="true" class="slds-icon slds-icon-text-default" style="fill: white !important;height:1.2rem;width:1.2rem;">
                                         <use xmlns:xlink=" http://www.w3.org/1999/xlink" xlink:href="/apexpages/slds/latest/assets/icons/standard-sprite/svg/symbols.svg#task">
@@ -1530,14 +1525,12 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
         ) {
           if (rowPhaseElement.children.length) {
             if (rowPhaseElement.children[5].children.length) {
-              console.log('rowPhaseElement ',JSON.parse(JSON.stringify(rowPhaseElement.children[5])));
               rowPhaseElement.children[5].children[0].innerHTML =
                 iconElement + rowPhaseElement.children[5].children[0].innerHTML;
             }
           }
         }
       } else if (source.record.type == "Project") {
-        console.log('in project condition');
         iconElement = `<span class="slds-icon_container slds-icon-custom-custom70" >
                                     <svg aria-hidden="true" class="slds-icon slds-icon-text-default" style="fill: white !important;height:1.2rem;width:1.2rem;">
                                     <use xmlns:xlink=" http://www.w3.org/1999/xlink" xlink:href="/apexpages/slds/latest/assets/icons/custom-sprite/svg/symbols.svg#custom70">
@@ -1720,7 +1713,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           }
         }
       }
-      console.log('scheduleDataList after logic changed ',{scheduleDataList});
       this.scheduleItemsDataList = scheduleDataList;
       var formatedSchData = formatData(
         this.scheduleData,
@@ -1817,6 +1809,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           ],
         },
       ];
+
       const project = new bryntum.gantt.ProjectModel({
         //enableProgressNotifications : true,
         calendar: data.project.calendar,
@@ -2013,7 +2006,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
                   );
                 }
               } else {
-                console.log('record.record.startDate ',record.record.startDate);
                 var sdate = new Date(record.record.startDate);
                 return (
                   months[sdate.getMonth()] +
@@ -2060,10 +2052,10 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
                   record.record._data.duration >= 1 &&
                   record.record._data.type == "Task" &&
                   record.record._data.name != "Milestone Complete"
-                  ) {
-                    // console.log('In if conditon for enddate');
-                    var start;
-                    var endDate = new Date(record.value);
+                ) {
+                  // console.log('In if conditon for enddate');
+                  var start;
+                  var endDate = new Date(record.value);
                   var start = new Date(record.record.startDate.getTime());
                   var duration = record.record.duration;
                   var eDate = new Date(start);
@@ -3109,10 +3101,9 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
             if (event.target.dataset.resource) {
               this.taskRecordId = event.record._data.id;
               this.showEditResourcePopup = true;
-              console.log('taskReocrdId:=- '+this.taskRecordId);
               this.selectedContactApiName = "buildertek__Resource__c";
               this.selectedResourceContact =
-              event.record._data.internalresource;
+                event.record._data.internalresource;
             }
           } else if (event.target.classList.contains("addinternalresource")) {
             this.taskRecordId = event.record._data.id;
@@ -3142,8 +3133,8 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           if (event.target.id == "editcontractorResource") {
             if (event.target.dataset.resource) {
               this.taskRecordId = event.record._data.id;
-              this.showEditResourcePopup = true;
               console.log('taskReocrdId:=- '+this.taskRecordId);
+              this.showEditResourcePopup = true;
               this.selectedContactApiName =
                 "buildertek__Contractor_Resource__c";
               this.selectedResourceContact =
@@ -3156,7 +3147,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           } else if (event.target.classList.contains("addcontractorresource")) {
             this.taskRecordId = event.record._data.id;
             this.showEditResourcePopup = true;
-            console.log('taskReocrdId:=- '+this.taskRecordId);
             this.selectedContactApiName = "buildertek__Contractor_Resource__c";
             this.selectedResourceContact = "";
           }
@@ -3285,7 +3275,9 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
       }, 5000);
     }
   }
+  // saveWbsData(wbsValue){
+  //   console.log({wbsValue});
 
-
+  // }
 
 }
