@@ -156,11 +156,11 @@
                                 </td>
                                 <td>
                                     <!-- <aura:if isTrue="{!budgetLineWrapper.BudgetLine.buildertek__Product__c != ''}"> -->
-                                        <lightning:select name="{!index}" value="{!budgetLineWrapper.BudgetLine.buildertek__Contractor__c}" class="vendor-class pointer1">
+                                        <!-- <lightning:select name="{!index}" value="{!budgetLineWrapper.BudgetLine.buildertek__Contractor__c}" class="vendor-class pointer1">
                                         <aura:iteration items="{!v.vendorList}" var="vendorOption">
                                                 <option name="{!budgetLineWrapper}" value="{!vendorOption.value}">{!vendorOption.label}</option>
                                             </aura:iteration>
-                                        </lightning:select>
+                                        </lightning:select> -->
                                     <!-- </aura:if>
                                     <aura:if isTrue="{!budgetLineWrapper.BudgetLine.buildertek__Product__c == ''}">
                                         <lightning:select name="{!index}" value="{!budgetLineWrapper.BudgetLine.buildertek__Contractor__c}" class="vendor-class pointer1">
@@ -169,6 +169,25 @@
                                             </aura:iteration>
                                         </lightning:select>
                                     </aura:if> -->
+
+                                    <aura:html tag="style">
+                                        .mainDiv{
+                                            padding-top:0% !important;
+
+                                        }
+                                        .pillSize{
+
+                                            padding-top: 2% !important;
+                                            padding-bottom: 2% !important;
+                                        }
+                                        .subDiv{
+                                            width:100% !important;
+                                            margin-top:0 !important;
+                                        }
+                                    </aura:html>
+                                    
+                                    <c:BT_LightningLookup objectAPIName="Account"  IconName="standard:account" selectedRecord="{!budgetLineWrapper.BudgetLine.buildertek__Contractor__c}" aura:id="accountId"  />
+
                                     
                                 </td>
                                 <td>
