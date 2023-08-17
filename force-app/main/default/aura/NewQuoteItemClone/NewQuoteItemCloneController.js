@@ -244,13 +244,24 @@
                 component.set('v.openProductBox', true);
             }
             else{
-                var toastEvent = $A.get("e.force:showToast");
-                toastEvent.setParams({
-                    "type": "error",
-                    "title": "Error!",
-                    "message": 'You don\'t have the necessary privileges to create this record.'
+                // var toastEvent = $A.get("e.force:showToast");
+                // toastEvent.setParams({
+                //     "type": "error",
+                //     "title": "Error!",
+                //     "message": 'You don\'t have the necessary privileges to create record.'
+                // });
+                // toastEvent.fire();
+
+                component.find('notifLib').showNotice({
+                    "variant": "error",
+                    "header": "Error!",
+                    "message": "You don\'t have the necessary privileges to Create record.",
+                    closeCallback: function () {
+                        $A.get("e.c:BT_SpinnerEvent").setParams({
+                            "action": "HIDE"
+                        }).fire();
+                    }
                 });
-                toastEvent.fire();
             }
 
 
@@ -642,13 +653,24 @@
             helper.createRFQPicker(component, event, helper);
         }
         else{
-            var toastEvent = $A.get("e.force:showToast");
-                toastEvent.setParams({
-                    "type": "error",
-                    "title": "Error!",
-                    "message": 'You don\'t have the necessary privileges.'
-                });
-                toastEvent.fire();
+            // var toastEvent = $A.get("e.force:showToast");
+            //     toastEvent.setParams({
+            //         "type": "error",
+            //         "title": "Error!",
+            //         "message": 'You don\'t have the necessary privileges.'
+            //     });
+            //     toastEvent.fire();
+
+            component.find('notifLib').showNotice({
+                "variant": "error",
+                "header": "Error!",
+                "message": "You don\'t have the necessary privileges to Create record.",
+                closeCallback: function () {
+                    $A.get("e.c:BT_SpinnerEvent").setParams({
+                        "action": "HIDE"
+                    }).fire();
+                }
+            });
         }
     },
 
@@ -806,13 +828,24 @@
             }
         }
         else{
-            var toastEvent = $A.get("e.force:showToast");
-            toastEvent.setParams({
-                "type": "error",
-                "title": "Error!",
-                "message": 'You don\'t have the necessary privileges to create this record.'
+            // var toastEvent = $A.get("e.force:showToast");
+            // toastEvent.setParams({
+            //     "type": "error",
+            //     "title": "Error!",
+            //     "message": 'You don\'t have the necessary privileges to create record.'
+            // });
+            // toastEvent.fire();
+
+            component.find('notifLib').showNotice({
+                "variant": "error",
+                "header": "Error!",
+                "message": "You don\'t have the necessary privileges to Create record.",
+                closeCallback: function () {
+                    $A.get("e.c:BT_SpinnerEvent").setParams({
+                        "action": "HIDE"
+                    }).fire();
+                }
             });
-            toastEvent.fire();
         }
 
     },
@@ -902,13 +935,24 @@
             $A.enqueueAction(action);
         }
         else{
-            var toastEvent = $A.get("e.force:showToast");
-                toastEvent.setParams({
-                    "type": "error",
-                    "title": "Error!",
-                    "message": 'You don\'t have the necessary privileges to Edit this record.'
-                });
-                toastEvent.fire();
+            // var toastEvent = $A.get("e.force:showToast");
+            //     toastEvent.setParams({
+            //         "type": "error",
+            //         "title": "Error!",
+            //         "message": 'You don\'t have the necessary privileges to update record.'
+            //     });
+            //     toastEvent.fire();
+
+            component.find('notifLib').showNotice({
+                "variant": "error",
+                "header": "Error!",
+                "message": "You don\'t have the necessary privileges to Update unit price.",
+                closeCallback: function () {
+                    $A.get("e.c:BT_SpinnerEvent").setParams({
+                        "action": "HIDE"
+                    }).fire();
+                }
+            });
 
                 $A.get("e.c:BT_SpinnerEvent").setParams({
                     "action": "HIDE"
@@ -923,73 +967,135 @@
 
 
     deleteQuote: function(component, event, helper) {
-        component.set("v.PopupHeader", "Delete Quote Line");
-        component.set("v.PopupDescription", "Are you sure you want to delete this Quote Line?");
-        component.set("v.isOpen", true);
-        var recordId = event.currentTarget.dataset.id;
-        component.set("v.quoteItemId", recordId);
+        if(component.get("v.HaveDeleteAccess")){
+            component.set("v.PopupHeader", "Delete Quote Line");
+            component.set("v.PopupDescription", "Are you sure you want to delete this Quote Line?");
+            component.set("v.isOpen", true);
+            var recordId = event.currentTarget.dataset.id;
+            component.set("v.quoteItemId", recordId);
+        }else{
+            // var toastEvent = $A.get("e.force:showToast");
+            // toastEvent.setParams({
+            //     "type": "error",
+            //     "title": "Error!",
+            //     "message": 'You don\'t have the necessary privileges to delete record.'
+            // });
+            // toastEvent.fire();
+            component.find('notifLib').showNotice({
+                "variant": "error",
+                "header": "Error!",
+                "message": "You don\'t have the necessary privileges to Delete record.",
+                closeCallback: function () {
+                    $A.get("e.c:BT_SpinnerEvent").setParams({
+                        "action": "HIDE"
+                    }).fire();
+                }
+            });
+        }
     },
 
     deleteAllQuotelines: function(component, event, helper) {
-        component.set("v.QuotelinePopupHeader", "Delete Quote Lines");
-        component.set("v.QuotelinePopupDescription", "Are you sure you want to delete Quote Lines?");
-        component.set("v.isQuotelinedelete", true);
-        var recordId = component.get("v.recordId");
-        component.set("v.quoteItemId", recordId);
+        if(component.get("v.HaveDeleteAccess")){
+            component.set("v.QuotelinePopupHeader", "Delete Quote Lines");
+            component.set("v.QuotelinePopupDescription", "Are you sure you want to delete Quote Lines?");
+            component.set("v.isQuotelinedelete", true);
+            var recordId = component.get("v.recordId");
+            component.set("v.quoteItemId", recordId);
+        }else{
+            // var toastEvent = $A.get("e.force:showToast");
+            // toastEvent.setParams({
+            //     "type": "error",
+            //     "title": "Error!",
+            //     "message": 'You don\'t have the necessary privileges to delete record.'
+            // });
+            // toastEvent.fire();
+            component.find('notifLib').showNotice({
+                "variant": "error",
+                "header": "Error!",
+                "message": "You don\'t have the necessary privileges to Delete record.",
+                closeCallback: function () {
+                    $A.get("e.c:BT_SpinnerEvent").setParams({
+                        "action": "HIDE"
+                    }).fire();
+                }
+            });
+        }
     },
 
     deleteSelectedQuoteItem: function(component, event, helper) {
-        console.log('---In Delete Method---');
-        component.set("v.Spinner22", true);
-        if (component.find("checkQuoteItem") != undefined || component.find("checkGroupQuoteItem1") != undefined) {
-            var QuoteIds = [];
-            var rowData;
-            var newRFQItems = [];
-            var delId = [];
-            var getAllId;
-            if(component.find("checkGroupQuoteItem1") != undefined){
-                getAllId = component.find("checkGroupQuoteItem1");
-            }else{
-                getAllId = component.find("checkQuoteItem");
-
-            }
-            console.log('getAllId--->>',{getAllId});
-            if (!Array.isArray(getAllId)) {
-                if (getAllId.get("v.value") == true) {
-                    QuoteIds.push(getAllId.get("v.text"));
+        if(component.get("v.HaveDeleteAccess")){
+            console.log('---In Delete Method---');
+            component.set("v.Spinner22", true);
+            if (component.find("checkQuoteItem") != undefined || component.find("checkGroupQuoteItem1") != undefined) {
+                var QuoteIds = [];
+                var rowData;
+                var newRFQItems = [];
+                var delId = [];
+                var getAllId;
+                if(component.find("checkGroupQuoteItem1") != undefined){
+                    getAllId = component.find("checkGroupQuoteItem1");
+                }else{
+                    getAllId = component.find("checkQuoteItem");
+    
                 }
-            } else {
-                for (var i = 0; i < getAllId.length; i++) {
-                    console.log(getAllId[i].get("v.value")  , 'getAllId[i].get("v.value") ');
-                    if (getAllId[i].get("v.value") == true) {
-                        console.log('inside if');
-                        QuoteIds.push(getAllId[i].get("v.text"));
-                        console.log({QuoteIds});
+                console.log('getAllId--->>',{getAllId});
+                if (!Array.isArray(getAllId)) {
+                    if (getAllId.get("v.value") == true) {
+                        QuoteIds.push(getAllId.get("v.text"));
+                    }
+                } else {
+                    for (var i = 0; i < getAllId.length; i++) {
+                        console.log(getAllId[i].get("v.value")  , 'getAllId[i].get("v.value") ');
+                        if (getAllId[i].get("v.value") == true) {
+                            console.log('inside if');
+                            QuoteIds.push(getAllId[i].get("v.text"));
+                            console.log({QuoteIds});
+                        }
                     }
                 }
-            }
-            if (QuoteIds.length > 0) {
-                var modal = component.find("exampleModal");
-                $A.util.removeClass(modal, 'hideDiv');
-                component.set("v.QuotelinePopupHeader", "Delete Quote Lines");
-                component.set("v.QuotelinePopupDescription", "Are you sure you want to delete Quote Lines?");
-                component.set("v.isQuotelinedelete", true);
-            } else {
-                
-                   var toastEvent = $A.get("e.force:showToast");
-                   toastEvent.setParams({
-                       title: 'Error',
-                       message: 'Please select atleast one Quote Line ',
-                       duration: ' 5000',
-                       key: 'info_alt',
-                       type: 'error',
-                       mode: 'pester'
-                   });
-                   toastEvent.fire();
+                if (QuoteIds.length > 0) {
+                    var modal = component.find("exampleModal");
+                    $A.util.removeClass(modal, 'hideDiv');
+                    component.set("v.QuotelinePopupHeader", "Delete Quote Lines");
+                    component.set("v.QuotelinePopupDescription", "Are you sure you want to delete Quote Lines?");
+                    component.set("v.isQuotelinedelete", true);
+                } else {
+                    
+                       var toastEvent = $A.get("e.force:showToast");
+                       toastEvent.setParams({
+                           title: 'Error',
+                           message: 'Please select atleast one Quote Line ',
+                           duration: ' 5000',
+                           key: 'info_alt',
+                           type: 'error',
+                           mode: 'pester'
+                       });
+                       toastEvent.fire();
+                    component.set("v.Spinner22", false);
+                }
                 component.set("v.Spinner22", false);
             }
-            component.set("v.Spinner22", false);
+        }else{
+            // var toastEvent = $A.get("e.force:showToast");
+            // toastEvent.setParams({
+            //     "type": "error",
+            //     "title": "Error!",
+            //     "message": 'You don\'t have the necessary privileges to delete record.'
+            // });
+            // toastEvent.fire();
+            component.find('notifLib').showNotice({
+                "variant": "error",
+                "header": "Error!",
+                "message": "You don\'t have the necessary privileges to Delete record.",
+                closeCallback: function () {
+                    $A.get("e.c:BT_SpinnerEvent").setParams({
+                        "action": "HIDE"
+                    }).fire();
+                }
+            });
         }
+
+        
     },
 
     newRFQ: function(component, event, helper) {
@@ -1614,13 +1720,23 @@
                 }
             }
             else{
-                var toastEvent = $A.get("e.force:showToast");
-                    toastEvent.setParams({
-                        "type": "error",
-                        "title": "Error!",
-                        "message": 'You don\'t have the necessary privileges to Edit this record.'
-                    });
-                    toastEvent.fire();
+                // var toastEvent = $A.get("e.force:showToast");
+                //     toastEvent.setParams({
+                //         "type": "error",
+                //         "title": "Error!",
+                //         "message": 'You don\'t have the necessary privileges to efit record.'
+                //     });
+                //     toastEvent.fire();
+                component.find('notifLib').showNotice({
+                    "variant": "error",
+                    "header": "Error!",
+                    "message": "You don\'t have the necessary privileges to Update record.",
+                    closeCallback: function () {
+                        $A.get("e.c:BT_SpinnerEvent").setParams({
+                            "action": "HIDE"
+                        }).fire();
+                    }
+                });
             }
 
 
@@ -2080,13 +2196,24 @@
             evt.fire();
         }
         else{
-            var toastEvent = $A.get("e.force:showToast");
-            toastEvent.setParams({
-                "type": "error",
-                "title": "Error!",
-                "message": 'You don\'t have the necessary privileges to create this record.'
+            // var toastEvent = $A.get("e.force:showToast");
+            // toastEvent.setParams({
+            //     "type": "error",
+            //     "title": "Error!",
+            //     "message": 'You don\'t have the necessary privileges to create record.'
+            // });
+            // toastEvent.fire();
+
+            component.find('notifLib').showNotice({
+                "variant": "error",
+                "header": "Error!",
+                "message": "You don\'t have the necessary privileges to Create record.",
+                closeCallback: function () {
+                    $A.get("e.c:BT_SpinnerEvent").setParams({
+                        "action": "HIDE"
+                    }).fire();
+                }
             });
-            toastEvent.fire();
 
         }
 
@@ -2150,11 +2277,33 @@
 
     },
     onclickDuplicate: function(component, event, helper) {
-        var currentId = event.currentTarget.getAttribute("data-id");
-        component.set("v.currentId", currentId);
-        component.set("v.PopupHeader", "Duplicate Quote Line");
-        component.set("v.PopupDescription", "Are you sure you want to duplicate this Quote Line?");
-        component.set("v.isDuplicate", true);
+        if(component.set("v.HaveCreateAccess")){
+            var currentId = event.currentTarget.getAttribute("data-id");
+            component.set("v.currentId", currentId);
+            component.set("v.PopupHeader", "Duplicate Quote Line");
+            component.set("v.PopupDescription", "Are you sure you want to duplicate this Quote Line?");
+            component.set("v.isDuplicate", true);
+        }
+        else{
+            // var toastEvent = $A.get("e.force:showToast");
+            // toastEvent.setParams({
+            //     "type": "error",
+            //     "title": "Error!",
+            //     "message": 'You don\'t have the necessary privileges to duplicate this record.'
+            // });
+            // toastEvent.fire();
+
+            component.find('notifLib').showNotice({
+                "variant": "error",
+                "header": "Error!",
+                "message": "You don\'t have the necessary privileges to Create record.",
+                closeCallback: function () {
+                    $A.get("e.c:BT_SpinnerEvent").setParams({
+                        "action": "HIDE"
+                    }).fire();
+                }
+            });
+        }
     },
     duplicateQuote: function(component, event, helper) {
         var currentId = component.get("v.currentId");
@@ -2268,13 +2417,23 @@
                 }
         }
         else{
-            var toastEvent = $A.get("e.force:showToast");
-                toastEvent.setParams({
-                    "type": "error",
-                    "title": "Error!",
-                    "message": 'You don\'t have the necessary privileges to Edit Global Markup.'
-                });
-                toastEvent.fire();
+            // var toastEvent = $A.get("e.force:showToast");
+            //     toastEvent.setParams({
+            //         "type": "error",
+            //         "title": "Error!",
+            //         "message": 'You don\'t have the necessary privileges to Update Global Markup.'
+            //     });
+            //     toastEvent.fire();
+            component.find('notifLib').showNotice({
+                "variant": "error",
+                "header": "Error!",
+                "message": "You don\'t have the necessary privileges to Update Global Markup.",
+                closeCallback: function () {
+                    $A.get("e.c:BT_SpinnerEvent").setParams({
+                        "action": "HIDE"
+                    }).fire();
+                }
+            });
 
         }
             //component.set("v.PopupHeader", "Save Quote Line");
