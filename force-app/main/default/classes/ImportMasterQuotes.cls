@@ -273,6 +273,37 @@ public with sharing class ImportMasterQuotes {
             return msg;
         }                                             
     }
+
+    @AuraEnabled
+    public static string CheckUserAccess(String AccessType){
+        // try {
+            switch on AccessType{
+                when 'Create'{
+                    if(Schema.sObjectType.buildertek__Quote_Item__c.isCreateable())
+                        {return 'True';}
+                    else{ return 'False'; }
+                }
+                when 'Update'{
+                    if(Schema.sObjectType.buildertek__Quote_Item__c.isUpdateable()){
+                        return 'True';
+                    }
+                    else{
+                        return 'False';
+                    }
+                }
+                when 'Delete'{
+                    if(Schema.sObjectType.buildertek__Quote_Item__c.isDeletable()){
+                        return 'True';
+                    }
+                    else{
+                        return 'False';
+                    }
+                }
+                when else{
+                    return null;
+                }
+            }
+        }
     
     public class MasterQuotesClass{
          @AuraEnabled

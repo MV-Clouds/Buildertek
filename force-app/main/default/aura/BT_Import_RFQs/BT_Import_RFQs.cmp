@@ -18,6 +18,9 @@
     <aura:handler name="change" value="{!v.searchRfqTradeFilter}" action="{!c.doRfqSearch}" />
     <aura:handler name="change" value="{!v.searchRfqDesFilter}" action="{!c.doRfqSearch}" />
     <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/> 
+
+    <aura:attribute name="HaveCreateAccess" type="boolean" default="true"/>
+
     <!-- <aura:html tag="style">
         .slds-modal__container{
             max-width: 80rem !important;
@@ -160,4 +163,6 @@
                           label="Add To budget" onclick="{!c.addToBudget}" />
     </div> 
     <!-- </footer> -->
+    <lightning:notificationsLibrary aura:id="notifLib" />
+
 </aura:component>

@@ -6,7 +6,7 @@
         // Check If User Have Access for Quote Line
         helper.Check_Create_User_Access(component, event, helper);
 
-        if(component.get("v.HaveCreateAccess")){
+
             var action = component.get("c.getMasterBudgets");
             action.setCallback(this, function(response){
                 console.log({response});
@@ -30,18 +30,6 @@
                 }
             });
             $A.enqueueAction(action);
-        }
-        else{
-            var toastEvent = $A.get("e.force:showToast");
-                toastEvent.setParams({
-                    "type": "error",
-                    "title": "Error!",
-                    "message": 'You don\'t have the necessary privileges to create this record.'
-                });
-                toastEvent.fire();
-                component.set("v.Spinner", false);
-
-        }
 
 	},
 
@@ -145,6 +133,8 @@
 	},
 
 	importBudget : function(component, event, helper){
+        if(component.get("v.HaveCreateAccess")){
+       
 	    component.set("v.Spinner", true);
 	    var budgetsList = component.get("v.masterBudgetsList");
 	    console.log('quotesList ---------> '+JSON.stringify(budgetsList));
@@ -210,6 +200,19 @@
             });
               toastEvent.fire();
 	    }
+    } 
+    else{
+        component.find('notifLib').showNotice({
+            "variant": "error",
+            "header": "Error!",
+            "message": "You don\'t have the necessary privileges to Create record.",
+            closeCallback: function () {
+                $A.get("e.c:BT_SpinnerEvent").setParams({
+                    "action": "HIDE"
+                }).fire();
+            }
+        });
+    }
 	},
 
 	next: function (component, event, helper) {

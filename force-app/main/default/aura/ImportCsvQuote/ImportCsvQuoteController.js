@@ -1,19 +1,30 @@
 ({  
+    doInit : function(component, event, helper) {
+        helper.Check_Create_User_Access(component, event, helper);
+    },
     save : function(component, event, helper) {
-        helper.save(component, helper);     
+        if(component.get("v.HaveCreateAccess")){
+            helper.save(component, helper);     
+        }
+        else{
+            var toastEvent = $A.get("e.force:showToast");
+                toastEvent.setParams({
+                    "type": "error",
+                    "title": "Error!",
+                    "message": 'You don\'t have the necessary privileges to create this record.'
+                });
+                toastEvent.fire();
+        }
     },
     closeModel : function(component, event, helper){
 	    $A.get("e.force:closeQuickAction").fire();    
 	},
     
     onSelectFileHandler : function(component,event,helper){
-        try{
         console.log('onfile select');
         var MAX_FILE_SIZE = 750000; 
         var fileInput = component.find("file").getElement();
         var file = fileInput.files[0];
-        // var file = event.getSource().get("v.files")[0];
-        console.log('file1 =: ', file);
         
         
          if(file != undefined){
@@ -27,16 +38,13 @@
              if(ext!='csv'){
                  helper.showToast(component, "warning",'Please Select .csv file.'); 
              }else{
-                //  $A.util.addClass(component.find("btn").getElement(), "slds-hide");
-                //  $A.util.removeClass(component.find("btn").getElement(), "slds-show");
+                 $A.util.addClass(component.find("btn").getElement(), "slds-hide");
+                 $A.util.removeClass(component.find("btn").getElement(), "slds-show");
                  component.set("v.selectedFile",file.name);
                  component.set("v.isSelect",true);
              }
              
          } 
-        } catch(error){
-            console.log('error => ', {error})
-        }
        
     },
     handleRemove :function(component,event,helper){

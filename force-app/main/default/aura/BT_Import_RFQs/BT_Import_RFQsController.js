@@ -1,5 +1,6 @@
 ({
     doInit : function(component, event, helper) {
+        helper.Check_Create_User_Access(component, event, helper);
         var pageNumber = component.get("v.PageNumber");
         var pageSize = component.get("v.pageSize");
         var vendorValue = component.get("v.searchRfqVendorFilter");
@@ -110,13 +111,27 @@
     },
     
     addToBudget: function (component, event, helper) {
-        var records = component.get("v.rfqRecordList");
-        var rfqIds = component.get("v.listOfSelectedRFQIds");
-        var budgetId = component.get("v.recordId");
-        if(rfqIds.length>0){
-            helper.addRFQToBudget(component, event, helper, rfqIds, budgetId);
-        }else{
-            helper.showErrorToast(component,event,helper,'Error!','Please Select RFQ.');
+        if(component.get("v.HaveCreateAccess")){
+            var records = component.get("v.rfqRecordList");
+            var rfqIds = component.get("v.listOfSelectedRFQIds");
+            var budgetId = component.get("v.recordId");
+            if(rfqIds.length>0){
+                helper.addRFQToBudget(component, event, helper, rfqIds, budgetId);
+            }else{
+                helper.showErrorToast(component,event,helper,'Error!','Please Select RFQ.');
+            }
+        }
+        else{
+            component.find('notifLib').showNotice({
+                "variant": "error",
+                "header": "Error!",
+                "message": "You don\'t have the necessary privileges to Create record.",
+                closeCallback: function () {
+                    $A.get("e.c:BT_SpinnerEvent").setParams({
+                        "action": "HIDE"
+                    }).fire();
+                }
+            });
         }
     },
     closeModal: function (component, event, helper) {
