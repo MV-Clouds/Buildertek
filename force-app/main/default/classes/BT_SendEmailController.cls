@@ -60,7 +60,7 @@ public with sharing class BT_SendEmailController{
 
                 emailTemplateList = [Select Id, Name, folder.name
                                      from Emailtemplate
-                                     where folder.name = :folderName];
+                                     where folder.name = :folderName AND DeveloperName != 'quote_top' AND DeveloperName != 'quote_bottom'];
         //  }
             return emailTemplateList;
         }
