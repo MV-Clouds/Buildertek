@@ -2539,7 +2539,12 @@ public with sharing class QuoteDAO{
                      filter = 'Id NOT IN: ProdIds';
                  }      
             }
-        sQuery = 'select id, Name from ' + ObjectName + ' WHERE ' + searchKey + ' AND ' + filter + ' order by Name ASC LIMIT 800';
+            if(filter != null){
+                sQuery = 'select id, Name from ' + ObjectName + ' WHERE ' + searchKey + ' AND ' + filter + ' order by Name ASC LIMIT 800';
+            }
+            else{
+                sQuery = 'select id, Name from ' + ObjectName + ' WHERE ' + searchKey + ' order by Name ASC LIMIT 800';
+            }
         // Query Log
         System.debug(sQuery);
         // Query Log

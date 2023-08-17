@@ -130,4 +130,7 @@
     	<button class="slds-button slds-button--neutral" onclick="{!c.closeModel}" >Cancel</button>
     	<button class="slds-button slds-button--brand" onclick="{!c.importQuote}">Import Master Quote</button>
     </div>
+	
+    <lightning:notificationsLibrary aura:id="notifLib" />
+
 </aura:component>

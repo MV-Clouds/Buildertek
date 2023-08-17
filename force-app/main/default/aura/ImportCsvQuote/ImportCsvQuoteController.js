@@ -7,13 +7,16 @@
             helper.save(component, helper);     
         }
         else{
-            var toastEvent = $A.get("e.force:showToast");
-                toastEvent.setParams({
-                    "type": "error",
-                    "title": "Error!",
-                    "message": 'You don\'t have the necessary privileges to create this record.'
-                });
-                toastEvent.fire();
+            component.find('notifLib').showNotice({
+                "variant": "error",
+                "header": "Error!",
+                "message": "You don\'t have the necessary privileges to Create record.",
+                closeCallback: function () {
+                    $A.get("e.c:BT_SpinnerEvent").setParams({
+                        "action": "HIDE"
+                    }).fire();
+                }
+            });
         }
     },
     closeModel : function(component, event, helper){
