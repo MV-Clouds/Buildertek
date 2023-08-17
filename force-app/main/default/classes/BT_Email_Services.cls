@@ -97,6 +97,9 @@ global with sharing class BT_Email_Services implements Messaging.InboundEmailHan
                         pdf.getParameters().put('templateId', plainTextBody.split(';templateId:')[1].split(';')[0]);
                         // pdf.getParameters().put('fileId', 'background-image:url("data:image/png;base64,'+fileid+'");');
                         pdf.getParameters().put('fileId', plainTextBody.split(';fileId:')[1].split(';')[0]);
+                        pdf.getParameters().put('fileIdNew', plainTextBody.split(';fileIdNew:')[1].split(';')[0]);
+                        System.debug('fileIdNew12------->'  + plainTextBody.split(';fileId:')[1].split(';')[0]);
+                        System.debug('fileIdNew123------->'  + plainTextBody.split(';fileIdNew:')[1].split(';')[0]);
                         pdf.setRedirect(true);
 
                         Blob b = !Test.isRunningTest() ? pdf.getContent() : Blob.ValueOf('dummy text');

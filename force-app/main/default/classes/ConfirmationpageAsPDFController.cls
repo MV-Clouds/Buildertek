@@ -12,6 +12,8 @@ public without sharing class ConfirmationpageAsPDFController{
     public DateTime customerAcceptedDate{ get; set; }
     
     public String imgId{ get; set; }
+
+    public String imgIdNew{ get; set; }
     
     public ConfirmationpageAsPDFController(){
         recordID = ApexPages.currentPage().getParameters().get('Id');
@@ -23,6 +25,8 @@ public without sharing class ConfirmationpageAsPDFController{
             system.debug('&&&&&&&&&&&&&&&&&&&&&&&&&&');
             imgId = ApexPages.currentPage().getParameters().get('imgURL');
              system.debug('**********'+imgId);
+            imgIdNew = ApexPages.currentPage().getParameters().get('imgURLNew');
+             system.debug('**********'+imgIdNew);
         }
         
         if (ApexPages.currentPage().getParameters().get('customerAcceptedDate') != null){

@@ -1,0 +1,82 @@
+<apex:component access="global">
+    <style>
+        /* Default signature box styling */
+        .NewCanvas {
+            background-color: #ffffff !important;
+            border:1px solid lightgray;
+            width:100%;
+            height:10rem;
+            margin-top:10px;
+        }
+    
+        /* Dark mode signature box styling */
+        @media (prefers-color-scheme: dark) {
+            .NewCanvas {
+                background-color: #ffffff !important;
+                border:1px solid lightgray;
+                width:100%;
+                height:10rem;
+                margin-top:10px;
+            }
+        }
+    </style>
+    <body>
+        <div class="slds-grid slds-wrap slds-grid--pull-padded slds-p-horizontal--small">
+            <!-- Signature Label -->
+            <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1">
+                <div class="slds-form slds-form_horizontal">
+                    <div class="">
+                        <div class="slds-form-element__control">
+                            <label class="slds-form-element__label" style="font-weight:bold;color: #444444;"> SIGNATURE</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Signature Pad -->
+            <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1">
+                <div class="">
+                    <div class="slds-form-element__control">
+                        <div id="signature-pad1" >
+                            <canvas class="NewCanvas" id="divsign"></canvas>
+                            <div style="float:right;margin-right:18px;"><a href="javascript:void(0);" style="text-decoration:none;" id="btnClear1">Clear Signature</a></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Include external scripts (inline) -->
+        <script>
+            setTimeout(function() {
+                var wrapper = document.getElementById("signature-pad1");
+                if (wrapper != undefined) {
+                    var canvas = wrapper.querySelector(".NewCanvas");
+                    var NewSignaturePad;
+
+                    // Adjust canvas coordinate space taking into account pixel ratio,
+                    // to make it look crisp on mobile devices.
+                    // This also causes canvas to be cleared.
+                    function resizeCanvas() {
+                        // When zoomed out to less than 100%, for some very strange reason,
+                        // some browsers report devicePixelRatio as less than 1
+                        // and only part of the canvas is cleared then.
+                        var ratio = Math.max(window.devicePixelRatio || 1, 1);
+                        canvas.width = canvas.offsetWidth * ratio;
+                        canvas.height = canvas.offsetHeight * ratio;
+                        canvas.getContext("2d").scale(ratio, ratio);
+                    }
+
+                    window.onresize = resizeCanvas;
+                    resizeCanvas();
+
+                    window.NewSignaturePad = new SignaturePad(canvas);
+
+                    document.getElementById("btnClear1").onclick = function(event) {
+                        event.preventDefault();
+                        window.NewSignaturePad.clear();
+                    }
+                }
+            }, 3000);
+        </script>
+    </body>
+</apex:component>

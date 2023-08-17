@@ -17,11 +17,17 @@ public without sharing class ConfirmationController{
 
     public string fileid{ get; set; }
 
+    public string fileIdNew{ get; set; }
+
     public string Checkcustomerview{ get; set; }
 
     public string filerecid{ get; set; }
 
+    public string filerecidNew {get;set;}
+
     public String imageURL{ get; set; }
+
+    public String imageURLNew{ get; set; }
 
     public String customerAcceptedDate{ get; set; }
 
@@ -43,7 +49,7 @@ public without sharing class ConfirmationController{
 
     public String rejectionReason{ get; set; }
 
-    public String cdId{ get; set; }
+    public List<String> cdId{ get; set; }
 
     public list<buildertek__Quote_Line_Group__c> Quotelinegroup;
     Public map<id, list<buildertek__Quote_Item__c>> quotegroupingmap;
@@ -78,6 +84,7 @@ public without sharing class ConfirmationController{
         allQuoteLineAccepted=true;
         Result = 'Not Accepted';
         RejectResult = 'Not Accepted';
+        cdId = new List<String>();
         contrctrec = new buildertek__Contract__c();
         Quotelinegroup = new list<buildertek__Quote_Line_Group__c>();
         recordID = apexpages.currentPage().getParameters().get('Id');
@@ -265,7 +272,7 @@ public without sharing class ConfirmationController{
                          FROM ContentVersion
                          WHERE Id = :conVer.Id].ContentDocumentId;
             //create ContentDocumentLink  record
-            ContentDocumentLink conDocLink = New ContentDocumentLink();
+            ContentDocumentLink conDocLink = new ContentDocumentLink();
             conDocLink.LinkedEntityId = recordID; // Specify RECORD ID here i.e Any Object ID (Standard Object/Custom Object)
             conDocLink.ContentDocumentId = conDoc;  //ContentDocumentId Id from ContentVersion
             conDocLink.shareType = 'I';
@@ -555,36 +562,110 @@ Messaging.sendEmail(new Messaging.SingleEmailMessage[] { email });  */
         transient Date nowDT = Date.today();
         System.debug('Check Debug log ==> '+nowDT);
         customerAcceptedDate = String.valueOf(DateTime.now());
-        ContentVersion conVer = new ContentVersion();
-        conVer.ContentLocation = 'S'; // to use S specify this document is in Salesforce, to use E for external files
-        conVer.PathOnClient = 'SignatureName.png'; // The files name, extension is very important here which will help the file in preview.
-        conVer.Title = 'Signature' + ' ' + nowDT; // Display name of the files
-        conVer.VersionData = EncodingUtil.base64Decode(imageContent);  // converting your binary string to Blog
-        insert conVer;
+        List<ContentVersion> contentVersionsToInsert = new List<ContentVersion>();
+        
+        List<String> imgcontent = new List<String>(imageContent.split(','));
+        System.debug('imgcontent----------------->' + imgcontent);
+        for (String base64Image : imgcontent) {
+            ContentVersion conVer = new ContentVersion();
+            conVer.ContentLocation = 'S'; // to use S specify this document is in Salesforce, to use E for external files
+            conVer.PathOnClient = 'SignatureName.png'; // The files name, extension is very important here which will help the file in preview.
+            conVer.Title = 'Signature' + ' ' + nowDT; // Display name of the files
+            System.debug('conVer.Title---->' + conVer.Title);
+            conVer.VersionData = EncodingUtil.base64Decode(base64Image);  // converting your binary string to Blog
+            contentVersionsToInsert.add(conVer);
+        }
+        if (!contentVersionsToInsert.isEmpty()) {
+            System.debug('contentVersionsToInsert----------------->' + contentVersionsToInsert);
+            insert contentVersionsToInsert;
+        }
         // First get the Content Document Id from ContentVersion Object
-        Id conDoc = [SELECT ContentDocumentId
-                     FROM ContentVersion
-                     WHERE Id = :conVer.Id].ContentDocumentId;
+        // Id conDoc = [SELECT ContentDocumentId
+        //              FROM ContentVersion
+        //              WHERE Id = :conVer.Id].ContentDocumentId;
+        List<Id> conVerIDs = new List<Id>();
+        for (ContentVersion conVer2 : contentVersionsToInsert) {
+            conVerIDs.add(conVer2.Id);
+        }System.debug('conVerIDs----------->' + conVerIDs);
+        Id converId1;
+        Id converId2;
+        if(conVerIDs.size()> 0) {
+             converId1 = conVerIDs[0];
+        }
+        if(conVerIDs.size()> 1) {
+            converId2 = conVerIDs[1];
+         }
+        
+        List<ContentVersion> contentVersions = [SELECT Id, ContentDocumentId FROM ContentVersion WHERE Id IN :conVerIDs];
+        List<Id> conDoc = new List<Id>();
+        for (ContentVersion conVer1 : contentVersions) {
+            System.debug('ContentDocumentId----->' + conVer1.ContentDocumentId);
+            conDoc.add(conVer1.ContentDocumentId);
+        }System.debug('conDoc-------->' +conDoc);
         //create ContentDocumentLink  record
-        ContentDocumentLink conDocLink = New ContentDocumentLink();
-        conDocLink.LinkedEntityId = recordID; // Specify RECORD ID here i.e Any Object ID (Standard Object/Custom Object)
-        conDocLink.ContentDocumentId = conDoc;  //ContentDocumentId Id from ContentVersion
-        conDocLink.shareType = 'I';
-        conDocLink.Visibility = 'AllUsers';
+        // ContentDocumentLink conDocLink = New ContentDocumentLink();
+        // conDocLink.LinkedEntityId = recordID; // Specify RECORD ID here i.e Any Object ID (Standard Object/Custom Object)
+        // conDocLink.ContentDocumentId = conDoc;  //ContentDocumentId Id from ContentVersion
+        // conDocLink.shareType = 'I';
+        // conDocLink.Visibility = 'AllUsers';
+        // insert conDocLink;
+        List<ContentDocumentLink> conDocLink = new List<ContentDocumentLink>();
+        for (Id conDocId : conDoc) {
+            System.debug('conDocId---------->' + conDocId);
+            ContentDocumentLink cdl = new ContentDocumentLink();
+            cdl.LinkedEntityId = recordID;
+            cdl.ContentDocumentId = conDocId;
+            cdl.ShareType = 'I'; // 'I' for internal sharing
+            cdl.Visibility = 'AllUsers'; // Set visibility as needed
+            conDocLink.add(cdl);
+        }
         insert conDocLink;
 
-        ContentDistribution cd = new ContentDistribution();
-        cd.name = 'PO';
-        cd.ContentVersionId = conVer.id;
-        cd.PreferencesAllowOriginalDownload = true;
-        cd.PreferencesAllowPDFDownload = true;
-        cd.PreferencesAllowViewInBrowser = true;
+        // ContentDistribution cd = new ContentDistribution();
+        // cd.name = 'PO';
+        // cd.ContentVersionId = conVer.id;
+        // cd.PreferencesAllowOriginalDownload = true;
+        // cd.PreferencesAllowPDFDownload = true;
+        // cd.PreferencesAllowViewInBrowser = true;
+        // insert cd;
+        List<ContentDistribution> cd = new List<ContentDistribution>();
+        for (Id conVerId : conVerIDs) {
+            ContentDistribution cd1 = new ContentDistribution();
+            cd1.Name = 'PO';
+            cd1.ContentVersionId = conVerId;
+            cd1.PreferencesAllowOriginalDownload = true;
+            cd1.PreferencesAllowPDFDownload = true;
+            cd1.PreferencesAllowViewInBrowser = true;
+            cd1.PreferencesNotifyOnVisit = false;
+            cd.add(cd1);
+        }
+        
         insert cd;
-        ContentDistribution cdPublickLink = [SELECT Id, DistributionPublicUrl, ContentDownloadUrl
-                                             FROM ContentDistribution
-                                             WHERE Id = :cd.Id];
-        cdId = cdPublickLink.Id;
-
+        System.debug('cdLIST-------->' + cd);
+        // ContentDistribution cdPublickLink = [SELECT Id, DistributionPublicUrl, ContentDownloadUrl
+        //                                      FROM ContentDistribution
+        //                                      WHERE Id = :cd.Id];
+        // cdId = cdPublickLink.Id;
+        
+        // List<ContentDistribution> getcdPublickLink = [SELECT Id, DistributionPublicUrl, ContentDownloadUrl
+        //                                      FROM ContentDistribution
+        //                                      WHERE Id IN :cd];
+        List<Id> cdIds = new List<Id>();
+        for (ContentDistribution cd1 : cd) {
+            cdIds.add(cd1.Id);
+        }
+        System.debug('cdIds-------->' + cdIds);
+        List<ContentDistribution> cdPublickLink = [SELECT Id, DistributionPublicUrl, ContentDownloadUrl
+                                           FROM ContentDistribution
+                                           WHERE Id IN :cdIds];
+           System.debug('cdPublickLink-------->' + cdPublickLink);
+        List<String> listName = new List<String>();
+       for (ContentDistribution Pl : cdPublickLink) {
+        // listName.add(Pl.Id);
+        // System.debug('listName---->'+ listName);
+            cdId.add(Pl.Id);
+        }                              
+        System.debug('cdId----> Outer ----->'+ cdId);
         if (objectAPIName.contains('buildertek__Contract__c')){
             buildertek__Contract__c contractrec = [select id, Name, buildertek__Status__c, buildertek__Customer_Accepted_Date__c, buildertek__Project__c, buildertek__Signed_Contract_Date__c
                                                    from buildertek__Contract__c
@@ -628,6 +709,9 @@ Messaging.sendEmail(new Messaging.SingleEmailMessage[] { email });  */
                 quoterec.buildertek__Customer_Accepted_Date__c = nowDT;
                 quoterec.buildertek__Status__c = 'Customer Accepted';
                 quoterec.buildertek__Date_Accepted_by_Customer__c = system.now();
+                if(conVerIDs.size()> 1) {
+                    quoterec.buildertek__Date_Approved_by_Customer__c = system.now();
+                }
                 quoterec.buildertek__Date_Sent_To_Customer__c = System.today();
                 update quoterec;
 
@@ -650,7 +734,14 @@ Messaging.sendEmail(new Messaging.SingleEmailMessage[] { email });  */
                                   WHERE DeveloperName = :'Quote_Template_2'].Id;
                 }
                 System.debug('templateId: ' + templateId);
-                mail.setHtmlBody('Action:SavePDF; recordId:' + quoterec.Id + ';templateId:' + templateId + ';fileId:' + conVer.Id+'; Confirmation Controller');
+            //     if(conVerIDs.size()> 0) {
+            //         mail.setHtmlBody('Action:SavePDF; recordId:' + quoterec.Id + ';templateId:' + templateId + ';fileId:' + converId1 +'; Confirmation Controller');
+            //     }
+            //    if(conVerIDs.size()> 1) {
+            //     mail.setHtmlBody('Action:SavePDF; recordId:' + quoterec.Id + ';templateId:' + templateId + ';fileId:' + converId1 + ';fileIdNew:' + converId2 +'; Confirmation Controller');
+            //     }
+                mail.setHtmlBody('Action:SavePDF; recordId:' + quoterec.Id + ';templateId:' + templateId + ';fileId:' + converId1 + ';fileIdNew:' + converId2 +'; Confirmation Controller');
+                // System.debug('CONVERID[0]------>' + conVerIDs[0] + 'CONVERID[1]------>' + conVerIDs[1] );
                 Messaging.sendEmail(new Messaging.SingleEmailMessage[]{ mail });
 
                 /*if(quoterec.buildertek__Status__c == 'Customer Accepted' && Checkcustomerview == null){
@@ -698,16 +789,26 @@ Messaging.sendEmail(new Messaging.SingleEmailMessage[] { email });  */
     }
 
     public PageReference insertAttachment(){
-        transient ContentDistribution cdPublicLink = [SELECT Id, DistributionPublicUrl, ContentDownloadUrl
+        transient List<ContentDistribution> cdPublicLink = [SELECT Id, DistributionPublicUrl, ContentDownloadUrl
                                             FROM ContentDistribution
                                             WHERE Id = :cdId];
+        List<String> imgURLs = new List<String>();
+        for (ContentDistribution cdLink : cdPublicLink) {
+            imgURLs.add(cdLink.ContentDownloadUrl);
+        }
         PageReference pdfPage;
         pdfPage = Page.buildertek__ConfirmationPageAsPDF;
         pdfPage.getParameters().put('Id', recordID);
         pdfPage.getParameters().put('templateId', theTemplate);
         pdfPage.getParameters().put('isOrderLienItem', 'true');
-        String imgURL = cdPublicLink.ContentDownloadUrl;
+        String imgURL = imgURLs[0];
+        System.debug('IMAGE URL-------->' + imgURL);
         pdfPage.getParameters().put('imgURL', imgURL);
+        if (imgURLs.size()>1) {
+            String imgURLNew = imgURLs[1];
+            System.debug('img URL New-------->' + imgURLNew);
+            pdfPage.getParameters().put('imgURLNew', imgURLNew);
+        }
         pdfPage.getParameters().put('customerAcceptedDate', customerAcceptedDate);
 
         Blob pdfBlob;

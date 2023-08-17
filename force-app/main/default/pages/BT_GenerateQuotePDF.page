@@ -7,8 +7,19 @@
 </script>-->
 
 <apex:form >
+  <apex:outputText value="{!strBody}" escape="false"/>
+<apex:outputPanel rendered="{!divsign == true}" >
+<apex:outputPanel rendered="{!fileIdNew != 'null' && filerecid != null}" >
+<div >
+Signature
+<div style="border:1px solid black;">   
+ <apex:image style="width:500px; height:100px" url="/sfc/servlet.shepherd/version/download/{!filerecidNew}"/>  
+</div>
+</div>
+</apex:outputPanel>
+</apex:outputPanel>
 <!--<apex:actionFunction name="loadData" action="{!createPDF}" /> -->
-<apex:outputText value="{!strBody}" escape="false"/>
+<apex:outputText value="{!strBodyNew}" escape="false"/>
 <br/>
 <apex:outputPanel rendered="{!filerecid != null}" >
 <div >
