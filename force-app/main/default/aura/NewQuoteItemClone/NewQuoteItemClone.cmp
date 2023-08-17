@@ -216,6 +216,11 @@
     <aura:attribute name="parentAttribute" type="Boolean" default="false" />
     <c:BT_Spinner />
     <aura:attribute name="parentValue" type="String" />
+
+    <aura:attribute name="HaveCreateAccess" type="boolean" />
+    <aura:attribute name="HaveUpdateAccess" type="boolean" />
+    <aura:attribute name="HaveDeleteAccess" type="boolean" />
+    
     <!-- <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> -->
     <aura:HTML tag="style">
         .slds-tabs_card{

@@ -1,29 +1,36 @@
 ({
 	doInit : function(component, event, helper) {
 	    component.set("v.Spinner", true);
-        var action = component.get("c.getMasterBudgets");
-        action.setCallback(this, function(response){
-            console.log({response});
-            var state = response.getState();
-            if(state === "SUCCESS"){
-                var pageSize = component.get("v.pageSize");
-                var result = response.getReturnValue();
-                console.log({result});
-                component.set("v.masterBudgetsList", result);
-                component.set("v.totalRecords", component.get("v.masterBudgetsList").length);
-                component.set("v.startPage",0);
-                component.set("v.endPage",pageSize-1);
-                var PaginationList = [];
-                for(var i=0; i< pageSize; i++){
-                    if(component.get("v.masterBudgetsList").length> i)
-                        PaginationList.push(result[i]);
+
+                // >>>>>>>>>>>>>>>> CHB - 78, 80 <<<<<<<<<<<<<<<<<<<<
+        // Check If User Have Access for Quote Line
+        helper.Check_Create_User_Access(component, event, helper);
+
+
+            var action = component.get("c.getMasterBudgets");
+            action.setCallback(this, function(response){
+                console.log({response});
+                var state = response.getState();
+                if(state === "SUCCESS"){
+                    var pageSize = component.get("v.pageSize");
+                    var result = response.getReturnValue();
+                    console.log({result});
+                    component.set("v.masterBudgetsList", result);
+                    component.set("v.totalRecords", component.get("v.masterBudgetsList").length);
+                    component.set("v.startPage",0);
+                    component.set("v.endPage",pageSize-1);
+                    var PaginationList = [];
+                    for(var i=0; i< pageSize; i++){
+                        if(component.get("v.masterBudgetsList").length> i)
+                            PaginationList.push(result[i]);
+                    }
+                    //alert('PaginationList Length ------> '+PaginationList.length);
+                    component.set('v.PaginationList', PaginationList);
+                    component.set("v.Spinner", false);
                 }
-                //alert('PaginationList Length ------> '+PaginationList.length);
-                component.set('v.PaginationList', PaginationList);
-                component.set("v.Spinner", false);
-            }
-        });
-	    $A.enqueueAction(action);
+            });
+            $A.enqueueAction(action);
+
 	},
 
 	handleCheck : function(component, event, helper) {
@@ -126,6 +133,8 @@
 	},
 
 	importBudget : function(component, event, helper){
+        if(component.get("v.HaveCreateAccess")){
+       
 	    component.set("v.Spinner", true);
 	    var budgetsList = component.get("v.masterBudgetsList");
 	    console.log('quotesList ---------> '+JSON.stringify(budgetsList));
@@ -191,6 +200,19 @@
             });
               toastEvent.fire();
 	    }
+    } 
+    else{
+        component.find('notifLib').showNotice({
+            "variant": "error",
+            "header": "Error!",
+            "message": "You don\'t have the necessary privileges to Create record.",
+            closeCallback: function () {
+                $A.get("e.c:BT_SpinnerEvent").setParams({
+                    "action": "HIDE"
+                }).fire();
+            }
+        });
+    }
 	},
 
 	next: function (component, event, helper) {

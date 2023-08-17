@@ -286,6 +286,11 @@
     <aura:attribute name="addInvoicePOSection" type="Boolean" default="false" />
     <aura:attribute name="invoicePORecordList" type="Account_Payable__c[]" />
 
+    <!-- >>>>>>>>>>>>>> CHB - 79 <<<<<<<<<<<<<<<<<<< -->
+    <aura:attribute name="HaveCreateAccess" type="boolean" default="true" />
+    <aura:attribute name="HaveUpdateAccess" type="boolean" default="true"/>
+    <aura:attribute name="HaveDeleteAccess" type="boolean" default="true"/>
+
     <!-- To set slds_tab_defaul height for responsive display ====== Start  BUIL - 3466-->
     <aura:attribute name="slds_tab_height_diff" type="String" default="0px"/>
     <aura:HTML tag="style">
@@ -598,12 +603,10 @@
                                                         .subDiv{
                                                             <!-- width:100% !important; -->
                                                             margin-top:-23px !important;
-
                                                         }
-                                                    </aura:html>
+                                                    </aura:html>                                                    
                                                     <c:BT_LightningLookup aura:id="productId" objectAPIName="Product2" IconName="standard:product" selectedRecord="{!v.selectedLookUpRecord}" parentId="{!v.pricebookName }" prodctfamly="{!v.productfamily}" />
                                                     <label class="slds-form-element__label" for="lookup-348"></label>
-
                                                 </td>
                                                 <td>
                                                     <!--	<force:inputField value="{!v.newBudgetLine.Name}"/>-->
@@ -902,7 +905,7 @@
                             <div class="slds-scrollable" style="height:47vh; padding:0px !important;">
                                 <div class="divcont" aura:id="headerDiv" style="">
                                     <!--height:30rem class="slds-scrollable"-->
-                                    <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-m-right_small" aura:id="budgetLineItemTable" style="width: auto;">
+                                    <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-m-right_small" style="width: auto;" aura:id="budgetLineItemTable">
                                         <thead></thead>
                                         <tbody>
                                             <aura:iteration items="{!v.TotalRecords.groupHierarchy}" var="group" indexVar="parentGroupIndex">

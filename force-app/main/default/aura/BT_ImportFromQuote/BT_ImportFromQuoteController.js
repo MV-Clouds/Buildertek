@@ -22,6 +22,8 @@
             }
         });
 	    $A.enqueueAction(action);
+
+        helper.Check_Create_User_Access(component, event, helper);
 	},
 	
 	handleCheck : function(component, event, helper) {
@@ -124,72 +126,87 @@
 	},
 	
 	importQuote : function(component, event, helper){
-	    component.set("v.Spinner", true);
-	    var budgetsList = component.get("v.masterquotesList");
-	    console.log('quotesList ---------> '+JSON.stringify(budgetsList));
-	    var budgetIds = [];
-	    for(var i=0 ; i < budgetsList.length;i++){
-	        //alert('quoteCheck -------> '+quotesList[i].quoteCheck);
-	        
-	        if(budgetsList[i].budgetCheck == true){
-	            if(budgetsList[i].masterBudgetRecord != null){
-	                budgetIds.push(budgetsList[i].masterBudgetRecord.Id);    
-	            }else if(budgetsList[i].quoteRecord != null){
-	                budgetIds.push(budgetsList[i].quoteRecord.Id);    
-	            }
-	        }
-	    }
-	    if(budgetIds.length > 0){
-	        var action = component.get("c.importMasterBudgetLines");  
-	        action.setParams({
-	            budgetIds : budgetIds,
-	            recordId : component.get("v.recordId")
-	        });
-	        action.setCallback(this, function(response){
-	            var state = response.getState();
-	            if(state === "SUCCESS"){
-	                var result = response.getReturnValue();  
-	                if(result.Status === 'Success'){
-	                    var toastEvent = $A.get("e.force:showToast");
-                        toastEvent.setParams({
-                            "title": "Success!",
-                            "message": result.Message,
-                            "type": 'Success'
-                        });
-                        toastEvent.fire(); 
-                        component.set("v.Spinner", false);
-                        $A.get("e.force:closeQuickAction").fire();  
-                        window.setTimeout(
-                            $A.getCallback(function() {
-                                document.location.reload(true);    
-                            }), 1000
-                        );
-	                }else{
-	                    component.set("v.Spinner", false);
-	                    var toastEvent = $A.get("e.force:showToast");
-                        toastEvent.setParams({
-                            "title": "Error!",
-                            "message": result.Message,
-                            "type": 'Error'
-                        });
-                        toastEvent.fire();    
-	                }
-	            }
-	        });
-	        $A.enqueueAction(action);
-	    }else{
-           
-	        component.set("v.Spinner", false);
-            var toastEvent = $A.get("e.force:showToast");
-            toastEvent.setParams({
-                "title": "Error!",
-                "message": 'Please Select at least One Quote record.',
-                "type": 'Error',
-                "duration": '10000',
-				"mode": 'dismissible'
-            });   
-             toastEvent.fire();
-	    }
+        if(component.get("v.HaveCreateAccess")){
+
+            component.set("v.Spinner", true);
+            var budgetsList = component.get("v.masterquotesList");
+            console.log('quotesList ---------> '+JSON.stringify(budgetsList));
+            var budgetIds = [];
+            for(var i=0 ; i < budgetsList.length;i++){
+                //alert('quoteCheck -------> '+quotesList[i].quoteCheck);
+                
+                if(budgetsList[i].budgetCheck == true){
+                    if(budgetsList[i].masterBudgetRecord != null){
+                        budgetIds.push(budgetsList[i].masterBudgetRecord.Id);    
+                    }else if(budgetsList[i].quoteRecord != null){
+                        budgetIds.push(budgetsList[i].quoteRecord.Id);    
+                    }
+                }
+            }
+            if(budgetIds.length > 0){
+                var action = component.get("c.importMasterBudgetLines");  
+                action.setParams({
+                    budgetIds : budgetIds,
+                    recordId : component.get("v.recordId")
+                });
+                action.setCallback(this, function(response){
+                    var state = response.getState();
+                    if(state === "SUCCESS"){
+                        var result = response.getReturnValue();  
+                        if(result.Status === 'Success'){
+                            var toastEvent = $A.get("e.force:showToast");
+                            toastEvent.setParams({
+                                "title": "Success!",
+                                "message": result.Message,
+                                "type": 'Success'
+                            });
+                            toastEvent.fire(); 
+                            component.set("v.Spinner", false);
+                            $A.get("e.force:closeQuickAction").fire();  
+                            window.setTimeout(
+                                $A.getCallback(function() {
+                                    document.location.reload(true);    
+                                }), 1000
+                            );
+                        }else{
+                            component.set("v.Spinner", false);
+                            var toastEvent = $A.get("e.force:showToast");
+                            toastEvent.setParams({
+                                "title": "Error!",
+                                "message": result.Message,
+                                "type": 'Error'
+                            });
+                            toastEvent.fire();    
+                        }
+                    }
+                });
+                $A.enqueueAction(action);
+            }else{
+               
+                component.set("v.Spinner", false);
+                var toastEvent = $A.get("e.force:showToast");
+                toastEvent.setParams({
+                    "title": "Error!",
+                    "message": 'Please Select at least One Quote record.',
+                    "type": 'Error',
+                    "duration": '10000',
+                    "mode": 'dismissible'
+                });   
+                 toastEvent.fire();
+            }
+        }
+        else{
+            component.find('notifLib').showNotice({
+                "variant": "error",
+                "header": "Error!",
+                "message": "You don\'t have the necessary privileges to Create record.",
+                closeCallback: function () {
+                    $A.get("e.c:BT_SpinnerEvent").setParams({
+                        "action": "HIDE"
+                    }).fire();
+                }
+            });
+        }
 	},
 	
 	next: function (component, event, helper) {
