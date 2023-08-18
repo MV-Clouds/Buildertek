@@ -2,7 +2,7 @@ import { LightningElement, track,api } from 'lwc';
 import getContacts from '@salesforce/apex/editResourcesController.getContacts';
 import getContactsDup from '@salesforce/apex/editResourcesController.getContactsDup';
 
- 
+
 export default class LwcRadioGroup extends LightningElement {
     @api isLoadedResources =false;
     @api conList;
@@ -38,7 +38,7 @@ export default class LwcRadioGroup extends LightningElement {
     handleNext(){
         var pageNumber = this.pageNumber;
         var pageSize = this.pageSize
-        pageNumber++;
+        pageNumber++
         this.pageNumber = pageNumber;
         var contact = this.searchVal;
         var acc = this.searchAccVal;
@@ -94,7 +94,7 @@ export default class LwcRadioGroup extends LightningElement {
                 that.showAddContactBtn = false;
             }
             //component.set("v.rfqRecordList", resultData.recordList);
-                
+
             /* that.conList = response;
             that.options = response */
             //that.value = that.selectedResourceid;
@@ -134,16 +134,16 @@ export default class LwcRadioGroup extends LightningElement {
             this.pageNumber = 1
         }
         if(event.target.dataset.searchname == 'account'){
-            
+
             this.searchAccVal = event.target.value.trim()
         }
         if(event.target.dataset.searchname == 'contact'){
             this.searchVal = event.target.value.trim()
         }
-        
+
         this.getContactsList();
     }
-    
+
 
     //new contact
     addNewContact(){
@@ -172,7 +172,7 @@ export default class LwcRadioGroup extends LightningElement {
             this.getContactsList();
         },800)
        // this.accountId = event.detail.id;
-        
+
     }
 
 }
