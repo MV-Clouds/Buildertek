@@ -328,7 +328,7 @@ export default base => class GanttToolbar extends base {
                         }
                     ]
                 },
-                /* {
+                {
                     type  : 'buttonGroup',
                     items : [
                         {
@@ -337,11 +337,11 @@ export default base => class GanttToolbar extends base {
                             ref        : 'exportButton',
                             cls        : 'exportSchButton',
                             icon       : 'b-fa b-fa-file-export',
-                            text       : 'Export to PDF',
-                            onAction : 'up.onExportToPdf'
+                            text       : 'Export to CSV',
+                            onAction : 'up.onExportToCSV'
                         }
                     ]
-                } */
+                }
 
             ]
         };
@@ -626,6 +626,11 @@ export default base => class GanttToolbar extends base {
     onImportMasterSchedule(){
         this.gantt.callGanttComponent.openMasterSchedule()
     }
+
+    onExportToCSV(){
+        this.gantt.callGanttComponent.exportData()
+    }
+
     onImportScheduleLines(){
         this.gantt.callGanttComponent.openScheduleLines()
     }

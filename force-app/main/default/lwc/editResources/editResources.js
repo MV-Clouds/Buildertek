@@ -91,11 +91,11 @@ export default class LwcRadioGroup extends LightningElement {
                 that.disablePrev = false;
             }
 
-            if(!that.conList.length){
-                that.showAddContactBtn = true;
-            }else if(!that.conList.length){
-                that.showAddContactBtn = false;
-            }
+            // if(!that.conList.length){
+            //     that.showAddContactBtn = true;
+            // }else if(!that.conList.length){
+            //     that.showAddContactBtn = false;
+            // }
             //component.set("v.rfqRecordList", resultData.recordList);
 
             /* that.conList = response;
