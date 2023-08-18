@@ -8,7 +8,6 @@ import { loadScript, loadStyle } from "lightning/platformResourceLoader";
 import GanttStyle from "@salesforce/resourceUrl/BT_Bryntum_NewGanttCss";
 //import GANTT from "@salesforce/resourceUrl/bryntum_gantt";
 import GANTTModule from "@salesforce/resourceUrl/BT_Bryntum_NewGantt_ModuleJS";
-// import GANTTModule from "@salesforce/resourceUrl/BT_Bryntum_NewGantt_ModuleJS_2";
 //import  SchedulerPro  from "@salesforce/resourceUrl/bryntumScheduleProModuleJS";
 import GanttToolbarMixin from "./lib/GanttToolbar";
 import GanttToolbarMixinDup from "./lib/GanttToolbarDup";
@@ -30,20 +29,12 @@ import saveResourceForRecord from "@salesforce/apex/BT_NewGanttChartCls.saveReso
 import updateHideGanttOnSch from "@salesforce/apex/BT_NewGanttChartCls.updateHideGanttOnSch";
 import changeOriginalDates from "@salesforce/apex/BT_NewGanttChartCls.changeOriginalDates";
 
-import setWBSValue from "@salesforce/apex/BT_NewGanttChartCls.setWBSValue";
-
-import PARSER from "@salesforce/resourceUrl/PapaParse";
-
 import { formatData, saveeditRecordMethod } from "./bryntum_GanttHelper";
 
 import getRecordType from "@salesforce/apex/BT_NewGanttChartCls.getRecordType";
-import { getPicklistValues, getObjectInfo } from "lightning/uiObjectInfoApi";
+import { getPicklistValues, getObjectInfo } from 'lightning/uiObjectInfoApi';
 
 export default class Gantt_component extends NavigationMixin(LightningElement) {
-
-  @track wpsValue = {};
-  @track wpsBoolean = false;
-
   @api showpopup = false;
   @api holidays = [];
   @api monthsval = [];
@@ -56,10 +47,10 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
   @api taskRecordId;
   @api objApiName = "buildertek__Project_Task__c";
   @track scheduleItemsData;
+  @api mapOfWBSValue = {};
 
   //VARIABLE ADDED TO GET PHASE DATES - 09/10
   @api phaseDates = [];
-  @api mapOfWBSValue;
 
   @api scheduleItemsDataList;
   @api storeRes;
@@ -173,37 +164,24 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
   @track showOriginalDateModal = false;
   @track blankPredecessor = false;
 
-  //New Toast message
-  @track showToast = true;
-  @track isrowchange = false;
-
-  // show export popup
-  @track showExportPopup = false;
-  @track fileName = "gantt-chart";
-
   @wire(getRecordType) objRecordType;
 
-
   @wire(pickListValueDynamically, {
-    customObjInfo: {
-      sobjectType: "buildertek__Project_Task__c",
-    },
+    customObjInfo: { sobjectType: "buildertek__Project_Task__c" },
     selectPicklistApi: "buildertek__Phase__c",
   })
   selectTargetValues;
 
   @wire(pickListValueDynamically, {
-    customObjInfo: {
-      sobjectType: "buildertek__Project_Task__c",
-    },
+    customObjInfo: { sobjectType: "buildertek__Project_Task__c" },
     selectPicklistApi: "buildertek__Type__c",
   })
   selectTargetTypeValues;
 
-  @wire(getPicklistValues, {
-    recordTypeId: "$objRecordType.data",
-    fieldApiName: "buildertek__Project_Task__c.buildertek__Phase__c",
-  })
+  @wire(
+    getPicklistValues,
+    { recordTypeId: '$objRecordType.data', fieldApiName: 'buildertek__Project_Task__c.buildertek__Phase__c' }
+  )
   picklistValues;
 
   selectOptionChanveValue(event) {
@@ -215,7 +193,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     this.newTaskRecordCreate["buildertek__Type__c"] = event.target.value;
   }
 
-  errorCallback(error, stack) {}
+  errorCallback(error, stack) { }
 
   get acceptedFormats() {
     return [".pdf", ".png", ".jpg", ".jpeg", ".csv", ".docx", ".doc"];
@@ -240,12 +218,10 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     );
   }
 
-  updateValOnSch(hideScheduleVal) {}
+  updateValOnSch(hideScheduleVal) { }
   updateValOnUser(hideScheduleVal) {
     var thatThis = this;
-    updateHideGanttOnSch({
-      hideGantt: hideScheduleVal,
-    }).then((response) => {
+    updateHideGanttOnSch({ hideGantt: hideScheduleVal }).then((response) => {
       thatThis.hideScheduleFromUser = response.buildertek__Hide_Schedule__c;
     });
   }
@@ -253,9 +229,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
   getComment() {
     var that = this;
     this.isLoaded = true;
-    getAllNotes({
-      schId: this.taskRecordId,
-    })
+    getAllNotes({ schId: this.taskRecordId })
       .then(function (response) {
         that.notesList = response;
         that.schItemComment = response.buildertek__Notes__c;
@@ -400,12 +374,12 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
   }
   saveSelectedContact() {
     var that = this;
-    console.log("checking method*&");
+    console.log('checking method*&');
     if (!this.taskRecordId.includes("_generated")) {
-      console.log("^ other side condition ^");
+      console.log('^ other side condition ^');
       //Added for contractor ****Start****
       if (this.contracFieldApiName === "buildertek__Contractor__c") {
-        console.log("^ In If ^");
+        console.log('^ In If ^');
         that.showContractor = false; //Added for contractor
         this.isLoaded = true;
 
@@ -415,19 +389,17 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           resourceApiName: this.contracFieldApiName,
         }).then(function (response) {
           const filterChangeEvent = new CustomEvent("filterchange", {
-            detail: {
-              message: "refresh page",
-            },
+            detail: { message: "refresh page" },
           });
           that.dispatchEvent(filterChangeEvent);
           that.gettaskrecords();
           that.showEditResourcePopup = false;
         });
-        that.contracFieldApiName = "";
+        that.contracFieldApiName = '';
       }
       //Added for contractor ****End****
       else {
-        console.log("^ In else ^");
+        console.log('^ In else ^');
         that.showEditResourcePopup = false;
         this.isLoaded = true;
 
@@ -437,9 +409,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           resourceApiName: this.selectedContactApiName,
         }).then(function (response) {
           const filterChangeEvent = new CustomEvent("filterchange", {
-            detail: {
-              message: "refresh page",
-            },
+            detail: { message: "refresh page" },
           });
           that.dispatchEvent(filterChangeEvent);
           that.gettaskrecords();
@@ -452,10 +422,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     if (e.currentTarget.dataset.inputname == "buildertek__Dependency__c") {
       this.newTaskRecordCreate[e.currentTarget.dataset.inputname] =
         this.template.querySelectorAll("lightning-input-field")[1].value;
-      console.log(
-        "NAME___>this.newTaskRecordCreate===>",
-        this.newTaskRecordCreate
-      );
+      console.log('NAME___>this.newTaskRecordCreate===>', this.newTaskRecordCreate);
     } else if (e.currentTarget.dataset.inputname == "buildertek__Resource__c") {
       this.newTaskRecordCreate[e.currentTarget.dataset.inputname] =
         this.template.querySelectorAll("lightning-input-field")[2].value;
@@ -503,15 +470,12 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
             var newTaskeDate = response; //.toLocaleDateString().split('/');
             thatThis.newTaskRecordCreate["buildertek__Finish__c"] = response; // newTaskeDate[2]+'-'+newTaskeDate[1]+'-'+newTaskeDate[0];
             if (thatThis.template.querySelectorAll("lightning-input")) {
-              try {
-                if (
-                  thatThis.template.querySelectorAll("lightning-input")[3].label == "End Date"
-                ) {
-                  thatThis.template.querySelectorAll("lightning-input")[3].value =
-                    thatThis.newTaskRecordCreate["buildertek__Finish__c"];
-                }
-              } catch (error) {
-                console.log('log one error:- '+error);
+              if (
+                thatThis.template.querySelectorAll("lightning-input")[3]
+                  .label == "End Date"
+              ) {
+                thatThis.template.querySelectorAll("lightning-input")[3].value =
+                  thatThis.newTaskRecordCreate["buildertek__Finish__c"];
               }
             }
           });
@@ -549,9 +513,9 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
             var newTaskeDate = response; //.toLocaleDateString().split('/');
             thatThis.newTaskRecordCreate["buildertek__Finish__c"] =
               newTaskeDate; // newTaskeDate[2]+'-'+newTaskeDate[1]+'-'+newTaskeDate[0];
-              console.log('log 2.');
             if (
-              thatThis.template.querySelectorAll("lightning-input")[3].label == "End Date"
+              thatThis.template.querySelectorAll("lightning-input")[3].label ==
+              "End Date"
             ) {
               thatThis.template.querySelectorAll("lightning-input")[3].value =
                 thatThis.newTaskRecordCreate["buildertek__Finish__c"];
@@ -562,7 +526,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
         }
       }
 
-      console.log(">>>>this.newTaskRecordCreate===>", this.newTaskRecordCreate);
+      console.log('>>>>this.newTaskRecordCreate===>', this.newTaskRecordCreate);
       this.newTaskRecordCreate[e.currentTarget.dataset.inputname] =
         e.target.value;
     }
@@ -580,9 +544,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     if (recID) {
       this.isLoaded = true;
       var recThis = this;
-      getTask({
-        taskId: recID,
-      })
+      getTask({ taskId: recID })
         .then(function (response) {
           try {
             if (response.buildertek__Dependency__c == undefined) {
@@ -591,9 +553,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
               recThis.blankPredecessor = false;
             }
           } catch (error) {
-            console.log("Error ==> ", {
-              error,
-            });
+            console.log('Error ==> ', { error });
           }
           recThis.newTaskRecordCreate = response;
           if (recData.predecessor != response["buildertek__Dependency__c"])
@@ -753,17 +713,17 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
       if (index1 < index2) {
         if (
           taskList[index2].buildertek__Phase__c !=
-            taskList[index1].buildertek__Phase__c &&
+          taskList[index1].buildertek__Phase__c &&
           taskList[index2].buildertek__Phase__c ==
-            taskList[index2 + 1].buildertek__Phase__c
+          taskList[index2 + 1].buildertek__Phase__c
         ) {
           taskList[index1].buildertek__Phase__c =
             taskList[index2].buildertek__Phase__c;
         } else if (
           taskList[index2].buildertek__Phase__c !=
-            taskList[index1].buildertek__Phase__c &&
+          taskList[index1].buildertek__Phase__c &&
           taskList[index2].buildertek__Phase__c !=
-            taskList[index2 + 1].buildertek__Phase__c
+          taskList[index2 + 1].buildertek__Phase__c
         ) {
           taskList[index1].buildertek__Phase__c = null;
         }
@@ -772,17 +732,17 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
       } else if (index1 > index2) {
         if (
           taskList[index2].buildertek__Phase__c !=
-            taskList[index1].buildertek__Phase__c &&
+          taskList[index1].buildertek__Phase__c &&
           taskList[index2].buildertek__Phase__c ==
-            taskList[index2 + 1].buildertek__Phase__c
+          taskList[index2 + 1].buildertek__Phase__c
         ) {
           taskList[index1].buildertek__Phase__c =
             taskList[index2].buildertek__Phase__c;
         } else if (
           taskList[index2].buildertek__Phase__c !=
-            taskList[index1].buildertek__Phase__c &&
+          taskList[index1].buildertek__Phase__c &&
           taskList[index2].buildertek__Phase__c !=
-            taskList[index2 + 1].buildertek__Phase__c
+          taskList[index2 + 1].buildertek__Phase__c
         ) {
           taskList[index1].buildertek__Phase__c = null;
         }
@@ -827,42 +787,28 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
       this.createGantt();
       this.isLoaded = false;
     }
-    this.isrowchange = true;
-    this.showToast = true;
-    this.handleBeforeUnload();
     e.preventDefault();
   }
   allowDrop(e) {
     e.preventDefault();
   }
-  ondragrow(e) {}
+  ondragrow(e) { }
   callinsertUpdateTaskList(taskData) {
     var that = this;
     this.isLoaded = true;
-    console.log(
-      "============In method=========================================="
-    );
-    console.log("taskData", {
-      taskData,
-    });
-    insertUpdateTaskList({
-      taskJSON: JSON.stringify(taskData),
-      isUpdate: true,
-    })
+    console.log('============In method==========================================');
+    console.log('taskData', { taskData });
+    insertUpdateTaskList({ taskJSON: JSON.stringify(taskData), isUpdate: true })
       .then(function (response) {
         const filterChangeEvent = new CustomEvent("filterchange", {
-          detail: {
-            message: "refresh page",
-          },
+          detail: { message: "refresh page" },
         });
         that.isLoaded = false;
         that.dispatchEvent(filterChangeEvent);
         window.location.reload();
       })
       .catch((error) => {
-        console.log("error --> ", {
-          error,
-        });
+        console.log('error --> ', { error });
         this.isLoaded = false;
       });
   }
@@ -872,9 +818,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     Object.assign(this.newTaskRecordCreate, this.newTaskRecordClone);
 
     if (record) {
-      console.log({
-        record,
-      });
+      console.log({ record });
       if (record._data.type == "Task") {
         this.newTaskRecordCreate["buildertek__Dependency__c"] = record._data.id;
         this.newTaskRecordCreate["buildertek__Order__c"] = record._data.order;
@@ -943,8 +887,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
       that.GanttVar.refresh();
       const evt = new ShowToastEvent({
         title: "Success",
-        message:
-          task._data.type + " " + task._data.name + " deleted successfully",
+        message: task._data.type + " " + task._data.name + " deleted successfully",
         variant: "success",
       });
       that.dispatchEvent(evt);
@@ -969,7 +912,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
   refreshGantt() {
     // this.phaseFunction();
 
-    console.log("refreshGantt");
+    console.log('refreshGantt');
 
     var that = this;
     getScheduleItemRecords({
@@ -977,9 +920,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
       scheduleid: this.recordId,
     })
       .then((response) => {
-        console.log({
-          response,
-        });
+        console.log({ response });
         var records = response;
         var data = response.lstOfSObjs;
         this.scheduleItemsDataList = response.lstOfSObjs;
@@ -1018,7 +959,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
               taskMap.has(scheduleItemsList[i].buildertek__Phase__c) &&
               i == taskMap.get(scheduleItemsList[i].buildertek__Phase__c) &&
               scheduleItemsMap.get(scheduleItemsList[i].buildertek__Phase__c) !=
-                undefined
+              undefined
             ) {
               scheduleItemsListClone.push(
                 scheduleItemsMap.get(scheduleItemsList[i].buildertek__Phase__c)
@@ -1101,6 +1042,8 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
       scheduleid: this.recordId,
     })
       .then((response) => {
+        console.log('get schedule item records.');
+        console.log({ response });
         this.formatCustomResponse(response);
       })
       .catch((error) => {
@@ -1135,61 +1078,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
       false
     );
   }
-  changeFileName(event) {
-    this.fileName = event.target.value;
-  }
-  exportData() {
-    this.showExportPopup = true;
-    console.log(this.scheduleItemsDataList);
-  }
-
-  exportScheduleData() {
-    let getColumns = [
-      "Name",
-      "buildertek__Dependency__r.Name",
-      "buildertek__Start__c",
-      "buildertek__Finish__c",
-      "buildertek__Completion__c",
-      "buildertek__Phase__c",
-      "buildertek__Notes__c",
-      "buildertek__Lag__c",
-    ];
-    const convertedObject = this.scheduleItemsDataList.map((item) => {
-      const obj = {};
-      getColumns.forEach((column) => {
-        if (item.hasOwnProperty(column)) {
-          obj[column] = item[column];
-        } else {
-          obj[column] = null;
-        }
-
-        if (item.hasOwnProperty("buildertek__Dependency__c")) {
-          obj["buildertek__Dependency__r.Name"] =
-            item.buildertek__Dependency__r.Name;
-        } else {
-          obj["buildertek__Dependency__r.Name"] = null;
-        }
-      });
-      return obj;
-    });
-
-    var csvData = Papa.unparse(convertedObject);
-    const element = document.createElement("a");
-    element.setAttribute(
-      "href",
-      "data:text/csv;charset=utf-8," + encodeURIComponent(csvData)
-    );
-    element.setAttribute("download", this.fileName + ".csv");
-    element.style.display = "none";
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
-    this.showExportPopup = false;
-  }
-
-  hideModalBox() {
-    this.showExportPopup = false;
-  }
 
   openScheduleLines() {
     const urlWithParameters =
@@ -1222,7 +1110,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     }
   }
   inputChange(event) {
-    console.log('log 3.');
     if (event.currentTarget.label == "Name") {
       this.newTaskPopupName = event.currentTarget.value;
     } else if (event.currentTarget.label == "Lag") {
@@ -1276,86 +1163,62 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
   phaseFunction() {
     //CODE ADDED TO GET PHASE DATES - 09-10
     getPhaseDates({
-      scheduleId: this.recordId,
-    })
-      .then((data) => {
-        console.log("in the phase data function");
-        console.log({
-          data,
+      scheduleId: this.recordId
+    }).then(data => {
+      console.log('in the phase data function');
+      console.log({ data });
+      var options = [];
+      for (var key in data) {
+        options.push({
+          label: data[key].buildertek__Phase__c,
+          value: data[key]
         });
-        var options = [];
-        for (var key in data) {
-          options.push({
-            label: data[key].buildertek__Phase__c,
-            value: data[key],
-          });
-        }
-        console.log("==options==");
-        console.log({
-          options,
-        });
-        this.phaseDates = options;
-        console.log("this.phaseDates-->" + this.phaseDates);
-      })
-      .catch((error) => {
-        console.log({
-          error,
-        });
-      });
+      }
+      console.log('==options==');
+      console.log({ options });
+      this.phaseDates = options;
+      console.log('this.phaseDates-->' + this.phaseDates);
+    }).catch(error => {
+      console.log({ error });
+    });
   }
 
   connectedCallback() {
     this.phaseFunction();
-
-    // event ot show toast message
-    // window.addEventListener('beforeunload', this.handleBeforeUnload.bind(this));
-
     const holidayInterval = {
       startDate: new Date(2023, 3, 8), // March 9th
-      endDate: new Date(2023, 3, 8), // March 9th
-      isWorking: false,
-    };
-
-    console.log("Connected Callback");
+      endDate: new Date(2023, 3, 8),   // March 9th
+      isWorking: false
+    }
   }
 
   renderedCallback() {
+    if (this.bryntumInitialized) {
+      return;
+    }
+    this.bryntumInitialized = true;
 
-    let intervalID = setInterval(() => {
-
-      if (this.bryntumInitialized) {
-        return;
-      }
-      this.bryntumInitialized = true;
-
-      Promise.all([
-        loadScript(this, GANTTModule), //GanttDup ,SchedulerPro GANTTModule,GANTT + "/gantt.lwc.module.js"
-        //loadStyle(this,  GANTT + "/gantt.stockholm.css")
-        //loadStyle(this,  GANTT + "/gantt.stockholm.css")
-        loadStyle(this, GanttStyle + "/gantt.stockholm.css"),
-        // loadScript(this, Papa.unparse()), // papaparse lib..
-        loadScript(this, PARSER + "/PapaParse/papaparse.js"),
-      ])
-        .then(() => {
-          console.log("*******LIBRARY LOADED SUCCESSFULLY******");
-          this.gettaskrecords();
-          this.loadedChart = true;
-        })
-        .catch((error) => {
-          this.dispatchEvent(
-            new ShowToastEvent({
-              title: "Error loading Gantt Chart",
-              message: error,
-              variant: "error",
-            })
-          );
-        });
-      }, 1000);
+    Promise.all([
+      loadScript(this, GANTTModule), //GanttDup ,SchedulerPro GANTTModule,GANTT + "/gantt.lwc.module.js"
+      //loadStyle(this,  GANTT + "/gantt.stockholm.css")
+      //loadStyle(this,  GANTT + "/gantt.stockholm.css")
+      loadStyle(this, GanttStyle + "/gantt.stockholm.css"),
+      // /gantt.material.css GANTTStockholm GANTT + "/gantt.stockholm.css" //GANTT + "/gantt.stockholm.css"
+    ])
+      .then(() => {
+        this.gettaskrecords();
+        this.loadedChart = true;
+      })
+      .catch((error) => {
+        this.dispatchEvent(
+          new ShowToastEvent({
+            title: "Error loading Gantt Chart",
+            message: error,
+            variant: "error",
+          })
+        );
+      });
   }
-
-  //   disconnectedCallback() {
-  //     window.removeEventListener('beforeunload', this.handleBeforeUnload.bind(this));
-  // }
 
   populateIcons(record) {
     // console.log('popluate record-->',record);
@@ -1590,7 +1453,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           taskMap.has(scheduleItemsList[i].buildertek__Phase__c) &&
           i == taskMap.get(scheduleItemsList[i].buildertek__Phase__c) &&
           scheduleItemsMap.get(scheduleItemsList[i].buildertek__Phase__c) !=
-            undefined
+          undefined
         ) {
           scheduleItemsListClone.push(
             scheduleItemsMap.get(scheduleItemsList[i].buildertek__Phase__c)
@@ -1622,13 +1485,9 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           .push(JSON.parse(JSON.stringify(scheduleItemsListClone[i])));
       }
     }
-    console.log({
-      recordsMap,
-    });
+    console.log({ recordsMap });
     var result = Array.from(recordsMap.entries());
-    console.log({
-      result,
-    });
+    console.log({ result });
     var groupData = [];
     for (var i in result) {
       var newObj = {};
@@ -1637,9 +1496,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
       groupData.push(newObj);
     }
     this.scheduleItemsData = groupData;
-    console.log({
-      groupData,
-    });
+    console.log({ groupData });
     if (this.template.querySelector(".container").children.length) {
       this.template.querySelector(".container").innerHTML = "";
       this.template.querySelector(".container1").innerHTML = "";
@@ -1651,18 +1508,8 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
 
   createGantt() {
     try {
-      console.log("createGantt");
-      console.log(this.GanttVar);
+      console.log('createGantt');
       var GanttToolbar;
-      var wbsObj={};
-
-      try {
-        console.log('bryntum ==> ',JSON.parse(JSON.stringify(bryntum)));
-      } catch (error) {
-        console.log('error on JSON ',error);
-      }
-
-
       var loc = window.location.href;
       var domName = loc.split(".lightning.force.com")[0].split("https://")[1];
       if (domName == "viewinc--bees" || domName == "viewinc") {
@@ -1687,13 +1534,9 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
       var rows = [];
 
       var phaseDateList = this.phaseDates;
-      console.log({
-        phaseDateList,
-      });
+      console.log({ phaseDateList });
       var scheduleDataList = this.scheduleItemsDataList;
-      console.log("scheduleDataList ==> ", {
-        scheduleDataList,
-      });
+      console.log('scheduleDataList ==> ', { scheduleDataList });
 
       for (var key in scheduleDataList) {
         if (scheduleDataList[key].buildertek__Milestone__c == true) {
@@ -1709,20 +1552,20 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
               // console.log(scheduleDataList[key].buildertek__Duration__c);
               // console.log(scheduleDataList[key].buildertek__Phase__c);
               // console.log('---------');
+
             }
           }
         }
       }
       this.scheduleItemsDataList = scheduleDataList;
+
       var formatedSchData = formatData(
         this.scheduleData,
         this.scheduleItemsData,
         this.scheduleItemsDataList
       );
-      console.log("=== formatedSchData ===");
-      console.log({
-        formatedSchData,
-      });
+      console.log('=== formatedSchData ===');
+      console.log({ formatedSchData });
 
       // var refVar = formatedSchData;
       // for(var key in refVar.rows[0].children){
@@ -1754,61 +1597,59 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
       resourceRowData = formatedSchData["resourceRowData"];
       assignmentRowData = formatedSchData["assignmentRowData"];
 
-      const holiday = [
-        {
-          id: "general",
-          name: "General",
-          intervals: [
-            {
-              recurrentStartDate: "on Sat at 0:00",
-              recurrentEndDate: "on Mon at 0:00",
-              isWorking: false,
-            },
-            {
-              startDate: "2023-03-06",
-              endDate: "2023-03-07",
-              isWorking: false,
-              name: "Vacation",
-            },
-          ],
-          expanded: true,
-          children: [
-            {
-              id: "business",
-              name: "Business",
-              hoursPerDay: 8,
-              daysPerWeek: 5,
-              daysPerMonth: 20,
-              intervals: [
-                {
-                  recurrentStartDate: "every weekday at 12:00",
-                  recurrentEndDate: "every weekday at 13:00",
-                  isWorking: false,
-                },
-                {
-                  recurrentStartDate: "every weekday at 17:00",
-                  recurrentEndDate: "every weekday at 08:00",
-                  isWorking: false,
-                },
-              ],
-            },
-            {
-              id: "night",
-              name: "Night shift",
-              hoursPerDay: 8,
-              daysPerWeek: 5,
-              daysPerMonth: 20,
-              intervals: [
-                {
-                  recurrentStartDate: "every weekday at 6:00",
-                  recurrentEndDate: "every weekday at 22:00",
-                  isWorking: false,
-                },
-              ],
-            },
-          ],
-        },
-      ];
+      const holiday = [{
+        "id": "general",
+        "name": "General",
+        "intervals": [
+          {
+            "recurrentStartDate": "on Sat at 0:00",
+            "recurrentEndDate": "on Mon at 0:00",
+            "isWorking": false
+          },
+          {
+            "startDate": "2023-03-06",
+            "endDate": "2023-03-07",
+            "isWorking": false,
+            "name": "Vacation",
+          }
+        ],
+        "expanded": true,
+        "children": [
+          {
+            "id": "business",
+            "name": "Business",
+            "hoursPerDay": 8,
+            "daysPerWeek": 5,
+            "daysPerMonth": 20,
+            "intervals": [
+              {
+                "recurrentStartDate": "every weekday at 12:00",
+                "recurrentEndDate": "every weekday at 13:00",
+                "isWorking": false
+              },
+              {
+                "recurrentStartDate": "every weekday at 17:00",
+                "recurrentEndDate": "every weekday at 08:00",
+                "isWorking": false
+              }
+            ]
+          },
+          {
+            "id": "night",
+            "name": "Night shift",
+            "hoursPerDay": 8,
+            "daysPerWeek": 5,
+            "daysPerMonth": 20,
+            "intervals": [
+              {
+                "recurrentStartDate": "every weekday at 6:00",
+                "recurrentEndDate": "every weekday at 22:00",
+                "isWorking": false
+              }
+            ]
+          }
+        ]
+      }];
 
       const project = new bryntum.gantt.ProjectModel({
         //enableProgressNotifications : true,
@@ -1835,10 +1676,10 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
         tbar: new GanttToolbar(),
         rowHeight: 30,
         barMargin: 5,
-        // minHeight: "80em",
+        minHeight: "80em",
         viewPreset: "weekAndDayLetter",
         dependencyIdField: "sequenceNumber",
-        // dependencyIdField: "wbsCode",
+        //dependencyIdField: "wbsCode",
         columns: [
           {
             type: "wbs",
@@ -1853,7 +1694,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
               {
                 cls: "b-fa b-fa-plus",
                 onClick: ({ record }) => {
-                  console.log("record ===>" + record);
+                  console.log('record ===>' + record);
                   if (record._data.id.indexOf("_generate") == -1) {
                     this.recordTaskParent = record;
                     this.addNewTask(record);
@@ -1982,15 +1823,10 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
                 "Nov",
                 "Dec",
               ];
-              if (
-                record.value &&
-                record.record._data.name == "Milestone Complete"
-              ) {
+              if (record.value && record.record._data.name == 'Milestone Complete') {
                 var endDate;
                 var endDate1 = new Date(record.record.startDate);
-                endDate1.setDate(
-                  endDate1.getDate() + record.record._data.durationMile
-                );
+                endDate1.setDate(endDate1.getDate() + record.record._data.durationMile);
                 if (record.record._parent._data.endDate != undefined) {
                   endDate = new Date(record.record._parent._data.endDate);
                   endDate.setDate(endDate.getDate() - 1);
@@ -2004,6 +1840,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
                     ", " +
                     endDate.getFullYear()
                   );
+
                 }
               } else {
                 var sdate = new Date(record.record.startDate);
@@ -2044,6 +1881,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
                 "Dec",
               ];
               if (record.value) {
+
                 // console.log('Record of endDate =>',{record});
                 // console.log('duration>>>', record.record._data.duration);
                 // console.log('type>>>', record.record._data.type);
@@ -2154,19 +1992,16 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
                   // console.log('Milestone End Date *** ===>' + months[endDate.getMonth()] +" " +Number(endDate.getDate()) +", " +endDate.getFullYear());
                   // endDate = map1.get(count);
 
+
+
+
                   // if(record.record._data.duration == 0){
                   //   endDate = new Date(record.record.startDate);
                   //   endDate.setDate(endDate.getDate() + record.record._data.durationMile);
                   // }else{
                   // console.log('--'+record.record._parent._data.endDate);
                   // endDate = new Date(record.record._parent._data.endDate);
-                  if (record.record._parent._data.endDate != undefined)
-                    console.log(
-                      "-|-" +
-                        record.record._parent._data.endDate
-                          .toString()
-                          .substring(8, 10)
-                    );
+                  if (record.record._parent._data.endDate != undefined) console.log('-|-' + record.record._parent._data.endDate.toString().substring(8, 10));
                   // console.log({endDate});
 
                   // if(endDate != undefined && record.record._parent._data.endDate != undefined && record.record._parent._data.endDate.toString().substring(8,10) == endDate.getDate().toString()){
@@ -2177,9 +2012,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
                   // console.log({endDate});
 
                   var endDate1 = new Date(record.record.startDate);
-                  endDate1.setDate(
-                    endDate1.getDate() + record.record._data.durationMile
-                  );
+                  endDate1.setDate(endDate1.getDate() + record.record._data.durationMile);
                   // console.log({endDate1});
 
                   endDate = new Date(record.record._parent._data.endDate);
@@ -2189,8 +2022,10 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
                   endDate = new Date(endDate);
                   // console.log('3-'+endDate);
 
+
                   // endDate.setDate(endDate.getDate() + record.record._parent._data.duration);
                   // }
+
 
                   return (
                     months[endDate.getMonth()] +
@@ -2600,9 +2435,9 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
               }
             }
           },
-          celldblclick: ({ source }) => {},
-          cellClick: ({ source }) => {},
-          finishCellEdit: ({ editorContext }) => {},
+          celldblclick: ({ source }) => { },
+          cellClick: ({ source }) => { },
+          finishCellEdit: ({ editorContext }) => { },
           beforeFinishCellEdit: ({ editorContext }) => {
             if (
               editorContext.column.field !== "percentDone" ||
@@ -2691,7 +2526,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
                   (source.selectedRecordCollection._values[0].constraintType ==
                     "" ||
                     source.selectedRecordCollection._values[0].constraintType ==
-                      null)
+                    null)
                 ) {
                   source.selectedRecordCollection._values[0].set(
                     "constraintType",
@@ -2980,56 +2815,8 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
                             }
                         }
                     }*/
-
-        wbsObj[renderData.taskRecord.wbsValue._value]=renderData.taskRecord.id.split('_')[0];
-        // wbsObj[renderData.taskRecord.id.split('_')[0]]=renderData.taskRecord.wbsValue._value;
-
-        var that = this;
-        that.wpsValue = wbsObj;
-
-          if (that.wpsBoolean == undefined || that.wpsBoolean == null) {
-            that.wpsBoolean = false;
-          }
-
-          try {
-            var that = this;
-            if (that.wpsBoolean == false) {
-              that.wpsValue = wbsObj;
-              that.wpsBoolean = true;
-
-              console.log('*** 1');
-              setTimeout(() => {
-                setWBSValue({
-                  scheduleItemMap: JSON.stringify(wbsObj),
-                })
-                  .then(function (response) {
-                    console.log('successfilly called setWBSValue');
-                    // console.log(response);
-                  })
-                  .catch(function (error) {
-                    console.log('Error from apex call in setWBSValue');
-                  });
-
-
-              },5000);
-
-                console.log('*** 2');
-
-            }
-          } catch (error) {
-            console.log('Error in custom WBS logic');
-            console.log({error});
-            console.log(JSON.stringify(error));
-          }
-          // const timeoutMilliseconds = 5000;
-
         },
-
       });
-
-      // console.log(gantt.taskRenderer({x , y}));
-      console.log('*** N3');
-      // console.log(taskRenderer({x , y}));
 
       if (this.GanttVar) {
         this.hideSchedule = this.GanttVar.subGrids.normal.collapsed;
@@ -3107,7 +2894,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
             }
           } else if (event.target.classList.contains("addinternalresource")) {
             this.taskRecordId = event.record._data.id;
-            console.log('taskReocrdId:=- '+this.taskRecordId);
             this.showEditResourcePopup = true;
             this.selectedContactApiName = "buildertek__Resource__c";
             this.selectedResourceContact = "";
@@ -3133,7 +2919,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           if (event.target.id == "editcontractorResource") {
             if (event.target.dataset.resource) {
               this.taskRecordId = event.record._data.id;
-              console.log('taskReocrdId:=- '+this.taskRecordId);
               this.showEditResourcePopup = true;
               this.selectedContactApiName =
                 "buildertek__Contractor_Resource__c";
@@ -3211,6 +2996,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     }
   }
 
+
   openOriginDateModal() {
     this.showOriginalDateModal = true;
   }
@@ -3241,9 +3027,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
       })
       .catch(function (error) {
         console.log("error");
-        console.log({
-          error,
-        });
+        console.log({ error });
         that.dispatchEvent(
           new ShowToastEvent({
             title: "Try Again",
@@ -3254,30 +3038,4 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
         that.isLoaded = false;
       });
   }
-  handleBeforeUnload() {
-    console.log("handleBeforeUnload");
-    if (this.showToast && this.isrowchange) {
-      console.log("handleBeforeUnload in if condition");
-      const toastEvent = new ShowToastEvent({
-        title: "Warning",
-        message: "Your have made changes please save before closing.",
-        variant: "warning",
-      });
-      this.dispatchEvent(toastEvent);
-
-      setTimeout(() => {
-        const toastCloseEvent = new ShowToastEvent({
-          title: "",
-          message: "",
-          variant: "",
-        });
-        this.dispatchEvent(toastCloseEvent);
-      }, 5000);
-    }
-  }
-  // saveWbsData(wbsValue){
-  //   console.log({wbsValue});
-
-  // }
-
 }

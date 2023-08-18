@@ -37,9 +37,9 @@ i.b-action-item.b-fa.b-fa-comment-alt-plus::before{
 }
 .b-grid-row.milestoneTypeColor {
     background: rgb(199, 191, 215);
-    
+
   }
- 
+
 .b-grid-row.pastDueDatesText .b-grid-cell{
     color:red;
 }
@@ -73,7 +73,7 @@ i.b-action-item.b-fa.b-fa-comment-alt-plus::before{
 
 .b-tree-cell-inner.indentCellTrue{
     margin-left: 1.5rem;
-} 
+}
 
 .b-sch-event-content i.b-fa.b-fa-arrow-right{
     display: none;
@@ -102,11 +102,11 @@ i.b-action-item.b-fa.b-fa-comment-alt-plus::before{
      height: unset !important;
      max-height: unset !important;
      box-shadow: none !important;
- } 
+ }
  .slds-modal__container{
     max-width: 72rem !important;
     width:72% !important;
- 
+
  }
 
  .hideBtn{
