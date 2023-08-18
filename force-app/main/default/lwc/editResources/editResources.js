@@ -28,6 +28,7 @@ export default class LwcRadioGroup extends LightningElement {
     //CHB-64
     @api recordId;
     @api taskid
+    @track disablePrevBtn = true;
 
     connectedCallback(){
         console.log('RecordID---->'+this.taskid);
@@ -38,13 +39,15 @@ export default class LwcRadioGroup extends LightningElement {
     handleNext(){
         var pageNumber = this.pageNumber;
         var pageSize = this.pageSize
-        pageNumber++
+        pageNumber++;
         this.pageNumber = pageNumber;
         var contact = this.searchVal;
         var acc = this.searchAccVal;
         var selectedId = ''
         selectedId = this.selectedResourceid ? this.selectedResourceid : '' ;
-        this.getContactsList()
+        // this.getContactsList();
+        this.showAddContactBtn = true;
+        this.disableNext = true;
         //this.getContacts(pageNumber, pageSize,selectedId, contact,acc);
     }
 
@@ -172,7 +175,5 @@ export default class LwcRadioGroup extends LightningElement {
             this.getContactsList();
         },800)
        // this.accountId = event.detail.id;
-
     }
-
 }
