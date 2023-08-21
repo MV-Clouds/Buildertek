@@ -1,6 +1,6 @@
 ({
     handleChangeObjectName : function(component, event, helper) {
-
+        console.log('changes');
         var action=component.get('c.getChildObectName');
         action.setParams({
             "projectId": component.get('v.recordId'),

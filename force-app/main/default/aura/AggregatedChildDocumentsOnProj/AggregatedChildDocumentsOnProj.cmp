@@ -101,6 +101,7 @@
             </tbody>
         </table>
 
+        
         <aura:if isTrue="{!(empty(v.attachmentData))}">
             <center class="noData">No Result found.... </center> 
         </aura:if>
