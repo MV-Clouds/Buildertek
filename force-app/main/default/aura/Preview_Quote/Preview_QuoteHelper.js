@@ -71,7 +71,7 @@
         var signName = component.get("v.SignatureName");
         var signatureaction = component.get("c.saveSign");
         var toastEvent = $A.get('e.force:showToast');
-        var vSplit = document.getElementById("divsign").toDataURL().split(',')[1];
+        var vSplit = component.find("divsign").getElement().toDataURL().split(',')[1];
 
         signatureaction.setParams({
             base64Data: encodeURIComponent(vSplit),
@@ -173,8 +173,9 @@
         var signName = component.get("v.SignatureName");
         var signatureaction = component.get("c.saveSign");
         var toastEvent = $A.get('e.force:showToast');
-        var vSplit = document.getElementById("divsign").toDataURL().split(',')[1];
-
+        var vSplit = component.find("divsign").getElement().toDataURL().split(',')[1];
+        console.log("vsplit:---------------" , vSplit);
+debugger;
         signatureaction.setParams({
             base64Data: encodeURIComponent(vSplit),
             contentType: "image/png",
@@ -184,7 +185,8 @@
         signatureaction.setCallback(this, function(e) {
             if (e.getState() == 'SUCCESS') {
                 var result = e.getReturnValue();
-
+                console.log('result' , result);
+                debugger;
                 component.set("v.fileimageId", result);
                 setTimeout(
                     function() {

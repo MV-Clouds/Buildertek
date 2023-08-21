@@ -147,7 +147,7 @@
                                         <div class="">
                                             <div class="slds-form-element__control">
                                                 <div id="signature-pad">
-                                                    <canvas style="border:1px solid lightgray;width:100%;height:100%;margin-top:10px;" id="divsign"></canvas>
+                                                    <canvas style="border:1px solid lightgray;width:100%;height:100%;margin-top:10px;"  aura:id="divsign"></canvas>
                                                     <div style="float:right;margin-right:18px;"><a href="#" style="text-decoration:none;" id="btnClear">Clear Signature</a></div>
                                                 </div>
                                                 <ltng:require scripts="/resource/buildertek__SignaturePad,/resource/buildertek__SignApp" />

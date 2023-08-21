@@ -392,11 +392,12 @@ public without sharing class PreviewQuoteController{
     }
 
     @AuraEnabled
-    public static String acceptandsendProposal(string signName, String htmlBody, String recordId, String templateId, List<String> to, List<String> cc, string fileid, string fileidNew, List<String> emailIds, string memovalue){
+    public static String acceptandsendProposal(string signName, String htmlBody, String recordId, String templateId, List<String> to, List<String> cc, string fileid, List<String> emailIds, string memovalue){
 
         try{
             String body = '';
             String subject = '';
+            String fileidNew = '';
              list<buildertek__Admin_Interface_Node_Configuration__c> adminInterfaceNodeConfigurations = [Select Id,
                                                                                                   buildertek__Quote_Configuration__c,buildertek__Email_Subject__c
                                                                                                   from buildertek__Admin_Interface_Node_Configuration__c
