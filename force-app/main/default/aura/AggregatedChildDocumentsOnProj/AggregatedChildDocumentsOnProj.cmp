@@ -1,22 +1,114 @@
 <aura:component implements="force:appHostable,lightning:isUrlAddressable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction"  access="global" controller="AggregatedChildDocsController" >
     <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
-    <!-- <aura:attribute name="conList" type="List"/> -->
-    <div class="slds-m-around_xx-large">
-        <!-- <lightning:accordion>
-            <aura:iteration items="{!v.conList}" var="con">
-                <lightning:accordionSection name="{!con.name}" label="{!con.Name}">
-                    <aura:set attribute="body">
-                        <p>Street : {!con.MailingStreet}</p>
-                        <p>City : {!con.MailingCity}</p>
-                        <p>State : {!con.MailingState}</p>
-                        <p>Postcode : {!con.MailingPostalcode}</p>
-                        <p>Country : {!con.MailingCountry}</p>
-                        <p>Email : {!con.Email}</p>
-                        <p>Phone : {!con.Phone}</p>
-                    </aura:set>
-                </lightning:accordionSection>
-            </aura:iteration>
-        </lightning:accordion> -->
+    <aura:attribute name="objectNameList" type="List"/>
+    <aura:attribute name="mycolumns" type="List"/>
+    <aura:attribute type="sObject"  name="attachmentData"/>
+    <lightning:navigation aura:id="navService"/>
+    <aura:attribute name="childObjectNameMap" type="List" />
+    <aura:attribute name="selectedObj" type="String" />
+    <!-- bt another -->
+    <aura:attribute name="displayObject" type="Boolean" default="false" />
+    <aura:attribute name="selectedObjectName" type="String" />
+
+
+
+    <!-- <div>
+        <div class="slds-input-has-icon slds-input-has-icon-right"> -->
+            <!-- <aura:if isTrue="{!v.selectedBudgetName == ''}">
+                <span class="slds-icon_container slds-combobox__input-entity-icon searchIcon" title="record">
+                    <lightning:icon class="slds-icon slds-icon slds-icon_small" iconName="utility:search" size="x-small" alternativeText="icon"/>
+                    <span class="slds-assistive-text"></span>
+                </span>
+            </aura:if> -->
+            <!-- <lightning:input aura:id="childObjectInput" class="budgetInput" autocomplete="off" type="search" placeholder="Search Child Object Name..." variant="label-hidden" value="{!v.selectedObjectName}"  onclick="{!c.searchChildObjectName}" onkeyup="{!c.keyupBudgetData}" />
+            <aura:if isTrue="{!v.displayObject}" >
+            <div id="listbox-id-11" class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid searchResult" role="listbox" style="position: absolute;" >
+                <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                    <aura:iteration items="{!v.childObjectNameMap}" var="result">
+                        <li role="presentation" class="slds-listbox__item" data-value="{!result.key}" onclick="{!c.clickOnChildName}">
+                            <div class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small slds-media slds-listbox__option slds-listbox__option_entity slds-media_center" role="option">
+                                <span class="slds-media__body">
+                                    <span class="slds-truncate" title="{!result.value}">
+                                        <span>{!result.value}</span>
+                                    </span>
+                                </span>
+                            </div>
+                        </li>
+                    </aura:iteration>    
+                </ul>
+            </div>
+        </aura:if>
+        </div>
+    </div>  -->
+
+
+    <!-- Another way (This way is also correct) -->
+    <lightning:select aura:id="childObjectNamePicklist" value="{!v.selectedObj}" onchange="{!c.handleObjectChange}" name="childObjectNamePicklist" label="Select Child Object Name" required="true">
+        <option value="">--None--</option>
+        <aura:iteration items="{!v.childObjectNameMap}" var="objName" indexVar="key">
+            <option text="{!objName.value}" value="{!objName.key}" selected="{!objName.key==v.selectedObj}" />
+        </aura:iteration>
+    </lightning:select>
+    <!-- Another way (This way is also correct) -->
+
+
+    <hr/>
+
+    <div style="overflow: auto;">
+        <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+            <thead>
+                <tr class="slds-line-height_reset slds-text-title_caps">
+                    <th  class="slds-is-resizable" scope="col">
+                        <div class="slds-truncate" title="Name">
+                            No.
+                        </div>
+                    </th>
+                    <th  class="slds-is-resizable" scope="col">
+                        <div class="slds-truncate" title="Account Number">
+                           Name
+                        </div>
+                    </th>
+                    <th class="slds-is-resizable" scope="col">
+                        <div class="slds-truncate" title="Industry">
+                            Attachment
+                        </div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <aura:iteration items="{!v.attachmentData}" var="attachment" indexVar="indx">
+                    <tr class="slds-hint-parent">
+                            
+                        <th data-label="index" scope="row">
+                            <div class="slds-truncate" title="index">
+                                {!indx+1}
+                            </div>
+                        </th>
+                        <td data-label="Name">
+                            <div class="slds-truncate" title="{!attachment.ParentName}"><a href="javascript:void(0);" onclick="{!c.openRecordPage}" data-record-id="{!attachment.ParentId}">{!attachment.ParentName} </a></div>
+                            
+
+                        </td>
+                        <td data-label="Attachment">
+                            <a href="{!'/servlet/servlet.FileDownload?file='+attachment.fileId}" target="_blank">{!attachment.Name}</a> 
+                            <lightning:fileCard fileId="{!attachment.ContentDocumentId}" />
+
+                        </td>
+        
+                            
+                    </tr>
+                </aura:iteration>
+            </tbody>
+        </table>
+
+        <aura:if isTrue="{!(empty(v.attachmentData))}">
+            <center class="noData">No Result found.... </center> 
+        </aura:if>
     </div>
+
+   
+
+    <c:BT_Spinner />
+
 
 </aura:component>	
