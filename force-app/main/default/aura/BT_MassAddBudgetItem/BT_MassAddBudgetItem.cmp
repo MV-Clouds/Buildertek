@@ -5,25 +5,32 @@
     <aura:attribute name="budgetLineWrapperList" type="Object" />
     <aura:attribute name="budgetLineGroups" type="List" />
     <aura:attribute name="pricebookOptions" type="List" />
-    <aura:attribute name="isLoading" type="Boolean" default="false" />
+    <!-- <aura:attribute name="isLoading" type="Boolean" default="false" /> -->
     <aura:attribute name="vendorList" type="List" />
     <aura:attribute name="uomOptionList" type="List" />
     <aura:attribute name="selectedPricebook" type="String" />
     <aura:attribute name="DefaultproductFamilyList" type="List" />
     <aura:attribute name="DefaultproductOptionList" type="List" />
-    
-
+    <aura:attribute name="selectedLookUpRecord" type="sObject" default="{}" />
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
-
+    <aura:attribute name="selectedRecordMap" type="String" />
     <lightning:workspaceAPI aura:id="workspace" />
     <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
     <lightning:overlayLibrary aura:id="overlayLib" />
 
+    <!-- <aura:attribute name="budgetwrap" type="Object" default="{}" /> -->
+    
+
+    <aura:handler name="oSelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.handleComponentEvent}" />
+    <aura:attribute name="defaultPriceBookId" type="String" />
+
+
+
     <div class="slds-modal__content slds-scrollable" style="height:100% !important">
         <lightning:card aura:id="lightCard" class="slds-card_boundary slds-page-header slds-scrollable" title="Budget Lines">
             <aura:set attribute="actions">
-                <lightning:button iconName="utility:save" iconPosition="left" onclick="{!c.onMassUpdate}" label="Save" />
-                <lightning:button iconName="utility:add" iconPosition="left" onclick="{!c.onAddClick}" label="Add" />
+                <lightning:button iconName="utility:save" iconPosition="left" onclick="{!c.onMassUpdate}" label="Save"    />
+                <lightning:button iconName="utility:add" iconPosition="left" onclick="{!c.onClickAddBtn}" label="Add"  />
                 <lightning:button iconName="utility:close" iconPosition="left" onclick="{!c.onCancel}" label="Cancel" />
             </aura:set>
         </lightning:card>
@@ -69,17 +76,14 @@
                         <aura:iteration items="{!v.budgetLineWrapperList}" var="budgetLineWrapper" indexVar="index">
                             <tr class="slds-hint-parent">
                                 <td>
-                                    <lightning:select name="{!index}" value="{!budgetLineWrapper.pricebookEntryId}" class="pricebook-class pointer1" onchange="{!c.getFamily}">
-                                        <aura:iteration items="{!v.pricebookOptions}" var="pricebookOption">
-                                            <aura:if isTrue="{!pricebookOption.value == v.selectedPricebook}">
-                                                <option name="{!budgetLineWrapper}" value="{!pricebookOption.value}" selected="true">{!pricebookOption.label}</option>
-                                                <aura:set attribute="else">
-                                                    <option name="{!budgetLineWrapper}" value="{!pricebookOption.value}">{!pricebookOption.label}</option>
-                                                </aura:set>
-                                            </aura:if>
-                                            <!-- <option name="{!budgetLineWrapper}" value="{!pricebookOption.value}">{!pricebookOption.label}</option> -->
+                        
+                                    <lightning:select  value="{!budgetLineWrapper.pricebookEntryId}" onchange="{!c.getFamily}" name="{!index}">
+                                        <aura:iteration items="{!v.pricebookOptions}" var="pricebookOption" indexVar="key">
+                                            <option text="{!pricebookOption.value}" value="{!pricebookOption.key}" selected="{!pricebookOption.key== budgetLineWrapper.pricebookEntryId}" />
                                         </aura:iteration>
                                     </lightning:select>
+
+                                    
                                 </td>
                                 <td>
                                     <lightning:select name="{!index}" value="{!budgetLineWrapper.productFamily}" class="family-class pointer1" onchange="{!c.getProduct}">
@@ -87,13 +91,33 @@
                                             <option name="{!budgetLineWrapper}" value="{!productFamilyOption.value}">{!productFamilyOption.label}</option>
                                         </aura:iteration>
                                     </lightning:select>
+
+                                    <!-- <lightning:select  value="{!budgetLineWrapper.productFamily}" onchange="{!c.getProduct}" name="{!index}">
+                                        <aura:iteration items="{!v.budgetLineWrapper.productFamilyList}" var="productFamilyOption" indexVar="key">
+                                            <option name="{!budgetLineWrapper}" text="{!pricebookOption.value}" value="{!productFamilyOption.value}" selected="{!pricebookOption.key== budgetLineWrapper.productFamily}" />
+                                        </aura:iteration>
+                                    </lightning:select> -->
                                 </td>
                                 <td>
-                                    <lightning:select name="{!index}" value="{!budgetLineWrapper.productId}" class="product-class pointer1" onchange="{!c.gotProduct}">
-                                        <aura:iteration items="{!budgetLineWrapper.productOptionList}" var="productOption">
-                                            <option name="{!budgetLineWrapper}" value="{!productOption.value}">{!productOption.label}</option>
-                                        </aura:iteration>
-                                    </lightning:select>
+                                    <aura:html tag="style">
+                                        .mainDiv{
+                                            padding-top:0% !important;
+
+                                        }
+                                        .pillSize{
+
+                                            padding-top: 2% !important;
+                                            padding-bottom: 2% !important;
+                                        }
+                                        .subDiv{
+                                            width:100% !important;
+                                            margin-top:0 !important;
+                                        }
+                                    </aura:html>
+                                    
+
+                                    <c:BT_LightningLookup objectAPIName="Product2"  IconName="standard:product" selectedRecord="{!budgetLineWrapper.selectedLookUpRecord}" aura:id="productId"   parentId="{!budgetLineWrapper.pricebookEntryId}" prodctfamly="{!budgetLineWrapper.productFamily != '' ? budgetLineWrapper.productFamily : 'All Families'}" />
+
                                 </td>
                                 <td>
                                     <lightning:input name="{!index}" value="{!budgetLineWrapper.BudgetLine.Name}" class="description-class" />
@@ -132,11 +156,11 @@
                                 </td>
                                 <td>
                                     <!-- <aura:if isTrue="{!budgetLineWrapper.BudgetLine.buildertek__Product__c != ''}"> -->
-                                        <lightning:select name="{!index}" value="{!budgetLineWrapper.BudgetLine.buildertek__Contractor__c}" class="vendor-class pointer1">
+                                        <!-- <lightning:select name="{!index}" value="{!budgetLineWrapper.BudgetLine.buildertek__Contractor__c}" class="vendor-class pointer1">
                                         <aura:iteration items="{!v.vendorList}" var="vendorOption">
                                                 <option name="{!budgetLineWrapper}" value="{!vendorOption.value}">{!vendorOption.label}</option>
                                             </aura:iteration>
-                                        </lightning:select>
+                                        </lightning:select> -->
                                     <!-- </aura:if>
                                     <aura:if isTrue="{!budgetLineWrapper.BudgetLine.buildertek__Product__c == ''}">
                                         <lightning:select name="{!index}" value="{!budgetLineWrapper.BudgetLine.buildertek__Contractor__c}" class="vendor-class pointer1">
@@ -145,6 +169,25 @@
                                             </aura:iteration>
                                         </lightning:select>
                                     </aura:if> -->
+
+                                    <aura:html tag="style">
+                                        .mainDiv{
+                                            padding-top:0% !important;
+
+                                        }
+                                        .pillSize{
+
+                                            padding-top: 2% !important;
+                                            padding-bottom: 2% !important;
+                                        }
+                                        .subDiv{
+                                            width:100% !important;
+                                            margin-top:0 !important;
+                                        }
+                                    </aura:html>
+                                    
+                                    <c:BT_LightningLookup objectAPIName="Account"  IconName="standard:account" selectedRecord="{!budgetLineWrapper.BudgetLine.buildertek__Contractor__c}" aura:id="accountId"  />
+
                                     
                                 </td>
                                 <td>
@@ -166,11 +209,6 @@
                 </table>
             </div>
         </div>
-
     </div>
-
-    <aura:if isTrue="{!v.isLoading}">
-        <lightning:spinner alternativeText="Loading" variant="brand" size="large" />
-    </aura:if>
-
+    <c:BT_Spinner />
 </aura:component>
