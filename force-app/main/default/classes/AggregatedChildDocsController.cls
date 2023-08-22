@@ -12,17 +12,14 @@ public without sharing class AggregatedChildDocsController {
     
     
     public class contntDocumentLinkWrapp {
-        // @AuraEnabled
-        // public String ContentDocumentId;
-        // @AuraEnabled
-        // public String Name;
-        // @AuraEnabled
-        // public String ParentId;
-        // @AuraEnabled
-        // public String ParentName;
-
-        public String ParentId { get; set; }
-        public List<ContentDocumentLink> DocumentLinks { get; set; }
+        @AuraEnabled
+        public String ContentDocumentId;
+        @AuraEnabled
+        public String Name;
+        @AuraEnabled
+        public String ParentId;
+        @AuraEnabled
+        public String ParentName;
     } 
     
     @AuraEnabled
@@ -57,39 +54,16 @@ public without sharing class AggregatedChildDocsController {
              }
              if(cntDocLinkIdList.size() > 0){
                  List<ContentDocumentLink> cntDocumentList=[Select Id , ContentDocumentId ,LinkedEntity.Type,  ContentDocument.Title, LinkedEntityId , LinkedEntity.Name   FROM ContentDocumentLink  WHERE LinkedEntityId IN: cntDocLinkIdList];
-
-                // Process results and group by ParentId
-                for (ContentDocumentLink cntDoc : cntDocumentList) {
-                    if (!parentIdToDocuments.containsKey(cntDoc.LinkedEntityId)) {
-                        parentIdToDocuments.put(cntDoc.LinkedEntityId, new List<ContentDocumentLink>());
-                    }
-                    parentIdToDocuments.get(cntDoc.LinkedEntityId).add(cntDoc);
+                System.debug(cntDocumentList);
+                 for(ContentDocumentLink cntDoc:cntDocumentList){
+                     contntDocumentLinkWrapp wrap= new contntDocumentLinkWrapp();
+                     wrap.ContentDocumentId=cntDoc.ContentDocumentId;
+                     wrap.ParentId= cntDoc.LinkedEntityId; 
+                     wrap.ParentName= cntDoc.LinkedEntity.Name ;
+                     documentWrapList.add(wrap);
                 }
-
-                // Create DocumentGroup instances
-                for (String parentId : parentIdToDocuments.keySet()) {
-                    contntDocumentLinkWrapp wrap = new contntDocumentLinkWrapp();
-                    wrap.ParentId = parentId;
-                    wrap.DocumentLinks = parentIdToDocuments.get(parentId);
-                    documentWrapList.add(wrap);
-
-                
-                }
-
-                return documentWrapList;
-
-
-                //  List<ContentDocumentLink> cntDocumentList=[Select Id , ContentDocumentId ,LinkedEntity.Type,  ContentDocument.Title, LinkedEntityId , LinkedEntity.Name   FROM ContentDocumentLink  WHERE LinkedEntityId IN: cntDocLinkIdList];
-                // System.debug(cntDocumentList);
-                //  for(ContentDocumentLink cntDoc:cntDocumentList){
-                //      contntDocumentLinkWrapp wrap= new contntDocumentLinkWrapp();
-                //      wrap.ContentDocumentId=cntDoc.ContentDocumentId;
-                //      wrap.ParentId= cntDoc.LinkedEntityId; 
-                //      wrap.ParentName= cntDoc.LinkedEntity.Name ;
-                //      documentWrapList.add(wrap);
-                // }
-                // System.debug(documentWrapList.size());
-                //  return documentWrapList;
+                System.debug(documentWrapList.size());
+                 return documentWrapList;
             }else{
                 return null;
             }

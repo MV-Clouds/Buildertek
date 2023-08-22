@@ -84,7 +84,18 @@
                         component.set('v.showAttachmentList' , true);
                         component.set('v.attachmentData' , result);
 
-
+                        const groupedData = result.reduce((result, entry) => {
+                            const { ParentId } = entry;
+                            
+                            if (!result[ParentId]) {
+                              result[ParentId] = [];
+                            }
+                            
+                            result[ParentId].push(entry);
+                            return result;
+                          }, {});
+                          
+                          console.log(groupedData);
                     }else{
                         component.set('v.showAttachmentList' , false);
 
