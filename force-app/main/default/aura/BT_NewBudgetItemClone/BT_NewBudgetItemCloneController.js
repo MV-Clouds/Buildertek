@@ -491,6 +491,7 @@
                 $A.get("e.c:BT_SpinnerEvent").setParams({
                     "action": "HIDE"
                 }).fire();
+
                 component.set("v.addtcsection", true);
                 var pageNumber = component.get("v.PageNumber");
                 var pageSize = component.get("v.pageSize");
@@ -2295,7 +2296,9 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
         editRecordEvent.fire();
     },
 
-    deleteBudget: function (component, event, helper) {
+    
+      : function (component, event, helper) {
+
         if(component.get("v.HaveDeleteAccess")){
             component.set("v.isOpen", true);
             var recordId = event.currentTarget.dataset.id;
@@ -3401,6 +3404,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                 }
             }
         }
+
         else{
             // var toastEvent = $A.get("e.force:showToast");
             // toastEvent.setParams({
@@ -4053,6 +4057,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
     },
 
     addExpense: function (component, event, helper) {
+
         if(component.get("v.HaveCreateAccess")){
             var selectedRecs = component.get('v.selectedRecs');
             console.log('v.selectedRecs ==> ', { selectedRecs });
@@ -4427,6 +4432,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
 
     //  ----------- For Add Sales Invoice Button BUIL - 3525 --------------
     addSalesInvoice: function (component, event, helper) {
+
         if(component.get("v.HaveCreateAccess")){
             var selectedRecs = component.get('v.selectedRecs');
             if (selectedRecs.length == 0) {

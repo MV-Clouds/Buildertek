@@ -66,7 +66,7 @@
     }, 
 
     changePricebookHelper : function(component, event, helper , priceBookId){
-        component.find("selectAll").set("v.checked", false);
+        // component.find("selectAll").set("v.checked", false);
         component.set('v.Spinner', true);
         component.set("v.sProductFamily", '');
         component.set("v.sProductName", '');
@@ -82,8 +82,35 @@
                 var rows = response.getReturnValue();
                 if (response.getState() == "SUCCESS" && rows != null) {
                     console.log('quoteLineList ==> ',{rows});
-                    component.set("v.quoteLineList", rows);
-                    component.set("v.tableDataList", rows);
+                    // component.set("v.quoteLineList", rows);
+                    // component.set("v.tableDataList", rows);
+                    //---------------------------------------------------------------------------
+                    var selectedRecords = component.get("v.selectedRecords");
+                    var selectedRows = [];
+                    var remainingRows = [];
+
+                    rows.forEach(function(row) {
+                        var matchingRecord = selectedRecords.find(function(record) {
+                            return record.Id === row.Id;
+                        });
+
+                        if (matchingRecord) {
+                            row.Selected = true; // Assuming there's a field like 'Selected__c'
+                            selectedRows.push(row);
+                        } else {
+                            row.Selected = false;
+                            remainingRows.push(row);
+                        }
+                    });
+
+                    // Combine selectedRows and remainingRows while maintaining selected order
+                    var updatedRows = selectedRecords.concat(remainingRows);
+
+                    component.set("v.quoteLineList", updatedRows);
+                    component.set("v.tableDataList", updatedRows);
+
+
+                    //--------------------------------------------------------------------------
                     var productFamilySet = new Set();
                     rows.forEach(element => {
                         if (element.Family != undefined && element.Family != '') {
@@ -136,100 +163,272 @@
             component.set('v.Spinner', false);
         }
     }, 
+    changeProductFamilyHelper : function(component, event, helper , priceBookId, productFamilyId){
+        console.log('method is calllll');
+        component.set('v.Spinner', true);
+        console.log('selectedPricebook====>',priceBookId);
+        console.log('selectedProductFamily=====>',productFamilyId);
+        let sProductFamily = component.get("v.sProductFamily");
+        console.log('sProductFamily=====>',sProductFamily);
+        if (priceBookId != '' && productFamilyId != '') {
+            
+            var action = component.get("c.getProductsthroughProductFamily");
+            action.setParams({
+                "pbookId": priceBookId ,
+                "pfId": productFamilyId
+            });
+            action.setCallback(this, function(response) {
+                var rows = response.getReturnValue();
+                if (response.getState() == "SUCCESS" && rows != null) {
+                    console.log('quoteLineList ==> ',{rows});
+                    // component.set("v.quoteLineList", rows);
+                    // component.set("v.tableDataList", rows);
+                    //---------------------------------------------------------------------------
+                    var selectedRecords = component.get("v.selectedRecords");
+                    var selectedRows = [];
+                    var remainingRows = [];
 
-    searchInDatatableHelper : function(component, event, helper){
+                    rows.forEach(function(row) {
+                        var matchingRecord = selectedRecords.find(function(record) {
+                            return record.Id === row.Id;
+                        });
 
+                        if (matchingRecord) {
+                            row.Selected = true; // Assuming there's a field like 'Selected__c'
+                            selectedRows.push(row);
+                        } else {
+                            row.Selected = false;
+                            remainingRows.push(row);
+                        }
+                    });
+
+                    // Combine selectedRows and remainingRows while maintaining selected order
+                    var updatedRows = selectedRecords.concat(remainingRows);
+
+                    component.set("v.quoteLineList", updatedRows);
+                    component.set("v.tableDataList", updatedRows);
+
+
+                    //--------------------------------------------------------------------------
+                }
+                component.set('v.Spinner', false);
+            });
+            $A.enqueueAction(action);
+        } else {
+            component.set("v.quoteLineList", []);
+            component.set("v.tableDataList", []);
+            if(component.get('v.selectedPricebookId')!= undefined){
+                var selectedPricebook = component.find("selectedPricebook").get("v.value");
+                helper.changePricebookHelper(component, event, helper , selectedPricebook);
+            }
+        }
+    },
+
+    // searchInDatatableHelper : function(component, event, helper){
+
+    //     if (component.get("v.selectedPricebookId") != '') {
+    //         let sProductFamily = component.get("v.sProductFamily");
+    //         let sProductName = component.get("v.sProductName");
+
+    //         var quoteLineList = component.get("v.quoteLineList");
+    //         var tableDataList = [];
+
+    //         if (sProductFamily != undefined && sProductFamily != '' && sProductName != undefined && sProductName != '') {
+    //             console.log('in3');
+    //             // quoteLineList.forEach(element => {
+    //             //     if (element.Family != undefined && element.Family != '') {
+    //             //         if (element.Family.toLowerCase().includes(sProductFamily.toLowerCase()) && element.Name.toLowerCase().includes(sProductName.toLowerCase())) {
+    //             //             tableDataList.push(element);
+    //             //         }
+    //             //     }
+    //             // });
+    //             let familySearchTerms = sProductFamily.toLowerCase().split(' ');
+    //             let nameSearchTerms = sProductName.toLowerCase().split(' ');
+
+    //             quoteLineList.forEach(element => {
+    //                 let familyLowerCase = element.Family ? element.Family.toLowerCase() : '';
+    //                 let nameLowerCase = element.Name.toLowerCase();
+
+    //                 let familyMatch = familySearchTerms.every(term => familyLowerCase.includes(term));
+    //                 let nameMatch = nameSearchTerms.every(term => nameLowerCase.includes(term));
+
+    //                 // If both family and name match, add the element to the tableDataList
+    //                 if (familyMatch && nameMatch) {
+    //                     tableDataList.push(element);
+    //                 }
+
+    //             });
+    //         } else if (sProductFamily != undefined && sProductFamily != '') {
+    //             console.log('in2');
+    //             quoteLineList.forEach(element => {
+    //                 if (element.Family != undefined && element.Family != '') {
+    //                     if (element.Family.toLowerCase().includes(sProductFamily.toLowerCase())) {
+    //                         tableDataList.push(element);
+    //                     }
+    //                 }
+    //             });
+    //         } else if (sProductName != undefined && sProductName != '') {
+    //             console.log('in1');
+    //             // quoteLineList.forEach(element => {
+    //             //     if (element.Name.toLowerCase().includes(sProductName.toLowerCase())) {
+    //             //         tableDataList.push(element);
+    //             //     }
+    //             // });
+    //             let searchTerms = sProductName.toLowerCase().split(' ');
+
+    //             quoteLineList.forEach(element => {
+    //                 let nameLowerCase = element.Name.toLowerCase();
+    //                 let allSearchTermsFound = true;
+                    
+    //                 // Check if all search terms are present in the Name field
+    //                 for (let term of searchTerms) {
+    //                     if (!nameLowerCase.includes(term)) {
+    //                         allSearchTermsFound = false;
+    //                         break;
+    //                     }
+    //                 }
+
+    //                 // If all search terms are found, add the element to the tableDataList
+    //                 if (allSearchTermsFound) {
+    //                     tableDataList.push(element);
+    //                 }
+    //             });
+    //         } else{
+    //             console.log('in5');
+    //             tableDataList = quoteLineList;
+    //         }
+    //         var checkAll = true;
+    //         tableDataList.forEach(element => {
+    //             if (!element.Selected) {
+    //                 checkAll = false
+    //             }
+    //         });
+    //         if (tableDataList.length > 0) {
+    //             // component.find("selectAll").set("v.checked", checkAll);
+    //         } else{
+    //             // component.find("selectAll").set("v.checked", false);
+    //         }
+    //         component.set("v.tableDataList", tableDataList);
+    //     }
+    // },                                    
+    
+    //The above method was used previously for searching but from now the below method will be use for searching.(RK)
+
+    searchDatatableHelper : function(component, event, helper){
+        console.log('searchDatatableHelper method is called------');
+        component.set('v.Spinner', true);
         if (component.get("v.selectedPricebookId") != '') {
             let sProductFamily = component.get("v.sProductFamily");
             let sProductName = component.get("v.sProductName");
-
+            let sPriceBook = component.get("v.selectedPricebookId");
             var quoteLineList = component.get("v.quoteLineList");
             var tableDataList = [];
+            if (sProductName != '' && sProductFamily == '') {
+                
+                    var action = component.get("c.getProductsbyName");
+                    action.setParams({
+                        "pbookId": sPriceBook ,
+                        "pName": sProductName
+                    });
+                    action.setCallback(this, function(response) {
+                        var rows = response.getReturnValue();
+                        if (response.getState() == "SUCCESS" && rows != null) {
+                            console.log('quoteLineList ==> ',{rows});
+                            // component.set("v.quoteLineList", rows);
+                            // component.set("v.tableDataList", rows);
+                            //---------------------------------------------------------------------------
+                            var selectedRecords = component.get("v.selectedRecords");
+                            rows.forEach(function(row) {
+                                var matchingRecord = selectedRecords.find(function(record) {
+                                    return record.Id === row.Id;
+                                });
+                                if (matchingRecord) {
+                                    row.Selected = true;
+                                }
+                            });
 
-            if (sProductFamily != undefined && sProductFamily != '' && sProductName != undefined && sProductName != '') {
-                console.log('in3');
-                // quoteLineList.forEach(element => {
-                //     if (element.Family != undefined && element.Family != '') {
-                //         if (element.Family.toLowerCase().includes(sProductFamily.toLowerCase()) && element.Name.toLowerCase().includes(sProductName.toLowerCase())) {
-                //             tableDataList.push(element);
-                //         }
-                //     }
-                // });
-                let familySearchTerms = sProductFamily.toLowerCase().split(' ');
-                let nameSearchTerms = sProductName.toLowerCase().split(' ');
-
-                quoteLineList.forEach(element => {
-                    let familyLowerCase = element.Family ? element.Family.toLowerCase() : '';
-                    let nameLowerCase = element.Name.toLowerCase();
-
-                    let familyMatch = familySearchTerms.every(term => familyLowerCase.includes(term));
-                    let nameMatch = nameSearchTerms.every(term => nameLowerCase.includes(term));
-
-                    // If both family and name match, add the element to the tableDataList
-                    if (familyMatch && nameMatch) {
-                        tableDataList.push(element);
-                    }
-                });
-            } else if (sProductFamily != undefined && sProductFamily != '') {
-                console.log('in2');
-                quoteLineList.forEach(element => {
-                    if (element.Family != undefined && element.Family != '') {
-                        if (element.Family.toLowerCase().includes(sProductFamily.toLowerCase())) {
-                            tableDataList.push(element);
+                            // Sort the records with selected ones on top
+                            rows.sort(function(a, b) {
+                                if (a.Selected && !b.Selected) {
+                                    return -1; // a comes before b
+                                } else if (!a.Selected && b.Selected) {
+                                    return 1; // b comes before a
+                                }
+                                return 0; // no change in order
+                            });
+                            
+                            component.set("v.quoteLineList", rows);
+                            component.set("v.tableDataList", rows);
+                            component.set('v.Spinner', false);
+                            //--------------------------------------------------------------------------
                         }
-                    }
-                });
-            } else if (sProductName != undefined && sProductName != '') {
-                console.log('in1');
-                // quoteLineList.forEach(element => {
-                //     if (element.Name.toLowerCase().includes(sProductName.toLowerCase())) {
-                //         tableDataList.push(element);
-                //     }
-                // });
-                let searchTerms = sProductName.toLowerCase().split(' ');
+                    });
+                    $A.enqueueAction(action);
+                
+            }
+            else if (sProductName != '' && sProductFamily != '') {
+                
+                    var action = component.get("c.getProductsbyNameandFamily");
+                    action.setParams({
+                        "pbookId": sPriceBook ,
+                        "pName": sProductName ,
+                        "pfId": sProductFamily
+                    });
+                    action.setCallback(this, function(response) {
+                        var rows = response.getReturnValue();
+                        if (response.getState() == "SUCCESS" && rows != null) {
+                            console.log('quoteLineList ==> ',{rows});
+                            // component.set("v.quoteLineList", rows);
+                            // component.set("v.tableDataList", rows);
+                            //---------------------------------------------------------------------------
+                            var selectedRecords = component.get("v.selectedRecords");
+                            rows.forEach(function(row) {
+                                var matchingRecord = selectedRecords.find(function(record) {
+                                    return record.Id === row.Id;
+                                });
+                                if (matchingRecord) {
+                                    row.Selected = true;
+                                }
+                            });
 
-                quoteLineList.forEach(element => {
-                    let nameLowerCase = element.Name.toLowerCase();
-                    let allSearchTermsFound = true;
-                    
-                    // Check if all search terms are present in the Name field
-                    for (let term of searchTerms) {
-                        if (!nameLowerCase.includes(term)) {
-                            allSearchTermsFound = false;
-                            break;
+                            // Sort the records with selected ones on top
+                            rows.sort(function(a, b) {
+                                if (a.Selected && !b.Selected) {
+                                    return -1; // a comes before b
+                                } else if (!a.Selected && b.Selected) {
+                                    return 1; // b comes before a
+                                }
+                                return 0; // no change in order
+                            });
+                            
+                            component.set("v.quoteLineList", rows);
+                            component.set("v.tableDataList", rows);
+                            component.set('v.Spinner', false);
+                            //--------------------------------------------------------------------------
                         }
-                    }
-
-                    // If all search terms are found, add the element to the tableDataList
-                    if (allSearchTermsFound) {
-                        tableDataList.push(element);
-                    }
-                });
-            } else{
-                console.log('in5');
-                tableDataList = quoteLineList;
+                    });
+                    $A.enqueueAction(action);
+                
             }
-            var checkAll = true;
-            tableDataList.forEach(element => {
-                if (!element.Selected) {
-                    checkAll = false
-                }
-            });
-            if (tableDataList.length > 0) {
-                component.find("selectAll").set("v.checked", checkAll);
-            } else{
-                component.find("selectAll").set("v.checked", false);
+            else if (sProductName == '' && sProductFamily != '') {
+                var selectedPricebook = component.find("selectedPricebook").get("v.value");
+                var selectedProductFamily = component.find("selectedProductFamily").get("v.value");
+                helper.changeProductFamilyHelper(component, event, helper , selectedPricebook, selectedProductFamily);
             }
-            component.set("v.tableDataList", tableDataList);
+            else if (sProductName == '' && sProductFamily == '') {
+                var selectedPricebook = component.find("selectedPricebook").get("v.value");
+                helper.changePricebookHelper(component, event, helper , selectedPricebook);
+            }
         }
     }, 
 
     goToEditModalHelper: function(component, event, helper) {
-        var quoteLineList = component.get("v.quoteLineList");
+        
+        var quoteLineList = component.get("v.selectedRecords");
         console.log('quoteLineList => ',{quoteLineList});
         var selectedProducts = [];
         var phaseValue= component.get('v.getPhase');
-        //find No Grouping from quoteLineGroupOptions and store it's Id in noGroupingId
+        //finding No Grouping from quoteLineGroupOptions and store it's Id in noGroupingId
         var noGroupingId = '';
         var quoteLineGroupOptions = component.get("v.quoteLineGroupOptions");
         //iterate through quoteLineGroupOptions and find first No Grouping
@@ -299,6 +498,7 @@
             
         });
         console.log('selectedProducts => ',{selectedProducts});
+        // var truelist = component.get("v.trueCheckBoxList");
         component.set("v.selectedProducts", selectedProducts);
         if (selectedProducts.length > 0) {
             component.set("v.selecteProducts", false);

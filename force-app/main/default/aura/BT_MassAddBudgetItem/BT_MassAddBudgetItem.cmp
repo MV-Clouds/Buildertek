@@ -18,6 +18,7 @@
     <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
     <lightning:overlayLibrary aura:id="overlayLib" />
 
+
     <!-- <aura:attribute name="budgetwrap" type="Object" default="{}" /> -->
     
 
@@ -30,7 +31,9 @@
         <lightning:card aura:id="lightCard" class="slds-card_boundary slds-page-header slds-scrollable" title="Budget Lines">
             <aura:set attribute="actions">
                 <lightning:button iconName="utility:save" iconPosition="left" onclick="{!c.onMassUpdate}" label="Save"    />
+
                 <lightning:button iconName="utility:add" iconPosition="left" onclick="{!c.onClickAddBtn}" label="Add"  />
+
                 <lightning:button iconName="utility:close" iconPosition="left" onclick="{!c.onCancel}" label="Cancel" />
             </aura:set>
         </lightning:card>

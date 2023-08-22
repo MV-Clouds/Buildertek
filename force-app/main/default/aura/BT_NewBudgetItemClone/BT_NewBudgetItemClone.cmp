@@ -286,6 +286,7 @@
     <aura:attribute name="addInvoicePOSection" type="Boolean" default="false" />
     <aura:attribute name="invoicePORecordList" type="Account_Payable__c[]" />
 
+
     <!-- >>>>>>>>>>>>>> CHB - 79 <<<<<<<<<<<<<<<<<<< -->
     <aura:attribute name="HaveCreateAccess" type="boolean" default="true" />
     <aura:attribute name="HaveUpdateAccess" type="boolean" default="true"/>
@@ -505,6 +506,7 @@
                     </div>
                 </div>
                 <div aura:id="budgetItem" />
+
                 <div class="av slds-box" id="{!v.recordId + 'groups'}" style="min-height:100%; padding-block:0px !important; padding-inline: 0px; margin-top: -5px;">
                     <div>
                         <aura:if isTrue="{!v.recordId != null}">
@@ -899,6 +901,7 @@
                                 </div>
                             </aura:if>
                             <!-- <aura:if isTrue="{!v.isLoaded}"> -->
+
 
 
 

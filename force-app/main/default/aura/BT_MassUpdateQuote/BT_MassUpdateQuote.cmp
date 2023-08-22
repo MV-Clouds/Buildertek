@@ -137,10 +137,10 @@
                                         }
                                         .subDiv{
                                             width:100% !important;
-                                            margin-top:17px !important;
-
+                                            margin-top:0 !important;
                                         }
-                                    </aura:html>                                   
+                                    </aura:html>
+                                
                                     <c:BT_LightningLookup objectAPIName="Product2"  IconName="standard:product" selectedRecord="{!quoteLineWrapper.selectedLookUpRecord}" aura:id="productId"   parentId="{!quoteLineWrapper.pricebookEntryId}" prodctfamly="{!quoteLineWrapper.productFamily != '' ? quoteLineWrapper.productFamily : 'All Families'}" />
                                     
                                 </td>

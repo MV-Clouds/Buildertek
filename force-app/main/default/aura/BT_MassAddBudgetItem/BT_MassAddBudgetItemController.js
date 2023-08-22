@@ -56,7 +56,6 @@
 
     getFamily : function(component, event, helper) {
         
-        console.log('getFamily');
         $A.get("e.c:BT_SpinnerEvent").setParams({
             "action": "SHOW"
         }).fire(); 
@@ -97,6 +96,7 @@
         $A.get("e.c:BT_SpinnerEvent").setParams({
             "action": "SHOW"
         }).fire();
+
         var budgetlineWrapperList = component.get("v.budgetLineWrapperList");
         var index = event.getSource().get("v.name");
         var family = budgetlineWrapperList[index].productFamily;
@@ -180,14 +180,11 @@
         }).fire(); 
 
         var budgetLineWrapperList = component.get("v.budgetLineWrapperList");
-        let budgetLineWrapper = helper.createBudgetLineWrapper(component, event, helper);
-        var selectedPricebook = component.get("v.selectedPricebook");
-        if(selectedPricebook != '') {
-            budgetLineWrapper.pricebookEntryId = selectedPricebook;    
-            budgetLineWrapper.productFamilyList = component.get("v.DefaultproductFamilyList");
-            budgetLineWrapper.productOptionList = component.get("v.DefaultproductOptionList");
-            budgetLineWrapper.ProductList = component.get("v.DefaultproductOptionList");
+        for(var i = 0; i < 2; i++) {
+            let budgetLineWrapper = helper.createBudgetLineWrapper(component, event, helper);
+            budgetLineWrapperList.push(budgetLineWrapper);
         }
+
         budgetLineWrapperList.push(budgetLineWrapper);
         component.set("v.budgetLineWrapperList", budgetLineWrapperList);
 
@@ -209,8 +206,6 @@
         //     bugetLineWrap[i].pricebookEntryId = component.get('v.selectedPricebook');
         //     helper.getFamily(component, event, helper, component.get('v.selectedPricebook'), i);
         // }
-
-        
     },
 
     deleteRow : function(component, event, helper) {

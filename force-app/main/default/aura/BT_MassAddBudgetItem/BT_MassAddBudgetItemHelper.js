@@ -15,26 +15,7 @@
         });
     },
 
-    createBudgetLineWrapper : function(component, event, helper) {        
-        // return {
-        //     pricebookEntryId: '',
-        //     productFamily: '',
-        //     Product: '',
-        //     ProductName: '',
-        //     BudgetLine: {
-        //         buildertek__Budget__c: component.get("v.recordId"),
-        //         buildertek__Product__c: '',
-        //         Name: '',
-        //         buildertek__Group__c: '',
-        //         buildertek__UOM__c: '',
-        //         buildertek__Contractor__c: '',
-        //         buildertek__Quantity__c: '1',
-        //         buildertek__Unit_Price__c: '',
-        //     },
-        //     productFamilyList: [],
-        //     ProductList: [],
-        //     productOptionList: [],
-        // };
+    createBudgetLineWrapper : function(component, event, helper) {
 
         var budgetLineWrapper = {
             pricebookEntryId : '',
@@ -87,7 +68,6 @@
 
     getFamily : function(component, event, helper, priceBookId, index) {
 
-        console.log(priceBookId);
         $A.get("e.c:BT_SpinnerEvent").setParams({
             "action": "SHOW"
         }).fire(); 
@@ -163,6 +143,71 @@
             }
         }); 
         $A.enqueueAction(action);
+
+        // var action = component.get("c.ProductsthroughPB");
+        // action.setParams({
+        //     pbookId : priceBookId
+        // });
+        // action.setCallback(this, function(response) {
+        //     var state = response.getState();
+        //     if(state === "SUCCESS") {
+        //         var productList = response.getReturnValue();
+        //         console.log('productList: ', productList);
+
+        //         var familySet = new Set();
+        //         for(var i = 0; i < productList.length; i++) {
+        //             familySet.add(productList[i].Family);
+        //         }
+        //         var familyList = [];
+        //         familyList.push({
+        //             label: '--All Families--',
+        //             value: ''
+        //         });
+        //         familySet.forEach(function(item) {
+        //             if(item != null || item != undefined){
+        //                 familyList.push({
+        //                     label: item,
+        //                     value: item
+        //                 });
+        //             }
+        //         }
+        //         );
+        //         console.log('familyList: ', familyList);
+        //         var budgetLineWrapperList = component.get("v.budgetLineWrapperList");
+        //         budgetLineWrapperList[index].productFamilyList = familyList;
+        //         budgetLineWrapperList[index].ProductList = productList;
+        //         var productOptionList = [];
+        //         if(productList.length > 0) {
+        //             productOptionList.push({
+        //                 label: 'Please Select Product',
+        //                 value: ''
+        //             });
+        //             for(var i = 0; i < productList.length; i++) {
+        //                 productOptionList.push({
+        //                     label: productList[i].Name,
+        //                     value: productList[i].Id
+        //                 });
+        //             }
+        //         } 
+        //         budgetLineWrapperList[index].productOptionList = productOptionList;
+        //         budgetLineWrapperList[index].BudgetLine = {
+        //             buildertek__Budget__c : component.get("v.recordId"),
+        //             buildertek__Product__c : '',
+        //             Name : '',
+        //             buildertek__Group__c : '',
+        //             buildertek__Quantity__c : '1',
+        //             buildertek__UOM__c : '',
+        //             buildertek__Contractor__c : '',
+        //             buildertek__Unit_Price__c : '',
+        //         }
+        //         component.set("v.budgetLineWrapperList", budgetLineWrapperList);
+        //         console.log('budgetLineWrapperList: ', budgetLineWrapperList);
+        //         $A.get("e.c:BT_SpinnerEvent").setParams({
+        //             "action": "HIDE"
+        //         }).fire(); 
+        //     }
+        // });
+        // $A.enqueueAction(action);
     },
 
     getProduct : function(component, event, helper, index) {
@@ -455,7 +500,6 @@
 
 
                 console.log(component.get('v.budgetLineWrapperList'));
-
                
                 
 
@@ -468,8 +512,6 @@
         });
         $A.enqueueAction(action);
     },
-    
-
     
 
 })
