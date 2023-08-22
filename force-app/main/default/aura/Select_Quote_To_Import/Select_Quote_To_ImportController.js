@@ -1,6 +1,23 @@
 ({
 	doInit : function(component, event, helper) {
 	    component.set("v.Spinner", true);
+
+        // >>>>>>>>>>>>>> CHB - 78, 80 <<<<<<<<<<<<<<<<<<<
+        var action1 = component.get("c.CheckUserAccess");
+        action1.setParams({
+            AccessType: 'Create'
+        });
+        action1.setCallback(this, function(response) {
+            console.log('CheckUserHaveAcces >> ',response.getReturnValue());
+            if(response.getReturnValue() == 'True'){
+               component.set("v.HaveCreateAccess", true);
+            }
+            else if(response.getReturnValue() == 'False'){
+                component.set("v.HaveCreateAccess", false);
+            }
+        });
+        $A.enqueueAction(action1);
+
         var action = component.get("c.getMasterQuotes");
         action.setCallback(this, function(response){
             var state = response.getState();
@@ -128,67 +145,83 @@
 	},
 	
 	importQuote : function(component, event, helper){
-	    component.set("v.Spinner", true);
-	    var quotesList = component.get("v.masterQuotesList");
-	    var QuoteIds = [];
-	    var getAllId = component.find("checkQuoteItem");
-    	if(! Array.isArray(getAllId)){
-    		if (getAllId.get("v.value") == true) {
-    			QuoteIds.push(getAllId.get("v.text"));
-    		}
-    	}else{
-    		for (var i = 0; i < getAllId.length; i++) {
-    			if (getAllId[i].get("v.value") == true) {
-    				QuoteIds.push(getAllId[i].get("v.text"));
-    			}
-    		}
-    	}
-	    /*for(var i=0 ; i < quotesList.length;i++){
-	        //alert('quoteCheck -------> '+quotesList[i].quoteCheck);
-	        if(quotesList[i].quoteCheck == true){
-	            quoteIds.push(quotesList[i].quoteRecord.Id);
-	        }
-	    }*/
-	    //alert('quoteLines --> '+quoteIds);
-	    if(QuoteIds.length > 0){
-	        var action = component.get("c.importMasterQuoteLines");  
-	        action.setParams({
-	            quoteIds : QuoteIds,
-	            recordId : component.get("v.recordId")
-	        });
-	        action.setCallback(this, function(response){
-	            var state = response.getState();
-	            if(state === "SUCCESS"){
-	                var result = response.getReturnValue();  
-	                if(result.Status === 'Success'){
-	                    var toastEvent = $A.get("e.force:showToast");
-                        toastEvent.setParams({
-                            "title": "Success!",
-                            "message": result.Message,
-                            "type": 'Success'
-                        });
-                        toastEvent.fire(); 
-                        component.set("v.Spinner", false);
-                        $A.get("e.force:closeQuickAction").fire();  
-                        window.setTimeout(
-                            $A.getCallback(function() {
-                                document.location.reload(true);    
-                            }), 1000
-                        );
-	                }else{
-	                    component.set("v.Spinner", false);
-	                    var toastEvent = $A.get("e.force:showToast");
-                        toastEvent.setParams({
-                            "title": "Error!",
-                            "message": result.Message,
-                            "type": 'Error'
-                        });
-                        toastEvent.fire();    
-	                }
-	            }
-	        });
-	        $A.enqueueAction(action);
-	    }
+        if(component.get("v.HaveCreateAccess")){
+
+            component.set("v.Spinner", true);
+            var quotesList = component.get("v.masterQuotesList");
+            var QuoteIds = [];
+            var getAllId = component.find("checkQuoteItem");
+            if(! Array.isArray(getAllId)){
+                if (getAllId.get("v.value") == true) {
+                    QuoteIds.push(getAllId.get("v.text"));
+                }
+            }else{
+                for (var i = 0; i < getAllId.length; i++) {
+                    if (getAllId[i].get("v.value") == true) {
+                        QuoteIds.push(getAllId[i].get("v.text"));
+                    }
+                }
+            }
+            /*for(var i=0 ; i < quotesList.length;i++){
+                //alert('quoteCheck -------> '+quotesList[i].quoteCheck);
+                if(quotesList[i].quoteCheck == true){
+                    quoteIds.push(quotesList[i].quoteRecord.Id);
+                }
+            }*/
+            //alert('quoteLines --> '+quoteIds);
+            if(QuoteIds.length > 0){
+                var action = component.get("c.importMasterQuoteLines");  
+                action.setParams({
+                    quoteIds : QuoteIds,
+                    recordId : component.get("v.recordId")
+                });
+                action.setCallback(this, function(response){
+                    var state = response.getState();
+                    if(state === "SUCCESS"){
+                        var result = response.getReturnValue();  
+                        if(result.Status === 'Success'){
+                            var toastEvent = $A.get("e.force:showToast");
+                            toastEvent.setParams({
+                                "title": "Success!",
+                                "message": result.Message,
+                                "type": 'Success'
+                            });
+                            toastEvent.fire(); 
+                            component.set("v.Spinner", false);
+                            $A.get("e.force:closeQuickAction").fire();  
+                            window.setTimeout(
+                                $A.getCallback(function() {
+                                    document.location.reload(true);    
+                                }), 1000
+                            );
+                        }else{
+                            component.set("v.Spinner", false);
+                            var toastEvent = $A.get("e.force:showToast");
+                            toastEvent.setParams({
+                                "title": "Error!",
+                                "message": result.Message,
+                                "type": 'Error'
+                            });
+                            toastEvent.fire();    
+                        }
+                    }
+                });
+                $A.enqueueAction(action);
+            }
+        }
+        else{
+            component.set("v.Spinner", false);
+            component.find('notifLib').showNotice({
+                "variant": "error",
+                "header": "Error!",
+                "message": "You don\'t have the necessary privileges to Create record.",
+                closeCallback: function () {
+                    $A.get("e.c:BT_SpinnerEvent").setParams({
+                        "action": "HIDE"
+                    }).fire();
+                }
+            });
+        }
 	},
 	
 	next: function (component, event, helper) {

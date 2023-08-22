@@ -9,6 +9,8 @@
     <aura:attribute name="endPage" type="Integer"/>
     <aura:attribute name="totalRecords" type="Integer"/>
     <aura:attribute name="pageSize" type="Integer" default="10"/>
+
+    <aura:attribute name="HaveCreateAccess" type="boolean" default="true" />
     
     <!-- Attribute Declration For Pagination End-->
     
@@ -138,4 +140,7 @@
     	<button class="slds-button slds-button--neutral" onclick="{!c.closeModel}" >Cancel</button>
     	<button class="slds-button slds-button--brand" onclick="{!c.importQuote}">Import Quote Lines</button>
     </div>
+	
+    <lightning:notificationsLibrary aura:id="notifLib" />
+
 </aura:component>

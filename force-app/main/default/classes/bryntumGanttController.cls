@@ -1,98 +1,5 @@
 public with sharing class bryntumGanttController {
 
-    /* Wrapper Class */
-
-
-    public class DataTableDetails{
-        @AuraEnabled
-        public List<buildertek__Project_Task__c> lstOfSObjs = new List<buildertek__Project_Task__c>();
-        @AuraEnabled
-        public buildertek__Schedule__c scheduleObj = new buildertek__Schedule__c();
-        @AuraEnabled
-        public Map<String, NotesAttachmet> filesandattacmentList = new Map<String, NotesAttachmet>();
-        @AuraEnabled
-        public string ganttJSON;
-        @AuraEnabled
-        public boolean hideScheduleFromUser;
-        @AuraEnabled
-        public string profileName;
-    }
-
-    public class NotesAttachmet{
-        @AuraEnabled
-        public Integer fileLength;
-        @AuraEnabled
-        public Integer notesLength;
-    }
-
-    public class RfqDataTableWrapper{
-        @AuraEnabled
-        public Integer pageSize{ get; set; }
-
-        @AuraEnabled
-        public Integer pageNumber{ get; set; }
-
-        @AuraEnabled
-        public Integer totalRecords{ get; set; }
-
-        @AuraEnabled
-        public Integer recordStart{ get; set; }
-
-        @AuraEnabled
-        public Integer recordEnd{ get; set; }
-
-        @AuraEnabled
-        public List<Contact> recordList{ get; set; }
-
-        @AuraEnabled
-        public List<contactWrap> wrapperList ;
-
-        @AuraEnabled
-        public String label;
-        @AuraEnabled
-        public String value;
-        @AuraEnabled
-        public Boolean check;
-        @AuraEnabled
-        public String accId;
-        @AuraEnabled
-        public String accName;
-
-        @AuraEnabled
-        public List<RfqDataTableSubWrapper> accRecList {get;set;}
-        // @AuraEnabled
-        // public List<RfqDataTableSubWrapper> subwraplist {get;set;}
-
-        // @AuraEnabled
-        // public List<Account> accRecList{get;set;}
-    }
-
-    public class RfqDataTableSubWrapper{
-        @AuraEnabled
-        public String Id {get;set;}
-
-        @AuraEnabled
-        public String Name {get;set;}
-
-        @AuraEnabled
-        public Boolean check {get;set;}
-    }
-
-    public class contactWrap{
-
-        @AuraEnabled
-        public String label;
-        @AuraEnabled
-        public String value;
-        @AuraEnabled
-        public Boolean check;
-        @AuraEnabled
-        public String accId;
-        @AuraEnabled
-        public String accName;
-    }
-
-
     @AuraEnabled
     public static DataTableDetails getScheduleWrapperAtLoading(string scheduleid){
 
@@ -106,7 +13,7 @@ public with sharing class bryntumGanttController {
 
         String strQuery = 'SELECT ';
 
-        strQuery += 'Id,Name,buildertek__Type__c,buildertek__Indent_Task__c,buildertek__Reference_for_Import__c,buildertek__Lag__c,buildertek__Schedule__c,buildertek__Budget__c,buildertek__Add_To_All_Active_Schedules__c,buildertek__Notes__c,buildertek__Schedule__r.Name,buildertek__Schedule__r.buildertek__Description__c,buildertek__Start__c,buildertek__Finish__c,buildertek__Duration__c,buildertek__Contractor__c,buildertek__Contractor__r.Name,buildertek__Phase__c,buildertek__Completion__c, buildertek__Dependency__c,buildertek__Dependency__r.Name,buildertek__Contractor_Resource__c,buildertek__Contractor_Resource__r.Name,buildertek__Resource__c, buildertek__Resource__r.Name,buildertek__Milestone__c,buildertek__Order__c,buildertek__Budget_Line__c,CreatedDate FROM buildertek__Project_Task__c where buildertek__Schedule__c = :  scheduleid Order By buildertek__Order__c NULLS LAST,CreatedDate';
+        strQuery += 'Id,Name,buildertek__Type__c,buildertek__Indent_Task__c,buildertek__Reference_for_Import__c,buildertek__Lag__c,buildertek__Schedule__c,buildertek__Budget__c,buildertek__ConstraintType__c,buildertek__ConstraintDate__c,buildertek__DependencyStatus__c,buildertek__Add_To_All_Active_Schedules__c,buildertek__Notes__c,buildertek__Schedule__r.Name,buildertek__Schedule__r.buildertek__Description__c,buildertek__Start__c,buildertek__Finish__c,buildertek__Duration__c,buildertek__Contractor__c,buildertek__Contractor__r.Name,buildertek__Phase__c,buildertek__Completion__c, buildertek__Dependency__c,buildertek__Dependency__r.Name,buildertek__Contractor_Resource__c,buildertek__Contractor_Resource__r.Name,buildertek__Resource__c, buildertek__Resource__r.Name,buildertek__Milestone__c,buildertek__Order__c,buildertek__Budget_Line__c,CreatedDate FROM buildertek__Project_Task__c where buildertek__Schedule__c = :  scheduleid Order By buildertek__Order__c NULLS LAST,CreatedDate';
         //CreatedDate//Order by buildertek__Milestone__c , Order__c ASC NULLS LAST, Auto_Number__c ASC
         system.debug('strQuery---' + strQuery);
 
@@ -291,112 +198,10 @@ public with sharing class bryntumGanttController {
         system.debug(userinfo.getusername());
         dataTableDtls.profileName = profileName;
         System.debug('dataTable :: ' + dataTableDtls);
+
+        dataTableDtls.listOfContractorAndResources = getContractorsAndResourcesToPick();
+
         return dataTableDtls;
-    }
-
-    @AuraEnabled
-    public static RfqDataTableWrapper getAccounts(Integer pageNumber, Integer pageSize,String selected,String searchaccount){
-        try {
-            List<Account> accList = new List<Account>();
-
-            Integer offset = (pageNumber - 1) * pageSize;
-            //Total Records
-            Integer totalRecords = 0;
-
-            String accountsearch = '%'+''+'%';
-            if(searchaccount != '' && searchaccount != null){
-                accountsearch = '%'+searchaccount+'%';
-            }
-
-            if(searchaccount != ''){
-                String query = 'Select COUNT() FROM Account WHERE id!=NULL';
-
-                if(searchaccount != '' && searchaccount != null){
-                    query = query+ ' AND Name LIKE \'%'+String.escapeSingleQuotes(searchaccount)+'%\'';
-                }
-                totalRecords = Database.countQuery(query);
-            }else{
-                totalRecords = [SELECT COUNT() FROM Account ];
-            }
-
-            Integer recordEnd = pageSize * pageNumber;
-
-            //Instance of Account DataTable Wrapper Class
-            RfqDataTableWrapper objDT = new RfqDataTableWrapper();
-            objDT.pageSize = pageSize;
-            objDT.pageNumber = pageNumber;
-            objDT.recordStart = offset + 1;
-            objDT.recordEnd = totalRecords >= recordEnd ? recordEnd : totalRecords;
-            objDT.totalRecords = totalRecords;
-
-            String queryList2 = '';
-            String queryList = 'Select Id,Name FROM Account WHERE id!=NULL ';
-            if(searchaccount != '' && searchaccount != null){
-                queryList = queryList+ ' AND (Name LIKE \'%'+searchaccount+'%\')'; //String.escapeSingleQuotes(description)
-            }
-            queryList2 = queryList+ ' ORDER BY Name';
-            queryList = queryList+ ' ORDER BY Name LIMIT :pageSize OFFSET :offset';
-
-            List<Account> allContacts =  Database.query(queryList2);
-
-            List<Account> accRecL = Database.query(queryList);
-
-            List<RfqDataTableSubWrapper> subwrapperlist = new List<RfqDataTableSubWrapper>();
-            for(Account a: accRecL){
-                RfqDataTableSubWrapper rs = new RfqDataTableSubWrapper();
-                rs.Id = a.Id;
-                rs.Name = a.Name;
-                rs.check = String.valueOf(a.Id) == selected ? true : false;
-                subwrapperlist.add(rs);
-            }
-            objDT.accRecList = subwrapperlist;
-
-            return objDT;
-
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    @AuraEnabled
-    public static List<contactWrap> getContacts(String selected,String searchname,String searchaccount){
-        String contactsearch = '%'+''+'%';
-        if(searchname != '' && searchname != null){
-            contactsearch = '%'+searchname+'%';
-        }
-        String accountsearch = '%'+''+'%';
-        if(searchaccount != '' && searchaccount != null){
-            accountsearch = '%'+searchaccount+'%';
-        }
-        String queryStr = 'Select Id,Name,AccountId,Account.Name From Contact Where Name LIKE:contactsearch ';
-        if(searchaccount != '' && searchaccount != null){
-            queryStr += ' AND Account.Name LIKE:accountsearch Order by Name';
-        }else{
-            queryStr += ' Order by Name';
-        }
-        List<Contact> conList = Database.query(queryStr);
-        //List<Contact> conList = [Select Id,Name,AccountId,Account.Name From Contact Order by Name];
-        List<contactWrap> conWrapList = new List<contactWrap>();
-        String conName = '';
-        if(conList.size() > 0){
-            for(Contact con : conList){
-                    contactWrap conwrapLabelVal = new contactWrap();
-                    conwrapLabelVal.label = con.Name;
-                    conwrapLabelVal.value = con.Id;
-                    conwrapLabelVal.check = false;
-                    conwrapLabelVal.accId = con.AccountId;
-                    conwrapLabelVal.accName = '';
-                    if(con.AccountId != null){
-                        conwrapLabelVal.accName = con.Account.Name;
-                    }
-
-                    if(selected == String.valueOf(con.Id) && selected != ''){
-                    conwrapLabelVal.check = true;
-                    }
-                    conWrapList.add(conwrapLabelVal);
-            }
-        }
-        return conWrapList;
     }
 
     @AuraEnabled(Cacheable=true)
@@ -411,62 +216,6 @@ public with sharing class bryntumGanttController {
         List<User> searchProjectManagerList = [SELECT Name, Id FROM User WHERE Name LIKE :('%' + searchProjectManagerName + '%')];
         System.debug('searchProjectManagerList: ' + searchProjectManagerList);
         return searchProjectManagerList;
-    }
-
-    @AuraEnabled
-    public static String getFieldSet(){
-        String result = '';
-        String objectName = 'buildertek__Schedule__c';
-        String fieldSetName = 'buildertek__ScheduleFields';
-        List<String> pickListValuesList = new List<String>();
-        try{
-            SObjectType objToken = Schema.getGlobalDescribe().get(objectName);
-            Schema.DescribeSObjectResult d = objToken.getDescribe();
-            Map<String, Schema.FieldSet> FsMap = d.fieldSets.getMap();
-            if (FsMap.containsKey(fieldSetName)){
-                for (Schema.FieldSetMember f : FsMap.get(fieldSetName).getFields()){
-                    if (result != ''){
-                        result += ',';
-                    }
-                    String jsonPart = '{';
-                    jsonPart += '"label":"' + f.getLabel() + '",';
-                    jsonPart += '"required":"' + (f.getDBRequired() || f.getRequired()) + '",';
-                    jsonPart += '"type":"' + (f.getType()) + '",';
-                    jsonPart += '"name":"' + f.getFieldPath() + '"';
-                    if (String.valueOf(f.getType()) == 'PICKLIST'){
-                        pickListValuesList = getDropDown(String.valueOf(f.getFieldPath()));
-                        jsonPart += ',"pickListValuesList":' + JSON.serialize(pickListValuesList);
-                    }
-                    jsonPart += '}';
-                    result += jsonPart;
-                }
-            }
-
-        } catch (Exception e){
-            result += e.getLineNumber() + ' : ' + e.getMessage();
-            System.debug('Error::' + e.getMessage());
-            System.debug('Error At Line::' + e.getLineNumber());
-        }
-        return '[' + result + ']';
-    }
-
-    @AuraEnabled
-    public static List<String> getDropDown(String fieldName){
-        String objName = 'buildertek__Schedule__c';
-        List<String> pickListValuesList = new List<String>();
-        try{
-            Schema.SObjectType s = Schema.getGlobalDescribe().get(objName);
-            Schema.DescribeSObjectResult r = s.getDescribe();
-            Map<String, Schema.SObjectField> fields = r.fields.getMap();
-            Schema.DescribeFieldResult fieldResult = fields.get(fieldName).getDescribe();
-            List<Schema.PicklistEntry> ple = fieldResult.getPicklistValues();
-            for (Schema.PicklistEntry pickListVal : ple){
-                pickListValuesList.add(pickListVal.getLabel());
-            }
-        } catch (Exception e){
-            throw new AuraHandledException(e.getMessage());
-        }
-        return pickListValuesList;
     }
 
     @AuraEnabled
@@ -560,7 +309,7 @@ public with sharing class bryntumGanttController {
         String msg;
         buildertek__Schedule__c scheduleRecord = (buildertek__Schedule__c)System.JSON.deserialize(scheduleRecordStr, buildertek__Schedule__c.class);
         List<buildertek__Project_Task__c> taskRecords = (List<buildertek__Project_Task__c>)System.JSON.deserialize(taskRecordsStr, List<buildertek__Project_Task__c>.class);
-        
+
         try {
             System.debug('childParentMap ==> '+childParentMap);
             System.debug('projectTaskMap ==> '+projectTaskMap);
@@ -583,7 +332,7 @@ public with sharing class bryntumGanttController {
                     newProjectTaskMap.put(key, task);
                 }
                 upsert newProjectTaskMap.values();
-             
+
                 if (childParentMap.size() > 0) {
                     List<buildertek__Project_Task__c> newTaskList = new List<buildertek__Project_Task__c>();
                     for (String taskId : childParentMap.keySet()) {
@@ -734,6 +483,127 @@ public with sharing class bryntumGanttController {
         update projectInsertTaskMap.values();
         ProjectTaskTriggerHandler.blnSkipTaskTrigger = false;
 
+    }
+
+    @AuraEnabled
+    public static String getProjectName(String parentRecordId){
+        try {
+            String searchProjectName = [SELECT Name, Id FROM buildertek__Project__c WHERE Id =: parentRecordId].Name;
+            System.debug('searchProjectName: ' + searchProjectName);
+            return searchProjectName;
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+    
+    /* @Author        Nishit Suthar
+     * Date           14-8-23
+     * Description :  This method is used to get Contractors(Account) of the current Org.
+     */
+    @AuraEnabled(Cacheable=true)
+    public static List<Account> getContractorsAndResourcesToPick(){
+        List<Account> contractorList = new List<Account>();
+        try {
+            contractorList = [SELECT Id, Name, (SELECT Id, LastName, FirstName FROM Contacts) FROM Account ORDER BY CreatedDate DESC];
+        } catch (Exception e) {
+            System.debug('Error Line '+e.getLineNumber());
+            System.debug('Error Message from contactorList method '+e.getMessage());
+        }
+        return contractorList;
+    }
+
+    /* Wrapper Class */
+    //* moved all the wrapper classes to bottom by Nishit
+
+    public class DataTableDetails{
+        @AuraEnabled
+        public List<buildertek__Project_Task__c> lstOfSObjs = new List<buildertek__Project_Task__c>();
+        @AuraEnabled
+        public buildertek__Schedule__c scheduleObj = new buildertek__Schedule__c();
+        @AuraEnabled
+        public Map<String, NotesAttachmet> filesandattacmentList = new Map<String, NotesAttachmet>();
+        @AuraEnabled
+        public List<Account> listOfContractorAndResources = new List<Account>();
+        @AuraEnabled
+        public string ganttJSON;
+        @AuraEnabled
+        public boolean hideScheduleFromUser;
+        @AuraEnabled
+        public string profileName;
+    }
+
+    public class NotesAttachmet{
+        @AuraEnabled
+        public Integer fileLength;
+        @AuraEnabled
+        public Integer notesLength;
+    }
+
+    public class RfqDataTableWrapper{
+        @AuraEnabled
+        public Integer pageSize{ get; set; }
+
+        @AuraEnabled
+        public Integer pageNumber{ get; set; }
+
+        @AuraEnabled
+        public Integer totalRecords{ get; set; }
+
+        @AuraEnabled
+        public Integer recordStart{ get; set; }
+
+        @AuraEnabled
+        public Integer recordEnd{ get; set; }
+
+        @AuraEnabled
+        public List<Contact> recordList{ get; set; }
+
+        @AuraEnabled
+        public List<contactWrap> wrapperList ;
+
+        @AuraEnabled
+        public String label;
+        @AuraEnabled
+        public String value;
+        @AuraEnabled
+        public Boolean check;
+        @AuraEnabled
+        public String accId;
+        @AuraEnabled
+        public String accName;
+
+        @AuraEnabled
+        public List<RfqDataTableSubWrapper> accRecList {get;set;}
+        // @AuraEnabled
+        // public List<RfqDataTableSubWrapper> subwraplist {get;set;}
+
+        // @AuraEnabled
+        // public List<Account> accRecList{get;set;}
+    }
+
+    public class RfqDataTableSubWrapper{
+        @AuraEnabled
+        public String Id {get;set;}
+
+        @AuraEnabled
+        public String Name {get;set;}
+
+        @AuraEnabled
+        public Boolean check {get;set;}
+    }
+
+    public class contactWrap{
+
+        @AuraEnabled
+        public String label;
+        @AuraEnabled
+        public String value;
+        @AuraEnabled
+        public Boolean check;
+        @AuraEnabled
+        public String accId;
+        @AuraEnabled
+        public String accName;
     }
 
 }

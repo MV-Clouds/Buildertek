@@ -7,7 +7,7 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
     var taskData = scheduleItemsData;
     var taskDependencyData = [];
     var resourceRowData = [];
-    var resourceRowIdList = []
+    var resourceRowIdList = [];
     var assignmentRowData= [];
     var scheduleItemIdsList = [];
     var rows = [];
@@ -25,8 +25,8 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
     firstRowDup['customtype'] = 'Project'
     firstRowDup["endDate"] = ""
     firstRowDup["children"] = []
-    firstRowDup["constraintType"] = 'startnoearlierthan'
-    firstRowDup["constraintDate"] = ""
+    // firstRowDup["constraintType"] = 'startnoearlierthan'
+    // firstRowDup["constraintDate"] = ""
     var newPhaseFlag = true;
     var taskWithphaseList = [];
     var taskPhaseRow;
@@ -49,9 +49,9 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
                 taskPhaseRow["endDate"] = ""
                 taskPhaseRow["children"] = []
                 taskPhaseRow["customtype"] = 'Phase'
-                taskPhaseRow["constraintDate"] = ""
+                // taskPhaseRow["constraintDate"] = ""
 
-                taskPhaseRow["constraintType"] = 'startnoearlierthan'
+                // taskPhaseRow["constraintType"] = 'startnoearlierthan'
                 newPhaseFlag = false;
             }
             var rowChilObj = {};
@@ -70,9 +70,9 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
 
 
                 if(taskListForPhase[i].buildertek__Dependency__c){
-                rowChilObj["constraintType"] = ''
+                // rowChilObj["constraintType"] = ''
                 }else{
-                rowChilObj["constraintType"] = 'startnoearlierthan'
+                // rowChilObj["constraintType"] = 'startnoearlierthan'
             }
 
                 if(scheduleItemIdsList.indexOf(taskListForPhase[i].Id) < 0){
@@ -83,11 +83,12 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
             rowChilObj["percentDone"] = taskListForPhase[i].buildertek__Completion__c
             rowChilObj["startDate"] = taskListForPhase[i].buildertek__Start__c
             rowChilObj["constraintDate"] = taskListForPhase[i].buildertek__Start__c
-            rowChilObj["constraintType"] = 'startnoearlierthan'
+            // rowChilObj["constraintType"] = 'startnoearlierthan'
             rowChilObj['predecessor'] = taskListForPhase[i].buildertek__Dependency__c;
 
             if (taskListForPhase[i].hasOwnProperty('buildertek__Dependency__c') == true) {
                 rowChilObj['predecessorName'] = taskListForPhase[i].buildertek__Dependency__r.Name;
+                // rowChilObj['']
             } else {
                 rowChilObj['predecessorName'] = '';
             }
@@ -112,15 +113,15 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
                 if(taskListForPhase[i].buildertek__Contractor__c){
                     rowChilObj["contractorname"] = taskListForPhase[i].buildertek__Contractor__r.Name;  //Added for contractor
                 }else{
-                rowChilObj["contractorname"] = '';
-            }
+                    rowChilObj["contractorname"] = '';
+                }
 
             rowChilObj['notes'] = taskListForPhase[i].buildertek__Notes__c;
                 if(taskListForPhase[i].buildertek__Lag__c != undefined && taskListForPhase[i].buildertek__Lag__c != null && taskListForPhase[i].buildertek__Lag__c != 0){
                     var startDate = new Date(taskListForPhase[i].buildertek__Start__c);
                     rowChilObj["startDate"] = new Date(startDate.getFullYear(),startDate.getMonth(),startDate.getDate(),0,0,0)
-                    rowChilObj["constraintDate"] = new Date(startDate.getFullYear(),startDate.getMonth(),startDate.getDate(),0,0,0)
-                    rowChilObj["constraintType"] = 'startnoearlierthan'
+                    // rowChilObj["constraintDate"] = new Date(startDate.getFullYear(),startDate.getMonth(),startDate.getDate(),0,0,0)
+                    // rowChilObj["constraintType"] = 'startnoearlierthan'
                 }
             rowChilObj["duration"] = taskListForPhase[i].buildertek__Duration__c
 
@@ -180,6 +181,13 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
                 assignmentRow['resource'] = taskListForPhase[i].buildertek__Contractor_Resource__c;
                 assignmentRowData.push(assignmentRow)
             }
+            if(rowChilObj["type"] == "Task"){
+                rowChilObj["constraintDate"] =  taskListForPhase[i].buildertek__ConstraintDate__c;
+                rowChilObj["constraintType"] =  taskListForPhase[i].buildertek__ConstraintType__c;
+                // if(rowChilObj["predecessor"]){
+
+                // }
+            }
             taskPhaseRow["children"].push(rowChilObj);
 
             var found = false;
@@ -210,7 +218,7 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
             taskPhaseRow["expanded"] = true
             taskPhaseRow["endDate"] = ""
             taskPhaseRow["children"] = []
-            taskPhaseRow["constraintType"] = 'startnoearlierthan'
+            // taskPhaseRow["constraintType"] = 'startnoearlierthan'
             var rowChilObj = {};
             rowChilObj["type"] = 'Task'
             rowChilObj["customtype"] = taskListForPhase[i].buildertek__Type__c
@@ -225,9 +233,9 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
             console.log('taskListForPhase[i].buildertek__Phase__c ',taskListForPhase[i].buildertek__Phase__c);
             rowChilObj['phase'] = taskListForPhase[i].buildertek__Phase__c
                 if(taskListForPhase[i].buildertek__Dependency__c){
-                rowChilObj["constraintType"] = ''
+                // rowChilObj["constraintType"] = ''
                 }else{
-                rowChilObj["constraintType"] = 'startnoearlierthan'
+                // rowChilObj["constraintType"] = 'startnoearlierthan'
             }
                 if(scheduleItemIdsList.indexOf(taskListForPhase[i].Id) < 0){
                 scheduleItemIdsList.push(taskListForPhase[i].Id)
@@ -236,8 +244,8 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
             rowChilObj["name"] = taskListForPhase[i].Name
             rowChilObj["percentDone"] = taskListForPhase[i].buildertek__Completion__c
             rowChilObj["startDate"] = taskListForPhase[i].buildertek__Start__c
-            rowChilObj["constraintDate"] = taskListForPhase[i].buildertek__Start__c
-            rowChilObj["constraintType"] = 'startnoearlierthan'
+            // rowChilObj["constraintDate"] = taskListForPhase[i].buildertek__Start__c
+            // rowChilObj["constraintType"] = 'startnoearlierthan'
 
             rowChilObj['predecessor'] = taskListForPhase[i].buildertek__Dependency__c;
 
@@ -276,8 +284,8 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
                 var startDate = new Date(taskListForPhase[i].buildertek__Start__c);
                 startDate.setDate(startDate.getDate());
                 rowChilObj["startDate"] = new Date(startDate.getFullYear(),startDate.getMonth(),startDate.getDate(),0,0,0)
-                rowChilObj["constraintDate"] = new Date(startDate.getFullYear(),startDate.getMonth(),startDate.getDate(),0,0,0)
-                rowChilObj["constraintType"] = 'startnoearlierthan'
+                // rowChilObj["constraintDate"] = new Date(startDate.getFullYear(),startDate.getMonth(),startDate.getDate(),0,0,0)
+                // rowChilObj["constraintType"] = 'startnoearlierthan'
                 }
             rowChilObj["duration"] = taskListForPhase[i].buildertek__Duration__c
 
@@ -339,6 +347,13 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
                 assignmentRow['resource'] = taskListForPhase[i].buildertek__Contractor_Resource__c;
                 assignmentRowData.push(assignmentRow)
             }
+            if(rowChilObj["type"] == "Task"){
+                rowChilObj["constraintDate"] =  taskListForPhase[i].buildertek__ConstraintDate__c;
+                rowChilObj["constraintType"] =  taskListForPhase[i].buildertek__ConstraintType__c;
+                // if(rowChilObj["predecessor"]){
+
+                // }
+            }
             taskPhaseRow["children"].push(rowChilObj);
             console.log('taskPhaseRow ',taskPhaseRow)
             firstRowDup['children'].push(taskPhaseRow);
@@ -359,9 +374,9 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
             }
             rowChilObj['phase'] = taskListForPhase[i].buildertek__Phase__c
             if(taskListForPhase[i].buildertek__Dependency__c){
-                rowChilObj["constraintType"] = ''
+                // rowChilObj["constraintType"] = ''
             }else{
-                rowChilObj["constraintType"] = 'startnoearlierthan'
+                // rowChilObj["constraintType"] = 'startnoearlierthan'
             }
             if(scheduleItemIdsList.indexOf(taskListForPhase[i].Id) < 0){
                 scheduleItemIdsList.push(taskListForPhase[i].Id)
@@ -370,8 +385,8 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
             rowChilObj["name"] = taskListForPhase[i].Name
             rowChilObj["percentDone"] = taskListForPhase[i].buildertek__Completion__c
             rowChilObj["startDate"] = taskListForPhase[i].buildertek__Start__c
-            rowChilObj["constraintDate"] = taskListForPhase[i].buildertek__Start__c
-            rowChilObj["constraintType"] = 'startnoearlierthan'
+            // rowChilObj["constraintDate"] = taskListForPhase[i].buildertek__Start__c
+            // rowChilObj["constraintType"] = 'startnoearlierthan'
 
 
             rowChilObj['predecessor'] = taskListForPhase[i].buildertek__Dependency__c;
@@ -412,8 +427,8 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
             startDate.setDate(startDate.getDate());
 
             rowChilObj["startDate"] = new Date(startDate.getFullYear(),startDate.getMonth(),startDate.getDate(),0,0,0)
-            rowChilObj["constraintDate"] = new Date(startDate.getFullYear(),startDate.getMonth(),startDate.getDate(),0,0,0)
-            rowChilObj["constraintType"] = 'startnoearlierthan'
+            // rowChilObj["constraintDate"] = new Date(startDate.getFullYear(),startDate.getMonth(),startDate.getDate(),0,0,0)
+            // rowChilObj["constraintType"] = 'startnoearlierthan'
             }
             rowChilObj["duration"] = taskListForPhase[i].buildertek__Duration__c
 
@@ -425,6 +440,10 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
 
             rowChilObj["expanded"] = true
             rowChilObj["order"] = taskListForPhase[i].buildertek__Order__c
+            if(rowChilObj["type"] == "Task"){
+                rowChilObj["constraintDate"] =  taskListForPhase[i].buildertek__ConstraintDate__c;
+                rowChilObj["constraintType"] =  taskListForPhase[i].buildertek__ConstraintType__c;
+            }
             firstRowDup['children'].push(rowChilObj);
             var dependencyRow = {};
             if(taskListForPhase[i].buildertek__Dependency__c){
@@ -501,7 +520,7 @@ function convertJSONtoApexData(data, taskData, dependenciesData, resourceData) {
     let scheduleObj = {};
     var rowData = [];
     const phasedatamap = new Map();
-    // let milestonedataList = []; 
+    // let milestonedataList = [];
     console.log('data !-->', {data})
     if (data) {
         data.forEach(element => {
@@ -566,7 +585,15 @@ function convertJSONtoApexData(data, taskData, dependenciesData, resourceData) {
                 updateData['buildertek__Finish__c'] = enddate.getFullYear() + '-' + Number(enddate.getMonth() + 1) + '-' + enddate.getDate();
                 updateData['buildertek__Duration__c'] = rowData[i]['duration']
                 updateData['buildertek__Completion__c'] = rowData[i]['percentDone']
-                console.log('check custom type ',rowData[i]['customtype']);
+                if (rowData[i]['constraintDate'] != null && rowData[i]['constraintType'] != null) {
+                    updateData['buildertek__ConstraintDate__c'] = rowData[i]['constraintDate'].split('T')[0];
+                    updateData['buildertek__ConstraintType__c'] = rowData[i]['constraintType']
+                } else{
+                    updateData['buildertek__ConstraintDate__c'] = null
+                    updateData['buildertek__ConstraintType__c'] = 'None'
+                }
+                console.log('check Constraint date ',rowData[i]['constraintDate']);
+                console.log('check Constraint type ',rowData[i]['constraintType']);
                 if (rowData[i]['customtype']) {
                     updateData['buildertek__Type__c'] = rowData[i]['customtype']
                 }else{
@@ -685,21 +712,6 @@ function recordsTobeDeleted(oldListOfTaskRecords, newListOfTaskRecords) {
     return listOfRecordIdToBeDeleted;
 }
 
-// for converting into date time formate
-function convertDateTime(dateString) {
-    // Convert the date string to a JavaScript Date object
-    const date = new Date(dateString);
-    // Get the current time zone offset in milliseconds
-    const timeZoneOffset = date.getTimezoneOffset() * 60000;
-    // Convert the date to UTC
-    const utcDate = new Date(date.getTime() - timeZoneOffset);
-    // Format the UTC date to the desired format
-    const formattedDate = utcDate.toISOString();
-    // Remove the "Z" at the end of the formatted date
-    const newDate = formattedDate.slice(0, -1);
-    return newDate;
-  }
-
 function covertIntoDate(date) {
     var d = new Date(date),
     month = '' + (d.getMonth() + 1),
@@ -714,4 +726,19 @@ function covertIntoDate(date) {
     return [year, month, day].join('-');
 }
 
-export{ formatApexDatatoJSData, convertJSONtoApexData, recordsTobeDeleted };
+function makeComboBoxDataForContractor(listOfContractors) {
+    let listOfContractorToReturn = [];
+
+    listOfContractors.forEach(ctrObj => {
+        let contractorObj = {};
+        if (ctrObj.Id) {
+            contractorObj['value'] = ctrObj.Id;
+        }
+        if(ctrObj.Name){
+            contractorObj['text'] = ctrObj.Name;
+        }
+        listOfContractorToReturn.push(contractorObj);
+    });
+    return listOfContractorToReturn;
+}
+export{ formatApexDatatoJSData, convertJSONtoApexData, recordsTobeDeleted, makeComboBoxDataForContractor };

@@ -13,6 +13,8 @@
     <aura:attribute name="quotId" type="String" />
     <aura:attribute name="rfqs" type="List" />
     <aura:attribute name="disableBtn" type="Boolean" default="false" />
+
+    <aura:attribute name="HaveCreateAccess" type="boolean" default="true"/>
     
     <!-- Attribute Declration For Pagination End-->
     
@@ -128,4 +130,7 @@
     	<button class="slds-button slds-button--neutral" onclick="{!c.closeModel}" >Cancel</button>
     	<button class="slds-button slds-button--brand" onclick="{!c.importQuote}">Import Master Quote</button>
     </div>
+	
+    <lightning:notificationsLibrary aura:id="notifLib" />
+
 </aura:component>

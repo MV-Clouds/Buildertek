@@ -1,11 +1,8 @@
 ({
-    save : function(component, helper, file) {
-        try{
+    save : function(component, helper) {
         var MAX_FILE_SIZE = 750000;
         var fileInput = component.find("file").getElement();
         var file = fileInput.files[0];
-        // var file = event.getSource().get("v.files");
-        console.log('file1 =: ', file)
         var isSelect = component.get("v.isSelect");
         
         if(file != undefined && isSelect){
@@ -19,7 +16,6 @@
             var self = this;
             fr.onload = function() {
                 var fileContents = fr.result;
-                console.log('fr.type : ', typeof fileContents);
                 var base64Mark = 'base64,';
                 var dataStart = fileContents.indexOf(base64Mark) + base64Mark.length;
                 
@@ -40,16 +36,12 @@
             });
             toastEvent.fire();
         }
-    } catch(error){
-            console.log('eoor => ', {error});
-        }
         
     },
       
     upload: function(component, helper, file, fileContents) {
-        component.set('v.Spinner', true);
-        // $A.util.addClass(component.find("uploading").getElement(), "uploading");
-    	// $A.util.removeClass(component.find("uploading").getElement(), "notUploading");
+        $A.util.addClass(component.find("uploading").getElement(), "uploading");
+    	$A.util.removeClass(component.find("uploading").getElement(), "notUploading");
         
         var action = component.get("c.importBudgets"); 
 		
@@ -64,16 +56,14 @@
         
         action.setParams({
             budgetId: component.get("v.recordId"),
-            // fileData: encodeURIComponent(fileContents),
-            fileData: fileContents     // ==> Chages For Ticket No : AC -28
+            fileData: encodeURIComponent(fileContents)
         });
 
         action.setCallback(this, function(response) {
             var state = response.getState();
-        //     $A.util.removeClass(component.find("uploading").getElement(), "uploading");
-    	// $A.util.addClass(component.find("uploading").getElement(), "notUploading");
+            $A.util.removeClass(component.find("uploading").getElement(), "uploading");
+    	$A.util.addClass(component.find("uploading").getElement(), "notUploading");
             if(state === "SUCCESS") {
-                component.set('v.Spinner', false);
                 var result = response.getReturnValue();
                 console.log('result ', result);
                 if(result.isSuccess) {
@@ -86,7 +76,6 @@
                 }
             }
             else {
-                component.set('v.Spinner', false);
                 var errors = response.getError();
                 var error = '';
                 
@@ -119,5 +108,23 @@
     	});
     	
         toastEvent.fire();
-	}
+	},
+
+    // >>>>>>>>>>>>>> CHB - 78, 80 <<<<<<<<<<<<<<<<<<<
+    Check_Create_User_Access: function(component, event, helper){
+        var action1 = component.get("c.CheckUserAccess");
+        action1.setParams({
+            AccessType: 'Create'
+        });
+        action1.setCallback(this, function(response) {
+            console.log('CheckUserHaveAcces >> ',response.getReturnValue());
+            if(response.getReturnValue() == 'True'){
+               component.set("v.HaveCreateAccess", true);
+            }
+            else if(response.getReturnValue() == 'False'){
+                component.set("v.HaveCreateAccess", false);
+            }
+        });
+        $A.enqueueAction(action1);
+    },
 })

@@ -2,8 +2,12 @@
 	<aura:attribute name="recordId" type="Id"/>
     <aura:attribute name="isSelect" type="boolean" default="false"/>
     <aura:attribute name="selectedFile" type="string" default="" />
-    <aura:attribute name="Spinner" type="boolean" default="false" />
 
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> 
+    <aura:attribute name="HaveCreateAccess" type="boolean" default="true" />
+
+
+     
     <!-- aura:handler event="aura:waiting" action="{!c.waiting}"/>
     <aura:handler event="aura:doneWaiting" action="{!c.doneWaiting}"/ -->
     <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
@@ -25,7 +29,7 @@
         }
     </aura:html> -->
      
-    <div class="slds-modal__content slds-p-around--medium" style="padding:0px !important; overflow-y: hidden;">
+    <div class="slds-modal__content slds-p-around--medium" style="padding:0px !important">
         <div class="slds-modal__header" style="font-size:17px;">
         <h1>Import External Quotes</h1>
     </div>
@@ -37,8 +41,8 @@
     </div>
 </div>
     <br/>
-    <div class="container" style="height: 70px;margin-bottom: 24px;">
-        <span aura:id="btn" class="slds-show" style="width: auto;margin-left: 2rem;">
+    <div class="container" style="height: 70px;">
+        <span aura:id="btn" class="slds-show" style="width: 125px;margin-left: 2rem;">
             <input type="file" aura:id="file" onchange="{!c.onSelectFileHandler}" class="slds-file-selector__input slds-assistive-text" accept=".csv" id="file-upload-input-01" aria-labelledby="file-selector-primary-label file-selector-secondary-label" />
             <label class="slds-file-selector__body" for="file-upload-input-01" id="file-selector-secondary-label">
                 <span class="slds-file-selector__button slds-button slds-button_neutral">
@@ -46,17 +50,15 @@
                     &nbsp;Select File
                 </span>
             </label> 
-            <!-- <lightning:input name="file1" type="file" label="Attachment" multiple="false" accept=".csv" onchange="{! c.onSelectFileHandler}" aura:id="file" id="file-upload-input-01" aria-labelledby="file-selector-primary-label file-selector-secondary-label"/> -->
         </span>
         
         <aura:if isTrue="{!v.isSelect}">
-            <!-- &nbsp; &nbsp;&nbsp; &nbsp; <lightning:pill label="{!v.selectedFile}" onremove="{! c.handleRemove }"/>&nbsp; -->
-            <div style="margin-left: 2rem; margin-top : 6px;" class="slds-text-body_small">{!v.selectedFile}</div> 
+            &nbsp; &nbsp;&nbsp; &nbsp; <lightning:pill label="{!v.selectedFile}" onremove="{! c.handleRemove }"/>&nbsp; 
         </aura:if>
 
-        <!-- <div aura:id="uploading" class="notUploading"> -->
-            <!-- <div class="demo-only" style="height: 6rem;">
-                <div role="status" class="slds-spinner slds-spinner_medium ">
+        <div aura:id="uploading" class="notUploading">
+            <div class="demo-only" style="height: 6rem;">
+                <div role="status" class="slds-spinner slds-spinner_medium">
                     <span class="slds-assistive-text">Loading</span>
                     <div class="slds-spinner__dot-a"></div>
                     <div class="slds-spinner__dot-b"></div>
@@ -64,22 +66,8 @@
                            <b>Processing, Please Wait</b>
                        </div>
                 </div>
-            </div> -->
-            <!-- </div> -->
-            
-            <aura:if isTrue="{!v.Spinner}">
-            <div aura:id="spinnerId" class="slds-spinner_container">
-                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative"
-                    role="alert">
-                    <span class="slds-assistive-text">Loading</span>
-                    <div class="slds-spinner__dot-a"></div>
-                    <div class="slds-spinner__dot-b"></div>
-                    <!--  <div class="custom-loading-text">
-                        <b>Processing, Please Wait</b>
-                    </div> -->
-                </div>
             </div>
-            </aura:if>
+        </div>
     </div>
     
         <div class="slds-modal__footer">
@@ -87,4 +75,7 @@
         <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}">Cancel</button>
     </div>
 </div>
+
+<lightning:notificationsLibrary aura:id="notifLib" />
+
 </aura:component>

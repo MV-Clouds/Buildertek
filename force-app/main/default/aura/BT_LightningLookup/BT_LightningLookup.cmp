@@ -55,7 +55,7 @@
             </div>
         </div>
         <!--This part is for Display typehead lookup result List-->  
-        <ul style="min-height:40px;margin-top:0px !important; text-align: left;" class="slds-listbox slds-listbox_vertical slds-dropdown slds-dropdown_fluid slds-lookup__menu slds" role="listbox" >
+        <ul style="min-height:40px;margin-top:0px !important; text-align: left;" class="slds-listbox slds-listbox_vertical slds-dropdown slds-dropdown_fluid slds-lookup__menu slds" role="listbox" onmousedown="{!c.preventHide}">
             <aura:html tag="style">
                     .slds-lookup__menu{
                         width: 100% !important;

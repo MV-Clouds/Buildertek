@@ -10,6 +10,10 @@
         helper.getBudgetLineGroups(component, event, helper);
         helper.getAccounts(component, event, helper);
         helper.getUOM(component, event, helper);
+        var budgetlineList = component.get("v.budgetLineWrapperList");
+        console.log(component.get('v.budgetLineWrapperList'));
+        
+
         var action = component.get("c.getpricebooks");
         action.setParams({
             "recordId" : recordId
@@ -20,146 +24,34 @@
                 var result = response.getReturnValue();
                 let projectHavePricebook=result[0].defaultValue;
                 var pricebookOptions = [];
-                var budgetlineWrapperList = component.get("v.budgetLineWrapperList");
+                pricebookOptions.push({ key: "", value: "None" });
 
+                for(var key in result[0].priceWrapList){
+                    pricebookOptions.push({key: result[0].priceWrapList[key].Id, value: result[0].priceWrapList[key].Name});
+                }
 
                 if(Object.keys(projectHavePricebook).length !=0){
+                    budgetlineList.forEach(function(value , index){
+                        console.log(index);
+                        value.pricebookEntryId=projectHavePricebook.Id;
+                     }); 
 
-                    pricebookOptions.push({ key: projectHavePricebook.Name, value: projectHavePricebook.Id });
-                    result[0].priceWrapList.forEach(function(element){
-                        if(projectHavePricebook.Id !== element.Id){
-                            pricebookOptions.push({ key: element.Name, value: element.Id });
-                        }else{
-                            pricebookOptions.push({ key: "None", value: "" });
-                        }
-                    });
-                    component.set('v.selectedPricebook' , projectHavePricebook.Id);
-
-                    for(var key in budgetlineWrapperList){
-                        budgetlineWrapperList[key].pricebookEntryId=projectHavePricebook.Id;
-                    }
-
-                }else{
-                    pricebookOptions.push({ key: "None", value: "" });
-                    result[0].priceWrapList.forEach(function(element){
-                        pricebookOptions.push({ key: element.Name, value: element.Id });
-                    });
+                     component.set('v.selectedPricebook' , projectHavePricebook.Id);
                 }
-
                 component.set("v.pricebookOptions", pricebookOptions);
-                console.log(component.get("v.pricebookOptions"));
+                component.set("v.budgetlineWrapperList", budgetlineList);
 
 
-                console.log(budgetlineWrapperList);
+                component.set("v.DefaultproductOptionList", pricebookOptions);
 
-                for(var key in budgetlineWrapperList){
-                    // console.log(budgetlineWrapperList[key].pricebookEntryId);
-                    if(budgetlineWrapperList[key].pricebookEntryId != undefined){                            
-                        helper.getFamily(component, event, helper, budgetlineWrapperList[key].pricebookEntryId, key);
-                    }
-                }
-                // if(component.get('v.selectedPricebook')!= undefined){
-                //     var selectedPricebookId = component.find("selectedPricebookId").get("v.value");
-                //     helper.getFamily(component, event, helper , selectedPricebookId , );
-                // }else{
-                //     component.set('v.Spinner', false);    
-                // }
                 
-                // var pricebookList = response.getReturnValue();
-                // console.log('pricebooks: ', pricebookList); 
-                // var pricebookOptions = [];
-                // pricebookOptions.push({
-                //     label: 'None',
-                //     value: ''
-                // });
-                // for(var i = 0; i < pricebookList[0].priceWrapList.length; i++) {
-                //     pricebookOptions.push({
-                //         label: pricebookList[0].priceWrapList[i].Name,
-                //         value: pricebookList[0].priceWrapList[i].Id
-                //     });
-                // }
-                // if(pricebookList[0].defaultValue != ''){
-                //     console.log('pricebookList[0].defaultValue: ', pricebookList[0].defaultValue);
-                //     component.set("v.selectedPricebook", pricebookList[0].defaultValue.Id);
-                //     var action1 = component.get("c.ProductsthroughPB");
-                //     action1.setParams({
-                //         pbookId : pricebookList[0].defaultValue.Id
-                //     });
-                //     action1.setCallback(this, function(response) {
-                //         var state = response.getState();
-                //         if(state === "SUCCESS") {
-                //             var productList = response.getReturnValue();
-                //             console.log('productList: ', productList);
-                            
-                //             var familyset = new Set();
-                //             var familySet = new Set();
-                //             for(var i = 0; i < productList.length; i++) {
-                //                 familySet.add(productList[i].Family);
-                //             }
-                //             var familyList = [];
-                //             familyList.push({
-                //                 label: '--All Families--',
-                //                 value: ''
-                //             });
-                //             familySet.forEach(function(item) {
-                //                 if(item != null || item != undefined){
-                //                     familyList.push({
-                //                         label: item,
-                //                         value: item
-                //                     });
-                //                 }
-                //             }
-                //             );
-                //             console.log('familyList: ', familyList);
-                //             var productOptionList = [];
-                //             if(productList.length > 0) {
-                //                 productOptionList.push({
-                //                     label: 'Please Select Product',
-                //                     value: ''
-                //                 });
-                //                 for(var i = 0; i < productList.length; i++) {
-                //                     productOptionList.push({
-                //                         label: productList[i].Name,
-                //                         value: productList[i].Id
-                //                     });
-                //                 }
-                //             } 
-                //             var budgetlineWrapperList = component.get("v.budgetLineWrapperList");
-                //             for(var i = 0; i < budgetlineWrapperList.length; i++) {
-                //                 budgetlineWrapperList[i].productFamilyList = familyList;
-                //                 budgetlineWrapperList[i].productOptionList = productOptionList;
-                //                 budgetlineWrapperList[i].ProductList = productList;
-                //             }
-                //             component.set("v.DefaultproductFamilyList", familyList);
-                //             component.set("v.DefaultproductOptionList", productOptionList);
-                //             component.set("v.budgetLineWrapperList", budgetlineWrapperList);
+                for(var key in budgetlineList){
+                    helper.getFamily(component, event, helper, budgetlineList[key].pricebookEntryId, key);
+                }     
 
-                //             $A.get("e.c:BT_SpinnerEvent").setParams({
-                //                 "action": "HIDE"
-                //             }).fire(); 
-                //         }
-                //     });
-                //     $A.enqueueAction(action1);
-                // }else{A
-                //     component.set("v.selectedPricebook", '');
-                //     $A.get("e.c:BT_SpinnerEvent").setParams({
-                //         "action": "HIDE"
-                //     }).fire(); 
-
-
-                // }
-                // component.set("v.pricebookOptions", pricebookOptions);
-
-                // for(var key in budgetlineWrapperList){
-                //     if(budgetlineWrapperList[key].pricebookEntryId != undefined){                            
-                //         helper.getFamily(component, event, helper, budgetlineWrapperList[key].pricebookEntryId, key);
-                //     }
-                // }
             }
         });
         $A.enqueueAction(action);
-
-
     },
 
     getFamily : function(component, event, helper) {
@@ -203,13 +95,13 @@
     getProduct : function(component, event, helper) {
         $A.get("e.c:BT_SpinnerEvent").setParams({
             "action": "SHOW"
-        }).fire(); 
+        }).fire();
+
         var budgetlineWrapperList = component.get("v.budgetLineWrapperList");
         var index = event.getSource().get("v.name");
         var family = budgetlineWrapperList[index].productFamily;
-        console.log('family: ', family);
         if(family!=''){
-            helper.getProduct(component, event, helper, family, index);
+            helper.getProduct(component, event, helper, index);
         }else{
             console.log('family is empty');
             var productList = budgetlineWrapperList[index].ProductList;
@@ -282,7 +174,7 @@
         });
     },
 
-    onAddClick : function(component, event, helper) {
+    onClickAddBtn : function(component, event, helper) {
         $A.get("e.c:BT_SpinnerEvent").setParams({
             "action": "SHOW"
         }).fire(); 
@@ -292,14 +184,28 @@
             let budgetLineWrapper = helper.createBudgetLineWrapper(component, event, helper);
             budgetLineWrapperList.push(budgetLineWrapper);
         }
+
+        budgetLineWrapperList.push(budgetLineWrapper);
         component.set("v.budgetLineWrapperList", budgetLineWrapperList);
-        let bugetLineWrap= component.get('v.budgetLineWrapperList');
-        for(var i=bugetLineWrap.length-2;i<bugetLineWrap.length;i++){
-            bugetLineWrap[i].pricebookEntryId = component.get('v.selectedPricebook');
-            helper.getFamily(component, event, helper, component.get('v.selectedPricebook'), i);
-        }
-       
-       
+
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "HIDE"
+        }).fire(); 
+
+        // console.log('inside');
+        // var budgetLineWrapperList = component.get("v.budgetLineWrapperList");
+        
+        // for (var x = 0; x < 5; x++) {
+        //     let budgetLineWrapper=helper.createBudgetLineWrapper(component, event, helper);
+        //     budgetLineWrapperList.push(budgetLineWrapper);
+        // }
+                
+        // let bugetLineWrap = budgetLineWrapperList;
+        // for (var i = bugetLineWrap.length - 5; i < bugetLineWrap.length; i++) {
+        //     console.log(bugetLineWrap[i].pricebookEntryId);
+        //     bugetLineWrap[i].pricebookEntryId = component.get('v.selectedPricebook');
+        //     helper.getFamily(component, event, helper, component.get('v.selectedPricebook'), i);
+        // }
     },
 
     deleteRow : function(component, event, helper) {

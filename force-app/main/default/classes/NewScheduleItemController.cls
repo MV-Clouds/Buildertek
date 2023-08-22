@@ -1,4 +1,4 @@
-public with sharing class NewScheduleItemController {
+public without sharing class NewScheduleItemController {
         
     @AuraEnabled
     public static WorkOrder getPurchaseOrderData(String recordId){
@@ -8,15 +8,7 @@ public with sharing class NewScheduleItemController {
     
     @AuraEnabled
     public static List<ScheduleWrap> getSchedulelist(String recordId){
-        // WorkOrder pur = [select Id, buildertek__Project__c from WorkOrder where Id =: recordId]; 
-        // system.debug('projectId -----> '+pur.buildertek__Project__c);
-        list<Schedule__c> getSchedulesList;
-         if(Schema.sObjectType.Schedule__c.fields.Id.isAccessible() &&
-            Schema.sObjectType.Schedule__c.fields.Name.isAccessible()&&
-            Schema.sObjectType.Schedule__c.fields.buildertek__Description__c.isAccessible() &&
-            Schema.sObjectType.Schedule__c.fields.buildertek__Project__c.isAccessible()){
-             getSchedulesList = [select id, Name, buildertek__Description__c from Schedule__c where buildertek__Project__c =: recordId];
-            }
+        list<Schedule__c> getSchedulesList = [select id, Name, buildertek__Description__c from Schedule__c where buildertek__Project__c =: recordId];
         system.debug('getSchedulesList ---------> '+getSchedulesList);
         list<ScheduleWrap> ScheduleWrapList = new list<ScheduleWrap>(); 
         for(Schedule__c sch : getSchedulesList){
@@ -25,45 +17,9 @@ public with sharing class NewScheduleItemController {
             ScheduleWrapRec.scheduleCheckbox = false;
             ScheduleWrapList.add(ScheduleWrapRec);
         }
-        return ScheduleWrapList;    
+        return ScheduleWrapList;     
     }
     
-    @AuraEnabled
-    public static List<ScheduleWrap> getProjectSchedules(String projectId){
-         list<Schedule__c> getSchedulesList;
-        if(Schema.sObjectType.Schedule__c.fields.Id.isAccessible() &&
-            Schema.sObjectType.Schedule__c.fields.Name.isAccessible()&&
-            Schema.sObjectType.Schedule__c.fields.buildertek__Description__c.isAccessible() &&
-            Schema.sObjectType.Schedule__c.fields.buildertek__Project__c.isAccessible()){
-            getSchedulesList = [select id, Name, buildertek__Description__c from Schedule__c where buildertek__Project__c =: projectId];
-         }
-        system.debug('getSchedulesList -----------> '+getSchedulesList);
-        list<ScheduleWrap> ScheduleWrapList = new list<ScheduleWrap>(); 
-        for(Schedule__c sch : getSchedulesList){
-            ScheduleWrap ScheduleWrapRec = new ScheduleWrap();
-            ScheduleWrapRec.getSchedulesList = sch;
-            ScheduleWrapRec.scheduleCheckbox = false;
-            ScheduleWrapList.add(ScheduleWrapRec);
-        }
-        return ScheduleWrapList;
-    }
-    
-    @AuraEnabled
-    public static List <String> getselectOptions(sObject objectName, string fieldName) {
-        system.debug('objObject --->' + objectName);
-        system.debug('fld --->' + fieldName);
-        List< String > allOpts = new List< String > ();
-        Schema.sObjectType objType = objectName.getSObjectType();
-        Schema.DescribeSObjectResult objDescribe = objType.getDescribe();
-        Map< String, Schema.SObjectField > fieldMap = objDescribe.fields.getMap();
-        List< Schema.PicklistEntry > values = fieldMap.get(fieldName).getDescribe().getPickListValues();
-        for (Schema.PicklistEntry a: values) {
-            allOpts.add(a.getValue());
-        }
-        system.debug('allOpts ---->' + allOpts);
-        allOpts.sort();
-        return allOpts;
-    }
     
     @AuraEnabled
     public static String insertScheduleTask(String task, String scheduleId, String dependency, Date startdate, String project, String contactorResource){
@@ -79,19 +35,58 @@ public with sharing class NewScheduleItemController {
                 projectTask.buildertek__Schedule__c = scheduleId;
             }
             if (startdate != null) {
-                projectTask.buildertek__Start__c = startdate;
+                Date adjustedDate = NewScheduleItemController.modifyDate(startdate);
+                System.debug('adjustedDate==>'+adjustedDate);
+                projectTask.buildertek__Start__c = adjustedDate;
+                projectTask.buildertek__Original_Start_Date__c = adjustedDate;
+                projectTask.buildertek__Original_End_Date__c = adjustedDate;
+                projectTask.buildertek__Finish__c = adjustedDate;
+                projectTask.buildertek__Duration__c = 1;
             }
             if (!String.isBlank(contactorResource)) {
                 projectTask.buildertek__Contractor_Resource__c = contactorResource;
             }
             if (!String.isBlank(dependency)) {
                 projectTask.buildertek__Dependency__c = dependency;
+                List<buildertek__Project_Task__c> schduleItemList= [Select Id ,buildertek__Finish__c ,buildertek__Lag__c  From buildertek__Project_Task__c  WHERE Id =: dependency];
+                System.debug('schduleItemList===>'+schduleItemList);
+                Decimal lagValue = schduleItemList[0].buildertek__Lag__c;
+                if (lagValue != 0) {
+                    Integer lagDays = lagValue.intValue() + 1;
+                    if (schduleItemList[0].buildertek__Finish__c > startdate) {
+                        Date adjustedDate = NewScheduleItemController.modifyDate(schduleItemList[0].buildertek__Finish__c.addDays(lagDays));
+                        System.debug('adjustedDate==>'+adjustedDate);
+                        projectTask.buildertek__Start__c = adjustedDate;
+                        projectTask.buildertek__Finish__c = adjustedDate;
+                    }else {
+                        Date adjustedDate = NewScheduleItemController.modifyDate(startdate);
+                        System.debug('adjustedDate==>'+adjustedDate);
+                        projectTask.buildertek__Start__c = adjustedDate;
+                        projectTask.buildertek__Finish__c = adjustedDate;
+                    }
+                    
+                }else {
+                    if (schduleItemList[0].buildertek__Finish__c > startdate) {
+                        Date adjustedDate = NewScheduleItemController.modifyDate(schduleItemList[0].buildertek__Finish__c.addDays(1));
+                        System.debug('adjustedDate==>'+adjustedDate);
+                        projectTask.buildertek__Start__c = adjustedDate;
+                        projectTask.buildertek__Finish__c = adjustedDate;
+                    }else {
+                        Date adjustedDate = NewScheduleItemController.modifyDate(startdate);
+                        System.debug('adjustedDate==>'+adjustedDate);
+                        projectTask.buildertek__Start__c = adjustedDate;
+                        projectTask.buildertek__Finish__c = adjustedDate;
+                    }
+                }
             }
+            
     
             System.debug('projectTask :: '+projectTask);
+            ProjectTaskTriggerHandler.blnSkipTaskTrigger = true;
             insert projectTask; 
+            ProjectTaskTriggerHandler.blnSkipTaskTrigger = false;
             System.debug('projectTask id :: '+projectTask.Id);
-            
+
             return projectTask.Id;
         
     }
@@ -114,8 +109,22 @@ public with sharing class NewScheduleItemController {
        @AuraEnabled public Schedule__c getSchedulesList;
    }
    
-   public class ErrorMessageClass{
-       @AuraEnabled public String Message { get; set; }
-       @AuraEnabled public String MessageType { get; set; }
-   }
+
+ public static Date modifyDate(Date inputDate) {
+    // Convert the Date to a DateTime to use the format method
+    DateTime dt = DateTime.newInstance(inputDate.year(), inputDate.month(), inputDate.day());
+    
+    // Check if the inputDate is Saturday
+    if (dt.format('E') == 'Sat') {
+        return inputDate.addDays(2);
+    }
+    // Check if the inputDate is Sunday
+    else if (dt.format('E') == 'Sun') {
+        return inputDate.addDays(1);
+    }
+    // If not Saturday or Sunday, return the original date
+    else {
+        return inputDate;
+    }
+}
 }

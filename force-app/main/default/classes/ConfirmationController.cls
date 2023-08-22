@@ -579,6 +579,7 @@ Messaging.sendEmail(new Messaging.SingleEmailMessage[] { email });  */
         cd.PreferencesAllowOriginalDownload = true;
         cd.PreferencesAllowPDFDownload = true;
         cd.PreferencesAllowViewInBrowser = true;
+        cd.PreferencesNotifyOnVisit = false;
         insert cd;
         ContentDistribution cdPublickLink = [SELECT Id, DistributionPublicUrl, ContentDownloadUrl
                                              FROM ContentDistribution

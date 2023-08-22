@@ -1,31 +1,13 @@
 <aura:component controller="NewScheduleItemController" implements="force:appHostable,flexipage:availableForRecordHome,force:lightningQuickActionWithoutHeader,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes" access='global'>
      <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
-     <aura:attribute name="scheduleString" type="string" />
-     <aura:attribute name="Schedules" type="list" />  
-     <aura:attribute name="ScheduleId" type="string" />
-     <!-- <aura:attribute name="taskRecord" type="Project_Task__c" default="{ 'sobjectType': 'Project_Task__c',
-                                                                                   'Name':''}"/> -->
+     <aura:attribute name="scheduleOptions" type="List" />
      <aura:attribute name="Spinner" type="boolean" default="false"/>
      <aura:attribute name="disablePro" type="boolean" default="false"/>
      <aura:attribute name="disableCon" type="boolean" default="false"/>
-     <aura:attribute name="isNewTask" type="boolean" />
-     <aura:attribute name="isNewTasks" type="boolean" />
      <aura:attribute name="TaskName" type="String" />
      <aura:attribute name="startTime" type="Date" />
-     <aura:attribute name="description" type="String" />
-     <aura:attribute name="duration" type="String" />
      <aura:attribute name="startDate" type="Date" />
-     <aura:attribute name="selectedLookUpRecord" type="sObject" default="{}"/>
      <aura:attribute name="selectedContactRecord" type="sObject"/>
-     <aura:attribute name="selectedContacts" type="sObject[]"  />
-    <aura:attribute name="selectedAccountRecord" type="sObject" default="{}"/>
-     <aura:attribute name="selectedProjectRecord" type="sObject" default="{}"/>
-     <aura:attribute name="isProject" type="boolean" default="false"/>
-    <aura:attribute name="isVendor" type="boolean" default="false"/>
-     <aura:attribute name="scheduleRecId" type="String"/>
-     <aura:attribute name="projectId" type="String"/>
-     <aura:attribute name="selectedPhaseValue" type="String"/>
-     <aura:attribute name="selectedLookUpRecordName" type="String"/> 
      <aura:attribute name="selectedValue" type="String"/>
      <aura:attribute name="selectedProjectId" type="String"/>
 
@@ -52,7 +34,7 @@
      </aura:html>
 
      
-     <ltng:require styles="{!$Resource.MOdalPreviewWidth52}"/>
+     <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/>
      <header class="slds-modal__header">
         <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Create Schedule Item</h2>
      </header>   
@@ -61,20 +43,14 @@
             <div class="slds-form-element__group" >
 
                 <div class="slds-form-element__row">
-                    <div class="slds-form-element slds-size_1-of-2">
+                    <div class="slds-form-element slds-size_1-of-2 slds-p-around_small">
                         <div class="slds-form-element__control">
-                            <!-- <label >Task Name</label>
-                            <ui:inputText value="{!v.taskRecord.Name}"/>     -->
                             <lightning:input type="text" label="Task Name" aura:id="taskName" name="Task Name" value="{!v.TaskName}" required="true"/>
                         </div>
                     </div>
-                    <div class="slds-form-element slds-size_1-of-2">
+                    <div class="slds-form-element slds-size_1-of-2 slds-p-around_small">
                         <div class="slds-form-element__control rkclass1">
                             <label>Project</label>
-                            <!-- <span class="{!if(v.isProject == false,'slds-show','slds-hide')}">
-                                <c:BT_LightningLookup objectAPIName="buildertek__Project__c" aura:id="projectLookup" selectedRecord="{!v.selectedProjectRecord}"/>
-                            </span>
-                            <lightning:input type="search" class="{!if(v.isProject == true,'slds-show','slds-hide')}" style="margin-top: -17px;" name="search" value="{!v.selectedLookUpRecordName}" onchange="{!c.clearSelectedValue}" disabled="true"/>        -->
                             <lightning:recordEditForm objectApiName="WorkOrder">
                                     <lightning:inputField fieldName="buildertek__Project__c" value="{!v.selectedProjectId}" disabled="{!v.disablePro}"/>
                             </lightning:recordEditForm>
@@ -83,35 +59,21 @@
                 </div>
 
                 <div class="slds-form-element__row">
-                    <div class="slds-form-element slds-size_1-of-2">
+                    <div class="slds-form-element slds-size_1-of-2 slds-p-around_small">
                         <div class="slds-form-element__control">
-                            <lightning:select name="colorId" label="Schedule" aura:id="colorId" value="{!v.selectedValue}" required="true" onchange="{!c.handleScheduleChange}" onfocus="{!c.getschdule}">
-                                <option text="None" value="" /> 
-                                <aura:iteration items="{!v.Schedules}" var="sch">
-                                    <option text="{!sch.getSchedulesList.Name +' - '+sch.getSchedulesList.buildertek__Description__c}" value="{!sch.getSchedulesList.Id}" />
-                                </aura:iteration>
-                            </lightning:select>
+                            <lightning:combobox name="colorId" label="Schedule" aura:id="colorId" value="{!v.selectedValue}" required="true" 
+                placeholder="Select a schedule" options="{!v.scheduleOptions}" 
+                onchange="{!c.handleScheduleChange}" onfocus="{!c.getschdule}" />
                         </div>
                     </div>
 
-                    <!-- <div class="slds-form-element slds-size_1-of-2">
-                        <div class="slds-form-element__control">
-                            <lightning:select name="colorId" label="Schedule Item" aura:id="colorId" value="{!v.selectedValue}" onchange="{!c.handleScheduleChange}">
-                                <option text="None" value="" /> 
-                                <aura:iteration items="{!v.Schedules}" var="sch">
-                                    <option text="{!sch.getSchedulesList.Name +' - '+sch.getSchedulesList.buildertek__Description__c}" value="{!sch.getSchedulesList.Id}" />
-                                </aura:iteration>
-                            </lightning:select>
-                        </div>
-                    </div> -->
-                    <div class="slds-form-element slds-size_1-of-2">
+                    <div class="slds-form-element slds-size_1-of-2 slds-p-around_small">
                         <div class="slds-form-element__control">
                             <label >Schedule Item</label>
-                            <!-- <c:BT_LightningLookup objectAPIName="buildertek__Project_Task__c" selectedRecord="{!v.selectedLookUpRecord}" />       -->
 
                             <lightning:input autocomplete="off" type="search" placeholder="Search Schedule Item" variant="label-hidden" value="{!v.selectedPredecessor}" onfocus="{!c.serachPredecessor}"  onkeyup="{!c.onkeyUp}" onblur="{!c.hideList}" />
                             <aura:if isTrue="{!v.diplayPredecessorlist}" >
-                                <div id="listbox-id-11" class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid searchResult" role="listbox" style="height:100px;position: fixed;width: 47%;margin-left: 24.5%;" onmousedown="{!c.preventHide}">
+                                <div id="listbox-id-11" class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid searchResult" role="listbox" style="height:100px;position: fixed;width: 46.6%;margin-left: 24.2%;" onmousedown="{!c.preventHide}">
                                     <ul class="slds-listbox slds-listbox_vertical" role="presentation">
                                         <aura:iteration items="{!v.predecessorList}" var="result">
                                             <li role="presentation" class="slds-listbox__item" data-value="{!result.value}" onclick="{!c.clickPredecessorValue}" data-id="{!result.key}">
@@ -142,52 +104,22 @@
 
 
                 <div class="slds-form-element__row">
-                    <div class="slds-form-element slds-size_1-of-2">
+                    <div class="slds-form-element slds-size_1-of-2 slds-p-around_small">
                         <div class="slds-form-element__control">
                             <lightning:input type="date" label="Start Date" aura:id="startDate" name="Start Date" value="{!v.startTime}" required="true"/> 
                         </div>
                     </div>
 
-                    <div class="slds-form-element slds-size_1-of-2">
+                    <div class="slds-form-element slds-size_1-of-2 slds-p-around_small">
                         <div class="slds-form-element__control rkclass1">
                             <label >Resource</label>
-                            <!-- <span class="{!if(v.isVendor == false,'slds-show','slds-hide')}"> -->
-                                <!-- <c:BT_LightningLookup objectAPIName="Contact" IconName="standard:contact" selectedRecord="{!v.selectedContactRecord}"/>  -->
                                 <lightning:recordEditForm objectApiName="WorkOrder">
                                     <lightning:inputField fieldName="ContactId" value="{!v.selectedContactRecord}" disabled="{!v.disableCon}"/>
                                 </lightning:recordEditForm>
-                                <!-- <c:BT_MultiSelectLookup objectAPIName="contact"
-                                                    IconName="standard:contact"
-                                                    lstSelectedRecords="{!v.selectedContacts}"
-                                                    label=""/> -->
-                            <!-- </span> -->
-                            <!-- <lightning:input type="search" class="{!if(v.isVendor == true,'slds-show','slds-hide')}" style="margin-top: -17px;" name="search" value="{!v.selectedAccountRecord.Name}" onchange="{!c.clearSelectedValueAccount}"/>  -->
                         </div>
                     </div>
                 
                 </div>
-
-                <!-- <div class="slds-form-element__row">
-                    <div class="slds-form-element slds-size_1-of-2">
-                        <div class="slds-form-element__control">
-                            <lightning:input type="date" label="Start Date" aura:id="startDate" name="Start Date" value="{!v.taskRecord.buildertek__Start__c}" required="true"/> 
-                        </div>
-                    </div>
-                    <div class="slds-form-element slds-size_1-of-2">
-                        <div class="slds-form-element__control">
-                            <lightning:input type="date" label="Finish" aura:id="finishDate"  name="Finish Date"  value="{!v.taskRecord.buildertek__Finish__c}"/>    
-                        </div>
-                    </div>
-                </div> -->
-
-                <!-- <div class="slds-form-element__row">
-                    <div class="slds-form-element slds-size_1-of-2">
-                        <div class="slds-form-element__control">
-                            <lightning:input type="text" label="Duration" value="{!v.taskRecord.buildertek__Duration__c}" required="true" />
-                        </div>
-                    </div>
-                
-                </div> -->
             
             </div>
         </div>
@@ -202,7 +134,7 @@
                         title="Save"
                         onclick="{! c.save }"/>
     </footer>
-    <!-- </aura:if>-->
+    
     <aura:if isTrue="{!v.Spinner}">
         <div aura:id="spinnerId" class="slds-spinner_container">
            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
@@ -215,5 +147,5 @@
                
            </div>
         </div>
-    </aura:if>
+    </aura:if> 
 </aura:component>

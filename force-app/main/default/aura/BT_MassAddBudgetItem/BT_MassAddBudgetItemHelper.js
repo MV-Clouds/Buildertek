@@ -37,20 +37,19 @@
             productOptionList : [],            
         };
 
-    
-
-
         return budgetLineWrapper;
         
     },
 
     createBudgetItemWrapperList : function(component, event, helper) {
+        console.log('=============createBudgetItemWrapperList===============');
         var budgetLineWrapperList = [];
         for(var i = 0; i < 5; i++) {
             budgetLineWrapperList.push(helper.createBudgetLineWrapper(component, event, helper));
         }
         console.log('budgetLineWrapperList: ', budgetLineWrapperList);
         component.set("v.budgetLineWrapperList", budgetLineWrapperList);
+        
 
     },
 
@@ -122,6 +121,9 @@
                 }
                 component.set('v.budgetLineWrapperList', budgetLineWrapperList);
                 // console.log('budgetLineWrapperList', budgetLineWrapperList);
+
+                component.set("v.DefaultproductFamilyList", familyList);
+
                  $A.get("e.c:BT_SpinnerEvent").setParams({
                     "action": "HIDE"
                 }).fire();
@@ -208,7 +210,8 @@
         // $A.enqueueAction(action);
     },
 
-    getProduct : function(component, event, helper, family, index) {
+    getProduct : function(component, event, helper, index) {
+        
         var budgetLineWrapperList = component.get("v.budgetLineWrapperList");
         budgetLineWrapperList[index].selectedLookUpRecord = {}
         budgetLineWrapperList[index].BudgetLine = {
@@ -460,5 +463,55 @@
         $A.enqueueAction(action);
     
     },
+
+    getPricebooks:function(component, event, helper) {
+        var action = component.get("c.getpricebooks");
+        action.setParams({
+            "recordId" : recordId
+        });
+        action.setCallback(this, function(response) {
+            var state = response.getState();
+            if(state === "SUCCESS") {
+
+                var result = response.getReturnValue();
+                console.log({result});
+                let projectHavePricebook=result[0].defaultValue;
+                console.log(projectHavePricebook);
+
+                var pricebookOptions = [];
+                var budgetlineWrapperList = component.get("v.budgetLineWrapperList");
+                
+                pricebookOptions.push({ key: "", value: "None" });
+                for(var key in result[0].priceWrapList){
+                    pricebookOptions.push({key: result[0].priceWrapList[key].Id, value: result[0].priceWrapList[key].Name});
+                }
+                console.log(pricebookOptions);
+
+
+                if(Object.keys(projectHavePricebook).length !=0){
+                    budgetlineWrapperList.forEach(function(value , index){
+                        console.log(index);
+                        value.pricebookEntryId=projectHavePricebook.Id;
+                        budgetlineWrapperList.push(value);
+                     }); 
+                }
+                component.set("v.pricebookOptions", pricebookOptions);
+                component.set("v.budgetlineWrapperList", budgetlineWrapperList);
+
+
+                console.log(component.get('v.budgetLineWrapperList'));
+               
+                
+
+                for(var key in budgetlineWrapperList){
+                    if(budgetlineWrapperList[key].pricebookEntryId != undefined){                            
+                        helper.getFamily(component, event, helper, budgetlineWrapperList[key].pricebookEntryId, key);
+                    }
+                }
+            }
+        });
+        $A.enqueueAction(action);
+    },
+    
 
 })
