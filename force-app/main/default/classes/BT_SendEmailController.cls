@@ -60,7 +60,7 @@ public with sharing class BT_SendEmailController{
 
                 emailTemplateList = [Select Id, Name, folder.name
                                      from Emailtemplate
-                                     where folder.name = :folderName];
+                                     where folder.name = :folderName AND DeveloperName != 'quote_top' AND DeveloperName != 'quote_bottom'];
         //  }
             return emailTemplateList;
         }
@@ -269,6 +269,17 @@ public with sharing class BT_SendEmailController{
         }
         return subject;
     }
+
+    @AuraEnabled
+    public Static String getBodyFromQuote(String recordId, String objectAPIName){
+        string body = '';
+        if (objectAPIName == 'buildertek__Quote__c'){
+            buildertek__Quote__c quoteRec = [select id, Name, buildertek__Email_Body__c from buildertek__Quote__c where Id =: recordId];
+            body = quoteRec.buildertek__Email_Body__c;
+        }
+        return body;
+    }
+
     @AuraEnabled
     public Static String SendEmail(List<String> to, List<String> cc, List<String> files, String subject, String body, String recordId, String templateId, String pdfFileName,List<String> emailIds){
         try{

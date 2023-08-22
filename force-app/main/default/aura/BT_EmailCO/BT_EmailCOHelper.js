@@ -567,6 +567,30 @@
         });
         $A.enqueueAction(action);
     },
+    getBody:function(component, event, helper) {
+        var action = component.get('c.getBodyFromQuote');
+        var objectName = component.get("v.sObjectName");
+        action.setParams({
+            recordId : component.get("v.recordId"),
+            objectAPIName: objectName,
+        });
+        action.setCallback(this, function (response) {
+            var state = response.getState();
+            console.log('state---->',state);
+            var result= response.getReturnValue();
+            console.log({result});
+            if (state === "SUCCESS") {
+                if (result != null) {
+                    component.set("v.templateBody", result);
+                }
+				else {
+                    component.set("v.templateBody", '');
+                }
+
+            }
+        });
+        $A.enqueueAction(action);
+    },
            
 
     
