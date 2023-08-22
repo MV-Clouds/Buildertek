@@ -217,9 +217,9 @@
     <c:BT_Spinner />
     <aura:attribute name="parentValue" type="String" />
 
-    <aura:attribute name="HaveCreateAccess" type="boolean" />
-    <aura:attribute name="HaveUpdateAccess" type="boolean" />
-    <aura:attribute name="HaveDeleteAccess" type="boolean" />
+    <aura:attribute name="HaveCreateAccess" type="boolean" default="true"/>
+    <aura:attribute name="HaveUpdateAccess" type="boolean" default="true"/>
+    <aura:attribute name="HaveDeleteAccess" type="boolean" default="true"/>
     
     <!-- <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> -->
     <aura:HTML tag="style">
@@ -1186,7 +1186,7 @@
                                                                             onclick="{!c.doView}">
                                                                             {!tar.recordName}
                                                                         </a>
-                                                                        <button
+                                                                        <!-- <button
                                                                             class="slds-button slds-button_icon slds-cell-edit__button slds-m-left_x-small"
                                                                             tabindex="-1" title="">
                                                                             <span style="display:none;"
@@ -1200,7 +1200,7 @@
                                                                             </span>
                                                                             <span
                                                                                 class="slds-assistive-text">Edit</span>
-                                                                        </button>
+                                                                        </button> -->
                                                                     </div>
                                                                 </aura:set>
                                                             </aura:if>

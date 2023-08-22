@@ -40,7 +40,7 @@ public with sharing class ImportCsvQuoteController {
                 if(!String.isBlank(strFileData) && response.isSuccess) {
                     List<buildertek__Quote_Item__c > listQuotes = new List<buildertek__Quote_Item__c >();
                     listCSVData = getListOfFileContentsAsStrings(strFileData);
-					Map<String,buildertek__Quote_Item__c > quoteItemMap = new Map<String,buildertek__Quote_Item__c >();
+                    Map<String,buildertek__Quote_Item__c > quoteItemMap = new Map<String,buildertek__Quote_Item__c >();
 
                     //get id from name 
                     List<String> productList = new List<String>();
@@ -115,14 +115,22 @@ public with sharing class ImportCsvQuoteController {
                                         }
                                     }
                                 }
+
+                                when 'Product' {
+                                    if(String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))) {
+                                       // quote.buildertek__Grouping__c = listCSVData.get(intIndex).get(intInnerIndex).trim();
+                                    //    String productName=listCSVData.get(intIndex).get(intInnerIndex).replace('\n','');
+                                    //     if(productMap.containsKey(productName.toLowerCase())){
+                                    //         quote.buildertek__Product__c =productMap.get(productName.toLowerCase()).id;
+                                    //     }
+                                    quote.buildertek__Product__c = listCSVData.get(intIndex).get(intInnerIndex);
+                                    }
+                                }
                                 
                                 when 'Product Description' {
                                     if(String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))) {
-                                    	//quote.buildertek__Product__c =listCSVData.get(intIndex).get(intInnerIndex).trim();
+                                        //quote.buildertek__Product__c =listCSVData.get(intIndex).get(intInnerIndex).trim();
                                         String productName=listCSVData.get(intIndex).get(intInnerIndex).replace('\n','');
-                                        if(productMap.containsKey(productName.toLowerCase())){
-                                            quote.buildertek__Product__c =productMap.get(productName.toLowerCase()).id;
-                                        }
                                         if(productName!=''){
                                             quote.Name=productName;
                                         }
@@ -139,7 +147,7 @@ public with sharing class ImportCsvQuoteController {
                                     if(String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))) {
                                         quote.buildertek__Unit_Cost__c = Decimal.valueOf(listCSVData.get(intIndex).get(intInnerIndex));
                                     }
-                                }
+                                }                                                                                               
                                 
                                 when 'Cost Code' {
                                     if(String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))) {
@@ -156,13 +164,33 @@ public with sharing class ImportCsvQuoteController {
                                         quote.buildertek__UOM__c = listCSVData.get(intIndex).get(intInnerIndex);
                                     }
                                 }
+
+                                when 'Location' {
+                                    // Chages For Ticket No : BUIL-3480
+                                    if(String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))) {
+                                        quote.buildertek__Location_Picklist__c = listCSVData.get(intIndex).get(intInnerIndex);
+                                    }
+                                }
                                 
                                 when 'Markup' {
                                     if(String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))) {
                                         quote.buildertek__Markup__c = Decimal.valueOf(listCSVData.get(intIndex).get(intInnerIndex).replace('%',''));
                                     }
                                 }
-                                
+
+                                when 'Tax' {
+                                    if(String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))) {
+                                        quote.buildertek__Tax__c = Decimal.valueOf(listCSVData.get(intIndex).get(intInnerIndex).replace('%',''));
+                                    }
+                                }
+
+                                when 'Quote Line Note' {
+                                    // Chages For Ticket No : BUIL-3480
+                                    if(String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))) {
+                                        quote.buildertek__Notes__c = listCSVData.get(intIndex).get(intInnerIndex);
+                                    }
+                                }
+    
                                 when 'quote Mods' {
                                     // quote.Product__c = listCSVData.get(intIndex).get(intInnerIndex);
                                 }
@@ -170,31 +198,47 @@ public with sharing class ImportCsvQuoteController {
                                 when 'Projected Costs' {
                                     // quote.Product__c = listCSVData.get(intIndex).get(intInnerIndex);
                                 }
+                                
+                                when else {
+                                    // Chages For Ticket No : AC-26 And BUIL-3480
+                                    response.isSuccess = false;
+                                }
                             }
                         }
                         listQuotes.add(quote);
                         
                     }
-                    
+                    System.debug('response.isSuccess--->'+response.isSuccess);
                     
                     if(!listQuotes.isEmpty()) {
-                        if(Schema.sObjectType.buildertek__Quote_Item__c.isCreateable()&&
-                            Schema.sObjectType.buildertek__Quote_Item__c.fields.Name.isCreateable()&&
-                            Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Quote__c.isCreateable() &&
-                			Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Cost_Code__c.isCreateable() &&
-                			Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Additional_Discount__c.isCreateable() &&
-                            Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Description__c.isCreateable()&&
-                            Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Applied_Markup__c.isCreateable() &&
-                			Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Grouping__c.isCreateable() &&
-                			Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Markup__c.isCreateable() &&
-                            Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Product__c.isCreateable()&&
-                            Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Quantity__c.isCreateable() &&
-                			Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Unit_Cost__c.isCreateable() &&
-                			Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__UOM__c.isCreateable() &&
-                			Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Vendor__c.isCreateable() ){
-                                insert listQuotes;
-                			}
-                        response.strMessage = 'Quote line items inserted successfully.';
+                        if (response.isSuccess) {
+                            
+                            if(Schema.sObjectType.buildertek__Quote_Item__c.isCreateable()&&
+                                Schema.sObjectType.buildertek__Quote_Item__c.fields.Name.isCreateable()&&
+                                Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Quote__c.isCreateable() &&
+                                Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Cost_Code__c.isCreateable() &&
+                                Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Additional_Discount__c.isCreateable() &&
+                                Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Description__c.isCreateable()&&
+                                Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Applied_Markup__c.isCreateable() &&
+                                Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Grouping__c.isCreateable() &&
+                                Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Markup__c.isCreateable() &&
+                                Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Product__c.isCreateable()&&
+                                Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Quantity__c.isCreateable() &&
+                                Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Unit_Cost__c.isCreateable() &&
+                                Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__UOM__c.isCreateable() &&
+                                Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Location_Picklist__c.isCreateable() &&
+                                Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Vendor__c.isCreateable() &&
+                                Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Tax__c.isCreateable() &&
+                                Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Notes__c.isCreateable()){
+                                    insert listQuotes;
+                                }
+                            response.strMessage = 'Quote line items inserted successfully.';
+                        }
+                        else {   
+                            // Chages For Ticket No : AC-26 And BUIL-3480
+                            response.isSuccess = false;
+                            response.strMessage = 'Please check the header.';
+                        }
                     }
                     else {
                         response.isSuccess = false;
@@ -224,8 +268,15 @@ public with sharing class ImportCsvQuoteController {
         List<List<String>> listOfFileContentsAsStrings;
         if(String.isNotBlank(strContents)) {
             List<String> listLines;
-            
-            if(strContents.contains('\r')) {
+            System.debug('strContents==>'+JSON.serialize(strContents));
+
+            // Chages For Ticket No : AC-26 And BUIL-3480
+
+            if(strContents.contains('\r\n')) {
+                // Split up the file contents into List of rows [ Using new line ].
+                listLines = strContents.split('\r\n');
+            }
+            else if(strContents.contains('\r')) {
                 // Split up the file contents into List of rows [ Using new line ].
                 listLines = strContents.split('\r');
             }
@@ -233,6 +284,9 @@ public with sharing class ImportCsvQuoteController {
                 // Split up the file contents into List of rows [ Using new line ].
                 listLines = strContents.split('\n');
             }
+
+            
+            // listLines = strContents.split('\r\n');
             
             if(listLines != Null && !listLines.isEmpty()) {
                 // Appending cell values separated by New Lines.

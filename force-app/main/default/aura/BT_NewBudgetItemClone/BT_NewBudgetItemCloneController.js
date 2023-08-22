@@ -2297,7 +2297,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
     },
 
     
-      : function (component, event, helper) {
+      deleteBudget: function (component, event, helper) {
 
         if(component.get("v.HaveDeleteAccess")){
             component.set("v.isOpen", true);
