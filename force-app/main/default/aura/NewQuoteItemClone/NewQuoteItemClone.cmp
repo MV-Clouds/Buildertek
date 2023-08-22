@@ -800,7 +800,7 @@
                                                     selectedRecord="{!v.selectedLookUpRecord}" aura:id="productId"
                                                     parentId="{! v.pricebookName }" prodctfamly="{!v.productfamily}" childValue="{!v.newQuote.Name}"  />
 
-                                                    <label class="slds-form-element__label" for="lookup-348"></label>
+                                                    <!-- <label class="slds-form-element__label" for="lookup-348"></label> -->
 
                                             </td>
                                             <!-- <td>
