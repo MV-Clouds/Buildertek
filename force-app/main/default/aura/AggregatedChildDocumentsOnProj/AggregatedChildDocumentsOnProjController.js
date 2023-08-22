@@ -7,9 +7,9 @@
        
 
         var action=component.get('c.getChildObectName');
-        action.setParams({
-            "projectId": component.get('v.recordId'),
-        });
+        // action.setParams({
+        //     "projectId": component.get('v.recordId'),
+        // });
         action.setCallback(this, function (response) {
             console.log(response.getError());            
             let state=response.getState();
@@ -70,13 +70,16 @@
                     let result=response.getReturnValue();
                     console.log(result);
                     component.set('v.attachmentData' , result);
-    
+                    $A.get("e.c:BT_SpinnerEvent").setParams({
+                        "action": "HIDE"
+                    }).fire();
+                }else{
+                    component.set('v.attachmentData' , []);
+                    $A.get("e.c:BT_SpinnerEvent").setParams({
+                        "action": "HIDE"
+                    }).fire();
                 }
-                
     
-                $A.get("e.c:BT_SpinnerEvent").setParams({
-                    "action": "HIDE"
-                }).fire();
             });
             $A.enqueueAction(action);
         }
