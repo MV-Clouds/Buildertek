@@ -15,7 +15,7 @@ private class NewScheduleItemControllerTest {
         WorkOrder testWorkOrder = new WorkOrder();
         testWorkOrder.buildertek__Project__c = proj.Id; // Replace with a valid Project Id
         testWorkOrder.ContactId = con.Id; // Replace with a valid Contact Id
-        insert testWorkOrder; 
+        insert testWorkOrder;
 
         // Call the method being tested
         Test.startTest();
@@ -83,20 +83,24 @@ private class NewScheduleItemControllerTest {
         schTask.buildertek__Start__c=System.Now().date();
         insert schTask;
 
+        List<buildertek__Project_Task__c> schitemList = new List<buildertek__Project_Task__c>();
+
         buildertek__Project_Task__c dependencyTask = new buildertek__Project_Task__c(
             Name = 'Dependency Task',
             buildertek__Finish__c = Date.today(),
             buildertek__Start__c = Date.today(),
             buildertek__Schedule__c = schList[0].Id
         );
-        insert dependencyTask;
+        schitemList.add(dependencyTask);
+        //insert dependencyTask;
         buildertek__Project_Task__c dependencyTask1 = new buildertek__Project_Task__c(
             Name = 'Dependency Task',
             buildertek__Finish__c = Date.today().addDays(5),
             buildertek__Start__c = Date.today(),
             buildertek__Schedule__c = schList[0].Id
         );
-        insert dependencyTask1;
+        schitemList.add(dependencyTask1);
+        //insert dependencyTask1;
         
         buildertek__Project_Task__c dependencyTask2 = new buildertek__Project_Task__c(
             Name = 'Dependency Task',
@@ -105,7 +109,8 @@ private class NewScheduleItemControllerTest {
             buildertek__Schedule__c = schList[0].Id,
             buildertek__Lag__c = 1.00
         );
-        insert dependencyTask2;
+        schitemList.add(dependencyTask2);
+        //insert dependencyTask2;
         buildertek__Project_Task__c dependencyTask3 = new buildertek__Project_Task__c(
             Name = 'Dependency Task',
             buildertek__Finish__c = Date.today().addDays(5),
@@ -113,15 +118,16 @@ private class NewScheduleItemControllerTest {
             buildertek__Schedule__c = schList[0].Id,
             buildertek__Lag__c = 1.00
         );
-        insert dependencyTask3;
+        schitemList.add(dependencyTask3);
+        insert schitemList;
         Date startDate = Date.today().addDays(2);
 
         Test.startTest();
         // Call the method to test
-        String taskId = NewScheduleItemController.insertScheduleTask('Test Task', schList[0].Id, dependencyTask.Id, startDate, proj.Id, con.Id);
-        String taskId1 = NewScheduleItemController.insertScheduleTask('Test Task', schList[0].Id, dependencyTask1.Id, startDate, proj.Id, con.Id);
-        String taskId2 = NewScheduleItemController.insertScheduleTask('Test Task', schList[0].Id, dependencyTask2.Id, startDate, proj.Id, con.Id);
-        String taskId3 = NewScheduleItemController.insertScheduleTask('Test Task', schList[0].Id, dependencyTask3.Id, startDate, proj.Id, con.Id);
+        String taskId = NewScheduleItemController.insertScheduleTask('Test Task', schList[0].Id, schitemList[0].Id, startDate, proj.Id, con.Id);
+        String taskId1 = NewScheduleItemController.insertScheduleTask('Test Task', schList[0].Id, schitemList[1].Id, startDate, proj.Id, con.Id);
+        String taskId2 = NewScheduleItemController.insertScheduleTask('Test Task', schList[0].Id, schitemList[2].Id, startDate, proj.Id, con.Id);
+        String taskId3 = NewScheduleItemController.insertScheduleTask('Test Task', schList[0].Id, schitemList[3].Id, startDate, proj.Id, con.Id);
         Test.stopTest();
 
         // Perform assertions
