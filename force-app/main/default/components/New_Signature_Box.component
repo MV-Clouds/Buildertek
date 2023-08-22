@@ -1,25 +1,4 @@
 <apex:component access="global">
-    <style>
-        /* Default signature box styling */
-        .NewCanvas {
-            background-color: #ffffff !important;
-            border:1px solid lightgray;
-            width:100%;
-            height:10rem;
-            margin-top:10px;
-        }
-    
-        /* Dark mode signature box styling */
-        @media (prefers-color-scheme: dark) {
-            .NewCanvas {
-                background-color: #ffffff !important;
-                border:1px solid lightgray;
-                width:100%;
-                height:10rem;
-                margin-top:10px;
-            }
-        }
-    </style>
     <body>
         <div class="slds-grid slds-wrap slds-grid--pull-padded slds-p-horizontal--small">
             <!-- Signature Label -->
@@ -37,7 +16,7 @@
                 <div class="">
                     <div class="slds-form-element__control">
                         <div id="signature-pad1" >
-                            <canvas class="NewCanvas" id="divsign"></canvas>
+                            <canvas class="NewCanvas" style="background-color: #ffffff !important; border:1px solid lightgray; width:100%; height:10rem; margin-top:10px;" id="divsign"></canvas>
                             <div style="float:right;margin-right:18px;"><a href="javascript:void(0);" style="text-decoration:none;" id="btnClear1">Clear Signature</a></div>
                         </div>
                     </div>

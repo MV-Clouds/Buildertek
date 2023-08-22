@@ -136,7 +136,7 @@
             if (state === "SUCCESS") {
                 var result = response.getReturnValue();
                 if (result === 'Success') {
-                    component.set("v.Spinner", false);
+                    // component.set("v.Spinner", false);
                     $A.get("e.force:closeQuickAction").fire();
                     var toastEvent = $A.get("e.force:showToast");
                     toastEvent.setParams({
@@ -144,7 +144,9 @@
                         "type": 'success',
                         "message": "Email Sent Successfully"
                     });
+                    component.set("v.Spinner", false);
                     toastEvent.fire();
+                    
                     // location.reload();
                 } else {
                     $A.get("e.force:closeQuickAction").fire();
@@ -152,7 +154,8 @@
                     toastEvent.setParams({
                         "type": 'error',
                         "message": result
-                    });
+                    });       
+                    component.set("v.Spinner", false);
                     toastEvent.fire();
                 }
                 $A.get('e.force:refreshView').fire();
@@ -161,7 +164,7 @@
 
         $A.enqueueAction(action);
 
-        component.set("v.Spinner", false);
+        // component.set("v.Spinner", false);
 
 
     },
