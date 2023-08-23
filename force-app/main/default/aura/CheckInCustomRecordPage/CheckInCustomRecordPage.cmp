@@ -118,7 +118,21 @@
                                 <div class="main-file-cmp">
                                     <aura:iteration items="{!ci.ContentDocumentLinks}" var="cd" indexVar="indexNum">
                                         <div class="slds-m-horizontal_x-small">
-                                            <lightning:carouselImage description="{!cd.ContentDocument.Title}" src="{!orgBaseURL + '/sfc/servlet.shepherd/document/download/' + cd.ContentDocumentId}" onclick="{!c.onImageClick}" id="{!cd.ContentDocumentId+'-'+index}"/>
+                                            <aura:if isTrue="{!cd.isImage}">
+                                                <lightning:carouselImage description="{!cd.ContentDocument.Title}" src="{!orgBaseURL + '/sfc/servlet.shepherd/document/download/' + cd.ContentDocumentId}" onclick="{!c.onImageClick}" id="{!cd.ContentDocumentId+'-'+index}"/>
+                                            </aura:if>
+                                            <aura:if isTrue="{!!cd.isImage}">
+                                                <div onclick="{!c.onImageClick}" id="{!cd.ContentDocumentId+'-'+index}">
+                                                    <!-- {!cd.ContentDocument.FileExtension} -->
+                                                    <!-- {!cd.ContentDocument.FileExtension} -->
+                                                    <!-- <lightning:icon iconName="{!'doctype:' + v.cd.ContentDocument.FileExtension}" alternativeText="XML file" title="XML" /> -->
+                                                    <!-- <lightning:icon iconName="doctype:{!cd.ContentDocument.FileExtension}" alternativeText="XML file" title="XML" /> -->
+                                                    <!-- <lightning:fileCard fileId="{!cd.ContentDocumentId}" description="Description"/> -->
+                                                    <lightning:carouselImage description="{!cd.ContentDocument.Title}" src="{!orgBaseURL + '/sfc/servlet.shepherd/document/download/' + cd.ContentDocumentId}" onclick="{!c.onImageClick}" id="{!cd.ContentDocumentId+'-'+index}"/>
+
+                                                </div>
+                                            </aura:if>
+                                            <!-- <lightning:carouselImage description="{!cd.ContentDocument.Title}" src="{!orgBaseURL + '/sfc/servlet.shepherd/document/download/' + cd.ContentDocumentId}" onclick="{!c.onImageClick}" id="{!cd.ContentDocumentId+'-'+index}"/> -->
                                         </div>
                                     </aura:iteration>
                                 </div>

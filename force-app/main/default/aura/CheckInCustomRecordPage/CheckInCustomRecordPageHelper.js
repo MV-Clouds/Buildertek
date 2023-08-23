@@ -25,8 +25,22 @@
                     console.log('result ==>' , result);
 
                     result.checkInList.forEach(element => {
+                        // element.ContentDocument.isImage = false;
                         console.log('element ==> ',element);
+
+                        element.ContentDocumentLinks.forEach(cdele => {
+                            
+                            if (cdele.ContentDocument.FileExtension == 'png' || cdele.ContentDocument.FileExtension == 'jpg' || cdele.ContentDocument.FileExtension == 'jpeg') {
+                                cdele.isImage = true;
+                            } else {
+                                cdele.isImage = false;
+                            }
+                        });
+
+                        // ContentDocumentLinks
+                        // console.log('false added');
                     });
+                    // console.log();
 
                     component.set("v.Spinner", false);
                     component.set('v.offset', result.offst);
