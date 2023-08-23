@@ -138,4 +138,15 @@
         });
         $A.enqueueAction(action1);
     },
+    convertArrayOfObjectsToCSV : function(component,event,helper){
+        // declare variables
+        var csvStringResult, keys, columnDivider;
+        columnDivider = ',';
+        keys = [ 'Product','Product Description','Cost Code','Grouping','UOM','Quantity','Unit Cost','Location','Markup','Tax','Quote Line Note'];
+      
+        csvStringResult = '';
+        csvStringResult += keys.join(columnDivider);
+       
+        return csvStringResult;        
+    },
 })
