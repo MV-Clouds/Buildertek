@@ -92,6 +92,10 @@ public with sharing class bryntumGanttController {
         public String accName;
     }
 
+    public bryntumGanttController(){
+        id = ApexPages.currentPage().getParameters().get('ID').escapeHtml4();
+        system.debug('id ------------> '+id);
+    }
 
     @AuraEnabled
     public static DataTableDetails getScheduleWrapperAtLoading(string scheduleid){
