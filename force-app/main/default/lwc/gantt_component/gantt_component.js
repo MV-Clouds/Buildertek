@@ -609,7 +609,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
       // startDate: data.project.startDate,
       // tasksData: data.tasks.rows,
       tasksData: tasks.rows,
-      // resourcesData: data.resources.rows,
       skipNonWorkingTimeWhenSchedulingManually: true,
       resourcesData: data.resources.rows,
       // assignmentsData: data.assignments.rows,
@@ -847,7 +846,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
         //     }
         //   },
         // },
-        {
+        /* {
           type: "widget",
           text: "Contractor",
           draggable: false,
@@ -901,11 +900,11 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
                 }]
             }
           }
-        
+
         },
         {
           type: "addnew",
-        },
+        }, */
         {
           type: "action",
           draggable: false,
@@ -1014,7 +1013,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
 
       features: {
         dependencyEdit : true,
-        dependencies : {radius:10},
+        // dependencies : {radius:10},
         rowReorder: false,
         rollups: {
           disabled: true,
@@ -1046,7 +1045,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
                 // Remove "% Complete","Effort", and the divider in the "General" tab
                 effort: false,
                 // flex:5,
-                // endDate: false,
                 startDate: {
                   weight: 100,
                 },
@@ -1065,7 +1063,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
             },
             // Remove all tabs except the "General" tab
             successorsTab: false,
-            resourcesTab: true,
+            resourcesTab: false,
             advancedTab: false,
           },
         },
@@ -1322,10 +1320,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
       childParentObj[element.to] = element.from;
     });
 
-    console.log('childParentObj ==> ',childParentObj);
-    console.log('projectTaskObj ==> ',projectTaskObj);
-
-    debugger;
     upsertDataOnSaveChanges({
       scheduleRecordStr: JSON.stringify(scheduleData),
       taskRecordsStr: JSON.stringify(newtasklistafterid),
