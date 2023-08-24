@@ -13,6 +13,17 @@ public with sharing class NewGanttChartTaskTriggerHandler{
 
             Map<String, Date> phaseDateMap = new Map<String, Date>();
             Map<String, buildertek__Project_Task__c> phaseMileStoneMap = new Map<String, buildertek__Project_Task__c>();
+            List<buildertek__Project_Task__c> milestoneListToDelete = new List<buildertek__Project_Task__c>();
+
+            for (buildertek__project_Task__c currProjectTask : projectTaskList) {
+                if (currProjectTask.buildertek__Milestone__c) {
+                    milestoneListToDelete.add(currProjectTask);
+                }
+            }
+
+            if (milestoneListToDelete.size()) {
+                delete milestoneListToDelete;
+            }
 
             for (buildertek__Project_Task__c projectTask : projectTaskList){
                 if (projectTask.buildertek__Milestone__c){
@@ -62,6 +73,8 @@ public with sharing class NewGanttChartTaskTriggerHandler{
             upsert mileStoneList;
             NewGanttChartTaskTriggerHandler.blnSkipTaskTrigger = false;
             ProjectTaskTriggerHandler.blnSkipTaskTrigger = false;
+            System.debug('mileStoneList: ' + mileStoneList);
+
         }
     }
 
