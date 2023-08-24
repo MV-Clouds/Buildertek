@@ -1,0 +1,547 @@
+<template>
+    <form>
+        <div class="spinner">
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading" variant="brand" size="large">
+                </lightning-spinner>
+            </template>
+        </div>
+        <div class="slds-m-around_large" style="background: white; margin: 1% 5%;">
+            <header class="slds-modal__header">
+                <lightning-button-icon icon-name="utility:close" onclick={closeModel} alternative-text="close"
+                    variant="bare-inverse" class="slds-modal__close"></lightning-button-icon>
+                <h3 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New Schedule</h3>
+            </header>
+            <h3 class="slds-section-title--divider" style="font-weight: bold; color: black; padding-top: 1rem;">
+                Information</h3>
+            <table class="slds-table slds-no-row-hover detailContainer" style="color: black; padding-top: 1rem;">
+                <tr>
+                    <td>
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label">Description</label>
+                            <div class="slds-form-element__control">
+                                <textarea class="slds-textarea" name="desc" id="desc" rows="2"
+                                    onchange={handleDescriptionChange} required></textarea>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-form-element">
+                            <div class="slds-form-element__control">
+                                <div class="slds-combobox_container">
+                                    <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click">
+                                        <div if:true={showProjectIcon} class="iconContainer-left">
+                                            <lightning-icon icon-name="custom:custom24" size="small"></lightning-icon>
+                                        </div>
+                                        <div if:false={showProjectIcon} class="iconContainer-left">
+                                            <lightning-icon icon-name='utility:search' size='xx-small'></lightning-icon>
+                                        </div>
+                                        <label class="slds-form-element__label">Project</label>
+                                        <input type="text" placeholder="Search BT Projects..."
+                                            class="slds-input custom-input" name="searchProjectName" data-id="project"
+                                            value={searchProjectName} oninput={handleProjectSearch}
+                                            disabled={isInputEnabledForProject} />
+                                        <div class="iconContainer-right">
+                                            <lightning-icon onclick={clearInput} data-id="project"
+                                                icon-name="utility:close" size='xx-small'>
+                                            </lightning-icon>
+                                        </div>
+                                        <div if:true={showProjectName} class="records">
+                                            <ul class="suggestions">
+                                                <span class="sdls-media__body">
+                                                    <span
+                                                        class="slds-listbox__option-text slds-listbox__option-text_entity"
+                                                        style="text-align: center; margin-top: 10px;">
+                                                        <lightning-icon icon-name='utility:search' size='x-small'
+                                                            style="margin-right: 10px;"></lightning-icon>
+                                                        <span class="slds-truncate"
+                                                            title="Show All Results for &quot;test&quot;">
+                                                            Show All Results for {searchProjectName}
+                                                        </span>
+                                                    </span>
+                                                </span>
+                                                <template for:each={suggestedProjectName} for:item="project">
+                                                    <li key={project.Id} data-id={project.Id} onclick={selectedRecord}>
+                                                        <div class="recitem">
+                                                            <div>
+                                                                <!-- <img src="https://btservice360-dev-ed.my.salesforce.com/img/icon/t4v35/custom/custom24_120.png"
+                                                                alt=""> -->
+                                                                <lightning-icon icon-name='custom:custom24'
+                                                                    alternative-text='custom24' size='small'>
+                                                                </lightning-icon>
+                                                            </div>
+                                                            <div class="project-name" style="margin-left: 15px;">
+                                                                {project.Name}
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                </template>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label">Initial Start Date</label>
+                            <div class="slds-form-element__control">
+                                <input type="date" class="slds-input" name="initialStartDate"
+                                    oninput={handleStartDateChange} />
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label">Type</label>
+                            <div class="slds-form-element__control">
+                                <select class="slds-select" name="Type" id="Scheduletype" style="padding-left: 10px;"
+                                    onchange={handleTypeChange}>
+                                    <option value="--None--">--None--</option>
+                                    <option value="Standard" selected>Standard</option>
+                                    <option value="Master">Master</option>
+                                </select>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="slds-form-element">
+                            <div class="slds-form-element__control">
+                                <div class="slds-combobox_container">
+                                    <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click">
+                                        <div if:true={showUserIcon} class="iconContainer-left">
+                                            <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
+                                        </div>
+                                        <div if:false={showUserIcon} class="iconContainer-left">
+                                            <lightning-icon icon-name='utility:search' size='xx-small'></lightning-icon>
+                                        </div>
+                                        <label class="slds-form-element__label">Project Manager - User</label>
+                                        <input type="text" placeholder="Search People..."
+                                            class="slds-input custom-input" name="project" data-id="user"
+                                            value={searchProjectManager} oninput={handleProjectManagerSearch}
+                                            disabled={isInputEnabledForUser} />
+                                        <div class="iconContainer-right">
+                                            <lightning-icon onclick={clearInput} data-id="user"
+                                                icon-name="utility:close" size='xx-small'>
+                                            </lightning-icon>
+                                        </div>
+                                        <div if:true={showProjectManagerName} class="records">
+                                            <ul class="suggestions">
+                                                <span class="sdls-media__body">
+                                                    <span
+                                                        class="slds-listbox__option-text slds-listbox__option-text_entity"
+                                                        style="text-align: center; margin-top: 10px;">
+                                                        <lightning-icon icon-name='utility:search' size='x-small'
+                                                            style="margin-right: 10px;"></lightning-icon>
+                                                        <span class="slds-truncate"
+                                                            title="Show All Results for &quot;test&quot;">
+                                                            Show All Results for {searchProjectManager}
+                                                        </span>
+                                                    </span>
+                                                </span>
+                                                <template for:each={suggestedProjectManagerName} for:item="user">
+                                                    <li key={user.Id} data-id={user.Id} onclick={selectedRecord}>
+                                                        <div class="recitem">
+                                                            <div>
+                                                                <lightning-icon icon-name='standard:user'
+                                                                    alternative-text='user' size='small'>
+                                                                </lightning-icon>
+                                                            </div>
+                                                            <div class="user-name" style="margin-left: 15px;">
+                                                                {user.Name}
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                </template>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <div style="height: 12.2rem; overflow-y: scroll; margin-top: 2%;">
+
+                <div>
+                    <h3 class="slds-section-title--divider" style="font-weight: bold">Master Schedules</h3>
+                </div>
+
+                <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                    <thead>
+                        <tr class="slds-text-title_caps">
+                            <th scope="col" class="slds-truncate">
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="Duration">Name</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="Project Description">Description</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="Project Description">Total Working Days
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={masterId} for:item="item" for:index="index">
+                            <tr key={item.Id}>
+                                <td>
+                                    <span data-id={item.Id} onchange={saveSelectedPO}>
+                                        <input type="radio" name="select" value={item.selectedPurchaseOrder} />
+                                    </span>
+                                </td>
+                                <td class="slds-truncate">
+                                    <a href={url} data-id={item.Name} onclick={getLink}>{item.Name}</a>
+                                </td>
+                                <td>
+                                    {item.buildertek__Description__c}
+                                </td>
+                                <td>
+                                    {item.buildertek__Total_Duration__c}
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+
+                </table>
+            </div>
+
+            <div class="modal-footer slds-modal__footer slds-size_1-of-1">
+                <lightning-button variant="neutral" title="Cancel" label="Cancel" onclick={onCancelHandle}
+                    style="margin-right: 10px;"></lightning-button>
+                <lightning-button variant="neutral" type="submit" title="Save &amp; New" label="Save &amp; New"
+                    onclick={onSaveandNew} style="margin-right: 10px;"></lightning-button>
+                <lightning-button variant="brand" type="submit" name="save" label="Save" onclick={createSchedule}>
+                </lightning-button>
+            </div>
+        </div>
+    </form>
+</template>
+
+import { LightningElement, track, api } from 'lwc';
+import searchProject from '@salesforce/apex/bryntumGanttController.searchProject';
+import searchUsers from '@salesforce/apex/bryntumGanttController.searchUsers';
+import fetchScheduleList from '@salesforce/apex/bryntumGanttController.fetchScheduleList';
+import getScheduleItemList from '@salesforce/apex/bryntumGanttController.getScheduleItemList';
+import createNewSchedule from '@salesforce/apex/bryntumGanttController.createNewSchedule';
+import getProjectName from '@salesforce/apex/bryntumGanttController.getProjectName';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import { NavigationMixin } from 'lightning/navigation';
+
+export default class CreateNewSchedule extends NavigationMixin(LightningElement) {
+
+    @track searchProjectName = '';
+    @track suggestedProjectName = [];
+    @track showProjectName = false;
+    @track projectId;
+    @track userId;
+    @track searchProjectManager = '';
+    @track suggestedProjectManagerName = [];
+    @track showProjectManagerName = false;
+    @track searchbarValue = '';
+    @track masterId = '';
+    @track masterRec = '';
+    @track listOfFields = [];
+    @track scheduleLineItems = [];
+    @track initialStartDate;
+    @track isLoading = false;
+    @track description = '';
+    @track type = 'Standard';
+    @track url = '';
+    @track showProjectIcon = false;
+    @track showUserIcon = false;
+    @track isInputEnabledForProject = false;
+    @track isInputEnabledForUser = false;
+    @track isRequiredFilled = false;
+
+    connectedCallback(event) {
+        document.addEventListener('click', this.handleDocumentEvent.bind(this));
+        this.getFields();
+        let name = 'inContextOfRef';
+        let url = window.location.href;
+        let regex = new RegExp("[?&]" + name + "(=1.([^&#]*)|&|#|$)");
+        let results = regex.exec(url);
+        console.log('results:', results);
+        let value = decodeURIComponent(results[2].replace(/\+/g, " "));
+        console.log('value:', value);
+        let context = JSON.parse(window.atob(value));
+        let parentRecordId = context.attributes.recordId;
+        if (parentRecordId) {
+            console.log(parentRecordId);
+            this.getProjectNameFromId(parentRecordId);
+        }
+
+    }
+
+    getProjectNameFromId(parentRecordId) {
+        console.log('parentRecordId:', parentRecordId);
+        getProjectName({ parentRecordId: parentRecordId })
+            .then((result) => {
+                this.searchProjectName = result;
+                this.isInputEnabledForProject = true;
+                this.showProjectIcon = true;
+                console.log('result:', result);
+            })
+            .catch((error) => {
+                console.log('error:', JSON.stringify(error));
+            });
+    }
+
+    handleProjectSearch(event) {
+        try {
+            this.searchProjectName = event.target.value;
+            this.searchbarValue = event.target.dataset.id;
+            console.log(`searchProjectName: ${this.searchProjectName}`);
+            if (this.searchProjectName.length != 0) {
+                clearTimeout(this.searchTimeout);
+                this.searchTimeout = setTimeout(() => {
+                    searchProject({ searchProjectName: this.searchProjectName })
+                        .then((result) => {
+                            this.suggestedProjectName = result;
+                            console.log('result', result);
+                            this.showProjectName = true;
+                        })
+                        .catch((error) => {
+                            console.log('error:', JSON.stringify(error));
+                        });
+                }, 300);
+            } else {
+                this.showProjectName = false;
+                this.suggestedProjectName = [];
+            }
+        } catch (error) {
+            console.log('error', JSON.stringify(error));
+        }
+    }
+
+    handleProjectManagerSearch(event) {
+        try {
+            this.searchProjectManager = event.target.value;
+            this.searchbarValue = event.target.dataset.id;
+            console.log(`searchProjectManager: ${this.searchProjectManager}`);
+            if (this.searchProjectManager.length != 0) {
+                clearTimeout(this.searchTimeout);
+                this.searchTimeout = setTimeout(() => {
+                    searchUsers({ searchProjectManagerName: this.searchProjectManager })
+                        .then((result) => {
+                            this.suggestedProjectManagerName = result;
+                            console.log('result', result);
+                            this.showProjectManagerName = true;
+                        })
+                        .catch((error) => {
+                            console.log('error:', JSON.stringify(error));
+                        });
+                }, 300);
+            } else {
+                this.showProjectManagerName = false;
+                this.suggestedProjectManagerName = [];
+            }
+        } catch (error) {
+            console.log('error', JSON.stringify(error));
+        }
+    }
+
+    handleDocumentEvent(event) {
+        const clickedElement = event.target;
+        const componentElement = this.template.querySelector('.detailContainer');
+        if (componentElement && !componentElement.contains(clickedElement)) {
+            console.log('handleDocumentEvent condition');
+            this.showProjectName = false;
+            this.showProjectManagerName = false;
+        }
+    }
+
+    selectedRecord(event) {
+        const selectedValue = event.target.innerText;
+        let pId = event.currentTarget.dataset.id;
+        console.log('selectedValue', selectedValue);
+        console.log('Id', pId);
+
+        if (this.searchbarValue === 'project') {
+            this.searchProjectName = selectedValue;
+            this.showProjectIcon = true;
+            this.isInputEnabledForProject = true;
+            this.projectId = pId;
+        } else {
+            this.searchProjectManager = selectedValue;
+            this.isInputEnabledForUser = true;
+            this.showUserIcon = true;
+            this.userId = pId;
+        }
+
+    }
+
+    getFields() {
+        fetchScheduleList()
+            .then((result) => {
+                this.masterId = result;
+                console.log('masterId', this.masterId);
+                console.log('Type masterId', typeof (this.masterId));
+            })
+            .catch((error) => {
+                console.log('error', JSON.stringify(error));
+            })
+    }
+
+    saveSelectedPO(event) {
+        this.masterRec = event.currentTarget.dataset.id;
+        console.log('masterId', this.masterRec);
+        getScheduleItemList({ masterId: this.masterRec })
+            .then((result) => {
+                this.scheduleLineItems = result;
+                console.log('scheduleLineItems:', this.scheduleLineItems);
+            })
+            .catch((error) => {
+                console.log('error', JSON.stringify(error));
+            })
+    }
+
+    handleDescriptionChange(event) {
+        this.description = event.target.value;
+        console.log('description', typeof (this.description));
+
+        if (this.description.length > 1) {
+            this.isRequiredFilled = true;
+        }
+    }
+
+    handleStartDateChange(event) {
+        this.initialStartDate = event.target.value;
+        console.log('formattedDate', this.initialStartDate);
+    }
+
+    handleTypeChange(event) {
+        this.type = event.target.value;
+        console.log('type', typeof (this.type));
+    }
+
+    // createSchedule() {
+    //     console.log('SAVE');
+    //     debugger;
+    //     try {
+    //         if (this.isRequiredFilled) {
+    //             this.isLoading = true;
+    //             console.log(`description: ${this.description} projectId: ${this.projectId} formattedDate: ${this.initialStartDate} type: ${this.type} userId: ${this.userId} masterRec: ${this.masterRec}`);
+    //             createNewSchedule({ description: this.description, project: this.projectId, initialStartDate: this.initialStartDate, type: this.type, user: this.userId, masterId: this.masterRec })
+    //                 .then((result) => {
+    //                     console.log('url:', result);
+    //                     this[NavigationMixin.Navigate]({
+    //                         type: 'standard__recordPage',
+    //                         attributes: {
+    //                             recordId: result,
+    //                             objectApiName: 'buildertek__Schedule__c',
+    //                             actionName: 'view'
+    //                         },
+    //                     }, true);
+    //                     this.isLoading = false;
+    //                 })
+    //                 .catch((error) => {
+    //                     console.log('error:', error);
+    //                     this.isLoading = false;
+    //                 })
+    //         } else {
+                // const event = new ShowToastEvent({
+                //     title: "Error creating schedule",
+                //     message: 'Description field is required to create schedule',
+                //     variant: 'error',
+                //     mode: 'dismissable'
+                // });
+                // this.dispatchEvent(event);
+    //         }
+    //     } catch (error) {
+    //         console.log('error', JSON.stringify(error));
+    //     }
+    // }
+    createSchedule() {
+        try {
+            this.isLoading = true;
+            console.log(`description: ${this.description} projectId: ${this.projectId} formattedDate: ${this.initialStartDate} type: ${this.type} userId: ${this.userId} masterRec: ${this.masterRec}`);
+            createNewSchedule({ description: this.description, project: this.projectId, initialStartDate: this.initialStartDate, type: this.type, user: this.userId, masterId: this.masterRec })
+                .then((result) => {
+                    console.log('url:', result);
+                    this[NavigationMixin.Navigate]({
+                        type: 'standard__recordPage',
+                        attributes: {
+                            recordId: result,
+                            objectApiName: 'buildertek__Schedule__c',
+                            actionName: 'view'
+                        },
+                    }, true);
+                    this.isLoading = false;
+                })
+                .catch((error) => {
+                    console.log('error:', error);
+                    this.isLoading = false;
+                })
+        } catch (error) {
+            console.log('error', JSON.stringify(error));
+        }
+    }
+    onSaveandNew() {
+        try {
+            this.isLoading = true;
+            console.log(`description: ${this.description} projectId: ${this.projectId} formattedDate: ${this.initialStartDate} type: ${this.type} userId: ${this.userId} masterRec: ${this.masterRec}`);
+            createNewSchedule({ description: this.description, project: this.projectId, initialStartDate: this.initialStartDate, type: this.type, user: this.userId, masterId: this.masterRec })
+                .then((result) => {
+                    console.log('schId:', result);
+                    this.isLoading = false;
+                    this.template.querySelector('form').reset();
+                })
+                .catch((error) => {
+                    console.log('error:', error);
+                    this.isLoading = false;
+                })
+        } catch (error) {
+            console.log('error', JSON.stringify(error));
+        }
+    }
+
+    onCancelHandle() {
+        console.log('Redirect the page');
+        this[NavigationMixin.Navigate]({
+            type: 'standard__objectPage',
+            attributes: {
+                objectApiName: 'buildertek__Schedule__c',
+                actionName: 'list'
+            },
+            state: {
+                filterName: 'Recent'
+            },
+        })
+    }
+
+    getLink(event) {
+        let scheduleName = event.currentTarget.dataset.id;
+        let val = this.masterId.find((schId) => schId.Name == scheduleName);
+        console.log('ScheduleName:', scheduleName);
+        this.url = `/${val.Id}`
+        console.log('Url:', this.url);
+    }
+
+    disconnectedCallback() {
+        document.removeEventListener('click', this.handleDocumentEvent.bind(this));
+    }
+
+    clearInput(event) {
+        let clearInputForType = event.currentTarget.dataset.id;
+        console.log('clearInputForType', clearInputForType);
+        if (clearInputForType === 'project') {
+            this.searchProjectName = '';
+            this.showProjectIcon = false;
+            this.isInputEnabledForProject = false;
+        } else {
+            this.searchProjectManager = '';
+            this.showUserIcon = false;
+            this.isInputEnabledForUser = false;
+        }
+    }
+
+}

@@ -170,7 +170,6 @@ export default class CreateNewSchedule extends NavigationMixin(LightningElement)
 
     handleDescriptionChange(event) {
         this.description = event.target.value;
-        console.log('description', typeof (this.description));
     }
 
     handleStartDateChange(event) {
@@ -184,7 +183,7 @@ export default class CreateNewSchedule extends NavigationMixin(LightningElement)
     }
 
     createSchedule() {
-        try {
+        if (this.description.length != 0) {
             this.isLoading = true;
             console.log(`description: ${this.description} projectId: ${this.projectId} formattedDate: ${this.initialStartDate} type: ${this.type} userId: ${this.userId} masterRec: ${this.masterRec}`);
             createNewSchedule({ description: this.description, project: this.projectId, initialStartDate: this.initialStartDate, type: this.type, user: this.userId, masterId: this.masterRec })
@@ -204,38 +203,55 @@ export default class CreateNewSchedule extends NavigationMixin(LightningElement)
                     console.log('error:', error);
                     this.isLoading = false;
                 })
-        } catch (error) {
-            console.log('error', JSON.stringify(error));
+        } else {
+            const event = new ShowToastEvent({
+                title: 'Error creating schedule',
+                message: 'Description field is empty !!!',
+                variant: 'error',
+                mode: 'dismissable'
+            });
+            this.dispatchEvent(event);
         }
+
     }
 
     onSaveandNew() {
-        this.isLoading = true;
-        console.log(`description: ${this.description} projectId: ${this.projectId} formattedDate: ${this.initialStartDate} type: ${this.type} userId: ${this.userId} masterRec: ${this.masterRec}`);
-        createNewSchedule({ description: this.description, project: this.projectId, initialStartDate: this.initialStartDate, type: this.type, user: this.userId, masterId: this.masterRec })
-            .then((result) => {
-                console.log('schId:', result);
-                this.isLoading = false;
-                const event = new ShowToastEvent({
-                    title: 'Success',
-                    message: 'Schedule created !!!',
-                    variant: 'success',
-                    mode: 'dismissable'
-                });
-                this.dispatchEvent(event);
-                this.template.querySelector('form').reset();
-            })
-            .catch((error) => {
-                console.log('error:', error);
-                this.isLoading = false;
-                const event = new ShowToastEvent({
-                    title: 'Error',
-                    message: 'Error creating schedule !!!',
-                    variant: 'error',
-                    mode: 'dismissable'
-                });
-                this.dispatchEvent(event);
-            })
+        if (this.description.length != 0) {
+            this.isLoading = true;
+            console.log(`description: ${this.description} projectId: ${this.projectId} formattedDate: ${this.initialStartDate} type: ${this.type} userId: ${this.userId} masterRec: ${this.masterRec}`);
+            createNewSchedule({ description: this.description, project: this.projectId, initialStartDate: this.initialStartDate, type: this.type, user: this.userId, masterId: this.masterRec })
+                .then((result) => {
+                    console.log('schId:', result);
+                    this.isLoading = false;
+                    const event = new ShowToastEvent({
+                        title: 'Success',
+                        message: 'Schedule created !!!',
+                        variant: 'success',
+                        mode: 'dismissable'
+                    });
+                    this.dispatchEvent(event);
+                    this.template.querySelector('form').reset();
+                })
+                .catch((error) => {
+                    console.log('error:', error);
+                    this.isLoading = false;
+                    const event = new ShowToastEvent({
+                        title: 'Error',
+                        message: 'Error creating schedule !!!',
+                        variant: 'error',
+                        mode: 'dismissable'
+                    });
+                    this.dispatchEvent(event);
+                })
+        } else { 
+            const event = new ShowToastEvent({
+                title: 'Error',
+                message: 'Description field is empty !!!',
+                variant: 'error',
+                mode: 'dismissable'
+            });
+            this.dispatchEvent(event);
+        }
     }
 
     onCancelHandle() {
