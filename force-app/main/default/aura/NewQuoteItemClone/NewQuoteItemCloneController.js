@@ -1563,7 +1563,7 @@
                         "action": "SHOW"
                     }).fire();
         
-                    $A.enqueueAction(action1);
+                    //$A.enqueueAction(action1);
                     var TotalRecords = component.get("v.TotalRecords");
                     console.log('TotalRecords--->>',{TotalRecords});
                     var ListOfEachRecord = TotalRecords.tarTable.ListOfEachRecord;
