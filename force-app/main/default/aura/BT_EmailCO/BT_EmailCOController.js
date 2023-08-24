@@ -40,6 +40,10 @@
             helper.getContact(component, event, helper);
             helper.getTemplate(component, event, helper);
         }
+        else if (objectName == 'buildertek__Quote__c') {
+            helper.getBody(component, event, helper);
+            helper.getTemplate(component, event, helper);
+        }
         else {
             if(objectName == 'buildertek__Account_Payable__c' || objectName == 'buildertek__Billings__c'){
                 component.set("v.showBodyTemplate",true);

@@ -668,13 +668,14 @@ public without sharing class PreviewQuoteController{
     @AuraEnabled
     public static string saveSign(String recId, String base64Data, String contentType, string signName){
         system.debug('base64Data-------------' + base64Data);
+        transient Date nowDT = Date.today();
         string conversn;
         if (base64Data.length() > 1696 || Test.isRunningTest()){
             base64Data = EncodingUtil.urlDecode(base64Data, 'UTF-8');
             ContentVersion conVer = new ContentVersion();
             conVer.ContentLocation = 'S'; // to use S specify this document is in Salesforce, to use E for external files
             conVer.PathOnClient = 'SignatureName.png'; // The files name, extension is very important here which will help the file in preview.
-            conVer.Title = signName; // Display name of the files
+            conVer.Title = 'Signature' + ' ' + nowDT; // Display name of the files
             conVer.VersionData = EncodingUtil.base64Decode(base64Data); // converting your binary string to Blog
             insert conVer;    //Insert ContentVersion
             system.debug('*******conVer*******' + conVer);
