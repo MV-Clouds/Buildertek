@@ -83,7 +83,12 @@
                 border: 1px solid #bcbcbc;
                 margin: 10px;
                 border-radius: 5px;
+                height: 55vh;
+                overflow-y: scroll;
             }
+            .slds-email-composer::-webkit-scrollbar {
+                display: none;
+              }
     </aura:html>
     <!-- <div class="Customcloseicon" style="width: 97%;text-align: right;position: absolute; margin-top: -50px;">
         <lightning:buttonIcon iconName="utility:close"    variant="border-inverse" title="Close"  alternativeText="Close Window" onclick="{!c.closeModel}" />
