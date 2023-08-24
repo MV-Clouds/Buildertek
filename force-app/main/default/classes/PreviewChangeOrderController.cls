@@ -195,7 +195,7 @@ public with sharing class PreviewChangeOrderController {
             String message = 'Success';
 
             
-            if(results.size() > 0){
+        if(results.size() > 0){
                if (results[0].isSuccess()) {
                    string Toaddresses= '';
                    string CCaddresses= '';
