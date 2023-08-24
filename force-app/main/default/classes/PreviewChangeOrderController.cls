@@ -122,6 +122,8 @@ public with sharing class PreviewChangeOrderController {
                     strCC.add(con.email);
                 }    
             }
+
+
             
              
              List<Messaging.SingleEmailMessage> mails = new List<Messaging.SingleEmailMessage>();
