@@ -51,6 +51,7 @@
                 </span>
             </label> 
             <!-- <lightning:input name="file1" type="file" label="Attachment" multiple="false" accept=".csv" onchange="{! c.onSelectFileHandler}" aura:id="file" id="file-upload-input-01" aria-labelledby="file-selector-primary-label file-selector-secondary-label"/> -->
+            <button class="slds-button slds-button--brand" onclick="{!c.downloadCsv}" style =" float:right; margin-right:1.5rem;">Download CSV</button> <br/><br/>
         </span>
         
         <aura:if isTrue="{!v.isSelect}">
