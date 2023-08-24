@@ -1092,15 +1092,15 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           editNextOnEnterPress: false,
           addNewAtEnd: false,
         },
-        indicators : {
-            items : {
-                deadlineDate   : false,
-                earlyDates     : false,
-                lateDates      : false,
-                // display constraint indicators
-                constraintDate : true
-            }
-        },
+        // indicators : {
+        //     items : {
+        //         deadlineDate   : false,
+        //         earlyDates     : false,
+        //         lateDates      : false,
+        //         // display constraint indicators
+        //         constraintDate : true
+        //     }
+        // },
       },
 
       //* this method is used for getting contractor Id to filter resources
