@@ -32,6 +32,7 @@
     <aura:attribute name="toEmail" type="String" />
     <aura:attribute name="emailIds" type="List" />
 	<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler name="destroy" value="{!this}" action="{!c.handleDestroy}"/>
     
     <aura:attribute name="showBodyTemplate" type="Boolean" default="false"/>
     <aura:attribute name="bodytemplatesList" type="List" default="[]"/>
@@ -91,7 +92,7 @@
     <div class="slds-modal__content ">
         <div class="slds slds-scope">
             <header class="slds-modal__header">
-                <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeModel }" alternativeText="close"
+                <lightning:buttonIcon iconName="utility:close" onclick="{!c.closeModel}" alternativeText="close"
                                       variant="bare-inverse" class="slds-modal__close" />
                 
                 <aura:if isTrue="{!v.sObjectName == 'buildertek__Change_Order__c'}">

@@ -1522,34 +1522,15 @@ public with sharing class BT_SendEmailController{
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    @AuraEnabled
+    public static void NewSignChecked(String recordId){
+        System.debug('RecordId on close click:- '+recordId);
+        if (Id.valueOf(recordId).getSObjectType().getDescribe().getName() == 'buildertek__Quote__c') {
+            buildertek__Quote__c Quote = [SELECT Id, Name,buildertek__NewSignBox__c FROM buildertek__Quote__c WHERE Id =: recordId];
+            buildertek__Quote__c q = new buildertek__Quote__c();
+            q.Id = Quote.Id;
+            q.buildertek__NewSignBox__c = true;
+            update q;
+        }
+    }
 }

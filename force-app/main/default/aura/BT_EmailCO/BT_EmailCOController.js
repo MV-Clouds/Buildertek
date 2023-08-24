@@ -244,8 +244,21 @@
         }
     },                
     closeWindow: function(component, event, helper) {
+            var NewSignBox = component.get("c.NewSignChecked");
+            NewSignBox.setParams({
+                recordId : component.get("v.recordId"),
+            });
+        $A.enqueueAction(NewSignBox);
         $A.get("e.force:closeQuickAction").fire();
-    }
+    },
+    handleDestroy : function (component, event, helper) {
+        var NewSignBox = component.get("c.NewSignChecked");
+            NewSignBox.setParams({
+                recordId : component.get("v.recordId"),
+            });
+        $A.enqueueAction(NewSignBox);
+        $A.get("e.force:closeQuickAction").fire();
+      }       
 
               
                 
