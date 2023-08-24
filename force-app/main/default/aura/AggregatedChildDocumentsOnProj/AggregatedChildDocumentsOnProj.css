@@ -2,3 +2,12 @@
     margin: 20px;
     
 }
+.THIS .main-file-cmp {
+    display: flex;
+    overflow: auto;
+    flex-direction: row;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    padding: 8px;
+    width: -webkit-fill-available;
+}

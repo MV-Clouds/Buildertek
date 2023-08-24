@@ -6,44 +6,23 @@
     <lightning:navigation aura:id="navService"/>
     <aura:attribute name="childObjectNameMap" type="List" />
     <aura:attribute name="selectedObj" type="String" />
-    <!-- bt another -->
-    <aura:attribute name="showAttachmentList" type="Boolean" default="false" />
+    <aura:attribute name="page" type="Integer" default="1" />
+    <aura:attribute name="pageSize" type="Integer" default="5" />
+    <aura:attribute name="totalPages" type="Integer" />
 
 
 
-    <!-- Another way (This way is also correct) -->
-    <lightning:select aura:id="childObjectNamePicklist" value="{!v.selectedObj}" onchange="{!c.handleObjectChange}" name="childObjectNamePicklist" label="Select Child Object Name" required="true">
+    <lightning:select aura:id="childObjectNamePicklist" value="{!v.selectedObj}" onchange="{!c.handleObjectChange}" name="childObjectNamePicklist" label="Select Child Object Name" >
         <option value="">--None--</option>
         <aura:iteration items="{!v.childObjectNameMap}" var="objName" indexVar="key">
             <option text="{!objName.value}" value="{!objName.key}" selected="{!objName.key==v.selectedObj}" />
         </aura:iteration>
     </lightning:select>
-    <!-- Another way (This way is also correct) -->
 
 
     <hr/>
 
-    <aura:if isTrue="{!v.showAttachmentList}">
-        <lightning:accordion>
-            <aura:iteration items="{!v.attachmentData}" var="attachment" indexVar="indx">
-                <lightning:accordionSection name="{!attachment.ParentId}" label="{!attachment.ParentName}">
-                    <aura:set attribute="body">
-                        <lightning:fileCard fileId="{!attachment.ContentDocumentId}" />
-                        <!-- <lightning:carousel disableAutoRefresh="true">
-                            <lightning:carouselImage  src="{!$Resource.CarouselImages+'/CarouselImages/1.png'}"  header = "First Card"  description = "First Image"  alternativeText = "First Image Description."  href = "https://www.google.com">
-                            </lightning:carouselImage>
-                        </lightning:carousel> -->
-                    </aura:set>
-                </lightning:accordionSection>
-            </aura:iteration>
-        </lightning:accordion>
-    </aura:if>
-
-    <aura:if isTrue="{!!v.showAttachmentList}">
-        <center class="noData">No Result found.... </center> 
-    </aura:if>
-
-    <!-- <div style="overflow: auto;">
+     <div style="overflow: auto;">
         <table class="slds-table slds-table_cell-buffer slds-table_bordered">
             <thead>
                 <tr class="slds-line-height_reset slds-text-title_caps">
@@ -65,6 +44,7 @@
                 </tr>
             </thead>
             <tbody>
+                {!v.attachmentData.records}
                 <aura:iteration items="{!v.attachmentData}" var="attachment" indexVar="indx">
                     <tr class="slds-hint-parent">
                             
@@ -74,26 +54,37 @@
                             </div>
                         </th>
                         <td data-label="Name">
-                            <div class="slds-truncate" title="{!attachment.ParentName}"><a href="javascript:void(0);" onclick="{!c.openRecordPage}" data-record-id="{!attachment.ParentId}">{!attachment.ParentName} </a></div>
+                            <div class="slds-truncate" title="{!attachment.LinkedEntity.Name}"><a href="javascript:void(0);" onclick="{!c.openRecordPage}" data-record-id="{!attachment.LinkedEntityId}">{!attachment.LinkedEntity.Name} </a></div>
                             
 
                         </td>
-                        <td data-label="Attachment">
+                        <td data-label="Attachment" >
                             <lightning:fileCard fileId="{!attachment.ContentDocumentId}" />
-
+                            <!-- <lightning:carousel>
+                                <aura:iteration items="{!attachment.contentDocumentLinks}" var="cntDocs" indexVar="subIndx">
+                                        <lightning:carouselImage  src="{!orgBaseURL + '/sfc/servlet.shepherd/document/download/' + cntDocs.ContentDocumentId}" onclick="{!c.onImageClick}" id="{!cntDocs.ContentDocumentId+'-'+subIndx}"/>
+                                </aura:iteration>
+                        </lightning:carousel> -->
                         </td>
-        
-                            
+                        
                     </tr>
                 </aura:iteration>
             </tbody>
         </table>
 
         
+
         <aura:if isTrue="{!(empty(v.attachmentData))}">
             <center class="noData">No Result found.... </center> 
+            <aura:set attribute="else">
+                <div style="display: flex; justify-content:space-between">
+                    <lightning:button variant="brand-outline" title="Previous" label="Previous" onclick="{!c.previousPage}" disabled="{!v.page == 1}" />
+                    <lightning:button variant="brand-outline" title="Next"  label="Next" onclick="{!c.nextPage}" disabled="{!v.page == v.totalPages}" />
+                </div>
+        
+            </aura:set>
         </aura:if>
-    </div> -->
+    </div> 
 
    
 
