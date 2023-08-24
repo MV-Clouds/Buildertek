@@ -70,6 +70,19 @@ public with sharing class PreviewChangeOrderController {
        }
        templateBody = templateBody1 ;
        system.debug('Final templateBody ----------> '+templateBody);
+
+       /* ====AC-34 changes ===*/
+       List<buildertek__Change_Order__c> corec=[SELECT id,  buildertek__TemplateId__c , buildertek__Template_Name__c  from buildertek__Change_Order__c where Id=:recordId limit 1];
+       List<EmailTemplate> emailTemp = [SELECT Id,Name,Subject FROM EmailTemplate WHERE Id =:templateId];
+       if(corec.size()>0){
+            corec[0].buildertek__TemplateId__c = templateId;
+            if(!emailTemp.isEmpty()){
+                corec[0].buildertek__Template_Name__c= emailTemp[0].Name;
+            }
+        }
+        update corec;
+       /* ==== End AC-34 changes ===*/
+
        return templateBody;
        
    }
@@ -100,7 +113,6 @@ public with sharing class PreviewChangeOrderController {
            } 
 
            /*==== AC-34 changes === */
-           List<EmailTemplate> emailTemp = [SELECT Id,Name,Subject FROM EmailTemplate WHERE Id =:templateId];
            buildertek__WideOrgEmailsettings__c getEmail = buildertek__WideOrgEmailsettings__c.getOrgDefaults();
            String wideOrgEmailName = getEmail.buildertek__WideEmail__c;
            List<OrgWideEmailAddress> wideOrgEmail =[select Id,Address from OrgWideEmailAddress WHERE Address =:wideOrgEmailName];
@@ -273,12 +285,7 @@ public with sharing class PreviewChangeOrderController {
                if (corec[0].buildertek__CO_Submit_Date__c == null) {
                corec[0].buildertek__CO_Submit_Date__c = System.today();  
                } 
-               /* ====AC-34 changes ===*/
-               corec[0].buildertek__TemplateId__c = templateId;
-               if(!emailTemp.isEmpty()){
-                   corec[0].buildertek__Template_Name__c= emailTemp[0].Name;
-               }
-               /* ==== End AC-34 changes ===*/
+               
                update corec; 
            }
            
@@ -312,7 +319,6 @@ public with sharing class PreviewChangeOrderController {
            }
 
            /*==== AC-34 changes === */
-           List<EmailTemplate> emailTemp = [SELECT Id,Name,Subject FROM EmailTemplate WHERE Id =:templateId];
            buildertek__WideOrgEmailsettings__c getEmail = buildertek__WideOrgEmailsettings__c.getOrgDefaults();
            String wideOrgEmailName = getEmail.buildertek__WideEmail__c;
            List<OrgWideEmailAddress> wideOrgEmail =[select Id,Address from OrgWideEmailAddress WHERE Address =:wideOrgEmailName];
@@ -529,14 +535,6 @@ public with sharing class PreviewChangeOrderController {
                             }//else{
                               // corec[0].buildertek__Contract__c = contractlist[0].id; 
                            // }
-
-                           /* ====AC-34 changes ===*/
-
-                           corec[0].buildertek__TemplateId__c = templateId;
-                           if(!emailTemp.isEmpty()){
-                               corec[0].buildertek__Template_Name__c= emailTemp[0].Name;
-                           }
-                           /* ==== End AC-34 changes ===*/
                            update corec;
                    
                }
