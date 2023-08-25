@@ -27,17 +27,17 @@
         <table class="slds-table slds-table_cell-buffer slds-table_bordered">
             <thead>
                 <tr class="slds-line-height_reset slds-text-title_caps">
-                    <th  class="slds-is-resizable" scope="col">
+                    <th  class="slds-is-resizable tableHeadRow" scope="col">
                         <div class="slds-truncate" title="Name">
                             No.
                         </div>
                     </th>
-                    <th  class="slds-is-resizable" scope="col">
+                    <th  class="slds-is-resizable tableHeadRow" scope="col">
                         <div class="slds-truncate" title="Account Number">
                            Name
                         </div>
                     </th>
-                    <th class="slds-is-resizable" scope="col">
+                    <th class="slds-is-resizable tableHeadRow" scope="col">
                         <div class="slds-truncate" title="Industry">
                             Attachment
                         </div>
@@ -48,15 +48,15 @@
                 <aura:iteration items="{!v.filterAttachedData}" var="attachment" indexVar="indx">
                     <tr class="slds-hint-parent">
                             
-                        <th data-label="index" scope="row">
+                        <td data-label="index" scope="row" class="tableBodyRow">
                             <div class="slds-truncate" title="index">
                                 {!indx+1}
                             </div>
-                        </th>
-                        <td data-label="Name">
+                        </td>
+                        <td data-label="Name" class="tableBodyRow">
                             <div class="slds-truncate" title="{!attachment.ParentName}"><a href="javascript:void(0);" onclick="{!c.openRecordPage}" data-record-id="{!attachment.ParentId}">{!attachment.ParentName} </a></div>
                         </td>
-                        <td data-label="Attachment" >
+                        <td data-label="Attachment" class="tableBodyAttachedRow" >
                             <!-- <lightning:carousel> -->
                             <div  class="file-div-tab">
                                 <div class="main-file-cmp">

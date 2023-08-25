@@ -21,3 +21,13 @@
     display: none !important;
 }
 
+.THIS .tableHeadRow{
+    text-align: center;
+}
+.THIS .tableBodyRow{
+    text-align: center;
+}
+.THIS .tableBodyAttachedRow{
+    display: flex;
+    justify-content: center;
+}
