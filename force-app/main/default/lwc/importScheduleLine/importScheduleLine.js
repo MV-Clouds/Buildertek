@@ -106,8 +106,10 @@ export default class importScheduleLine extends LightningElement {
         let endIndex;
 
         for (let i = 1; i < arr.length; i++) {
+            console.log('arr[i]:',arr[i]);
             if (arr[i] !== undefined) {
                 while (arr[i].indexOf('"') > -1) {
+                    console.log('while loop');
                     if (startIndex === null) {
                         startIndex = arr[i].indexOf('"');
                         arr[i] =
