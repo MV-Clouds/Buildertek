@@ -11,3 +11,13 @@
     padding: 8px;
     width: -webkit-fill-available;
 }
+.THIS .file-div-tab {
+    width: -webkit-fill-available;
+    overflow: auto;
+    max-width: 45vw;
+
+}
+.THIS .slds-carousel__autoplay {
+    display: none !important;
+}
+

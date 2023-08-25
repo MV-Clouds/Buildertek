@@ -9,6 +9,8 @@
     <aura:attribute name="page" type="Integer" default="1" />
     <aura:attribute name="pageSize" type="Integer" default="5" />
     <aura:attribute name="totalPages" type="Integer" />
+    <aura:attribute name="filterAttachedData" type="List"/>
+
 
 
 
@@ -21,8 +23,7 @@
 
 
     <hr/>
-
-     <div style="overflow: auto;">
+    <div style="overflow: auto;">
         <table class="slds-table slds-table_cell-buffer slds-table_bordered">
             <thead>
                 <tr class="slds-line-height_reset slds-text-title_caps">
@@ -44,8 +45,7 @@
                 </tr>
             </thead>
             <tbody>
-                {!v.attachmentData.records}
-                <aura:iteration items="{!v.attachmentData}" var="attachment" indexVar="indx">
+                <aura:iteration items="{!v.filterAttachedData}" var="attachment" indexVar="indx">
                     <tr class="slds-hint-parent">
                             
                         <th data-label="index" scope="row">
@@ -54,17 +54,20 @@
                             </div>
                         </th>
                         <td data-label="Name">
-                            <div class="slds-truncate" title="{!attachment.LinkedEntity.Name}"><a href="javascript:void(0);" onclick="{!c.openRecordPage}" data-record-id="{!attachment.LinkedEntityId}">{!attachment.LinkedEntity.Name} </a></div>
-                            
-
+                            <div class="slds-truncate" title="{!attachment.ParentName}"><a href="javascript:void(0);" onclick="{!c.openRecordPage}" data-record-id="{!attachment.ParentId}">{!attachment.ParentName} </a></div>
                         </td>
                         <td data-label="Attachment" >
-                            <lightning:fileCard fileId="{!attachment.ContentDocumentId}" />
-                            <!-- <lightning:carousel>
-                                <aura:iteration items="{!attachment.contentDocumentLinks}" var="cntDocs" indexVar="subIndx">
-                                        <lightning:carouselImage  src="{!orgBaseURL + '/sfc/servlet.shepherd/document/download/' + cntDocs.ContentDocumentId}" onclick="{!c.onImageClick}" id="{!cntDocs.ContentDocumentId+'-'+subIndx}"/>
-                                </aura:iteration>
-                        </lightning:carousel> -->
+                            <!-- <lightning:carousel> -->
+                            <div  class="file-div-tab">
+                                <div class="main-file-cmp">
+                                    <aura:iteration items="{!attachment.contentDocumentLinks}" var="cntDocs" indexVar="subIndx">
+                                        <div class="slds-m-horizontal_x-small">
+                                            <lightning:fileCard fileId="{!cntDocs.ContentDocumentId}" />
+                                       </div>  
+                                    </aura:iteration>
+                                </div>
+                            </div>
+                        <!-- </lightning:carousel> -->
                         </td>
                         
                     </tr>
@@ -72,19 +75,27 @@
             </tbody>
         </table>
 
-        
-
-        <aura:if isTrue="{!(empty(v.attachmentData))}">
+        <aura:if isTrue="{!(empty(v.filterAttachedData))}">
             <center class="noData">No Result found.... </center> 
             <aura:set attribute="else">
                 <div style="display: flex; justify-content:space-between">
-                    <lightning:button variant="brand-outline" title="Previous" label="Previous" onclick="{!c.previousPage}" disabled="{!v.page == 1}" />
-                    <lightning:button variant="brand-outline" title="Next"  label="Next" onclick="{!c.nextPage}" disabled="{!v.page == v.totalPages}" />
+                    <ui:button class="prv-btn active-btn slds-button slds-button--neutral" press="{!c.clickPrevious}" disabled="{!v.page == 1}" >
+                        <span>Previous</span>
+                    </ui:button>
+
+                    <div class="pagintaion-num-div">
+                        <div> {!v.page} of {!v.totalPages}</div>
+                    </div>
+
+                    <ui:button class="next-btn active-btn slds-button slds-button--neutral" press="{!c.clickNext}" disabled="{!v.page == v.totalPages}" >
+                        <span>Next</span>
+                    </ui:button>
                 </div>
         
             </aura:set>
         </aura:if>
     </div> 
+     
 
    
 

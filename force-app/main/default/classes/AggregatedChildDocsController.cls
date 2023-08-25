@@ -12,24 +12,24 @@ public without sharing class AggregatedChildDocsController {
     
     
     public class contntDocumentLinkWrapp {
-        // @AuraEnabled
-        // public String ContentDocumentId;
+        @AuraEnabled
+        public String ContentDocumentId;
         // @AuraEnabled
         // public String Name;
-        // @AuraEnabled
-        // public String ParentId;
-        // @AuraEnabled
-        // public String ParentName;
-        @AuraEnabled public List<ContentDocumentLink> records;
-        @AuraEnabled public Integer totalPages;
-        // @AuraEnabled public  String orgBaseURL;
+        @AuraEnabled
+        public String ParentId;
+        @AuraEnabled
+        public String ParentName;
+        // @AuraEnabled public List<ContentDocumentLink> records;
+        // @AuraEnabled public Integer totalPages;
+        @AuraEnabled public  String orgBaseURL;
 
 
         
     } 
     
     @AuraEnabled
-    public static  contntDocumentLinkWrapp getAttachement(String objectName , String projectId ,Integer page, Integer pageSize){
+    public static  List<contntDocumentLinkWrapp> getAttachement(String objectName , String projectId){
         if(objectName !=null){
             // Replace 'Your_Object_API_Name' with the actual API name of the object you're working with
             String objectApiName = objectName;
@@ -60,13 +60,22 @@ public without sharing class AggregatedChildDocsController {
                     cntDocLinkIdList.add((Id)cdLink.get('LinkedEntityId'));
                 }
                 if(cntDocLinkIdList.size() > 0){
-                    List<ContentDocumentLink> cntDocumentList=[Select Id , ContentDocumentId ,LinkedEntity.Type,  ContentDocument.Title, LinkedEntityId , LinkedEntity.Name   FROM ContentDocumentLink  WHERE LinkedEntityId IN:cntDocLinkIdList  AND ContentDocumentId NOT IN(SELECT Id FROM ContentDocument WHERE Title LIKE 'Signature%') LIMIT :pageSize OFFSET :((page - 1) * pageSize)];
-                    contntDocumentLinkWrapp wrap= new contntDocumentLinkWrapp();
-                    wrap.records = cntDocumentList;
-                    wrap.totalPages = (Integer)Math.ceil([SELECT count() FROM ContentDocumentLink WHERE LinkedEntityId IN: cntDocLinkIdList AND ContentDocumentId NOT IN(SELECT Id FROM ContentDocument WHERE Title LIKE 'Signature%')] / (Decimal)pageSize);
+                    List<ContentDocumentLink> cntDocumentList=[Select Id , ContentDocumentId ,LinkedEntity.Type,  ContentDocument.Title, LinkedEntityId , ContentDocument.FileType, LinkedEntity.Name   FROM ContentDocumentLink  WHERE LinkedEntityId IN:cntDocLinkIdList  AND ContentDocumentId NOT IN(SELECT Id FROM ContentDocument WHERE Title LIKE 'Signature%')];
+                    // contntDocumentLinkWrapp wrap= new contntDocumentLinkWrapp();
+                    // wrap.records = cntDocumentList;
+                    // wrap.totalPages = (Integer)Math.ceil([SELECT count() FROM ContentDocumentLink WHERE LinkedEntityId IN: cntDocLinkIdList AND ContentDocumentId NOT IN(SELECT Id FROM ContentDocument WHERE Title LIKE 'Signature%')] / (Decimal)pageSize);
                     // wrap.orgBaseURL= URL.getSalesforceBaseUrl().toExternalForm();
+                    for(ContentDocumentLink cntDocLink:cntDocumentList){
+                        contntDocumentLinkWrapp wrap= new contntDocumentLinkWrapp();
+                        wrap.ContentDocumentId=cntDocLink.ContentDocumentId;
+                        // wrap.Name=cntDocLink.
+                        wrap.ParentId=cntDocLink.LinkedEntityId;
+                        wrap.ParentName=cntDocLink.LinkedEntity.Name;
+                        wrap.orgBaseURL=URL.getSalesforceBaseUrl().toExternalForm();
+                        documentWrapList.add(wrap);
+                    }
     
-                    return wrap;
+                    return documentWrapList;
             
                 }else{
                     return null;

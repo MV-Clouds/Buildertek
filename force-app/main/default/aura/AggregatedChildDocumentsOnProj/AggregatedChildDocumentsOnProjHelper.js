@@ -12,8 +12,6 @@
             action.setParams({
                "objectName": objectName,
                "projectId": component.get('v.recordId'),
-               "page": component.get("v.page"),
-               "pageSize": component.get("v.pageSize")
             });
             action.setCallback(this, function (response) {
                console.log(response.getError());            
@@ -22,43 +20,49 @@
                   let result=response.getReturnValue();
                   console.log(result);
                   if(result != null && result!= undefined && result != ''){
-                     //  const output = Object.values(result.records.reduce((acc, cur) => { 
-                     //      acc[cur.LinkedEntityName] = acc[cur.LinkedEntityName] || { LinkedEntityName: cur.LinkedEntity.Name, contentDocumentLinks: [] ,LinkedEntityId:cur.LinkedEntityId };
-                     //      acc[cur.LinkedEntityName].contentDocumentLinks.push({ ContentDocumentId: cur.ContentDocumentId});
-                     //    //   acc[cur.LinkedEntityName].
+                     console.log(result);
 
-                     //      return acc;
-                     //  }, {}))
-                        component.set('v.attachmentData' , result.records);
-                        console.log(component.get('v.attachmentData'));
-                        component.set('v.totalPages' , result.totalPages);
-                        component.set('v.orgBaseURL' , result.orgBaseURL);
+                      const reduceData = Object.values(result.reduce((acc, cur) => { 
+                          acc[cur.ParentId] = acc[cur.ParentId] || { ParentId: cur.ParentId, contentDocumentLinks: [], ParentName:cur.ParentName};
+                          acc[cur.ParentId].contentDocumentLinks.push({ ContentDocumentId: cur.ContentDocumentId , orgBaseURL:cur.orgBaseURL});
+                          return acc;
+                      }, {}));
+                     component.set('v.attachmentData' , reduceData);
+
+
+
+                     var getAttachedDocsLength=component.get('v.attachmentData').length;
+                     var totalPages=Math.ceil(getAttachedDocsLength/5);
+                     var page=component.get('v.page');
+                     var pageSize=component.get('v.pageSize');
+                     const trimStart = (page - 1) * pageSize;
+                     const trimEnd = trimStart + pageSize;
+                     var filterData=[...reduceData.slice(trimStart , trimEnd)];
+                     component.set('v.filterAttachedData' , filterData);
+                     component.set('v.totalPages' , totalPages);
+                     console.log({trimStart});
+                     console.log({trimEnd});
+
                   }else{
-                        component.set('v.attachmentData' , []);
+                        component.set('v.filterAttachedData' , []);
                   }
+
                   $A.get("e.c:BT_SpinnerEvent").setParams({
                         "action": "HIDE"
                   }).fire();
 
                }else{
-                  component.set('v.attachmentData' , []);
+                  component.set('v.filterAttachedData' , []);
 
                   $A.get("e.c:BT_SpinnerEvent").setParams({
                         "action": "HIDE"
                   }).fire();
-                  // var toastEvent = $A.get("e.force:showToast");
-                  // toastEvent.setParams({
-                  //       "title": "Error!",
-                  //       "type": "error",
-                  //       "message": "Something went wrong."  
-                  // });
-                  // toastEvent.fire();
                }
                
             });
             $A.enqueueAction(action);
       }else{
-         component.set('v.attachmentData' , []);
+         component.set('v.filterAttachedData' , []);
          $A.get("e.c:BT_SpinnerEvent").setParams({
             "action": "HIDE"
       }).fire();

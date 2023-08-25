@@ -53,21 +53,24 @@
         navService.navigate(pageReference);
     },
     handleObjectChange:function(component, event, helper) {
-        component.set("v.page", 1);
-        component.set("v.pageSize", 5);
+        // component.set("v.page", 1);
+        // component.set("v.pageSize", 5);
         helper.loadRecords(component, event, helper );         
     },
 
-    previousPage: function(component, event, helper) {
+    clickPrevious: function(component, event, helper) {
         if (component.get("v.page") > 1) {
             component.set("v.page", component.get("v.page") - 1);
             helper.loadRecords(component);
         }
+      
     },
-    nextPage: function(component, event, helper) {
+    clickNext: function(component, event, helper) {
         if (component.get("v.page") < component.get("v.totalPages")) {
-            component.set("v.page", component.get("v.page") + 1);
-            helper.loadRecords(component, event, helper);
+             component.set("v.page", component.get("v.page") + 1);
+             helper.loadRecords(component, event, helper);
         }
+
+        
     }
 })
