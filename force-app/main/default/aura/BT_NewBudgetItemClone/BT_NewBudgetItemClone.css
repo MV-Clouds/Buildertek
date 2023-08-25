@@ -22,7 +22,7 @@
 }
 
 /*.THIS .table--bordered {
-    display: none !important;
+    display: none;
 }
 .THIS .table {
     border-collapse:none !important;
