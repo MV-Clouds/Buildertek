@@ -49,3 +49,22 @@
     background-color: #e8e8e8;
     border: 1px solid #ccc;
 }
+
+.iconContainer-left,
+.iconContainer-right {
+    position: absolute;
+    top: 70%;
+    transform: translateY(-50%);
+}
+
+.iconContainer-left {
+    left: 5px;
+}
+
+.iconContainer-right {
+    right: 10px;
+}
+
+.custom-input{
+    text-indent: 20px;
+}
