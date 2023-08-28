@@ -615,7 +615,10 @@
     },
 
     addPO: function (component, event, helper) {
-        if(component.set("v.HaveCreateAccess")){
+        console.log('addPO');
+        console.log('v.HaveCreateAccess ==> ', component.get("v.HaveCreateAccess"));
+        // Changed by Jaimin
+        if(component.get("v.HaveCreateAccess")){
 
             var selectedRecs = component.get('v.selectedRecs');
             if (selectedRecs.length > 1) {

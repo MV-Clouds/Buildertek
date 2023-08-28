@@ -226,7 +226,7 @@
     <aura:attribute name="currencycode" type="String" />
     <aura:attribute name="multicurrency" type="Boolean" />
 
-    <!-- Pagination Starts -->
+    <!-- Pagination Start -->
 
     <aura:attribute name="page" type="integer" description="using for store page Number" />
     <aura:attribute name="pages" type="integer" description="using for store All Pages page Number" />
