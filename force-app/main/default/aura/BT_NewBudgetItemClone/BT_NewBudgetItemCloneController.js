@@ -2298,7 +2298,9 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
         editRecordEvent.fire();
     },
 
-    deleteBudget: function (component, event, helper) {
+    
+      deleteBudget: function (component, event, helper) {
+
         if(component.get("v.HaveDeleteAccess")){
             component.set("v.isOpen", true);
             var recordId = event.currentTarget.dataset.id;

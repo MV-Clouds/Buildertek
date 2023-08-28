@@ -180,11 +180,14 @@
         }).fire(); 
 
         var budgetLineWrapperList = component.get("v.budgetLineWrapperList");
-        for(var i = 0; i < 2; i++) {
-            let budgetLineWrapper = helper.createBudgetLineWrapper(component, event, helper);
-            budgetLineWrapperList.push(budgetLineWrapper);
+        let budgetLineWrapper = helper.createBudgetLineWrapper(component, event, helper);
+        var selectedPricebook = component.get("v.selectedPricebook");
+        if(selectedPricebook != '') {
+            budgetLineWrapper.pricebookEntryId = selectedPricebook;    
+            budgetLineWrapper.productFamilyList = component.get("v.DefaultproductFamilyList");
+            budgetLineWrapper.productOptionList = component.get("v.DefaultproductOptionList");
+            budgetLineWrapper.ProductList = component.get("v.DefaultproductOptionList");
         }
-
         budgetLineWrapperList.push(budgetLineWrapper);
         component.set("v.budgetLineWrapperList", budgetLineWrapperList);
 
@@ -206,6 +209,8 @@
         //     bugetLineWrap[i].pricebookEntryId = component.get('v.selectedPricebook');
         //     helper.getFamily(component, event, helper, component.get('v.selectedPricebook'), i);
         // }
+
+        
     },
 
     deleteRow : function(component, event, helper) {
