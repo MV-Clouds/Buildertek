@@ -57,7 +57,6 @@
                             <div class="slds-truncate" title="{!attachment.ParentName}"><a href="javascript:void(0);" onclick="{!c.openRecordPage}" data-record-id="{!attachment.ParentId}">{!attachment.ParentName} </a></div>
                         </td>
                         <td data-label="Attachment" class="tableBodyAttachedRow" >
-                            <!-- <lightning:carousel> -->
                             <div  class="file-div-tab">
                                 <div class="main-file-cmp">
                                     <aura:iteration items="{!attachment.contentDocumentLinks}" var="cntDocs" indexVar="subIndx">
@@ -67,7 +66,6 @@
                                     </aura:iteration>
                                 </div>
                             </div>
-                        <!-- </lightning:carousel> -->
                         </td>
                         
                     </tr>

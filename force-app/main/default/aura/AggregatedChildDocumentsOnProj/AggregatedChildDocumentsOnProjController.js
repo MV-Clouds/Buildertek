@@ -4,41 +4,7 @@
         $A.get("e.c:BT_SpinnerEvent").setParams({
             "action": "SHOW"
         }).fire();
-        
-        var action=component.get('c.getChildObectName');
-        action.setCallback(this, function (response) {
-            console.log(response.getError());            
-            let state=response.getState();
-            if(state == 'SUCCESS'){
-                let result=response.getReturnValue();
-                console.log(result);
-
-                var objectNameMap = [];
-
-                for(var key in result){
-                    if(key.includes('buildertek')){
-                        objectNameMap.push({key: key, value: result[key]});
-                    }
-                }
-                component.set('v.childObjectNameMap' ,objectNameMap );
-                console.log(component.get('v.childObjectNameMap'));
-
-            }else{
-                var toastEvent = $A.get("e.force:showToast");
-                toastEvent.setParams({
-                    "title": "Error!",
-                    "type": "error",
-                    "message": "Something went wrong."  
-                });
-                toastEvent.fire();
-            }
-
-            $A.get("e.c:BT_SpinnerEvent").setParams({
-                "action": "HIDE"
-            }).fire();
-        });
-        $A.enqueueAction(action);
-
+       helper.ChildObjectNameHelper(component, event, helper);
     },
     openRecordPage: function(component, event, helper) {
         var recordId = event.currentTarget.dataset.recordId;
@@ -53,8 +19,6 @@
         navService.navigate(pageReference);
     },
     handleObjectChange:function(component, event, helper) {
-        // component.set("v.page", 1);
-        // component.set("v.pageSize", 5);
         helper.loadRecords(component, event, helper );         
     },
 
