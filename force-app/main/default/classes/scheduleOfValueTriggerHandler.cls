@@ -67,10 +67,12 @@ public class scheduleOfValueTriggerHandler {
                     if(Sovmap.get(line.buildertek__Schedule_of_Values__c) == 'Company Submitted'){
                         line.buildertek__Status__c = 'Company Submitted';
                         sovLinesList.add(line);
-                    }/* else if(Sovmap.get(line.buildertek__Schedule_of_Values__c) == 'Company Approved'){
-line.buildertek__Status__c = 'Approved';
-sovLinesList.add(line);
-} */
+                    }
+                    // ===> Changes for BUIL - 3490 <======
+                    else if(Sovmap.get(line.buildertek__Schedule_of_Values__c) == 'Company Approved'){
+                    line.buildertek__Status__c = 'Approved';
+                    sovLinesList.add(line);
+                    }
                 } 
                 
             }else  if(line.buildertek__Schedule_of_Values__r.recordtype.name == 'Standard'){
