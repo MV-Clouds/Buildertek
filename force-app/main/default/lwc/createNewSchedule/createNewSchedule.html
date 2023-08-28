@@ -30,9 +30,26 @@
                         <div class="slds-form-element__control">
                             <div class="slds-combobox_container">
                                 <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click">
-                                    <lightning-input label="Project" type="search" placeholder="Search BT Projects..." name="searchProjectName"
-                                        data-id="project" value={searchProjectName} onchange={handleProjectSearch}>
-                                    </lightning-input>
+                                    <!-- <lightning-input label="Project" type="search" placeholder="Search BT Projects..." name="searchProjectName"
+                                    data-id="project" value={searchProjectName} onchange={handleProjectSearch}>
+                                </lightning-input> -->
+                                    <div if:true={showProjectIcon} class="iconContainer-left">
+                                        <lightning-icon icon-name="custom:custom24" size="small"></lightning-icon>
+                                    </div>
+                                    <div if:false={showProjectIcon} class="iconContainer-left">
+                                        <lightning-icon icon-name='utility:search' size='xx-small'
+                                            style="position: relative; bottom: 1px; left: 2px"></lightning-icon>
+                                    </div>
+                                    <label class="slds-form-element__label">Project</label>
+                                    <input type="text" placeholder="Search BT Projects..."
+                                        class="slds-input custom-input" name="searchProjectName" data-id="project"
+                                        value={searchProjectName} oninput={handleProjectSearch}
+                                        disabled={isInputEnabledForProject} />
+                                    <div class="iconContainer-right">
+                                        <lightning-icon onclick={clearInput} data-id="project"
+                                            icon-name="utility:close" size='xx-small'>
+                                        </lightning-icon>
+                                    </div>
                                     <div if:true={showProjectName} class="records">
                                         <ul class="suggestions">
                                             <span class="sdls-media__body">
@@ -83,7 +100,7 @@
                         <div class="slds-form-element__control">
                             <select class="slds-select" name="Type" id="Scheduletype" style="padding-left: 10px;"
                                 onchange={handleTypeChange}>
-                                <option value="--None--">--None--</option>
+                                <option value="Standard">--None--</option>
                                 <option value="Standard" selected>Standard</option>
                                 <option value="Master">Master</option>
                             </select>
@@ -97,9 +114,26 @@
                         <div class="slds-form-element__control">
                             <div class="slds-combobox_container">
                                 <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click">
-                                    <lightning-input name="project" label="Project Manager - User" type="search"
-                                        placeholder="Search People..." data-id="user" value={searchProjectManager}
-                                        onchange={handleProjectManagerSearch}></lightning-input>
+                                    <!-- <lightning-input name="project" label="Project Manager - User" type="search"
+                                    placeholder="Search People..." data-id="user" value={searchProjectManager}
+                                    onchange={handleProjectManagerSearch}></lightning-input> -->
+                                    <div if:true={showUserIcon} class="iconContainer-left">
+                                        <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
+                                    </div>
+                                    <div if:false={showUserIcon} class="iconContainer-left">
+                                        <lightning-icon icon-name='utility:search' size='xx-small'
+                                            style="position: relative; bottom: 1px; left: 2px"></lightning-icon>
+                                    </div>
+                                    <label class="slds-form-element__label">Project Manager - User</label>
+                                    <input type="text" placeholder="Search People..."
+                                        class="slds-input custom-input" name="project" data-id="user"
+                                        value={searchProjectManager} oninput={handleProjectManagerSearch}
+                                        disabled={isInputEnabledForUser} />
+                                    <div class="iconContainer-right">
+                                        <lightning-icon onclick={clearInput} data-id="user"
+                                            icon-name="utility:close" size='xx-small'>
+                                        </lightning-icon>
+                                    </div>
                                     <div if:true={showProjectManagerName} class="records">
                                         <ul class="suggestions">
                                             <span class="sdls-media__body">
@@ -181,7 +215,7 @@
 
             </table>
         </div>
-    </form>
+        </form>
         <div class="modal-footer slds-modal__footer slds-size_1-of-1">
             <lightning-button variant="neutral" title="Cancel" label="Cancel" onclick={onCancelHandle}
                 style="margin-right: 10px;"></lightning-button>

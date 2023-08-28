@@ -13,7 +13,7 @@
         </aura:set>
         <aura:set attribute="else">
             <!-- Code when is false -->
-            <c:createNewSchedule onfiltercha¯nge="{!c.handleFilterChange}" />
+            <c:createNewSchedule oncloseclicked="{!c.handleFilterChange}" />
         </aura:set>
     </aura:if>
 
