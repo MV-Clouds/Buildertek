@@ -28,6 +28,10 @@ export default class CreateNewSchedule extends NavigationMixin(LightningElement)
     @track description = '';
     @track type = 'Standard';
     @track url = '';
+    @track showProjectIcon = false;
+    @track showUserIcon = false;
+    @track isInputEnabledForProject = false;
+    @track isInputEnabledForUser = false;
 
     connectedCallback(event) {
         document.addEventListener('click', this.handleDocumentEvent.bind(this));
@@ -54,6 +58,7 @@ export default class CreateNewSchedule extends NavigationMixin(LightningElement)
                 this.searchProjectName = result;
                 this.isInputEnabledForProject = true;
                 this.showProjectIcon = true;
+                this.projectId = parentRecordId;
                 console.log('result:', result);
             })
             .catch((error) => {
@@ -133,11 +138,13 @@ export default class CreateNewSchedule extends NavigationMixin(LightningElement)
 
         if (this.searchbarValue === 'project') {
             this.searchProjectName = selectedValue;
+            this.showProjectIcon = true;
             this.isInputEnabledForProject = true;
             this.projectId = pId;
         } else {
             this.searchProjectManager = selectedValue;
             this.isInputEnabledForUser = true;
+            this.showUserIcon = true;
             this.userId = pId;
         }
 
@@ -243,7 +250,7 @@ export default class CreateNewSchedule extends NavigationMixin(LightningElement)
                     });
                     this.dispatchEvent(event);
                 })
-        } else { 
+        } else {
             const event = new ShowToastEvent({
                 title: 'Error',
                 message: 'Description field is empty !!!',
@@ -266,6 +273,11 @@ export default class CreateNewSchedule extends NavigationMixin(LightningElement)
                 filterName: 'Recent'
             },
         })
+        let close = true;
+        const closeclickedevt = new CustomEvent('closeclicked', {
+            detail: { close },
+        });
+        this.dispatchEvent(closeclickedevt);
     }
 
     getLink(event) {
@@ -280,4 +292,17 @@ export default class CreateNewSchedule extends NavigationMixin(LightningElement)
         document.removeEventListener('click', this.handleDocumentEvent.bind(this));
     }
 
+    clearInput(event) {
+        let clearInputForType = event.currentTarget.dataset.id;
+        console.log('clearInputForType', clearInputForType);
+        if (clearInputForType === 'project') {
+            this.searchProjectName = '';
+            this.showProjectIcon = false;
+            this.isInputEnabledForProject = false;
+        } else {
+            this.searchProjectManager = '';
+            this.showUserIcon = false;
+            this.isInputEnabledForUser = false;
+        }
+    }
 }
