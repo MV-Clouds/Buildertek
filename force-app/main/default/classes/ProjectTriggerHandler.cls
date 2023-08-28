@@ -835,5 +835,6 @@ public with sharing class ProjectTriggerHandler {
 
         return qryString;
     }
+    
    
 }
