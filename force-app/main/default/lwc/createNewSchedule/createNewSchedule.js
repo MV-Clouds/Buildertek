@@ -186,7 +186,7 @@ export default class CreateNewSchedule extends NavigationMixin(LightningElement)
 
     handleTypeChange(event) {
         this.type = event.target.value;
-        console.log('type', typeof (this.type));
+        console.log('type:',this.type);
     }
 
     createSchedule() {
