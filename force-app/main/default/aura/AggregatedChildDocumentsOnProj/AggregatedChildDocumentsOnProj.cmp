@@ -93,10 +93,6 @@
             </aura:set>
         </aura:if>
     </div> 
-     
-
-   
-
     <c:BT_Spinner />
 
 

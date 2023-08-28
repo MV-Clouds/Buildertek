@@ -1,5 +1,6 @@
 ({
    ChildObjectNameHelper:function(component, event, helper){
+    
       var action=component.get('c.getChildObectName');
       action.setCallback(this, function (response) {
           console.log(response.getError());            
