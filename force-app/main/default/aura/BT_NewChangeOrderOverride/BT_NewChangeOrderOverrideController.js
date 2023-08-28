@@ -249,6 +249,7 @@
                                 workspaceAPI.closeTab({tabId: focusedTabId});
                             }), 1000
                         );
+                        
                         window.setTimeout(
                             $A.getCallback(function() {
                                 $A.get('e.force:refreshView').fire();
