@@ -181,13 +181,22 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
                 assignmentRow['resource'] = taskListForPhase[i].buildertek__Contractor_Resource__c;
                 assignmentRowData.push(assignmentRow)
             }
-            if(rowChilObj["type"] == "Task"){
+
+            if(taskListForPhase[i].buildertek__ConstraintType__c == 'None' || taskListForPhase[i].buildertek__ConstraintType__c == '--None--' || taskListForPhase[i].buildertek__ConstraintType__c == null || taskListForPhase[i].buildertek__ConstraintType__c == undefined){
+                rowChilObj["constraintDate"] =  scheduleData.buildertek__Initial_Start_Date__c;
+                rowChilObj["constraintType"] =  "startnoearlierthan";
+            } else{
                 rowChilObj["constraintDate"] =  taskListForPhase[i].buildertek__ConstraintDate__c;
                 rowChilObj["constraintType"] =  taskListForPhase[i].buildertek__ConstraintType__c;
-                // if(rowChilObj["predecessor"]){
+                }
 
-                // }
+                if(rowChilObj["customtype"] == "Milestone"){
+                rowChilObj["constraintDate"] =  taskListForPhase[i].buildertek__End_date__c;
+                rowChilObj["constraintType"] =  "muststarton";
+
             }
+
+
             taskPhaseRow["children"].push(rowChilObj);
 
             var found = false;
@@ -232,11 +241,11 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
             }
             console.log('taskListForPhase[i].buildertek__Phase__c ',taskListForPhase[i].buildertek__Phase__c);
             rowChilObj['phase'] = taskListForPhase[i].buildertek__Phase__c
-                if(taskListForPhase[i].buildertek__Dependency__c){
-                // rowChilObj["constraintType"] = ''
-                }else{
-                // rowChilObj["constraintType"] = 'startnoearlierthan'
-            }
+                //     if(taskListForPhase[i].buildertek__Dependency__c){
+                //     // rowChilObj["constraintType"] = ''
+                //     }else{
+                //     // rowChilObj["constraintType"] = 'startnoearlierthan'
+            // }
                 if(scheduleItemIdsList.indexOf(taskListForPhase[i].Id) < 0){
                 scheduleItemIdsList.push(taskListForPhase[i].Id)
             }
@@ -347,13 +356,15 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
                 assignmentRow['resource'] = taskListForPhase[i].buildertek__Contractor_Resource__c;
                 assignmentRowData.push(assignmentRow)
             }
-            if(rowChilObj["type"] == "Task"){
+            if(taskListForPhase[i].buildertek__ConstraintType__c == 'None' || taskListForPhase[i].buildertek__ConstraintType__c == '--None--' || taskListForPhase[i].buildertek__ConstraintType__c == null || taskListForPhase[i].buildertek__ConstraintType__c == undefined){
+                rowChilObj["constraintDate"] =  scheduleData.buildertek__Initial_Start_Date__c;
+                rowChilObj["constraintType"] =  "startnoearlierthan";
+            } else{
                 rowChilObj["constraintDate"] =  taskListForPhase[i].buildertek__ConstraintDate__c;
                 rowChilObj["constraintType"] =  taskListForPhase[i].buildertek__ConstraintType__c;
-                // if(rowChilObj["predecessor"]){
+                }
 
-                // }
-            }
+
             taskPhaseRow["children"].push(rowChilObj);
             console.log('taskPhaseRow ',taskPhaseRow)
             firstRowDup['children'].push(taskPhaseRow);
@@ -432,19 +443,26 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
             }
             rowChilObj["duration"] = taskListForPhase[i].buildertek__Duration__c
 
+
+            rowChilObj["expanded"] = true
+            rowChilObj["order"] = taskListForPhase[i].buildertek__Order__c
+            if(taskListForPhase[i].buildertek__ConstraintType__c == 'None' || taskListForPhase[i].buildertek__ConstraintType__c == '--None--' || taskListForPhase[i].buildertek__ConstraintType__c == null || taskListForPhase[i].buildertek__ConstraintType__c == undefined){
+                rowChilObj["constraintDate"] =  scheduleData.buildertek__Initial_Start_Date__c;
+                rowChilObj["constraintType"] =  "startnoearlierthan";
+            } else{
+                rowChilObj["constraintDate"] =  taskListForPhase[i].buildertek__ConstraintDate__c;
+                rowChilObj["constraintType"] =  taskListForPhase[i].buildertek__ConstraintType__c;
+            }
+
             if(taskListForPhase[i].buildertek__Milestone__c){
                 rowChilObj["duration"] = 0
                 rowChilObj["cls"] = 'milestoneCompleteColor'
                 rowChilObj['orgmilestone'] = taskListForPhase[i].buildertek__Milestone__c;
+                rowChilObj["constraintDate"] =  taskListForPhase[i].buildertek__End_date__c;
+                rowChilObj["constraintType"] =  'muststarton';
             }
 
-            rowChilObj["expanded"] = true
-            rowChilObj["order"] = taskListForPhase[i].buildertek__Order__c
-            if(rowChilObj["type"] == "Task"){
-                rowChilObj["constraintDate"] =  taskListForPhase[i].buildertek__ConstraintDate__c;
-                rowChilObj["constraintType"] =  taskListForPhase[i].buildertek__ConstraintType__c;
-            }
-            firstRowDup['children'].push(rowChilObj);
+                        firstRowDup['children'].push(rowChilObj);
             var dependencyRow = {};
             if(taskListForPhase[i].buildertek__Dependency__c){
                 dependencyRow["id" ]  = taskListForPhase[i].Id+'_'+taskListForPhase[i].buildertek__Dependency__c
@@ -741,4 +759,33 @@ function makeComboBoxDataForContractor(listOfContractors) {
     });
     return listOfContractorToReturn;
 }
-export{ formatApexDatatoJSData, convertJSONtoApexData, recordsTobeDeleted, makeComboBoxDataForContractor };
+
+//* auther : Nishit Suthar
+//* Date : 24th Aug 2023
+//* this method is used to calculate business days between two dates for project schedule
+function calcBusinessDays(dDate1, dDate2) { // input given as Date objects
+    var iWeeks, iDateDiff, iAdjust = 0;
+    if (dDate2 < dDate1) return -1; // error code if dates transposed
+    var iWeekday1 = dDate1.getDay(); // day of week
+    var iWeekday2 = dDate2.getDay();
+    iWeekday1 = (iWeekday1 == 0) ? 7 : iWeekday1; // change Sunday from 0 to 7
+    iWeekday2 = (iWeekday2 == 0) ? 7 : iWeekday2;
+    if ((iWeekday1 > 5) && (iWeekday2 > 5)) iAdjust = 1; // adjustment if both days on weekend
+    iWeekday1 = (iWeekday1 > 5) ? 5 : iWeekday1; // only count weekdays
+    iWeekday2 = (iWeekday2 > 5) ? 5 : iWeekday2;
+
+    // calculate differnece in weeks (1000mS * 60sec * 60min * 24hrs * 7 days = 604800000)
+    iWeeks = Math.floor((dDate2.getTime() - dDate1.getTime()) / 604800000)
+
+    if (iWeekday1 < iWeekday2) { //Equal to makes it reduce 5 days
+      iDateDiff = (iWeeks * 5) + (iWeekday2 - iWeekday1)
+    } else {
+      iDateDiff = ((iWeeks + 1) * 5) - (iWeekday1 - iWeekday2)
+    }
+
+    iDateDiff -= iAdjust // take into account both days on weekend
+
+    return (iDateDiff + 1); // add 1 because dates are inclusive
+}
+
+export{ formatApexDatatoJSData, convertJSONtoApexData, recordsTobeDeleted, makeComboBoxDataForContractor, calcBusinessDays };

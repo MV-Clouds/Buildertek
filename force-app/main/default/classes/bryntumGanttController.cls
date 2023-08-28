@@ -375,6 +375,9 @@ public with sharing class bryntumGanttController {
             initialStartDate = Date.Today();
             System.debug('initialStartDate: ' + initialStartDate);
         }
+
+        initialStartDate = getInitialStartDate(initialStartDate);
+
         System.debug('initialStartDate: outif' + initialStartDate);
 
         buildertek__Schedule__c schedule = new buildertek__Schedule__c(
@@ -409,13 +412,13 @@ public with sharing class bryntumGanttController {
         if (masterStartDate == null) {
             masterStartDate = System.today();
         }
+        initialStartDate = getInitialStartDate(initialStartDate);
         DateTime oldDate = DateTime.newInstance(masterStartDate.year(), masterStartDate.month(),masterStartDate.day());
         DateTime newDate = DateTime.newInstance(initialStartDate.year(), initialStartDate.month(),initialStartDate.day());
 
         // Integer diffDays = Integer.valueOf(System.BusinessHours.diff(businessHourId, oldDate, newDate)/(24 * 60 * 60 * 1000L));
         Long diffDays = System.BusinessHours.diff(businessHourId, oldDate, newDate);
 
-        System.debug('initialStartDate: ' + initialStartDate);
         Map<Id, buildertek__Project_Task__c> projectInsertTaskMap = new Map<Id, buildertek__Project_Task__c>();
 
         List<buildertek__Project_Task__c> masterScheduleList = new List<buildertek__Project_Task__c>([select Id, Name, buildertek__Start__c,buildertek__Contractor__c,buildertek__Phase__c, buildertek__Schedule__c,buildertek__Dependency__r.Name, buildertek__Dependency__r.buildertek__Schedule__c, buildertek__Completed__c, buildertek__Completion__c, buildertek__Contractor_Resource__c, buildertek__Type__c,buildertek__Cost_Code__c, buildertek__Duration__c, buildertek__Finish__c, buildertek__Resource__c, buildertek__Lag__c, buildertek__Last_Saved_End_Date__c, buildertek__Last_Saved_Start_Date__c, buildertek__Material_Ordered__c, buildertek__Material_Received__c, buildertek__Milestone__c, buildertek__Notes__c, buildertek__Order__c, buildertek__Original_End_Date__c, buildertek__Original_Start_Date__c, buildertek__Payable_Task__c, buildertek__Project__c, buildertek__Purchase_Order__c, buildertek__Reason_for_Date_Change__c, buildertek__Reason_for_Date_Change_PL__c, buildertek__Required_Completion_Date__c  from buildertek__Project_Task__c where buildertek__Schedule__c = :masterId  ORDER BY buildertek__Order__c ASC NULLS LAST]);
@@ -495,7 +498,7 @@ public with sharing class bryntumGanttController {
             throw new AuraHandledException(e.getMessage());
         }
     }
-    
+
     /* @Author        Nishit Suthar
      * Date           14-8-23
      * Description :  This method is used to get Contractors(Account) of the current Org.
@@ -511,6 +514,21 @@ public with sharing class bryntumGanttController {
         }
         return contractorList;
     }
+
+    /* @Author        Nishit Suthar
+     * Date           24-08-2023
+     * Description :  This method is used for checking sat & sun on InitialStartdate.
+     */
+    public static Date getInitialStartDate(Date startDate){
+		DateTime currDate = DateTime.newInstance(startDate.year(), startDate.month(), startDate.day());
+		String todayDay = currDate.format('EEEE');
+		if (todayDay == 'Saturday'){
+			startDate = startDate.addDays(2);
+		} else if (todayDay == 'Sunday'){
+			startDate = startDate.addDays(1);
+		}
+		return startDate;
+	}
 
     /* Wrapper Class */
     //* moved all the wrapper classes to bottom by Nishit

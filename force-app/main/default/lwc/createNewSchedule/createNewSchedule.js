@@ -5,6 +5,7 @@ import fetchScheduleList from '@salesforce/apex/bryntumGanttController.fetchSche
 import getScheduleItemList from '@salesforce/apex/bryntumGanttController.getScheduleItemList';
 import createNewSchedule from '@salesforce/apex/bryntumGanttController.createNewSchedule';
 import getProjectName from '@salesforce/apex/bryntumGanttController.getProjectName';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { NavigationMixin } from 'lightning/navigation';
 
 export default class CreateNewSchedule extends NavigationMixin(LightningElement) {
@@ -37,14 +38,13 @@ export default class CreateNewSchedule extends NavigationMixin(LightningElement)
         let results = regex.exec(url);
         console.log('results:', results);
         let value = decodeURIComponent(results[2].replace(/\+/g, " "));
-        console.log('value:',value);
+        console.log('value:', value);
         let context = JSON.parse(window.atob(value));
         let parentRecordId = context.attributes.recordId;
         if (parentRecordId) {
             console.log(parentRecordId);
             this.getProjectNameFromId(parentRecordId);
         }
-
     }
 
     getProjectNameFromId(parentRecordId) {
@@ -52,6 +52,8 @@ export default class CreateNewSchedule extends NavigationMixin(LightningElement)
         getProjectName({ parentRecordId: parentRecordId })
             .then((result) => {
                 this.searchProjectName = result;
+                this.isInputEnabledForProject = true;
+                this.showProjectIcon = true;
                 console.log('result:', result);
             })
             .catch((error) => {
@@ -131,9 +133,11 @@ export default class CreateNewSchedule extends NavigationMixin(LightningElement)
 
         if (this.searchbarValue === 'project') {
             this.searchProjectName = selectedValue;
+            this.isInputEnabledForProject = true;
             this.projectId = pId;
         } else {
             this.searchProjectManager = selectedValue;
+            this.isInputEnabledForUser = true;
             this.userId = pId;
         }
 
@@ -206,27 +210,32 @@ export default class CreateNewSchedule extends NavigationMixin(LightningElement)
     }
 
     onSaveandNew() {
-        try {
-            this.isLoading = true;
-            console.log(`description: ${this.description} projectId: ${this.projectId} formattedDate: ${this.initialStartDate} type: ${this.type} userId: ${this.userId} masterRec: ${this.masterRec}`);
-            createNewSchedule({ description: this.description, project: this.projectId, initialStartDate: this.initialStartDate, type: this.type, user: this.userId, masterId: this.masterRec })
-                .then((result) => {
-                    console.log('schId:', result);
-                    this.isLoading = false;
-                    this.description = '';
-                    this.initialStartDate = undefined;
-                    this.type = 'Standard';
-                    this.userId = undefined;
-                    this.masterRec = undefined;
-                    this.projectId = undefined;
-                })
-                .catch((error) => {
-                    console.log('error:', error);
-                    this.isLoading = false;
-                })
-        } catch (error) {
-            console.log('error', JSON.stringify(error));
-        }
+        this.isLoading = true;
+        console.log(`description: ${this.description} projectId: ${this.projectId} formattedDate: ${this.initialStartDate} type: ${this.type} userId: ${this.userId} masterRec: ${this.masterRec}`);
+        createNewSchedule({ description: this.description, project: this.projectId, initialStartDate: this.initialStartDate, type: this.type, user: this.userId, masterId: this.masterRec })
+            .then((result) => {
+                console.log('schId:', result);
+                this.isLoading = false;
+                const event = new ShowToastEvent({
+                    title: 'Success',
+                    message: 'Schedule created !!!',
+                    variant: 'success',
+                    mode: 'dismissable'
+                });
+                this.dispatchEvent(event);
+                this.template.querySelector('form').reset();
+            })
+            .catch((error) => {
+                console.log('error:', error);
+                this.isLoading = false;
+                const event = new ShowToastEvent({
+                    title: 'Error',
+                    message: 'Error creating schedule !!!',
+                    variant: 'error',
+                    mode: 'dismissable'
+                });
+                this.dispatchEvent(event);
+            })
     }
 
     onCancelHandle() {

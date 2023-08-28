@@ -18,7 +18,8 @@ import getPickListValuesIntoList from "@salesforce/apex/bryntumGanttController.g
 import {
   formatApexDatatoJSData,
   recordsTobeDeleted,
-  makeComboBoxDataForContractor
+  makeComboBoxDataForContractor,
+  calcBusinessDays
 } from "./gantt_componentHelper";
 import { populateIcons } from "./lib/BryntumGanttIcons";
 
@@ -630,7 +631,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
       // endDate: "2019-10-01",
 
       tbar: new GanttToolbar(),
-      rowHeight         : 40,
+      rowHeight         : 30,
       barMargin         : 5,
 
 
@@ -711,6 +712,22 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           type: "duration",
           draggable: false,
           allowedUnits: "day",
+          renderer: function (record) {
+            if (record.record._data.type == "Project") {
+              let projectStartDate = new Date(record.record._data.startDate);
+              let projectEndDate = new Date(record.record.endDate);
+              let projectDuration = calcBusinessDays(projectStartDate, projectEndDate);
+              return projectDuration + ' days';
+            }
+            if (record.record._data.type == "Phase") {
+              return record.record.duration+' days';
+            }
+            if (record.record._data.name == "Milestone Complete") {
+              return record.record._data.duration+' days';
+            } else {
+              return record.record._data.duration+' days';
+            }
+          }
         },
         // {
         //   text: "Internal Resource",
@@ -846,7 +863,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
         //     }
         //   },
         // },
-        {
+        /* {
           type: "widget",
           text: "Contractor",
           draggable: false,
@@ -904,7 +921,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
         },
         {
           type: "addnew",
-        },
+        }, */
         {
           type: "action",
           draggable: false,
@@ -1013,7 +1030,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
 
       features: {
         dependencyEdit : true,
-        dependencies : {radius:10},
+        // dependencies : {radius:10},
         rowReorder: false,
         rollups: {
           disabled: true,
@@ -1063,7 +1080,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
             },
             // Remove all tabs except the "General" tab
             successorsTab: false,
-            resourcesTab: true,
+            resourcesTab: false,
             advancedTab: false,
           },
         },
@@ -1092,15 +1109,15 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           editNextOnEnterPress: false,
           addNewAtEnd: false,
         },
-        indicators : {
-            items : {
-                deadlineDate   : false,
-                earlyDates     : false,
-                lateDates      : false,
-                // display constraint indicators
-                constraintDate : true
-            }
-        },
+        // indicators : {
+        //     items : {
+        //         deadlineDate   : false,
+        //         earlyDates     : false,
+        //         lateDates      : false,
+        //         // display constraint indicators
+        //         constraintDate : true
+        //     }
+        // },
       },
 
       //* this method is used for getting contractor Id to filter resources
