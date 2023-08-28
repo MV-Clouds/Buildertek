@@ -73,6 +73,8 @@ public class scheduleOfValueTriggerHandler {
                     line.buildertek__Status__c = 'Approved';
                     sovLinesList.add(line);
                     }
+
+                    
                 } 
                 
             }else  if(line.buildertek__Schedule_of_Values__r.recordtype.name == 'Standard'){
