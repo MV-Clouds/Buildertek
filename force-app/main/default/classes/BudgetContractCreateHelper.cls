@@ -201,7 +201,11 @@ public without sharing class BudgetContractCreateHelper {
                 buildertek__Quantity__c = currQuoteLine.buildertek__Quantity__c,
                 buildertek__Unit_Price__c = currQuoteLine.buildertek__Unit_Cost__c,
                 //buildertek__Unit_Price__c = currQuoteLine.buildertek__Net_Unit__c,
-                buildertek__Sales_Price__c = currQuoteLine.buildertek__Net_Total_Price__c, 
+                
+                // buildertek__Sales_Price__c = currQuoteLine.buildertek__Net_Total_Price__c, 
+                buildertek__Sales_Price__c = currQuoteLine.buildertek__Net_Unit__c,  // ===> Changes for Open Issue - 1 - Quote - Create Budget button is still not correct. 23/08/23 ....
+                buildertek__Tax__c = currQuoteLine.buildertek__Tax__c,
+
                 buildertek__Budget_Line_Group__c = currQuoteLine.buildertek__Grouping__c,
                 buildertek__Group__c = groupMap.get(currQuoteLine.buildertek__Grouping__r.Name)
                 // buildertek__Notes__c=currQuoteLine.buildertek__Notes__c
@@ -577,6 +581,7 @@ public without sharing class BudgetContractCreateHelper {
                                     buildertek__Profit_Margin__c, 
                                     buildertek__Net_Total_Price__c, 
                                     buildertek__Notes__c,
+                                    buildertek__Tax__c,
                                      buildertek__Status__c,
                                     buildertek__Purchase_Order__c, 
                                     buildertek__Grouping__r.Name
