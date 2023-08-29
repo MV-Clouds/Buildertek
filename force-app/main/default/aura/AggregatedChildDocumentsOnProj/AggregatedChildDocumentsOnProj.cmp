@@ -1,0 +1,99 @@
+<aura:component implements="force:appHostable,lightning:isUrlAddressable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction"  access="global" controller="AggregatedChildDocsController" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="objectNameList" type="List"/>
+    <aura:attribute name="mycolumns" type="List"/>
+    <aura:attribute type="sObject"  name="attachmentData"/>
+    <lightning:navigation aura:id="navService"/>
+    <aura:attribute name="childObjectNameMap" type="List" />
+    <aura:attribute name="selectedObj" type="String" />
+    <aura:attribute name="page" type="Integer" default="1" />
+    <aura:attribute name="pageSize" type="Integer" default="5" />
+    <aura:attribute name="totalPages" type="Integer" />
+    <aura:attribute name="filterAttachedData" type="List"/>
+
+
+
+
+    <lightning:select aura:id="childObjectNamePicklist" value="{!v.selectedObj}" onchange="{!c.handleObjectChange}" name="childObjectNamePicklist" label="Select Child Object Name" >
+        <option value="">--None--</option>
+        <aura:iteration items="{!v.childObjectNameMap}" var="objName" indexVar="key">
+            <option text="{!objName.value}" value="{!objName.key}" selected="{!objName.key==v.selectedObj}" />
+        </aura:iteration>
+    </lightning:select>
+
+
+    <hr/>
+    <div style="overflow: auto;">
+        <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+            <thead>
+                <tr class="slds-line-height_reset slds-text-title_caps">
+                    <th  class="slds-is-resizable tableHeadRow" scope="col">
+                        <div class="slds-truncate" title="Name">
+                            No.
+                        </div>
+                    </th>
+                    <th  class="slds-is-resizable tableHeadRow" scope="col">
+                        <div class="slds-truncate" title="Account Number">
+                           Name
+                        </div>
+                    </th>
+                    <th class="slds-is-resizable tableHeadRow" scope="col">
+                        <div class="slds-truncate" title="Industry">
+                            Attachment
+                        </div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <aura:iteration items="{!v.filterAttachedData}" var="attachment" indexVar="indx">
+                    <tr class="slds-hint-parent">
+                            
+                        <td data-label="index" scope="row" class="tableBodyRow">
+                            <div class="slds-truncate" title="index">
+                                {!indx+1}
+                            </div>
+                        </td>
+                        <td data-label="Name" class="tableBodyRow">
+                            <div class="slds-truncate" title="{!attachment.ParentName}"><a href="javascript:void(0);" onclick="{!c.openRecordPage}" data-record-id="{!attachment.ParentId}">{!attachment.ParentName} </a></div>
+                        </td>
+                        <td data-label="Attachment" class="tableBodyAttachedRow" >
+                            <div  class="file-div-tab">
+                                <div class="main-file-cmp">
+                                    <aura:iteration items="{!attachment.contentDocumentLinks}" var="cntDocs" indexVar="subIndx">
+                                        <div class="slds-m-horizontal_x-small">
+                                            <lightning:fileCard fileId="{!cntDocs.ContentDocumentId}" />
+                                       </div>  
+                                    </aura:iteration>
+                                </div>
+                            </div>
+                        </td>
+                        
+                    </tr>
+                </aura:iteration>
+            </tbody>
+        </table>
+
+        <aura:if isTrue="{!(empty(v.filterAttachedData))}">
+            <center class="noData">No Result found.... </center> 
+            <aura:set attribute="else">
+                <div style="display: flex; justify-content:space-between">
+                    <ui:button class="prv-btn active-btn slds-button slds-button--neutral" press="{!c.clickPrevious}" disabled="{!v.page == 1}" >
+                        <span>Previous</span>
+                    </ui:button>
+
+                    <div class="pagintaion-num-div">
+                        <div> {!v.page} of {!v.totalPages}</div>
+                    </div>
+
+                    <ui:button class="next-btn active-btn slds-button slds-button--neutral" press="{!c.clickNext}" disabled="{!v.page == v.totalPages}" >
+                        <span>Next</span>
+                    </ui:button>
+                </div>
+        
+            </aura:set>
+        </aura:if>
+    </div> 
+    <c:BT_Spinner />
+
+
+</aura:component>

@@ -1,0 +1,33 @@
+.THIS .noData{
+    margin: 20px;
+    
+}
+.THIS .main-file-cmp {
+    display: flex;
+    overflow: auto;
+    flex-direction: row;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    padding: 8px;
+    width: -webkit-fill-available;
+}
+.THIS .file-div-tab {
+    width: -webkit-fill-available;
+    overflow: auto;
+    max-width: 45vw;
+
+}
+.THIS .slds-carousel__autoplay {
+    display: none !important;
+}
+
+.THIS .tableHeadRow{
+    text-align: center;
+}
+.THIS .tableBodyRow{
+    text-align: center;
+}
+.THIS .tableBodyAttachedRow{
+    display: flex;
+    justify-content: center;
+}

@@ -1,5 +1,5 @@
 public without sharing class CreateScheduleFromQuoteController {
-   
+
     @AuraEnabled
     public static void createScheduleLine(String scheduleId ,String recId , String sobjName) {
         System.debug('createScheduleLine');
@@ -11,7 +11,7 @@ public without sharing class CreateScheduleFromQuoteController {
             list<buildertek__Project_Task__c> scheduleLineList = new list<buildertek__Project_Task__c>();
             buildertek__Schedule__c scheduleList=[Select Id , buildertek__Initial_Start_Date__c  From buildertek__Schedule__c where Id=:scheduleId LIMIT 1];
             List<buildertek__Quote_Item__c> quoteLineList= new List<buildertek__Quote_Item__c>();
-            List<buildertek__Budget_Item__c> budgetLineList= new List<buildertek__Budget_Item__c>();    
+            List<buildertek__Budget_Item__c> budgetLineList= new List<buildertek__Budget_Item__c>();
             System.debug('sobjName' + sobjName);
 
             if(sobjName  == 'buildertek__Quote__c'){
@@ -22,6 +22,7 @@ public without sharing class CreateScheduleFromQuoteController {
                     scheduleLineRec.Name=quoteLineRec.Name;
                     scheduleLineRec.buildertek__Schedule__c=scheduleId;
                     scheduleLineRec.buildertek__Start__c=scheduleList.buildertek__Initial_Start_Date__c;
+                    scheduleLineRec.buildertek__Finish__c=scheduleList.buildertek__Initial_Start_Date__c;
                     scheduleLineRec.buildertek__Duration__c=1;
 
                     scheduleLineRec.buildertek__Phase__c=quoteLineRec.buildertek__Grouping__r.Name;
@@ -45,23 +46,24 @@ public without sharing class CreateScheduleFromQuoteController {
                         scheduleLineRec.Name=budgetLineRec.Name;
                         scheduleLineRec.buildertek__Schedule__c=scheduleId;
                         scheduleLineRec.buildertek__Start__c=scheduleList.buildertek__Initial_Start_Date__c;
+                        scheduleLineRec.buildertek__Finish__c=scheduleList.buildertek__Initial_Start_Date__c;
                         scheduleLineRec.buildertek__Duration__c=1;
-    
+
                         scheduleLineRec.buildertek__Phase__c=budgetLineRec.buildertek__Group__r.Name;
                         scheduleLineRec.buildertek__Contractor__c=budgetLineRec.buildertek__Contractor__c;
-    
+
                         scheduleLineList.add(scheduleLineRec);
                     }
                     System.debug('scheduleLineList' + scheduleLineList.size());
                     System.debug('scheduleLineList' + scheduleLineList);
-    
-    
+
+
                     if(scheduleLineList.size() > 0){
                          insert scheduleLineList;
                     }
                 }
             }
-        } 
+        }
     }
-    
+
 }
