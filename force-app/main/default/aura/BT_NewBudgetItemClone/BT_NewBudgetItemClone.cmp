@@ -1222,7 +1222,7 @@
                                                                                     <aura:if isTrue="{!and(!value.referenceValue,value.fieldName != 'buildertek__Old_Budget_Line__c')}">
                                                                                         <ui:outputURL value="{!'/one/one.app?#/sObject/'+ value.originalValue + '/view'}" target="_blank" label="{!value.referenceValue}" />
                                                                                     </aura:if>
-                                                                                    <button class="slds-button slds-button_icon slds-cell-edit__button slds-m-left_x-small" tabindex="-1" title="">
+                                                                                    <!-- <button class="slds-button slds-button_icon slds-cell-edit__button slds-m-left_x-small" tabindex="-1" title="">
                                                                                         <aura:if
                                                                                             isTrue="{!value.isEditable == true}">
                                                                                             <span style="display:none;"
@@ -1238,7 +1238,7 @@
                                                                                         </aura:if>
                                                                                         <span
                                                                                             class="slds-assistive-text">Edit</span>
-                                                                                    </button>
+                                                                                    </button> -->
                                                                                 </div>
                                                                             </aura:set>
                                                                         </aura:if>
