@@ -616,8 +616,12 @@
     },
 
     addPO: function (component, event, helper) {
-        if(component.set("v.HaveCreateAccess")){
-
+        //  >>> should be in master <<<
+        console.log('addPO');
+        console.log('v.HaveCreateAccess ==> ', component.get("v.HaveCreateAccess"));
+        // Changed by Jaimin
+        if(component.get("v.HaveCreateAccess")){
+        //  >>> should be in master <<<
             var selectedRecs = component.get('v.selectedRecs');
             if (selectedRecs.length > 1) {
                 component.find('notifLib').showNotice({
