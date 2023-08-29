@@ -904,7 +904,7 @@
 
 
 
-                            <div class="slds-scrollable" style="height:100%; padding:0px !important;">
+                            <div class="slds-scrollable" style="min-height: 47vh; height:fit-content; padding:0px !important;">
                                 <div class="divcont" aura:id="headerDiv" style="">
                                     <!--height:30rem class="slds-scrollable"-->
                                     <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-m-right_small" style="width: auto;" aura:id="budgetLineItemTable">
