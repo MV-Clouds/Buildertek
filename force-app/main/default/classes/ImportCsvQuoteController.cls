@@ -134,12 +134,12 @@ public with sharing class ImportCsvQuoteController {
                                         if(productName!=''){
                                             //quote.Name=productName;  Need to susbtring the 80 characters so it fits in the Name field.
                                             //quote.buildertek__Description__c = productName;
-                                            if (productName.length() > 75) {
-                                                String truncatedProductName = productName.substring(0, 75); // Take the first 75 characters
-                                                quote.Name = truncatedProductName; // Assign truncated name
-                                                quote.buildertek__Description__c = productName;
+                                            if (productName.length() > 80) {    // ------- changes for ticket AC-40 [START]------------------
+                                                String truncatedProductName = productName.substring(0, 80); // Take the first 75 characters
+                                                quote.Name = truncatedProductName.replace('"', ''); // Assign truncated name
+                                                quote.buildertek__Description__c = productName.replace('"', '');
                                             } else {
-                                                quote.Name = productName;
+                                                quote.Name = productName.replace('"', ''); // ------- changes for ticket AC-40 [END]------------------
                                             }
                                         }
                                     }
