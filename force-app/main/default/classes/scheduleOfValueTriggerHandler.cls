@@ -62,7 +62,6 @@ public class scheduleOfValueTriggerHandler {
         }
         system.debug(sovLines);
         for(buildertek__Schedule_of_Value_Lines__c line:sovLines){
-
             // ===> Start Changes for BUIL - 3490 <======
             if(Sovmap.get(line.buildertek__Schedule_of_Values__c) == 'Company Approved'){
                 line.buildertek__Status__c = 'Approved';
