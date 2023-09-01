@@ -23,76 +23,74 @@
 
 
     <hr/>
-    <div style="overflow: auto;">
-        <table class="slds-table slds-table_cell-buffer slds-table_bordered">
-            <thead>
-                <tr class="slds-line-height_reset slds-text-title_caps">
-                    <th  class="slds-is-resizable tableHeadRow" scope="col">
-                        <div class="slds-truncate" title="Name">
-                            No.
-                        </div>
-                    </th>
-                    <th  class="slds-is-resizable tableHeadRow" scope="col">
-                        <div class="slds-truncate" title="Account Number">
-                           Name
-                        </div>
-                    </th>
-                    <th class="slds-is-resizable tableHeadRow" scope="col">
-                        <div class="slds-truncate" title="Industry">
-                            Attachment
-                        </div>
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <aura:iteration items="{!v.filterAttachedData}" var="attachment" indexVar="indx">
-                    <tr class="slds-hint-parent">
-                            
-                        <td data-label="index" scope="row" class="tableBodyRow">
-                            <div class="slds-truncate" title="index">
-                                {!indx+1}
-                            </div>
-                        </td>
-                        <td data-label="Name" class="tableBodyRow">
-                            <div class="slds-truncate" title="{!attachment.ParentName}"><a href="javascript:void(0);" onclick="{!c.openRecordPage}" data-record-id="{!attachment.ParentId}">{!attachment.ParentName} </a></div>
-                        </td>
-                        <td data-label="Attachment" class="tableBodyAttachedRow" >
-                            <div  class="file-div-tab">
-                                <div class="main-file-cmp">
-                                    <aura:iteration items="{!attachment.contentDocumentLinks}" var="cntDocs" indexVar="subIndx">
-                                        <div class="slds-m-horizontal_x-small">
-                                            <lightning:fileCard fileId="{!cntDocs.ContentDocumentId}" />
-                                       </div>  
-                                    </aura:iteration>
-                                </div>
-                            </div>
-                        </td>
-                        
-                    </tr>
-                </aura:iteration>
-            </tbody>
-        </table>
-
+    
+    <div class="main-table-div">
         <aura:if isTrue="{!(empty(v.filterAttachedData))}">
-            <center class="noData">No Result found.... </center> 
             <aura:set attribute="else">
-                <div style="display: flex; justify-content:space-between">
-                    <ui:button class="prv-btn active-btn slds-button slds-button--neutral" press="{!c.clickPrevious}" disabled="{!v.page == 1}" >
-                        <span>Previous</span>
-                    </ui:button>
-
-                    <div class="pagintaion-num-div">
-                        <div> {!v.page} of {!v.totalPages}</div>
-                    </div>
-
-                    <ui:button class="next-btn active-btn slds-button slds-button--neutral" press="{!c.clickNext}" disabled="{!v.page == v.totalPages}" >
-                        <span>Next</span>
-                    </ui:button>
+                <div class="tbl-header">
+                    <div class="tbl-hd-th id-cell">No.</div>
+                    <div class="tbl-hd-th name-cell">Name</div>
+                    <div class="tbl-hd-th status-cell st-txt">Attachment</div>
                 </div>
-        
             </aura:set>
         </aura:if>
-    </div> 
+
+        <div class="tbl-body">
+            <aura:if isTrue="{!empty(v.filterAttachedData)}">
+                <div class="no-check-in-div">
+                    No Result found....
+                </div>
+            </aura:if>
+
+
+            <aura:iteration items="{!v.filterAttachedData}" var="attachment" indexVar="indx">
+                <div class="ci-row">
+                    <div class="td-txt id-cell num-txt"> {!indx + 1}</div>
+                    <div class="td-txt name-cell">
+                        <div class="slds-truncate" title="{!attachment.ParentName}"><a href="javascript:void(0);" onclick="{!c.openRecordPage}" data-record-id="{!attachment.ParentId}">{!attachment.ParentName} </a></div>
+                    </div>
+                    <div class="td-txt photo-cell ph-hg-at">
+                        <div  class="file-div-tab">
+                            <div class="main-file-cmp">
+                                <aura:iteration items="{!attachment.contentDocumentLinks}" var="cntDocs" indexVar="subIndx">
+                                    <div class="slds-m-horizontal_x-small">
+                                        <lightning:fileCard fileId="{!cntDocs.ContentDocumentId}" />
+                                   </div>  
+                                </aura:iteration>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </aura:iteration>
+
+        </div>
+
+
+        <div class="tbl-footer">
+            <aura:if isTrue="{!(empty(v.filterAttachedData))}">
+                <aura:set attribute="else">
+                        <ui:button class="prv-btn active-btn slds-button slds-button-neutral" press="{!c.clickPrevious}" disabled="{!v.page == 1}" >
+                            <span>Previous</span>
+                        </ui:button>
+    
+                        <div class="pagintaion-num-div">
+                            <div> {!v.page} of {!v.totalPages}</div>
+                        </div>
+    
+                        <ui:button class="next-btn active-btn slds-button slds-button-neutral" press="{!c.clickNext}" disabled="{!v.page == v.totalPages}" >
+                            <span>Next</span>
+                        </ui:button>            
+                </aura:set>
+            </aura:if>
+        </div>
+
+    </div>
+
+
     <c:BT_Spinner />
 
 
