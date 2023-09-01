@@ -2277,7 +2277,7 @@
 
     },
     onclickDuplicate: function(component, event, helper) {
-        if(component.set("v.HaveCreateAccess")){
+        if(component.get("v.HaveCreateAccess")){
             var currentId = event.currentTarget.getAttribute("data-id");
             component.set("v.currentId", currentId);
             component.set("v.PopupHeader", "Duplicate Quote Line");
