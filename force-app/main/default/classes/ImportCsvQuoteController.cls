@@ -132,7 +132,15 @@ public with sharing class ImportCsvQuoteController {
                                         //quote.buildertek__Product__c =listCSVData.get(intIndex).get(intInnerIndex).trim();
                                         String productName=listCSVData.get(intIndex).get(intInnerIndex).replace('\n','');
                                         if(productName!=''){
-                                            quote.Name=productName;
+                                            //quote.Name=productName;  Need to susbtring the 80 characters so it fits in the Name field.
+                                            //quote.buildertek__Description__c = productName;
+                                            if (productName.length() > 75) {
+                                                String truncatedProductName = productName.substring(0, 75); // Take the first 75 characters
+                                                quote.Name = truncatedProductName; // Assign truncated name
+                                                quote.buildertek__Description__c = productName;
+                                            } else {
+                                                quote.Name = productName;
+                                            }
                                         }
                                     }
                                 }

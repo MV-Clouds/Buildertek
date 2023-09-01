@@ -62,7 +62,7 @@
             <div class="slds-modal__content" id="modal-content-id-1" >
                 <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__Change_Order__c" onsubmit="{!c.handleSubmit}" onsuccess="{!c.onRecordSuccess}" onerror="{!c.handleError}" recordTypeId="{!v.RecordTypeId}">
                     <lightning:messages />
-                    <div class="" style="height:50vh;width:100%;overflow: auto;">
+                    <div class="" style="height:55vh;width:100%;overflow: auto;">
                         <div class="slds-p-around_medium" style="background-color:white;">
                         <h2 class="slds-section-title--divider">Information</h2>
                         <lightning:layout multipleRows="true">
@@ -172,7 +172,7 @@
             <div class="slds-modal__content" id="modal-content-id-1" >
                 <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__Change_Order__c" onsubmit="{!c.handleSubmit}"  density="Comfy" onerror="{!c.handleError}" recordTypeId="{!v.RecordTypeId}">
                     <lightning:messages />
-                    <div class="" style="height:50vh;width:100%;overflow: auto;">
+                    <div class="" style="height:55vh;width:100%;overflow: auto;">
 
                         <div class="slds-p-around_medium" style="background-color:white;">
                             <h2 class="slds-section-title--divider" style=" font-weight:bold">Information</h2>

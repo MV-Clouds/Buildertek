@@ -286,6 +286,7 @@
     <aura:attribute name="addInvoicePOSection" type="Boolean" default="false" />
     <aura:attribute name="invoicePORecordList" type="Account_Payable__c[]" />
 
+
     <!-- >>>>>>>>>>>>>> CHB - 79 <<<<<<<<<<<<<<<<<<< -->
     <aura:attribute name="HaveCreateAccess" type="boolean" default="true" />
     <aura:attribute name="HaveUpdateAccess" type="boolean" default="true"/>
@@ -505,6 +506,7 @@
                     </div>
                 </div>
                 <div aura:id="budgetItem" />
+
                 <div class="av slds-box" id="{!v.recordId + 'groups'}" style="min-height:100%; padding-block:0px !important; padding-inline: 0px; margin-top: -5px;">
                     <div>
                         <aura:if isTrue="{!v.recordId != null}">
@@ -902,7 +904,7 @@
 
 
 
-                            <div class="slds-scrollable" style="height:100%; padding:0px !important;">
+                            <div class="slds-scrollable" style="min-height: 47vh; height:fit-content; padding:0px !important;">
                                 <div class="divcont" aura:id="headerDiv" style="">
                                     <!--height:30rem class="slds-scrollable"-->
                                     <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-m-right_small" style="width: auto;" aura:id="budgetLineItemTable">
@@ -1222,23 +1224,6 @@
                                                                                     <aura:if isTrue="{!and(!value.referenceValue,value.fieldName != 'buildertek__Old_Budget_Line__c')}">
                                                                                         <ui:outputURL value="{!'/one/one.app?#/sObject/'+ value.originalValue + '/view'}" target="_blank" label="{!value.referenceValue}" />
                                                                                     </aura:if>
-                                                                                    <button class="slds-button slds-button_icon slds-cell-edit__button slds-m-left_x-small" tabindex="-1" title="">
-                                                                                        <aura:if
-                                                                                            isTrue="{!value.isEditable == true}">
-                                                                                            <span style="display:none;"
-                                                                                                data-id="{!recs.recordId}"
-                                                                                                data-label="{!value.fieldName}"
-                                                                                                data-group="{!recs.groupId}"
-                                                                                                onclick="{!c.inlineEdit}">
-                                                                                                <lightning:icon
-                                                                                                    iconName="utility:edit"
-                                                                                                    size="xx-small"
-                                                                                                    alternativeText="edit" />
-                                                                                            </span>
-                                                                                        </aura:if>
-                                                                                        <span
-                                                                                            class="slds-assistive-text">Edit</span>
-                                                                                    </button>
                                                                                 </div>
                                                                             </aura:set>
                                                                         </aura:if>

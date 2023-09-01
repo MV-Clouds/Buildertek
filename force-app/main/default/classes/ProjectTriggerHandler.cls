@@ -510,7 +510,7 @@ public with sharing class ProjectTriggerHandler {
      public void CreatePermitsForNewProject(List<buildertek__Project__c> projects){
         List<buildertek__Permit__c> permits = [select Id,Name,buildertek__Permit_Type__c,buildertek__Permit_Sub_Type__c from buildertek__Permit__c where  buildertek__Create_on_New_Project__c = True];
         if(!permits.isEmpty()){
-            List<buildertek__Permit__c> insertPermits = new List<buildertek__Permit__c>();
+            Map<Id,buildertek__Permit__c> permitMap= new Map<Id,buildertek__Permit__c>();
             for(buildertek__Project__c projectRecords : projects){
                 for(buildertek__Permit__c permit : permits){
                     buildertek__Permit__c newPermit = new buildertek__Permit__c();
@@ -518,12 +518,26 @@ public with sharing class ProjectTriggerHandler {
                     newPermit.buildertek__Permit_Sub_Type__c = permit.buildertek__Permit_Sub_Type__c;
                     newPermit.buildertek__Permit_Type__c = permit.buildertek__Permit_Type__c;
                     newPermit.buildertek__Project__c = projectRecords.Id;
-                    insertPermits.add(newPermit);
+                    permitMap.put(permit.Id, newPermit);
                 }
             }
-            if(!insertPermits.isEmpty()){
-                insert insertPermits;
+            if(!permitMap.isEmpty()){
+                insert permitMap.values();
             }
+            // BUIL-3488 Changes
+            List<buildertek__Permit_Line__c> permitLineList = [SELECT Id, Name,buildertek__Description__c,buildertek__Status__c, buildertek__Permit_Owner__c, buildertek__Notes__c, buildertek__Municipality__c, buildertek__Municipality_Contact__c, buildertek__BT_Permit__c From buildertek__Permit_Line__c WHERE buildertek__BT_Permit__c=:permitMap.keySet()];
+            List<buildertek__Permit_Line__c> clonePermitLineList = new List<buildertek__Permit_Line__c>();
+           
+            for (buildertek__Permit_Line__c originalPermitLine : permitLineList) {
+                    buildertek__Permit_Line__c clonePermitLine = originalPermitLine.clone(false, true, false, false);
+                    clonePermitLine.buildertek__BT_Permit__c = permitMap.get(originalPermitLine.buildertek__BT_Permit__c).Id;
+                    clonePermitLineList.add(clonePermitLine);
+            }
+
+            if(!clonePermitLineList.isEmpty()){
+                insert clonePermitLineList;
+            }
+             // BUIL-3488 Changes
         }
     }
 
@@ -835,5 +849,6 @@ public with sharing class ProjectTriggerHandler {
 
         return qryString;
     }
+    
    
 }
