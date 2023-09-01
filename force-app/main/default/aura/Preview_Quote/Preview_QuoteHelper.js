@@ -134,6 +134,7 @@
             var state = response.getState();
             var subject = 'Quote[ref:' + component.get("v.recordId") + ']';
             if (state === "SUCCESS") {
+                component.set("v.Spinner", false);
                 var result = response.getReturnValue();
                 if (result === 'Success') {
                     // component.set("v.Spinner", false);
@@ -144,7 +145,7 @@
                         "type": 'success',
                         "message": "Email Sent Successfully"
                     });
-                    component.set("v.Spinner", false);
+                    // component.set("v.Spinner", false);
                     toastEvent.fire();
                     
                     // location.reload();

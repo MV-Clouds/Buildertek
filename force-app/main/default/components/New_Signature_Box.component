@@ -16,7 +16,7 @@
                 <div class="">
                     <div class="slds-form-element__control">
                         <div id="signature-pad1" >
-                            <canvas class="NewCanvas" style="background-color: #ffffff !important; border:1px solid lightgray; width:100%; height:10rem; margin-top:10px;" id="divsign"></canvas>
+                            <canvas class="NewCanvas" style="background-color: #ffffff !important; border:1px solid lightgray; width:100%; height:5rem; margin-top:10px;" id="divsign"></canvas>
                             <div style="float:right;margin-right:18px;"><a href="javascript:void(0);" style="text-decoration:none;" id="btnClear1">Clear Signature</a></div>
                         </div>
                     </div>
