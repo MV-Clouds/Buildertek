@@ -373,7 +373,7 @@ public with sharing class PreviewBillingsController{
         else if (invoice.buildertek__Customer_Account__c != null) {
             accId.add(invoice.buildertek__Customer_Account__c);
             if(!accId.isEmpty()){
-                con = [SELECT Id, Name, Email , buildertek__Primary_Contact__c, AccountId FROM Contact WHERE AccountId IN: accId AND Email != null];
+                con = [SELECT Id, Name, Email , buildertek__Primary_Contact__c, AccountId, CreatedDate FROM Contact WHERE AccountId IN: accId AND Email != null ORDER by CreatedDate Desc Limit 1];
             }
         }
         return con;
