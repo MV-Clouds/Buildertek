@@ -759,7 +759,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           draggable : false,
           editor      : {
             picker : {
-<<<<<<< HEAD
               height   : 350,
               width    : 450,
               selectionMode: {
@@ -784,36 +783,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           },
           itemTpl : assignment => assignment.resourceName
         }, */
-=======
-                height   : 350,
-                width    : 450,
-                features : {
-                    filterBar  : true,
-                    group      : 'resource.type',
-                    headerMenu : false,
-                    cellMenu   : false,
-                },
-                // The extra columns are concatenated onto the base column set.
-                columns : [{
-                    text       : 'Calendar',
-                    // Read a nested property (name) from the resource calendar
-                    field      : 'resource.calendar.name',
-                    filterable : false,
-                    editor     : false,
-                    width      : 85
-                }]
-            },
-            isteners: {
-              paint: ({ source }) => {
-                console.log('source => ',source);
-                let contractorId = source._projectEvent._data.contractorId
-                console.log('contractorId ==> ',contractorId);
-                source.store.filter(record => record.resource._data.contractorId == contractorId);
-              }
-            }
-          }
-        },
->>>>>>> cfc7a36 (krunal code for resource added)
         // {
         //   type: "addnew",
         // },
