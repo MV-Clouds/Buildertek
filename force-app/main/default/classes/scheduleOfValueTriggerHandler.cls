@@ -62,12 +62,23 @@ public class scheduleOfValueTriggerHandler {
         }
         system.debug(sovLines);
         for(buildertek__Schedule_of_Value_Lines__c line:sovLines){
+            // ===> Start Changes for BUIL - 3490 <======
+            if(Sovmap.get(line.buildertek__Schedule_of_Values__c) == 'Company Approved'){
+                line.buildertek__Status__c = 'Approved';
+                sovLinesList.add(line);
+            }else if(Sovmap.get(line.buildertek__Schedule_of_Values__c) == 'Customer Approved'){
+                line.buildertek__Status__c = 'Customer Approved';
+                sovLinesList.add(line);
+            }
+            // ===> END Changes for BUIL - 3490 <======
+
             if(line.buildertek__Schedule_of_Values__r.recordtype.name == 'Vendor'){
                 if(portalCode == 'false'){
                     if(Sovmap.get(line.buildertek__Schedule_of_Values__c) == 'Company Submitted'){
                         line.buildertek__Status__c = 'Company Submitted';
                         sovLinesList.add(line);
                     }
+
                     // ===> Changes for BUIL - 3490 <======
                     else if(Sovmap.get(line.buildertek__Schedule_of_Values__c) == 'Company Approved'){
                     line.buildertek__Status__c = 'Approved';
