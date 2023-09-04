@@ -44,7 +44,6 @@
     <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
     <aura:attribute name="selectedRecordMap" type="String" />
 
-    <!-- <aura:attribute name="selectedLookUpRecord" type="sObject" default="{}" /> -->
 
    
     <!-- <aura:handler name="datafromChild" event="c:senDatafromChild" action="{!c.handleComponentEvent}"/>  -->
