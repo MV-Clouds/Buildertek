@@ -540,7 +540,7 @@
     },
 
     saveQuoteLine : function(component, event, helper, quotelineList) {
-        console.log('quotelineList', quotelineList);
+        console.log('saveQuoteLine', quotelineList);
         var action = component.get("c.saveQuoteLine");
         action.setParams({
             quotelineList : quotelineList,
