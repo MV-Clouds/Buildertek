@@ -53,8 +53,18 @@ public without sharing class importScheduleLineController {
                 if(mainScheduleRec.buildertek__Initial_Start_Date__c != null){
                     startDate = mainScheduleRec.buildertek__Initial_Start_Date__c;
                 } else if (wrapper.StartDate != null) {
-                    startDate = wrapper.StartDate;
+                    startDate = Date.valueOf(wrapper.StartDate);
                 }
+
+                if (String.isEmpty(wrapper.Dependency) && String.isBlank(wrapper.Dependency)) {
+                    startDate = Date.valueOf(wrapper.StartDate);
+                }
+
+                // if (wrapper.StartDate != null) {
+                //     startDate = Date.valueOf(wrapper.StartDate);
+                // } else if(mainScheduleRec.buildertek__Initial_Start_Date__c != null){
+                //     startDate = mainScheduleRec.buildertek__Initial_Start_Date__c;
+                // }
 
                 DateTime currentDate = DateTime.newInstance(startDate.year(), startDate.month(), startDate.day());
                 String todayDay = currentDate.format('EEEE');
@@ -65,13 +75,13 @@ public without sharing class importScheduleLineController {
                 }
 
                 schItem.buildertek__Start__c = startDate;
-                wrapper.StartDate = Date.valueOf(startDate);
+                // wrapper.StartDate = Date.valueOf(startDate);
 
                 DateTime sDate = DateTime.newInstance(schItem.buildertek__Start__c.year(), schItem.buildertek__Start__c.month(), schItem.buildertek__Start__c.day());
 
                 schItem.buildertek__Duration__c = wrapper.Duration;
                 schItem.buildertek__Finish__c = System.BusinessHours.add(businessHourId, sDate, Integer.valueOf(wrapper.Duration)*(24 * 60 * 60 * 1000L)).date();
-                schItem.buildertek__Original_Start_Date__c = Date.valueOf(wrapper.StartDate);
+                schItem.buildertek__Original_Start_Date__c = startDate;
                 schItem.buildertek__Original_End_Date__c = startDate.addDays(wrapper.Duration);
                 schItem.buildertek__Phase__c = wrapper.Phase;
                 schItem.buildertek__Notes__c = wrapper.Notes;
@@ -156,7 +166,7 @@ public without sharing class importScheduleLineController {
     public class fieldWrapper{
         public String Name;
         public String Dependency;
-        public Date StartDate;
+        public String StartDate;
         public Integer Duration;
         public Decimal percentComplete;
         public String Phase;

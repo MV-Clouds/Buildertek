@@ -301,6 +301,14 @@ export default base => class GanttToolbar extends base {
                             onAction : 'up.onImportclick'
                         },
                         {
+                            type     : 'button',
+                            text     : 'Import Master Schedule',
+                            color    : 'b-blue',
+                            ref      : 'importMasterSchedule',
+                            icon     : 'b-fa-file-import',
+                            onAction : 'up.onImportMasterSchedule'
+                        },
+                        {
                             type       : 'button',
                             color      : 'b-blue',
                             ref        : 'criticalPathsButton',
@@ -515,6 +523,7 @@ export default base => class GanttToolbar extends base {
             var taskData = JSON.parse(this.gantt.taskStore.json);
             var taskEdit = this.gantt.taskStore;
             console.log('taskEdit ',{taskEdit});
+            console.log('taskEdit assignmentStore ',taskEdit.assignmentStore.json);
             debugger;
             var dependenciesData = JSON.parse(this.gantt.dependencyStore.json);
             var resourceData = JSON.parse(this.gantt.assignmentStore.json)
@@ -534,5 +543,9 @@ export default base => class GanttToolbar extends base {
 
     onImportclick(){
         this.gantt.callGanttComponent.importtData();
+    }
+
+    onImportMasterSchedule(){
+        this.gantt.callGanttComponent.openMasterSchedule()
     }
 };

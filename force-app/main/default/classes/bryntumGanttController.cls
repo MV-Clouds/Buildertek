@@ -507,7 +507,7 @@ public with sharing class bryntumGanttController {
     public static List<Account> getContractorsAndResourcesToPick(){
         List<Account> contractorList = new List<Account>();
         try {
-            contractorList = [SELECT Id, Name, (SELECT Id, LastName, FirstName FROM Contacts) FROM Account ORDER BY CreatedDate DESC];
+            contractorList = [SELECT Id, Name, (SELECT Id, Name, LastName, FirstName FROM Contacts) FROM Account WHERE buildertek__BT_Account_Type__c = 'Vendor' ORDER BY Name ASC];
         } catch (Exception e) {
             System.debug('Error Line '+e.getLineNumber());
             System.debug('Error Message from contactorList method '+e.getMessage());
