@@ -47,7 +47,6 @@
     <!-- <aura:attribute name="selectedLookUpRecord" type="sObject" default="{}" /> -->
 
    
-    <!-- <aura:handler name="datafromChild" event="c:senDatafromChild" action="{!c.handleComponentEvent}"/>  -->
     <aura:handler name="oSelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.handleComponentEvent}" />
     <aura:registerEvent name="ClearSelectedRecordEvent" type="c:BT_CLearLightningLookupEvent" />
 
