@@ -186,7 +186,7 @@
         // declare variables
         var csvStringResult, keys, columnDivider;
         columnDivider = ',';
-        keys = [ 'Grouping','Product Name','Quantity','Unit Price','Tax'];
+        keys = [ 'Grouping','Budget Line Name','Quantity','Unit Price','UOM','Tax','Markup','Labour','Invoice Total'];
       
         csvStringResult = '';
         csvStringResult += keys.join(columnDivider);
@@ -196,6 +196,7 @@
 
   upload: function (component, helper, file, fileContents) {
      // alert("helo");
+     component.set('v.Spinner', true);
     var action = component.get("c.importBudgets");
 
     /*
@@ -221,22 +222,27 @@
         if (result.isSuccess) {
           //  alert("succ");
           helper.showToast(component, "success", result.strMessage);
+          window.setTimeout(
+            $A.getCallback(function() {
+              window.location.reload();
+            }), 2000
+          );
         } else {
           helper.showToast(component, "error", result.strMessage);
         }
-        $A.util.removeClass(
-          component.find("uploading").getElement(),
-          "notUploading"
-        );
-        document.getElementById("uploadingCSVSpinnerText").innerHTML = "";
-        location.reload();
+        // $A.util.removeClass(
+        //   component.find("uploading").getElement(),
+        //   "notUploading"
+        // );
+        // document.getElementById("uploadingCSVSpinnerText").innerHTML = "";
+        // location.reload();
         
       } else {
-        $A.util.removeClass(
-          component.find("uploading").getElement(),
-          "notUploading"
-        );
-        document.getElementById("uploadingCSVSpinnerText").innerHTML = "";
+        // $A.util.removeClass(
+        //   component.find("uploading").getElement(),
+        //   "notUploading"
+        // );
+        // document.getElementById("uploadingCSVSpinnerText").innerHTML = "";
 
         var errors = response.getError();
         var error = "";
@@ -257,7 +263,7 @@
       }
 
       $A.get("e.force:closeQuickAction").fire();
-      $A.get('e.force:refreshView').fire();
+      // $A.get('e.force:refreshView').fire();
     });
 
     $A.enqueueAction(action);
@@ -267,9 +273,10 @@
     var toastEvent = $A.get("e.force:showToast");
 
     toastEvent.setParams({
-      type: type,
-      message: message,
-      mode: "sticky",
+      "type": type,
+      "message": message,
+      duration: '5000',
+      mode: 'dismissible'
     });
 
     toastEvent.fire();

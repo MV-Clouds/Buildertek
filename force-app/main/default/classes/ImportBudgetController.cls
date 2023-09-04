@@ -76,27 +76,37 @@ public with sharing class ImportBudgetController{
 									}
 								}
 
-								when 'Product Name'{
+								when 'Budget Line Name'{
 									if (String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))){
-										budget.buildertek__Description__c = listCSVData.get(intIndex).get(intInnerIndex);
-										budget.Name = listCSVData.get(intIndex).get(intInnerIndex);
+										// budget.buildertek__Description__c = listCSVData.get(intIndex).get(intInnerIndex);
+										// budget.Name = listCSVData.get(intIndex).get(intInnerIndex);
+										String budgetName=listCSVData.get(intIndex).get(intInnerIndex);
+                                        if(budgetName != ''){
+                                            if (budgetName.length() > 80) { 
+                                                String truncatedbudgetName = budgetName.substring(0, 80);
+                                                budget.Name = truncatedbudgetName.replace('"', ''); 
+												budget.buildertek__Description__c = budgetName.replace('"', '');
+                                            } else {
+                                                budget.Name = budgetName.replace('"', '');
+                                            }
+                                        }
 									}
 								}
 
 								when 'Quantity'{
 									if (String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))){
-										budget.Quantity__c = Decimal.valueOf(listCSVData.get(intIndex).get(intInnerIndex));
+										budget.buildertek__Quantity__c = Decimal.valueOf(listCSVData.get(intIndex).get(intInnerIndex));
 									}
 								}
 
 								when 'Unit Price'{
 									if (String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))){										
-										budget.Unit_Price__c = Decimal.valueOf(listCSVData.get(intIndex).get(intInnerIndex).replaceAll('[^.\\d]',''));
+										budget.buildertek__Unit_Price__c = Decimal.valueOf(listCSVData.get(intIndex).get(intInnerIndex).replaceAll('[^.\\d]',''));
 									}
 								}
 
 								when 'UOM'{
-									// budget.Product__c = listCSVData.get(intIndex).get(intInnerIndex);
+									budget.buildertek__UOM__c = listCSVData.get(intIndex).get(intInnerIndex);
 								}
 
 								when 'Budget Mods'{
@@ -106,18 +116,41 @@ public with sharing class ImportBudgetController{
 								when 'Projected Costs'{
 									// budget.Product__c = listCSVData.get(intIndex).get(intInnerIndex);
 								}
+
 								when 'Tax'{
 									if (String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))){
 										budget.buildertek__Tax__c = Decimal.valueOf(listCSVData.get(intIndex).get(intInnerIndex));
 									}
 								}
+
+								when 'Markup'{
+									budget.buildertek__Markup__c = Decimal.valueOf(listCSVData.get(intIndex).get(intInnerIndex).replace('%',''));
+								}
+
+								when 'Labour'{
+									budget.buildertek__Labor__c = Decimal.valueOf(listCSVData.get(intIndex).get(intInnerIndex));
+								}
+
+								when 'Invoice Total'{
+									budget.buildertek__Invoice_total__c = Decimal.valueOf(listCSVData.get(intIndex).get(intInnerIndex));
+								}
+
+								when else {
+                                    response.isSuccess = false;
+                                }
 							}
 						}
 						listBudgets.add(budget);
 					}
 					if (!listBudgets.isEmpty()){
-						insert listBudgets;
-						response.strMessage = 'Budget line items inserted successfully.';
+						if (response.isSuccess) {
+                            insert listBudgets;
+                            response.strMessage = 'Budget line items inserted successfully.';
+                        }
+                        else {   
+                            response.isSuccess = false;
+                            response.strMessage = 'Please check the header.';
+                        }
 					} else{
 						response.isSuccess = false;
 						response.strMessage = 'No budget line items present.';
