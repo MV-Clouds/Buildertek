@@ -77,10 +77,13 @@ public without sharing class importScheduleLineController {
                 schItem.buildertek__Start__c = startDate;
                 // wrapper.StartDate = Date.valueOf(startDate);
 
-                DateTime sDate = DateTime.newInstance(schItem.buildertek__Start__c.year(), schItem.buildertek__Start__c.month(), schItem.buildertek__Start__c.day());
+                Date sDate = Date.newInstance(schItem.buildertek__Start__c.year(), schItem.buildertek__Start__c.month(), schItem.buildertek__Start__c.day());
 
                 schItem.buildertek__Duration__c = wrapper.Duration;
-                schItem.buildertek__Finish__c = System.BusinessHours.add(businessHourId, sDate, Integer.valueOf(wrapper.Duration)*(24 * 60 * 60 * 1000L)).date();
+                // schItem.buildertek__Finish__c = System.BusinessHours.add(businessHourId, sDate, Integer.valueOf(wrapper.Duration)*(24 * 60 * 60 * 1000L)).date();
+                schItem.buildertek__Finish__c = addDaysSkippingWeekends(sDate, Integer.valueOf(wrapper.Duration));
+                System.debug('schItem.buildertek__Finish__c neo '+schItem.buildertek__Finish__c);
+
                 schItem.buildertek__Original_Start_Date__c = startDate;
                 schItem.buildertek__Original_End_Date__c = startDate.addDays(wrapper.Duration);
                 schItem.buildertek__Phase__c = wrapper.Phase;
@@ -128,10 +131,12 @@ public without sharing class importScheduleLineController {
                 for (String key : newProjectTaskMap.keySet()) {
                     System.debug('Old newProjectTaskMap.get(key) ==> '+newProjectTaskMap.get(key));
                     if (newProjectTaskMap.get(key).buildertek__Dependency__c != null) {
-                        newProjectTaskMap.get(key).buildertek__Start__c = newProjectTaskMap.get(newProjectTaskMap.get(key).buildertek__Dependency__c).buildertek__Finish__c;
+                        newProjectTaskMap.get(key).buildertek__Start__c = skipWeekend(newProjectTaskMap.get(newProjectTaskMap.get(key).buildertek__Dependency__c).buildertek__Finish__c.adddays(1));
 
-                        DateTime sDate = DateTime.newInstance(newProjectTaskMap.get(key).buildertek__Start__c.year(), newProjectTaskMap.get(key).buildertek__Start__c.month(), newProjectTaskMap.get(key).buildertek__Start__c.day());
-                        newProjectTaskMap.get(key).buildertek__Finish__c = System.BusinessHours.add(businessHourId, sDate, Integer.valueOf(newProjectTaskMap.get(key).buildertek__Duration__c)*(24 * 60 * 60 * 1000L)).date();
+                        Date sDate = Date.newInstance(newProjectTaskMap.get(key).buildertek__Start__c.year(), newProjectTaskMap.get(key).buildertek__Start__c.month(), newProjectTaskMap.get(key).buildertek__Start__c.day());
+                        // newProjectTaskMap.get(key).buildertek__Finish__c = System.BusinessHours.add(businessHourId, sDate, Integer.valueOf(newProjectTaskMap.get(key).buildertek__Duration__c)*(24 * 60 * 60 * 1000L)).date();
+                        newProjectTaskMap.get(key).buildertek__Finish__c = addDaysSkippingWeekends(sDate, Integer.valueOf(newProjectTaskMap.get(key).buildertek__Duration__c));
+                        System.debug('newProjectTaskMap.get(key).buildertek__Finish__c '+newProjectTaskMap.get(key).buildertek__Finish__c);
                     }
                 }
 
@@ -151,7 +156,7 @@ public without sharing class importScheduleLineController {
     // Skip weekend and calculate date
 	public static Date addDaysSkippingWeekends(Date sDate, Integer days){
 		Date result = sDate;
-		Integer addedDays = 0;
+		Integer addedDays = 1;
 		while (addedDays < days){
 			result = result.addDays(1);
 			DateTime currentDate = DateTime.newInstance(result.year(), result.month(), result.day());
@@ -161,6 +166,17 @@ public without sharing class importScheduleLineController {
 			}
 		}
 		return result;
+	}
+
+    public static Date skipWeekend(Date startDate){
+		DateTime currDate = DateTime.newInstance(startDate.year(), startDate.month(), startDate.day());
+		String todayDay = currDate.format('EEEE');
+		if (todayDay == 'Saturday'){
+			startDate = startDate.addDays(2);
+		} else if (todayDay == 'Sunday'){
+			startDate = startDate.addDays(1);
+		}
+		return startDate;
 	}
 
     public class fieldWrapper{

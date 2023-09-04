@@ -77,7 +77,7 @@ public with sharing class NewGanttChartTaskTriggerHandler{
 
         }
     }
-    
+
     public static Date skipWeekend(Date startDate){
 		DateTime currDate = DateTime.newInstance(startDate.year(), startDate.month(), startDate.day());
 		String todayDay = currDate.format('EEEE');
