@@ -1606,7 +1606,7 @@
                 </aura:html>
                 <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
                     <div class="slds-modal__container" style="width: 70%;">
-                        <div aura:id="poContainer" class="c-container" style="position: relative; height:90vh" >
+                        <div aura:id="poContainer" class="c-container" style="position: relative; max-height:90vh" >
                             <header class="slds-modal__header">
                                 <lightning:buttonIcon iconName="utility:close" onclick="{!c.doCancel}" alternativeText="close" variant="bare-inverse" class="slds-modal__close" />
                                 <p></p>
@@ -1614,7 +1614,7 @@
                                 </h2>
                                 <p></p>
                             </header>
-                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="height:80%">
+                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="max-height:80%">
                                 <table class="slds-table slds-table_bordered slds-table_cell-buffer">
                                     <thead>
                                         <tr class="slds-text-title_caps">
@@ -1656,6 +1656,11 @@
                                                 </td>
                                             </tr>
                                         </aura:iteration>
+                                        <aura:if isTrue="{!empty(v.recordList)}">
+                                            <td colspan="5" style="text-align: center; line-height: 10rem; font-size: 18px; ">
+                                                No Records Found
+                                            </td>
+                                        </aura:if>
                                     </tbody>
                                 </table>
                             </div>
@@ -1680,7 +1685,7 @@
                                 </h2>
                                 <p></p>
                             </header>
-                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="height:80%">
+                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="max-height:80%">
                                 <table class="slds-table slds-table_bordered slds-table_cell-buffer">
                                     <thead>
                                         <tr class="slds-text-title_caps">
@@ -1743,6 +1748,11 @@
                                                 </td> -->
                                             </tr>
                                         </aura:iteration>
+                                        <aura:if isTrue="{!empty(v.recordList)}">
+                                            <td colspan="5" style="text-align: center; line-height: 10rem; font-size: 18px; ">
+                                                No Records Found
+                                            </td>
+                                        </aura:if>
                                     </tbody>
                                 </table>
                             </div>
@@ -1766,7 +1776,7 @@
                                 </h2>
                                 <p></p>
                             </header>
-                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="height:80%">
+                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="max-height:80%">
                                 <table class="slds-table slds-table_bordered slds-table_cell-buffer">
                                     <thead>
                                         <tr class="slds-text-title_caps">
@@ -2193,6 +2203,11 @@
                                                 </td>
                                             </tr>
                                         </aura:iteration>
+                                        <aura:if isTrue="{!empty(v.salesInvoices)}">
+                                            <td colspan="5" style="text-align: center; line-height: 10rem; font-size: 18px; ">
+                                                No Records Found
+                                            </td>
+                                        </aura:if>
                                     </tbody>
                                 </table>
                             </div>
@@ -2205,6 +2220,7 @@
                 </section>
                 <div class="slds-backdrop slds-backdrop_open"></div>
             </aura:if>
+            
 
 
 
