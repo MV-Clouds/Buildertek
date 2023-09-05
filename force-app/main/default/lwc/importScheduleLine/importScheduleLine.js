@@ -299,14 +299,6 @@ export default class importScheduleLine extends LightningElement {
             console.log("Total Loop:", totalLoop);
             if (circularDependency) {
                 console.log("dependentRecord:", dependentRecord);
-                console.log("Circular Dependency");
-                const event = new ShowToastEvent({
-                    title: 'Error',
-                    message: 'Error Circular Dependency !!!',
-                    variant: 'error',
-                    mode: 'dismissable'
-                });
-                this.dispatchEvent(event);
                 return "";
             } else {
                 let json = JSON.stringify(jsonObj);
@@ -547,7 +539,7 @@ export default class importScheduleLine extends LightningElement {
                         const CircularDependencyName = this.CircularDependencyName;
                         const toastEvent = new ShowToastEvent({
                             title: "Error",
-                            message: `Circular Dependency due to '${CircularDependencyName}' Record`,
+                            message: `Circular Dependency!`,
                             duration: "5000",
                             key: "info_alt",
                             variant: "error",
