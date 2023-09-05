@@ -217,7 +217,7 @@
     <c:BT_Spinner />
     <aura:attribute name="parentValue" type="String" />
 
-    <aura:attribute name="HaveCreateAccess" type="boolean" default="true"/>
+    <aura:attribute name="HaveCreateAccess" type="boolean" default="true" />
     <aura:attribute name="HaveUpdateAccess" type="boolean" default="true"/>
     <aura:attribute name="HaveDeleteAccess" type="boolean" default="true"/>
     
@@ -799,8 +799,7 @@
                                                     IconName="standard:product"
                                                     selectedRecord="{!v.selectedLookUpRecord}" aura:id="productId"
                                                     parentId="{! v.pricebookName }" prodctfamly="{!v.productfamily}" childValue="{!v.newQuote.Name}"  />
-
-                                                    <!-- <label class="slds-form-element__label" for="lookup-348"></label> -->
+                                                
 
                                             </td>
                                             <!-- <td>
