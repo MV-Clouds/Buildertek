@@ -55,7 +55,11 @@ public with sharing class NewQuoteComponentController {
 
     @AuraEnabled
     public static List<buildertek__Quote__c> getAllMasterQuote(){
-        List<buildertek__Quote__c> quoteList=[SELECT Id, Name , buildertek__Status__c, buildertek__Description__c , buildertek__Type__c  From buildertek__Quote__c WHERE buildertek__Type__c = 'Master' LIMIT 900];
+        // Integer offset = (pageNumber - 1) * pageSize;
+
+        // List<buildertek__Quote__c> quoteList=[SELECT Id, Name , buildertek__Status__c, buildertek__Description__c , buildertek__Type__c  From buildertek__Quote__c WHERE buildertek__Type__c = 'Master' LIMIT :pageSize OFFSET :offset];
+        List<buildertek__Quote__c> quoteList=[SELECT Id, Name , buildertek__Status__c, buildertek__Description__c , buildertek__Type__c  From buildertek__Quote__c WHERE buildertek__Type__c = 'Master'];
+
         return quoteList;
     }
 

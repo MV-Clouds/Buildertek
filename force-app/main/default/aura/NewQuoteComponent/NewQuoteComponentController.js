@@ -62,6 +62,9 @@
             $A.enqueueAction(action);
         }
         $A.enqueueAction(action2);
+        
+        // var pageNumber = 1;
+        // var pageSize = 20; // Adjust the page size as needed
         helper.masterQuoteRecord(component, event, helper);
     },
 
@@ -189,5 +192,24 @@
         component.set('v.selectedMasterQuoteId' , masterQuoteId);
         console.log(component.get('v.selectedMasterQuoteId'));
 
-    }
+    },
+    // handleScroll:function(component, event, helper) {
+    //     console.log('handleScroll');
+
+    //     var scrollTop = event.target.scrollTop;
+    //     var scrollHeight = event.target.scrollHeight;
+    //     var clientHeight = event.target.clientHeight;
+    
+    //     var pageNumber = 1;
+    //     var pageSize = 20; 
+    //     console.log(scrollTop + clientHeight >= scrollHeight ,scrollTop,  clientHeight , scrollHeight);
+
+    //     if (scrollTop + clientHeight >= scrollHeight) {
+            
+    //         pageNumber++;
+    //         console.log(pageNumber);
+    //         helper.masterQuoteRecord(component, event, helper , pageNumber, pageSize);
+    //     }
+
+    // }
 })

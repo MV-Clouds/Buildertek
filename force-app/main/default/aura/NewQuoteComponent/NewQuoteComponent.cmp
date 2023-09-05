@@ -14,6 +14,9 @@
     <aura:attribute name="masterQuoteList" type="List" />
     <lightning:navigation aura:id="navService"/>
     <aura:attribute name="selectedMasterQuoteId" type="String" default="" />
+    <!-- <aura:attribute name="pageNumber" type="Integer" default="1" />
+    <aura:attribute name="pageSize" type="Integer" default="20" /> -->
+
 
 
 
@@ -42,9 +45,9 @@
         <header class="slds-modal__header">
             <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New BT Quote</h2>
         </header>
-        <div class="slds-modal__content" id="modal-content-id-1">
+        <div class="slds-modal__content" id="modal-content-id-1" >
             <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__Quote__c" onsubmit="{!c.handleSubmit}" density="Comfy" >
-                <div class="" style="height:50vh;width:100%;overflow: auto;">
+                <div class="" style="height:50vh;width:100%;overflow: auto;" >
                     <div class="slds-p-around_medium" style="background-color:white;">
                         <lightning:layout multipleRows="true">
                             <aura:iteration items="{!v.listOfFields0}" var="field">
@@ -71,28 +74,33 @@
                         </lightning:layout>
                     </div>
 
-                    <div style="height: 12.2rem; overflow-y: scroll; margin-top: 2%;" class="slds-is-relative">
+                    <div style="height: 12.2rem; overflow: auto; margin-top: 2%;" class="lazy-loading-container slds-is-relative" >
                         <div><h3 class="slds-section-title--divider" style="font-weight: bold">Master Quotes</h3> </div>
                         <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-is-relative">
                             <thead style="position:sticky; top:0px; z-index:100">
                                 <tr class="slds-text-title_caps">
+                                    <!-- <th scope="col" class="slds-truncate">
+                                        <div class="slds-truncate" title="Index">Index</div>
+                                    </th> -->
                                     <th scope="col" class="slds-truncate">
+                                        
                                     </th>
                                     <th scope="col">
-                                        <div class="slds-truncate" title="Duration">Name</div>
+                                        <div class="slds-truncate" title="Name">Name</div>
                                     </th>
                                     <th scope="col">
-                                        <div class="slds-truncate" title="Project Description">Status
+                                        <div class="slds-truncate" title="Status">Status
                                         </div>
                                     </th>
                                     <th scope="col">
-                                        <div class="slds-truncate" title="Project Description">Description</div>
+                                        <div class="slds-truncate" title="Description">Description</div>
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody style="max-height: 300px; overflow-y: auto;">
-                                <aura:iteration items="{!v.masterQuoteList}" var="masterQuote">
+                            <tbody style="max-height: 300px; overflow-y: auto;" >
+                                <aura:iteration items="{!v.masterQuoteList}" var="masterQuote" indexVar="index">
                                     <tr>
+                                        <!-- <td> {!index+1} </td> -->
                                         <td> <ui:inputRadio text='{!masterQuote.Id}'  name='masterQuote' change='{!c.selectMasterQuote}' /> </td>
                                         <td class="slds-truncate"><a href="javascript:void(0);" onclick="{!c.openRecordPage}" data-record-id="{!masterQuote.Id}">{!masterQuote.Name}</a></td>
                                         <td class="slds-truncate">{!masterQuote.buildertek__Status__c}</td>
@@ -105,8 +113,6 @@
             
                         </table>
                     </div>
-
-
                 </div>
                 <footer aura:id="footer" class="slds-modal__footer">
                     <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{! c.closeModel }" />
