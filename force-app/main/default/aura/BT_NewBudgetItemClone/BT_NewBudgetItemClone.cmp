@@ -507,7 +507,7 @@
                 </div>
                 <div aura:id="budgetItem" />
 
-                <div class="av slds-box" id="{!v.recordId + 'groups'}" style="min-height:100%; padding-block:0px !important; padding-inline: 0px; margin-top: -5px;">
+                <div class="av slds-box" id="{!v.recordId + 'groups'}" style="min-height:100%; padding-block:0px !important; padding-inline: 0px; margin-top: -5px; overflow:auto">
                     <div>
                         <aura:if isTrue="{!v.recordId != null}">
                             <div style="padding:0px; min-height:100%; height: 100%; padding-inline: 10px;">
@@ -593,14 +593,16 @@
                                                 </td>
                                                 <td>
                                                     <aura:html tag="style">
-                                                        <!-- .mainDiv{
-                                                            padding-top:0% !important;
+                                                        .mainDiv{
+                                                            <!-- CSS Chages with BUIL-3502 == Keep in master -->
+                                                            max-width: 27vw !important;
+                                                            padding-top:1% !important;
     
                                                         }
-                                                        .pillSize{
-    
-                                                            padding-top: 2% !important;
-                                                            padding-bottom: 2% !important;
+                                                        <!-- .pillSize{
+                                                            width: 45vw;
+                                                            padding-top: 1% !important;
+                                                            padding-bottom: 1% !important;
                                                         } -->
                                                         .subDiv{
                                                             <!-- width:100% !important; -->
