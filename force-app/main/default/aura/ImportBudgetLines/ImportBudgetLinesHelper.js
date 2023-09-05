@@ -169,7 +169,7 @@
 
       fr.readAsDataURL(file);
     } else {
-         document.getElementById("uploadingCSVSpinnerText").innerHTML = "";
+        //  document.getElementById("uploadingCSVSpinnerText").innerHTML = "";
       var toastEvent = $A.get("e.force:showToast");
       toastEvent.setParams({
         mode: "sticky",
