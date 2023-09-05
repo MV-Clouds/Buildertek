@@ -297,10 +297,12 @@ export default class CreateNewSchedule extends NavigationMixin(LightningElement)
         console.log('clearInputForType', clearInputForType);
         if (clearInputForType === 'project') {
             this.searchProjectName = '';
+            this.projectId = undefined;
             this.showProjectIcon = false;
             this.isInputEnabledForProject = false;
         } else {
             this.searchProjectManager = '';
+            this.userId = undefined;
             this.showUserIcon = false;
             this.isInputEnabledForUser = false;
         }

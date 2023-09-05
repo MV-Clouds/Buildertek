@@ -7,8 +7,8 @@
     </div>
     <div class="slds-m-around_large" style="background: white; margin: 1% 5%;">
         <header class="slds-modal__header">
-            <lightning-button-icon icon-name="utility:close" onclick={closeModel} alternative-text="close"
-                variant="bare-inverse" class="slds-modal__close"></lightning-button-icon>
+            <lightning-button-icon icon-name="utility:close" onclick={onCancelHandle} alternative-text="close"
+                variant="bare-inverse" class="slds-modal__close" style="margin-top: 15px;"></lightning-button-icon>
             <h3 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New Schedule</h3>
         </header>
         <h3 class="slds-section-title--divider" style="font-weight: bold; color: black; padding-top: 1rem;">
@@ -45,7 +45,7 @@
                                         class="slds-input custom-input" name="searchProjectName" data-id="project"
                                         value={searchProjectName} oninput={handleProjectSearch}
                                         disabled={isInputEnabledForProject} />
-                                    <div class="iconContainer-right">
+                                    <div if:true={showProjectIcon} class="iconContainer-right">
                                         <lightning-icon onclick={clearInput} data-id="project"
                                             icon-name="utility:close" size='xx-small'>
                                         </lightning-icon>
@@ -129,7 +129,7 @@
                                         class="slds-input custom-input" name="project" data-id="user"
                                         value={searchProjectManager} oninput={handleProjectManagerSearch}
                                         disabled={isInputEnabledForUser} />
-                                    <div class="iconContainer-right">
+                                    <div if:true={showUserIcon} class="iconContainer-right">
                                         <lightning-icon onclick={clearInput} data-id="user"
                                             icon-name="utility:close" size='xx-small'>
                                         </lightning-icon>
