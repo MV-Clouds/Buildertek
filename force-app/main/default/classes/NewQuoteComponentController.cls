@@ -55,7 +55,7 @@ public with sharing class NewQuoteComponentController {
 
     @AuraEnabled
     public static List<buildertek__Quote__c> getAllMasterQuote(){
-        List<buildertek__Quote__c> quoteList=[SELECT Id, Name , buildertek__Description__c , buildertek__Type__c  From buildertek__Quote__c WHERE buildertek__Type__c = 'Master' LIMIT 900];
+        List<buildertek__Quote__c> quoteList=[SELECT Id, Name , buildertek__Status__c, buildertek__Description__c , buildertek__Type__c  From buildertek__Quote__c WHERE buildertek__Type__c = 'Master' LIMIT 900];
         return quoteList;
     }
 
@@ -71,9 +71,20 @@ public with sharing class NewQuoteComponentController {
         Set<String> SobjectFields = Schema.getGlobalDescribe().get('buildertek__Quote_Item__c').getDescribe().fields.getMap().keySet();  
         List<String> fieldsInList = new List<String>(SobjectFields);
         String query = 'SELECT ' + String.join(fieldsInList, ',') + ' FROM buildertek__Quote_Item__c WHERE buildertek__Quote__c=:masterQuoteId'; 
-
+        System.debug(query);
         List<buildertek__Quote_Item__c> quoteItemList = Database.query(query);
-        System.debug(quoteItemList);
+        list<buildertek__Quote_Item__c> newQuoteItemList= new List<buildertek__Quote_Item__c>();
+        for(buildertek__Quote_Item__c quoteItem:quoteItemList){
+
+            buildertek__Quote_Item__c newQuoteItemRec=quoteItem.clone(false, false, false, false);
+            newQuoteItemRec.buildertek__Quote__c=QuoteToInsert.Id;
+            newQuoteItemList.add(newQuoteItemRec);
+        
+        }
+        if(newQuoteItemList.size() >0){
+
+            insert newQuoteItemList;
+        }
          return QuoteToInsert.ID;
     }
 

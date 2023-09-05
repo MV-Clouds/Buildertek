@@ -96,6 +96,7 @@
         console.log('fields: ' + JSON.stringify(fields));
         var data = JSON.stringify(fields);
         console.log('data-->>',{data});
+        debugger;
         var action = component.get("c.saveRecord");
         action.setParams({
             "data": data,
@@ -184,7 +185,8 @@
         navService.navigate(pageReference);
     },
     selectMasterQuote:function(component, event, helper) {
-        component.set('v.selectedMasterQuoteId' ,event.getSource().get('v.text') );
+        var masterQuoteId=event.getSource().get('v.text');
+        component.set('v.selectedMasterQuoteId' , masterQuoteId);
         console.log(component.get('v.selectedMasterQuoteId'));
 
     }

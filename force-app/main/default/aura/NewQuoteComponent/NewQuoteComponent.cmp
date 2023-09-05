@@ -18,7 +18,6 @@
 
 
 
-
     <aura:if isTrue="{!v.Spinner}">
         <div aura:id="spinnerId" class="slds-spinner_container">
             <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
@@ -72,11 +71,10 @@
                         </lightning:layout>
                     </div>
 
-                    <div style="height: 12.2rem; overflow-y: scroll; margin-top: 2%;">
-
-                        <div><h3 class="slds-section-title--divider" style="font-weight: bold">Master Schedules</h3> </div>
-                        <table class="slds-table slds-table_bordered slds-table_cell-buffer">
-                            <thead>
+                    <div style="height: 12.2rem; overflow-y: scroll; margin-top: 2%;" class="slds-is-relative">
+                        <div><h3 class="slds-section-title--divider" style="font-weight: bold">Master Quotes</h3> </div>
+                        <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-is-relative">
+                            <thead style="position:sticky; top:0px; z-index:100">
                                 <tr class="slds-text-title_caps">
                                     <th scope="col" class="slds-truncate">
                                     </th>
@@ -84,30 +82,21 @@
                                         <div class="slds-truncate" title="Duration">Name</div>
                                     </th>
                                     <th scope="col">
+                                        <div class="slds-truncate" title="Project Description">Status
+                                        </div>
+                                    </th>
+                                    <th scope="col">
                                         <div class="slds-truncate" title="Project Description">Description</div>
                                     </th>
-                                    <!-- <th scope="col">
-                                        <div class="slds-truncate" title="Project Description">Total Working Days
-                                        </div>
-                                    </th> -->
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody style="max-height: 300px; overflow-y: auto;">
                                 <aura:iteration items="{!v.masterQuoteList}" var="masterQuote">
                                     <tr>
-                                        <td>
-                                            <ui:inputRadio text='{!masterQuote.Id}'  name='masterQuote' change='{!c.selectMasterQuote}' />
-                                        </td>
-
-                                        <td class="slds-truncate">
-                                            <a href="javascript:void(0);" onclick="{!c.openRecordPage}" data-record-id="{!masterQuote.Id}">{!masterQuote.Name}</a>
-                                           
-                                        </td>
-
-                                        <td>
-                                            {!masterQuote.buildertek__Description__c}
-                                        </td>
-
+                                        <td> <ui:inputRadio text='{!masterQuote.Id}'  name='masterQuote' change='{!c.selectMasterQuote}' /> </td>
+                                        <td class="slds-truncate"><a href="javascript:void(0);" onclick="{!c.openRecordPage}" data-record-id="{!masterQuote.Id}">{!masterQuote.Name}</a></td>
+                                        <td class="slds-truncate">{!masterQuote.buildertek__Status__c}</td>
+                                        <td class="slds-truncate">   {!masterQuote.buildertek__Description__c}</td>
                                     </tr>
                                 </aura:iteration>
 
