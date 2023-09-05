@@ -1,6 +1,9 @@
 ({
     doInit : function(component, event, helper) {
-        component.set("v.Spinner", true);
+        // component.set("v.Spinner", true);
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "SHOW"
+        }).fire();
         var value = helper.getParameterByName(component, event, 'inContextOfRef');
         console.log('value-->>',{value});
         var context = '';
@@ -13,7 +16,10 @@
         });
         action2.setCallback(this, function (response) {
             if (response.getState() == 'SUCCESS' && response.getReturnValue()) {
-                component.set("v.Spinner", false);
+                // component.set("v.Spinner", false);
+                $A.get("e.c:BT_SpinnerEvent").setParams({
+                    "action": "HIDE"
+                }).fire();
                 var listOfFields0 = JSON.parse(response.getReturnValue());
                 console.log({listOfFields0});
                 component.set("v.listOfFields0", listOfFields0);
@@ -24,7 +30,7 @@
             parentRecordId = context.attributes.recordId;
             component.set("v.parentRecordId", parentRecordId);
             console.log('parentRecordId---->>',{parentRecordId});
-            component.set("v.Spinner", false);
+            // component.set("v.Spinner", false);
         } else {
             var relatedList = window.location.pathname;
             var stringList = relatedList.split("/");
@@ -42,7 +48,7 @@
                 recordId: parentRecordId,
             });
             action.setCallback(this, function (response) {
-                component.set("v.Spinner", false);
+                // component.set("v.Spinner", false);
                 if (response.getState() == 'SUCCESS' && response.getReturnValue()) {
                     var objName = response.getReturnValue();
                     console.log('objName '+objName);
@@ -56,6 +62,7 @@
             $A.enqueueAction(action);
         }
         $A.enqueueAction(action2);
+        helper.masterQuoteRecord(component, event, helper);
     },
 
     closeModel: function(component, event, helper) {
@@ -89,10 +96,10 @@
         console.log('fields: ' + JSON.stringify(fields));
         var data = JSON.stringify(fields);
         console.log('data-->>',{data});
-        debugger;
         var action = component.get("c.saveRecord");
         action.setParams({
-            "data": data
+            "data": data,
+            "masterQuoteId":component.get('v.selectedMasterQuoteId')
         });
         action.setCallback(this, function (response) {
             var state = response.getState();
@@ -163,5 +170,22 @@
     saveNnew : function(component, event, helper) {
         component.set("v.saveAndNew", true);
         console.log('saveNnew');
+    },
+    openRecordPage: function(component, event, helper) {
+        var recordId = event.currentTarget.dataset.recordId;
+        var navService = component.find("navService");
+        var pageReference = {
+            type: "standard__recordPage",
+            attributes: {
+                recordId: recordId,
+                actionName: "view"
+            }
+        };
+        navService.navigate(pageReference);
+    },
+    selectMasterQuote:function(component, event, helper) {
+        component.set('v.selectedMasterQuoteId' ,event.getSource().get('v.text') );
+        console.log(component.get('v.selectedMasterQuoteId'));
+
     }
 })
