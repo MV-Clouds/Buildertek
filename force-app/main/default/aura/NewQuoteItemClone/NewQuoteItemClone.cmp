@@ -220,51 +220,18 @@
     <aura:attribute name="HaveCreateAccess" type="boolean" default="true" />
     <aura:attribute name="HaveUpdateAccess" type="boolean" default="true"/>
     <aura:attribute name="HaveDeleteAccess" type="boolean" default="true"/>
-    
+
     <!-- <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> -->
     <aura:HTML tag="style">
         .slds-tabs_card{
-            min-height: fit-content !important; 
+            min-height: fit-content !important;
             height: fit-content !important;
         }
 
         .slds-tabs_default{
-            min-height: fit-content !important; 
+            min-height: fit-content !important;
             height: fit-content;
         }
-        <!-- .slds-tabs_default{
-            min-height: 67vh; height: 67vh;
-        }
-        @media only screen and (max-height: 1080px) and (min-height: 990px){
-            .slds-tabs_default{
-                min-height: 67vh; height: 67vh;
-            }
-        }
-        @media only screen and (max-height: 990px) and (min-height: 900px){
-            .slds-tabs_default{
-                min-height: 71vh; height: 71vh;
-            }
-        }
-        @media only screen and (max-height: 900px) and (min-height: 810px){
-            .slds-tabs_default{
-                min-height: 75vh; height: 75vh;
-            }
-        }
-        @media only screen and (max-height: 810px) and (min-height: 720px){
-            .slds-tabs_default{
-                min-height: 80vh; height: 80vh;
-            }
-        }
-        @media only screen and (max-height: 720px) and (min-height: 630px){
-            .slds-tabs_default{
-                min-height: 84vh; height: 84vh;
-            }
-        }
-        @media only screen and (max-height: 630px) and (min-height: 540px){
-            .slds-tabs_default{
-                min-height: 89vh; height: 89vh;
-            }
-        } -->
     </aura:HTML>
 
 
@@ -386,14 +353,14 @@
                                 <lightning:button iconPosition="left" onclick="{!c.onClickAddlines}" label="Mass Add Line" class="sldsButtonGroup" />
                             </div>&nbsp;
 
-                                <!-- <div>
+                                <div>
                                     <aura:if isTrue="{!!v.displayGrouping}">
                                         <lightning:button iconPosition="left" onclick="{!c.onclickBOMGrouping}" label="Group" class="sldsButtonGroup" />
                                         <aura:set attribute="else">
                                             <lightning:button iconPosition="left" onclick="{!c.returnToNormalVIew}" label="Return" class="sldsButtonGroup" />
                                         </aura:set>
                                     </aura:if>
-                                </div>&nbsp; -->
+                                </div>&nbsp;
 
                                 <div>
                                     <lightning:button iconName="utility:edit" iconPosition="left"
@@ -794,12 +761,12 @@
                                                         width:100% !important;
                                                         margin-top:0 !important;
                                                     } -->
-                                                </aura:html> 
+                                                </aura:html>
                                                 <c:BT_LightningLookup objectAPIName="Product2"
                                                     IconName="standard:product"
                                                     selectedRecord="{!v.selectedLookUpRecord}" aura:id="productId"
                                                     parentId="{! v.pricebookName }" prodctfamly="{!v.productfamily}" childValue="{!v.newQuote.Name}"  />
-                                                
+
 
                                             </td>
                                             <!-- <td>
@@ -1478,6 +1445,12 @@
                         <!-- </div> -->
 
                         <!-- *** BOM Grouping *** -->
+                        <!-- Changes for Fix CSS Issue for Grouping
+                        1. mainBomDiv ==> addes style="max-height: 45vh;"
+                        2. table body tr line-height ==> 2.5 to 1.5;
+                        3. lightning:buttonIcon size ==> x-small;
+                        4. removed br tag 
+                        -->
                         <aura:set attribute="else">
                             <div class="mainBomDiv">
                                 <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal">
@@ -1488,10 +1461,10 @@
                                                     <td class="groupHeaderIcon">
                                                         <div id='collapseBtn' class="slds-float_left">
                                                             <span data-iconname="Expand Group" id="{!'expandGroupBtn_'+group1.groupIndex}" onclick="{!c.expandCollapeGroup}" style="display:none">
-                                                                <lightning:buttonIcon iconName="utility:add" variant="border-filled" iconClass="dark" alternativeText="Expand Group" title="Expand Group" />
+                                                                <lightning:buttonIcon iconName="utility:add" variant="border-filled" iconClass="dark" alternativeText="Expand Group" title="Expand Group" size="x-small" /> 
                                                             </span>
                                                             <span data-iconname="Collapse Group" id="{!'collapeseGroupBtn_'+group1.groupIndex}" onclick="{!c.expandCollapeGroup}"  style="display:inline-block;">
-                                                                <lightning:buttonIcon iconName="utility:dash" variant="border-filled" iconClass="dark" alternativeText="Collapse Group" title="Collapse Group" />
+                                                                <lightning:buttonIcon iconName="utility:dash" variant="border-filled" iconClass="dark" alternativeText="Collapse Group" title="Collapse Group" size="x-small"/>
                                                             </span>
                                                         </div>
                                                     </td>
@@ -1527,7 +1500,7 @@
                                                     </aura:iteration>
                                                 </tr>
                                                 <aura:iteration items="{!group1.quoteLineList}" var="quoteItem">
-                                                    <tr style="line-height: 2.5;display:table-row;" class="{!'record_'+group1.groupIndex}" >
+                                                    <tr style="line-height: 1.5;display:table-row;" class="{!'record_'+group1.groupIndex}" >
                                                         <td class="blankDiv"></td>
                                                         <td>
                                                             <div class="slds-form-element">
@@ -1657,10 +1630,10 @@
                                                         <td class="groupHeaderIcon">
                                                             <div id='collapseBtn' class="slds-float_left">
                                                                 <span data-iconname="Expand Group" id="{!'expandGroupBtn_'+group1.groupIndex+group2.groupIndex}" onclick="{!c.expandCollapeGroup}" style="display:none">
-                                                                    <lightning:buttonIcon iconName="utility:add" variant="border-filled" iconClass="dark" alternativeText="Expand Group" title="Expand Group" />
+                                                                    <lightning:buttonIcon iconName="utility:add" variant="border-filled" iconClass="dark" alternativeText="Expand Group" title="Expand Group" size="x-small" />
                                                                 </span>
                                                                 <span data-iconname="Collapse Group" id="{!'collapeseGroupBtn_'+group1.groupIndex+group2.groupIndex}" onclick="{!c.expandCollapeGroup}" style="display:inline-block;">
-                                                                    <lightning:buttonIcon iconName="utility:dash" variant="border-filled" iconClass="dark" alternativeText="Collapse Group" title="Collapse Group" />
+                                                                    <lightning:buttonIcon iconName="utility:dash" variant="border-filled" iconClass="dark" alternativeText="Collapse Group" title="Collapse Group" size="x-small" />
                                                                 </span>
                                                             </div>
                                                         </td>
@@ -1696,7 +1669,7 @@
                                                         </aura:iteration>
                                                     </tr>
                                                     <aura:iteration items="{!group2.quoteLineList}" var="quoteItem">
-                                                        <tr style="line-height: 2.5;display:table-row;"  class="{!'record_'+group1.groupIndex+group2.groupIndex}">
+                                                        <tr style="line-height: 1.5;display:table-row;"  class="{!'record_'+group1.groupIndex+group2.groupIndex}">
                                                             <td class="blankDiv"> </td>
                                                             <td>
                                                                 <div class="slds-form-element">
@@ -1790,8 +1763,9 @@
                                                             </td>
                                                         </aura:iteration>
                                                     </tr>
-                                                    <br/>
-                                                </aura:iteration>
+                                                    <!-- <br/>  -->
+                                                    <!-- commented This br tag to remove extra spaces -->
+                                                 </aura:iteration>
 
                                             </aura:iteration>
                                         </aura:if>
@@ -1858,10 +1832,10 @@
                                                             <td class="groupHeaderIcon">
                                                                 <div id='collapseBtn' class="slds-float_left">
                                                                     <span data-iconname="Expand Group" id="{!'expandGroupBtn_'+group1.groupIndex+group2.groupIndex+group3.groupIndex}" onclick="{!c.expandCollapeGroup}" style="display:none">
-                                                                        <lightning:buttonIcon iconName="utility:add" variant="border-filled" iconClass="dark" alternativeText="Expand Group" title="Expand Group" />
+                                                                        <lightning:buttonIcon iconName="utility:add" variant="border-filled" iconClass="dark" alternativeText="Expand Group" title="Expand Group" size="x-small" />
                                                                     </span>
                                                                     <span data-iconname="Collapse Group" id="{!'collapeseGroupBtn_'+group1.groupIndex+group2.groupIndex+group3.groupIndex}" onclick="{!c.expandCollapeGroup}" style="display:inline-block;">
-                                                                        <lightning:buttonIcon iconName="utility:dash" variant="border-filled" iconClass="dark" alternativeText="Collapse Group" title="Collapse Group" />
+                                                                        <lightning:buttonIcon iconName="utility:dash" variant="border-filled" iconClass="dark" alternativeText="Collapse Group" title="Collapse Group" size="x-small" />
                                                                     </span>
                                                                 </div>
                                                             </td>
@@ -1896,7 +1870,7 @@
                                                             </aura:iteration>
                                                         </tr>
                                                         <aura:iteration items="{!group3.quoteLineList}" var="quoteItem">
-                                                            <tr style="line-height: 2.5;display:table-row;"  class="{!'record_'+group1.groupIndex+group2.groupIndex+group3.groupIndex}">
+                                                            <tr style="line-height: 1.5;display:table-row;"  class="{!'record_'+group1.groupIndex+group2.groupIndex+group3.groupIndex}">
                                                                 <td class="blankDiv" colspan="2"> </td>
                                                                 <td>
                                                                     <div class="slds-form-element">
@@ -1988,7 +1962,7 @@
                                                                 </td>
                                                             </aura:iteration>
                                                         </tr>
-                                                        <br/>
+                                                        <!-- <br/> -->
                                                     </aura:iteration>
 
                                                 </aura:iteration>
@@ -2088,10 +2062,10 @@
                                                                 <td class="groupHeaderIcon">
                                                                     <div id='collapseBtn' class="slds-float_left">
                                                                         <span data-iconname="Expand Group" id="{!'expandGroupBtn_'+group1.groupIndex+group2.groupIndex+group3.groupIndex+group4.groupIndex}" onclick="{!c.expandCollapeGroup}" style="display:none">
-                                                                            <lightning:buttonIcon iconName="utility:add" variant="border-filled" iconClass="dark" alternativeText="Expand Group" title="Expand Group" />
+                                                                            <lightning:buttonIcon iconName="utility:add" variant="border-filled" iconClass="dark" alternativeText="Expand Group" title="Expand Group" size="x-small" />
                                                                         </span>
                                                                         <span data-iconname="Collapse Group" id="{!'collapeseGroupBtn_'+group1.groupIndex+group2.groupIndex+group3.groupIndex+group4.groupIndex}" onclick="{!c.expandCollapeGroup}" style="display:inline-block;">
-                                                                            <lightning:buttonIcon iconName="utility:dash" variant="border-filled" iconClass="dark" alternativeText="Collapse Group" title="Collapse Group" />
+                                                                            <lightning:buttonIcon iconName="utility:dash" variant="border-filled" iconClass="dark" alternativeText="Collapse Group" title="Collapse Group" size="x-small" />
                                                                         </span>
                                                                     </div>
                                                                 </td>
@@ -2131,7 +2105,7 @@
                                                                 </aura:iteration>
                                                             </tr>
                                                             <aura:iteration items="{!group4.quoteLineList}" var="quoteItem">
-                                                                <tr style="line-height: 2.5;display:table-row;"  class="{!'record_'+group1.groupIndex+group2.groupIndex+group3.groupIndex+group4.groupIndex}">
+                                                                <tr style="line-height: 1.5;display:table-row;"  class="{!'record_'+group1.groupIndex+group2.groupIndex+group3.groupIndex+group4.groupIndex}">
                                                                     <td class="blankDiv" colspan="3"> </td>
                                                                     <td>
                                                                         <div class="slds-form-element">
@@ -2231,7 +2205,7 @@
                                                                     </td>
                                                                 </aura:iteration>
                                                             </tr>
-                                                            <br/>
+                                                            <!-- <br/> -->
                                                         </aura:iteration>
 
                                                     </aura:iteration>

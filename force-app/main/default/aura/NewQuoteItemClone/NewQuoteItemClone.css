@@ -248,62 +248,62 @@
 .THIS .width{
     width: 45% !important;
 }
+/* new chnages for css fixing after grouping  */
+.THIS .mainBomDiv{
+    max-height : 45vh;
+}
 .THIS .divcont{
-    /* min-height: 42vh; */
-    max-height: 42vh;
+    max-height : 42vh;
     overflow: auto;
 }
-
-/* @media only screen and (max-width: 1369px) and (min-width: 1280px){
-.THIS .divcont {
-    max-height: 27vh;
+@media only screen and (max-height: 1080px) and (min-height: 990px){
+    .THIS .mainBomDiv{
+        max-height : 45vh;
     }
-}
-
-@media only screen and (max-width: 1579px) and (min-width: 1370px){
-.THIS .divcont {
-    max-height: 33vh;
-    }
-}
-@media only screen and (max-width: 1579px) and (min-width: 1370px){
-.THIS .divcont {
-    max-height: 35vh;
-    }
-}
-
-@media only screen and (max-width: 1779px) and (min-width: 1580px){
-.THIS .divcont {
-    max-height: 37vh;
-    }
-}
-
-@media only screen and (max-width: 1779px) and (min-width: 1580px){
-.THIS .divcont {
-    max-height: 40vh;
-    }
-}
-
-@media only screen and (max-width: 1980px) and (min-width: 1780px){
-.THIS .divcont {
-    max-height: 43vh;
-    } 
-}
-
-@media only screen and (max-width: 1980px) and (min-width: 1780px){
-.THIS .divcont {
-    max-height: 43vh;
-    }
-}    */
-@media only screen and (max-height: 1080px) {
     .THIS .divcont{
-        /* min-height: 42vh; */
-        max-height: 42vh;
-        overflow: auto;
+        max-height : 42vh;
     }
-    /* .THIS .av{
-        min-height: auto !important;
-    } */
-  }
+}
+@media only screen and (max-height: 990px) and (min-height: 900px){
+    .THIS .mainBomDiv{
+        max-height : 43vh;
+    }
+    .THIS .divcont{
+        max-height : 40.5vh;
+    }
+}
+@media only screen and (max-height: 900px) and (min-height: 810px){
+    .THIS .mainBomDiv{
+        max-height : 42vh;
+    }
+    .THIS .divcont{
+        max-height : 38vh;
+    }
+}
+@media only screen and (max-height: 810px) and (min-height: 720px){
+    .THIS .mainBomDiv{
+        max-height : 41vh;
+    }
+    .THIS .divcont{
+        max-height : 36.5vh;
+    }
+}
+@media only screen and (max-height: 720px) and (min-height: 630px){
+    .THIS .mainBomDiv{
+        max-height : 40vh;
+    }
+    .THIS .divcont{
+        max-height : 35vh;
+    }
+}
+@media only screen and (max-height: 630px) and (min-height: 540px){
+    .THIS .mainBomDiv{
+        max-height : 39vh;
+    }
+    .THIS .divcont{
+        max-height : 33.5vh;
+    }
+}
 .THIS .divcont1{
     max-height: 60vh;
     overflow: auto;
