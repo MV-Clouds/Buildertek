@@ -104,5 +104,5 @@ public without sharing class ConfirmationpageAsPDFController{
         String imageid = doc.id;
         imageid = imageid.substring(0, 15);
         strBody = strBody.replace('###############', imageid);
-     }
+    }
 }

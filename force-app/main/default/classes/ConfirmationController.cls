@@ -9,10 +9,15 @@ public without sharing class ConfirmationController{
 
     // Construct the list of emails we want to send
     string templateBody = '';
+
     string templateBody1 = '';
+
     string templateBody2 = '';
+
     public String templateId;
+
     public string theTemplate;
+
     public string templateName;
 
     public string fileid{ get; set; }
@@ -52,6 +57,7 @@ public without sharing class ConfirmationController{
     public List<String> cdId{ get; set; }
 
     public list<buildertek__Quote_Line_Group__c> Quotelinegroup;
+
     Public map<id, list<buildertek__Quote_Item__c>> quotegroupingmap;
 
     public List<buildertek__Quote_Item__c> quotelinerecords{ get; set; }
@@ -59,17 +65,22 @@ public without sharing class ConfirmationController{
     public boolean displayPopup{ get; set; }
 
     public Boolean isActionMethodCall{ get; set; }
+
     public String quoteMessage{ get; set; }
+
     public Boolean isAccepted{ get; set; }
 
     public Boolean allQuoteLineAccepted{ get; set; }
 
     public String Result{ get; set; }
+
     public String RejectResult{ get; set; }
 
     //public ApexPages.StandardController std;
     public transient string imageContent{ get; set; }
+
      public string imageContentforReject{ get; set; }
+     
     public Boolean reject_Quote_on_Rejected_Lines{ get; set; }
 
     public ConfirmationController(){
@@ -495,28 +506,18 @@ public without sharing class ConfirmationController{
         }
       /*  String[] toAddresses = new String[] {'mailto:manisha.kotha@diligentforcelabs.com'};
 
-email.setToAddresses(toAddresses);
-email.setSenderDisplayName('Salesforce Support');
-email.setSubject('New Case Created : ');
-email.setBccSender(false);
-email.setUseSignature(false);
-email.setPlainTextBody('Your Case: '  +' has been created.');
-email.setHtmlBody('Your case:<b> </b>has been created.<p>'+
-     'To view your case <a href=https://mydomainname.my.salesforce.com/>click here.</a>');
-     email.SetSaveAsActivity(true);
+        email.setToAddresses(toAddresses);
+        email.setSenderDisplayName('Salesforce Support');
+        email.setSubject('New Case Created : ');
+        email.setBccSender(false);
+        email.setUseSignature(false);
+        email.setPlainTextBody('Your Case: '  +' has been created.');
+        email.setHtmlBody('Your case:<b> </b>has been created.<p>'+
+            'To view your case <a href=https://mydomainname.my.salesforce.com/>click here.</a>');
+            email.SetSaveAsActivity(true);
 
-// Send the email you have created.
-Messaging.sendEmail(new Messaging.SingleEmailMessage[] { email });  */
-
-
-
-
-
-
-
-
-
-
+        // Send the email you have created.
+        Messaging.sendEmail(new Messaging.SingleEmailMessage[] { email });  */
 
         Messaging.SingleEmailMessage email1 = new Messaging.SingleEmailMessage();
         string theTemplate1 = [SELECT Id
@@ -660,7 +661,7 @@ Messaging.sendEmail(new Messaging.SingleEmailMessage[] { email });  */
                                            WHERE Id IN :cdIds];
            System.debug('cdPublickLink-------->' + cdPublickLink);
         List<String> listName = new List<String>();
-       for (ContentDistribution Pl : cdPublickLink) {
+        for (ContentDistribution Pl : cdPublickLink) {
         // listName.add(Pl.Id);
         // System.debug('listName---->'+ listName);
             cdId.add(Pl.Id);
@@ -734,43 +735,41 @@ Messaging.sendEmail(new Messaging.SingleEmailMessage[] { email });  */
                                   WHERE DeveloperName = :'Quote_Template_2'].Id;
                 }
                 System.debug('templateId: ' + templateId);
-            //     if(conVerIDs.size()> 0) {
-            //         mail.setHtmlBody('Action:SavePDF; recordId:' + quoterec.Id + ';templateId:' + templateId + ';fileId:' + converId1 +'; Confirmation Controller');
-            //     }
-            //    if(conVerIDs.size()> 1) {
-            //     mail.setHtmlBody('Action:SavePDF; recordId:' + quoterec.Id + ';templateId:' + templateId + ';fileId:' + converId1 + ';fileIdNew:' + converId2 +'; Confirmation Controller');
-            //     }
+                //     if(conVerIDs.size()> 0) {
+                //         mail.setHtmlBody('Action:SavePDF; recordId:' + quoterec.Id + ';templateId:' + templateId + ';fileId:' + converId1 +'; Confirmation Controller');
+                //     }
+                //    if(conVerIDs.size()> 1) {
+                //     mail.setHtmlBody('Action:SavePDF; recordId:' + quoterec.Id + ';templateId:' + templateId + ';fileId:' + converId1 + ';fileIdNew:' + converId2 +'; Confirmation Controller');
+                //     }
                 mail.setHtmlBody('Action:SavePDF; recordId:' + quoterec.Id + ';templateId:' + templateId + ';fileId:' + converId1 + ';fileIdNew:' + converId2 +'; Confirmation Controller');
                 // System.debug('CONVERID[0]------>' + conVerIDs[0] + 'CONVERID[1]------>' + conVerIDs[1] );
                 Messaging.sendEmail(new Messaging.SingleEmailMessage[]{ mail });
 
                 /*if(quoterec.buildertek__Status__c == 'Customer Accepted' && Checkcustomerview == null){
-                 string theTemplate;
-                 if (templateId != null){
-                 theTemplate = [SELECT Id
-                 FROM EmailTemplate
-                 WHERE Id = :templateId].Id;
-                 }
-                 if (templateId == null && Checkcustomerview != null){
-                 EmailTemplate emailtemrec = [Select Id, Name, Body, DeveloperName
-                 from EmailTemplate
-                 where DeveloperName = :'Quote_Template_2'
-                 limit 1];
-                 theTemplate = emailtemrec.Id;
-                 }
+                    string theTemplate;
+                    if (templateId != null){
+                        theTemplate = [SELECT Id
+                        FROM EmailTemplate
+                        WHERE Id = :templateId].Id;
+                    }
+                    if (templateId == null && Checkcustomerview != null){
+                        EmailTemplate emailtemrec = [Select Id, Name, Body, DeveloperName
+                        from EmailTemplate
+                        where DeveloperName = :'Quote_Template_2'
+                        limit 1];
+                        theTemplate = emailtemrec.Id;
+                    }
 
-                 String testString = quoterec.buildertek__To_Emails__c;
-                 List<String> values = testString.split(',');
-                // List<String> to = new List<String>();
-                // to.add('harika.chunduri@diligentforcelabs.com');
-                 List<String> cc = new List<String>();
-                // cc.add('');
-                 system.debug('theTemplate'+theTemplate + 'templateId'+templateId +'values' + values);
-                 PreviewQuoteController.acceptandsendProposal('','',recordId,theTemplate,values, cc, conVer.Id ,cc,'');
-                 }*/
-
+                    String testString = quoterec.buildertek__To_Emails__c;
+                    List<String> values = testString.split(',');
+                    // List<String> to = new List<String>();
+                    // to.add('harika.chunduri@diligentforcelabs.com');
+                    List<String> cc = new List<String>();
+                    // cc.add('');
+                    system.debug('theTemplate'+theTemplate + 'templateId'+templateId +'values' + values);
+                    PreviewQuoteController.acceptandsendProposal('','',recordId,theTemplate,values, cc, conVer.Id ,cc,'');
+                }*/
             }
-
         }
         system.debug('objectAPIName'+objectAPIName);
         if (objectAPIName.contains('buildertek__Change_Order__c')){

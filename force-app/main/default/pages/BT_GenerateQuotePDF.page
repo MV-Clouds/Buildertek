@@ -1,63 +1,56 @@
 <apex:page controller="BT_GenerateQuotePDF"  standardStylesheets="false" applyHtmlTag="false" applyBodyTag="false" showHeader="false" renderAs="pdf"  action="{!createPDF}" >
-<!--<script>
-        window.onload = onload;
-        function onload{
-            loadData();
-        }
-</script>-->
+  <!--<script>
+          window.onload = onload;
+          function onload{
+              loadData();
+          }
+  </script>-->
 
-<apex:form >
-  <apex:outputText value="{!strBody}" escape="false"/>
-<apex:outputPanel rendered="{!divsign == true}" >
-<apex:outputPanel rendered="{!fileIdNew != 'null' && filerecid != null && filerecidNew != ''}" >
-<div >
-Signature
-<div style="border:1px solid black;">   
- <apex:image style="width:500px; height:100px" url="/sfc/servlet.shepherd/version/download/{!filerecidNew}"/>  
-</div>
-</div>
-</apex:outputPanel>
-<!--<apex:actionFunction name="loadData" action="{!createPDF}" /> -->
-<apex:outputText value="{!strBodyNew}" escape="false"/>
-<br/>
-<apex:outputPanel rendered="{!filerecid != null}" >
-<div >
-Signature
-<div style="border:1px solid black;">   
-  <!-- <apex:outputText value="{!filerecid}" escape="false"/> -->
+  <apex:form >
+      <apex:outputText value="{!strBody}" escape="false"/>
+      <apex:outputPanel rendered="{!divsign == true}" >
+        <apex:outputPanel rendered="{!fileIdNew != 'null' && filerecid != null && filerecidNew != ''}" >
+          <div >
+            Signature
+            <div style="border:1px solid black;">   
+            <apex:image style="width:500px; height:100px" url="/sfc/servlet.shepherd/version/download/{!filerecidNew}"/>  
+            </div>
+          </div>
+        </apex:outputPanel>
+        <!--<apex:actionFunction name="loadData" action="{!createPDF}" /> -->
+        <apex:outputText value="{!strBodyNew}" escape="false"/>
+          <br/>
+          <apex:outputPanel rendered="{!filerecid != null}" >
+            <div >
+              Signature
+              <div style="border:1px solid black;">   
+                <!-- <apex:outputText value="{!filerecid}" escape="false"/> -->
+                <apex:image style="width:500px; height:100px" url="/sfc/servlet.shepherd/version/download/{!filerecid}"/> 
+                <!-- <apex:image url="https://btservice360-dev-ed.lightning.force.com/sfc/servlet.shepherd/version/download/0681K00000avraSQAQ" /> -->
+              </div> <br/>
+              Accepted Date :
+              <apex:outputText value="{0,date,dd' 'MMMMM' 'yyyy}"> 
+                  <apex:param value="{!CustomerAcceptedDate}" /> 
+              </apex:outputText>
+            </div>
+          </apex:outputPanel>
+      </apex:outputPanel>
+      <apex:outputPanel rendered="{!divsign == false}" >
+        <apex:outputPanel rendered="{!filerecid != null}" >
+          <div >
+            Signature
+            <div style="border:1px solid black;">   
+              <!-- <apex:outputText value="{!filerecid}" escape="false"/> -->
+              <apex:image style="width:500px; height:100px" url="/sfc/servlet.shepherd/version/download/{!filerecid}"/> 
+              <!-- <apex:image url="https://btservice360-dev-ed.lightning.force.com/sfc/servlet.shepherd/version/download/0681K00000avraSQAQ" /> -->
+            </div> <br/>
+            Accepted Date :
+            <apex:outputText value="{0,date,dd' 'MMMMM' 'yyyy}"> 
+                <apex:param value="{!CustomerAcceptedDate}" /> 
+            </apex:outputText>
+          </div>
+        </apex:outputPanel>
+      </apex:outputPanel>
 
- <apex:image style="width:500px; height:100px" url="/sfc/servlet.shepherd/version/download/{!filerecid}"/> 
-   <!-- <apex:image url="https://btservice360-dev-ed.lightning.force.com/sfc/servlet.shepherd/version/download/0681K00000avraSQAQ" /> -->
-    
-</div> <br/>
-Accepted Date :
-<apex:outputText value="{0,date,dd' 'MMMMM' 'yyyy}"> 
-                   <apex:param value="{!CustomerAcceptedDate}" /> 
-</apex:outputText>
-
-</div>
-</apex:outputPanel>
-</apex:outputPanel>
-<apex:outputPanel rendered="{!divsign == false}" >
-  <apex:outputPanel rendered="{!filerecid != null}" >
-    <div >
-    Signature
-    <div style="border:1px solid black;">   
-      <!-- <apex:outputText value="{!filerecid}" escape="false"/> -->
-    
-     <apex:image style="width:500px; height:100px" url="/sfc/servlet.shepherd/version/download/{!filerecid}"/> 
-       <!-- <apex:image url="https://btservice360-dev-ed.lightning.force.com/sfc/servlet.shepherd/version/download/0681K00000avraSQAQ" /> -->
-        
-    </div> <br/>
-    Accepted Date :
-    <apex:outputText value="{0,date,dd' 'MMMMM' 'yyyy}"> 
-                       <apex:param value="{!CustomerAcceptedDate}" /> 
-    </apex:outputText>
-    
-    </div>
-    </apex:outputPanel>
-
-</apex:outputPanel>
-
-</apex:form>
+  </apex:form>
 </apex:page>
