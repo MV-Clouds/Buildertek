@@ -958,6 +958,16 @@
 
                         <!-- <div class="slds mainTablediv"> -->
                         <div class="slds-scrollable">
+
+                            <aura:if isTrue="{!v.total > 50}">
+                                <div class="slds-align_absolute-center" style="background-color: white; padding-block: 5px">
+                                    <lightning:button disabled="{!v.page == 1}" variant="brand" label="Previous"
+                                        onclick="{! c.navigate }" />
+                                    <lightning:button disabled="{!v.page == v.pages}" aura:id="previousPage"
+                                        variant="brand" label="Next" onclick="{! c.navigate }" />
+                                </div>
+                            </aura:if>
+
                             <div class="divcont" aura:id="headerDiv">
                                 <!--<div class="slds-scrollable" style="width:100%;height: 35rem;">-->
 
@@ -1044,7 +1054,7 @@
                                                 </td>
 
                                             </tr>
-                                            <tr class="slds-text-heading--label" style="line-height: 1.7;font-size: 12px;">
+                                            <tr class="slds-text-heading--label" style="line-height: 1;font-size: 12px;">
                                                 <th></th>
                                                 <th class="slds-is-sortable tabletitle" scope="col" width="5px">
                                                     <div class="slds-form-element">
@@ -1092,7 +1102,7 @@
                                             </tr>
                                             <aura:iteration items="{!v.TotalRecords.tarTable.ListOfEachRecord}"
                                                 var="tar" indexVar="quoteIndex">
-                                                <tr style="line-height: 1.7;display:table-row;"
+                                                <tr style="line-height: 1;display:table-row;"
                                                     class="{!v.quoteId+' slds-hint-parent groupRows_'+groupIndex}">
                                                     <!-- quoteId -->
 
@@ -1430,14 +1440,7 @@
 
                             </div>
                             <!--<br />-->
-                            <aura:if isTrue="{!v.total > 50}">
-                                <div class="slds-align_absolute-center" style="background-color: white; padding-block: 5px">
-                                    <lightning:button disabled="{!v.page == 1}" variant="brand" label="Previous"
-                                        onclick="{! c.navigate }" />
-                                    <lightning:button disabled="{!v.page == v.pages}" aura:id="previousPage"
-                                        variant="brand" label="Next" onclick="{! c.navigate }" />
-                                </div>
-                            </aura:if>
+
 
                         </div>
 
@@ -1446,10 +1449,11 @@
 
                         <!-- *** BOM Grouping *** -->
                         <!-- Changes for Fix CSS Issue for Grouping
-                        1. mainBomDiv ==> addes style="max-height: 45vh;"
-                        2. table body tr line-height ==> 2.5 to 1.5;
+                        1. mainBomDiv & divcont==> addes media Query max-Height "
+                        2. line-height ==> set to 1 for all;
                         3. lightning:buttonIcon size ==> x-small;
                         4. removed br tag 
+                        5. move NEXT & PREVIOUS buttom to above the table
                         -->
                         <aura:set attribute="else">
                             <div class="mainBomDiv">
@@ -1500,7 +1504,7 @@
                                                     </aura:iteration>
                                                 </tr>
                                                 <aura:iteration items="{!group1.quoteLineList}" var="quoteItem">
-                                                    <tr style="line-height: 1.5;display:table-row;" class="{!'record_'+group1.groupIndex}" >
+                                                    <tr style="line-height: 1;display:table-row;" class="{!'record_'+group1.groupIndex}" >
                                                         <td class="blankDiv"></td>
                                                         <td>
                                                             <div class="slds-form-element">
@@ -1669,7 +1673,7 @@
                                                         </aura:iteration>
                                                     </tr>
                                                     <aura:iteration items="{!group2.quoteLineList}" var="quoteItem">
-                                                        <tr style="line-height: 1.5;display:table-row;"  class="{!'record_'+group1.groupIndex+group2.groupIndex}">
+                                                        <tr style="line-height: 1;display:table-row;"  class="{!'record_'+group1.groupIndex+group2.groupIndex}">
                                                             <td class="blankDiv"> </td>
                                                             <td>
                                                                 <div class="slds-form-element">
@@ -1870,7 +1874,7 @@
                                                             </aura:iteration>
                                                         </tr>
                                                         <aura:iteration items="{!group3.quoteLineList}" var="quoteItem">
-                                                            <tr style="line-height: 1.5;display:table-row;"  class="{!'record_'+group1.groupIndex+group2.groupIndex+group3.groupIndex}">
+                                                            <tr style="line-height: 1;display:table-row;"  class="{!'record_'+group1.groupIndex+group2.groupIndex+group3.groupIndex}">
                                                                 <td class="blankDiv" colspan="2"> </td>
                                                                 <td>
                                                                     <div class="slds-form-element">
@@ -2105,7 +2109,7 @@
                                                                 </aura:iteration>
                                                             </tr>
                                                             <aura:iteration items="{!group4.quoteLineList}" var="quoteItem">
-                                                                <tr style="line-height: 1.5;display:table-row;"  class="{!'record_'+group1.groupIndex+group2.groupIndex+group3.groupIndex+group4.groupIndex}">
+                                                                <tr style="line-height: 1;display:table-row;"  class="{!'record_'+group1.groupIndex+group2.groupIndex+group3.groupIndex+group4.groupIndex}">
                                                                     <td class="blankDiv" colspan="3"> </td>
                                                                     <td>
                                                                         <div class="slds-form-element">
