@@ -4646,6 +4646,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                             component.set("v.addInvoicePOSection", false); // to close popup
                             $A.get("e.force:refreshView").fire();
                             document.location.reload(true);    
+
                         }
                     }
                     else if (response.getState() == 'ERROR') {

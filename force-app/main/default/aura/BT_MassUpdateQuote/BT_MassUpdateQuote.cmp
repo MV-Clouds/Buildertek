@@ -47,7 +47,6 @@
     <!-- <aura:attribute name="selectedLookUpRecord" type="sObject" default="{}" /> -->
 
    
-    <!-- <aura:handler name="datafromChild" event="c:senDatafromChild" action="{!c.handleComponentEvent}"/>  -->
     <aura:handler name="oSelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.handleComponentEvent}" />
     <aura:registerEvent name="ClearSelectedRecordEvent" type="c:BT_CLearLightningLookupEvent" />
 
@@ -62,7 +61,7 @@
             </aura:set>
         </lightning:card>
 
-        <div class="slds-border_top slds-box slds-box_xx-small" >
+        <div class="slds-border_top slds-box slds-box_xx-small" style="overflow: auto;" >
             <div class="slds slds-m-top_medium slds-p-horizontal_medium" >
                 <table class="slds-table slds-table--bordered':'slds-table--bordered'">
                     <thead>
@@ -128,19 +127,19 @@
                                     <aura:html tag="style">
                                         .mainDiv{
                                             padding-top:0% !important;
+                                            max-width:27vw
 
                                         }
                                         .pillSize{
 
-                                            padding-top: 2% !important;
-                                            padding-bottom: 2% !important;
+                                            padding-top: 1.3% !important;
+                                            padding-bottom: 1.3% !important;
                                         }
                                         .subDiv{
                                             width:100% !important;
                                             margin-top:0 !important;
                                         }
                                     </aura:html>
-                                
                                     <c:BT_LightningLookup objectAPIName="Product2"  IconName="standard:product" selectedRecord="{!quoteLineWrapper.selectedLookUpRecord}" aura:id="productId"   parentId="{!quoteLineWrapper.pricebookEntryId}" prodctfamly="{!quoteLineWrapper.productFamily != '' ? quoteLineWrapper.productFamily : 'All Families'}" />
                                     
                                 </td>

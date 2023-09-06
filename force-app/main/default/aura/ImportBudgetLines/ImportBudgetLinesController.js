@@ -74,8 +74,8 @@
     save: function (component, event, helper) {
         if(component.get("v.HaveCreateAccess")){
             // alert("haiii");
-         $A.util.addClass(component.find("uploading").getElement(), "uploading");
-         document.getElementById("uploadingCSVSpinnerText").innerHTML = '';  //Remove text for BUIL-2690
+        //  $A.util.addClass(component.find("uploading").getElement(), "uploading");
+        //  document.getElementById("uploadingCSVSpinnerText").innerHTML = '';  //Remove text for BUIL-2690
          helper.save(component, helper);
        }
        else{
@@ -99,18 +99,18 @@
   },
 
 
-  waiting: function (component, event, helper) {
-    $A.util.addClass(component.find("uploading").getElement(), "uploading");
-    $A.util.removeClass(
-      component.find("uploading").getElement(),
-      "notUploading"
-    );
-  },
+//   waiting: function (component, event, helper) {
+//     $A.util.addClass(component.find("uploading").getElement(), "uploading");
+//     $A.util.removeClass(
+//       component.find("uploading").getElement(),
+//       "notUploading"
+//     );
+//   },
 
-  doneWaiting: function (component, event, helper) {
-    $A.util.removeClass(component.find("uploading").getElement(), "uploading");
-    $A.util.addClass(component.find("uploading").getElement(), "notUploading");
-  },
+//   doneWaiting: function (component, event, helper) {
+//     $A.util.removeClass(component.find("uploading").getElement(), "uploading");
+//     $A.util.addClass(component.find("uploading").getElement(), "notUploading");
+//   },
     
       downloadCsv : function(component,event,helper){
         var csv = helper.convertArrayOfObjectsToCSV(component,event,helper);   

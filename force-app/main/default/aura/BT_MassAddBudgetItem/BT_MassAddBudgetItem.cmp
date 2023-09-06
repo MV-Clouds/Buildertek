@@ -38,7 +38,7 @@
             </aura:set>
         </lightning:card>
 
-        <div class="slds-border_top slds-box slds-box_xx-small" >
+        <div class="slds-border_top slds-box slds-box_xx-small"  style="overflow: auto;">
             <div class="slds slds-m-top_medium slds-p-horizontal_medium" >
                 <table class="slds-table slds-table--bordered':'slds-table--bordered'">
                     <thead>
