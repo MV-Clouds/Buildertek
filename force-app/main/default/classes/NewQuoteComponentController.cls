@@ -53,14 +53,25 @@ public with sharing class NewQuoteComponentController {
         return pickListValuesList;
     }
 
+    public class masterQuoteWrapper{
+        @AuraEnabled
+        public  List<buildertek__Quote__c> quoteList;
+        @AuraEnabled
+        public Integer totalQuotes;
+    }
+
     @AuraEnabled
-    public static List<buildertek__Quote__c> getAllMasterQuote(){
-        // Integer offset = (pageNumber - 1) * pageSize;
+    public static masterQuoteWrapper getAllMasterQuote(Integer recordLimit, Integer recordOffset){
+        masterQuoteWrapper  masterQuoteWrapperRecords= new masterQuoteWrapper();
+        masterQuoteWrapperRecords.quoteList= new List<buildertek__Quote__c>();
+        masterQuoteWrapperRecords.quoteList=[SELECT Id, Name , buildertek__Status__c, buildertek__Description__c , buildertek__Type__c  From buildertek__Quote__c WHERE buildertek__Type__c = 'Master' LIMIT :recordLimit Offset :recordOffset];
+       
+       
+        AggregateResult results = [SELECT Count(Id) TotalQuotes  From buildertek__Quote__c WHERE buildertek__Type__c = 'Master' ];
+        Integer totalQuotesRec = (Integer)results.get('TotalQuotes');
 
-        // List<buildertek__Quote__c> quoteList=[SELECT Id, Name , buildertek__Status__c, buildertek__Description__c , buildertek__Type__c  From buildertek__Quote__c WHERE buildertek__Type__c = 'Master' LIMIT :pageSize OFFSET :offset];
-        List<buildertek__Quote__c> quoteList=[SELECT Id, Name , buildertek__Status__c, buildertek__Description__c , buildertek__Type__c  From buildertek__Quote__c WHERE buildertek__Type__c = 'Master'];
-
-        return quoteList;
+        masterQuoteWrapperRecords.totalQuotes=totalQuotesRec;
+        return masterQuoteWrapperRecords;
     }
 
     @AuraEnabled

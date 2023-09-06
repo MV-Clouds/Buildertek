@@ -10,26 +10,30 @@
 	},
 	masterQuoteRecord: function (component, event, helper) {
 		console.log('masterQuoteRecord');
-		
+			
+		component.set('v.columns', [
+            {label: 'Name', fieldName: 'QuoteName', type: 'url' , typeAttributes: {label: { fieldName: 'Name' }, target: '_blank'}},
+            {label: 'Status', fieldName: 'buildertek__Status__c', type: 'picklist'},
+            {label: 'Description', fieldName: 'buildertek__Description__c', type: 'text'},
+        ]);		
+
 		var action = component.get("c.getAllMasterQuote");
-		// action.setParams({
-		// 	pageNumber: pageNumber,
-        //     pageSize: pageSize
-		// })
+		action.setParams({
+            "recordLimit": component.get("v.initialRows"),
+            "recordOffset": component.get("v.rowNumberOffset")
+        });
 		action.setCallback(this, function (response) {
 			var state=response.getState();
 			console.log(response.getError());
 			if(state === 'SUCCESS'){
-				// var result=response.getReturnValue();			
-				// component.set('v.masterQuoteList' ,result);
-
 				var records = response.getReturnValue();
-                // var currentRecords = component.get("v.masterQuoteList") || [];
-                // currentRecords = currentRecords.concat(records);
-                // component.set("v.masterQuoteList", currentRecords);
-                component.set("v.masterQuoteList", records);
-
-
+				console.log(records.quoteList);
+				records.quoteList.forEach(function(record){
+					record.QuoteName = '/'+record.Id;
+				});
+				component.set('v.data' , records.quoteList);
+                component.set("v.currentCount", component.get("v.initialRows"));
+                component.set("v.totalNumberOfRows", records.totalQuotes);
 
 			}else{
 				var toastEvent = $A.get("e.force:showToast");
@@ -42,5 +46,40 @@
 			}
 		});
 		$A.enqueueAction(action);
-	}
+	},
+	getMoreQuotes: function(component , rows){
+		console.log('getMoreQuotes');
+        return new Promise($A.getCallback(function(resolve, reject) {
+            var action = component.get('c.getAllMasterQuote');
+            var recordOffset = component.get("v.currentCount");
+            var recordLimit = component.get("v.initialRows");
+            action.setParams({
+                "recordLimit": recordLimit,
+                "recordOffset": recordOffset 
+            });
+            action.setCallback(this, function(response) {
+                var state = response.getState();
+				console.log(recordOffset);
+				console.log(recordLimit);
+
+                if(state === "SUCCESS"){
+                    var resultData = response.getReturnValue();
+					console.log(resultData);
+					var masterQuoteRecords=resultData.quoteList;
+					masterQuoteRecords.forEach(function(record){
+						record.QuoteName = '/'+record.Id;
+					});
+                    resolve(masterQuoteRecords);
+						
+				
+					recordOffset = recordOffset+recordLimit;
+					component.set("v.currentCount", recordOffset);  
+
+
+					
+                }                
+            });
+            $A.enqueueAction(action);
+        }));
+    },
 })

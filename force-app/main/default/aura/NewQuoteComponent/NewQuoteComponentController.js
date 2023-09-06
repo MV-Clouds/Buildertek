@@ -1,6 +1,5 @@
 ({
     doInit : function(component, event, helper) {
-        // component.set("v.Spinner", true);
         $A.get("e.c:BT_SpinnerEvent").setParams({
             "action": "SHOW"
         }).fire();
@@ -16,14 +15,14 @@
         });
         action2.setCallback(this, function (response) {
             if (response.getState() == 'SUCCESS' && response.getReturnValue()) {
-                // component.set("v.Spinner", false);
-                $A.get("e.c:BT_SpinnerEvent").setParams({
-                    "action": "HIDE"
-                }).fire();
                 var listOfFields0 = JSON.parse(response.getReturnValue());
                 console.log({listOfFields0});
                 component.set("v.listOfFields0", listOfFields0);
             }
+            
+            $A.get("e.c:BT_SpinnerEvent").setParams({
+                "action": "HIDE"
+            }).fire();
         });
         if (value != null) {
             context = JSON.parse(window.atob(value));
@@ -62,9 +61,6 @@
             $A.enqueueAction(action);
         }
         $A.enqueueAction(action2);
-        
-        // var pageNumber = 1;
-        // var pageSize = 20; // Adjust the page size as needed
         helper.masterQuoteRecord(component, event, helper);
     },
 
@@ -93,6 +89,10 @@
      },
 
     handleSubmit : function(component, event, helper) {
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "SHOW"
+        }).fire();
+
         console.log('handleSubmit');
         event.preventDefault();
         var fields = event.getParam('fields');
@@ -103,7 +103,7 @@
         var action = component.get("c.saveRecord");
         action.setParams({
             "data": data,
-            "masterQuoteId":component.get('v.selectedMasterQuoteId')
+            "masterQuoteId":component.get('v.selectedRowsList')
         });
         action.setCallback(this, function (response) {
             var state = response.getState();
@@ -128,6 +128,7 @@
 
                 if(saveNnew){
                     $A.get('e.force:refreshView').fire();
+                    
                 }
                 else{
                     console.log('---Else---');
@@ -163,6 +164,10 @@
 				toastEvent.fire();
                 console.log('error', response.getError());
             }
+
+            $A.get("e.c:BT_SpinnerEvent").setParams({
+                "action": "HIDE"
+            }).fire();
         });
         $A.enqueueAction(action);
     },
@@ -172,44 +177,28 @@
     },
 
     saveNnew : function(component, event, helper) {
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "SHOW"
+        }).fire();
         component.set("v.saveAndNew", true);
         console.log('saveNnew');
     },
-    openRecordPage: function(component, event, helper) {
-        var recordId = event.currentTarget.dataset.recordId;
-        var navService = component.find("navService");
-        var pageReference = {
-            type: "standard__recordPage",
-            attributes: {
-                recordId: recordId,
-                actionName: "view"
+    handleSelectedRow:function(component, event, helper) {
+        var selectedRows = event.getParam('selectedRows');
+        component.set("v.selectedRowsList", selectedRows[0].Id);
+        console.log(selectedRows[0].Id);
+    },
+
+    handleLoadMoreQuotes:function(component, event, helper) {
+        helper.getMoreQuotes(component, component.get('v.rowsToLoad')).then($A.getCallback(function (data) {
+            if (component.get('v.data').length == component.get('v.totalNumberOfRows')) {
+                component.set('v.enableInfiniteLoading', false);
+            } else {
+                var currentData = component.get('v.data');
+                var newData = currentData.concat(data);
+                component.set('v.data', newData);
             }
-        };
-        navService.navigate(pageReference);
+            event.getSource().set("v.isLoading", false);
+        }));
     },
-    selectMasterQuote:function(component, event, helper) {
-        var masterQuoteId=event.getSource().get('v.text');
-        component.set('v.selectedMasterQuoteId' , masterQuoteId);
-        console.log(component.get('v.selectedMasterQuoteId'));
-
-    },
-    // handleScroll:function(component, event, helper) {
-    //     console.log('handleScroll');
-
-    //     var scrollTop = event.target.scrollTop;
-    //     var scrollHeight = event.target.scrollHeight;
-    //     var clientHeight = event.target.clientHeight;
-    
-    //     var pageNumber = 1;
-    //     var pageSize = 20; 
-    //     console.log(scrollTop + clientHeight >= scrollHeight ,scrollTop,  clientHeight , scrollHeight);
-
-    //     if (scrollTop + clientHeight >= scrollHeight) {
-            
-    //         pageNumber++;
-    //         console.log(pageNumber);
-    //         helper.masterQuoteRecord(component, event, helper , pageNumber, pageSize);
-    //     }
-
-    // }
 })

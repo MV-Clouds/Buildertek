@@ -11,11 +11,23 @@
    <aura:attribute name="parentOppRecordId" type="String" default="" />
     <aura:attribute name="Spinner" type="boolean" default="false"/>
 
-    <aura:attribute name="masterQuoteList" type="List" />
     <lightning:navigation aura:id="navService"/>
-    <aura:attribute name="selectedMasterQuoteId" type="String" default="" />
-    <!-- <aura:attribute name="pageNumber" type="Integer" default="1" />
-    <aura:attribute name="pageSize" type="Integer" default="20" /> -->
+    <!--Declare Attributes-->
+    <aura:attribute name="data" type="Object"/>
+    <aura:attribute name="columns" type="List"/>
+    <!-- <aura:attribute name="selectedRowsCount" type="Integer" default="0"/>
+    <aura:attribute name="selectedRowsDetails" type="Object" /> -->
+    <aura:attribute name="selectedRowsList" type="String" />
+    <aura:attribute name="maxRowSelection" type="Integer" default="1"/>
+    <aura:attribute name="selectedRows" type="List" />
+    <aura:attribute name="enableInfiniteLoading" type="Boolean" default="true"/>
+    <aura:attribute name="initialRows" type="Integer" default="900"/>
+    <aura:attribute name="rowsToLoad" type="Integer" default="900"/>
+    <aura:attribute name="totalNumberOfRows" type="Integer"/>
+    <aura:attribute name="showRowNumberColumn" type="Boolean" default="false"/>
+    <aura:attribute name="rowNumberOffset" type="Integer" default="0"/>
+    <aura:attribute name="rowsToAdd" type="Integer" default="900"/>
+    <aura:attribute name="currentCount" type="Integer" default="900"/>
 
 
 
@@ -36,7 +48,7 @@
 
     <aura:html tag="style">
         .slds-modal__container{
-            width: 60% !important;
+            width: 100% !important;
             padding: 0 !important;
             max-width: 80rem !important;
         }
@@ -47,7 +59,7 @@
         </header>
         <div class="slds-modal__content" id="modal-content-id-1" >
             <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__Quote__c" onsubmit="{!c.handleSubmit}" density="Comfy" >
-                <div class="" style="height:50vh;width:100%;overflow: auto;" >
+                <div class="" style="height:60vh;width:100%;overflow: auto;" >
                     <div class="slds-p-around_medium" style="background-color:white;">
                         <lightning:layout multipleRows="true">
                             <aura:iteration items="{!v.listOfFields0}" var="field">
@@ -73,46 +85,23 @@
                             </aura:iteration>
                         </lightning:layout>
                     </div>
+                <h3 class="slds-section-title-divider" style="font-weight: bold;background: #e5e5e5; padding: 10px;">Master Quotes</h3>
+                <div style="height: 13rem; overflow: auto; " class="lazy-loading-container slds-is-relative" >
+                    <lightning:datatable 
+                            columns="{!v.columns}"
+                            data="{!v.data}"
+                            keyField="Id"
+                            showRowNumberColumn="true"
+                            rowNumberOffset="0"
+                            selectedRows="{!v.selectedRows}"
+                            onrowselection="{!c.handleSelectedRow}"
+                            enableInfiniteLoading="true"
+                            loadMoreOffset="{!v.loadMoreOffset}"
+                            onloadmore="{!c.handleLoadMoreQuotes}"
+                            maxRowSelection="{! v.maxRowSelection }" /> 
+                    
+                </div>
 
-                    <div style="height: 12.2rem; overflow: auto; margin-top: 2%;" class="lazy-loading-container slds-is-relative" >
-                        <div><h3 class="slds-section-title--divider" style="font-weight: bold">Master Quotes</h3> </div>
-                        <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-is-relative">
-                            <thead style="position:sticky; top:0px; z-index:100">
-                                <tr class="slds-text-title_caps">
-                                    <!-- <th scope="col" class="slds-truncate">
-                                        <div class="slds-truncate" title="Index">Index</div>
-                                    </th> -->
-                                    <th scope="col" class="slds-truncate">
-                                        
-                                    </th>
-                                    <th scope="col">
-                                        <div class="slds-truncate" title="Name">Name</div>
-                                    </th>
-                                    <th scope="col">
-                                        <div class="slds-truncate" title="Status">Status
-                                        </div>
-                                    </th>
-                                    <th scope="col">
-                                        <div class="slds-truncate" title="Description">Description</div>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody style="max-height: 300px; overflow-y: auto;" >
-                                <aura:iteration items="{!v.masterQuoteList}" var="masterQuote" indexVar="index">
-                                    <tr>
-                                        <!-- <td> {!index+1} </td> -->
-                                        <td> <ui:inputRadio text='{!masterQuote.Id}'  name='masterQuote' change='{!c.selectMasterQuote}' /> </td>
-                                        <td class="slds-truncate"><a href="javascript:void(0);" onclick="{!c.openRecordPage}" data-record-id="{!masterQuote.Id}">{!masterQuote.Name}</a></td>
-                                        <td class="slds-truncate">{!masterQuote.buildertek__Status__c}</td>
-                                        <td class="slds-truncate">   {!masterQuote.buildertek__Description__c}</td>
-                                    </tr>
-                                </aura:iteration>
-
-                               
-                            </tbody>
-            
-                        </table>
-                    </div>
                 </div>
                 <footer aura:id="footer" class="slds-modal__footer">
                     <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{! c.closeModel }" />
