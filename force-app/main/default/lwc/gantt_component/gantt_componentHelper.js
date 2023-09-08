@@ -83,7 +83,7 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
             rowChilObj["percentDone"] = taskListForPhase[i].buildertek__Completion__c
             rowChilObj["startDate"] = taskListForPhase[i].buildertek__Start__c
             rowChilObj["constraintDate"] = taskListForPhase[i].buildertek__Start__c
-            // rowChilObj["constraintType"] = 'startnoearlierthan'
+            rowChilObj["constraintType"] = 'startnoearlierthan'
             rowChilObj['predecessor'] = taskListForPhase[i].buildertek__Dependency__c;
 
             if (taskListForPhase[i].hasOwnProperty('buildertek__Dependency__c') == true) {
@@ -108,7 +108,7 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
                 }else{
                 rowChilObj['contractorresourcename'] = '';
             }
-            rowChilObj['contractoracc'] = taskListForPhase[i].buildertek__Contractor__c;
+            rowChilObj['contractorId'] = taskListForPhase[i].buildertek__Contractor__c;
 
                 if(taskListForPhase[i].buildertek__Contractor__c){
                     rowChilObj["contractorname"] = taskListForPhase[i].buildertek__Contractor__r.Name;  //Added for contractor
@@ -120,8 +120,8 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
                 if(taskListForPhase[i].buildertek__Lag__c != undefined && taskListForPhase[i].buildertek__Lag__c != null && taskListForPhase[i].buildertek__Lag__c != 0){
                     var startDate = new Date(taskListForPhase[i].buildertek__Start__c);
                     rowChilObj["startDate"] = new Date(startDate.getFullYear(),startDate.getMonth(),startDate.getDate(),0,0,0)
-                    // rowChilObj["constraintDate"] = new Date(startDate.getFullYear(),startDate.getMonth(),startDate.getDate(),0,0,0)
-                    // rowChilObj["constraintType"] = 'startnoearlierthan'
+                    rowChilObj["constraintDate"] = new Date(startDate.getFullYear(),startDate.getMonth(),startDate.getDate(),0,0,0)
+                    rowChilObj["constraintType"] = 'startnoearlierthan'
                 }
             rowChilObj["duration"] = taskListForPhase[i].buildertek__Duration__c
 
@@ -182,13 +182,13 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
                 assignmentRowData.push(assignmentRow)
             }
 
-            if(taskListForPhase[i].buildertek__ConstraintType__c == 'None' || taskListForPhase[i].buildertek__ConstraintType__c == '--None--' || taskListForPhase[i].buildertek__ConstraintType__c == null || taskListForPhase[i].buildertek__ConstraintType__c == undefined){
-                rowChilObj["constraintDate"] =  scheduleData.buildertek__Initial_Start_Date__c;
+            // if(taskListForPhase[i].buildertek__ConstraintType__c == 'None' || taskListForPhase[i].buildertek__ConstraintType__c == '--None--' || taskListForPhase[i].buildertek__ConstraintType__c == null || taskListForPhase[i].buildertek__ConstraintType__c == undefined){
+                rowChilObj["constraintDate"] =  scheduleData.buildertek__Start__c;
                 rowChilObj["constraintType"] =  "startnoearlierthan";
-            } else{
-                rowChilObj["constraintDate"] =  taskListForPhase[i].buildertek__ConstraintDate__c;
-                rowChilObj["constraintType"] =  taskListForPhase[i].buildertek__ConstraintType__c;
-                }
+            // } else{
+            //     rowChilObj["constraintDate"] =  taskListForPhase[i].buildertek__ConstraintDate__c;
+            //     rowChilObj["constraintType"] =  taskListForPhase[i].buildertek__ConstraintType__c;
+            //     }
 
                 if(rowChilObj["customtype"] == "Milestone"){
                 rowChilObj["constraintDate"] =  taskListForPhase[i].buildertek__End_date__c;
@@ -253,8 +253,8 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
             rowChilObj["name"] = taskListForPhase[i].Name
             rowChilObj["percentDone"] = taskListForPhase[i].buildertek__Completion__c
             rowChilObj["startDate"] = taskListForPhase[i].buildertek__Start__c
-            // rowChilObj["constraintDate"] = taskListForPhase[i].buildertek__Start__c
-            // rowChilObj["constraintType"] = 'startnoearlierthan'
+            rowChilObj["constraintDate"] = taskListForPhase[i].buildertek__Start__c
+            rowChilObj["constraintType"] = 'startnoearlierthan'
 
             rowChilObj['predecessor'] = taskListForPhase[i].buildertek__Dependency__c;
 
@@ -279,7 +279,7 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
                 }else{
                 rowChilObj['contractorresourcename'] = ''
             }
-            rowChilObj['contractoracc'] = taskListForPhase[i].buildertek__Contractor__c;
+            rowChilObj['contractorId'] = taskListForPhase[i].buildertek__Contractor__c;
 
                 if(taskListForPhase[i].buildertek__Contractor__c){
                     rowChilObj["contractorname"] = taskListForPhase[i].buildertek__Contractor__r.Name;  //Added for contractor
@@ -293,8 +293,8 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
                 var startDate = new Date(taskListForPhase[i].buildertek__Start__c);
                 startDate.setDate(startDate.getDate());
                 rowChilObj["startDate"] = new Date(startDate.getFullYear(),startDate.getMonth(),startDate.getDate(),0,0,0)
-                // rowChilObj["constraintDate"] = new Date(startDate.getFullYear(),startDate.getMonth(),startDate.getDate(),0,0,0)
-                // rowChilObj["constraintType"] = 'startnoearlierthan'
+                rowChilObj["constraintDate"] = new Date(startDate.getFullYear(),startDate.getMonth(),startDate.getDate(),0,0,0)
+                rowChilObj["constraintType"] = 'startnoearlierthan'
                 }
             rowChilObj["duration"] = taskListForPhase[i].buildertek__Duration__c
 
@@ -356,13 +356,13 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
                 assignmentRow['resource'] = taskListForPhase[i].buildertek__Contractor_Resource__c;
                 assignmentRowData.push(assignmentRow)
             }
-            if(taskListForPhase[i].buildertek__ConstraintType__c == 'None' || taskListForPhase[i].buildertek__ConstraintType__c == '--None--' || taskListForPhase[i].buildertek__ConstraintType__c == null || taskListForPhase[i].buildertek__ConstraintType__c == undefined){
-                rowChilObj["constraintDate"] =  scheduleData.buildertek__Initial_Start_Date__c;
+            // if(taskListForPhase[i].buildertek__ConstraintType__c == 'None' || taskListForPhase[i].buildertek__ConstraintType__c == '--None--' || taskListForPhase[i].buildertek__ConstraintType__c == null || taskListForPhase[i].buildertek__ConstraintType__c == undefined){
+                rowChilObj["constraintDate"] =  scheduleData.buildertek__Start__c;
                 rowChilObj["constraintType"] =  "startnoearlierthan";
-            } else{
-                rowChilObj["constraintDate"] =  taskListForPhase[i].buildertek__ConstraintDate__c;
-                rowChilObj["constraintType"] =  taskListForPhase[i].buildertek__ConstraintType__c;
-                }
+            // } else{
+            //     rowChilObj["constraintDate"] =  taskListForPhase[i].buildertek__ConstraintDate__c;
+            //     rowChilObj["constraintType"] =  taskListForPhase[i].buildertek__ConstraintType__c;
+            //     }
 
 
             taskPhaseRow["children"].push(rowChilObj);
@@ -396,8 +396,8 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
             rowChilObj["name"] = taskListForPhase[i].Name
             rowChilObj["percentDone"] = taskListForPhase[i].buildertek__Completion__c
             rowChilObj["startDate"] = taskListForPhase[i].buildertek__Start__c
-            // rowChilObj["constraintDate"] = taskListForPhase[i].buildertek__Start__c
-            // rowChilObj["constraintType"] = 'startnoearlierthan'
+            rowChilObj["constraintDate"] = taskListForPhase[i].buildertek__Start__c
+            rowChilObj["constraintType"] = 'startnoearlierthan'
 
 
             rowChilObj['predecessor'] = taskListForPhase[i].buildertek__Dependency__c;
@@ -422,7 +422,7 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
             }else{
                 rowChilObj['contractorresourcename'] = '';
             }
-            rowChilObj['contractoracc'] = taskListForPhase[i].buildertek__Contractor__c;
+            rowChilObj['contractorId'] = taskListForPhase[i].buildertek__Contractor__c;
 
             if(taskListForPhase[i].buildertek__Contractor__c){
                 rowChilObj["contractorname"] = taskListForPhase[i].buildertek__Contractor__r.Name;  //Added for contractor
@@ -438,21 +438,21 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
             startDate.setDate(startDate.getDate());
 
             rowChilObj["startDate"] = new Date(startDate.getFullYear(),startDate.getMonth(),startDate.getDate(),0,0,0)
-            // rowChilObj["constraintDate"] = new Date(startDate.getFullYear(),startDate.getMonth(),startDate.getDate(),0,0,0)
-            // rowChilObj["constraintType"] = 'startnoearlierthan'
+            rowChilObj["constraintDate"] = new Date(startDate.getFullYear(),startDate.getMonth(),startDate.getDate(),0,0,0)
+            rowChilObj["constraintType"] = 'startnoearlierthan'
             }
             rowChilObj["duration"] = taskListForPhase[i].buildertek__Duration__c
 
 
             rowChilObj["expanded"] = true
             rowChilObj["order"] = taskListForPhase[i].buildertek__Order__c
-            if(taskListForPhase[i].buildertek__ConstraintType__c == 'None' || taskListForPhase[i].buildertek__ConstraintType__c == '--None--' || taskListForPhase[i].buildertek__ConstraintType__c == null || taskListForPhase[i].buildertek__ConstraintType__c == undefined){
-                rowChilObj["constraintDate"] =  scheduleData.buildertek__Initial_Start_Date__c;
+            // if(taskListForPhase[i].buildertek__ConstraintType__c == 'None' || taskListForPhase[i].buildertek__ConstraintType__c == '--None--' || taskListForPhase[i].buildertek__ConstraintType__c == null || taskListForPhase[i].buildertek__ConstraintType__c == undefined){
+                rowChilObj["constraintDate"] =  scheduleData.buildertek__Start__c;
                 rowChilObj["constraintType"] =  "startnoearlierthan";
-            } else{
-                rowChilObj["constraintDate"] =  taskListForPhase[i].buildertek__ConstraintDate__c;
-                rowChilObj["constraintType"] =  taskListForPhase[i].buildertek__ConstraintType__c;
-            }
+            // } else{
+            //     rowChilObj["constraintDate"] =  taskListForPhase[i].buildertek__ConstraintDate__c;
+            //     rowChilObj["constraintType"] =  taskListForPhase[i].buildertek__ConstraintType__c;
+            // }
 
             if(taskListForPhase[i].buildertek__Milestone__c){
                 rowChilObj["duration"] = 0
@@ -538,21 +538,16 @@ function convertJSONtoApexData(data, taskData, dependenciesData, resourceData) {
     let scheduleObj = {};
     var rowData = [];
     const phasedatamap = new Map();
-    // let milestonedataList = [];
+    const contractordatamap = new Map();
+
     console.log('data !-->', {data})
     if (data) {
         data.forEach(element => {
             if(element.hasOwnProperty('NewPhase')){
-                // let milestonedata = {};
-                console.log('element --> ',JSON.parse(JSON.stringify(element)));
-                console.log('in has phase as propertry');
-                console.log('element id --> ',element.id);
-                console.log('element newphase --> ',element.NewPhase);
                 phasedatamap.set(element.id, element.NewPhase);
-                console.log('phasedatamap -->', phasedatamap);
-                //Createing new milestone for new phase..
-                // milestonedata['buildertek__Schedule__c'] = taskData[0].id;
-                // milestonedata['buildertek__Phase__c'] = element.NewPhase;
+            }
+            if(element._data.hasOwnProperty('contractorId')){
+                contractordatamap.set(element.id, element._data.contractorId);
             }
         });
         if (data.length > 0) {
@@ -663,34 +658,16 @@ function convertJSONtoApexData(data, taskData, dependenciesData, resourceData) {
                     updateData['buildertek__Phase__c'] = phasedatamap.get(updateData.Id);
                 }
                 const keys = phasedatamap.keys();
-                for (const key of keys) {
-                    // if(updateData.Id == undefined){
-                    //     updateData['Id'] = 'DemoGenretedId';
-                    //     updateData['buildertek__Phase__c'] = phasedatamap.get(key);
-                    // }
+
+                if(contractordatamap.has(updateData.Id)){
+                    console.log('updating Contractor data');
+                    updateData['buildertek__Contractor__c'] = contractordatamap.get(updateData.Id);
                 }
 
                 console.log('DemoGenretedId updateData:- ',{updateData});
 
                 updateDataClone = Object.assign({}, updateData);
-                // console.log(updateDataClone);
-                /* for (var j = 0; j < resourceData.length; j++) {
-                    if (resourceData[j]['event'] == rowData[i]['id']) {
-                        if (resourceData[j]['id'].indexOf('ContractorResource') >= 0) {
-                            var conresName = resourceData[j]['id'].split('ContractorResource_Name')[1];
-                            var obj = { 'Name': conresName }
-                            updateData['buildertek__Contractor_Resource__r'] = obj;
-                            updateData['buildertek__Contractor_Resource__c'] = resourceData[j]['resource']
-                            updateDataClone['buildertek__Contractor_Resource__c'] = resourceData[j]['resource']
-                        } else if (resourceData[j]['id'].indexOf('Resource') >= 0) {
-                            var resName = resourceData[j]['id'].split('Resource_Name')[1];
-                            var obj = { 'Name': resName }
-                            updateData['buildertek__Resource__c'] = resourceData[j]['resource']
-                            updateData['buildertek__Resource__r'] = obj;
-                            updateDataClone['buildertek__Resource__c'] = resourceData[j]['resource']
-                        }
-                    }
-                } */
+
                 if (rowData[i]['id'].indexOf('_generate') == -1) {
                     updateDataCloneList.push(updateDataClone)
                 }
@@ -760,6 +737,27 @@ function makeComboBoxDataForContractor(listOfContractors) {
     return listOfContractorToReturn;
 }
 
+//* auther : Nishit Suthar/krunal Lungaria
+//* Date : 29th Aug 2023
+//* this method is used to create data for resource combobox
+function makeComboBoxDataForResourceData(listOfContractors){
+    let listOfResourceToReturn = [];
+
+    listOfContractors.forEach(ctrObj => {
+        if (ctrObj.Contacts) {
+            ctrObj.Contacts.forEach(resObj => {
+                let resourceObj = {};
+                resourceObj['id'] = resObj.Id;
+                resourceObj['name'] = resObj.Name;
+                resourceObj['contractorId'] = resObj.AccountId;
+                resourceObj['type'] = 'External Resources';
+                listOfResourceToReturn.push(resourceObj);
+            });
+        }
+    });
+    return listOfResourceToReturn;
+}
+
 //* auther : Nishit Suthar
 //* Date : 24th Aug 2023
 //* this method is used to calculate business days between two dates for project schedule
@@ -788,4 +786,4 @@ function calcBusinessDays(dDate1, dDate2) { // input given as Date objects
     return (iDateDiff + 1); // add 1 because dates are inclusive
 }
 
-export{ formatApexDatatoJSData, convertJSONtoApexData, recordsTobeDeleted, makeComboBoxDataForContractor, calcBusinessDays };
+export{ formatApexDatatoJSData, convertJSONtoApexData, recordsTobeDeleted, makeComboBoxDataForContractor, calcBusinessDays, makeComboBoxDataForResourceData };
