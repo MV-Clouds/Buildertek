@@ -9,15 +9,12 @@
    <aura:attribute name="parentprojectRecordId" type="String" default="" />
    <aura:attribute name="parentRecordId" type="String" default="" />
    <aura:attribute name="parentOppRecordId" type="String" default="" />
-    <aura:attribute name="Spinner" type="boolean" default="false"/>
 
-    <lightning:navigation aura:id="navService"/>
     <!--Declare Attributes-->
-    <aura:attribute name="data" type="Object"/>
+    <lightning:navigation aura:id="navService"/>
+    <aura:attribute name="masterQuoteData" type="Object"/>
     <aura:attribute name="columns" type="List"/>
-    <!-- <aura:attribute name="selectedRowsCount" type="Integer" default="0"/>
-    <aura:attribute name="selectedRowsDetails" type="Object" /> -->
-    <aura:attribute name="selectedRowsList" type="String" />
+    <aura:attribute name="selectedMasterQuoteId" type="String" />
     <aura:attribute name="maxRowSelection" type="Integer" default="1"/>
     <aura:attribute name="selectedRows" type="List" />
     <aura:attribute name="enableInfiniteLoading" type="Boolean" default="true"/>
@@ -32,25 +29,11 @@
 
 
 
-
-    <aura:if isTrue="{!v.Spinner}">
-        <div aura:id="spinnerId" class="slds-spinner_container">
-            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
-                <span class="slds-assistive-text">Loading</span>
-                <div class="slds-spinner__dot-a"></div>
-                <div class="slds-spinner__dot-b"></div>
-                <div class="custom-loading-text">
-                    <b>Processing, Please Wait</b>
-                </div>
-            </div>
-        </div>
-    </aura:if>
-
     <aura:html tag="style">
         .slds-modal__container{
             width: 100% !important;
             padding: 0 !important;
-            max-width: 80rem !important;
+            max-width: 85rem !important;
         }
     </aura:html>
     <div class="slds-modal__container">
@@ -59,7 +42,7 @@
         </header>
         <div class="slds-modal__content" id="modal-content-id-1" >
             <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__Quote__c" onsubmit="{!c.handleSubmit}" density="Comfy" >
-                <div class="" style="height:60vh;width:100%;overflow: auto;" >
+                <div class="mainContent" >
                     <div class="slds-p-around_medium" style="background-color:white;">
                         <lightning:layout multipleRows="true">
                             <aura:iteration items="{!v.listOfFields0}" var="field">
@@ -86,10 +69,10 @@
                         </lightning:layout>
                     </div>
                 <h3 class="slds-section-title-divider" style="font-weight: bold;background: #e5e5e5; padding: 10px;">Master Quotes</h3>
-                <div style="height: 13rem; overflow: auto; " class="lazy-loading-container slds-is-relative" >
+                <div style="height:19rem; overflow: auto; " class="lazy-loading-container slds-is-relative" >
                     <lightning:datatable 
                             columns="{!v.columns}"
-                            data="{!v.data}"
+                            data="{!v.masterQuoteData}"
                             keyField="Id"
                             showRowNumberColumn="true"
                             rowNumberOffset="0"

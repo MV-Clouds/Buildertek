@@ -103,7 +103,7 @@
         var action = component.get("c.saveRecord");
         action.setParams({
             "data": data,
-            "masterQuoteId":component.get('v.selectedRowsList')
+            "masterQuoteId":component.get('v.selectedMasterQuoteId')
         });
         action.setCallback(this, function (response) {
             var state = response.getState();
@@ -185,18 +185,18 @@
     },
     handleSelectedRow:function(component, event, helper) {
         var selectedRows = event.getParam('selectedRows');
-        component.set("v.selectedRowsList", selectedRows[0].Id);
+        component.set("v.selectedMasterQuoteId", selectedRows[0].Id);
         console.log(selectedRows[0].Id);
     },
 
     handleLoadMoreQuotes:function(component, event, helper) {
-        helper.getMoreQuotes(component, component.get('v.rowsToLoad')).then($A.getCallback(function (data) {
-            if (component.get('v.data').length == component.get('v.totalNumberOfRows')) {
+        helper.getMoreQuotes(component, component.get('v.rowsToLoad')).then($A.getCallback(function (getMasterQuoteRecords) {
+            if (component.get('v.masterQuoteData').length == component.get('v.totalNumberOfRows')) {
                 component.set('v.enableInfiniteLoading', false);
             } else {
-                var currentData = component.get('v.data');
-                var newData = currentData.concat(data);
-                component.set('v.data', newData);
+                var currentMasterQuoteData = component.get('v.masterQuoteData');
+                var newMasterQuoteData = [...currentMasterQuoteData , ...getMasterQuoteRecords];
+                component.set('v.masterQuoteData', newMasterQuoteData);
             }
             event.getSource().set("v.isLoading", false);
         }));

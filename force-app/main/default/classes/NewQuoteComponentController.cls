@@ -80,9 +80,19 @@ public with sharing class NewQuoteComponentController {
         if(QuoteToInsert.Name.length() > 79){
             QuoteToInsert.Name = QuoteToInsert.Name.left(78);
         }
-        System.debug('QuoteToInsert ==? '+QuoteToInsert);
         insert QuoteToInsert;
+        NewQuoteComponentController.cloneQuoteLines(QuoteToInsert.Id , masterQuoteId);
+        return QuoteToInsert.ID;
+    }
 
+    @AuraEnabled
+    public static String getobjectName(Id recordId){
+        String sObjName = recordId.getSObjectType().getDescribe().getName();  
+        return sObjName;
+    }
+
+    // @future
+    public static void cloneQuoteLines(String quoteId , String masterQuoteId){
         Set<String> SobjectFields = Schema.getGlobalDescribe().get('buildertek__Quote_Item__c').getDescribe().fields.getMap().keySet();  
         List<String> fieldsInList = new List<String>(SobjectFields);
         String query = 'SELECT ' + String.join(fieldsInList, ',') + ' FROM buildertek__Quote_Item__c WHERE buildertek__Quote__c=:masterQuoteId'; 
@@ -92,7 +102,7 @@ public with sharing class NewQuoteComponentController {
         for(buildertek__Quote_Item__c quoteItem:quoteItemList){
 
             buildertek__Quote_Item__c newQuoteItemRec=quoteItem.clone(false, false, false, false);
-            newQuoteItemRec.buildertek__Quote__c=QuoteToInsert.Id;
+            newQuoteItemRec.buildertek__Quote__c=quoteId;
             newQuoteItemList.add(newQuoteItemRec);
         
         }
@@ -100,12 +110,7 @@ public with sharing class NewQuoteComponentController {
 
             insert newQuoteItemList;
         }
-         return QuoteToInsert.ID;
+    
     }
 
-    @AuraEnabled
-    public static String getobjectName(Id recordId){
-        String sObjName = recordId.getSObjectType().getDescribe().getName();  
-        return sObjName;
-    }
 }

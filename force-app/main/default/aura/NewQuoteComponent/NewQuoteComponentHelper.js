@@ -31,7 +31,7 @@
 				records.quoteList.forEach(function(record){
 					record.QuoteName = '/'+record.Id;
 				});
-				component.set('v.data' , records.quoteList);
+				component.set('v.masterQuoteData' , records.quoteList);
                 component.set("v.currentCount", component.get("v.initialRows"));
                 component.set("v.totalNumberOfRows", records.totalQuotes);
 
@@ -65,19 +65,14 @@
                 if(state === "SUCCESS"){
                     var resultData = response.getReturnValue();
 					console.log(resultData);
-					var masterQuoteRecords=resultData.quoteList;
-					masterQuoteRecords.forEach(function(record){
+					var setMasterQuoteRecords=resultData.quoteList;
+					setMasterQuoteRecords.forEach(function(record){
 						record.QuoteName = '/'+record.Id;
 					});
-                    resolve(masterQuoteRecords);
-						
-				
+                    resolve(setMasterQuoteRecords);
 					recordOffset = recordOffset+recordLimit;
 					component.set("v.currentCount", recordOffset);  
-
-
-					
-                }                
+                }             
             });
             $A.enqueueAction(action);
         }));
