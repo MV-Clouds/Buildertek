@@ -23,8 +23,12 @@
         if (value != null) {
             context = JSON.parse(window.atob(value));
             parentRecordId = context.attributes.recordId;
-            component.set("v.parentRecordId", parentRecordId);
-            console.log('parentRecordId---->>',{parentRecordId});
+            var isproject = context.attributes.objectApiName;
+            if (isproject == 'buildertek__Project__c') {
+                component.set("v.parentRecordId", parentRecordId);
+                component.set("v.forProject", true);
+                helper.handleChangeProjectHelper(component, event, helper);
+            }
         } else {
             var relatedList = window.location.pathname;
             var stringList = relatedList.split("/");
@@ -33,7 +37,12 @@
                 var stringList = relatedList.split("/");
                 parentRecordId = stringList[3];
             }
-            component.set("v.parentRecordId", parentRecordId);
+            if (stringList.includes('buildertek__Project__c')) {
+                // If 'buildertek_project__c' is found in the stringList, set a specific value
+                component.set("v.parentRecordId", parentRecordId);
+                component.set("v.forProject", true);
+                helper.handleChangeProjectHelper(component, event, helper);
+            }
             console.log('parentRecordId-->>',{parentRecordId});
         }
         if(parentRecordId != null && parentRecordId != ''){
@@ -59,6 +68,10 @@
 		component.set("v.isLoading", true);
         event.preventDefault(); // Prevent default submit
         var fields = event.getParam("fields");
+        var poId = component.get("v.selectedPOId");
+        if (poId != null && poId != '' && poId != undefined) {
+            fields["buildertek__Purchase_Order__c"] = poId;
+        }
         var allData = JSON.stringify(fields);
 
         var action = component.get("c.saveData");
@@ -136,4 +149,70 @@
             }), 1000
         );
    },
+
+
+    changeProject:function(component, event, helper) {
+        component.set('v.displayPO', false);
+        component.set('v.selectedPOName' , '');
+        component.set('v.selectedPOId' , '');
+    },
+
+    keyupPOData:function(component, event, helper) {
+        var listOfAllRecords=component.get('v.allPORecords');
+        var searchFilter = event.getSource().get("v.value").toUpperCase();
+        var tempArray = [];
+        var i;
+        for (i = 0; i < listOfAllRecords.length; i++) {
+            console.log(listOfAllRecords[i].Name);
+            console.log(listOfAllRecords[i].Name.toUpperCase().indexOf(searchFilter) != -1);
+            if ((listOfAllRecords[i].Name && listOfAllRecords[i].Name.toUpperCase().indexOf(searchFilter) != -1)) {
+                    tempArray.push(listOfAllRecords[i]);
+            }else{
+                component.set('v.selectedPOId' , ' ')
+            }
+        }
+
+        component.set("v.poList", tempArray);
+        console.log({searchFilter});
+        if(searchFilter == undefined || searchFilter == ''){
+            component.set("v.poList", listOfAllRecords);
+        }
+
+    },
+
+    clickHandlerPO: function(component, event, helper){
+        component.set('v.displayPO', false);
+        var recordId = event.currentTarget.dataset.value;
+        console.log('recordId ==> '+recordId);
+        component.set('v.selectedPOId', recordId);
+
+        var poList = component.get("v.poList");
+        poList.forEach(element => {
+            console.log('element => ',element);
+            if (recordId == element.Id) {
+                component.set('v.selectedPOName', element.Name);
+
+            }
+        });
+    },
+    
+    searchPOData : function(component, event, helper) {
+        component.set('v.displayPO', true);
+        helper.handleChangeProjectHelper(component, event, helper);
+        event.stopPropagation();
+    },
+
+    hideList : function(component, event, helper) {
+        component.set('v.displayPO', false);
+    },
+
+    preventHide: function(component, event, helper) {
+        event.preventDefault();
+    },
+
+    clearInput: function(component, event, helper) {
+        component.set('v.selectedPOName','');
+        component.set('v.selectedPOId','');
+    },
+    
 })

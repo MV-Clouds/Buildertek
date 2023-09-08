@@ -6,3 +6,41 @@
     white-space: nowrap;
     font-size: 20px;
 }
+.THIS input[readonly][role=combobox][disabled] {
+    background-color: white;
+    border-color: rgb(119, 119, 119);
+    color: var(--slds-c-input-text-color, var(--sds-c-input-text-color));
+}
+.THIS .poInput .slds-input__icon_left{
+    display: none;
+}
+.THIS .poInput .slds-input__icon_right{
+    display: none;
+}
+.THIS .rkclass{
+    color: var(--slds-g-color-neutral-base-30, var(--lwc-colorTextLabel,rgb(68, 68, 68)));
+    font-size: var(--lwc-formLabelFontSize,0.75rem);
+    padding-right: var(--lwc-spacingXSmall,0.5rem);
+    padding-top: var(--lwc-spacingXxSmall,0.25rem);
+    margin-bottom: var(--lwc-spacingXxxSmall,0.125rem);
+}
+.THIS .crossicon{
+    right: calc(var(--lwc-spacingXxSmall,0.25rem) + 1px) !important;
+    left: unset !important;
+}
+.THIS .crossicon .slds-button_icon-border{
+    border: unset !important;
+}
+.THIS .slds-form-element__help {
+    display: none;
+}
+.THIS .slds-has-error .slds-input {
+    --slds-c-input-color-border: var(--lwc-borderWidthThin,1px) solid var(--slds-c-input-color-border, var(--sds-c-input-color-border, var(--slds-g-color-border-base-4, var(--lwc-colorBorderInput,rgb(201, 201, 201)))));
+    --slds-c-input-shadow: var(--slds-c-input-shadow, var(--sds-c-input-shadow)) inset;
+}
+.THIS .rkclasses .slds-input{
+    padding-left: 10px !important;
+}
+.THIS .rkclasses1 .slds-input{
+    padding-left: 35px !important;
+}
