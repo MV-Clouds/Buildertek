@@ -671,8 +671,8 @@
 
             <div aura:id="quoteItem" />
             <!-- <div class="av slds-box" id="{!v.recordId + 'groups'}" style="min-height:50vh;padding:0px !important;"> -->
-            <div class="av slds-box" id="{!v.recordId + 'groups'}" style="min-height:54vh;padding:0px !important;" aura:id="av">
-                <div style="min-height: 60vh; height: 61vh;">
+            <div class="av slds-box" id="{!v.recordId + 'groups'}" style="min-height:fit-content;padding:0px !important;" aura:id="av">
+                <div style="min-height: fit-content; max-height: 61vh;">
                     <aura:if isTrue="{!!v.removeSingleQuoteLineOption}">
                         <div id='Tablebox' style="margin-top: -5px;padding-inline: 10px;padding-block: 0px;">
                             <br />
