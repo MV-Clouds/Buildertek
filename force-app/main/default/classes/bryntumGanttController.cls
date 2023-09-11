@@ -199,7 +199,8 @@ public with sharing class bryntumGanttController {
         dataTableDtls.profileName = profileName;
         System.debug('dataTable :: ' + dataTableDtls);
 
-        dataTableDtls.listOfContractorAndResources = getContractorsAndResourcesToPick();
+        dataTableDtls.listOfContractorAndResources = [SELECT Id, Name, (SELECT Id, Name, LastName, FirstName FROM Contacts) FROM Account WHERE buildertek__BT_Account_Type__c = 'Vendor' ORDER BY Name ASC];
+        dataTableDtls.listOfInternalResources = [SELECT Id, Name FROM User ORDER BY Name ASC LIMIT 10000];
 
         return dataTableDtls;
     }
@@ -499,21 +500,6 @@ public with sharing class bryntumGanttController {
         }
     }
 
-    /* @Author        Nishit Suthar
-     * Date           14-8-23
-     * Description :  This method is used to get Contractors(Account) of the current Org.
-     */
-    @AuraEnabled(Cacheable=true)
-    public static List<Account> getContractorsAndResourcesToPick(){
-        List<Account> contractorList = new List<Account>();
-        try {
-            contractorList = [SELECT Id, Name, (SELECT Id, Name, LastName, FirstName FROM Contacts) FROM Account WHERE buildertek__BT_Account_Type__c = 'Vendor' ORDER BY Name ASC];
-        } catch (Exception e) {
-            System.debug('Error Line '+e.getLineNumber());
-            System.debug('Error Message from contactorList method '+e.getMessage());
-        }
-        return contractorList;
-    }
 
     /* @Author        Nishit Suthar
      * Date           24-08-2023
@@ -540,6 +526,8 @@ public with sharing class bryntumGanttController {
         public buildertek__Schedule__c scheduleObj = new buildertek__Schedule__c();
         @AuraEnabled
         public Map<String, NotesAttachmet> filesandattacmentList = new Map<String, NotesAttachmet>();
+        @AuraEnabled
+        public List<User> listOfInternalResources = new List<User>();
         @AuraEnabled
         public List<Account> listOfContractorAndResources = new List<Account>();
         @AuraEnabled

@@ -20,7 +20,8 @@ import {
   recordsTobeDeleted,
   makeComboBoxDataForContractor,
   calcBusinessDays,
-  makeComboBoxDataForResourceData
+  makeComboBoxDataForResourceData,
+  mergeArrays
 } from "./gantt_componentHelper";
 import { populateIcons } from "./lib/BryntumGanttIcons";
 
@@ -32,6 +33,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
   @track scheduleData;
   @track scheduleItemsData;
   @track contractorAndResources;
+  @track internalResources;
 
   @track error_toast = true;
 
@@ -242,13 +244,14 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
         console.log("data-->", data);
         this.scheduleItemsDataList = response.lstOfSObjs;
         this.contractorAndResources = response.listOfContractorAndResources;
+        this.internalResources = response.listOfInternalResources;
         console.log(
           "scheduleItemsDataList",
           JSON.parse(JSON.stringify(this.scheduleItemsDataList))
         );
         console.log(
-          "contractorAndResources",
-          JSON.parse(JSON.stringify(this.contractorAndResources))
+          "internalResources",
+          JSON.parse(JSON.stringify(this.internalResources))
         );
         this.scheduleData = response.scheduleObj;
         console.log("scheduleData", this.scheduleData);
@@ -602,7 +605,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     resourceRowData = formatedSchData["resourceRowData"];
     assignmentRowData = formatedSchData["assignmentRowData"];
 
-    let resourceData = makeComboBoxDataForResourceData(this.contractorAndResources);
+    let resourceData = makeComboBoxDataForResourceData(this.contractorAndResources, this.internalResources);
 
     const project = new bryntum.gantt.ProjectModel({
       calendar: data.project.calendar,
@@ -728,7 +731,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
             }
           }
         },
-        /* {
+        {
           type: "widget",
           text: "Contractor",
           draggable: false,
@@ -763,13 +766,12 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
               width    : 450,
               selectionMode: {
                 rowCheckboxSelection: true,
-                multiSelect: false,
+                multiSelect: true,
                 showCheckAll: false,
               },
               features : {
                   filterBar  : true,
                   group      : 'resource.type',
-                  multiSelect: false,
                   headerMenu : false,
                   cellMenu   : false,
               },
@@ -777,12 +779,12 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
             listeners: {
               paint: ({ source }) => {
                 let contractorId = source._projectEvent._data.contractorId
-                source.store.filter(record => record.resource._data.contractorId == contractorId);
+                source.store.filter(record => (record.resource._data.type == 'Internal Resources' || record.resource._data.contractorId == contractorId));
               }
             }
           },
           itemTpl : assignment => assignment.resourceName
-        }, */
+        },
         // {
         //   type: "addnew",
         // },
@@ -1172,8 +1174,10 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
   }
 
   //* calling this method on save changes
-  saveChanges(scheduleData, taskData, dependenciesDatamap) {
+  saveChanges(scheduleData, taskData, dependenciesDatamap, assignedResources) {
     this.handleShowSpinner();
+    let mergeTaskData = mergeArrays(taskData, assignedResources);
+
     let listOfRecordsToDelete = recordsTobeDeleted(
       this.scheduleItemsDataList,
       taskData
@@ -1182,7 +1186,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     console.log("taskdata:- ", taskData);
     let projectTaskObj = {};
     var newtasklistafterid = [];
-    taskData.forEach((newTaskRecord) => {
+    mergeTaskData.forEach((newTaskRecord) => {
       var demoidvar = newTaskRecord.Id;
       var demoidvar2 = newTaskRecord.buildertek__Dependency__c;
 
@@ -1200,7 +1204,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
       newtasklistafterid.push(newTaskRecord);
     });
 
-    console.log("taskData before apex:- ", taskData);
+    console.log("mergeTaskData before apex:- ", mergeTaskData);
     var that = this;
 
     let childParentObj = {};

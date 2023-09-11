@@ -737,10 +737,64 @@ function makeComboBoxDataForContractor(listOfContractors) {
     return listOfContractorToReturn;
 }
 
+//* auther : Nishit Suthar
+//* Date : 8th Sep 2023
+//* this method is use for creating data for resources to store in backend
+function setResourceDataForApexData(assignmentsData) {
+    if (assignmentsData.length > 0) {
+        const resourceMap = {};
+        assignmentsData.forEach(assignmentObj => {
+            let recordId = assignmentObj.eventId;
+            let resourcePrefixToIdentify = assignmentObj.resourceId.slice(0,3);
+
+            if (resourceMap[recordId]) {
+                if (resourcePrefixToIdentify == '003'){
+                    resourceMap[recordId].conList.push(assignmentObj.resourceId);
+                } else if (resourcePrefixToIdentify == '005') {
+                    resourceMap[recordId].usrList.push(assignmentObj.resourceId);
+                }
+            } else {
+                if (resourcePrefixToIdentify == '003'){
+                    resourceMap[recordId] = {conList: [assignmentObj.resourceId], usrList: []};
+                } else if (resourcePrefixToIdentify == '005') {
+                    resourceMap[recordId] = {conList: [], usrList: [assignmentObj.resourceId]};
+                }
+            }
+        });
+
+        let listOfResourceToReturn = createResourceDataForApex(resourceMap);
+        return listOfResourceToReturn;
+    }
+}
+
+//* auther : Nishit Suthar
+//* Date : 11th Sep 2023
+//* this method is use for creating data for resources to store in backend
+function createResourceDataForApex(resourceObjectWithList) {
+
+    let data = resourceObjectWithList;
+    let listOfapexDataToReturn = [];
+
+    for (const id in data) {
+        let apexDataObject = {};
+        apexDataObject['Id'] = id;
+        const [a, b, c] = data[id].conList;
+        apexDataObject['buildertek__Contractor_Resource_1__c'] = a;
+        apexDataObject['buildertek__Contractor_Resource_2__c'] = b;
+        apexDataObject['buildertek__Contractor_Resource_3__c'] = c;
+        const [e, f, g] = data[id].usrList;
+        apexDataObject['buildertek__Internal_Resource_1__c'] = e;
+        apexDataObject['buildertek__Internal_Resource_4__c'] = f;
+        apexDataObject['buildertek__Internal_Resource_3__c'] = g;
+        listOfapexDataToReturn.push(apexDataObject);
+    }
+
+    return listOfapexDataToReturn;
+}
 //* auther : Nishit Suthar/krunal Lungaria
 //* Date : 29th Aug 2023
 //* this method is used to create data for resource combobox
-function makeComboBoxDataForResourceData(listOfContractors){
+function makeComboBoxDataForResourceData(listOfContractors, listOfUsers){
     let listOfResourceToReturn = [];
 
     listOfContractors.forEach(ctrObj => {
@@ -755,6 +809,16 @@ function makeComboBoxDataForResourceData(listOfContractors){
             });
         }
     });
+
+    listOfUsers.forEach(usrObj => {
+        let resourceObj = {};
+        resourceObj['id'] = usrObj.Id;
+        resourceObj['name'] = usrObj.Name;
+        resourceObj['type'] = 'Internal Resources';
+        listOfResourceToReturn.push(resourceObj);
+    });
+
+
     return listOfResourceToReturn;
 }
 
@@ -786,4 +850,31 @@ function calcBusinessDays(dDate1, dDate2) { // input given as Date objects
     return (iDateDiff + 1); // add 1 because dates are inclusive
 }
 
-export{ formatApexDatatoJSData, convertJSONtoApexData, recordsTobeDeleted, makeComboBoxDataForContractor, calcBusinessDays, makeComboBoxDataForResourceData };
+//* auther : Nishit Suthar
+//* Date : 11th Sep 2023
+//* this method is used to merge 2 arrays of object
+function mergeArrays(taskData, assignedResources) {
+    const mergedList = [];
+
+    for (const item1 of taskData) {
+        let matchingItem;
+
+        for (const element of assignedResources) {
+            if (element.Id === item1.Id) {
+                matchingItem = element;
+                break;
+            }
+        }
+
+        if (matchingItem) {
+            const mergedObject = Object.assign({}, item1, matchingItem);
+            mergedList.push(mergedObject);
+        } else {
+            mergedList.push(item1);
+        }
+    }
+
+    return mergedList;
+}
+
+export{ formatApexDatatoJSData, convertJSONtoApexData, recordsTobeDeleted, makeComboBoxDataForContractor, calcBusinessDays, makeComboBoxDataForResourceData, setResourceDataForApexData, mergeArrays };

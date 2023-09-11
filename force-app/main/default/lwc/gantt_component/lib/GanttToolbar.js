@@ -1,5 +1,5 @@
 /* globals bryntum : true */
-import { convertJSONtoApexData } from "../gantt_componentHelper";
+import { convertJSONtoApexData,setResourceDataForApexData } from "../gantt_componentHelper";
 export default base => class GanttToolbar extends base {
     static get $name() {
         return 'GanttToolbar';
@@ -523,13 +523,14 @@ export default base => class GanttToolbar extends base {
             var taskData = JSON.parse(this.gantt.taskStore.json);
             var taskEdit = this.gantt.taskStore;
             console.log('taskEdit ',{taskEdit});
-            console.log('taskEdit assignmentStore ',taskEdit.assignmentStore.json);
+            let assignedResources = setResourceDataForApexData(JSON.parse(taskEdit.assignmentStore.json));
+            console.log('assignedResources ',assignedResources);
             debugger;
             var dependenciesData = JSON.parse(this.gantt.dependencyStore.json);
             var resourceData = JSON.parse(this.gantt.assignmentStore.json)
             let dataForApexController = convertJSONtoApexData(data, taskData, dependenciesData, resourceData);
             console.log('dataForApexController ',dataForApexController);
-            this.gantt.callGanttComponent.saveChanges(dataForApexController.scheduleData,dataForApexController.taskData, dependenciesData);
+            this.gantt.callGanttComponent.saveChanges(dataForApexController.scheduleData,dataForApexController.taskData, dependenciesData, assignedResources);
 
         } catch (error) {
             console.log('Error-->' + error + ' message-->' + error.message);
