@@ -6,3 +6,12 @@
     white-space: nowrap;
     font-size: 20px;
 }
+.THIS .mainContent{
+    height:65vh;
+    width:100%;
+    overflow: auto;
+}
+.THIS .mainContent::-webkit-scrollbar {
+    display: none;
+
+}
