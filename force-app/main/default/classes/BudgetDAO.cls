@@ -3206,5 +3206,70 @@ buildertek__Budget__c budgetCopy = Database.query(query);*/
         }
 
 
+    @AuraEnabled
+    public static budgetLineWrapperClass getBudgetLineData(String budgetId, Integer pageNumber, Integer recordToDisply, List<String> groupingList){
+        budgetLineWrapperClass mainWrapper = new budgetLineWrapperClass();
+        Integer pageSize = recordToDisply;
+        Integer offset = (pageNumber - 1) * pageSize;
+        List<String> gorupingFieldList = new List<String>{'id', 'buildertek__Sub_Grouping__c', 'buildertek__Group__c'};
+        String apiString = '';
+
+        List<BT_Lightning_Utils.dataTableFields> column = BT_Lightning_Utils.getFieldSetForDataTable('buildertek__Budget_Item__c', 'buildertek__BT_Related_List_View_Fields');
+        for(BT_Lightning_Utils.dataTableFields s : column){
+            if (!gorupingFieldList.contains(s.fieldName)) {
+                apiString += s.fieldName + ', ';
+            }
+        }
+        String query = 'SELECT Id, '+apiString;
+        query += 'buildertek__Sub_Grouping__c, buildertek__Sub_Grouping__r.Name, buildertek__Group__c, buildertek__Group__r.Name ';
+        query += 'FROM buildertek__Budget_Item__c WHERE buildertek__Budget__c =\''+budgetId+'\''+' ORDER BY '+groupingList[0];
+        if (groupingList.size() > 1) {
+            query += ', '+groupingList[1];
+        }
+        if (groupingList.size() > 2) {
+            query += ', '+groupingList[2];
+        }
+        if (groupingList.size() > 3) {
+            query += ', '+groupingList[3];
+        }
+        query += ' NULLS LAST';
+
+        List<buildertek__Budget_Item__c> budgetLineList = Database.query(query);
+
+        Integer totalBudgetLine = [SELECT count() FROM buildertek__Budget_Item__c WHERE buildertek__Budget__c = :budgetId];
+
+        buildertek__Budget__c budget = [SELECT Id, Name, buildertek__Budget_Line_Grouping_Fields__c FROM buildertek__Budget__c WHERE Id =: budgetId];
+        budget.buildertek__Budget_Line_Grouping_Fields__c = JSON.serialize(groupingList);
+        update budget;
+
+        mainWrapper.budgetLineList = budgetLineList;
+        mainWrapper.columns = column;
+        mainWrapper.pageSize = recordToDisply;
+        mainWrapper.pageNumber = pageNumber;
+        mainWrapper.total = totalBudgetLine;
+
+        return mainWrapper;
+
+    }    
+
+    public class budgetLineWrapperClass{
+
+        @AuraEnabled
+        public List<buildertek__Budget_Item__c> budgetLineList;
+    
+        @AuraEnabled
+        public List<BT_Lightning_Utils.dataTableFields> columns;
+    
+        @AuraEnabled
+        public Integer pageSize{ get; set; }
+    
+        @AuraEnabled
+        public Integer pageNumber{ get; set; }
+    
+        @AuraEnabled
+        public Integer total{ get; set; }
+    }
+
+
 
 }
