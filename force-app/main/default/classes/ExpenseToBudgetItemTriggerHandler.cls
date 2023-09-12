@@ -195,7 +195,8 @@ public class ExpenseToBudgetItemTriggerHandler {
 
         for (buildertek__Expense__c expense : newExpenseList) {
             // get expense list for create new junction object
-            if (expenseLinkMap.get(expense.Id) == null && expense.buildertek__Budget_Line__c != null) {
+            // xpenseLinkMap.get(expense.Id) == null && 
+            if (expense.buildertek__Budget_Line__c != null) {
                 createExpenseList.add(expense);
             }
 
@@ -209,7 +210,8 @@ public class ExpenseToBudgetItemTriggerHandler {
             }
 
             // if user remove budget line from the expense and that budget line is auto created from code then we need to delete that budget line record
-            if(oldExpenseMap.get(expense.Id).buildertek__Budget_Line__c != null && expense.buildertek__Budget_Line__c == null){
+            // && expense.buildertek__Budget_Line__c == null
+            if(oldExpenseMap.get(expense.Id).buildertek__Budget_Line__c != null ){
                 deleteBudgetLineIdList.add(oldExpenseMap.get(expense.Id).buildertek__Budget_Line__c);
             }
 
