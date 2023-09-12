@@ -12,7 +12,7 @@ import { refreshApex } from "@salesforce/apex";
 import GanttToolbarMixin from "./lib/GanttToolbar";
 import data from "./data/launch-saas";
 import scheduleWrapperDataFromApex from "@salesforce/apex/bryntumGanttController.getScheduleWrapperAtLoading";
-import saveResourceForRecord from "@salesforce/apex/bryntumGanttController.saveResourceForRecord";
+// import saveResourceForRecord from "@salesforce/apex/bryntumGanttController.saveResourceForRecord";
 import upsertDataOnSaveChanges from "@salesforce/apex/bryntumGanttController.upsertDataOnSaveChanges";
 import getPickListValuesIntoList from "@salesforce/apex/bryntumGanttController.getPickListValuesIntoList";
 import {
@@ -425,7 +425,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     this.contractorname = event.target.value;
   }
 
-  saveSelectedContact() {
+  /* saveSelectedContact() {
     var that = this;
     console.log("checking method*&");
     if (!this.taskRecordId.includes("_generated")) {
@@ -475,7 +475,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
         });
       }
     }
-  }
+  } */
 
   closeEditPopup(event) {
     event.preventDefault();
@@ -757,8 +757,8 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
         },
         {
           type : 'resourceassignment',
-          width : 120,
-          showAvatars : false,
+          width : 180,
+          showAvatars : true,
           draggable : false,
           editor      : {
             picker : {
@@ -778,7 +778,8 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
             },
             listeners: {
               paint: ({ source }) => {
-                let contractorId = source._projectEvent._data.contractorId
+                let contractorId = source._projectEvent._data.contractorId;
+                console.log('source :- ', source);
                 source.store.filter(record => (record.resource._data.type == 'Internal Resources' || record.resource._data.contractorId == contractorId));
               }
             }

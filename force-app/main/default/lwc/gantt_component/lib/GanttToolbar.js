@@ -525,12 +525,17 @@ export default base => class GanttToolbar extends base {
             console.log('taskEdit ',{taskEdit});
             let assignedResources = setResourceDataForApexData(JSON.parse(taskEdit.assignmentStore.json));
             console.log('assignedResources ',assignedResources);
-            debugger;
-            var dependenciesData = JSON.parse(this.gantt.dependencyStore.json);
-            var resourceData = JSON.parse(this.gantt.assignmentStore.json)
-            let dataForApexController = convertJSONtoApexData(data, taskData, dependenciesData, resourceData);
-            console.log('dataForApexController ',dataForApexController);
-            this.gantt.callGanttComponent.saveChanges(dataForApexController.scheduleData,dataForApexController.taskData, dependenciesData, assignedResources);
+            if (assignedResources == 'error') {
+                this.gantt.callGanttComponent.showToastMessage('Can not Select more then 3 Internal or External Resources!');
+                return;
+            }else{
+                var dependenciesData = JSON.parse(this.gantt.dependencyStore.json);
+                var resourceData = JSON.parse(this.gantt.assignmentStore.json)
+                let dataForApexController = convertJSONtoApexData(data, taskData, dependenciesData, resourceData);
+                debugger;
+                console.log('dataForApexController ',dataForApexController);
+                this.gantt.callGanttComponent.saveChanges(dataForApexController.scheduleData,dataForApexController.taskData, dependenciesData, assignedResources);
+            }
 
         } catch (error) {
             console.log('Error-->' + error + ' message-->' + error.message);
