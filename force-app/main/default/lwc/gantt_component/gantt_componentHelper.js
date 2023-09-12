@@ -872,7 +872,7 @@ function setResourceDataForApexData(assignmentsData) {
         const resourceMap = {};
         assignmentsData.forEach(assignmentObj => {
             let recordId = assignmentObj.eventId;
-            let resourcePrefixToIdentify = assignmentObj.resourceId.slice(0,3);
+            let resourcePrefixToIdentify = assignmentObj.resourceId ? assignmentObj.resourceId.slice(0,3) : undefined;
 
             if (resourceMap[recordId]) {
                 if (resourcePrefixToIdentify == '003'){

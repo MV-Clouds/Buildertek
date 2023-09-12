@@ -523,6 +523,7 @@ export default base => class GanttToolbar extends base {
             var taskData = JSON.parse(this.gantt.taskStore.json);
             var taskEdit = this.gantt.taskStore;
             console.log('taskEdit ',{taskEdit});
+            console.log('assignmentStore JSON ',JSON.parse(taskEdit.assignmentStore.json));
             let assignedResources = setResourceDataForApexData(JSON.parse(taskEdit.assignmentStore.json));
             console.log('assignedResources ',assignedResources);
             if (assignedResources == 'error') {
