@@ -250,67 +250,85 @@
 }
 /* new chnages for css fixing after grouping  */
 .THIS .mainBomDiv{
-    max-height : 45vh;
+    max-height : 46vh;
 }
 .THIS .divcont{
-    max-height : 42vh;
-    overflow: auto;
+    /* max-height : 42vh; */
+    /* overflow: hidden; */
 }
 @media only screen and (max-height: 1080px) and (min-height: 990px){
     .THIS .mainBomDiv{
-        max-height : 45vh;
+        max-height : 46vh;
     }
-    .THIS .divcont{
-        max-height : 42vh;
+    .THIS .slds_scrollable{
+        max-height : 46vh;
     }
 }
 @media only screen and (max-height: 990px) and (min-height: 900px){
     .THIS .mainBomDiv{
-        max-height : 43vh;
+        max-height : 46vh;
     }
-    .THIS .divcont{
-        max-height : 40.5vh;
+    .THIS .slds_scrollable{
+        max-height : 46vh;
     }
 }
 @media only screen and (max-height: 900px) and (min-height: 810px){
     .THIS .mainBomDiv{
-        max-height : 42vh;
+        max-height : 44.5vh;
     }
-    .THIS .divcont{
-        max-height : 38vh;
+    .THIS .slds_scrollable{
+        max-height : 44.5vh;
     }
+    .THIS .divcont1{
+        border-bottom : 1rem solid white;
+        border-radius: 5px;
+        margin-bottom : 0.5rem;
+    }
+    
 }
 @media only screen and (max-height: 810px) and (min-height: 720px){
     .THIS .mainBomDiv{
-        max-height : 41vh;
+        max-height : 42vh;
     }
-    .THIS .divcont{
-        max-height : 36.5vh;
+    .THIS .slds_scrollable{
+        max-height : 42vh;
     }
+    .THIS .divcont1{
+        border-bottom : 1rem solid white;
+        border-radius: 5px;
+        margin-bottom : 0.5rem;
+    }
+    
 }
 @media only screen and (max-height: 720px) and (min-height: 630px){
     .THIS .mainBomDiv{
-        max-height : 40vh;
+        max-height : 40.5vh;
     }
-    .THIS .divcont{
-        max-height : 35vh;
+    .THIS .slds_scrollable{
+        max-height : 40.5vh;
+    }
+    .THIS .divcont1{
+        border-bottom : 1rem solid white;
+        border-radius: 5px;
+        margin-bottom : 0.5rem;
     }
 }
 @media only screen and (max-height: 630px) and (min-height: 540px){
     .THIS .mainBomDiv{
-        max-height : 39vh;
+        max-height : 38.5vh;
     }
-    .THIS .divcont{
-        max-height : 33.5vh;
+    .THIS .slds_scrollable{
+        max-height : 38.5vh;
+    }
+    .THIS .divcont1{
+        border-bottom : 1rem solid white;
+        border-radius: 5px;
+        margin-bottom : 0.5rem;
     }
 }
 .THIS .divcont1{
-    max-height: 60vh;
+    max-height: 62vh;
     overflow: auto;
-
-    /* min-height: fit-content;
-    max-height: 100%;
-    overflow: auto; */
 }
 
 .THIS .divcount2{
