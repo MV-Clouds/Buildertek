@@ -1,6 +1,8 @@
 ({
     doInit : function(component, event, helper) {
-        component.set("v.Spinner", true);
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "SHOW"
+        }).fire();
         var value = helper.getParameterByName(component, event, 'inContextOfRef');
         console.log('value-->>',{value});
         var context = '';
@@ -13,18 +15,21 @@
         });
         action2.setCallback(this, function (response) {
             if (response.getState() == 'SUCCESS' && response.getReturnValue()) {
-                component.set("v.Spinner", false);
                 var listOfFields0 = JSON.parse(response.getReturnValue());
                 console.log({listOfFields0});
                 component.set("v.listOfFields0", listOfFields0);
             }
+            
+            $A.get("e.c:BT_SpinnerEvent").setParams({
+                "action": "HIDE"
+            }).fire();
         });
         if (value != null) {
             context = JSON.parse(window.atob(value));
             parentRecordId = context.attributes.recordId;
             component.set("v.parentRecordId", parentRecordId);
             console.log('parentRecordId---->>',{parentRecordId});
-            component.set("v.Spinner", false);
+            // component.set("v.Spinner", false);
         } else {
             var relatedList = window.location.pathname;
             var stringList = relatedList.split("/");
@@ -42,7 +47,7 @@
                 recordId: parentRecordId,
             });
             action.setCallback(this, function (response) {
-                component.set("v.Spinner", false);
+                // component.set("v.Spinner", false);
                 if (response.getState() == 'SUCCESS' && response.getReturnValue()) {
                     var objName = response.getReturnValue();
                     console.log('objName '+objName);
@@ -56,6 +61,7 @@
             $A.enqueueAction(action);
         }
         $A.enqueueAction(action2);
+        helper.masterQuoteRecord(component, event, helper);
     },
 
     closeModel: function(component, event, helper) {
@@ -83,6 +89,10 @@
      },
 
     handleSubmit : function(component, event, helper) {
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "SHOW"
+        }).fire();
+
         console.log('handleSubmit');
         event.preventDefault();
         var fields = event.getParam('fields');
@@ -92,7 +102,8 @@
         debugger;
         var action = component.get("c.saveRecord");
         action.setParams({
-            "data": data
+            "data": data,
+            "masterQuoteId":component.get('v.selectedMasterQuoteId')
         });
         action.setCallback(this, function (response) {
             var state = response.getState();
@@ -117,6 +128,7 @@
 
                 if(saveNnew){
                     $A.get('e.force:refreshView').fire();
+                    
                 }
                 else{
                     console.log('---Else---');
@@ -152,6 +164,10 @@
 				toastEvent.fire();
                 console.log('error', response.getError());
             }
+
+            $A.get("e.c:BT_SpinnerEvent").setParams({
+                "action": "HIDE"
+            }).fire();
         });
         $A.enqueueAction(action);
     },
@@ -161,7 +177,28 @@
     },
 
     saveNnew : function(component, event, helper) {
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "SHOW"
+        }).fire();
         component.set("v.saveAndNew", true);
         console.log('saveNnew');
-    }
+    },
+    handleSelectedRow:function(component, event, helper) {
+        var selectedRows = event.getParam('selectedRows');
+        component.set("v.selectedMasterQuoteId", selectedRows[0].Id);
+        console.log(selectedRows[0].Id);
+    },
+
+    handleLoadMoreQuotes:function(component, event, helper) {
+        helper.getMoreQuotes(component, component.get('v.rowsToLoad')).then($A.getCallback(function (getMasterQuoteRecords) {
+            if (component.get('v.masterQuoteData').length == component.get('v.totalNumberOfRows')) {
+                component.set('v.enableInfiniteLoading', false);
+            } else {
+                var currentMasterQuoteData = component.get('v.masterQuoteData');
+                var newMasterQuoteData = [...currentMasterQuoteData , ...getMasterQuoteRecords];
+                component.set('v.masterQuoteData', newMasterQuoteData);
+            }
+            event.getSource().set("v.isLoading", false);
+        }));
+    },
 })
