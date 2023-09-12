@@ -64,4 +64,15 @@ public class New_InvoicePO_ComponentFields {
         String sObjName = recordId.getSObjectType().getDescribe().getName();  
         return sObjName;
     }
+
+    @AuraEnabled
+    public static List<buildertek__Purchase_Order__c> getPO(string recordId) {
+        if (String.isNotBlank(recordId)) {
+            List<buildertek__Purchase_Order__c> poList = [SELECT Id, Name, buildertek__Project__c FROM buildertek__Purchase_Order__c WHERE buildertek__Project__c = :recordId ORDER BY Name ASC];
+            return poList;
+        } else {
+            // If recordId is null or empty, return an empty list or handle it as needed.
+            return new List<buildertek__Purchase_Order__c>();
+        }
+    }
 }

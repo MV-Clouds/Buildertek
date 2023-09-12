@@ -4626,19 +4626,30 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                         $A.get("e.c:BT_SpinnerEvent").setParams({
                             "action": "HIDE"
                         }).fire();
-    
-                        var toastEvent = $A.get("e.force:showToast");
-                        toastEvent.setParams({
-                            type: 'SUCCESS',
-                            message: 'Invoice (PO)  added Successfully',
-                            duration: '5000',
-                        });
-                        toastEvent.fire();
-                        component.set("v.addInvoicePOSection", false); // to close popup
-                        $A.get("e.force:refreshView").fire();
-                        document.location.reload(true);    
-        
-    
+
+
+                        if (response.getReturnValue() == 'HasDisburshment') {   // Changes for BUIL-3498 END
+                            var toastEvent = $A.get("e.force:showToast");
+                            toastEvent.setParams({
+                                type: 'ERROR',
+                                message: 'You are trying to add Invoice which has contentDisburshment associated with it.',
+                                duration: '5000',
+                            });
+                            toastEvent.fire();
+                            component.set("v.addInvoicePOSection", false); // to close popup
+                        }else{
+                            var toastEvent = $A.get("e.force:showToast");
+                            toastEvent.setParams({
+                                type: 'SUCCESS',
+                                message: 'Invoice (PO)  added Successfully',
+                                duration: '5000',
+                            });
+                            toastEvent.fire();
+                            component.set("v.addInvoicePOSection", false); // to close popup
+                            $A.get("e.force:refreshView").fire();
+                            document.location.reload(true);    
+
+                        }
                     }
                     else if (response.getState() == 'Error') {
                         $A.get("e.c:BT_SpinnerEvent").setParams({

@@ -32,6 +32,7 @@ export default class CreateNewSchedule extends NavigationMixin(LightningElement)
     @track showUserIcon = false;
     @track isInputEnabledForProject = false;
     @track isInputEnabledForUser = false;
+    @track projectSchedule = false;
 
     connectedCallback(event) {
         document.addEventListener('click', this.handleDocumentEvent.bind(this));
@@ -53,6 +54,7 @@ export default class CreateNewSchedule extends NavigationMixin(LightningElement)
 
     getProjectNameFromId(parentRecordId) {
         console.log('parentRecordId:', parentRecordId);
+        this.projectSchedule = true;
         getProjectName({ parentRecordId: parentRecordId })
             .then((result) => {
                 this.searchProjectName = result;
@@ -186,7 +188,7 @@ export default class CreateNewSchedule extends NavigationMixin(LightningElement)
 
     handleTypeChange(event) {
         this.type = event.target.value;
-        console.log('type:',this.type);
+        console.log('type:', this.type);
     }
 
     createSchedule() {
@@ -237,7 +239,6 @@ export default class CreateNewSchedule extends NavigationMixin(LightningElement)
                         mode: 'dismissable'
                     });
                     this.dispatchEvent(event);
-                    this.template.querySelector('form').reset();
                 })
                 .catch((error) => {
                     console.log('error:', error);
@@ -249,6 +250,24 @@ export default class CreateNewSchedule extends NavigationMixin(LightningElement)
                         mode: 'dismissable'
                     });
                     this.dispatchEvent(event);
+                })
+                .finally(() => {
+                    this.template.querySelector('form').reset();
+                    if (!this.projectSchedule) {
+                        this.searchProjectName = '';
+                        this.showProjectIcon = false;
+                        this.isInputEnabledForProject = false;
+                        this.projectId = undefined;
+                    }
+                    this.description = '';
+                    this.initialStartDate = undefined;
+                    this.type = 'Standard';
+                    this.userId = undefined;
+                    this.masterRec = undefined;
+                    this.searchProjectManager = '';
+                    this.showUserIcon = false;
+                    this.isInputEnabledForUser = false;
+                    console.log(`description: ${this.description} projectId: ${this.projectId} formattedDate: ${this.initialStartDate} type: ${this.type} userId: ${this.userId} masterRec: ${this.masterRec}`);
                 })
         } else {
             const event = new ShowToastEvent({
@@ -297,10 +316,12 @@ export default class CreateNewSchedule extends NavigationMixin(LightningElement)
         console.log('clearInputForType', clearInputForType);
         if (clearInputForType === 'project') {
             this.searchProjectName = '';
+            this.projectId = undefined;
             this.showProjectIcon = false;
             this.isInputEnabledForProject = false;
         } else {
             this.searchProjectManager = '';
+            this.userId = undefined;
             this.showUserIcon = false;
             this.isInputEnabledForUser = false;
         }
