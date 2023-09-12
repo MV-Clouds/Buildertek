@@ -127,8 +127,8 @@ public class ExpenseToBudgetItemTriggerHandler {
         // If user change budget and expense is not linked with any budget line then it's create nee budget line under that budget
         Map<Id, buildertek__Budget_Item__c> newBudgetItemMap = new Map<Id, buildertek__Budget_Item__c>();
         for (buildertek__Expense__c expense : newExpenseList) {
-            if(newExpenseMap.get(expense.Id).buildertek__Status__c == 'Posted' && newExpenseMap.get(expense.Id).buildertek__Budget__c != oldExpenseMap.get(expense.Id).buildertek__Budget__c) {
-                expense.addError('You cannot change status to Posted and change the Budget/Project of expense at same time.');
+            if(newExpenseMap.get(expense.Id).buildertek__Status__c != oldExpenseMap.get(expense.Id).buildertek__Status__c && newExpenseMap.get(expense.Id).buildertek__Status__c == 'Posted' && newExpenseMap.get(expense.Id).buildertek__Budget__c != oldExpenseMap.get(expense.Id).buildertek__Budget__c) {
+                expense.addError('You cannot change the status to Posted and update the Budget/Project of expense at the same time.');
 
             }
             if(oldExpenseMap.get(expense.Id).buildertek__Date_Posted__c !=null && newExpenseMap.get(expense.Id).buildertek__Date_Posted__c!= null){
