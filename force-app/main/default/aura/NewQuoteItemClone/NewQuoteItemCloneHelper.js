@@ -1527,18 +1527,22 @@
      applyCSSBasedOnURL: function(component) {
         var isproject = component.get("v.isproject");
         console.log('isproject',isproject);
-        var headerDiv = component.find("headerDiv");
-        console.log('headerDiv',headerDiv);
+        // var headerDiv = component.find("headerDiv");
+        // console.log('headerDiv',headerDiv);
+        var slds_scrollable = component.find("slds_scrollable");
+
         var totalPage = component.get("v.total");
         console.log('totalPage',totalPage);
 
         // Check if the current URL contains a specific keyword or phrase
         if (isproject) {
             console.log('in if');
-            $A.util.addClass(headerDiv, "divcont1");
+            // $A.util.addClass(headerDiv, "divcont1");
+            $A.util.addClass(slds_scrollable, "divcont1");
         } else if(!isproject){
             console.log('in else');
-            $A.util.removeClass(headerDiv, "divcont1");
+            // $A.util.removeClass(headerDiv, "divcont1");
+            $A.util.removeClass(slds_scrollable, "divcont1");
 
             // if(totalPage < 50){
             //     $A.util.addClass(headerDiv, "divcont2");
