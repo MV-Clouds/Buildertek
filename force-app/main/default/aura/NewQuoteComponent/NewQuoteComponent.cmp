@@ -69,7 +69,7 @@
                         </lightning:layout>
                     </div>
                 <h3 class="slds-section-title-divider" style="font-weight: bold;background: #e5e5e5; padding: 10px;">Master Quotes</h3>
-                <div style="height:21rem; overflow: auto; " class="lazy-loading-container slds-is-relative" >
+                <div style="height:21.2rem; overflow: auto; " class="lazy-loading-container slds-is-relative" >
                     <lightning:datatable 
                             columns="{!v.columns}"
                             data="{!v.masterQuoteData}"
