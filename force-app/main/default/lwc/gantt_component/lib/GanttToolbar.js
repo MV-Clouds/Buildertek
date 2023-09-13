@@ -518,7 +518,6 @@ export default base => class GanttToolbar extends base {
 
     onSaveClick() {
         try {
-            // this.gantt.callGanttComponent.handleShowSpinner();
             var data = this.gantt.data;
             var taskData = JSON.parse(this.gantt.taskStore.json);
             var taskEdit = this.gantt.taskStore;
@@ -528,16 +527,15 @@ export default base => class GanttToolbar extends base {
             console.log('assignedResources ',assignedResources);
             if (assignedResources == 'error') {
                 this.gantt.callGanttComponent.showToastMessage('Can not Select more then 3 Internal or External Resources!');
-                return;
+                this.gantt.callGanttComponent.template.querySelector('.container').innerHTML = '';
+                this.gantt.callGanttComponent.createGanttChartInitially();
             }else{
                 var dependenciesData = JSON.parse(this.gantt.dependencyStore.json);
                 var resourceData = JSON.parse(this.gantt.assignmentStore.json)
                 let dataForApexController = convertJSONtoApexData(data, taskData, dependenciesData, resourceData);
-                debugger;
                 console.log('dataForApexController ',dataForApexController);
                 this.gantt.callGanttComponent.saveChanges(dataForApexController.scheduleData,dataForApexController.taskData, dependenciesData, assignedResources);
             }
-
         } catch (error) {
             console.log('Error-->' + error + ' message-->' + error.message);
             this.gantt.callGanttComponent.showToastMessage('Dates cannot be null or empty');

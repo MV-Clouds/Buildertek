@@ -336,7 +336,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
 
         if (this.template.querySelector(".container").children.length) {
           this.template.querySelector(".container").innerHTML = "";
-          this.template.querySelector(".container1").innerHTML = "";
           // this.handleHideSpinner();
           this.createGanttChartInitially();
           // this.createGantt();
@@ -461,11 +460,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     }
   }
 
-  addtaskeventcall(taskrecord) {
-    console.log("In addtaskeventcall method");
-    console.log(taskrecord);
-  }
-
   createGanttChartInitially() {
     const GanttToolbar = GanttToolbarMixin(bryntum.gantt.Toolbar);
 
@@ -507,7 +501,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     assignmentRowData = formatedSchData["assignmentRowData"];
 
     let resourceData = makeComboBoxDataForResourceData(this.contractorAndResources, this.internalResources);
-
+    this.handleHideSpinner();
     const project = new bryntum.gantt.ProjectModel({
       calendar: data.project.calendar,
       // startDate: data.project.startDate,
@@ -526,7 +520,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     project.calendar = "business";
 
     let contractorComboData = makeComboBoxDataForContractor(this.contractorAndResources);
-
+    this.handleHideSpinner();
     const gantt = new bryntum.gantt.Gantt({
       project,
       appendTo: this.template.querySelector(".container"),
