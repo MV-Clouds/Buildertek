@@ -1,8 +1,3 @@
-// import insertUpdateTask from '@salesforce/apex/BT_NewGanttChartCls.insertUpdateTask';
-// import {
-//     ShowToastEvent
-// } from "lightning/platformShowToastEvent";
-
 function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDataList) {
     var taskData = scheduleItemsData;
     var taskDependencyData = [];
