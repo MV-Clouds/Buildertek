@@ -81,7 +81,11 @@ public with sharing class NewQuoteComponentController {
             QuoteToInsert.Name = QuoteToInsert.Name.left(78);
         }
         insert QuoteToInsert;
-        NewQuoteComponentController.cloneQuoteLines(QuoteToInsert.Id , masterQuoteId);
+
+        if(masterQuoteId !=null && QuoteToInsert.Id !=null){
+            NewQuoteComponentController.cloneQuoteSection(QuoteToInsert.Id , masterQuoteId);
+            NewQuoteComponentController.cloneQuoteLines(QuoteToInsert.Id , masterQuoteId);
+        }
         return QuoteToInsert.ID;
     }
 
@@ -110,6 +114,18 @@ public with sharing class NewQuoteComponentController {
 
             insert newQuoteItemList;
         }
+    
+    }
+
+    public static void cloneQuoteSection(String quoteId , String masterQuoteId){
+
+        buildertek__Quote__c quoteList=[SELECT Id,buildertek__Memo__c, buildertek__Email_Body__c, buildertek__Section_I__c, buildertek__Section_II__c, buildertek__Section_III__c, buildertek__Section_IV__c , buildertek__Section_IX__c, buildertek__Section_V__c, buildertek__Section_VI__c, buildertek__Section_VII__c, buildertek__Section_VIII__c, buildertek__Section_X__c ,buildertek__Footer__c FROM buildertek__Quote__c WHERE Id=:masterQuoteId LIMIT 1 ];
+
+        buildertek__Quote__c quoteRec= quoteList.clone(false, false, false, false);
+        quoteRec.Id=quoteId;
+        update quoteRec;
+    
+
     
     }
 
