@@ -13,6 +13,7 @@
 			
 		component.set('v.columns', [
             {label: 'Name', fieldName: 'QuoteName', type: 'url' , typeAttributes: {label: { fieldName: 'Name' }, target: '_blank'}},
+            // {label: 'Status', fieldName: 'buildertek__Status__c', type: 'picklist'},
             {label: 'Description', fieldName: 'buildertek__Description__c', type: 'text'},
         ]);		
 
