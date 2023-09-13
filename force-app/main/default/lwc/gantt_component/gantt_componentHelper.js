@@ -93,21 +93,6 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
                 rowChilObj['predecessorName'] = '';
             }
 
-            rowChilObj['internalresource'] = taskListForPhase[i].buildertek__Resource__c;
-
-                if(taskListForPhase[i].buildertek__Resource__c){
-                rowChilObj['internalresourcename'] = taskListForPhase[i].buildertek__Resource__r.Name;
-                }else{
-                rowChilObj['internalresourcename'] = '';
-            }
-
-            rowChilObj['contractorresource'] = taskListForPhase[i].buildertek__Contractor_Resource__c;
-
-                if(taskListForPhase[i].buildertek__Contractor_Resource__c){
-                rowChilObj['contractorresourcename'] = taskListForPhase[i].buildertek__Contractor_Resource__r.Name;
-                }else{
-                rowChilObj['contractorresourcename'] = '';
-            }
             rowChilObj['contractorId'] = taskListForPhase[i].buildertek__Contractor__c;
 
                 if(taskListForPhase[i].buildertek__Contractor__c){
@@ -140,46 +125,6 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
                     dependencyRow["toTask"]  = taskListForPhase[i].Id
                     dependencyRow["lag"]  = taskListForPhase[i].buildertek__Lag__c
                 taskDependencyData.push(dependencyRow)
-            }
-
-
-                if(!taskListForPhase[i].buildertek__Milestone__c && taskListForPhase[i].buildertek__Resource__c){
-                    if(resourceRowIdList.indexOf(taskListForPhase[i].buildertek__Resource__c) < 0){
-                    var resourceRow = {}
-                    resourceRow['id'] = taskListForPhase[i].buildertek__Resource__c;
-                    resourceRow['name'] = taskListForPhase[i].buildertek__Resource__r.Name;
-                    resourceRow['calendar'] = "general";
-                    resourceRowData.push(resourceRow)
-                    resourceRowIdList.push(taskListForPhase[i].buildertek__Resource__c)
-                }
-
-            }
-                if(!taskListForPhase[i].buildertek__Milestone__c && taskListForPhase[i].buildertek__Contractor_Resource__c){
-
-                    if(resourceRowIdList.indexOf(taskListForPhase[i].buildertek__Contractor_Resource__c) < 0){
-                    var resourceRow = {}
-                    resourceRow['id'] = taskListForPhase[i].buildertek__Contractor_Resource__c
-                    resourceRow['name'] = taskListForPhase[i].buildertek__Contractor_Resource__r.Name;
-                    resourceRow['calendar'] = "general";
-                    resourceRowData.push(resourceRow)
-                    resourceRowIdList.push(resourceRow['id'])
-                }
-            }
-
-
-                if(!taskListForPhase[i].buildertek__Milestone__c && taskListForPhase[i].buildertek__Resource__c){
-                var assignmentRow = {}
-                    assignmentRow['id'] = taskListForPhase[i].Id+'_'+taskListForPhase[i].buildertek__Resource__c+'__index_'+i+'Resource_Name'+taskListForPhase[i].buildertek__Resource__r.Name;
-                assignmentRow['event'] = taskListForPhase[i].Id
-                assignmentRow['resource'] = taskListForPhase[i].buildertek__Resource__c;
-                assignmentRowData.push(assignmentRow)
-            }
-                if(!taskListForPhase[i].buildertek__Milestone__c && taskListForPhase[i].buildertek__Contractor_Resource__c){
-                var assignmentRow = {}
-                    assignmentRow['id'] = taskListForPhase[i].Id+'_'+taskListForPhase[i].buildertek__Contractor_Resource__c+'__index'+i+'ContractorResource_Name'+taskListForPhase[i].buildertek__Contractor_Resource__r.Name;
-                assignmentRow['event'] = taskListForPhase[i].Id
-                assignmentRow['resource'] = taskListForPhase[i].buildertek__Contractor_Resource__c;
-                assignmentRowData.push(assignmentRow)
             }
 
             if(!taskListForPhase[i].buildertek__Milestone__c && taskListForPhase[i].buildertek__Contractor_Resource_1__c){
@@ -307,21 +252,6 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
                 rowChilObj['predecessorName'] = '';
             }
 
-            rowChilObj['internalresource'] = taskListForPhase[i].buildertek__Resource__c;
-
-                if(taskListForPhase[i].buildertek__Resource__c){
-                rowChilObj['internalresourcename'] = taskListForPhase[i].buildertek__Resource__r.Name;
-                }else{
-                rowChilObj['internalresourcename'] = '';
-            }
-
-            rowChilObj['contractorresource'] = taskListForPhase[i].buildertek__Contractor_Resource__c;
-
-                if(taskListForPhase[i].buildertek__Contractor_Resource__c){
-                rowChilObj['contractorresourcename'] = taskListForPhase[i].buildertek__Contractor_Resource__r.Name;
-                }else{
-                rowChilObj['contractorresourcename'] = ''
-            }
             rowChilObj['contractorId'] = taskListForPhase[i].buildertek__Contractor__c;
 
                 if(taskListForPhase[i].buildertek__Contractor__c){
@@ -360,45 +290,6 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
                 taskDependencyData.push(dependencyRow)
             }
 
-
-                if(!taskListForPhase[i].buildertek__Milestone__c && taskListForPhase[i].buildertek__Resource__c){
-                    if(resourceRowIdList.indexOf(taskListForPhase[i].buildertek__Resource__c) < 0){
-                    var resourceRow = {}
-                    resourceRow['id'] = taskListForPhase[i].buildertek__Resource__c;
-                    resourceRow['name'] = taskListForPhase[i].buildertek__Resource__r.Name;
-                    resourceRow['calendar'] = "general";
-                    resourceRowData.push(resourceRow)
-                    resourceRowIdList.push(resourceRow['id'])
-                }
-
-            }
-                if(!taskListForPhase[i].buildertek__Milestone__c && taskListForPhase[i].buildertek__Contractor_Resource__c){
-
-                    if(resourceRowIdList.indexOf(taskListForPhase[i].buildertek__Contractor_Resource__c) < 0){
-                    var resourceRow = {}
-                    resourceRow['id'] = taskListForPhase[i].buildertek__Contractor_Resource__c
-                    resourceRow['name'] = taskListForPhase[i].buildertek__Contractor_Resource__r.Name;
-                    resourceRow['calendar'] = "general";
-                    resourceRowData.push(resourceRow)
-                    resourceRowIdList.push(resourceRow['id'])
-                }
-            }
-
-
-            if(!taskListForPhase[i].buildertek__Milestone__c && taskListForPhase[i].buildertek__Resource__c){
-                var assignmentRow = {}
-                    assignmentRow['id'] = taskListForPhase[i].Id+'_'+taskListForPhase[i].buildertek__Resource__c+'__index_'+i+'Resource_Name'+taskListForPhase[i].buildertek__Resource__r.Name;
-                assignmentRow['event'] = taskListForPhase[i].Id
-                assignmentRow['resource'] = taskListForPhase[i].buildertek__Resource__c;
-                assignmentRowData.push(assignmentRow)
-            }
-            if(!taskListForPhase[i].buildertek__Milestone__c && taskListForPhase[i].buildertek__Contractor_Resource__c){
-                var assignmentRow = {}
-                    assignmentRow['id'] = taskListForPhase[i].Id+'_'+taskListForPhase[i].buildertek__Contractor_Resource__c+'__index'+i+'ContractorResource_Name'+taskListForPhase[i].buildertek__Contractor_Resource__r.Name;
-                assignmentRow['event'] = taskListForPhase[i].Id
-                assignmentRow['resource'] = taskListForPhase[i].buildertek__Contractor_Resource__c;
-                assignmentRowData.push(assignmentRow)
-            }
             if(!taskListForPhase[i].buildertek__Milestone__c && taskListForPhase[i].buildertek__Contractor_Resource_1__c){
                 var assignmentRow = {}
                 assignmentRow['id'] = taskListForPhase[i].Id+'_'+taskListForPhase[i].buildertek__Contractor_Resource_1__c+'__index'+i+'ContractorResource_Name'+taskListForPhase[i].buildertek__Contractor_Resource_1__r.Name;
@@ -493,20 +384,6 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
                 rowChilObj['predecessorName'] = '';
             }
 
-            rowChilObj['internalresource'] = taskListForPhase[i].buildertek__Resource__c;
-
-            if(taskListForPhase[i].buildertek__Resource__c){
-                rowChilObj['internalresourcename'] = taskListForPhase[i].buildertek__Resource__r.Name;
-            }else{
-                rowChilObj['internalresourcename'] = '';
-            }
-            rowChilObj['contractorresource'] = taskListForPhase[i].buildertek__Contractor_Resource__c;
-
-            if(taskListForPhase[i].buildertek__Contractor_Resource__c){
-                rowChilObj['contractorresourcename'] = taskListForPhase[i].buildertek__Contractor_Resource__r.Name;
-            }else{
-                rowChilObj['contractorresourcename'] = '';
-            }
             rowChilObj['contractorId'] = taskListForPhase[i].buildertek__Contractor__c;
 
             if(taskListForPhase[i].buildertek__Contractor__c){
@@ -557,46 +434,6 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
                 taskDependencyData.push(dependencyRow)
             }
 
-
-            if(!taskListForPhase[i].buildertek__Milestone__c && taskListForPhase[i].buildertek__Resource__c){
-                if(resourceRowIdList.indexOf(taskListForPhase[i].buildertek__Resource__c) < 0){
-                    var resourceRow = {}
-                    resourceRow['id'] = taskListForPhase[i].buildertek__Resource__c;
-                    resourceRow['name'] = taskListForPhase[i].buildertek__Resource__r.Name;
-                    resourceRow['calendar'] = "general";
-                    resourceRowData.push(resourceRow)
-                    resourceRowIdList.push(resourceRow['id'])
-                }
-
-            }
-
-            if(!taskListForPhase[i].buildertek__Milestone__c && taskListForPhase[i].buildertek__Contractor_Resource__c){
-
-                if(resourceRowIdList.indexOf(taskListForPhase[i].buildertek__Contractor_Resource__c) < 0){
-                    var resourceRow = {}
-                    resourceRow['id'] = taskListForPhase[i].buildertek__Contractor_Resource__c
-                    resourceRow['name'] = taskListForPhase[i].buildertek__Contractor_Resource__r.Name;
-                    resourceRow['calendar'] = "general";
-                    resourceRowData.push(resourceRow)
-                    resourceRowIdList.push(resourceRow['id'])
-                }
-            }
-
-
-            if(!taskListForPhase[i].buildertek__Milestone__c && taskListForPhase[i].buildertek__Resource__c){
-                var assignmentRow = {}
-                assignmentRow['id'] = taskListForPhase[i].Id+'_'+taskListForPhase[i].buildertek__Resource__c+'__index_'+i+'Resource_Name'+taskListForPhase[i].buildertek__Resource__r.Name;
-                assignmentRow['event'] = taskListForPhase[i].Id
-                assignmentRow['resource'] = taskListForPhase[i].buildertek__Resource__c;
-                assignmentRowData.push(assignmentRow)
-            }
-            if(!taskListForPhase[i].buildertek__Milestone__c && taskListForPhase[i].buildertek__Contractor_Resource__c){
-                var assignmentRow = {}
-                assignmentRow['id'] = taskListForPhase[i].Id+'_'+taskListForPhase[i].buildertek__Contractor_Resource__c+'__index'+i+'ContractorResource_Name'+taskListForPhase[i].buildertek__Contractor_Resource__r.Name;
-                assignmentRow['event'] = taskListForPhase[i].Id
-                assignmentRow['resource'] = taskListForPhase[i].buildertek__Contractor_Resource__c;
-                assignmentRowData.push(assignmentRow)
-            }
             if(!taskListForPhase[i].buildertek__Milestone__c && taskListForPhase[i].buildertek__Contractor_Resource_1__c){
                 var assignmentRow = {}
                 assignmentRow['id'] = taskListForPhase[i].Id+'_'+taskListForPhase[i].buildertek__Contractor_Resource_1__c+'__index'+i+'ContractorResource_Name'+taskListForPhase[i].buildertek__Contractor_Resource_1__r.Name;

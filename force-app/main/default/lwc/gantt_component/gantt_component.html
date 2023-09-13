@@ -36,22 +36,6 @@
             schedule-data-to-export={scheduleItemsDataList}></c-import-schedule-line>
     </template>
 
-    <template if:true={showEditResourcePopup}>
-        <c-edit-resources field-api-name={selectedContactApiName} taskid={taskRecordId}
-            selected-resourceid={selectedResourceContact} oncontactselected={handlecontactSelection}
-            onclosepopuevent={closeEditPopup} onsaveres={saveSelectedContact}>
-        </c-edit-resources>
-        <!-- <div class="slds-backdrop slds-backdrop_open"></div> -->
-    </template>
-
-    <!--Added for contract-->
-    <template if:true={showContractor}>
-        <c-edit-acc-resources field-api-name={selectedContactApiName} selected-resourceid={selectedResourceAccount}
-            oncontactselected={handleaccountSelectionContractor} onclosepopuevent={closeEditPopup}
-            onsaveres={saveSelectedContact}>
-        </c-edit-acc-resources>
-    </template>
-
     <template if:true={showpopup}>
         <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
             aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">

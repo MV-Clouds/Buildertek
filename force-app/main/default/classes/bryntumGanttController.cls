@@ -237,63 +237,6 @@ public with sharing class bryntumGanttController {
                 order by createdDate];
     }
 
-    /* @AuraEnabled
-    public static buildertek__Project_Task__c saveResourceForRecord(Id taskId, String resourceId, String resourceApiName){
-        System.debug('check param here');
-        System.debug('taskID '+taskId);
-        System.debug('resourceID '+resourceId);
-        System.debug('resourceAPIName '+resourceApiName);
-        string rel = resourceApiName.split('__c')[0] + '__r.Name';
-        String queryStr = 'Select Id,Name,' + resourceApiName + ',' + rel + ' From buildertek__Project_Task__c Where Id=:taskId';
-        String apiName = resourceApiName;
-        System.debug('apiName>>>' + apiName);
-        buildertek__Project_Task__c updateTask = Database.query(queryStr);
-        List<buildertek__Project_Task__c> updateTaskResourceList = new List<buildertek__Project_Task__c>();
-        if (resourceApiName == 'buildertek__Resource__c'){
-            if (resourceId != null){
-                system.debug(updateTask.buildertek__Resource__c);
-                system.debug(resourceId);
-                buildertek__Project_Task__c projTask = new buildertek__Project_Task__c();
-                projTask.Id = updateTask.Id;
-                projTask.buildertek__Resource__c = resourceId;
-                updateTaskResourceList.add(projTask);
-                update updateTaskResourceList;
-                system.debug(updateTaskResourceList[0].buildertek__Resource__c);
-            }
-        } else if (apiName == 'buildertek__Contractor_Resource__c'){
-            if (resourceId != null){
-                Contact con = [SELECT Id, AccountId from Contact Where id = :resourceId];
-                buildertek__Project_Task__c projTask = new buildertek__Project_Task__c();
-                projTask.Id = updateTask.Id;
-                projTask.buildertek__Contractor_Resource__c = resourceId;
-                projTask.buildertek__Contractor__c = con.AccountId;
-                updateTaskResourceList.add(projTask);
-                update updateTaskResourceList;
-            }
-        }
-
-
-        //added for contractor
-        else if (apiName == 'buildertek__Contractor__c'){
-
-            System.debug('In contractor>>>>');
-            System.debug('resourceId>>>' + resourceId);
-            System.debug('resourceApiName>>>' + resourceApiName);
-            if (resourceId != null){
-                Account acc = [SELECT Id, Name from Account Where Id = :resourceId];
-                buildertek__Project_Task__c projTask = new buildertek__Project_Task__c();
-                projTask.Id = updateTask.Id;
-                // projTask.buildertek__Contractor_Resource__c = resourceId;
-                projTask.buildertek__Contractor__c = acc.Id;
-                updateTaskResourceList.add(projTask);
-                update updateTaskResourceList;
-            }
-        }
-
-
-        return updateTask;
-    } */
-
     @AuraEnabled
     public static List<String> getPickListValuesIntoList(){
         List<String> pickListValuesList= new List<String>();
