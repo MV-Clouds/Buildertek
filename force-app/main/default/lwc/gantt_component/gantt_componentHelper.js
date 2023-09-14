@@ -838,7 +838,7 @@ function mergeArrays(taskData, assignedResources) {
             item1['buildertek__Contractor_Resource_2__c'] = null;
             item1['buildertek__Contractor_Resource_3__c'] = null;
             item1['buildertek__Internal_Resource_1__c'] = null;
-            item1['buildertek__Internal_Resource_3_c'] = null;
+            item1['buildertek__Internal_Resource_3__c'] = null;
             item1['buildertek__Internal_Resource_4__c'] = null;
             mergedList.push(item1);
         }
