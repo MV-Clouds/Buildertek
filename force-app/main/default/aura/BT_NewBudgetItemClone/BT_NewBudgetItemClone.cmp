@@ -909,7 +909,7 @@
                             <div class="slds-scrollable" style="min-height: 47vh; height:fit-content; padding:0px !important;">
                                 <div class="divcont" aura:id="headerDiv" style="">
                                     <!--height:30rem class="slds-scrollable"-->
-                                    <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-m-right_small" style="width: auto;" aura:id="budgetLineItemTable">
+                                    <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal" style="width: -webkit-fill-available;" aura:id="budgetLineItemTable">
                                         <thead></thead>
                                         <tbody>
                                             <aura:iteration items="{!v.TotalRecords.groupHierarchy}" var="group" indexVar="parentGroupIndex">
