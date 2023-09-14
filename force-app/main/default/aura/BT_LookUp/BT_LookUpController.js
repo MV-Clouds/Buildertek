@@ -51,6 +51,10 @@
             }
         });
         $A.enqueueAction(action);
-    }
+    },
+
+    preventHide: function(component, event, helper) {
+        event.preventDefault();
+    },
 
 })

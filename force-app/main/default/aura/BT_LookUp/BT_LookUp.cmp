@@ -20,42 +20,47 @@
             <input class="slds-lookup__search-input slds-input" type="text" placeholder="{!v._placeholder}" value="{!v._text_value}" onkeyup="{!c.search}" style="width:100%" onclick="{!c.searchAll}" onkeydown="{!c.closeSelectBox}" onblur="{!c.closeDropDown}" />
         </div>
 
-        <div class="slds-lookup__menu" aura:id="selectedlookUp">
-            <ul class="slds-lookup__list" role="listbox">
+        <div class="slds-lookup__menu" aura:id="selectedlookUp" onmousedown="{!c.preventHide}">
+            <ul role="listbox">
                 <aura:if isTrue="{!v.searchList.length > 0}">
                     <aura:iteration items="{!v.searchList}" var="item">
                         <li role="presentation" onblur="{!c.closeSelectBox}">
-                            <span class="slds-lookup__item-action slds-media slds-media--center" role="option">                            
+                            <span class="slds-lookup__item-action slds-media slds-media--center" role="option">
                                 <div class="slds-media__body">
                                     <div class="slds-lookup__result-text">
-                                        
-                                    </div>
-                                    <aura:if isTrue="{!v._target_sobject == 'buildertek__Cost_Codes__c'}">
-                                        <span class="slds-lookup__result-meta slds-text-body--small"
-                                              id="{!item.Id}"
-                                              title="{!item.buildertek__Cost_Code_Name__c}"
-                                              onclick="{!c.itemSelected}"
-                                              >
-                                            <!-- {!v._target_sobject} •  -->{!item.buildertek__Cost_Code_Name__c} 
-                                        </span>
-                            <aura:set attribute="else">
-                                <span class="slds-lookup__result-meta slds-text-body--small" id="{!item.Id}" title="{!item.Name}" onclick="{!c.itemSelected}">
+                                        <!-- Apply the ellipsis style to the result text -->
+                                        <aura:if isTrue="{!v._target_sobject == 'buildertek__Cost_Codes__c'}">
+                                            <span class="slds-lookup__result-meta slds-text-body--small"
+                                                  id="{!item.Id}"
+                                                  title="{!item.buildertek__Cost_Code_Name__c}"
+                                                  onclick="{!c.itemSelected}"
+                                                  style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+                                                  >
+                                                <!-- {!v._target_sobject} •  -->{!item.buildertek__Cost_Code_Name__c} 
+                                            </span>
+                                        <aura:set attribute="else">
+                                            <span class="slds-lookup__result-meta slds-text-body--small"
+                                                  id="{!item.Id}"
+                                                  title="{!item.Name}"
+                                                  onclick="{!c.itemSelected}"
+                                                  style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+                                                  >
                                                 <!-- {!v._target_sobject} •  -->{!item.Name} 
                                             </span>
-                            </aura:set>
+                                        </aura:set>
+                                    </aura:if>
+                                </div>
+                                </div>
+                            </span>
+                        </li>
+                    </aura:iteration>
+                    <aura:set attribute="else">
+                        <span onclick="{!c.closeSelectBox}">No Records Found</span>
+                    </aura:set>
                 </aura:if>
-
+            </ul>
         </div>
-        </span>
-        </li>
-        </aura:iteration>
-        <aura:set attribute="else">
-            <span onclick="{!c.closeSelectBox}">No Records Found</span>
-        </aura:set>
-        </aura:if>
-
-        </ul>
-    </div>
+        
     </div>
 
 </aura:component>
