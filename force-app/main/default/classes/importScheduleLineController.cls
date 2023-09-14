@@ -57,8 +57,18 @@ public without sharing class importScheduleLineController {
                 }
 
                 if (String.isEmpty(wrapper.Dependency) && String.isBlank(wrapper.Dependency)) {
-                    startDate = Date.valueOf(wrapper.StartDate);
+                    startDate = Date.valueOf(Date.valueOf(wrapper.StartDate);
                 }
+
+                if (String.isEmpty(wrapper.Dependency) && String.isBlank(wrapper.Dependency)) {
+                    startDate = Date.valueOf(wrapper.StartDate));
+                }
+
+                // if (wrapper.StartDate != null) {
+                //     startDate = Date.valueOf(wrapper.StartDate);
+                // } else if(mainScheduleRec.buildertek__Initial_Start_Date__c != null){
+                //     startDate = mainScheduleRec.buildertek__Initial_Start_Date__c;
+                // }
 
                 // if (wrapper.StartDate != null) {
                 //     startDate = Date.valueOf(wrapper.StartDate);

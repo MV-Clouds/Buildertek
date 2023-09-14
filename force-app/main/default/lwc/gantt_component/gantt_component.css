@@ -93,3 +93,8 @@
   }
 
 /* Spinner end */
+
+.b-pickerfield:not(.b-readonly):not(.b-disabled) input[readonly] {
+    cursor: pointer;
+    display: none;
+}

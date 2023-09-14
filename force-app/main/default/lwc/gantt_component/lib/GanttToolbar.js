@@ -1,5 +1,5 @@
 /* globals bryntum : true */
-import { convertJSONtoApexData } from "../gantt_componentHelper";
+import { convertJSONtoApexData,setResourceDataForApexData } from "../gantt_componentHelper";
 export default base => class GanttToolbar extends base {
     static get $name() {
         return 'GanttToolbar';
@@ -518,19 +518,24 @@ export default base => class GanttToolbar extends base {
 
     onSaveClick() {
         try {
-            // this.gantt.callGanttComponent.handleShowSpinner();
             var data = this.gantt.data;
             var taskData = JSON.parse(this.gantt.taskStore.json);
             var taskEdit = this.gantt.taskStore;
             console.log('taskEdit ',{taskEdit});
-            console.log('taskEdit assignmentStore ',taskEdit.assignmentStore.json);
-            debugger;
-            var dependenciesData = JSON.parse(this.gantt.dependencyStore.json);
-            var resourceData = JSON.parse(this.gantt.assignmentStore.json)
-            let dataForApexController = convertJSONtoApexData(data, taskData, dependenciesData, resourceData);
-            console.log('dataForApexController ',dataForApexController);
-            this.gantt.callGanttComponent.saveChanges(dataForApexController.scheduleData,dataForApexController.taskData, dependenciesData);
-
+            console.log('assignmentStore JSON ',JSON.parse(taskEdit.assignmentStore.json));
+            let assignedResources = setResourceDataForApexData(JSON.parse(taskEdit.assignmentStore.json));
+            console.log('assignedResources ',assignedResources);
+            if (assignedResources == 'error') {
+                this.gantt.callGanttComponent.showToastMessage('Can not Select more then 3 Internal or External Resources!');
+                this.gantt.callGanttComponent.template.querySelector('.container').innerHTML = '';
+                this.gantt.callGanttComponent.createGanttChartInitially();
+            }else{
+                var dependenciesData = JSON.parse(this.gantt.dependencyStore.json);
+                var resourceData = JSON.parse(this.gantt.assignmentStore.json)
+                let dataForApexController = convertJSONtoApexData(data, taskData, dependenciesData, resourceData);
+                console.log('dataForApexController ',dataForApexController);
+                this.gantt.callGanttComponent.saveChanges(dataForApexController.scheduleData,dataForApexController.taskData, dependenciesData, assignedResources);
+            }
         } catch (error) {
             console.log('Error-->' + error + ' message-->' + error.message);
             this.gantt.callGanttComponent.showToastMessage('Dates cannot be null or empty');

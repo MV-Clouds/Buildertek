@@ -6,13 +6,11 @@ import { loadScript, loadStyle } from "lightning/platformResourceLoader";
 import GanttStyle from "@salesforce/resourceUrl/BT_Bryntum_NewGanttCss";
 import GANTTModule from "@salesforce/resourceUrl/BT_Bryntum_NewGantt_ModuleJS";
 import { NavigationMixin } from "lightning/navigation";
-import { refreshApex } from "@salesforce/apex";
 
 // import GanttStyle from "@salesforce/resourceUrl/BT_Bryntum_NewGanttCss";
 import GanttToolbarMixin from "./lib/GanttToolbar";
 import data from "./data/launch-saas";
 import scheduleWrapperDataFromApex from "@salesforce/apex/bryntumGanttController.getScheduleWrapperAtLoading";
-import saveResourceForRecord from "@salesforce/apex/bryntumGanttController.saveResourceForRecord";
 import upsertDataOnSaveChanges from "@salesforce/apex/bryntumGanttController.upsertDataOnSaveChanges";
 import getPickListValuesIntoList from "@salesforce/apex/bryntumGanttController.getPickListValuesIntoList";
 import {
@@ -20,7 +18,8 @@ import {
   recordsTobeDeleted,
   makeComboBoxDataForContractor,
   calcBusinessDays,
-  makeComboBoxDataForResourceData
+  makeComboBoxDataForResourceData,
+  mergeArrays
 } from "./gantt_componentHelper";
 import { populateIcons } from "./lib/BryntumGanttIcons";
 
@@ -32,6 +31,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
   @track scheduleData;
   @track scheduleItemsData;
   @track contractorAndResources;
+  @track internalResources;
 
   @track error_toast = true;
 
@@ -41,15 +41,12 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
   @api showImportPopup;
   @api recordId;
   @api taskRecordId;
-  @track showContractor = false;
-  @track showEditResourcePopup = false;
   @track selectedContactApiName;
 
   //Phase list
   @track phaseNameList;
 
   //new
-  @api showEditResourcePopup = false;
   @api selectedResourceContact;
   @api selectedContactApiName;
   @api resourceLookup = {};
@@ -57,14 +54,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
   @api contratctorLookup = {};
   @api contractorResourceFilterVal = "";
   @api internalResourceFilterVal = "";
-  //@api saveSelectedContact;
-  //@api saveSelectedContactApiName;
-
-  //Added for contractor
-  @api showContractor = false;
-  @api selectedResourceAccount;
-  @track contracFieldApiName;
-  @track contractorname;
 
   @api newTaskRecordCreate = {
     sObjectType: "buildertek__Project_Task__c",
@@ -242,13 +231,14 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
         console.log("data-->", data);
         this.scheduleItemsDataList = response.lstOfSObjs;
         this.contractorAndResources = response.listOfContractorAndResources;
+        this.internalResources = response.listOfInternalResources;
         console.log(
           "scheduleItemsDataList",
           JSON.parse(JSON.stringify(this.scheduleItemsDataList))
         );
         console.log(
-          "contractorAndResources",
-          JSON.parse(JSON.stringify(this.contractorAndResources))
+          "internalResources",
+          JSON.parse(JSON.stringify(this.internalResources))
         );
         this.scheduleData = response.scheduleObj;
         console.log("scheduleData", this.scheduleData);
@@ -346,7 +336,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
 
         if (this.template.querySelector(".container").children.length) {
           this.template.querySelector(".container").innerHTML = "";
-          this.template.querySelector(".container1").innerHTML = "";
           // this.handleHideSpinner();
           this.createGanttChartInitially();
           // this.createGantt();
@@ -389,90 +378,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
       });
   }
 
-  handleAccountSelection(event) {
-    if (event.detail.fieldNameapi == "buildertek__Dependency__c") {
-      this.newTaskRecordCreate["buildertek__Dependency__c"] = event.detail.Id;
-      this.predecessorLookup["Id"] = event.detail.Id;
-      this.predecessorLookup["Name"] = event.detail.selectedName;
-    } else if (event.detail.fieldNameapi == "buildertek__Resource__c") {
-      this.newTaskRecordCreate["buildertek__Resource__c"] = event.detail.Id;
-      this.resourceLookup["Id"] = event.detail.Id;
-      this.resourceLookup["Name"] = event.detail.selectedName;
-    } else if (event.detail.fieldNameapi == "buildertek__Contractor__c") {
-      this.newTaskRecordCreate["buildertek__Contractor__c"] = event.detail.Id;
-      this.contratctorLookup["Id"] = event.detail.Id;
-      this.contratctorLookup["Name"] = event.detail.selectedName;
-    } else if (
-      event.detail.fieldNameapi == "buildertek__Contractor_Resource__c"
-    ) {
-      this.newTaskRecordCreate["buildertek__Contractor_Resource__c"] =
-        event.detail.Id;
-      this.contractorResourceLookup["Id"] = event.detail.Id;
-      this.contractorResourceLookup["Name"] = event.detail.selectedName;
-    }
-  }
-
-  handlecontactSelection(event) {
-    this.selectedResourceContact = event.detail.Id;
-  }
-
-  handleaccountSelectionContractor(event) {
-    this.selectedResourceAccount = event.detail.Id;
-    this.contracFieldApiName = event.detail.fieldNameapi;
-    this.contractorname = event.target.value;
-  }
-
-  saveSelectedContact() {
-    var that = this;
-    console.log("checking method*&");
-    if (!this.taskRecordId.includes("_generated")) {
-      console.log("^ other side condition ^");
-      //Added for contractor ****Start****
-      if (this.contracFieldApiName === "buildertek__Contractor__c") {
-        console.log("^ In If ^");
-        that.showContractor = false; //Added for contractor
-        this.isLoaded = true;
-        console.log("taskRecordId:-", this.taskRecordId);
-        console.log("selectedResourceAccount:-", this.selectedResourceAccount);
-        console.log("contracFieldApiName:-", this.contracFieldApiName);
-        saveResourceForRecord({
-          taskId: this.taskRecordId,
-          resourceId: this.selectedResourceAccount,
-          resourceApiName: this.contracFieldApiName,
-        }).then(function (response) {
-          const filterChangeEvent = new CustomEvent("filterchange", {
-            detail: {
-              message: "refresh page",
-            },
-          });
-          that.dispatchEvent(filterChangeEvent);
-          that.getScheduleWrapperDataFromApex();
-          that.showEditResourcePopup = false;
-        });
-        that.contracFieldApiName = "";
-      }
-      //Added for contractor ****End****
-      else {
-        console.log("^ In else ^");
-        that.showEditResourcePopup = false;
-        this.isLoaded = true;
-
-        saveResourceForRecord({
-          taskId: this.taskRecordId,
-          resourceId: this.selectedResourceContact,
-          resourceApiName: this.selectedContactApiName,
-        }).then(function (response) {
-          const filterChangeEvent = new CustomEvent("filterchange", {
-            detail: {
-              message: "refresh page",
-            },
-          });
-          that.dispatchEvent(filterChangeEvent);
-          that.getScheduleWrapperDataFromApex();
-        });
-      }
-    }
-  }
 
   closeEditPopup(event) {
     event.preventDefault();
@@ -495,11 +400,9 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     this.newTaskCompletion = null;
     this.showEditPopup = false;
     this.showDeletePopup = false;
-    this.showEditResourcePopup = false;
     this.saveCommentSpinner = false;
     this.newNotesList = [];
 
-    this.showContractor = false; //Added for contractor
     Object.assign(this.newTaskRecordCreate, this.newTaskRecordClone);
   }
 
@@ -557,11 +460,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     }
   }
 
-  addtaskeventcall(taskrecord) {
-    console.log("In addtaskeventcall method");
-    console.log(taskrecord);
-  }
-
   createGanttChartInitially() {
     const GanttToolbar = GanttToolbarMixin(bryntum.gantt.Toolbar);
 
@@ -602,8 +500,8 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     resourceRowData = formatedSchData["resourceRowData"];
     assignmentRowData = formatedSchData["assignmentRowData"];
 
-    let resourceData = makeComboBoxDataForResourceData(this.contractorAndResources);
-
+    let resourceData = makeComboBoxDataForResourceData(this.contractorAndResources, this.internalResources);
+    this.handleHideSpinner();
     const project = new bryntum.gantt.ProjectModel({
       calendar: data.project.calendar,
       // startDate: data.project.startDate,
@@ -622,7 +520,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     project.calendar = "business";
 
     let contractorComboData = makeComboBoxDataForContractor(this.contractorAndResources);
-
+    this.handleHideSpinner();
     const gantt = new bryntum.gantt.Gantt({
       project,
       appendTo: this.template.querySelector(".container"),
@@ -728,7 +626,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
             }
           }
         },
-        /* {
+        {
           type: "widget",
           text: "Contractor",
           draggable: false,
@@ -754,8 +652,8 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
         },
         {
           type : 'resourceassignment',
-          width : 120,
-          showAvatars : false,
+          width : 180,
+          showAvatars : true,
           draggable : false,
           editor      : {
             picker : {
@@ -763,26 +661,26 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
               width    : 450,
               selectionMode: {
                 rowCheckboxSelection: true,
-                multiSelect: false,
+                multiSelect: true,
                 showCheckAll: false,
               },
               features : {
                   filterBar  : true,
                   group      : 'resource.type',
-                  multiSelect: false,
                   headerMenu : false,
                   cellMenu   : false,
               },
             },
             listeners: {
               paint: ({ source }) => {
-                let contractorId = source._projectEvent._data.contractorId
-                source.store.filter(record => record.resource._data.contractorId == contractorId);
+                let contractorId = source._projectEvent._data.contractorId;
+                console.log('source :- ', source);
+                source.store.filter(record => (record.resource._data.type == 'Internal Resources' || record.resource._data.contractorId == contractorId));
               }
             }
           },
           itemTpl : assignment => assignment.resourceName
-        }, */
+        },
         // {
         //   type: "addnew",
         // },
@@ -1058,63 +956,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
       }
     });
 
-    //Resources data
-    gantt.addListener("cellClick", (event) => {
-      if (event.column.data.text == "Internal Resource") {
-        if (event.target.id == "editInternalResource") {
-          if (event.target.dataset.resource) {
-            this.taskRecordId = event.record._data.id;
-            this.showEditResourcePopup = true;
-            console.log("taskReocrdId:=- " + this.taskRecordId);
-            this.selectedContactApiName = "buildertek__Resource__c";
-            this.selectedResourceContact = event.record._data.internalresource;
-          }
-        } else if (event.target.classList.contains("addinternalresource")) {
-          this.taskRecordId = event.record._data.id;
-          console.log("taskReocrdId:=- " + this.taskRecordId);
-          this.showEditResourcePopup = true;
-          this.selectedContactApiName = "buildertek__Resource__c";
-          this.selectedResourceContact = "";
-        }
-      }
-      //Added for Contractor
-      if (event.column.data.text == "Contractor") {
-        if (event.target.id == "editcontractor") {
-          if (event.target.dataset.resource) {
-            this.taskRecordId = event.record._data.id;
-            console.log("taskReocrdId:=- " + this.taskRecordId);
-            this.showContractor = true;
-            this.selectedContactApiName = "buildertek__Contractor__c";
-            this.selectedResourceAccount = event.record._data.contractoracc;
-          }
-        } else if (event.target.classList.contains("addcontractor")) {
-          this.taskRecordId = event.record._data.id;
-          console.log("taskReocrdId:=- " + this.taskRecordId);
-          this.showContractor = true;
-          this.selectedContactApiName = "buildertek__Contractor__c";
-          this.selectedResourceAccount = "";
-        }
-      }
-      if (event.column.data.text == "Contractor Resource") {
-        if (event.target.id == "editcontractorResource") {
-          if (event.target.dataset.resource) {
-            this.taskRecordId = event.record._data.id;
-            this.showEditResourcePopup = true;
-            console.log("taskReocrdId:=- " + this.taskRecordId);
-            this.selectedContactApiName = "buildertek__Contractor_Resource__c";
-            this.selectedResourceContact =
-              event.record._data.contractorresource;
-          }
-        } else if (event.target.classList.contains("addcontractorresource")) {
-          this.taskRecordId = event.record._data.id;
-          this.showEditResourcePopup = true;
-          console.log("taskReocrdId:=- " + this.taskRecordId);
-          this.selectedContactApiName = "buildertek__Contractor_Resource__c";
-          this.selectedResourceContact = "";
-        }
-      }
-    });
-
     gantt.on("expandnode", (source) => {
       // populateIcons(record);
       this.populateIconsOnExpandCollapse(source);
@@ -1172,8 +1013,10 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
   }
 
   //* calling this method on save changes
-  saveChanges(scheduleData, taskData, dependenciesDatamap) {
+  saveChanges(scheduleData, taskData, dependenciesDatamap, assignedResources) {
     this.handleShowSpinner();
+    let mergeTaskData = mergeArrays(taskData, assignedResources);
+
     let listOfRecordsToDelete = recordsTobeDeleted(
       this.scheduleItemsDataList,
       taskData
@@ -1182,7 +1025,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     console.log("taskdata:- ", taskData);
     let projectTaskObj = {};
     var newtasklistafterid = [];
-    taskData.forEach((newTaskRecord) => {
+    mergeTaskData.forEach((newTaskRecord) => {
       var demoidvar = newTaskRecord.Id;
       var demoidvar2 = newTaskRecord.buildertek__Dependency__c;
 
@@ -1200,7 +1043,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
       newtasklistafterid.push(newTaskRecord);
     });
 
-    console.log("taskData before apex:- ", taskData);
+    console.log("mergeTaskData before apex:- ", mergeTaskData);
     var that = this;
 
     let childParentObj = {};

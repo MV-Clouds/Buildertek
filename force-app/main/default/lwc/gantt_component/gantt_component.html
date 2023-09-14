@@ -1,8 +1,8 @@
 <template>
 
-     <!-- ============== toast =========== -->
-     <!-- <template if:true={error_toast}> -->
-        <!-- <c-toast-component></c-toast-component> -->
+    <!-- ============== toast =========== -->
+    <!-- <template if:true={error_toast}> -->
+    <!-- <c-toast-component></c-toast-component> -->
     <!-- </template> -->
     <!-- ============== toast =========== -->
 
@@ -19,10 +19,6 @@
     </template>
     <!-- spinner -->
 
-    <!-- <template if:true={isLoading}>
-        <c-show-spinner-in-gantt-component></c-show-spinner-in-gantt-component>
-    </template> -->
-
     <div class="container" lwc:dom="manual"></div>
 
     <!-- pop up model for exporting schedule -->
@@ -34,22 +30,6 @@
     <template if:true={showImportPopup}>
         <c-import-schedule-line recordid={SchedulerId} onhidemodel={hideModalBox1}
             schedule-data-to-export={scheduleItemsDataList}></c-import-schedule-line>
-    </template>
-
-    <template if:true={showEditResourcePopup}>
-        <c-edit-resources field-api-name={selectedContactApiName} taskid={taskRecordId}
-            selected-resourceid={selectedResourceContact} oncontactselected={handlecontactSelection}
-            onclosepopuevent={closeEditPopup} onsaveres={saveSelectedContact}>
-        </c-edit-resources>
-        <!-- <div class="slds-backdrop slds-backdrop_open"></div> -->
-    </template>
-
-    <!--Added for contract-->
-    <template if:true={showContractor}>
-        <c-edit-acc-resources field-api-name={selectedContactApiName} selected-resourceid={selectedResourceAccount}
-            oncontactselected={handleaccountSelectionContractor} onclosepopuevent={closeEditPopup}
-            onsaveres={saveSelectedContact}>
-        </c-edit-acc-resources>
     </template>
 
     <template if:true={showpopup}>
