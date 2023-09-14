@@ -759,12 +759,12 @@
                                     <! <lightning:button aura:id="expandCollapeseAllBtn" variant="neutral" label="" title="Expand All"  iconName="utility:add" iconPosition="left" onclick="{!c.expandCollapeAll}"/> -->
                                 <!-- </div> --> 
 
-                                <aura:if isTrue="{!v.total > 60}">
+                                <!-- <aura:if isTrue="{!v.total > 60}">
                                     <div class="slds-align_absolute-center">
                                         <lightning:button disabled="{!v.page == 1}" variant="brand" label="Previous" onclick="{! c.navigate }" />
                                         <lightning:button disabled="{!v.page == v.pages}" aura:id="previousPage" variant="brand" label="Next" onclick="{! c.navigate }" />
                                     </div>
-                                </aura:if>
+                                </aura:if> -->
                             </div>
                             <!--<aura:if isTrue="{!and(v.groupListSize == 0, v.groupLoaded)}">-->
                             <!--<div class="av-list">
@@ -963,9 +963,15 @@
 
                             <aura:if isTrue="{!!v.displayGrouping}">
                             <div class="slds-scrollable" style="min-height: 47vh; height:fit-content; padding:0px !important;">
+                                <aura:if isTrue="{!v.total > 60}">
+                                    <div class="slds-align_absolute-center">
+                                        <lightning:button disabled="{!v.page == 1}" variant="brand" label="Previous" onclick="{! c.navigate }" />
+                                        <lightning:button disabled="{!v.page == v.pages}" aura:id="previousPage" variant="brand" label="Next" onclick="{! c.navigate }" />
+                                    </div>
+                                </aura:if>
                                 <div class="divcont" aura:id="headerDiv" style="">
                                     <!--height:30rem class="slds-scrollable"-->
-                                    <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-m-right_small" style="width: auto;" aura:id="budgetLineItemTable">
+                                    <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal" style="width: -webkit-fill-available;" aura:id="budgetLineItemTable">
                                         <thead></thead>
                                         <tbody>
                                             <aura:iteration items="{!v.TotalRecords.groupHierarchy}" var="group" indexVar="parentGroupIndex">
@@ -1454,7 +1460,7 @@
 
                             </div>
                             <aura:set attribute="else">
-                            <div class="mainBomDiv slds-scrollable">
+                            <div class="slds-scrollable" aura:id="headerDiv1">
                                 <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal">
                                     <tbody>
                                         <aura:if isTrue="{!v.firstGrouping}">
@@ -2752,7 +2758,7 @@
                                 <lightning:buttonIcon iconName="utility:close" onclick="{!c.doCancel}" alternativeText="close" variant="bare-inverse" class="slds-modal__close" />
                                 <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Change Orders</h2>
                             </header>
-                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="max-height:70vh;">
+                            <div class="slds-modal__content slds-p-around_medium rkbudclass" id="modal-content-id-1">
                                 <table class="slds-table slds-table_bordered slds-table_cell-buffer">
                                     <thead>
                                         <tr class="slds-text-title_caps">
@@ -2835,7 +2841,7 @@
                                 <lightning:buttonIcon iconName="utility:close" onclick="{!c.doCancel}" alternativeText="close" variant="bare-inverse" class="slds-modal__close" />
                                 <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Invoice (PO)</h2>
                             </header>
-                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="max-height:70vh;">
+                            <div class="slds-modal__content slds-p-around_medium rkbudclass" id="modal-content-id-1">
                                 <table class="slds-table slds-table_bordered slds-table_cell-buffer">
                                     <thead>
                                         <tr class="slds-text-title_caps">
@@ -2911,7 +2917,7 @@
                                 <lightning:buttonIcon iconName="utility:close" onclick="{!c.doCancel}" alternativeText="close" variant="bare-inverse" class="slds-modal__close" />
                                 <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Expenses</h2>
                             </header>
-                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="max-height:70vh;">
+                            <div class="slds-modal__content slds-p-around_medium rkbudclass" id="modal-content-id-1">
                                 <table class="slds-table slds-table_bordered slds-table_cell-buffer">
                                     <thead>
                                         <tr class="slds-text-title_caps">
@@ -2987,7 +2993,7 @@
                                 </h2>
                                 <p></p>
                             </header>
-                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="height: fit-content; max-height: 70vh;">
+                            <div class="slds-modal__content slds-p-around_medium rkbudclass" id="modal-content-id-1">
                                 <table class="slds-table slds-table_bordered slds-table_cell-buffer">
                                     <thead>
                                         <tr class="slds-text-title_caps">
@@ -3060,7 +3066,7 @@
 
     
     <aura:if isTrue="{!v.isBOMmodalOpen}">
-        <div class="slds-m-around_xx-large">
+        <div class="">
 
         <!-- Modal/Popup Box starts here-->
         <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"

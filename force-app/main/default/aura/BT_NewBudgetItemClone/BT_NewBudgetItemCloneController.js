@@ -622,7 +622,27 @@
         // Changed by Jaimin
         if(component.get("v.HaveCreateAccess")){
         //  >>> should be in master <<<
-            var selectedRecs = component.get('v.selectedRecs');
+            var selectedRecs = [];
+            var getAllId;
+            if(component.find("checkGroupQuoteItem1") != undefined){
+                getAllId = component.find("checkGroupQuoteItem1");
+                if (!Array.isArray(getAllId)) {
+                    if (getAllId.get("v.value") == true) {
+                        selectedRecs.push(getAllId.get("v.text"));
+                    }
+                } else {
+                    for (var i = 0; i < getAllId.length; i++) {
+                        console.log(getAllId[i].get("v.value")  , 'getAllId[i].get("v.value") ');
+                        if (getAllId[i].get("v.value") == true) {
+                            console.log('inside if');
+                            selectedRecs.push(getAllId[i].get("v.text"));
+                        }
+                    }
+                }
+            }else{
+                selectedRecs = component.get('v.selectedRecs');
+
+            }
             if (selectedRecs.length > 1) {
                 component.find('notifLib').showNotice({
                     "variant": "error",
@@ -1223,8 +1243,15 @@
                         });
                         toastEvent.fire();
 
-                        var action1 = component.get("c.doInit");
-                        $A.enqueueAction(action1);
+                        let getValue=component.get('v.displayGrouping')
+                        if (getValue) {
+                            helper.getBudgetGrouping(component, event, helper); 
+                        } else{
+                            var action1 = component.get("c.doInit");
+                            $A.enqueueAction(action1);
+
+                        }
+
                     } else {
                         var toastEvent = $A.get("e.force:showToast");
                         toastEvent.setParams({
@@ -1339,8 +1366,16 @@
                         });
                         toastEvent.fire();
 
-                        var action1 = component.get("c.doInit");
-                        $A.enqueueAction(action1);
+                        let getValue=component.get('v.displayGrouping')
+                        if (getValue) {
+                            helper.getBudgetGrouping(component, event, helper); 
+                        } else{
+                            var action1 = component.get("c.doInit");
+                            $A.enqueueAction(action1);
+
+                        }
+
+                       
                     } else {
                         var toastEvent = $A.get("e.force:showToast");
                         toastEvent.setParams({
@@ -2221,6 +2256,11 @@ helper.getProductDetails(component,event,helper);
                             }), 3000
                         );
                         //$A.get('e.force:refreshView').fire();
+                        // component.refreshData();
+                        let getValue=component.get('v.displayGrouping')
+                        if (getValue) {
+                            helper.getBudgetGrouping(component, event, helper); 
+                        } 
                         component.refreshData();
                     }
                 });
@@ -2358,11 +2398,34 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
         if(component.get("v.HaveDeleteAccess")){
             var selectedRecs = component.get('v.selectedRecs');
             console.log('selected:id', selectedRecs);
-            if (component.get('v.selectedRecs') != undefined) {
+            if (component.get('v.selectedRecs') != undefined || component.find("checkGroupQuoteItem1") != undefined) {
                 // $A.get("e.c:BT_SpinnerEvent").setParams({
                 //     "action": "SHOW"
                 // }).fire();
-                var BudgetIds = component.get('v.selectedRecs');
+                var BudgetIds = [];
+                var getAllId;
+                if(component.find("checkGroupQuoteItem1") != undefined){
+                    getAllId = component.find("checkGroupQuoteItem1");
+                    if (!Array.isArray(getAllId)) {
+                        if (getAllId.get("v.value") == true) {
+                            BudgetIds.push(getAllId.get("v.text"));
+                        }
+                    } else {
+                        for (var i = 0; i < getAllId.length; i++) {
+                            console.log(getAllId[i].get("v.value")  , 'getAllId[i].get("v.value") ');
+                            if (getAllId[i].get("v.value") == true) {
+                                console.log('inside if');
+                                BudgetIds.push(getAllId[i].get("v.text"));
+                                console.log({BudgetIds});
+                            }
+                        }
+                    }
+                }else{
+                    BudgetIds = component.get('v.selectedRecs');
+    
+                }
+                
+                // var BudgetIds = component.get('v.selectedRecs');
                 var rowData;
                 var newRFQItems = [];
                 var delId = [];
@@ -2708,16 +2771,36 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
     deleteSelectedBudgetItemlines: function (component, event, helper) {
         var selectedRecs = component.get('v.selectedRecs');
         console.log('selected:id when delete--->>>', selectedRecs);
-        if (component.get('v.selectedRecs') != undefined) {
+        if (component.get('v.selectedRecs') != undefined || component.find("checkGroupQuoteItem1") != undefined) {
             $A.get("e.c:BT_SpinnerEvent").setParams({
                 "action": "SHOW"
             }).fire();
-            var BudgetIds = component.get('v.selectedRecs');
+                var BudgetIds = [];
+                var getAllId;
+                if(component.find("checkGroupQuoteItem1") != undefined){
+                    getAllId = component.find("checkGroupQuoteItem1");
+                    if (!Array.isArray(getAllId)) {
+                        if (getAllId.get("v.value") == true) {
+                            BudgetIds.push(getAllId.get("v.text"));
+                        }
+                    } else {
+                        for (var i = 0; i < getAllId.length; i++) {
+                            console.log(getAllId[i].get("v.value")  , 'getAllId[i].get("v.value") ');
+                            if (getAllId[i].get("v.value") == true) {
+                                console.log('inside if');
+                                BudgetIds.push(getAllId[i].get("v.text"));
+                                console.log({BudgetIds});
+                            }
+                        }
+                    }
+                }else{
+                    BudgetIds = component.get('v.selectedRecs');
+    
+                }
             console.log('BudgetIds--->>>', { BudgetIds });
             var rowData;
             var newRFQItems = [];
             var delId = [];
-            var getAllId = component.find("checkQuoteItem");
             if (BudgetIds.length > 0) {
                 var action = component.get('c.deleteSelectedItems');
                 action.setParams({
@@ -2733,6 +2816,21 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                         var noRecord = [];
                         component.set('v.selectedRecs', noRecord);
                         var page = component.get("v.page") || 1
+                        let getValue=component.get('v.displayGrouping')
+                        if (getValue) {
+                            helper.getBudgetGrouping(component, event, helper, function () {
+                                // Callback function to execute after the helper method has finished
+                                var toastEvent = $A.get("e.force:showToast");
+                                toastEvent.setParams({
+                                    mode: 'sticky',
+                                    message: 'Selected Budget Lines were deleted',
+                                    type: 'success',
+                                    duration: '10000',
+                                    mode: 'dismissible'
+                                });
+                                toastEvent.fire();
+                            }); 
+                        } else {
                         component.set("v.TotalRecords", {});
                         helper.getBudgetGroups(component, event, helper, page, function () {
                             // Callback function to execute after the helper method has finished
@@ -2746,6 +2844,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                             });
                             toastEvent.fire();
                         });
+                    }
                     }
                 });
                 $A.enqueueAction(action);
@@ -3139,8 +3238,16 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
 
     onClickMassUpdate: function (component, event, helper) {
         if(component.get("v.HaveUpdateAccess")){
-
-            component.set("v.isExpandGrp", false);
+            let getValue=component.get('v.displayGrouping')
+                if (getValue) {
+                    component.find('notifLib').showNotice({
+                        "variant": "error",
+                        "header": "Error!",
+                        "message": "Can't update the Budget Line in grouping stage.",
+                    });
+                } 
+                else{
+                    component.set("v.isExpandGrp", false);
     
             component.set("v.enableMassUpdate", component.get("v.enableMassUpdate") == true ? false : true);
             // component.set("v.isExpandGrp",false);
@@ -3423,6 +3530,10 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                     }
                 }
             }
+
+                }
+
+            
         }
 
         else{
@@ -3922,8 +4033,28 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
 
     addCO: function (component, event, helper) {
         if(component.get("v.HaveCreateAccess")){
-            var selectedRecs = component.get('v.selectedRecs');
+            var selectedRecs = [];
+            var getAllId;
             console.log('v.selectedRecs ==> ', { selectedRecs });
+            if(component.find("checkGroupQuoteItem1") != undefined){
+                getAllId = component.find("checkGroupQuoteItem1");
+                if (!Array.isArray(getAllId)) {
+                    if (getAllId.get("v.value") == true) {
+                        selectedRecs.push(getAllId.get("v.text"));
+                    }
+                } else {
+                    for (var i = 0; i < getAllId.length; i++) {
+                        console.log(getAllId[i].get("v.value")  , 'getAllId[i].get("v.value") ');
+                        if (getAllId[i].get("v.value") == true) {
+                            console.log('inside if');
+                            selectedRecs.push(getAllId[i].get("v.text"));
+                        }
+                    }
+                }
+            }else{
+                selectedRecs = component.get('v.selectedRecs');
+
+            }
             // Changes for BUIL - 3434
             if (selectedRecs.length == 0) {
                 helper.getcoList(component, event, helper);
@@ -4146,8 +4277,14 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                         });
                         toastEvent.fire();
 
-                        var action1 = component.get("c.doInit");
-                        $A.enqueueAction(action1);
+                        let getValue=component.get('v.displayGrouping')
+                        if (getValue) {
+                            helper.getBudgetGrouping(component, event, helper); 
+                        } else {
+                            var action1 = component.get("c.doInit");
+                            $A.enqueueAction(action1);
+                        }
+
                     } else {
                         var toastEvent = $A.get("e.force:showToast");
                         toastEvent.setParams({
@@ -4720,20 +4857,22 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
 
     onclickBOMGrouping : function(component, event, helper){
         console.log('onclickBOMGrouping');
-        component.set("v.isBOMmodalOpen", true);
-        var opts = [
-            {label: "Phase", value:"buildertek__Group__c"},
-            {label: "Sub Group", value:"buildertek__Sub_Grouping__c"},
-            // {label: "Build Phase", value:"buildertek__Build_Phase__c"},
-            // {label: "Build Reference 1", value:"buildertek__Build_Reference_1__c"},
-            // {label: "Base Location", value:"buildertek__Base_Location__c"},
-            // {label: "Location (PL)", value:"buildertek__Location_Picklist__c"},
-            // {label: "Location Detailed Area", value:"buildertek__Location_Detailed_Area__c"},
-            // {label: "Location Detail Reference 1", value:"buildertek__Location_Detail_Reference_1__c"},
-            // {label: "Service Category", value:"buildertek__BL_SERVICE_CATEGORY__c"},
-            // {label: "Product Family", value:"buildertek__Product_Family__c"},
-        ]
-        component.set("v.GroupingOptions", opts);
+        var budgetList = component.get("v.TotalRecords.groupHierarchy");
+        if (budgetList.length > 0) {
+            component.set("v.isBOMmodalOpen", true);
+            var opts = [
+                {label: "Phase", value:"buildertek__Group__c"},
+                {label: "Sub Group", value:"buildertek__Sub_Grouping__c"},
+            ]
+            component.set("v.GroupingOptions", opts);
+        }
+        else{
+            component.find('notifLib').showNotice({
+                "variant": "error",
+                "header": "Error!",
+                "message": "There is no Budget Line for this record.",
+            });
+        }
     },
     submitDetails: function(component, event, helper) {
         helper.submitDetails(component, event, helper);
@@ -4751,6 +4890,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
         component.set("v.thirdGrouping", false);
         component.set("v.secondGrouping", false);
         component.set("v.firstGrouping", false);
+        helper.applyCSSBasedOnURL(component);
      }, 
 
      expandCollapeAllBom: function(component, event, helper){

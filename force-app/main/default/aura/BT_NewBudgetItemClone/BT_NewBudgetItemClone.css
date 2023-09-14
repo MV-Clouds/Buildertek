@@ -282,8 +282,8 @@
 }
 
 .THIS .groupHeaderDiv {
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
+    /* border-top-left-radius: 4px;
+    border-top-right-radius: 4px; */
     background-color: #f3f3f3;
     font-family: 'Salesforce Sans', 'Open Sans', Arial, sans-serif;
     font-size: 18px;
@@ -301,8 +301,8 @@
 .THIS .groupHeaderTotal{
     background-color: #f3f3f3;
     color: #000000;
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
+    /* border-top-left-radius: 4px;
+    border-top-right-radius: 4px; */
     margin: 0;
     border: 0;
     padding: 5px;
@@ -317,6 +317,7 @@
     border-bottom-color: #dedbd7;
     border-bottom-style: solid;
     border-bottom-width: 1px;
+    border-top: 0px;
 }
 
 .THIS .blankDiv{
@@ -344,4 +345,8 @@
 /* new chnages for css fixing after grouping  */
 .THIS .mainBomDiv{
     max-height : 47vh;
+}
+.THIS .rkbudclass{
+    height: fit-content !important; 
+    max-height: 70vh !important;
 }

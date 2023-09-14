@@ -2415,7 +2415,8 @@
         var isBudget = component.get("v.isbudget");
         console.log('isBudget',isBudget);
         var headerDiv = component.find("headerDiv");
-        console.log('headerDiv',headerDiv);
+        var headerDiv1 = component.find("headerDiv1");
+        console.log('headerDiv',headerDiv1);
         console.log('v.total => ', component.get("v.total"));
         
         // Check if the current URL contains a specific keyword or phrase
@@ -2424,10 +2425,12 @@
             console.log('in if');
             $A.util.addClass(headerDiv, "divconts1");
             $A.util.removeClass(headerDiv, "divconts2");
+            $A.util.addClass(headerDiv1, "divconts1");
         } else {
             console.log('in else');
             $A.util.addClass(headerDiv, "divconts2");
             $A.util.removeClass(headerDiv, "divconts1");
+            $A.util.addClass(headerDiv1, "mainBomDiv");
         }
     },
 
@@ -2555,6 +2558,7 @@
 
             component.set("v.groupFieldList", selectedFieldList);
             helper.getBudgetGrouping(component, event, helper);
+            helper.applyCSSBasedOnURL(component);
 
         }
 
