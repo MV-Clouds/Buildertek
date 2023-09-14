@@ -10,15 +10,40 @@
             console.log({error});
 
             if (state === "SUCCESS") {
+                var EmailTemplates = [];
                 console.log( response.getReturnValue());
                 var result= response.getReturnValue();
                 result.forEach(function(value){
                     console.log(value);
-                    if(value.Name === 'Quote'){
+                    if(value.DeveloperName === 'Quote_Template_2'){
+                        EmailTemplates.push(value.Id);
                         component.set("v.selectedTemplate" ,value.Id);
                         helper.getTemplateBody(component, event, helper);
                     }
                 })
+                if(EmailTemplates.length == 0) {
+                        var toastEvent = $A.get("e.force:showToast");
+                        toastEvent.setParams({
+                            type: 'ERROR',
+                            message: 'Something Went Wrong',
+                            duration: '5000',
+                        });
+                        toastEvent.fire();
+                        component.set("v.Spinner", false);
+                        $A.get("e.force:closeQuickAction").fire();
+                    }
+
+            }
+            else {
+                var toastEvent = $A.get("e.force:showToast");
+                toastEvent.setParams({
+                    type: 'ERROR',
+                    message: 'Something Went Wrong',
+                    duration: '5000',
+                });
+                toastEvent.fire();
+                component.set("v.Spinner", false);
+                $A.get("e.force:closeQuickAction").fire();
             }
         });
 

@@ -3,9 +3,9 @@ public without sharing class PreviewQuoteController{
     public Static List<EmailTemplate> getTemplates(){
         List<Emailtemplate> temrec;
         if (Schema.sObjectType.Emailtemplate.fields.Id.isAccessible() && Schema.sObjectType.Emailtemplate.fields.Name.isAccessible() && Schema.sObjectType.Emailtemplate.fields.folderid.isAccessible() && Schema.sObjectType.Folder.fields.Name.isAccessible()){
-            temrec = [Select Id, Name, folder.name
+            temrec = [Select Id, Name, folder.name, DeveloperName
                       from Emailtemplate
-                      where folder.name = 'BT Quote'];
+                      where folder.name = 'BT Quote' AND DeveloperName != 'quote_top' AND DeveloperName != 'quote_bottom'];
         }
         System.debug('Template ========>>>>>'+temrec);
         return temrec;
