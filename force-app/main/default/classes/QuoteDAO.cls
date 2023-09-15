@@ -1260,25 +1260,24 @@ public with sharing class QuoteDAO{
             system.debug('quote -----------> ' + quote);
 
             buildertek__Quote__c newQuote = quote.clone(false, true);
-            Decimal versionNumber;
+            Integer versionNumber;
             String quoteName = quote.Name;
 
 
             if (quote.buildertek__Version_Number__c == null){
-                versionNumber = 1.0;
-                //newQuote.Name = quote.Name + ' Ver ' + versionNumber;
+                versionNumber = 1;
                 newQuote.Name = quote.Name;
-                newQuote.buildertek__Version_Number__c = '1.0';
+                newQuote.buildertek__Version_Number__c = '1';
                 newQuote.buildertek__Status__c = 'Draft';
             } else{
-                versionNumber = Decimal.valueOf(quote.buildertek__Version_Number__c);
-                versionNumber = versionNumber + .1;
-                //quoteName = quoteName.right(1);
-                //quoteName = quoteName.replace(quoteName.right(1), String.valueOf(versionNumber));
+                versionNumber = Integer.valueOf(quote.buildertek__Version_Number__c);
+                versionNumber++;
                 newQuote.buildertek__Version_Number__c = String.valueOf(versionNumber);
                 newQuote.buildertek__Status__c = 'Draft';
             }
-
+            System.debug(versionNumber);
+            newQuote.buildertek__Original_Quote__c=quote.Id;
+            
             if (Schema.sObjectType.buildertek__Quote__c.fields.Name.isCreateable() && Schema.sObjectType.buildertek__Quote__c.fields.buildertek__Version_Number__c.isCreateable()){
                 insert newQuote;
             }
