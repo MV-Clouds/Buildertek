@@ -2415,7 +2415,8 @@
         var isBudget = component.get("v.isbudget");
         console.log('isBudget',isBudget);
         var headerDiv = component.find("headerDiv");
-        console.log('headerDiv',headerDiv);
+        var headerDiv1 = component.find("headerDiv1");
+        console.log('headerDiv',headerDiv1);
         console.log('v.total => ', component.get("v.total"));
         
         // Check if the current URL contains a specific keyword or phrase
@@ -2424,10 +2425,12 @@
             console.log('in if');
             $A.util.addClass(headerDiv, "divconts1");
             $A.util.removeClass(headerDiv, "divconts2");
+            $A.util.addClass(headerDiv1, "divconts1");
         } else {
             console.log('in else');
             $A.util.addClass(headerDiv, "divconts2");
             $A.util.removeClass(headerDiv, "divconts1");
+            $A.util.addClass(headerDiv1, "mainBomDiv");
         }
     },
 
@@ -2511,6 +2514,373 @@
             }
         });
         $A.enqueueAction(action1);
+    },
+
+    submitDetails: function(component, event, helper) {
+        var valueofField1 = component.get("v.valueofField1");
+        var valueofField2 = component.get("v.valueofField2");
+        // var valueofField1 = 'buildertek__Group__c';
+        // var valueofField2 = 'buildertek__Sub_Grouping__c';
+        // var valueofField3 = component.get("v.valueofField3")
+        // var valueofField4 = component.get("v.valueofField4")
+
+        console.log(valueofField1);
+        console.log(valueofField2);
+        // console.log({valueofField3});
+        // console.log({valueofField4});
+
+
+        if(valueofField1 == "" && valueofField2 == ""){
+            var toastEvent = $A.get("e.force:showToast");
+            toastEvent.setParams({
+                "type": "Error",
+                "title": "Error!",
+                "message": 'Please Select At Least One Field'
+            });
+            toastEvent.fire();           
+        } else{
+            var selectedFieldList = [];
+            if (valueofField1 != "") {
+                selectedFieldList.push(valueofField1)
+            }
+            if (valueofField2 != "") {
+                selectedFieldList.push(valueofField2)
+            }
+            // if (valueofField3 != "") {
+            //     selectedFieldList.push(valueofField3)
+            // }
+            // if (valueofField4 != "") {
+            //     selectedFieldList.push(valueofField4)
+            // }
+            console.log('selectedFieldList ==> ',{selectedFieldList});
+            component.set("v.isBOMmodalOpen", false); 
+            component.set("v.displayGrouping", true);
+
+            component.set("v.groupFieldList", selectedFieldList);
+            helper.getBudgetGrouping(component, event, helper);
+            helper.applyCSSBasedOnURL(component);
+
+        }
+
+     },
+
+     getBudgetGrouping : function(component, event, helper) {
+        console.log('*** getBudgetGrouping Method ***');
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "SHOW"
+        }).fire();
+        var page = component.get("v.page") || 1
+        var groupFieldList = component.get("v.groupFieldList");
+        if (groupFieldList[3] != undefined) {
+            component.set("v.forthGrouping", true);
+        } else if (groupFieldList[2] != undefined) {
+            component.set("v.thirdGrouping", true);
+        } else if (groupFieldList[1] != undefined) {
+            component.set("v.secondGrouping", true);
+        } else if(groupFieldList[0] != undefined){
+            component.set("v.firstGrouping", true);
+        }
+        var action = component.get("c.getBudgetLineData");
+        action.setParams({
+            budgetId: component.get("v.recordId"),
+            pageNumber: page,   // It's for future use, currnetly it's not in used
+            recordToDisply: 50, // It's for future use, currnetly it's not in used
+            groupingList: groupFieldList
+        });
+        action.setCallback(this, function(response) {
+            var state = response.getState();
+            if (state === "SUCCESS") {
+                console.log('getting result ', response.getReturnValue());                
+                var budgetLineWrapper = response.getReturnValue();
+                var budgetLineList = budgetLineWrapper.budgetLineList;
+                component.set("v.totalColumn", budgetLineWrapper.columns.length);
+                if (budgetLineList.length > 0) {
+                    component.set("v.TotalRecordCount", budgetLineList.length);
+                    var columns = budgetLineWrapper.columns;
+                    budgetLineList.forEach(element => {
+                        var budgetLineFieldData = []
+                        columns.forEach(ele => {
+                            if (ele.type == 'currency' && element[ele.fieldName] == undefined) {
+                                element[ele.fieldName] = 0;
+                            }
+                            var fieldData = {fieldName: ele.fieldName, fieldType: ele.type, fieldValue: element[ele.fieldName]};
+                            budgetLineFieldData.push(fieldData);
+                        });
+                        element.FieldDataList = budgetLineFieldData;
+                        // if (element.buildertek__Build_Phase__c != undefined) {
+                        //     element.buildertek__Build_Phase__c = element.buildertek__Build_Phase__r.Name;
+                        // }
+                        if (element.buildertek__Sub_Grouping__c != undefined) {
+                            element.buildertek__Sub_Grouping__c = element.buildertek__Sub_Grouping__r.Name;
+                        }
+                        if (element.buildertek__Group__c != undefined) {
+                            element.buildertek__Group__c = element.buildertek__Group__r.Name;
+                        }
+                    });
+                    var group1Wrapper = [];
+                    var group1Value = budgetLineList[0][groupFieldList[0]];
+                    var budgetLines1 = [];
+                    let totalObj = {};
+                    columns.forEach(ele => {
+                        totalObj[ele.fieldName] = 0;
+                    });
+                    budgetLineList.forEach((element, index) => {
+                        if (group1Value == element[groupFieldList[0]]) {
+                            totalObj = helper.countTotal(component, helper, totalObj, element);
+                            budgetLines1.push(element);
+                            if (budgetLineList.length == index+1) {
+                                if (groupFieldList[1] != undefined) {
+                                    budgetLines1 = helper.addSecondGrouping(component, helper, budgetLines1, groupFieldList, columns);
+                                }
+                                totalObj = helper.createTotalWrapper(component, helper, totalObj, columns);
+                                var wrapperData = {groupIndex: group1Wrapper.length+1, groupName : group1Value, budgetLineList: budgetLines1, fieldTotals: totalObj};
+                                group1Wrapper.push(wrapperData);
+                            }
+                        } else{
+                            if (groupFieldList[1] != undefined){
+                                budgetLines1 = helper.addSecondGrouping(component, helper, budgetLines1, groupFieldList, columns);
+                            }
+                            totalObj = helper.createTotalWrapper(component, helper, totalObj, columns);
+                            var wrapperData = {groupIndex: group1Wrapper.length+1, groupName : group1Value, budgetLineList: budgetLines1, fieldTotals: totalObj};
+                            group1Wrapper.push(wrapperData);
+
+                            totalObj = {};
+                            columns.forEach(ele => {
+                                totalObj[ele.fieldName] = 0;
+                            });
+                            totalObj = helper.countTotal(component, helper, totalObj, element);
+
+                            budgetLines1 = [];
+                            group1Value = element[groupFieldList[0]];
+                            budgetLines1.push(element);
+
+                            if (budgetLineList.length == index+1) {
+                                if (groupFieldList[1] != undefined) {
+                                    budgetLines1 = helper.addSecondGrouping(component, helper, budgetLines1, groupFieldList, columns);
+                                }
+                                totalObj = helper.createTotalWrapper(component, helper, totalObj, columns);
+                                var wrapperData = {groupIndex: group1Wrapper.length+1, groupName : group1Value, budgetLineList: budgetLines1, fieldTotals: totalObj};
+                                group1Wrapper.push(wrapperData);
+                            }
+                        }
+                    });
+                    budgetLineWrapper.groupWrapper = group1Wrapper;
+                    console.log('*** Budget Wrapper Data ***');
+                    console.log('Budget Wrapper Data => ',{ budgetLineWrapper });
+                    component.set("v.BudgetLineWrapper", budgetLineWrapper);
+                    $A.get("e.c:BT_SpinnerEvent").setParams({
+                        "action": "HIDE"
+                    }).fire();
+                }else{
+                    $A.get("e.c:BT_SpinnerEvent").setParams({
+                        "action": "HIDE"
+                    }).fire();
+                }
+            } else{
+                var error = response.getError();
+                console.log('Error => ',{error});
+                $A.get("e.c:BT_SpinnerEvent").setParams({
+                    "action": "HIDE"
+                }).fire();
+            }                
+        });
+        $A.enqueueAction(action);
+    }, 
+    addSecondGrouping : function(component, helper, budgetLines1, groupFieldList, columns){
+        var group2Wrapper = [];
+        if (budgetLines1.length > 0) {
+            var group2Value = budgetLines1[0][groupFieldList[1]];
+            var budgetLines2 = [];
+            let totalObj = {};
+            columns.forEach(ele => {
+                totalObj[ele.fieldName] = 0;
+            });
+            budgetLines1.forEach((element, index) => {
+                if (group2Value == element[groupFieldList[1]]){
+                    totalObj = helper.countTotal(component, helper, totalObj, element);
+                    budgetLines2.push(element);
+                    if (budgetLines1.length == index+1){
+                        if (groupFieldList[2] != undefined) {
+                            budgetLines2 = helper.addThirdGrouping(component, helper, budgetLines2, groupFieldList, columns);
+                        }
+                        totalObj = helper.createTotalWrapper(component, helper, totalObj, columns);
+                        var wrapperData = {groupIndex: group2Wrapper.length+1, groupName : group2Value, budgetLineList: budgetLines2, fieldTotals: totalObj};
+                        group2Wrapper.push(wrapperData);
+                    }
+                } else{
+                    if (groupFieldList[2] != undefined) {
+                        budgetLines2 = helper.addThirdGrouping(component, helper, budgetLines2, groupFieldList, columns);
+                    }
+                    totalObj = helper.createTotalWrapper(component, helper, totalObj, columns);
+                    var wrapperData = {groupIndex: group2Wrapper.length+1, groupName : group2Value, budgetLineList: budgetLines2, fieldTotals: totalObj};
+                    group2Wrapper.push(wrapperData);
+
+                    totalObj = {};
+                    columns.forEach(ele => {
+                        totalObj[ele.fieldName] = 0;
+                    });
+                    totalObj = helper.countTotal(component, helper, totalObj, element);
+
+                    budgetLines2 = [];
+                    group2Value = element[groupFieldList[1]];
+                    budgetLines2.push(element);
+
+                    if (budgetLines1.length == index+1){
+                        if (groupFieldList[2] != undefined) {
+                            budgetLines2 = helper.addThirdGrouping(component, helper, budgetLines2, groupFieldList, columns);
+                        }
+                        totalObj = helper.createTotalWrapper(component, helper, totalObj, columns);
+                        var wrapperData = {groupIndex: group2Wrapper.length+1, groupName : group2Value, budgetLineList: budgetLines2, fieldTotals: totalObj};
+                        group2Wrapper.push(wrapperData);
+                    }
+                }
+            });
+            return group2Wrapper;
+        }
+    },
+    addThirdGrouping : function(component, helper, budgetLines2, groupFieldList, columns){
+        var group3Wrapper = [];
+        if (budgetLines2.length > 0) {
+            var group3Value = budgetLines2[0][groupFieldList[2]];
+            var budgetLines3 = [];
+            let totalObj = {};
+            columns.forEach(ele => {
+                totalObj[ele.fieldName] = 0;
+            });
+            budgetLines2.forEach((element, index) => {
+                if (group3Value == element[groupFieldList[2]]){
+                    totalObj = helper.countTotal(component, helper, totalObj, element);
+                    budgetLines3.push(element);
+                    if (budgetLines2.length == index+1){
+                        if (groupFieldList[3] != undefined) {
+                            budgetLines3 = helper.addFourthGrouping(component, helper, budgetLines3, groupFieldList, columns);
+                        }
+                        totalObj = helper.createTotalWrapper(component, helper, totalObj, columns);
+                        var wrapperData = {groupIndex: group3Wrapper.length+1, groupName : group3Value, budgetLineList: budgetLines3, fieldTotals: totalObj};
+                        group3Wrapper.push(wrapperData);
+                    }
+                } else{
+                    if (groupFieldList[3] != undefined) {
+                        budgetLines3 = helper.addFourthGrouping(component, helper, budgetLines3, groupFieldList, columns);
+                    }
+                    totalObj = helper.createTotalWrapper(component, helper, totalObj, columns);
+                    var wrapperData = {groupIndex: group3Wrapper.length+1, groupName : group3Value, budgetLineList: budgetLines3, fieldTotals: totalObj};
+                    group3Wrapper.push(wrapperData);
+
+                    totalObj = {};
+                    columns.forEach(ele => {
+                        totalObj[ele.fieldName] = 0;
+                    });
+                    totalObj = helper.countTotal(component, helper, totalObj, element);
+
+                    budgetLines3 = [];
+                    group3Value = element[groupFieldList[2]]
+                    budgetLines3.push(element);
+
+                    if (budgetLines2.length == index+1){
+                        if (groupFieldList[3] != undefined) {
+                            budgetLines3 = helper.addFourthGrouping(component, helper, budgetLines3, groupFieldList, columns);
+                        }
+                        totalObj = helper.createTotalWrapper(component, helper, totalObj, columns);
+                        var wrapperData = {groupIndex: group3Wrapper.length+1, groupName : group3Value, budgetLineList: budgetLines3, fieldTotals: totalObj};
+                        group3Wrapper.push(wrapperData);
+                    }
+                }
+            });
+            return group3Wrapper;
+        }
+    }, 
+
+    addFourthGrouping : function(component, helper, budgetLines3, groupFieldList, columns){
+        var group4Wrapper = [];
+        if (budgetLines3.length > 0) {
+            var group4Value = budgetLines3[0][groupFieldList[3]];
+            var budgetLines4 = [];
+            let totalObj = {};
+            columns.forEach(ele => {
+                totalObj[ele.fieldName] = 0;
+            });
+            budgetLines3.forEach((element, index) => {
+                if (group4Value == element[groupFieldList[3]]){
+                    totalObj = helper.countTotal(component, helper, totalObj, element);
+                    budgetLines4.push(element);
+                    if (budgetLines3.length == index+1){
+                        totalObj = helper.createTotalWrapper(component, helper, totalObj, columns);
+                        var wrapperData = {groupIndex: group4Wrapper.length+1, groupName : group4Value, budgetLineList: budgetLines4, fieldTotals: totalObj};
+                        group4Wrapper.push(wrapperData);
+                    }
+                } else{
+                    totalObj = helper.createTotalWrapper(component, helper, totalObj, columns);
+                    var wrapperData = {groupIndex: group4Wrapper.length+1, groupName : group4Value, budgetLineList: budgetLines4, fieldTotals: totalObj};
+                    group4Wrapper.push(wrapperData);
+
+                    totalObj = {};
+                    columns.forEach(ele => {
+                        totalObj[ele.fieldName] = 0;
+                    });
+                    totalObj = helper.countTotal(component, helper, totalObj, element);
+
+                    budgetLines4 = [];
+                    group4Value = element[groupFieldList[3]];
+                    budgetLines4.push(element);
+
+                    if (budgetLines3.length == index+1){
+                        totalObj = helper.createTotalWrapper(component, helper, totalObj, columns);
+                        var wrapperData = {groupIndex: group4Wrapper.length+1, groupName : group4Value, budgetLineList: budgetLines4, fieldTotals: totalObj};
+                        group4Wrapper.push(wrapperData);
+                    }
+                }
+            });
+            return group4Wrapper;
+        }
+    },
+    countTotal : function(component, helper, totalObj, element){
+        element.FieldDataList.forEach(ele => {
+            if (ele.fieldType == 'currency') {
+                totalObj[ele.fieldName] += Number(ele.fieldValue);
+            }
+        });
+        return totalObj;
+    },
+    createTotalWrapper : function(component, helper, totalObj, columns){
+        var budgetLineTotalData = [];
+        columns.forEach(ele => {
+            let fieldData;
+            if (ele.type == 'currency') {
+                fieldData = {fieldName: ele.fieldName, fieldType: ele.type, fieldValue: totalObj[ele.fieldName]};
+            } else if(ele.fieldName == 'Name'){
+                fieldData = {fieldName: 'Total', fieldType: ele.type, fieldValue: totalObj[ele.fieldName]};
+            }else{
+                fieldData = {fieldName: ele.fieldName, fieldType: ele.type, fieldValue: ''};
+            }
+            budgetLineTotalData.push(fieldData);
+        });
+        totalObj['fieldTotalList'] = budgetLineTotalData;
+        return totalObj;
+    }, 
+    expandRecordsHelper : function(component, event, helper, spanGroupId){
+        console.log('in expandrec');
+        let recordDivList = document.getElementsByClassName('record_'+spanGroupId);
+        let collapeallIcon = document.getElementById("collapeseGroupBtn_" + spanGroupId);
+        let expandallIcon = document.getElementById("expandGroupBtn_" + spanGroupId);
+
+        collapeallIcon.style.display = 'block';
+        expandallIcon.style.display = 'none';
+        for(let index = 0; index < recordDivList.length; index++) {
+            recordDivList[index].style.display = 'table-row';
+        }
+    },
+    collapeRecordsHelper : function(component, event, helper, spanGroupId){
+        console.log('in expandrec');
+        let recordDivList = document.getElementsByClassName('record_'+spanGroupId);
+        let collapeallIcon = document.getElementById("collapeseGroupBtn_" + spanGroupId);
+        let expandallIcon = document.getElementById("expandGroupBtn_" + spanGroupId);
+        
+        collapeallIcon.style.display = 'none';
+        expandallIcon.style.display = 'block';
+        for(let index = 0; index < recordDivList.length; index++) {
+            recordDivList[index].style.display = 'none';
+        }
     },
     
     
