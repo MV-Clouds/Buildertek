@@ -280,8 +280,9 @@ public with sharing class PreviewChangeOrderController {
            }
 
            List<buildertek__Change_Order__c> corec=[SELECT id,  Name,  buildertek__Customer_Accepted_Date__c,  buildertek__TemplateId__c , buildertek__Template_Name__c , buildertek__Status__c,   buildertek__Date_Approved__c,  buildertek__CO_Submit_Date__c from buildertek__Change_Order__c where Id=:recordId limit 1];
+           System.debug('CO LIST 1-------->' + corec);
            if(corec.size()>0){
-               corec[0].buildertek__Date_Approved__c = system.now();
+            //    corec[0].buildertek__Date_Approved__c = system.now();
                if (corec[0].buildertek__CO_Submit_Date__c == null) {
                corec[0].buildertek__CO_Submit_Date__c = System.today();  
                } 
@@ -527,7 +528,7 @@ public with sharing class PreviewChangeOrderController {
                if(corec.size()>0){
                    
                            //corec[0].buildertek__Status__c = 'Sent';
-                            corec[0].buildertek__Status__c ='Customer Approved'; 
+                            corec[0].buildertek__Status__c ='Customer Accepted'; 
                             corec[0].buildertek__Date_Approved__c = system.now();
                             corec[0].buildertek__Customer_Accepted_Date__c = System.today();
                             if(contractlist.size() > 0){
@@ -611,9 +612,9 @@ public with sharing class PreviewChangeOrderController {
                
                if(corec.size()>0){
                    
-                           corec[0].buildertek__Status__c = 'Customer Approved';
+                           corec[0].buildertek__Status__c = 'Customer Accepted';
                           
-                            corec[0].buildertek__Date_Approved__c = system.now();
+                            // corec[0].buildertek__Date_Approved__c = system.now();
                             corec[0].buildertek__Customer_Accepted_Date__c = System.today();
                            if(contractlist.size() > 0){
                                corec[0].buildertek__Contract__c = contractlist[0].id;
