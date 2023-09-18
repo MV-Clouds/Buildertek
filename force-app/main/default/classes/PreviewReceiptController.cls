@@ -17,6 +17,7 @@ public with sharing class PreviewReceiptController {
         string templateBody = '';
         string templateBody1 = '';
         string templateBody2 = '';
+        Boolean useSignature = false;
         Contact con ;
         if(Schema.sObjectType.Contact.fields.Id.isAccessible()&&
             Schema.sObjectType.Contact.fields.Name.isAccessible() &&
@@ -37,6 +38,7 @@ public with sharing class PreviewReceiptController {
         email.setTargetObjectId(con.Id);       
         email.setSaveAsActivity(false);
         email.setToAddresses(toaddres);
+        email.setUseSignature(useSignature);
 		msgList.add(email);
 		
         Messaging.SendEmailResult [] r = Messaging.sendEmail(new Messaging.SingleEmailMessage[] {email}); 
@@ -74,6 +76,7 @@ public with sharing class PreviewReceiptController {
          try{
              String body = '';
              String subject = 'Receipt'; 
+             Boolean useSignature = false;
             List<string> strTO = new List<string>();
     	    List<string> strCC = new List<string>();
     	    SET<Id> contactIdSet = new SET<Id>();
@@ -125,6 +128,7 @@ public with sharing class PreviewReceiptController {
              efa.setBody(setAttachmentBody(recordId, templateId));
              fileAttachments.add(efa); 
              mail.setFileAttachments(fileAttachments);
+             mail.setUseSignature(useSignature);
              mails.add(mail);
              Messaging.SendEmailResult[] results = Messaging.sendEmail(mails);
              String message = 'Success';

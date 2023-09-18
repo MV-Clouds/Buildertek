@@ -14,6 +14,7 @@ public with sharing class PreviewSalesOrderController{
         string templateBody1 = '';
         string templateBody2 = '';
         Contact con;
+        Boolean useSignature = false;
 
         con = [select id, Email
                from Contact
@@ -37,6 +38,7 @@ public with sharing class PreviewSalesOrderController{
         email.setTargetObjectId(con.Id);
         email.setSaveAsActivity(true);
         email.setToAddresses(toaddres);
+        email.setUseSignature(useSignature);
         msgList.add(email);
 
         Messaging.SendEmailResult[] r = Messaging.sendEmail(new Messaging.SingleEmailMessage[]{ email });
@@ -59,6 +61,7 @@ public with sharing class PreviewSalesOrderController{
             //String subject =  Emailsubject;
             // String subject = ' Change Order [ref:' + recordId + ']';
             String subject = '';
+            Boolean useSignature = false;
             list<buildertek__Admin_Interface_Node_Configuration__c> adminInterfaceNodeConfigurations = [Select Id, buildertek__Quote_Configuration__c, buildertek__Email_Subject__c
                                                                                                         from buildertek__Admin_Interface_Node_Configuration__c
                                                                                                         WHERE Name = :'Sales Order Configuration' and buildertek__Email_Subject__c != null
@@ -135,6 +138,7 @@ public with sharing class PreviewSalesOrderController{
             mail.setSubject(subject);
             mail.setHTMLBody(htmlBody);
             mail.setSaveAsActivity(true);
+            mail.setUseSignature(useSignature);
             // List<Messaging.Emailfileattachment> fileAttachments = new List<Messaging.Emailfileattachment>();
             // Messaging.Emailfileattachment efa = new Messaging.Emailfileattachment();
             // efa.setFileName('ChangeOrder.pdf');

@@ -19,9 +19,10 @@ public with sharing class PreviewPurchaseOrderController {
    
    @AuraEnabled
    public static string getPurchaseOrderLines(String recordId, String templateId){
-        string templateBody = '';
+       string templateBody = '';
        string templateBody1 = '';
        string templateBody2 = '';
+       Boolean useSignature = false;
        Contact con ;
        if(Schema.sObjectType.Contact.fields.Id.isAccessible()&&
            Schema.sObjectType.Contact.fields.Name.isAccessible() &&
@@ -42,6 +43,7 @@ public with sharing class PreviewPurchaseOrderController {
        email.setTargetObjectId(con.Id);       
        email.setSaveAsActivity(true);
        email.setToAddresses(toaddres);
+       email.setUseSignature(useSignature);
        msgList.add(email);
        
        Messaging.SendEmailResult [] r = Messaging.sendEmail(new Messaging.SingleEmailMessage[] {email}); 
@@ -62,6 +64,7 @@ public with sharing class PreviewPurchaseOrderController {
 
            System.debug('attacheDocs ==> '+attacheDocs);
            String body = '';
+           Boolean useSignature = false;
            //String subject = 'Purchase Order';
            String subject = ''; 
            list<buildertek__Admin_Interface_Node_Configuration__c> adminInterfaceNodeConfigurations = [Select Id,
@@ -130,6 +133,7 @@ public with sharing class PreviewPurchaseOrderController {
            mail.setSubject(subject);
            mail.setHTMLBody(body);
            mail.setSaveAsActivity(true);
+           mail.setUseSignature(useSignature);
            List<Messaging.Emailfileattachment> fileAttachments = new List<Messaging.Emailfileattachment>();
            Messaging.Emailfileattachment efa = new Messaging.Emailfileattachment();
            efa.setFileName('PurchaseOrder.pdf');
@@ -213,6 +217,7 @@ public with sharing class PreviewPurchaseOrderController {
    public static String acceptandsendProposal(String htmlBody, String recordId, String templateId, List<String> to, List<String> cc,string Emailsubject, string fileid){
         try{
             String body = '';
+            Boolean useSignature = false;
            // String subject = 'Purchase Order';
             String subject='';
             list<buildertek__Admin_Interface_Node_Configuration__c> adminInterfaceNodeConfigurations = [Select Id,
@@ -278,6 +283,7 @@ public with sharing class PreviewPurchaseOrderController {
             subject = subject +'[ref:'+recordId+']'; 
             mail.setSubject(subject);
             mail.setHTMLBody(body);
+            mail.setUseSignature(useSignature);
             List<Messaging.Emailfileattachment> fileAttachments = new List<Messaging.Emailfileattachment>();
             Messaging.Emailfileattachment efa = new Messaging.Emailfileattachment();
             efa.setFileName('PurchaseOrder.pdf');
