@@ -25,6 +25,7 @@ public with sharing class PreviewBillingsController{
         string templateBody = '';
         string templateBody1 = '';
         string templateBody2 = '';
+        Boolean useSignature = false;
         System.debug('templateId=='+templateId);
         Contact con;
         if (Schema.sObjectType.Contact.fields.Id.isAccessible() && Schema.sObjectType.Contact.fields.Name.isAccessible() && Schema.sObjectType.Contact.fields.email.isAccessible()){
@@ -57,6 +58,7 @@ public with sharing class PreviewBillingsController{
         email.setTargetObjectId(con.Id);
         email.setSaveAsActivity(false);
         email.setToAddresses(toaddres);
+        email.setUseSignature(useSignature);
         msgList.add(email);
 
         System.debug('msgList=='+msgList);
@@ -222,11 +224,13 @@ public with sharing class PreviewBillingsController{
     @AuraEnabled
     public static String sendProposal(String htmlBody, String recordId, String templateId, List<String> to, List<String> cc){
         try{
+
             Blob tempblob;
             List<Contact> conList =  [Select Id,Name,email from Contact where Id IN :to and email != null];
 
             String subject = 'Invoice';
             String body;
+            Boolean useSignature = false;
             List<Messaging.SingleEmailMessage> mails = new List<Messaging.SingleEmailMessage>();
             List<String> sendTo = new List<String>();
             List<String> ccTo = new List<String>();
@@ -269,6 +273,8 @@ public with sharing class PreviewBillingsController{
                 tempblob = setAttachmentBody(recordId, templateId);
                 system.debug('Blob ---> ' + tempblob);
                 mail.setSaveAsActivity(false);
+                mail.setUseSignature(useSignature);
+
                 mails.add(mail);
             }
             Messaging.SendEmailResult[] results = Messaging.sendEmail(mails);
