@@ -644,33 +644,36 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           draggable: false,
         },
         {
-          type: "widget",
-          text: "Done",
-          draggable: false,
-          align   : 'center',
-          widgets: [
+          type: "action",
+          text: "Complete",
+          width: 50,
+          actions: [
             {
-              type: 'check',
-              name  : 'markAsDone',
+              cls: "b-fa b-fa-check",
+              onClick: ({ record }) => {
+                if (record._data.type == "Task") {
+                  if (record._data.percentDone == 100) {
+                    record.set("percentDone", 0);
+                  } else {
+                    record.set("percentDone", 100);
+                  }
+                }
+              },
+              renderer: ({ action, record }) => {
+                if (record._data.type == "Task") {
+                  return `<i class="b-action-item ${action.cls}" ></i>`;
+                } else {
+                  return `<i class="b-action-item ${action.cls}" style="display:none;"></i>`;
+                }
+              },
             },
           ],
-          renderer: (record) => {
-            if (record.record._data.type == "Project") {
-              return {class: 'd-none'};
-            }
-            else if (record.record._data.type == "Phase") {
-              return {class: 'd-none'};
-            }
-            else if (record.record._data.name == "Milestone Complete") {
-              return {class: 'd-none'};
-            }
-          },
         },
         {
           type: "percentdone",
           draggable: false,
           showCircle: true,
-          width: 100,
+          width: 50,
           text: "% Complete",
         },
         {
