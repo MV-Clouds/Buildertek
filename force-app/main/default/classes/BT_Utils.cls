@@ -138,9 +138,9 @@ public with sharing class BT_Utils{
         }
         if (!currentUser.isEmpty()){
             toAddresses.add(currentUser[0].Email);
-            toAddresses.add('thoriyas@gmail.com');
+            toAddresses.add('info@buildertek.com'); // Changes for BUIL-3533
         } else{
-            toAddresses.add('thoriyas@gmail.com');
+            toAddresses.add('info@buildertek.com'); // Changes for BUIL-3533
         }
         String fromAddressId;
         String fromAddress = getApplicationConfigurationValue(BT_Constants.JOB_STATUS_FROM_EMAIL_ADDRESS);
