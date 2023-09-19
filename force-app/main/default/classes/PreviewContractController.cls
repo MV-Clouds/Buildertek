@@ -29,7 +29,6 @@ public with sharing class PreviewContractController{
 
 	public void ContractMethod(){
 		Contact con;
-		Boolean useSignature = false;
 		if (Schema.sObjectType.Contact.fields.Id.isAccessible() && Schema.sObjectType.Contact.fields.Name.isAccessible() && Schema.sObjectType.Contact.fields.email.isAccessible()){
 			con = [select id, Email
 			       from Contact
@@ -53,7 +52,6 @@ public with sharing class PreviewContractController{
 		email.setTargetObjectId(con.Id);
 		email.setSaveAsActivity(false);
 		email.setToAddresses(toaddres);
-		email.setUseSignature(useSignature);
 		msgList.add(email);
 		Messaging.SendEmailResult[] r = Messaging.sendEmail(new Messaging.SingleEmailMessage[]{email});
 		System.debug('Email Results isSuccess = ' + r[0].IsSuccess());
@@ -72,7 +70,6 @@ public with sharing class PreviewContractController{
 		string templateBody1 = '';
 		string templateBody2 = '';
 		Contact con;
-		Boolean useSignature = false;
 		if (Schema.sObjectType.Contact.fields.Id.isAccessible() && Schema.sObjectType.Contact.fields.Name.isAccessible() && Schema.sObjectType.Contact.fields.email.isAccessible()){
 			con = [select id, Email
 			       from Contact
@@ -100,7 +97,6 @@ public with sharing class PreviewContractController{
 		email.setTargetObjectId(con.Id);
 		email.setSaveAsActivity(false);
 		email.setToAddresses(toaddres);
-		email.setUseSignature(useSignature);
 		msgList.add(email);
 
 		Messaging.SendEmailResult[] r = Messaging.sendEmail(new Messaging.SingleEmailMessage[]{email});
@@ -123,7 +119,6 @@ public with sharing class PreviewContractController{
 		email1.setTargetObjectId(con.Id);
 		email1.setSaveAsActivity(false);
 		email1.setToAddresses(toaddres);
-		email1.setUseSignature(useSignature);
 		msgList1.add(email1);
 		Messaging.SendEmailResult[] r1 = Messaging.sendEmail(new Messaging.SingleEmailMessage[]{email1});
 		System.debug('Email Results isSuccess = ' + r1[0].IsSuccess());
@@ -155,7 +150,6 @@ public with sharing class PreviewContractController{
 			string fileid = '';
 			String body = '';
 			String subject = '';
-			Boolean useSignature = false;
 			list<buildertek__Admin_Interface_Node_Configuration__c> adminInterfaceNodeConfigurations = [Select Id, buildertek__Quote_Configuration__c, buildertek__Email_Subject__c
 			                                                                                            from buildertek__Admin_Interface_Node_Configuration__c
 			                                                                                            WHERE Name = :'Create Contract on Quote Acceptance' and buildertek__Email_Subject__c != null
@@ -232,7 +226,6 @@ public with sharing class PreviewContractController{
 			subject = subject + '[ref:' + recordId + ']';
 			mail.setSubject(subject);
 			mail.setHTMLBody(body);
-			mail.setUseSignature(useSignature);
 			List<Messaging.Emailfileattachment> fileAttachments = new List<Messaging.Emailfileattachment>();
 			Messaging.Emailfileattachment efa = new Messaging.Emailfileattachment();
 			efa.setFileName('Contract.pdf');
@@ -381,7 +374,6 @@ public with sharing class PreviewContractController{
 		try{
 			String body = '';
 			String subject = '';
-			Boolean useSignature = false;
 			list<buildertek__Admin_Interface_Node_Configuration__c> adminInterfaceNodeConfigurations = [Select Id, buildertek__Quote_Configuration__c, buildertek__Email_Subject__c
 			                                                                                            from buildertek__Admin_Interface_Node_Configuration__c
 			                                                                                            WHERE Name = :'Create Contract on Quote Acceptance' and buildertek__Email_Subject__c != null
@@ -458,7 +450,6 @@ public with sharing class PreviewContractController{
 			subject = subject + '[ref:' + recordId + ']';
 			mail.setSubject(subject);
 			mail.setHTMLBody(body);
-			mail.setUseSignature(useSignature);
 			List<Messaging.Emailfileattachment> fileAttachments = new List<Messaging.Emailfileattachment>();
 			Messaging.Emailfileattachment efa = new Messaging.Emailfileattachment();
 			efa.setFileName('Contract.pdf');

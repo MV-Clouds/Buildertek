@@ -17,7 +17,6 @@ public with sharing class PreviewPunchlist {
         string templateBody1 = '';
         string templateBody2 = '';
         Contact con ;
-        Boolean useSignature = false;
         if(Schema.sObjectType.Contact.fields.Id.isAccessible()&&
            Schema.sObjectType.Contact.fields.Name.isAccessible() &&
            Schema.sObjectType.Contact.fields.email.isAccessible()  ){
@@ -38,7 +37,6 @@ public with sharing class PreviewPunchlist {
         email.setTargetObjectId(con.Id);       
         email.setSaveAsActivity(false);
         email.setToAddresses(toaddres);
-        email.setUseSignature(useSignature);
         msgList.add(email);
         
         Messaging.SendEmailResult [] r = Messaging.sendEmail(new Messaging.SingleEmailMessage[] {email}); 
@@ -58,7 +56,6 @@ public with sharing class PreviewPunchlist {
         try{
             String body = '';
             String subject = 'Punch List'; 
-            Boolean useSignature = false;
             List<string> strTO = new List<string>();
             List<string> strCC = new List<string>();
             SET<Id> contactIdSet = new SET<Id>();
@@ -112,7 +109,6 @@ public with sharing class PreviewPunchlist {
             efa.setBody(setAttachmentBody(recordId, templateId));
             fileAttachments.add(efa); 
             mail.setFileAttachments(fileAttachments);
-            mail.setUseSignature(useSignature);
             mails.add(mail);
             Messaging.SendEmailResult[] results = Messaging.sendEmail(mails);
             String message = 'Success';

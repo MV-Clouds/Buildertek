@@ -36,11 +36,10 @@ public with sharing class PreviewChangeOrderController {
    
    @AuraEnabled
    public static string getChangeOrderLines(String recordId, String templateId){
-       string templateBody = '';
+        string templateBody = '';
        string templateBody1 = '';
        string templateBody2 = '';
        Contact con ;
-       Boolean useSignature = false;
       
            con = [select id, Email from Contact where email != null order by createddate desc limit 1 ];
            
@@ -61,7 +60,6 @@ public with sharing class PreviewChangeOrderController {
        email.setTargetObjectId(con.Id);       
        email.setSaveAsActivity(true);
        email.setToAddresses(toaddres);
-       email.setUseSignature(useSignature);
        msgList.add(email);
        
        Messaging.SendEmailResult [] r = Messaging.sendEmail(new Messaging.SingleEmailMessage[] {email}); 
@@ -92,7 +90,6 @@ public with sharing class PreviewChangeOrderController {
     @AuraEnabled
     public static String sendProposal(String htmlBody, String recordId, String templateId, List<String> to, List<String> cc,string Emailsubject){
        Blob filebody;
-       Boolean useSignature = false;
        try{
             string fileid = '';
             String body = '';
@@ -154,7 +151,6 @@ public with sharing class PreviewChangeOrderController {
             email.setSaveAsActivity(false);
             email.setWhatId(recordId);
             email.setToAddresses(new List<String>{'noreplay@buildertek.com'});
-            email.setUseSignature(useSignature);
             msgList.add(email);
             Messaging.SendEmailResult[] r = Messaging.sendEmail(new Messaging.SingleEmailMessage[]{email});
             Database.rollback(sp);
@@ -195,7 +191,6 @@ public with sharing class PreviewChangeOrderController {
             mail.setSubject(subject);
             mail.setHTMLBody(templateBody1);
             mail.setSaveAsActivity(false);
-            mail.setUseSignature(useSignature);
             List<Messaging.Emailfileattachment> fileAttachments = new List<Messaging.Emailfileattachment>();
             Messaging.Emailfileattachment efa = new Messaging.Emailfileattachment();
 
@@ -308,7 +303,6 @@ public with sharing class PreviewChangeOrderController {
         try{
             String body = '';
             string templateBody1 = '';
-            Boolean useSignature = false;
 
            buildertek__Change_Order__c changeRec = [select id, Name , buildertek__Auto_Number__c , buildertek__Project__r.Name , buildertek__Project__r.buildertek__Auto_Number__c from buildertek__Change_Order__c where Id =: recordId Limit 1];
 
@@ -368,7 +362,6 @@ public with sharing class PreviewChangeOrderController {
              email.setSaveAsActivity(false);
              email.setWhatId(recordId);
              email.setToAddresses(new List<String>{'noreplay@buildertek.com'});
-             email.setUseSignature(useSignature);
              msgList.add(email);
  
              Messaging.SendEmailResult[] r = Messaging.sendEmail(new Messaging.SingleEmailMessage[]{email});
@@ -418,7 +411,6 @@ public with sharing class PreviewChangeOrderController {
             subject = subject +'[ref:'+recordId+']'; 
             mail.setSubject(subject);
             mail.setHTMLBody(templateBody1);
-            mail.setUseSignature(useSignature);
             List<Messaging.Emailfileattachment> fileAttachments = new List<Messaging.Emailfileattachment>();
             Messaging.Emailfileattachment efa = new Messaging.Emailfileattachment();
             efa.setFileName(changeRec.buildertek__Project__r.Name +'-' + changeRec.buildertek__Project__r.buildertek__Auto_Number__c +'-' + changeRec.buildertek__Auto_Number__c+'.pdf');

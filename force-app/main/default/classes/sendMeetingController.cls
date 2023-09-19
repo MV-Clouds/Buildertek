@@ -4,8 +4,6 @@ public class sendMeetingController {
         List<contact> conlist = [select id,name from contact limit 1];
         InnerClass inn = new InnerClass();
         string htmlbody = '';
-        Boolean useSignature = false;
-
         EmailTemplate et = [SELECT Id,Subject, Body FROM EmailTemplate WHERE name ='Send Meeting Email'];
         buildertek__Meeting__c met = [select id,buildertek__Subject__c from buildertek__Meeting__c where id =:recId];
         List<Messaging.SingleEmailMessage> lstMsgs = new List<Messaging.SingleEmailMessage>();
@@ -14,7 +12,6 @@ public class sendMeetingController {
         msg.setWhatId(recId);
         msg.setTargetObjectId(conlist[0].Id);
         msg.setToAddresses(new list<string>{EmaiValue});
-        msg.setUseSignature(useSignature);
         lstMsgs.add(msg);
         //Messaging.sendEmail(lstMsgs);
         Savepoint sp = Database.setSavepoint();
@@ -43,9 +40,6 @@ public class sendMeetingController {
     
     @AuraEnabled
     public static void sendMail(List<buildertek__Attendee__c> atendeeList,List<contact> ccContactList,string EmaiValue,string ccValue,string SubjectValue,string bodyvalue){
-
-        Boolean useSignature = false;
-
         EmailTemplate et = [SELECT Id,Subject, Body FROM EmailTemplate WHERE name ='Send Meeting Email'];
         /*List<Messaging.SingleEmailMessage> lstMsgs = new List<Messaging.SingleEmailMessage>();
         Messaging.SingleEmailMessage msg = new Messaging.SingleEmailMessage();
@@ -82,8 +76,6 @@ public class sendMeetingController {
         //emailToSend.setPlainTextBody(email.getPlainTextBody());
         emailToSend.setHTMLBody(bodyvalue);
         emailToSend.setSubject(SubjectValue);
-        emailToSend.setUseSignature(useSignature);
-
         lstMsgsToSend.add(emailToSend);
          Messaging.sendEmail(lstMsgsToSend);
     }

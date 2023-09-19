@@ -36,7 +36,6 @@ public class ViewInvoiceForInvoiceAPController {
         string templateBody1 = '';
         string templateBody2 = '';
         Contact con;
-        Boolean useSignature = false;
 
         if (Schema.sObjectType.Contact.fields.Id.isAccessible() && Schema.sObjectType.Contact.fields.Name.isAccessible() && Schema.sObjectType.Contact.fields.email.isAccessible()){
             con = [select id, Email
@@ -63,7 +62,6 @@ public class ViewInvoiceForInvoiceAPController {
         email.setTargetObjectId(con.Id);
         email.setSaveAsActivity(true);
         email.setToAddresses(toaddres);
-        email.setUseSignature(useSignature);
         msgList.add(email);
 
         Messaging.SendEmailResult[] r = Messaging.sendEmail(new Messaging.SingleEmailMessage[]{email});
@@ -104,7 +102,6 @@ public class ViewInvoiceForInvoiceAPController {
             
             String subject = 'Invoice';
             String body;
-            Boolean useSignature = false;
             List<Messaging.SingleEmailMessage> mails = new List<Messaging.SingleEmailMessage>();
             List<String> sendTo = new List<String>();
             List<String> ccTo = new List<String>();
@@ -144,7 +141,6 @@ public class ViewInvoiceForInvoiceAPController {
                 efa.setBody(setAttachmentBody(recordId, templateId));
                 fileAttachments.add(efa);
                 mail.setFileAttachments(fileAttachments);
-                mail.setUseSignature(useSignature);
                 mails.add(mail);
             }
             Messaging.SendEmailResult[] results = Messaging.sendEmail(mails);
