@@ -532,9 +532,9 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           rowPhaseElement.innerHTML.indexOf("slds-icon-custom-custom62") == -1
         ) {
           if (rowPhaseElement.children.length) {
-            if (rowPhaseElement.children[2].children.length) {
-              rowPhaseElement.children[2].children[0].innerHTML =
-                iconElement + rowPhaseElement.children[2].children[0].innerHTML;
+            if (rowPhaseElement.children[3].children.length) {
+              rowPhaseElement.children[3].children[0].innerHTML =
+                iconElement + rowPhaseElement.children[3].children[0].innerHTML;
             }
           }
         }
@@ -550,9 +550,9 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           rowPhaseElement.innerHTML.indexOf("slds-icon-custom-custom70") == -1
         ) {
           if (rowPhaseElement.children.length) {
-            if (rowPhaseElement.children[2].children.length) {
-              rowPhaseElement.children[2].children[0].innerHTML =
-                iconElement + rowPhaseElement.children[2].children[0].innerHTML;
+            if (rowPhaseElement.children[3].children.length) {
+              rowPhaseElement.children[3].children[0].innerHTML =
+                iconElement + rowPhaseElement.children[3].children[0].innerHTML;
             }
           }
         }
@@ -642,6 +642,29 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
         {
           type: "wbs",
           draggable: false,
+        },
+        {
+          type: "widget",
+          text: "Done",
+          draggable: false,
+          align   : 'center',
+          widgets: [
+            {
+              type: 'check',
+              name  : 'markAsDone',
+            },
+          ],
+          renderer: (record) => {
+            if (record.record._data.type == "Project") {
+              return {class: 'd-none'};
+            }
+            else if (record.record._data.type == "Phase") {
+              return {class: 'd-none'};
+            }
+            else if (record.record._data.name == "Milestone Complete") {
+              return {class: 'd-none'};
+            }
+          },
         },
         {
           type: "percentdone",

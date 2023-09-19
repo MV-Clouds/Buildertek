@@ -113,6 +113,7 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
             }
             rowChilObj["expanded"] = true
             rowChilObj["order"] = taskListForPhase[i].buildertek__Order__c
+            rowChilObj["markAsDone"] = taskListForPhase[i].buildertek__Completed__c;
             var dependencyRow = {};
                 if(taskListForPhase[i].buildertek__Dependency__c){
                     dependencyRow["id" ]  = taskListForPhase[i].Id+'_'+taskListForPhase[i].buildertek__Dependency__c
@@ -212,7 +213,7 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
             taskPhaseRow["children"] = []
             // taskPhaseRow["constraintType"] = 'startnoearlierthan'
             var rowChilObj = {};
-            rowChilObj["type"] = 'Task'
+            rowChilObj["type"] = 'Task';
             rowChilObj["customtype"] = taskListForPhase[i].buildertek__Type__c
                 if(taskListForPhase[i].buildertek__Type__c == 'Milestone'){
                 rowChilObj["cls"] = 'milestoneTypeColor'
@@ -275,6 +276,7 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
 
             rowChilObj["expanded"] = true
             rowChilObj["order"] = taskListForPhase[i].buildertek__Order__c
+            rowChilObj["markAsDone"] = taskListForPhase[i].buildertek__Completed__c;
 
             var dependencyRow = {};
                 if(taskListForPhase[i].buildertek__Dependency__c){
@@ -403,6 +405,7 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
 
             rowChilObj["expanded"] = true
             rowChilObj["order"] = taskListForPhase[i].buildertek__Order__c
+            rowChilObj["markAsDone"] = taskListForPhase[i].buildertek__Completed__c;
             // if(taskListForPhase[i].buildertek__ConstraintType__c == 'None' || taskListForPhase[i].buildertek__ConstraintType__c == '--None--' || taskListForPhase[i].buildertek__ConstraintType__c == null || taskListForPhase[i].buildertek__ConstraintType__c == undefined){
                 rowChilObj["constraintDate"] =  scheduleData.buildertek__Start__c;
                 rowChilObj["constraintType"] =  "startnoearlierthan";
@@ -498,6 +501,7 @@ function convertJSONtoApexData(data, taskData, dependenciesData, resourceData) {
     var rowData = [];
     const phasedatamap = new Map();
     const contractordatamap = new Map();
+    const markAsDonemap = new Map();
 
     console.log('data !-->', {data})
     if (data) {
@@ -507,6 +511,9 @@ function convertJSONtoApexData(data, taskData, dependenciesData, resourceData) {
             }
             if(element._data.hasOwnProperty('contractorId')){
                 contractordatamap.set(element.id, element._data.contractorId);
+            }
+            if(element._data.hasOwnProperty('markAsDone')){
+                markAsDonemap.set(element.id, element._data.markAsDone);
             }
         });
         if (data.length > 0) {
@@ -616,13 +623,16 @@ function convertJSONtoApexData(data, taskData, dependenciesData, resourceData) {
                     console.log('updating phase data');
                     updateData['buildertek__Phase__c'] = phasedatamap.get(updateData.Id);
                 }
-                const keys = phasedatamap.keys();
 
                 if(contractordatamap.has(updateData.Id)){
                     console.log('updating Contractor data');
                     updateData['buildertek__Contractor__c'] = contractordatamap.get(updateData.Id);
                 }
 
+                if(markAsDonemap.has(updateData.Id)){
+                    updateData['buildertek__Completed__c'] = markAsDonemap.get(updateData.Id);
+                }
+                
                 console.log('DemoGenretedId updateData:- ',{updateData});
 
                 updateDataClone = Object.assign({}, updateData);
