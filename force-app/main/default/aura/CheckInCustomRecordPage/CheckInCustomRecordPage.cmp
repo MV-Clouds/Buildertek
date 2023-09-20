@@ -18,6 +18,9 @@
 
     <aura:attribute name="Spinner" type="boolean" default="false" />
 
+    <aura:attribute name="PreviewImageSrc" type="String" />
+    <aura:attribute name="PreviewImageTitle" type="String" />
+
     <aura:if isTrue="{!v.Spinner}">
         <div aura:id="spinnerId" class="slds-spinner_container">
             <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
@@ -118,7 +121,7 @@
                                 <div class="main-file-cmp">
                                     <aura:iteration items="{!ci.ContentDocumentLinks}" var="cd" indexVar="indexNum">
                                         <div class="slds-m-horizontal_x-small">
-                                            <lightning:carouselImage description="{!cd.ContentDocument.Title}" src="{!orgBaseURL + '/sfc/servlet.shepherd/document/download/' + cd.ContentDocumentId}" onclick="{!c.onImageClick}" id="{!cd.ContentDocumentId+'-'+index}"/>
+                                            <lightning:carouselImage description="{!cd.ContentDocument.Title}" src="{!orgBaseURL + '/sfc/servlet.shepherd/document/download/' + cd.ContentDocumentId}" onclick="{!c.openCustomPreview}" id="{!cd.ContentDocumentId+'-'+index}"/>
                                         </div>
                                     </aura:iteration>
                                 </div>
@@ -161,7 +164,7 @@
                                     <div class="main-file-cmp">
                                         <aura:iteration items="{!ci.ContentDocumentLinks}" var="cd" indexVar="indexNum">
                                             <div class="slds-m-horizontal_x-small">
-                                                <lightning:carouselImage description="{!cd.ContentDocument.Title}" src="{!orgBaseURL + '/sfc/servlet.shepherd/document/download/' + cd.ContentDocumentId}" onclick="{!c.onImageClick}" id="{!cd.ContentDocumentId+'-'+index}"/>
+                                                <lightning:carouselImage description="{!cd.ContentDocument.Title}" src="{!orgBaseURL + '/sfc/servlet.shepherd/document/download/' + cd.ContentDocumentId}" onclick="{!c.openCustomPreview}" id="{!cd.ContentDocumentId+'-'+index}"/>
                                             </div>
                                         </aura:iteration>
                                     </div>
@@ -195,5 +198,26 @@
             </div>
         </div>
     </div>
+
+    <!-- ============= New Image Preview ============= -->
+    <div class="image_preview" aura:id="img_preview" onclick="{!c.closeImagePreview}">
+        <div class="image_control_bar" style="background: #0000008c;" onclick="{!c.stopEventPropogation}">
+            <div class="image_title">
+                <lightning:icon iconName="doctype:image" alternativeText="Image file" title="Image" size="medium" />
+                <h2>{!v.PreviewImageTitle}</h2>
+            </div>
+            <div class="Download_image" onclick="{!c.downloadImage}">
+                <lightning:icon iconName="utility:download" alternativeText="download!" title="download" size="x-small"/>
+                <h2>Download</h2>
+            </div>
+            <div class="close_img" onclick="{!c.closeImagePreview}">
+                <lightning:icon iconName="utility:close" alternativeText="close!" title="close" size="small"/>
+            </div>
+        </div>    
+    <div class="img_preview_container" >
+            <img class="image_content" src="{!v.PreviewImageSrc}" onclick="{!c.stopEventPropogation}"/>
+        </div>
+    </div>
+    <!-- ============= New Image Preview END ============= -->
 
 </aura:component>
