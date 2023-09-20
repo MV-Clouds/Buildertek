@@ -256,6 +256,8 @@
                                       class="sldsButtonGroup" disabled="{!v.statusDisable}" />
                 </aura:set>
             </aura:if> 
+
+            <lightning:button iconPosition="left" label="Cancel" onclick="{!c.closeCOModal}" class="sldsButtonGroup"  />
             
         </div>
     </div>
