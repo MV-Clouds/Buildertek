@@ -691,6 +691,7 @@ Messaging.sendEmail(new Messaging.SingleEmailMessage[] { email });  */
             if (corec != null){
                 corec.buildertek__Status__c = 'Customer Accepted';
                 corec.buildertek__Customer_Accepted_Date__c = nowDT;
+                corec.buildertek__Date_Approved__c = nowDT;
                 update corec;
             }
         }
