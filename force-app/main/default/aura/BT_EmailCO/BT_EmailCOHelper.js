@@ -232,7 +232,7 @@
                         });
                         toastEvent.fire(); 
                     }
-                    component.get("v.onSuccess")(); 
+                    // component.get("v.onSuccess")(); // Getting Error popup in Team-k sandbox (Open Issue on 19th Sep 2023 By Brian)
                     $A.get('e.force:refreshView').fire();
                     
                     
