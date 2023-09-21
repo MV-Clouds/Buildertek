@@ -289,7 +289,7 @@ Balfour Beatty Construction3100 McKinnon StreetDallas, Texas 75201
                                 ContinuationSheet, AIA Document G703, is attached</div>
                             <table width="100%" height="100%">
                                 <tr>
-                                    <td width="100%" align="left">
+                                    <td width="80%" align="left">
                                         <div class="a" style="font-size:10.5px">
                                             1. ORIGINAL CONTRACT SUM
                                         </div>
@@ -303,7 +303,7 @@ Balfour Beatty Construction3100 McKinnon StreetDallas, Texas 75201
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td width="100%" align="left">
+                                    <td width="80%" align="left">
                                         <div class="a" style="font-size:10.5px">
                                             2. Net change by Change Orders
                                         </div>
@@ -317,7 +317,7 @@ Balfour Beatty Construction3100 McKinnon StreetDallas, Texas 75201
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td width="100%" align="left">
+                                    <td width="80%" align="left">
                                         <div class="a" style="font-size:10.5px">
                                             3. CONTRACT SUM TO DATE (Line 1 ± 2)
                                         </div>
@@ -331,7 +331,7 @@ Balfour Beatty Construction3100 McKinnon StreetDallas, Texas 75201
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td width="100%" align="left">
+                                    <td width="80%" align="left">
                                         <div class="a" style="font-size:10.5px">
                                             4. TOTAL COMPLETED AND STORED TO DATE
                                             <br/>
@@ -348,7 +348,7 @@ Balfour Beatty Construction3100 McKinnon StreetDallas, Texas 75201
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td width="100%" align="left">
+                                    <td width="80%" align="left">
                                         <div class="a" style="font-size:10.5px">
                                             5. HOLDBACK:
                                             <br/>
@@ -391,7 +391,7 @@ Balfour Beatty Construction3100 McKinnon StreetDallas, Texas 75201
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td width="100%" align="left">
+                                    <td width="80%" align="left">
                                         <div class="a" style="font-size:10.5px">
                                             6. TOTAL EARNED LESS RETAINAGE
                                             <br/>
@@ -407,7 +407,7 @@ Balfour Beatty Construction3100 McKinnon StreetDallas, Texas 75201
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td width="100%" align="left">
+                                    <td width="80%" align="left">
                                         <div class="a" style="font-size:10.5px">
                                             7. LESS PREVIOUS CERTIFICATES FOR
                                             <br/>
@@ -423,7 +423,7 @@ Balfour Beatty Construction3100 McKinnon StreetDallas, Texas 75201
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td width="100%" align="left">
+                                    <td width="80%" align="left">
                                         <div class="a" style="font-size:10.5px">
                                             8. CURRENT PAYMENT DUE
                                         </div>
@@ -437,22 +437,20 @@ Balfour Beatty Construction3100 McKinnon StreetDallas, Texas 75201
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td width="100%" align="left">
+                                    <td width="80%" align="left">
                                         <div class="a" style="font-size:10.5px">
-                                            9. BALANCE TO FINISH, INCLUDING RETAINAGE
-                                            <br/>
-                                            <div style="margin-left:30px">(Line 3 less Line 6) </div>
+                                            9. BALANCE TO FINISH, INCLUDING RETAINAGE<br/>
+                                            (Line 3 less Line 6)
                                         </div>
                                     </td>
                                     <td width="100%" align="right">
                                         <div class="a" style="font-size:9.5px">
-                                            <u style="margin-left:100px">
-                                                <apex:outputField value="{!paymentApp.Balance_To_Finish_Including_Retainage__c}"
-                                                />
+                                            <u>
+                                                <apex:outputField value="{!paymentApp.Balance_To_Finish_Including_Retainage__c}"/>
                                             </u>
                                         </div>
                                     </td>
-                                </tr>
+                                </tr> 
                             </table>
 
                             <table width="90%" height="100%" style="border: 1px solid black;border-collapse: collapse;margin-top:20px;margin-bottom:30px;">
@@ -541,7 +539,9 @@ Balfour Beatty Construction3100 McKinnon StreetDallas, Texas 75201
                                             <br/>
                                             <br/>
                                             <div style="font-size:10.5px">CONTRACTOR:
-                                                <b>View, Inc.</b>
+                                                <b>
+                                                    <apex:outputField value="{!paymentApp.buildertek__Vendor__r.Name}"/>
+                                                </b>
                                             </div>
                                             <br/>
                                             <br/>
