@@ -29,3 +29,10 @@
     min-width :53rem !important;
     padding-top :130px
 }
+.THIS .rkclass .slds-form-element__control{
+    padding-left: 0px !important;
+    clear: both !important;
+}
+.THIS .rkclass .buildertekBT_LightningLookup.mainDiv {
+    padding-top: 1% !important;
+}
