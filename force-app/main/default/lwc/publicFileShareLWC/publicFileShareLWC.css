@@ -1,0 +1,78 @@
+table {
+    width: 100%;
+    min-width: 35rem;
+    border-collapse: collapse;
+    background-color: #fff;
+    box-shadow: rgba(185, 188, 191, 0.2) 0px 0px 24px 5px;
+    border-radius: 5px;
+    font-family: arial;
+    overflow: auto;
+}
+
+table thead th {
+    padding: 10px 16px;
+    text-align: left;
+    background-color: #009ddc;
+    color: #fff;
+    border-right: 1px solid #eee;
+}
+
+table tbody tr td {
+    padding: 10px 16px;
+    border-bottom: 1px solid #eee;
+}
+
+table tbody tr .action {
+    display: flex;
+}
+
+table tbody tr .action button {
+    margin-right: 10px;
+    cursor: pointer;
+    background-color: #f3f3f5;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 2px;
+    transition: all 0.24s linear;
+
+    &:hover{
+        background: #bbe4fe
+    }
+}
+.copy_btn{
+    position: relative;
+    display: flex;
+    width: fit-content;
+    justify-content: center;
+    cursor: pointer;
+}
+.copy_btn:hover > svg{
+    fill: #009ddc;
+    transition: all 0.24s linear;
+}
+
+.copied_info_popup{
+    display: none;
+    position: absolute;
+    left: 115%;
+    transform: translate(0%, 0%);
+    background: #359ddc;
+    border-radius: 24px;
+    color: white;
+    padding: 4px 10px;
+    font-size: 12px;
+    text-align: center;
+}
+.showPopup{
+    animation: slideLeft .24s linear 0s 1;
+    animation-fill-mode: forwards;
+}
+
+@keyframes slideLeft{
+    0%{opacity: 0;}
+    100%{opacity: 1;}
+}
+
+.delete_icon{
+    --sds-c-icon-color-foreground-default: #ff4c4c;
+}

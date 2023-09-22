@@ -1,0 +1,103 @@
+<template>
+    <div class="MainOutherDiv">
+    <!-- ============== toast message =========== -->
+    <c-toast-component></c-toast-component>
+    <!-- ============== toast message =========== -->
+    
+    
+    <!-- ============== Spinner =========== -->
+    <div class="spinner">
+        <template if:true={spinnerDataTable}>
+            <lightning-spinner alternative-text="Loading" variant="brand" size="large"></lightning-spinner>
+        </template> 
+    </div>
+    <!-- ============== Spinner =========== -->
+
+    <div if:true={showtable}> 
+        <center><lightning-button label="Add New Files" onclick={handleAddFiles}></lightning-button></center>
+    <template if:true={RelatedJunObj}>
+        <lightning-card title="Files Table">
+        <table class="mainTable">
+            <thead>
+            <tr class="table_head">
+                <th class="checkboxes" style="border-right: transparent;"><lightning-input type="checkbox" variant="label-hidden" data-name="select_all_checkbox" onchange={Handle_CheckBoxes}></lightning-input></th>
+                <th>File Name</th>
+                <th>Edit Name</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <template for:each={RelatedJunObj} for:item="record">
+                <tr key={record.Id} class="table_body">
+                    <td class="checkboxes">
+                        <lightning-input type="checkbox" variant="label-hidden" data-key={record.Id} data-name="select_file_checkbox" onchange={Handle_CheckBoxes}></lightning-input>
+                    </td>
+                    <td data-key={record.Id} data-filename={record.Id}>
+                            <input class="file_Name_input" type="text" value={record.buildertek__Public_File__r.buildertek__File_Name__c} onchange={handle_Changes} ondblclick={Handle_EditFileName} onblur={Handle_EditFileName} data-key={record.Id} data-inputfiled={record.Id} disabled />
+                    </td>
+                    <td style="width: 0px">
+                        <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" title="Edit" onclick={Handle_EditFileName} data-key={record.Id} data-nameedit={record.Id}></lightning-icon>
+                        <lightning-icon icon-name="utility:check" class="edit_done_btn" alternative-text="Done" size="x-small" title="Done" data-key={record.Id} data-namedone={record.Id}></lightning-icon>
+                    </td>
+                    <td style="width: 0px" class="delete_icon">
+                            <lightning-icon icon-name="utility:delete" alternative-text="Delete" size="x-small" title="Delete" onclick={Handle_deleteFile} data-key={record.Id} data-deleteicon={record.Id}></lightning-icon>
+                    </td>
+                </tr>
+            </template>
+        </tbody>
+        </table>
+        </lightning-card>
+
+    </template>
+    <div class="Table_Button_footer">
+        <lightning-button variant="natural" label="Back" title="Back" onclick={handle_BackButton} class="slds-m-left_x-small"></lightning-button>
+        <lightning-button variant="brand" label="Save Changes" data-name="SaveChanges" title="Save Changes" onclick={handle_SaveChanges} class="slds-m-left_x-small" disabled></lightning-button>
+        <lightning-button variant="natural" label="Delete Selected" title="Delete Selected" onclick={Handle_deleteFile} class="slds-m-left_x-small" data-deleteicon="delete_selected" data-key="delete_selected"></lightning-button>
+    </div>
+</div>
+
+    <div if:true={showfiles}>
+        <div if:true={showfiletable}>
+            <div class="container">
+                <div class="section">
+                    <h1>All Content Documents</h1>
+                    <br>
+                    <template for:each={contentDocuments} for:item="doc">
+                        <div key={doc.ContentDocument.Id} class="document1">
+                            <input type="checkbox" 
+                            value={doc.ContentDocument.Id} 
+                            onchange={handleCheckboxChange} />
+                            <div class="document2"><p>{doc.ContentDocument.Title}</p> <lightning-button 
+                                variant="base"
+                                label="Preview" 
+                                data-id={doc.ContentDocument.Id}
+                                onclick={previewHandler} 
+                                ></lightning-button></div>
+                            </div>
+                        </template>
+                    </div>
+                    <div class="section">
+                        <h1>Selected Documents</h1>
+                        <br>
+                        <template for:each={selectedDocuments} for:item="doc">
+                            <div key={doc.ContentDocument.Id} class="document">
+                                <p>{doc.ContentDocument.Title}</p>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>        
+            <div if:false={showfilemessage}>
+                <center>
+                    <lightning-button label="Back" onclick={handleBack}></lightning-button>
+                    <lightning-button label="Confirm" onclick={handleConfirm} class="slds-m-horizontal_small" variant="brand"></lightning-button>
+            </center>
+            </div>
+            <div if:true={showfilemessage}>
+                <center><h1>There are no files for current record to add or all the files for current record are already added to the selected folder!</h1></center>
+                <lightning-button label="Back" onclick={handleBack}></lightning-button>
+            </div>
+        </div>
+    </div>
+</template>

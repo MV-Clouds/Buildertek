@@ -1,0 +1,40 @@
+<template>
+    <template if:true={showToastBar_success}>
+        <div class="slds-notify_container">
+            <div class="slds-notify slds-notify_toast success_outer toast_shadow" role="status">
+                <span class="slds-assistive-text">{type}</span>
+                <div style=" width:1px; height:40px; border-radius: 10px; border:2px solid green; border-radius:7px;"></div>
+                <span class=" slds-no-flex success_inner" title={message}>
+                    <lightning-icon icon-name="utility:success" alternative-text="icon" variant="inverse" size="small"></lightning-icon>
+                </span>
+                <div class="slds-notify__content tost_mesage">
+                    <h1 class="tost_h1">Yay! Everything worked!</h1>
+                    <h2 class="tost_h2">{message}</h2>
+                </div>
+                <div class="slds-notify__close close_btn" >
+                    <img class="greyclosebtn" src={cross_gery_img} onclick={closeModel}>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template if:true={showToastBar_error}>
+        <div class="slds-notify_container">
+            <div class="slds-notify slds-notify_toast error_outer toast_shadow1" role="status">
+                <span class="slds-assistive-text">{type}</span>
+                <div style=" width:1px; height:40px; border-radius: 10px; border:2px solid red; border-radius:7px;"></div>
+                <span class="slds-no-flex error_inner" title={message}>
+                    <lightning-icon icon-name="utility:error" alternative-text="icon" styleclass="slds-icon slds-icon_small" variant="inverse" size="small"></lightning-icon>
+                </span>
+                <div class="slds-notify__content tost_mesage">
+                    <h1 class="tost_h1">Uh oh, something went wrong</h1>
+                    <h2 class="tost_h2">{message}</h2>
+                </div>
+                <div class="slds-notify__close close_btn">
+                    <img class="greyclosebtn" src={cross_gery_img} onclick={closeModel}>
+                </div>
+            </div>
+        </div>
+    </template>
+
+</template>
