@@ -38,25 +38,16 @@
     },
 
 
-    //  New Image Preview --------------
-    openCustomPreview: function(component, event, helper){
-        component.set("v.PreviewImgSpinner", true);
-        component.set("v.Is_ImageHavePreview", true);
+    //  -------------------- New Image Preview --------------
+    handle_img_click: function(component, event, helper){
 
         var imageSrc = event.getSource().get("v.src");
-        component.set("v.PreviewImageSrc", imageSrc);
-
         var imageTitle = event.getSource().get("v.description");
-        component.set("v.PreviewImageTitle", imageTitle);
-
         var imageId = event.getSource().get("v.id")
-        component.set("v.PreviewImageId", imageId);
-        console.log('imageId : ', imageId);
 
-        helper.chaneImageHelper(component, event, helper);
+        helper.changeImageHelper(component, event, helper, imageId, false);  // To set Visibilti of Next - Previuos button for First & last img
+        helper.openCustomPreviewHelper(component, event, helper, imageSrc, imageTitle, imageId);
 
-       const img_preview = component.find("img_preview").getElement();
-       img_preview.style = 'display : flex; background: rgba(0, 0, 0, 0.8);'
     },
 
     Handle_imageLoaded: function(component, event, helper){
@@ -72,7 +63,8 @@
     },
 
     ChangeImg: function(component, event, helper){
-        helper.chaneImageHelper(component, event, helper);
+        component.set("v.Is_ImageHavePreview", false);
+        helper.changeImageHelper(component, event, helper, null, true);
     },
 
     NextImg: function(component, event, helper){
@@ -80,10 +72,8 @@
     },
 
     closeImagePreview : function(component, event, helper){
-        const img_preview = component.find("img_preview").getElement();
         component.set("v.Is_ImageHavePreview", false);
-       img_preview.style = '';
-
+        component.set('v.Show_ImagePreview', false);
     },
 
     downloadImage: function(component, event, helper){

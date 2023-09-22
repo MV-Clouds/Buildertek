@@ -616,7 +616,8 @@
 
 /* New custome Image Preview Css  */
 .THIS.image_preview{
-    display: none;
+    /* display: none; */
+    display : flex;
     position: fixed;
     top: 0%;
     left: 0%;
@@ -633,6 +634,7 @@
 }
 .THIS .image_control_bar{
     position: absolute;
+    z-index: 1;
     top: 0%;
     left: 0%;
     width: 100%;
@@ -684,6 +686,7 @@
 }
 
 .THIS .img_preview_container{
+    position: relative;
     max-width: 60%;
     width: 60%;
     height: 100%;

@@ -18,7 +18,7 @@
 
     <aura:attribute name="Spinner" type="boolean" default="false" />
 
-    
+    <!-- ============= New Image Preview ============= -->
     <aura:attribute name="Show_ImagePreview" type="boolean"/>
     <aura:attribute name="PreviewImageSrc" type="String" />
     <aura:attribute name="PreviewImageId" type="String" />
@@ -27,8 +27,8 @@
     <aura:attribute name="PreviewImgSpinner" type="boolean" default="false"/>
     <aura:attribute name="NotFirstImg" type="boolean" default="true"/>
     <aura:attribute name="NotLastImg" type="boolean" default="true"/>
-
-
+    <!-- ============= New Image Preview END ============= -->
+ 
     <aura:if isTrue="{!v.Spinner}">
         <div aura:id="spinnerId" class="slds-spinner_container">
             <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
@@ -129,7 +129,7 @@
                                 <div class="main-file-cmp">
                                     <aura:iteration items="{!ci.ContentDocumentLinks}" var="cd" indexVar="indexNum">
                                         <div class="slds-m-horizontal_x-small" id="{!cd.ContentDocumentId}" data-cdid="{!cd.Id}" data-cid="{!ci.Id}" data-cdlindex="{!indexNum}">
-                                            <lightning:carouselImage description="{!cd.ContentDocument.Title}" dataid="{!cd.Id}" src="{!orgBaseURL + '/sfc/servlet.shepherd/document/download/' + cd.ContentDocumentId}" onclick="{!c.openCustomPreview}" id="{!cd.ContentDocumentId}"/>
+                                            <lightning:carouselImage description="{!cd.ContentDocument.Title}" src="{!orgBaseURL + '/sfc/servlet.shepherd/document/download/' + cd.ContentDocumentId}" onclick="{!c.handle_img_click}" id="{!cd.ContentDocumentId}"/>
                                         </div>
                                     </aura:iteration>
                                 </div>
@@ -172,7 +172,7 @@
                                     <div class="main-file-cmp">
                                         <aura:iteration items="{!ci.ContentDocumentLinks}" var="cd" indexVar="indexNum">
                                             <div class="slds-m-horizontal_x-small" id="{!cd.ContentDocumentId}" data-cdid="{!cd.Id}" data-cid="{!ci.Id}" data-cdlindex="{!indexNum}">
-                                                <lightning:carouselImage description="{!cd.ContentDocument.Title}" dataid="{!cd.Id}" src="{!orgBaseURL + '/sfc/servlet.shepherd/document/download/' + cd.ContentDocumentId}" onclick="{!c.openCustomPreview}" id="{!cd.ContentDocumentId}"/>
+                                                <lightning:carouselImage description="{!cd.ContentDocument.Title}" src="{!orgBaseURL + '/sfc/servlet.shepherd/document/download/' + cd.ContentDocumentId}" onclick="{!c.handle_img_click}" id="{!cd.ContentDocumentId}"/>
                                             </div>
                                         </aura:iteration>
                                     </div>
@@ -208,8 +208,8 @@
     </div>
 
     <!-- ============= New Image Preview ============= -->
-    <aura:if ifTrue="{!v.Show_ImagePreview}">
-        <div class="image_preview" aura:id="img_preview">
+    <aura:if isTrue="{!v.Show_ImagePreview}">
+        <div class="image_preview" aura:id="img_preview" style='background: rgba(0, 0, 0, 0.8);'>
             <div class="image_control_bar" style="background: #0000008c;" onclick="{!c.stopEventPropogation}">
                 <div class="image_title">
                     <lightning:icon iconName="doctype:image" alternativeText="Image file" title="Image" size="medium" />
@@ -231,6 +231,16 @@
                         <h2 style="color: white; font-size: 1rem;"> Sorry, Image Preview Does Not Supported By Salesforce </h2>
                     </aura:set>
                 </aura:if>
+
+                <aura:if isTrue="{!v.PreviewImgSpinner}">
+                    <div aura:id="spinnerId" class="slds-spinner_container" style="position: absolute; background : #04040466">
+                        <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                            <span class="slds-assistive-text">Loading</span>
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                        </div>
+                    </div>      
+                </aura:if>
             </div>
     
             <div class="Next_Previous_btn">
@@ -248,15 +258,6 @@
             
     
         </div>
-        <aura:if isTrue="{!v.PreviewImgSpinner}">
-        <div aura:id="spinnerId" class="slds-spinner_container" style="position: fixed; background : transparent">
-            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
-                <span class="slds-assistive-text">Loading</span>
-                <div class="slds-spinner__dot-a"></div>
-                <div class="slds-spinner__dot-b"></div>
-            </div>
-        </div>
-        </aura:if>
     </aura:if>
     <!-- ============= New Image Preview END ============= -->
 
