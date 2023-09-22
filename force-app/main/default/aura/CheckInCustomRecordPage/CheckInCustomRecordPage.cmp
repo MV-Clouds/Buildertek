@@ -228,7 +228,7 @@
                 <aura:if isTrue="{!v.Is_ImageHavePreview}">
                     <img class="image_content" src="{!v.PreviewImageSrc}" onload="{!c.Handle_imageLoaded}" onerror="{!c.Handle_imageNotLoaded}" onclick="{!c.stopEventPropogation}"/>
                     <aura:set attribute="else">
-                        <h2 style="color: white; font-size: 1rem;"> Sorry, Image Preview Does Not Supported By Salesforce </h2>
+                        <h2 style="color: white; font-size: 1rem;"> Sorry, Image Preview Does Not Supported By Your Browser </h2>
                     </aura:set>
                 </aura:if>
 

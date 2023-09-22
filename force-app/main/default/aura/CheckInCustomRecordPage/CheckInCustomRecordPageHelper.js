@@ -120,42 +120,50 @@
                 imageId = imageId;
             }
 
-            const div = document.getElementById(imageId);
+            const div = document.getElementById(imageId);       // This Div use to check-in's Id, contentDocument Id, etc
             const checkIns = component.get('v.checkIns');
 
             checkIns.forEach(checkIn =>{
                 if(checkIn.Id == div.dataset.cid){
                     for(var j = 0; j< checkIn.ContentDocumentLinks.length; j++){
                         if(j == div.dataset.cdlindex && checkIn.ContentDocumentLinks[j].Id == div.dataset.cdid){
-                            if(j != 0){
-                                component.set("v.NotFirstImg", true);
-                                // If Function Called From Previous Btn
+                            if(next_previus_btn_click == true){
+                                // Main Next/Previous Lofic
                                 if(operation == 'Previous_Image'){
-                                    var imageSrc = component.get("v.orgBaseURL") + '/sfc/servlet.shepherd/document/download/' + checkIn.ContentDocumentLinks[j - 1].ContentDocumentId;
+                                    console.log('Previous_Image');
+                                    var imageSrc = '/sfc/servlet.shepherd/document/download/' + checkIn.ContentDocumentLinks[j - 1].ContentDocumentId;
                                     var imageTitle = checkIn.ContentDocumentLinks[j - 1].ContentDocument.Title;
                                     var imageId = checkIn.ContentDocumentLinks[j - 1].ContentDocumentId;
                                     helper.changeImageHelper(component, event, helper, imageId, false);  // To set Visibilti of Next - Previuos button for First & last img
-                                    helper.openCustomPreviewHelper(component, event, helper, imageSrc, imageTitle, imageId);
+                                    helper.openCustomPreviewHelper(component, event, helper, imageSrc, imageTitle, imageId); // reopen preview div to call 'onload' and 'onerror' method for image
                                 }
-                            }
-                            else{
-                                component.set("v.NotFirstImg", false);
-                            }
-                            if(j != (checkIn.ContentDocumentLinks.length - 1)){
-                                component.set("v.NotLastImg", true);
-                                // If Function Called From Next Btn
-                                if(operation == 'Next_Image'){
-                                    var imageSrc = component.get("v.orgBaseURL") + '/sfc/servlet.shepherd/document/download/' + checkIn.ContentDocumentLinks[j + 1].ContentDocumentId;
+                                else if(operation == 'Next_Image'){
+                                    console.log('Next_Image');
+                                    var imageSrc = '/sfc/servlet.shepherd/document/download/' + checkIn.ContentDocumentLinks[j + 1].ContentDocumentId;
                                     var imageTitle = checkIn.ContentDocumentLinks[j + 1].ContentDocument.Title;
                                     var imageId = checkIn.ContentDocumentLinks[j + 1].ContentDocumentId;
                                     helper.changeImageHelper(component, event, helper, imageId, false);  // To set Visibilti of Next - Previuos button for First & last img
-                                    helper.openCustomPreviewHelper(component, event, helper, imageSrc, imageTitle, imageId);
-
+                                    helper.openCustomPreviewHelper(component, event, helper, imageSrc, imageTitle, imageId);    // reopen preview div to call 'onload' and 'onerror' method for image
                                 }
                             }
-                            else{
-                                component.set("v.NotLastImg", false);
+                            else if(next_previus_btn_click == false){
+                                // To set Next/Previous Button Visibility for First & last Image
+                                if(j == 0){
+                                    console.log('First_Img');
+                                    component.set("v.NotFirstImg", false);
+                                }
+                                else if(j != 0){
+                                    component.set("v.NotFirstImg", true);
+                                }
+                                if(j == (checkIn.ContentDocumentLinks.length - 1)){
+                                    component.set("v.NotLastImg", false);
+                                    console.log('Last_Img');
+                                }
+                                else if(j != (checkIn.ContentDocumentLinks.length - 1)){
+                                    component.set("v.NotLastImg", true);
+                                }
                             }
+                            
                         }
                     }
                 }
