@@ -1,0 +1,77 @@
+.slds-notify_container{
+    position: fixed;
+    width: 100%;
+    left: 0;
+    top: 9%;
+    text-align: center;
+}
+.success_outer, .error_outer{
+    background-color: white;
+    box-shadow: 1px 2px 4px 0px #888888;
+}
+
+img{
+    width: 20px;
+    height: 20px;
+    margin-top: 6px;
+} 
+.greyclosebtn {
+    width: 20px;
+    height: 20px;
+    margin-top: 6px;
+}
+.success_inner{
+    margin: 0 12px;
+    --sds-c-icon-color-foreground: green;
+}
+
+.error_inner{
+    margin: 0 12px;
+    --sds-c-icon-color-foreground: red;
+}
+
+.tost_message h1, .tost_h1{
+    font-size: 18px !important;
+    color: black;
+}
+.tost_message h2, .tost_h2{
+    font-weight: 400;
+    font-size: 15px !important;
+    color: rgba(0, 0, 0);
+}
+.close_btn{
+    margin: 11px;
+}
+.slds-notify{
+    max-width: 600px;
+}
+.toast_shadow {
+    box-shadow: 1px 2px 4px 0px #888888;
+    border-radius: 3px;
+    background: #E5FFEE;
+}
+.toast_shadow1 {
+    box-shadow: 1px 2px 4px 0px #888888;
+    border-radius: 3px;
+    background: #FFCCCB;
+}
+
+@media (max-width:500px){
+    .slds-notify_toast{
+        min-width: var(--slds-c-toast-sizing-min-width, var(--sds-c-toast-sizing-min-width, 90%));
+    }
+    .tost_message h1, .tost_h1{
+        font-size: 16px !important;
+        color: black;
+    }
+    .tost_message h2, .tost_h2{
+        font-size: 12px !important;
+        color: rgba(0, 0, 0, 0.5); 
+    }
+    .close_btn{
+        margin: 10px;
+    }
+    .slds-button_icon-border{
+        border: none;
+    }
+}
