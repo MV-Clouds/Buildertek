@@ -40,28 +40,61 @@
 
     //  New Image Preview --------------
     openCustomPreview: function(component, event, helper){
+        component.set("v.PreviewImgSpinner", true);
+        component.set("v.Is_ImageHavePreview", true);
+
         var imageSrc = event.getSource().get("v.src");
         component.set("v.PreviewImageSrc", imageSrc);
+
         var imageTitle = event.getSource().get("v.description");
         component.set("v.PreviewImageTitle", imageTitle);
-        console.log('description >> ', event.getSource().get("v.description"));
+
+        var imageId = event.getSource().get("v.id")
+        component.set("v.PreviewImageId", imageId);
+        console.log('imageId : ', imageId);
+
+        helper.chaneImageHelper(component, event, helper);
 
        const img_preview = component.find("img_preview").getElement();
        img_preview.style = 'display : flex; background: rgba(0, 0, 0, 0.8);'
     },
 
+    Handle_imageLoaded: function(component, event, helper){
+        console.log('image loaded');
+        component.set("v.PreviewImgSpinner", false);
+    },
+    
+    Handle_imageNotLoaded: function(component, event, helper){
+        console.log('image not loaded');
+        component.set("v.Is_ImageHavePreview", false);
+        component.set("v.PreviewImgSpinner", false);
+
+    },
+
+    ChangeImg: function(component, event, helper){
+        helper.chaneImageHelper(component, event, helper);
+    },
+
+    NextImg: function(component, event, helper){
+        event.stopPropagation();
+    },
+
     closeImagePreview : function(component, event, helper){
         const img_preview = component.find("img_preview").getElement();
+        component.set("v.Is_ImageHavePreview", false);
        img_preview.style = '';
+
     },
 
     downloadImage: function(component, event, helper){
+        component.set("v.PreviewImgSpinner", true);
         var a = document.createElement('a');
         a.href = component.get("v.PreviewImageSrc");
         a.download = component.get("v.PreviewImageSrc");
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
+        component.set("v.PreviewImgSpinner", false);
     },
 
     stopEventPropogation: function(component, event, helper){

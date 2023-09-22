@@ -74,4 +74,83 @@
 		    selectedRecordId: fileId
 		});
 	},
+    displayImage: function (component, imageLink) {
+        console.log('in displayimage');
+        // Set the image source and title in the component's attributes
+        component.set("v.PreviewImageSrc", imageLink);
+        component.set("v.PreviewImageTitle", imageLink.ContentDocument.Title);
+
+        // Optionally, you can also set a loading indicator if needed
+        component.set("v.PreviewImgSpinner", true);
+
+        // Assuming you want to reset the loading indicator after a brief delay
+        // You can use setTimeout to simulate the loading process
+        window.setTimeout(function () {
+            // Remove the loading indicator after a delay
+            component.set("v.PreviewImgSpinner", false);
+        }, 1000); // Adjust the delay as needed
+    },
+
+    chaneImageHelper: function(component, event, helper){
+        try {
+            event.stopPropagation();
+            var operation;
+            if(event.currentTarget){
+                operation = event.currentTarget.dataset.name;
+            }
+            else{
+                operation = null;
+            }
+
+            var imageId = component.get("v.PreviewImageId");
+            const div = document.getElementById(imageId);
+
+            const checkIns = component.get('v.checkIns');
+
+            checkIns.forEach(checkIn =>{
+                if(checkIn.Id == div.dataset.cid){
+                    for(var j = 0; j< checkIn.ContentDocumentLinks.length; j++){
+                        if(j == div.dataset.cdlindex && checkIn.ContentDocumentLinks[j].Id == div.dataset.cdid){
+                            if(j != 0){
+                                if(operation == 'Previous_Image'){
+                                    component.set("v.NotFirstImg", true);
+
+                                    var PreviewImageSrc = component.get("v.orgBaseURL") + '/sfc/servlet.shepherd/document/download/' + checkIn.ContentDocumentLinks[j - 1].ContentDocumentId;
+                                    component.set("v.PreviewImageSrc", PreviewImageSrc);
+                                    component.set("v.PreviewImageId", checkIn.ContentDocumentLinks[j - 1].ContentDocumentId);
+                                    component.set("v.PreviewImageTitle", checkIn.ContentDocumentLinks[j - 1].ContentDocument.Title);
+                                    console.log('current Image >> ', JSON.parse(JSON.stringify(checkIn.ContentDocumentLinks[j-1].ContentDocument)));
+                                }
+                            }
+                            else{
+                                component.set("v.NotFirstImg", false);
+                            }
+                            if(j != (checkIn.ContentDocumentLinks.length - 1)){
+                                if(operation == 'Next_Image'){
+                                    component.set("v.NotLastImg", true);
+
+                                    var PreviewImageSrc = component.get("v.orgBaseURL") + '/sfc/servlet.shepherd/document/download/' + checkIn.ContentDocumentLinks[j + 1].ContentDocumentId;
+                                    component.set("v.PreviewImageSrc", PreviewImageSrc);
+                                    component.set("v.PreviewImageId", checkIn.ContentDocumentLinks[j + 1].ContentDocumentId);
+                                    component.set("v.PreviewImageTitle", checkIn.ContentDocumentLinks[j + 1].ContentDocument.Title);
+                                    console.log('current Image >> ', JSON.parse(JSON.stringify(checkIn.ContentDocumentLinks[j+1].ContentDocument)));
+
+                                }
+                            }
+                            else{
+                                component.set("v.NotLastImg", false);
+                            }
+                        }
+                    }
+                }
+            })
+                    
+            console.log('dataset.cid> ', div.dataset.cid);
+            console.log('dataset.cdid> ', div.dataset.cdid);
+            console.log('dataset.cdlindex> ', div.dataset.cdlindex);
+            
+        } catch (error) {
+            console.log('error >> ', error.stack);
+        }
+    }
 })
