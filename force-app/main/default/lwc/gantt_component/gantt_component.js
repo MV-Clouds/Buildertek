@@ -737,7 +737,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
             }
           }
         },
-        /* {
+        {
           type: "widget",
           text: "Contractor",
           draggable: false,
@@ -790,7 +790,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
             }
           },
           itemTpl : assignment => assignment.resourceName
-        }, */
+        },
         // {
         //   type: "addnew",
         // },
@@ -1028,7 +1028,9 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     gantt.on('startCellEdit', (editorContext) => {
       if ( editorContext.editorContext.column.type == 'resourceassignment' ) {
         let contractorId = editorContext.editorContext.record._data.contractorId;
-        editorContext.editorContext.editor.inputField.store.filter(record => (record.resource.type == 'Internal Resources' || record.resource.contractorId == contractorId));
+        editorContext.editorContext.editor.inputField.picker.onShow = ({source}) => {
+          source.store.filter(record => (record.resource.type == 'Internal Resources' || record.resource.contractorId == contractorId));
+        };
       }
     });
 
