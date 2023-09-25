@@ -2,11 +2,13 @@
     doInit : function(component, event, helper) {
         var action = component.get("c.cloneScheduleRecords");
 		action.setParams({
-			scheduleId: component.get("v.recordId")
+			scheduleId:'null'
 		});
 		action.setCallback(this, function(response) {
 			var state = response.getState();
-			if (state === "SUCCESS") {
+			var result = response.getReturnValue();
+
+			if (state === "SUCCESS" && result!= null) {
 
                 var navEvt = $A.get("e.force:navigateToSObject");
                 navEvt.setParams({
@@ -36,7 +38,6 @@
 				});
 				toastEvent.fire();
 
-                $A.get("e.force:closeQuickAction");
 			}
 		});
 		$A.enqueueAction(action);
