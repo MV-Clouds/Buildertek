@@ -99,57 +99,8 @@
     		if (response.getState() == "SUCCESS") {
     		    
     			component.set("v.pricebookName", response.getReturnValue());
-                var product = component.get('v.selectedLookUpRecord');
-                var compEvent = $A.get('e.c:BT_CLearLightningLookupEvent');
-                compEvent.setParams({ "recordByEvent": product });
-                compEvent.fire();
-                component.set('v.newContractLine.Name', '');
-                component.set('v.newContractLine.buildertek__Contract_Item_Group__c', null);
-                component.set('v.newContractLine.buildertek__Cost_Code__c', null);
-                component.set('v.newContractLine.buildertek__Unit_Price__c', '');
-                component.set('v.newContractLine.buildertek__Quantity__c', 1);
-
-                var pribooknames = component.get("v.pricebookName");
-                var action = component.get("c.getProductfamilyRecords");
-                // set param to method  
-                action.setParams({
-                    'ObjectName': "Product2",
-                    'parentId': component.get("v.pricebookName")
-                });
-                // set a callBack    
-                action.setCallback(this, function (response) {
-                    $A.util.removeClass(component.find("mySpinner"), "slds-show");
-                    var state = response.getState();
-                    if (state === "SUCCESS") {
-                        var storeResponse = response.getReturnValue();
-                        // if storeResponse size is equal 0 ,display No Result Found... message on screen.                }
-                        if (storeResponse.length == 0) {
-                            component.set("v.Message", 'No Result Found...');
-                        } else {
-                            component.set("v.Message", '');
-                        }
-                        // set searchResult list with return value from server.
-                        component.set("v.listofproductfamily", storeResponse);
-
-                        if (component.get("v.listofproductfamily").length > 0) {
-                            component.set("v.productfamily", component.get("v.listofproductfamily")[0].productfamilyvalues);
-                        }
-
-                    } else{
-                        var toastEvent = $A.get("e.force:showToast");
-                        toastEvent.setParams({
-                            "type": 'error',
-                            "mode": 'dismissible',
-                            "title": "Error!",
-                            "message": "Something went Wrong!"
-                        });
-                        toastEvent.fire();
-                    }
-
-                });
-                // enqueue the Action  
-                $A.enqueueAction(action);
-                
+                var action1 = component.get('c.changeEvent');
+                $A.enqueueAction(action1);                
     		}
     	});
     	$A.enqueueAction(action);
