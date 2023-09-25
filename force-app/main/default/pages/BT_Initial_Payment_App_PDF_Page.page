@@ -303,7 +303,7 @@
                             <p style="font-size:10px">Application is made for payment, as shown below, in connection with the Contract.</p>
                             <table width="100%" height="100%">
                                 <tr>
-                                    <td width="100%" align="left">
+                                    <td width="80%" align="left">
                                         <div class="a" style="font-size:10.5px">
                                             1. ORIGINAL CONTRACT SUM
                                         </div>
@@ -317,7 +317,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td width="100%" align="left">
+                                    <td width="80%" align="left">
                                         <div class="a" style="font-size:10.5px">
                                             2. Net change by Change Orders
                                         </div>
@@ -335,7 +335,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td width="100%" align="left">
+                                    <td width="80%" align="left">
                                         <div class="a" style="font-size:10.5px">
                                             3. CONTRACT SUM TO DATE (Line 1 ± 2)
                                         </div>
@@ -349,7 +349,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td width="100%" align="left">
+                                    <td width="80%" align="left">
                                         <div class="a" style="font-size:10.5px">
                                             4. TOTAL COMPLETED TO DATE
                                             <br/>
@@ -365,7 +365,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td width="100%" align="left">
+                                    <td width="80%" align="left">
                                         <div class="a" style="font-size:10.5px">
                                             5. HOLDBACK:
                                             <br/>
@@ -385,7 +385,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td width="100%" align="left">
+                                    <td width="80%" align="left">
                                         <div class="a" style="font-size:10.5px">
                                             6. TOTAL EARNED LESS RETAINAGE
                                             <br/>
@@ -401,7 +401,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td width="100%" align="left">
+                                    <td width="80%" align="left">
                                         <div class="a" style="font-size:10.5px">
                                             7. LESS PREVIOUS CERTIFICATES FOR
                                             <br/>
@@ -417,7 +417,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td width="100%" align="left">
+                                    <td width="80%" align="left">
                                         <div class="a" style="font-size:10.5px">
                                             8. CURRENT PAYMENT DUE
                                         </div>
@@ -431,7 +431,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td width="100%" align="left">
+                                    <td width="80%" align="left">
                                         <div class="a" style="font-size:10.5px">
                                             9. BALANCE TO FINISH, INCLUDING RETAINAGE
                                             <br/>
@@ -440,7 +440,7 @@
                                     </td>
                                     <td width="100%" align="right">
                                         <div class="a" style="font-size:10.5px">
-                                            <u style="margin-left:200px">
+                                            <u>
                                                 <apex:outputField value="{!paymentApp.Balance_To_Finish_Including_Retainage__c}" />
                                             </u>
                                         </div>
@@ -538,7 +538,9 @@
                                             <br/>
                                             <br/>
                                             <div style="font-size:10.5px">SUBCONTRACTOR:
-                                                <b>VIEW, INC.</b>
+                                                <b>
+                                                    <apex:outputField value="{!paymentApp.buildertek__Vendor__r.Name}"/>
+                                                </b>
                                             </div>
                                             <br/>
                                             <br/>
