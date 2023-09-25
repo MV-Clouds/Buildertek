@@ -2,7 +2,7 @@
     doInit : function(component, event, helper) {
         var action = component.get("c.cloneScheduleRecords");
 		action.setParams({
-			scheduleId:'null'
+			oldScheduleId:component.get('v.recordId')
 		});
 		action.setCallback(this, function(response) {
 			var state = response.getState();

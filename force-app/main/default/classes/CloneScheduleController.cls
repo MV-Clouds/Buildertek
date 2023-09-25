@@ -1,9 +1,9 @@
 public without sharing class CloneScheduleController {
 
     @AuraEnabled
-    public static string cloneScheduleRecords(Id scheduleId){
+    public static string cloneScheduleRecords(Id oldScheduleId){
 
-        if(scheduleId !=null){
+        if(oldScheduleId !=null){
 
             String scheduleObj = 'buildertek__Schedule__c'; 
             String scheduleQuery = 'SELECT ';
@@ -11,7 +11,7 @@ public without sharing class CloneScheduleController {
             for (String fieldName : ScheduleFieldMap.keySet()) {
                 scheduleQuery += fieldName + ', ';
             }
-            scheduleQuery = scheduleQuery.removeEnd(', ') + ' FROM ' + scheduleObj +' WHERE id=\'' + scheduleId + '\'';
+            scheduleQuery = scheduleQuery.removeEnd(', ') + ' FROM ' + scheduleObj +' WHERE id=\'' + oldScheduleId + '\'';
             buildertek__Schedule__c originalScheduleRec = Database.query(scheduleQuery);
             buildertek__Schedule__c scheduleCopy  = originalScheduleRec.clone(false, false, false, false);     
             insert scheduleCopy;
@@ -21,7 +21,7 @@ public without sharing class CloneScheduleController {
                 initialStartDate = System.today();
             }
     
-            bryntumGanttController.createScheduleLineFromMasterSchedule(scheduleCopy.Id, scheduleId, initialStartDate);
+            bryntumGanttController.createScheduleLineFromMasterSchedule(scheduleCopy.Id, oldScheduleId, initialStartDate);
             return scheduleCopy.Id;
         }else{
             return null;
