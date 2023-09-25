@@ -69,6 +69,9 @@ public class scheduleOfValueTriggerHandler {
             }else if(Sovmap.get(line.buildertek__Schedule_of_Values__c) == 'Customer Approved'){
                 line.buildertek__Status__c = 'Customer Approved';
                 sovLinesList.add(line);
+            }else if(Sovmap.get(line.buildertek__Schedule_of_Values__c) == 'Pending'){
+                line.buildertek__Status__c = 'Pending';
+                sovLinesList.add(line);
             }
             // ===> END Changes for BUIL - 3490 <======
 
