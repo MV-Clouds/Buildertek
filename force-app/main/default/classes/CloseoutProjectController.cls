@@ -1,11 +1,26 @@
 public with sharing class CloseoutProjectController {
     @AuraEnabled
-    public static string createInvoice(String recordId){
+    public static List<Emailtemplate> getTemplatesOptions(){
+
+        List<Emailtemplate> temrec;
+        if (Schema.sObjectType.Emailtemplate.fields.Id.isAccessible() && Schema.sObjectType.Emailtemplate.fields.Name.isAccessible() && Schema.sObjectType.Emailtemplate.fields.folderid.isAccessible() && Schema.sObjectType.Folder.fields.Name.isAccessible()){
+            temrec = [Select Id, Name, folder.name, DeveloperName
+                      from Emailtemplate
+                      where folder.name = 'Closeout Project'];
+        }
+        System.debug('Template ========>>>>>'+temrec);
+        return temrec;
+       
+    }
+    @AuraEnabled
+    public static string createInvoice(String recordId , String SelectedTemplateId){
+        System.debug('SelectedtemplateName--->' + SelectedTemplateId);
         string mainAR = '';
-        List<buildertek__Billings__c> oldAR = [SELECT Id, Name FROM buildertek__Billings__c WHERE buildertek__Project__c =: recordId AND Name =: 'Closeout-Project-Invoice'];
+        EmailTemplate eTemp = [SELECT Id, Name,DeveloperName FROM EmailTemplate WHERE Id =: SelectedTemplateId ];
+        List<buildertek__Billings__c> oldAR = [SELECT Id, Name FROM buildertek__Billings__c WHERE buildertek__Project__c =: recordId AND Name =: eTemp.Name ];
         if (oldAR.isEmpty()) {
             buildertek__Billings__c AR = new buildertek__Billings__c();
-            AR.Name = 'Closeout-Project-Invoice';
+            AR.Name = eTemp.Name;
             AR.buildertek__Project__c = recordId;
             insert AR;
             mainAR = AR.Id;
@@ -13,8 +28,7 @@ public with sharing class CloseoutProjectController {
             mainAR = oldAR[0].Id;
         }
 
-        String emailLabel = System.label.CloseOutProjectTemplate;
-        EmailTemplate eTemp = [SELECT Id, Name FROM EmailTemplate WHERE Name =: emailLabel LIMIT 1];
+        // EmailTemplate eTemp = [SELECT Id, Name,DeveloperName FROM EmailTemplate WHERE Name =: SelectedtemplateName LIMIT 1];
         Contact con = [SELECT id, Email FROM Contact WHERE email != null ORDER BY createddate DESC LIMIT 1];
         Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
         email.setTemplateId(eTemp.Id);
@@ -53,15 +67,17 @@ public with sharing class CloseoutProjectController {
     }
 
     @AuraEnabled
-    public static String sendProposal(String htmlBody, String recordPId, List<String> to, List<String> cc){
+    public static String sendProposal(String htmlBody, String SelectedTemplateId, String recordPId, List<String> to, List<String> cc){
         try{
 
-            buildertek__Billings__c oldAR = [SELECT Id, Name FROM buildertek__Billings__c WHERE buildertek__Project__c =: recordPId AND Name =: 'Closeout-Project-Invoice' LIMIT 1];
+            EmailTemplate eTemp = [SELECT Id, Name FROM EmailTemplate WHERE Id =: SelectedTemplateId];
+            String templateId = eTemp.Id;
+            String templateName = eTemp.Name;
+            buildertek__Billings__c oldAR = [SELECT Id, Name FROM buildertek__Billings__c WHERE buildertek__Project__c =: recordPId AND Name =: templateName LIMIT 1];
             String recordId = oldAR.Id;
 
-            String emailLabel = System.label.CloseOutProjectTemplate;
-            EmailTemplate eTemp = [SELECT Id, Name FROM EmailTemplate WHERE Name =: emailLabel LIMIT 1];
-            String templateId = eTemp.Id;
+            // String emailLabel = System.label.CloseOutProjectTemplate;
+            // EmailTemplate eTemp = [SELECT Id, Name FROM EmailTemplate WHERE Name =: emailLabel LIMIT 1];
 
             List<Contact> conToList =  [Select Id,Name,email,MailingStreet,MailingCity, MailingState,MailingPostalCode,MailingCountry from Contact where Id IN :to and email != null];
 
