@@ -573,8 +573,16 @@ Throws [Exceptions]:
         }  
         
         buildertek__Contract_Item__c contractLineToInsert = new buildertek__Contract_Item__c();
+
+        if (contractRec.Name != null && contractRec.Name.length() > 79){
+            contractLineToInsert.Name = contractRec.Name.left(78);
+            contractLineToInsert.buildertek__Description__c = contractRec.Name;
+        } else{
+            contractLineToInsert.Name = contractRec.Name;
+        }
+
         contractLineToInsert.buildertek__Product__c = contractRec.buildertek__Product__c;
-        contractLineToInsert.Name = contractRec.Name;
+        // contractLineToInsert.Name = contractRec.Name;
         contractLineToInsert.buildertek__Contract__c = contractRec.buildertek__Contract__c; 
         contractLineToInsert.buildertek__Contract_Item_Group__c = contractRec.buildertek__Contract_Item_Group__c;
         contractLineToInsert.buildertek__Unit_Price__c = contractRec.buildertek__Unit_Price__c;

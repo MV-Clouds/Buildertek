@@ -1060,9 +1060,60 @@ public without sharing class ChangeOrderTriggerHandler {
 
        
     }
-    
 
 
+    public void UpdateContractor(buildertek__Change_Order__c[] oldChangeOrder, buildertek__Change_Order__c[] updatedChangeOrder, Map<ID, buildertek__Change_Order__c> ChangeOrderMap, Map<Id, buildertek__Change_Order__c> oldChangeOrderMap){
+        try {
+            System.debug('in UpdateContractor');
+            SET<Id> changeOrderContractIdSet = new SET<Id>();            
+            Map<String, Decimal> contractMap = new Map<String, Decimal>();
+            List<buildertek__Contract__c> contractToUpdateList = new List<buildertek__Contract__c>();
+            List<buildertek__Change_Order__c> changeOrdersList;
 
+            for(buildertek__Change_Order__c changeOrder : updatedChangeOrder){
+                if(changeOrder.buildertek__Contract__c !=null){
+                    changeOrderContractIdSet.add(changeOrder.buildertek__Contract__c);
+                }  
+            }
+            System.debug('changeOrderContractIdSet'+changeOrderContractIdSet);
+            
+            
+            changeOrdersList = [SELECT Id, Name, buildertek__Contract__c, buildertek__Total_Amount_Tax__c FROM buildertek__Change_Order__c WHERE buildertek__Contract__c IN: changeOrderContractIdSet AND buildertek__Status__c IN ('Customer Accepted', 'Customer Approved')];
+            system.debug('ChangeOrderList.....>' +changeOrdersList);
+            
+            if(changeOrdersList.size() >  0){
+                for(buildertek__Change_Order__c changeOrders : changeOrdersList){
+                    if(contractMap.get(changeOrders.buildertek__Contract__c) == null){
+                        contractMap.put(changeOrders.buildertek__Contract__c, changeOrders.buildertek__Total_Amount_Tax__c);    
+                    }else{
+                        decimal finalTotalAmount = contractMap.get(changeOrders.buildertek__Contract__c) + changeOrders.buildertek__Total_Amount_Tax__c; 
+                        contractMap.put(changeOrders.buildertek__Contract__c, finalTotalAmount);
+                    }
+                }
+            } else {
+                for(String cont : changeOrderContractIdSet){
+                    decimal finalTotalAmount = 0; 
+                    contractMap.put(cont, finalTotalAmount);
+                }
+            }
+            system.debug('Contract Map ---------> '+contractMap.keySet());
 
+            for(String contractId : contractMap.keySet()){
+                system.debug('contractId ---------> '+contractId);
+                buildertek__Contract__c contractToUpdate = new buildertek__Contract__c();
+                contractToUpdate.Id = contractId;
+                system.debug('CO Amount --------->'+contractMap.get(contractId));
+                contractToUpdate.buildertek__Change_Order_Amount__c = contractMap.get(contractId);
+                contractToUpdateList.add(contractToUpdate);
+            }                      
+            system.debug('contractToUpdateList --------------> '+contractToUpdateList);
+            
+            if(contractToUpdateList.size() > 0){
+                update contractToUpdateList;    
+            } 
+            
+        } catch (Exception e) {
+            System.debug('Exception occurred at line ' + e.getLineNumber() + ': ' + e.getMessage());
+        }
+    }
 }

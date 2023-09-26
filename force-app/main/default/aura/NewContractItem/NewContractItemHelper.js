@@ -99,6 +99,8 @@
     		if (response.getState() == "SUCCESS") {
     		    
     			component.set("v.pricebookName", response.getReturnValue());
+                var action1 = component.get('c.changeEvent');
+                $A.enqueueAction(action1);                
     		}
     	});
     	$A.enqueueAction(action);

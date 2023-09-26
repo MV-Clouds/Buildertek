@@ -158,7 +158,19 @@
                                             </ui:inputSelect>
                                             
                                         </td>
-                                    <td>
+                                    <td style="width: 20%;">
+                                        <aura:html tag="style">
+                                            .mainDiv{
+                                                padding-top:1.3% !important;
+                                                max-width:27vw;
+
+                                            }
+                                            .pillSize{
+
+                                                padding-top: 1.3% !important;
+                                                padding-bottom: 1.3% !important;
+                                            }
+                                        </aura:html>
                                         <c:BT_LightningLookup objectAPIName="Product2" IconName="standard:product" selectedRecord="{!v.selectedLookUpRecord}" parentId="{!v.pricebookName}" prodctfamly ="{!v.productfamily}" />
                                     </td>
                                     <td>
