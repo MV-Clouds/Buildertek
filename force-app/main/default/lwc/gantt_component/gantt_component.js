@@ -764,7 +764,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
         {
           type : 'resourceassignment',
           width : 120,
-          showAvatars : false,
+          showAvatars : true,
           draggable : false,
           editor      : {
             picker : {
@@ -782,12 +782,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
                   cellMenu   : false,
               },
             },
-            listeners: {
-              // paint: ({ source }) => {
-              //   let contractorId = source._projectEvent._data.contractorId
-              //   source.store.filter(record => (record.resource._data.type == 'Internal Resources' || record.resource._data.contractorId == contractorId));
-              // }
-            }
           },
           itemTpl : assignment => assignment.resourceName
         },
