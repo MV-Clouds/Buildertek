@@ -258,7 +258,18 @@
             </aura:if> 
 
             <lightning:button iconPosition="left" label="Cancel" onclick="{!c.closeCOModal}" class="sldsButtonGroup"  />
-            
+            <aura:if isTrue="{!v.isCommUser}">
+                <lightning:button variant="neutral" 
+                                  label="Save"
+                                  title="Save"
+                                  onclick="{! c.createContinuationSheetLines }" disabled="{!v.IsSubmitted}"/>
+                <aura:set attribute="else">
+                    <lightning:button variant="neutral" 
+                                      label="Save"
+                                      title="Save"
+                                      onclick="{! c.createContinuationSheetLines }" disabled="{!v.statusDisable}"/>
+                </aura:set>
+            </aura:if>             
         </div>
     </div>
     
