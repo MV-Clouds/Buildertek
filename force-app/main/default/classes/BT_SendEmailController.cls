@@ -473,7 +473,9 @@ public with sharing class BT_SendEmailController{
                     subject = subject + ' Quote - [ref:' + recordId + ']';
                 }
                 //subject = subject + ' Quote - [ref:' + recordId + ']';
-                body = body;
+                body = body.replaceAll('<p><br></p>', '<br>');
+                body = body.replaceAll('<p>', '<p style="margin-top: 0em; margin-bottom: 0em; ">');
+                // body = body;
                 system.debug('Final body -------> ' + body);
 
             }
