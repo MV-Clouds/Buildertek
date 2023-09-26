@@ -229,12 +229,14 @@
                 </div>
             </div>
         </div>
+        <!-- Changes for BUIL-3545 starts from here -->
         <br/>
         <br/>
         <footer role="contentinfo" class="slds-docked-form-footer fixedFooter" style="display:block;text-align:right;padding-right:5px;">
             <button class="slds-button slds-button--brand" onclick="{!c.sendemail}">Send Email</button>
             <button class="slds-button slds-button--neutral sldsbutton" onclick="{!c.closeWindow}">Cancel</button>
         </footer>
+        <!-- changes for BUIL-3545 ends here -->
     </div>
     <!-- <div class="modal-footer slds-modal__footer slds-size_1-of-1">
         <lightning:button variant="Brand" class="slds-button" label="Send Email" onclick="{!c.sendemail}"/>
