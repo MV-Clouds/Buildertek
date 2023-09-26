@@ -10,6 +10,14 @@
     <aura:attribute name="pageSize" type="Integer" default="5" />
     <aura:attribute name="totalPages" type="Integer" />
     <aura:attribute name="filterAttachedData" type="List"/>
+    <aura:html tag="style">
+        .imgtag .forceContentFileCard {
+            width: 15vh !important;
+        }
+        .imgtag .slds-file__title {
+            padding: 5px !important;
+        }
+    </aura:html>
 
 
 
@@ -22,7 +30,7 @@
     </lightning:select>
 
 
-    <hr/>
+    <hr style="margin: 5px;"/>
     
     <div class="main-table-div">
         <aura:if isTrue="{!(empty(v.filterAttachedData))}">
@@ -53,7 +61,7 @@
                         <div  class="file-div-tab">
                             <div class="main-file-cmp">
                                 <aura:iteration items="{!attachment.contentDocumentLinks}" var="cntDocs" indexVar="subIndx">
-                                    <div class="slds-m-horizontal_x-small">
+                                    <div class="slds-m-horizontal_x-small imgtag">
                                         <lightning:fileCard fileId="{!cntDocs.ContentDocumentId}" />
                                    </div>  
                                 </aura:iteration>
