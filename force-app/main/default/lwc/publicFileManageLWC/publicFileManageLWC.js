@@ -233,6 +233,7 @@ export default class PublickFileManageLWC extends NavigationMixin(LightningEleme
         this.spinnerDataTable = true
         this.showfiles = true;
         this.showtable = false;
+        this.selectedDocuments = [];
         this.getFilesforselectedRecord()
     }
 
