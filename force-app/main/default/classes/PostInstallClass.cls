@@ -59,7 +59,7 @@ global without sharing class PostInstallClass implements InstallHandler {
     private void sendFailureMessage(Exception ex, String version, String step){
         Messaging.SingleEmailMessage emailTobeSent = new Messaging.SingleEmailMessage();
         list<String> listEmailMembers = new list<String>();
-        listEmailMembers.add('thoriyas@gmail.com');
+        listEmailMembers.add('info@buildertek.com');
         emailTobeSent.setToAddresses(listEmailMembers);
         
         if(step != null){
@@ -89,7 +89,7 @@ global without sharing class PostInstallClass implements InstallHandler {
     public static void sendBatchFailureMessage(String version, String step, String body){
         Messaging.SingleEmailMessage emailTobeSent = new Messaging.SingleEmailMessage();
         list<String> listEmailMembers = new list<String>();
-        listEmailMembers.add('thoriyas@gmail.com');
+        listEmailMembers.add('info@buildertek.com');
         emailTobeSent.setToAddresses(listEmailMembers);
         
         if(step != null){

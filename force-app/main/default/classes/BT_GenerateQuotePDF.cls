@@ -20,7 +20,7 @@ public without sharing class BT_GenerateQuotePDF {
     }
     
     public void createPDF(){
-        
+        Boolean useSignature = false;
          string vendorID;
         // Pick a dummy Contact
          if(vendorID == null){
@@ -85,6 +85,7 @@ public without sharing class BT_GenerateQuotePDF {
         email.setTargetObjectId(vendorID);       
         email.setSaveAsActivity(false);
         email.setToAddresses(new List<String>{'pratap.uddarraju@diligentforcelabs.com'});
+        email.setUseSignature(useSignature);
         msgList.add(email);
         System.debug('********** --->'+msgList);
         System.debug('email--->'+email);
@@ -117,6 +118,7 @@ public without sharing class BT_GenerateQuotePDF {
         email1.setTargetObjectId(vendorID);       
         email1.setSaveAsActivity(false);
         email1.setToAddresses(new List<String>{'pratap.uddarraju@diligentforcelabs.com'});
+        email1.setUseSignature(useSignature);
         msgList1.add(email1);
         Messaging.SendEmailResult [] r1 = Messaging.sendEmail(new Messaging.SingleEmailMessage[] {email1}); 
         System.debug('Email Results isSuccess = ' +  r1[0].IsSuccess());

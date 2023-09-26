@@ -3489,7 +3489,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
             }
     
             if (component.get("v.enableMassUpdate")) {
-                console.log(component.get("v.TotalRecords").groupHierarchy);
+                // console.log(component.get("v.TotalRecords").groupHierarchy); //Getting Error popup in Team-k sandbox (Open Issue on 21th Sep 2023 By BT Team)
                 var budgetIdele = component.get("v.budgetId");
                 var tabId = component.get("v.currentTab")
                 // var spanEle = event.currentTarget.dataset.iconname;
@@ -3712,7 +3712,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
     },
     expandCollapeAll: function (component, event, helper) {
         //component.set("v.ShowSpinner",true);
-        console.log(component.get("v.TotalRecords").groupHierarchy);
+        // console.log(component.get("v.TotalRecords").groupHierarchy); //Getting Error popup in Team-k sandbox (Open Issue on 21th Sep 2023 By BT Team)
 
 
 

@@ -958,8 +958,9 @@ public without sharing class ChangeOrderTriggerHandler {
         }
         
         for (buildertek__Change_Order__c sovLine : coList){
-            if((sovLine.buildertek__Status__c == 'Approved' || sovLine.buildertek__Status__c == 'Customer Approved') && ( oldCOMap.get(sovLine.Id).buildertek__Status__c != 'Approved' || oldCOMap.get(sovLine.Id).buildertek__Status__c != 'Customer Approved')){
+            if((sovLine.buildertek__Status__c == 'Approved' || sovLine.buildertek__Status__c == 'Customer Accepted' || sovLine.buildertek__Status__c == 'Customer Approved') && ( oldCOMap.get(sovLine.Id).buildertek__Status__c != 'Approved' || oldCOMap.get(sovLine.Id).buildertek__Status__c != 'Customer Accepted' || oldCOMap.get(sovLine.Id).buildertek__Status__c != 'Customer Approved')){
                 sovLine.buildertek__Date_Approved__c = System.Now();
+                sovLine.buildertek__Customer_Accepted_Date__c = Date.today();
             }
         }
         
@@ -970,8 +971,9 @@ public without sharing class ChangeOrderTriggerHandler {
     public  void UpdateDateApprovedOnInsert(List<buildertek__Change_Order__c> coList){
         if(!coList.isEmpty()){
             for(buildertek__Change_Order__c sovLine : coList){
-                if(sovLine.buildertek__Status__c == 'Approved' || sovLine.buildertek__Status__c == 'Customer Approved'){
+                if(sovLine.buildertek__Status__c == 'Approved' || sovLine.buildertek__Status__c == 'Customer Accepted' || sovLine.buildertek__Status__c == 'Customer Approved'){
                     sovLine.buildertek__Date_Approved__c = System.Now();
+                    sovLine.buildertek__Customer_Accepted_Date__c = Date.today();
                 }
             }
         }
@@ -1059,6 +1061,7 @@ public without sharing class ChangeOrderTriggerHandler {
        
     }
 
+
     public void UpdateContractor(buildertek__Change_Order__c[] oldChangeOrder, buildertek__Change_Order__c[] updatedChangeOrder, Map<ID, buildertek__Change_Order__c> ChangeOrderMap, Map<Id, buildertek__Change_Order__c> oldChangeOrderMap){
         try {
             System.debug('in UpdateContractor');
@@ -1113,11 +1116,4 @@ public without sharing class ChangeOrderTriggerHandler {
             System.debug('Exception occurred at line ' + e.getLineNumber() + ': ' + e.getMessage());
         }
     }
-
-    
-    
-    
-    
-    
-    
 }

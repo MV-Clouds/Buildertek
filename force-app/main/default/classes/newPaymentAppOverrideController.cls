@@ -446,7 +446,7 @@ public class newPaymentAppOverrideController {
                          buildertek__Vendor_SOV_Line__c,
                          buildertek__Old_Sov_Line_Ids_From_Project__c
                          FROM buildertek__Schedule_of_Value_Lines__c
-                         WHERE buildertek__Schedule_of_Values__c IN :Id AND (buildertek__Status__c = 'Pending' or buildertek__Status__c = 'Customer Approved') AND buildertek__Schedule_of_Values__r.RecordType.Name =:rectype ORDER BY buildertek__Item__c ASC];
+                         WHERE buildertek__Schedule_of_Values__c IN :Id AND (buildertek__Status__c = 'Pending' or buildertek__Status__c = 'Approved' or  buildertek__Status__c = 'Customer Approved') AND buildertek__Schedule_of_Values__r.RecordType.Name =:rectype ORDER BY buildertek__Item__c ASC];
         
         }else{
           masterRFQList = [SELECT Id,
@@ -460,7 +460,7 @@ public class newPaymentAppOverrideController {
                          buildertek__Vendor_SOV_Line__c,
                          buildertek__Old_Sov_Line_Ids_From_Project__c
                          FROM buildertek__Schedule_of_Value_Lines__c
-                         WHERE buildertek__Schedule_of_Values__c IN :Id AND (buildertek__Status__c = 'Approved' or buildertek__Status__c = 'Customer Approved') AND buildertek__Schedule_of_Values__r.RecordType.Name =:rectype ORDER BY buildertek__Item__c ASC];
+                         WHERE buildertek__Schedule_of_Values__c IN :Id AND (buildertek__Status__c = 'Pending' or buildertek__Status__c = 'Approved' or buildertek__Status__c = 'Customer Approved') AND buildertek__Schedule_of_Values__r.RecordType.Name =:rectype ORDER BY buildertek__Item__c ASC];
           
         }
         

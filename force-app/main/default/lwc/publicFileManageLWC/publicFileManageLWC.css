@@ -1,0 +1,158 @@
+.MainOutherDiv{
+    background: white;
+    height: fit-content;
+}
+
+/* .mainTable{
+    background: white;
+}
+
+.table_head{
+    background: #ebebeb;
+}
+
+.table_head > th{
+    border-bottom: 1px solid #c9c9c9;
+    border-right: 1px solid #c9c9c9;
+    height: 2rem;
+    padding: 0.25rem 1rem;
+    font-size: 14px;
+    color: #444444;
+
+    &:hover{
+        background: white;
+    }
+} */
+
+.checkboxes{
+    width: 0px;
+}
+
+/* .table_body{
+
+    &:hover{
+        background: #ebebeb;
+    }
+}
+
+.table_body > td{
+    border-bottom: 1px solid #c9c9c9;
+    height: 1rem;
+    padding: 0.25rem 1rem;
+
+} */
+
+.delete_icon{
+    /* --slds-c-icon-color-foreground: red; */
+    --sds-c-icon-color-foreground-default: #ff4c4c;
+    /* border-radius: 50%; */
+    /* display: flex;
+    align-items: center;
+    justify-content: flex-start; */
+}
+
+.FileName_cell{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.file_Name_input{
+    border-radius: 4px;
+    padding: 0.2rem;
+    border: 0px solid transparent;
+    outline: 1px solid #c4c4c4;
+    width: 100%;
+    max-width: 100%;
+    transition: all 0.2s linear;
+
+    &:focus-visible{
+        box-shadow: 0 0 6px #0176d3;
+        outline: 1px solid rgb(84, 173, 251);
+    }
+}
+
+.file_Name_input:disabled{
+    background: transparent;
+    border: 0px solid transparent;
+    outline: transparent;
+}
+
+.edit_done_btn{
+    display: none;
+}
+
+.Table_Button_footer{
+    margin-block: 0.5rem;
+    padding: 0.5rem 1rem;
+    display: flex;
+    justify-content: center;
+}
+
+table {
+    width: 100%;
+    min-width: 35rem;
+    border-collapse: collapse;
+    background-color: #fff;
+    box-shadow: rgba(185, 188, 191, 0.2) 0px 0px 24px 5px;
+    border-radius: 5px;
+    font-family: arial;
+    overflow: auto;
+}
+
+table thead th {
+    padding: 10px 16px;
+    text-align: left;
+    background-color: #009ddc;
+    color: #fff;
+    border-right: 1px solid #eee;
+}
+
+table tbody tr td {
+    padding: 10px 16px;
+    border-bottom: 1px solid #eee;
+}
+
+.container {
+    display: flex;
+}
+
+.section {
+    flex: 1;
+    padding: 25px;
+    border: 1px solid #ccc;
+    margin: 10px;
+}
+
+.document {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.document1 {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0px;
+}
+
+.document2{
+    display: flex;
+    align-items: center;
+    margin-bottom: 0px;
+    margin-top: -2px;
+}
+
+input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.slds-modal__container {
+    margin: 0 auto;
+    width: 80%;
+    max-width: 60%;
+    min-width: 20rem;
+    padding: 5%;
+    --slds-c-modal-radius-border: 14px;
+}

@@ -41,6 +41,7 @@ public without sharing class PreviewQuoteController{
         string templateBody = '';
         string templateBody1 = '';
         string templateBody2 = '';
+        Boolean useSignature = false;
         Contact con;
         if (Schema.sObjectType.Contact.fields.Id.isAccessible() && Schema.sObjectType.Contact.fields.Name.isAccessible() && Schema.sObjectType.Contact.fields.email.isAccessible()){
             con = [select id, Email
@@ -69,6 +70,7 @@ public without sharing class PreviewQuoteController{
         // email.setSaveAsActivity(true);
         email.setSaveAsActivity(false);
         email.setToAddresses(toaddres);
+        email.setUseSignature(useSignature);
         msgList.add(email);
 
         Messaging.SendEmailResult[] r = Messaging.sendEmail(new Messaging.SingleEmailMessage[]{email});
@@ -90,6 +92,7 @@ public without sharing class PreviewQuoteController{
             // email1.setSaveAsActivity(true);
             email1.setSaveAsActivity(false);
             email1.setToAddresses(toaddres);
+            email1.setUseSignature(useSignature);
             msgList1.add(email1);
             Messaging.SendEmailResult[] r1 = Messaging.sendEmail(new Messaging.SingleEmailMessage[]{email1});
             System.debug('Email Results isSuccess = ' + r1[0].IsSuccess());
@@ -129,6 +132,7 @@ public without sharing class PreviewQuoteController{
             string templateBody = '';
             string templateBody1 = '';
             string templateBody2 = '';
+            Boolean useSignature = false;
             system.debug(' To list '+to);
             List<buildertek__Quote__c> salesRepEmail=[SELECT Id, buildertek__Sales_Rep__r.Email FROM buildertek__Quote__c WHERE Id = : recordId LIMIT 1];
             if(salesRepEmail.size()>0){
@@ -203,6 +207,7 @@ public without sharing class PreviewQuoteController{
             email.setSaveAsActivity(false);
             email.setWhatId(recordId);
             email.setToAddresses(new List<String>{'noreplay@buildertek.com'});
+            email.setUseSignature(useSignature);
             msgList.add(email);
 
             Messaging.SendEmailResult[] r = Messaging.sendEmail(new Messaging.SingleEmailMessage[]{email});
@@ -281,6 +286,7 @@ public without sharing class PreviewQuoteController{
             efa.setBody(b);
             fileAttachments.add(efa);
             mail.setFileAttachments(fileAttachments);
+            mail.setUseSignature(useSignature);
             mails.add(mail);
             Messaging.SendEmailResult[] results = Messaging.sendEmail(mails);
 
@@ -396,6 +402,7 @@ public without sharing class PreviewQuoteController{
         try{
             String body = '';
             String subject = '';
+            Boolean useSignature = false;
              list<buildertek__Admin_Interface_Node_Configuration__c> adminInterfaceNodeConfigurations = [Select Id,
                                                                                                   buildertek__Quote_Configuration__c,buildertek__Email_Subject__c
                                                                                                   from buildertek__Admin_Interface_Node_Configuration__c
@@ -513,6 +520,7 @@ public without sharing class PreviewQuoteController{
             efa.setBody(setAttachmentBody(recordId, templateId, fileid));
             fileAttachments.add(efa);
             mail.setFileAttachments(fileAttachments);
+            mail.setUseSignature(useSignature);
             mails.add(mail);
             Messaging.SendEmailResult[] results = Messaging.sendEmail(mails);
             String message = 'Success';

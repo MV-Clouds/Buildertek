@@ -36,6 +36,7 @@ public class ViewInvoiceForInvoiceAPController {
         string templateBody1 = '';
         string templateBody2 = '';
         Contact con;
+
         if (Schema.sObjectType.Contact.fields.Id.isAccessible() && Schema.sObjectType.Contact.fields.Name.isAccessible() && Schema.sObjectType.Contact.fields.email.isAccessible()){
             con = [select id, Email
                    from Contact

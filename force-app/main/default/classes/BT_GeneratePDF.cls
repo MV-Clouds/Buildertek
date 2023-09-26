@@ -23,7 +23,7 @@ public without sharing class BT_GeneratePDF{
 	}
 
 	public void createPDF(){
-
+		Boolean useSignature = false;
 		string vendorID;
 		// Pick a dummy Contact
 		if (vendorID == null){
@@ -92,6 +92,7 @@ public without sharing class BT_GeneratePDF{
 		msg.setWhatId(recordID);
 		msg.setTargetObjectId(ID.valueOf(vendorID));
 		msg.setToAddresses(new List<String>{'noreplay@buildertek.com'});
+		msg.setUseSignature(useSignature);
 		lstMsgs.add(msg);
         System.debug('recordID::'+ recordID);
         System.debug('vendorID::'+ vendorID);
@@ -130,6 +131,7 @@ public without sharing class BT_GeneratePDF{
 		email1.setTargetObjectId(vendorID);
 		email1.setSaveAsActivity(false);
 		email1.setToAddresses(new List<String>{'noreplay@buildertek.com'});
+		email1.setUseSignature(useSignature);
 		lstMsgs1.add(email1);
 		Messaging.SendEmailResult[] r1 = Messaging.sendEmail(new Messaging.SingleEmailMessage[]{email1});
 		System.debug('Email Results isSuccess = ' + r1[0].IsSuccess());

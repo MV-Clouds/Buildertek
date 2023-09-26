@@ -222,6 +222,7 @@ public with sharing class PreviewBillingsController{
     @AuraEnabled
     public static String sendProposal(String htmlBody, String recordId, String templateId, List<String> to, List<String> cc){
         try{
+
             Blob tempblob;
             List<Contact> conList =  [Select Id,Name,email from Contact where Id IN :to and email != null];
 

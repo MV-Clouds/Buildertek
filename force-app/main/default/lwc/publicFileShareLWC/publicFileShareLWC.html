@@ -1,0 +1,103 @@
+<template>
+    
+    <!-- ============== toast message =========== -->
+    <c-toast-component></c-toast-component>
+    <!-- ============== toast message =========== -->
+    
+    <!-- ============== Spinner =========== -->
+    <template if:true={spinnerDataTable}>
+        <div data-id="spinnerId" class="spinnerclass">
+            <lightning-spinner alternative-text="Loading" variant="brand" size="large"></lightning-spinner>
+        </div>
+    </template> 
+    <!-- ============== Spinner =========== -->
+
+    <template if:false={showManageFolder}>
+
+        <div>
+            <center><lightning-button label="Create New Folder" onclick={handleNewFolder}></lightning-button></center>
+            <br> <br>
+            <template if:true={showFolderTable}>
+                <lightning-card title="Folder Table">
+    
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>File Count</th>
+                                <th>Folder Link</th>
+                                <th>Delete</th>
+                                <th>Manage Folder</th>
+                            </tr>
+                        </thead>
+    
+                        <tbody>
+                            <template for:each={folderData} for:item="item" for:index="index">
+                                <tr key={item.Id}>
+                                    <td>{item.Name}</td>
+                                    <td>{item.buildertek__Description__c}</td>
+                                    <td>{item.buildertek__File_Count__c}</td>
+                                    <td>
+                                        <div data-link={item.Id} class="copy_btn" onclick={copySiteURL} >
+                                            <svg width="20" height="20" fill="#868686" viewBox="0 0 24 24"><path d="M19.125 22.5h-10.5a3.375 3.375 0 0 1-3.375-3.375v-10.5A3.375 3.375 0 0 1 8.625 5.25h10.5A3.375 3.375 0 0 1 22.5 8.625v10.5a3.375 3.375 0 0 1-3.375 3.375Z"></path><path d="M7.5 3.75h11.057a3.381 3.381 0 0 0-3.182-2.25h-10.5A3.375 3.375 0 0 0 1.5 4.875v10.5a3.38 3.38 0 0 0 2.25 3.182V7.5A3.75 3.75 0 0 1 7.5 3.75Z"></path></svg>
+                                            <div class="copied_info_popup" data-id={item.Id}> Copied </div>
+                                        </div>
+                                    </td>
+                                    <td style="width: 0px" class="delete_icon">
+                                        <lightning-icon icon-name="utility:delete" alternative-text="Delete" size="x-small" title="Delete" onclick={Handle_DeleteFolder} data-key={item.Id} data-deleteicon={item.Id}></lightning-icon>
+                                    </td>
+                                    <td class="action">
+                                        <button data-id={item.Id} onclick={manageFolder}>Manage Folder</button>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+    
+                </lightning-card>    
+            </template>    
+            <template if:false={showFolderTable}>
+                <h1>There are no Public Folders for the current Record you can start by creating new Folder.</h1>
+            </template>     
+        </div>
+
+        <template if:true={showNewFolderPopup}>
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container" >
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" onclick={closeCreateFolder}>
+                        <svg width="46" height="46" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+                    </button>
+
+                    <div class="slds-modal__header">
+                        <h1 class="slds-modal__title slds-hyphenate">Create New Public Folder</h1>
+                    </div>
+    
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <lightning-card>
+                            <div class="slds-m-around_medium">
+                                <lightning-input label="Name" data-name="Name" value={recordName} onchange={handleNameChange} required></lightning-input>
+                                <lightning-input label="Description" data-name="Description" value={recordDescription} onchange={handleDescriptionChange}></lightning-input>
+                            </div>
+                        </lightning-card>
+                    </div>
+
+                    <div class="slds-modal__footer">
+                        <lightning-button label="Close" onclick={closeCreateFolder} class="slds-m-horizontal_xx-small" ></lightning-button>
+                        <lightning-button label="Create Folder" variant="brand" onclick={createFolder} class="slds-m-horizontal_xx-small"></lightning-button>
+                    </div>
+    
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+        </template>
+
+    </template>
+    
+
+    <template if:true={showManageFolder}>
+        <c-public-file-manage-l-w-c folderids={selectedFolder} projectid={recordId} onbackbuttonclick={closeManageFolder} ondatarefresh={getFolderDataFromApex}></c-public-file-manage-l-w-c>
+    </template>
+
+</template>
