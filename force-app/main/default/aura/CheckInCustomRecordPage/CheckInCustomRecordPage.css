@@ -641,7 +641,7 @@
     height: 4rem;
     backdrop-filter: blur(0.7px);
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     gap: 10px;
     align-items: center;
     padding-inline: 2rem;
@@ -656,7 +656,14 @@
     font-size: 1rem;
     color: white;
 }
-.THIS .Download_image{
+.THIS .img_options{
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    align-items: center;
+    margin-right: auto;
+}
+.THIS .image_distrubution{
     display: flex;
     align-items: center;
     gap: 10px;
@@ -666,11 +673,46 @@
     transition: all 0.24s linear;
     padding: 6px 10px;
     border-radius: 4px;
-    margin-right: auto;
-    --sds-c-icon-color-foreground-default: white;
+    margin-inline: 4px;
+    position: relative;
 }
-.THIS .Download_image:hover{
-    background: #797979;
+.THIS .image_distrubution:hover{
+    background: rgb(81 83 85 / 80%)
+}
+
+.THIS .Share_link_container{
+    width: 100%;
+    height: fit-content;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: nowrap;
+    flex-direction: row;
+}
+.THIS .share_link_div{
+    width: 80%;
+    /* width : max(75%, 17rem); */
+    max-width: 90%;
+    border: 1px solid rgb(197, 197, 197);
+    border-radius: 4px;
+    white-space: pre;
+    padding: 0.5rem;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+.THIS .share_link_div > h3 {
+    overflow: hidden;
+}
+.THIS .copy_to_clipboard_btn{
+    background: #2a76d3;
+    border: 1px solid #2a76d3;
+    padding: 0.5rem;
+    color: white;
+    border-radius: 4px;
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+    cursor: pointer;
+    flex-grow: 1;
 }
 .THIS .close_img{
     display: flex;
@@ -679,10 +721,9 @@
     padding: 6px 10px;
     transition: all 0.24s linear;
     border-radius: 4px;
-    --sds-c-icon-color-foreground-default: white;
 }
 .THIS .close_img:hover{
-    background: #797979;
+    background: rgb(81 83 85 / 80%);
 }
 
 .THIS .img_preview_container{

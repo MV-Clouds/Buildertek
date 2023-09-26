@@ -68,4 +68,33 @@ public without sharing class CheckInCustomRecordPageController {
         }
         return true;
     }
+
+     // -------------------- New Image Preview  END --------------------
+     @AuraEnabled
+     public static ContentDistribution GetContentDistrubutionRecord(String Content_Document_Id){
+             ContentVersion CV = [SELECT Id,Title,ContentDocumentId FROM ContentVersion WHERE ContentDocumentId =: Content_Document_Id LIMIT 1]; 
+             list<ContentDistribution> CD = [SELECT Id, Name, ContentDocumentId,ContentVersionId , RelatedRecordId, DistributionPublicUrl, ContentDownloadUrl FROM ContentDistribution WHERE ContentVersionId =: CV.Id Limit 1];
+     
+             system.debug('CD.size : ' + CD.size());
+             if(CD.size() == 0){
+                 // If ContentDistribution is not available for ContentDocument,
+                 // Create ContentDistribution Record for ContentDocument
+                 ContentDistribution newCD = new ContentDistribution();
+                 newCD.Name = CV.Title;
+                 newCD.ContentVersionId = CV.Id;
+                 newCD.PreferencesAllowViewInBrowser = true;
+                 insert newCD;
+     
+                 ContentDistribution newDistribution = [SELECT Id, Name, ContentDocumentId,ContentVersionId , RelatedRecordId, DistributionPublicUrl, ContentDownloadUrl FROM ContentDistribution WHERE Id =: newCD.Id Limit 1];
+                 system.debug(' Newly created Content Distribution : ' + newDistribution);
+                 return newDistribution;
+             }
+             else if(CD.size() > 0){
+                 // Else Return Existing Content Distribution...
+                 system.debug('existing Content Distribution : ' + CD[0]);
+                 return CD[0];
+             }
+             return null; // in  case of eroor
+      }
+     //  ------------------ New Image Preview  END --------------------
 }

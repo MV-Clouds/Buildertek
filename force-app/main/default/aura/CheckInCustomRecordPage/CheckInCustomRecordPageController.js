@@ -64,6 +64,7 @@
 
     ChangeImg: function(component, event, helper){
         component.set("v.Is_ImageHavePreview", false);
+        component.set('v.Show_ImagePreview', false);
         helper.changeImageHelper(component, event, helper, null, true);
     },
 
@@ -85,6 +86,44 @@
         a.click();
         document.body.removeChild(a);
         component.set("v.PreviewImgSpinner", false);
+    },
+
+    downloadImage_distribution: function(component, event, helper){
+        console.log('current preview image id >> ', component.get('v.PreviewImageId'));
+        helper.downloadImage_distribution_helper(component, event, helper);
+    },
+
+    ShareImage_distribution: function(component, event, helper){
+        console.log('Share Image >> ', component.get('v.PreviewImageId'));
+        helper.ShareImage_distribution_helper(component, event, helper);
+    },
+
+    copy_share_link: function(component, event, helper){
+        // Create a temporary textarea element
+        var imageShareLink = component.get("v.ShareImg_Link");
+        
+        const textarea = document.createElement('textarea');
+        textarea.value =  imageShareLink;        ;
+        document.body.appendChild(textarea);
+        textarea.select();
+        textarea.setSelectionRange(0, 99999);
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+
+        component.set("v.ShareImg_Modal_btn", 'Copied');
+
+        var toastEvent = $A.get("e.force:showToast");
+                toastEvent.setParams({
+                    "title": "Copied!",
+                    "type": "success",
+                    "message": "Public Share Link Copied to Clipborad"  
+                }, 1000);
+        toastEvent.fire();
+    },
+
+    close_ShareImg_Model: function(component, event, helper){
+        component.set("v.Open_ShareImg_Modal", false);
+        component.set("v.ShareImg_Modal_btn", 'Copy');
     },
 
     stopEventPropogation: function(component, event, helper){

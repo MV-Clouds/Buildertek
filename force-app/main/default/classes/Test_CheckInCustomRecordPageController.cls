@@ -57,6 +57,16 @@ public with sharing class Test_CheckInCustomRecordPageController {
         buildertek__Project__c pro1 = new buildertek__Project__c(Name='test1');
         insert pro1;
 
+        // -- New Image Preview ---
+        ContentVersion testContentVersion = new ContentVersion(
+            Title = 'Test Version',
+            VersionData = Blob.valueOf('test Version'),
+            PathOnClient = 'Test Version',
+            IsMajorVersion = true
+        );
+        insert testContentVersion;
+        // -- New Image Preview ---
+
         Test.startTest();
         List<buildertek__Check_In__c> insertCheckIn = new List<buildertek__Check_In__c>();
 
@@ -113,6 +123,10 @@ public with sharing class Test_CheckInCustomRecordPageController {
         pageController = CheckInCustomRecordPageController.getCheckIns(false, false, 0, pro.Id);
         pageController = CheckInCustomRecordPageController.getCheckIns(true, false, 5, pro.Id);
         pageController = CheckInCustomRecordPageController.getCheckIns(false, true, 0, pro.Id);
+
+        // -- New Image Preview ---
+        ContentVersion cv = [SELECT Id, Title, ContentDocumentId FROM ContentVersion WHERE Id =: testContentVersion.Id LIMIT 1];
+        CheckInCustomRecordPageController.GetContentDistrubutionRecord(cv.ContentDocumentId);
         Test.stopTest();
 
         // return pro;

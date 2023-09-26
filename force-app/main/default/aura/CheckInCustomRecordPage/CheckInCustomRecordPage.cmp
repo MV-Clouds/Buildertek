@@ -27,6 +27,10 @@
     <aura:attribute name="PreviewImgSpinner" type="boolean" default="false"/>
     <aura:attribute name="NotFirstImg" type="boolean" default="true"/>
     <aura:attribute name="NotLastImg" type="boolean" default="true"/>
+    <aura:attribute name="Open_ShareImg_Modal" type="boolean" default="false"/>
+    <aura:attribute name="ShareImg_Modal_title" type="String" />
+    <aura:attribute name="ShareImg_Modal_btn" type="String" />
+    <aura:attribute name="ShareImg_Link" type="String"/>
     <!-- ============= New Image Preview END ============= -->
  
     <aura:if isTrue="{!v.Spinner}">
@@ -215,9 +219,23 @@
                     <lightning:icon iconName="doctype:image" alternativeText="Image file" title="Image" size="medium" />
                     <h2>{!v.PreviewImageTitle}</h2>
                 </div>
-                <div class="Download_image" onclick="{!c.downloadImage}">
+                <!-- <div class="Download_image" onclick="{!c.downloadImage}">
                     <lightning:icon iconName="utility:download" alternativeText="download!" title="download" size="x-small"/>
-                    <!-- <h2>Download</h2> -->
+                    <h2>Download</h2>
+                </div> -->
+                <div class="img_options">
+                    <div class="image_distrubution" onclick="{!c.ShareImage_distribution}">
+                        <lightning:icon iconName="utility:share" alternativeText="download!" title="download" size="x-small"/>
+                        <h2>Public link</h2>
+                        <!-- <div class="Share_link_container">
+                            <div class="share_link_div"></div>
+                            <div class="copy_to_clipboard_btn"></div>
+                        </div> -->
+                    </div>
+                    <div class="image_distrubution" onclick="{!c.downloadImage_distribution}">
+                        <lightning:icon iconName="utility:download" alternativeText="download!" title="download" size="x-small"/>
+                        <h2>Download</h2>
+                    </div>
                 </div>
                 <div class="close_img" onclick="{!c.closeImagePreview}">
                     <lightning:icon iconName="utility:close" alternativeText="close!" title="close" size="small"/>
@@ -225,10 +243,12 @@
             </div>    
     
             <div class="img_preview_container" >
+                <!-- <img class="image_content" src="{!v.PreviewImageSrc}" onload="{!c.Handle_imageLoaded}" onerror="{!c.Handle_imageNotLoaded}" onclick="{!c.stopEventPropogation}"/> -->
+
                 <aura:if isTrue="{!v.Is_ImageHavePreview}">
                     <img class="image_content" src="{!v.PreviewImageSrc}" onload="{!c.Handle_imageLoaded}" onerror="{!c.Handle_imageNotLoaded}" onclick="{!c.stopEventPropogation}"/>
                     <aura:set attribute="else">
-                        <h2 style="color: white; font-size: 1rem;"> Sorry, Image Preview Does Not Supported By Your Browser </h2>
+                        <h2 style="color: white; font-size: 1rem;"> Sorry, This Image Preview Does Not Supported</h2>
                     </aura:set>
                 </aura:if>
 
@@ -258,6 +278,27 @@
             
     
         </div>
+        <aura:if isTrue="{!v.Open_ShareImg_Modal}">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close" onclick="{!c.close_ShareImg_Model}" alternativeText="close" variant="bare-inverse" class="slds-modal__close" />
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">{!v.ShareImg_Modal_title}</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <center>
+                            <div class="Share_link_container">
+                                <div class="share_link_div">
+                                    <h3>{!v.ShareImg_Link}</h3>
+                                </div>
+                                <div class="copy_to_clipboard_btn" onclick="{!c.copy_share_link}">{!v.ShareImg_Modal_btn}</div>
+                            </div>
+                        </center>
+                    </div>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </aura:if>
     </aura:if>
     <!-- ============= New Image Preview END ============= -->
 
