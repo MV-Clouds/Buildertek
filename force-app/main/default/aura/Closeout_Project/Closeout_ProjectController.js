@@ -10,6 +10,14 @@
             if (state === "SUCCESS") {
                 component.set("v.templates", response.getReturnValue());
                 component.set("v.Spinner", false);
+            } else{
+                var toastEvent = $A.get("e.force:showToast");
+                toastEvent.setParams({
+                    "type": 'error',
+                    "message": 'Something went wrong'
+                });
+                toastEvent.fire();
+                component.set("v.Spinner", false);
             }
         });
 
