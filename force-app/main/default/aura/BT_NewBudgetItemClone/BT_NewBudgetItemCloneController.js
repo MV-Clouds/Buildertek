@@ -344,6 +344,7 @@
         component.set('v.newBudgetLine.Name', '');
         component.set('v.newBudgetLine.buildertek__Unit_Price__c', '');
         component.set('v.newBudgetLine.buildertek__Sales_Price__c', '');
+        component.set('v.newBudgetLine.buildertek__Markup__c', '');
     },
 
     onContingency: function (component, event, helper) {
@@ -1791,6 +1792,7 @@
                                     newInvoiceItem.buildertek__Description__c = rowData.Name;
                                     newInvoiceItem.buildertek__Quantity__c = rowData.buildertek__Quantity__c;
                                     newInvoiceItem.buildertek__Unit_Price__c = rowData.buildertek__Sales_Price__c;
+                                    newInvoiceItem.buildertek__Markup__c = rowData.buildertek__Markup__c;
                                     newInvoiceItems.push(newInvoiceItem);
                                 }
                                 var Invoice = component.get("v.newInvoiceAR");
@@ -2229,6 +2231,7 @@ helper.getProductDetails(component,event,helper);
                         component.set('v.newBudgetLine.buildertek__Unit_Price__c', '');
                         component.set('v.newBudgetLine.buildertek__Quantity__c', '1');
                         component.set('v.newBudgetLine.buildertek__Sales_Price__c', '');
+                        component.set('v.newBudgetLine.buildertek__Markup__c', '');
                         component.set('v.newBudgetLine.buildertek__Cost_Code__c', '');
                         component.set('v.UOMvalues', '');
                         component.set('v.pricebookName', '');
@@ -3297,6 +3300,8 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                                         newMassQuoteItem.buildertek__Forecast_To_Complete__c = recordList[l].originalValue;
                                     } else if (recordList[l].fieldName == 'buildertek__Sales_Price__c') {
                                         newMassQuoteItem.buildertek__Sales_Price__c = recordList[l].originalValue;
+                                    } else if (recordList[l].fieldName == 'buildertek__Markup__c') {
+                                        newMassQuoteItem.buildertek__Markup__c = recordList[l].originalValue;
                                     } else if (recordList[l].fieldName == 'buildertek__Notes__c') {
                                         newMassQuoteItem.buildertek__Notes__c = recordList[l].originalValue;
                                     } else if (recordList[l].fieldName == 'buildertek__Cost_Code__c') {

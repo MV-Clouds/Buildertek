@@ -2365,6 +2365,7 @@
         component.set('v.newBudgetLine.buildertek__Sub_Grouping__c', null);
         component.set('v.options', '');
         component.set('v.newBudgetLine.buildertek__Sales_Price__c', '');
+        component.set('v.newBudgetLine.buildertek__Markup__c', '');
         component.set('v.newBudgetLine.buildertek__Unit_Price__c', '');
         component.set('v.newBudgetLine.buildertek__Quantity__c', '1');
         component.set('v.newBudgetLine.buildertek__Cost_Code__c', '');
