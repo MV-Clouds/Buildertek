@@ -618,8 +618,11 @@
                                                 <th style="background-color:rgba(27, 82, 151, 1.0); color:white;">
                                                     <div class="slds-truncate" title="Unit Cost">Unit Cost</div>
                                                 </th>
-                                                <th style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+                                                <!-- <th style="background-color:rgba(27, 82, 151, 1.0); color:white;">
                                                     <div class="slds-truncate" title="Unit Cost">Unit Sales Price</div>
+                                                </th> -->
+                                                <th style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+                                                    <div class="slds-truncate" title="Markup (%)">Markup (%)</div>
                                                 </th>
                                                 <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-right-radius:5px;">
                                                     <div class="slds-truncate" title="Save">Save</div>
@@ -733,10 +736,19 @@
                                                     <!--<force:inputField value="{!v.newBudgetLine.buildertek__Unit_Price__c}" />-->
                                                     <ui:inputCurrency class="costInputField" value="{!v.newBudgetLine.buildertek__Unit_Price__c}" aura:id="unitPriceId" />
                                                 </td>
-                                                <td>
+                                                <!-- <td>
                                                     <ui:inputCurrency class="costInputField" value="{!v.newBudgetLine.buildertek__Sales_Price__c}" />
+                                                </td> -->
+                                                <td>
+                                                    <div class="slds-form slds-form_inline">
+                                                        <div class="slds-form-element">
+                                                            <lightning:input class="costInputField" value="{!v.newBudgetLine.buildertek__Markup__c}" formatter="percent-fixed" label="" type="number" step="0.01" />
+                                                        </div>
+                                                    </div>
+                                                    <!-- <ui:inputNumber class="costInputField" value="{!v.newBudgetLine.buildertek__Markup__c}" /> -->
                                                 </td>
                                                 <td>
+                                                    
                                                     <lightning:buttonIcon iconName="utility:save" alternativeText="save" onclick="{!c.saveBudgetItemRecord}" />
                                                 </td>
                                             </tr>
