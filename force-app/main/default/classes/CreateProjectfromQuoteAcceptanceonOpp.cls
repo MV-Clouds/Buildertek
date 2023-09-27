@@ -115,7 +115,6 @@ public String GroupingLevel4 { get; set; }
             return; // Validation fails, no data saving will be performed
         }
 
-
         update adminInterfaceNodeConfigurations;
         ApexPages.addmessage(new ApexPages.message(ApexPages.severity.CONFIRM,'Updated Successfully'));
     }
