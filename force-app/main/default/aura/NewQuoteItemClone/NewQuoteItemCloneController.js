@@ -3276,10 +3276,10 @@ console.log(document.getElementsByClassName(className)[0]);
      },
 
      returnToNormalVIew: function(component, event, helper){
-        component.set("v.valueofField1", '');
-        component.set("v.valueofField2", '');
-        component.set("v.valueofField3", '');
-        component.set("v.valueofField4", '');
+        //component.set("v.valueofField1", '');
+        //component.set("v.valueofField2", '');
+        //component.set("v.valueofField3", '');
+        //component.set("v.valueofField4", '');
         
         component.set("v.displayGrouping", false);
         component.set("v.QuoteLineWrapper", null);
