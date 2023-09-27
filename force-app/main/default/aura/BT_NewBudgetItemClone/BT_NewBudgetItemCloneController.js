@@ -169,6 +169,9 @@
 
         });
         $A.enqueueAction(btadminaction);
+
+        helper.getGroupingLevels(component, event, helper);
+
         helper.applyCSSBasedOnURL(component);
 
     },
@@ -5006,7 +5009,8 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
         var collapeallIcon = document.getElementById("collapeseAllBtn_" + recordId);
 
         var iconName = event.currentTarget.dataset.iconname;
-        var spanId = event.target.id;
+        var spanId = event.currentTarget.dataset.iconattr;
+        console.log('spanId==>',spanId);
 
         var totalRecordCount = component.get("v.TotalRecordCount");
         var collapeCount = component.get("v.CollapeCount");
