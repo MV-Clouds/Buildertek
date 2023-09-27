@@ -6,6 +6,8 @@
     <aura:attribute name="selectedToContact" type="sObject[]" default="[]" />
 	<aura:attribute name="selectedCcContact" type="sObject[]" default="[]" />
     <aura:attribute name="invoiceMemo" type="String" default=""/>
+    <aura:attribute name="templates" type="List" default="[]" />
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
 
     <force:recordData aura:id="forceRecordCmp" recordId="{!v.recordId}"
         fields="buildertek__Project__r.Name, buildertek__Auto_Number__c, buildertek__Total_Amount_Tax__c, buildertek__Amount__c, buildertek__Tax_Rate__c, buildertek__Total_Amount_Tax__c"
@@ -68,9 +70,13 @@
                                 }
                             </aura:html>  
                             <lightning:select name="templates" label="Select Template" aura:id="template" value="{!v.selectedTemplate}" onchange="{!c.preiewEmailTemplate}">
-                                <option text="None" value="" />
-                                <option text="Create Closeout Invoice" value="Invoice" />
+                                <!-- <option text="None" value="" />
+                                <option text="Create Closeout Invoice" value="Invoice" /> -->
                                 <!-- <option text="Create Closeout Documentation" value="Documentation" /> -->
+                                <option text="None" value="--None--" />
+                                <aura:iteration items="{!v.templates}" var="temp">
+                                    <option text="{!temp.Name}" value="{!temp.Id}" />
+                                </aura:iteration>
                             </lightning:select>
                         </aura:if>  
                         <aura:if isTrue="{!v.isTemplateSelected}">
@@ -97,7 +103,7 @@
                             </aura:html>  
                             <div>
 
-                                <aura:if isTrue="{!v.selectedTemplate == 'Invoice'}">
+                                <!-- <aura:if isTrue="{!v.selectedTemplate == }"> -->
 
                                     <div class="slds-form-element slds-email-composer__combobox" style="padding-bottom: 10px;">
                                         <label class="slds-form-element__label" for="recipients-to">To</label>
@@ -133,11 +139,11 @@
 
                                     <aura:unescapedHtml value="{!v.invoiceLines}" />
 
-                                </aura:if>
+                                <!-- </aura:if> -->
 
-                                <aura:if isTrue="{!v.selectedTemplate == 'Documentation'}">
+                                <!-- <aura:if isTrue="{!v.selectedTemplate == 'Documentation'}"> -->
 
-                                </aura:if>
+                                <!-- </aura:if> -->
                                 
                             </div>
                         </aura:if>
@@ -146,8 +152,11 @@
             </div>
             <footer role="contentinfo" class="slds-docked-form-footer fixedFooter" style="display:block;text-align:right;padding-right:5px;">
                 <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}">Cancel</button>
-                <button class="slds-button slds-button--brand" onclick="{!c.sendEmail}">Send Email</button>
+                <aura:if isTrue="{!v.isTemplateSelected}">
+                    <button class="slds-button slds-button--brand" onclick="{!c.sendEmail}">Send Email</button>
+                </aura:if>
             </footer>
         </div>
+        <c:BT_Spinner />
     </div>
 </aura:component>

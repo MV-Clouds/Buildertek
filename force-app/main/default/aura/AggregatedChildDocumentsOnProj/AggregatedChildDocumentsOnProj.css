@@ -8,7 +8,7 @@
     flex-direction: row;
     border: 1px solid rgba(0, 0, 0, 0.3);
     border-radius: 4px;
-    padding: 8px;
+    padding: 5px;
     width: -webkit-fill-available;
 }
 .THIS .file-div-tab {
@@ -133,7 +133,7 @@
 .THIS .notes-border-div {
     border: 1px solid rgba(0, 0, 0, 0.3);
     border-radius: 4px;
-    padding: 8px;
+    padding: 5px;
     /* width: inherit; */
     width: -webkit-fill-available;
 }
@@ -179,7 +179,7 @@
     line-height: 20px;
     display: flex;
     /* align-items: center; */
-    padding: 8px;
+    padding: 5px;
     align-items: center;
 
 }
@@ -304,7 +304,7 @@
     width: 124px; */
     height: 80px !important;
     width: 100px;
-    padding: 8px;
+    padding: 5px;
 }
 
 .THIS .slds-carousel__content {
@@ -427,7 +427,7 @@
     flex-direction: row;
     border: 1px solid rgba(0, 0, 0, 0.3);
     border-radius: 4px;
-    padding: 8px;
+    padding: 5px;
     width: -webkit-fill-available;
 }
 

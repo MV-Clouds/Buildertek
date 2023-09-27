@@ -1,10 +1,10 @@
 ({
     getTemplateBody : function(component, event, helper) {
-		console.log('getTemplateBody');
         var recordId = component.get("v.recordId");
 		var action = component.get("c.createInvoice");
 		action.setParams({
-		    recordId : recordId
+		    recordId : recordId,
+			SelectedTemplateId: component.get("v.selectedTemplate")
 		});
 		action.setCallback(this, function(response){
 		    var state = response.getState();
@@ -19,7 +19,7 @@
 	},
 
 	sendEmail: function (component, event, helper){
-		component.set("v.Spinner", true);
+		// component.set("v.Spinner", true);
 		var toIds = [];
 		var ccIds = [];
         var noToIds = [];
@@ -54,6 +54,7 @@
 					action.setParams({
 						htmlBody: component.get("v.invoiceLines"),
 						recordPId: component.get("v.recordId"),
+						SelectedTemplateId: component.get("v.selectedTemplate"),
 						to: toIds,
 						cc: ccIds
 					});
@@ -71,6 +72,9 @@
 									"message": "Email Sent Successfully"
 								});
 								toastEvent.fire();
+								$A.get("e.c:BT_SpinnerEvent").setParams({
+									"action": "HIDE"
+								}).fire();
 							} else {
 								$A.get("e.force:closeQuickAction").fire();
 								var toastEvent = $A.get("e.force:showToast");
@@ -79,14 +83,15 @@
 									"message": result1
 								});
 								toastEvent.fire();
+								$A.get("e.c:BT_SpinnerEvent").setParams({
+									"action": "HIDE"
+								}).fire();
 							}
 							$A.get('e.force:refreshView').fire();
 						}
-						component.set("v.Spinner", false);
 					});
 					$A.enqueueAction(action);
 				}
-				component.set("v.Spinner", false);
 			});
 			$A.enqueueAction(updateAction);
 		} else {
@@ -98,6 +103,9 @@
 				"message": "Please select To Address to send Email"
 			});
 			toastEvent.fire();
+			$A.get("e.c:BT_SpinnerEvent").setParams({
+				"action": "HIDE"
+			}).fire();
 		}
 	}
 })
