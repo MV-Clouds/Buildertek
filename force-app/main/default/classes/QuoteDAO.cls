@@ -2276,6 +2276,34 @@ public with sharing class QuoteDAO{
         return islien;
     }   
 
+
+    @AuraEnabled
+    public static List<String> groupingLevels(){
+        buildertek__Admin_Interface_Node_Configuration__c adminInterfaceNodeConfigurations = [Select Id, buildertek__Grouping_Level_1__c,buildertek__Grouping_Level_2__c,buildertek__Grouping_Level_3__c,           buildertek__Grouping_Level_4__c   from buildertek__Admin_Interface_Node_Configuration__c   WHERE Name = :'Quote Configuration'];
+
+        String groupingLevel1= adminInterfaceNodeConfigurations.buildertek__Grouping_Level_1__c;
+        if(groupingLevel1 == null){
+            groupingLevel1='';
+        }
+        String groupingLevel2= adminInterfaceNodeConfigurations.buildertek__Grouping_Level_2__c;
+        if(groupingLevel2 == null){
+            groupingLevel2='';
+        }
+        String groupingLevel3= adminInterfaceNodeConfigurations.buildertek__Grouping_Level_3__c;
+        if(groupingLevel3 == null){
+            groupingLevel3='';
+        }
+        String groupingLevel4= adminInterfaceNodeConfigurations.buildertek__Grouping_Level_4__c;
+        if(groupingLevel4 == null){
+            groupingLevel4='';
+        }
+
+
+        List<String> groupingLevels = new List<String>{groupingLevel1, groupingLevel2,groupingLevel3,groupingLevel4};
+        return groupingLevels;
+    }   
+
+
     @AuraEnabled
     public static quoteLineWrapperClass getQuoteData(String quoteId, Integer pageNumber, Integer recordToDisply, List<String> groupingList){
         quoteLineWrapperClass mainWrapper = new quoteLineWrapperClass();

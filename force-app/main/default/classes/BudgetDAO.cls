@@ -3272,6 +3272,26 @@ buildertek__Budget__c budgetCopy = Database.query(query);*/
         public Integer total{ get; set; }
     }
 
+    @AuraEnabled
+    public static List<String> groupingLevels(){
+        buildertek__Admin_Interface_Node_Configuration__c adminInterfaceNodeConfigurations = [Select Id, buildertek__Budget_Grouping_Level_1__c,
+        buildertek__Budget_Grouping_Level_2__c  from buildertek__Admin_Interface_Node_Configuration__c   WHERE Name = :'Budget Configuration'];
+
+        String groupingLevel1= adminInterfaceNodeConfigurations.buildertek__Budget_Grouping_Level_1__c;
+        if(groupingLevel1 == null){
+            groupingLevel1='';
+        }
+        String groupingLevel2= adminInterfaceNodeConfigurations.buildertek__Budget_Grouping_Level_2__c;
+        if(groupingLevel2 == null){
+            groupingLevel2='';
+        }
+
+
+        List<String> groupingLevels = new List<String>{groupingLevel1, groupingLevel2};
+        return groupingLevels;
+    }   
+
+
 
 
 }

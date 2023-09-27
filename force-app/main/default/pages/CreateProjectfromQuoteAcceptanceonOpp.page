@@ -22,12 +22,35 @@
                 <apex:inputcheckbox value="{!hideGlobalMarkup}" label="Hide Global Markup">
                 </apex:inputcheckbox>
                 <!-- Labbel changed from : Reject Quote on Rejected Lines based on CHB-35 -->
+                
+                <apex:selectList label="Grouping Level 1"  id="grouping1" value="{!GroupingLevel1}" size="1">
+                    <apex:selectOptions value="{!GroupingOptions}" />
+                </apex:selectList>
+                
+                <apex:selectList label="Grouping Level 2" id="grouping2" value="{!GroupingLevel2}" size="1">
+                    <apex:selectOptions value="{!GroupingOptions}" />
+                </apex:selectList>
+                
+                <apex:selectList label="Grouping Level 3"  id="grouping3" value="{!GroupingLevel3}" size="1">
+                    <apex:selectOptions value="{!GroupingOptions}" />
+                </apex:selectList>
+                
+                <apex:selectList label="Grouping Level 4" id="grouping4"  value="{!GroupingLevel4}" size="1">
+                    <apex:selectOptions value="{!GroupingOptions}" />
+                </apex:selectList>
                 <apex:inputcheckbox value="{!reject_Quote_on_Rejected_Lines}" label="Reject all or Acccept all">
                 </apex:inputcheckbox>
+
+
                 <center>
-                    <apex:commandButton value="Save" id="onCreateProjectfromQuoteAcceptanceonOpp" styleClass="slds-button slds-button_brand" action="{!onCreateProjectfromQuoteAcceptanceonOpp}"></apex:commandButton>
+                    <apex:commandButton value="Save" id="onCreateProjectfromQuoteAcceptanceonOpp"  styleClass="slds-button slds-button_brand" action="{!onCreateProjectfromQuoteAcceptanceonOpp}"></apex:commandButton>
                 </center>
             </apex:pageblocksection>
         </apex:pageBlock>
     </apex:form>
+
+    
+
+
+   
 </apex:page>

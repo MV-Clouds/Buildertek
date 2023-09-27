@@ -19,6 +19,18 @@
                     <apex:selectOption itemValue="Group By Vendor" itemLabel="Group By Vendor"/>
                     <apex:selectOption itemValue="Group By Cost Code" itemLabel="Group By Cost Code"/>
                 </apex:selectList>
+
+                 <apex:selectList label="Grouping Level 1"  id="grouping1" value="{!GroupingLevel1}" size="1">
+                    <apex:selectOptions value="{!GroupingOptions}" />
+                </apex:selectList>
+                
+                <apex:selectList label="Grouping Level 2" id="grouping2" value="{!GroupingLevel2}" size="1">
+                    <apex:selectOptions value="{!GroupingOptions}" />
+                </apex:selectList>
+                
+
+
+
                 <center>
                 <apex:commandButton value="Save" id="onCreateChangeOrderonOverage" styleClass="slds-button slds-button_brand" action="{!onQuoteAccepted}"></apex:commandButton>
                 </center>

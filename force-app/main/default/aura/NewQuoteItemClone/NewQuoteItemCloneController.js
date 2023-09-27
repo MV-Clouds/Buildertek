@@ -153,6 +153,8 @@
 
         });
         $A.enqueueAction(btadminaction);
+
+        helper.getGroupingLevels(component, event, helper);
         helper.applyCSSBasedOnURL(component);
 
     },
