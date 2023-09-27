@@ -45,7 +45,19 @@
 /* Extra large devices (large laptops and desktops, 1200px and up) */
 @media only screen and (min-width: 1200px) {
   .THIS .fixedFooter {
-    bottom : 4.4rem !important;
+    bottom : 3.4rem !important;
+  }
+
+}
+@media only screen and (min-width: 1400px) {
+  .THIS .fixedFooter {
+    bottom : 6.4rem !important;
+  }
+
+}
+@media only screen and (min-width: 1900px) {
+  .THIS .fixedFooter {
+    bottom : 9.4rem !important;
   }
 
 }
