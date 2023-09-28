@@ -602,7 +602,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
 
     let contractorComboData = makeComboBoxDataForContractor(this.contractorAndResources);
 
-    const gantt = new bryntum.gantt.Gantt({
+    let gantt = new bryntum.gantt.Gantt({
       project,
       appendTo: this.template.querySelector(".container"),
       // startDate: "2019-07-01",
@@ -747,6 +747,19 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
               type: "Combo",
               items: contractorComboData,
               name: "contractorId",
+              listeners:{
+                change : (event) => {
+                  // Use a debounce mechanism to delay execution
+                  if (this.debouncedChange) {
+                    clearTimeout(this.debouncedChange);
+                  }
+                  this.debouncedChange = setTimeout(() => {
+                    if (event.value != event.oldValue && this.taskRecordId != null && this.taskRecordId != undefined) {
+                      project.taskStore.getById(this.taskRecordId).assignments = [];
+                    }
+                  }, 300);
+                }
+              },
             },
           ],
           renderer: (record) => {
@@ -1113,6 +1126,9 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           this.selectedContactApiName = "buildertek__Contractor_Resource__c";
           this.selectedResourceContact = "";
         }
+      }
+      if (event.column.text == "Contractor") {
+        this.taskRecordId = event.record.id;
       }
     });
 
