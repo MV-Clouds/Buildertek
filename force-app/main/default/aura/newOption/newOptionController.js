@@ -63,6 +63,9 @@
      changeSelectionType:function(component, event, helper) {
         helper.changeSelectionType(component, event, helper);
      },
+     changePricebook:function(component, event, helper) {
+        helper.changePriceBook(component, event, helper);
+     },
 
     handleSubmit: function (component, event, helper) {
 
@@ -76,6 +79,7 @@
         let budgetLineName=component.get('v.selectedBudgetLineName');
         let budgetLineId=component.get('v.selectedBudgetLineId');
         let budgetId=component.get('v.selectedBudgetId');
+        let productId=component.get('v.selectedProductId');
 
         
         console.log({budgetLineId});
@@ -94,10 +98,20 @@
             fields["buildertek__Budget__c"] = component.get("v.selectedBudgetId");
         }
 
+        if(productId == ''){
+            fields["buildertek__Product__c"] = '';
+        }else{
+            fields["buildertek__Product__c"] = component.get("v.selectedProductId");
+        }
+
         fields["Name"] = component.get("v.optName");
         fields["buildertek__Options_Name__c"] = component.get("v.optLongName");
         fields["buildertek__Markup__c"] = component.get("v.markupValue");    
+
         var allData = JSON.stringify(fields);
+
+        console.log({allData});
+
         var action = component.get("c.saveData");
         action.setParams({
             allData : allData
@@ -170,6 +184,7 @@
         console.log('searchBudgetData');
         component.set('v.displayBudget', true);
         component.set('v.displayBudgetLine', false);
+        component.set('v.displayProduct', false);
 
 
         var selectionTypeId = component.get('v.selectionTypeId');
@@ -187,6 +202,71 @@
 
         event.stopPropagation();
  
+    },
+    searchProductData: function(component, event, helper) {
+        console.log('searchProductData');
+        component.set('v.displayProduct', true);
+        component.set('v.displayBudgetLine', false);
+        component.set('v.displayBudget', false);
+        let pricebook =component.get("v.selectedPricebookId");
+        if (pricebook == null || pricebook =='' || pricebook == undefined) {
+            try {
+                helper.getAllProducts(component, event, helper);
+            } catch (error) {
+                console.log('Error => ',error);
+            }
+        } else{
+            helper.getPricebooksProduct(component, event, helper , pricebook);
+        }
+        event.stopPropagation();
+    },
+    keyupProductData:function(component, event, helper) {
+
+        // console.log('selectedBudgetId=====', component.get('v.selectedBudgetId'));
+
+            var allRecords = component.get("v.productList");
+            var searchFilter = event.getSource().get("v.value").toUpperCase();
+            console.log({searchFilter});
+            var tempArray = [];
+            var i;
+            console.log("ok")
+            for (i = 0; i < allRecords.length; i++) {
+                console.log(allRecords[i].Name);
+                console.log(allRecords[i].Name.toUpperCase().indexOf(searchFilter) != -1);
+                if ((allRecords[i].Name && allRecords[i].Name.toUpperCase().indexOf(searchFilter) != -1)) {
+                    tempArray.push(allRecords[i]);
+                }else{
+                    component.set('v.selectedProductId' , ' ')
+                }
+            }
+            component.set("v.productList", tempArray);
+            let pricebook =component.get("v.selectedPricebookId");
+            if(searchFilter == ''){
+                if (pricebook == null || pricebook =='' || pricebook == undefined) {
+                    try {
+                        helper.getAllProducts(component, event, helper, searchFilter);
+                    } catch (error) {
+                        console.log('Error => ',error);
+                    }
+                    
+                } else{
+                    console.log('LOG FOR FILTER-->',searchFilter );
+                    helper.getPricebooksProduct(component, event, helper , pricebook, searchFilter);
+                }
+            }else{
+                if (pricebook == null || pricebook =='' || pricebook == undefined) {
+                    try {
+                        helper.getAllProducts(component, event, helper);
+                    } catch (error) {
+                        console.log('Error => ',error);
+                    }
+                    
+                } else{
+                    console.log('LOG FOR FILTER-->',searchFilter );
+                    helper.getPricebooksProduct(component, event, helper , pricebook, searchFilter);
+                }
+            }
+        
     },
     keyupBudgetData:function(component, event, helper) {
 
@@ -269,6 +349,7 @@
         console.log('searchBudgetLineData');
         component.set('v.displayBudgetLine', true);
         component.set('v.displayBudget', false);
+        component.set('v.displayProduct', false);
 
         console.log('<<<<<<<<<<---------->>>>>' ,  component.get('v.selectedBudgetName'));
 
@@ -293,6 +374,28 @@
             console.log('element => ',element);
             if (recordId == element.Id) {
                 component.set('v.selectedBudgetName', element.Name);
+            }
+        });
+        // event.stopPropagation();
+
+    },
+    clickHandlerProduct: function(component, event, helper){
+        // event.preventDefault();
+        console.log('clickHandlerProduct');
+        component.set('v.displayProduct', false);
+
+        
+        var recordId = event.currentTarget.dataset.value;
+        console.log('recordId ==> '+recordId);
+        component.set('v.selectedProductId', recordId);
+
+        var productList = component.get("v.productList");
+        productList.forEach(element => {
+            console.log('element => ',element);
+            if (recordId == element.Id) {
+                component.set('v.selectedProductName', element.Name);
+                component.set('v.selectedProductId', element.Id);
+
             }
         });
         // event.stopPropagation();
@@ -354,6 +457,7 @@
         
         component.set('v.displayBudget', false);
         component.set('v.displayBudgetLine', false);
+        component.set('v.displayProduct', false);
     },
 
     changeProduct:function(component, event, helper){
@@ -382,10 +486,6 @@
                     component.set('v.SalesPrice' , 0);
 
                 }
-
-
-                
-
 
             }
         });

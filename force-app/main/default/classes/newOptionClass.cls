@@ -14,6 +14,80 @@ public class newOptionClass {
         return prod;
     }
     @AuraEnabled
+    public static List<Product2> getAllProducts(){
+        // System.debug('prodName' + prodName);
+        // String filterValue='%'+prodName+'%';
+        List<Product2> prod = new List<Product2>();
+        // if(prodName !=null ){
+        //  prod = [SELECT Id, Name FROM Product2 WHERE Name LIKE :filterValue ORDER BY Name ASC LIMIT 100 ];
+        // }else{
+          prod = [SELECT Id, Name FROM Product2 ORDER BY Name ASC LIMIT 100 ];
+  
+        // }
+        System.debug('Method call' + prod);
+        return prod;
+    }
+    @AuraEnabled
+    public static List<Product2> getProductReletedToPricebook(String pricebook , String prodName){
+    
+        String filterValue='%'+prodName+'%';
+        System.debug(prodName);
+
+        List<Product2> productList = [SELECT Id, Name FROM Product2 WHERE buildertek__Product_Type__r.Name != 'Exclude'];
+        List<Product2> productList1 = [SELECT Id, Name FROM Product2 ];
+        List<Pricebook2> pricebookRec= [SELECT Id, Name, buildertek__Exclude__c FROM Pricebook2 WHERE  Id=:pricebook LIMIT 1];
+        System.debug(pricebookRec);
+        if(pricebookRec.size() > 0){
+            List<PricebookEntry> pricebookEntryList = new  List<PricebookEntry>();
+            if(pricebookRec[0].buildertek__Exclude__c == true){
+            
+                if(prodName !=null ){
+                    System.debug(prodName);
+                pricebookEntryList=[SELECT Id,Pricebook2Id, Product2Id FROM PricebookEntry WHERE Pricebook2Id=:pricebookRec[0].Id AND Product2Id IN :productList AND Product2.Name LIKE :filterValue LIMIT 100 ];
+                }else{
+                    pricebookEntryList=[SELECT Id,Pricebook2Id, Product2Id FROM PricebookEntry WHERE Pricebook2Id=:pricebookRec[0].Id AND Product2Id IN :productList LIMIT 100 ];
+
+                }
+                System.debug(pricebookEntryList);
+                Set<Id> productIds= new Set<Id>();
+                for(PricebookEntry pricebookEntryRec : pricebookEntryList){
+                    productIds.add(pricebookEntryRec.Product2Id);
+                }
+        
+                List<Product2> filterProductList=[SELECT Id , Name From Product2 WHERE Id IN:productIds ORDER BY Name ASC];
+                System.debug(filterProductList);
+                return filterProductList;
+            }else{
+                if(prodName !=null ){
+                pricebookEntryList=[SELECT Id,Pricebook2Id, Product2Id FROM PricebookEntry WHERE Pricebook2Id=:pricebookRec[0].Id AND Product2Id IN :productList1 AND Product2.Name LIKE :filterValue LIMIT 100 ];
+                }else{
+                    pricebookEntryList=[SELECT Id,Pricebook2Id, Product2Id FROM PricebookEntry WHERE Pricebook2Id=:pricebookRec[0].Id AND Product2Id IN :productList LIMIT 100 ];
+
+                }
+                System.debug(pricebookEntryList);
+                Set<Id> productIds= new Set<Id>();
+                for(PricebookEntry pricebookEntryRec : pricebookEntryList){
+                    productIds.add(pricebookEntryRec.Product2Id);
+                }
+        
+                List<Product2> filterProductList=[SELECT Id , Name From Product2 WHERE Id IN:productIds ORDER BY Name ASC];
+                System.debug(filterProductList);
+                return filterProductList;
+            }
+        
+        }else{
+            return null;
+        }
+        
+
+
+    }
+    @AuraEnabled
+    public static List<Pricebook2> getPriceBook(){
+        List<Pricebook2> priceBooks = [SELECT Id, Name, buildertek__Exclude__c FROM Pricebook2 ];
+        return priceBooks;
+    }
+    @AuraEnabled
     public static List<buildertek__Budget__c> getBudget(String seleTypeId){
         Set<Id> selectionCategoryIds= new Set<Id>();
         List<buildertek__Question_Group__c> selectionTypeList = [SELECT Id, Name, buildertek__Section__c, buildertek__Section__r.Name   FROM buildertek__Question_Group__c where id=:seleTypeId];
@@ -102,6 +176,7 @@ public class newOptionClass {
     //* method for saving data into object
     @AuraEnabled
     public static String saveData(String allData){
+        System.debug('ALL DATA-->' + allData);
         String optionNewId;
         buildertek__Question__c option = (buildertek__Question__c) JSON.deserialize(allData, buildertek__Question__c.class);
 
