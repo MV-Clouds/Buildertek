@@ -74,12 +74,9 @@ public without sharing class ContractTriggerHandler{
             if (cont.RecordTypeId == rt.Id && cont.buildertek__Status__c == 'Approved' && cont.buildertek__Project__c != null){
                 system.debug('&&&&&&&&&&&&&&&&&&&'+cont.buildertek__Status__c);
                 if (projectContractAmountMap.get(cont.buildertek__Project__c) == null){
-                    // contractAmountMap.put(cont.Id, cont.buildertek__Revised_Contract_Amount__c);
-                    contractAmountMap.put(cont.Id, cont.buildertek__Contract_Amount__c);
-
+                    contractAmountMap.put(cont.Id, cont.buildertek__Revised_Contract_Amount__c);
                 } else{
-                    // decimal finalTotalAmount = projectContractAmountMap.get(cont.buildertek__Project__c)+cont.buildertek__Revised_Contract_Amount__c;
-                    decimal finalTotalAmount = projectContractAmountMap.get(cont.buildertek__Project__c)+cont.buildertek__Contract_Amount__c;
+                    decimal finalTotalAmount = projectContractAmountMap.get(cont.buildertek__Project__c)+cont.buildertek__Revised_Contract_Amount__c;
                     contractAmountMap.put(cont.Id, finalTotalAmount);
                 }
                 buildertek__Project__c proj = new buildertek__Project__c();
@@ -127,13 +124,9 @@ public without sharing class ContractTriggerHandler{
                 system.debug('%%%%%%%%%%%%%%%%%%%%%----->'+cont.buildertek__Status__c);
                 
                 if (projectContractAmountMap.get(cont.buildertek__Project__c) == null){
-                    // contractAmountMap.put(cont.Id, cont.buildertek__Revised_Contract_Amount__c);
-                    contractAmountMap.put(cont.Id, cont.buildertek__Contract_Amount__c);
-
+                    contractAmountMap.put(cont.Id, cont.buildertek__Revised_Contract_Amount__c);
                 } else{
-                    // decimal finalTotalAmount = projectContractAmountMap.get(cont.buildertek__Project__c)+cont.buildertek__Revised_Contract_Amount__c;
-                    decimal finalTotalAmount = projectContractAmountMap.get(cont.buildertek__Project__c)+cont.buildertek__Contract_Amount__c;
-
+                    decimal finalTotalAmount = projectContractAmountMap.get(cont.buildertek__Project__c)+cont.buildertek__Revised_Contract_Amount__c;
                     contractAmountMap.put(cont.Id, finalTotalAmount);
                 }
                 buildertek__Project__c proj = new buildertek__Project__c();
@@ -142,9 +135,7 @@ public without sharing class ContractTriggerHandler{
                 projectList.add(proj);
             } else if (cont.RecordTypeId == rt.Id && oldContractsMap.get(cont.Id).buildertek__Status__c == 'Approved' && cont.buildertek__Status__c != 'Approved'){
                 if (projectContractAmountMap.get(cont.buildertek__Project__c) != null){
-                    // decimal finalTotalAmount = projectContractAmountMap.get(cont.buildertek__Project__c)-cont.buildertek__Revised_Contract_Amount__c;
-                    decimal finalTotalAmount = projectContractAmountMap.get(cont.buildertek__Project__c)-cont.buildertek__Contract_Amount__c;
-
+                    decimal finalTotalAmount = projectContractAmountMap.get(cont.buildertek__Project__c)-cont.buildertek__Revised_Contract_Amount__c;
                     buildertek__Project__c proj = new buildertek__Project__c();
                     proj.Id = cont.buildertek__Project__c;
                     proj.buildertek__Contract_Amount__c = finalTotalAmount;
@@ -152,12 +143,8 @@ public without sharing class ContractTriggerHandler{
                 }
             } else if (cont.RecordTypeId == rt.Id && oldContractsMap.get(cont.Id).buildertek__Status__c == cont.buildertek__Status__c && cont.buildertek__Status__c == 'Approved' && oldContractsMap.get(cont.Id).buildertek__Revised_Contract_Amount__c != cont.buildertek__Revised_Contract_Amount__c){
                 if (projectContractAmountMap.get(cont.buildertek__Project__c) != null){
-                    // decimal finalTotalAmount = projectContractAmountMap.get(cont.buildertek__Project__c)-oldContractsMap.get(cont.Id).buildertek__Revised_Contract_Amount__c;
-                    decimal finalTotalAmount = projectContractAmountMap.get(cont.buildertek__Project__c)-oldContractsMap.get(cont.Id).buildertek__Contract_Amount__c;
-
-                    // finalTotalAmount = finalTotalAmount + cont.buildertek__Revised_Contract_Amount__c;
-                    finalTotalAmount = finalTotalAmount + cont.buildertek__Contract_Amount__c;
-
+                    decimal finalTotalAmount = projectContractAmountMap.get(cont.buildertek__Project__c)-oldContractsMap.get(cont.Id).buildertek__Revised_Contract_Amount__c;
+                    finalTotalAmount = finalTotalAmount + cont.buildertek__Revised_Contract_Amount__c;
                     buildertek__Project__c proj = new buildertek__Project__c();
                     proj.Id = cont.buildertek__Project__c;
                     proj.buildertek__Contract_Amount__c = finalTotalAmount;
@@ -232,7 +219,36 @@ public without sharing class ContractTriggerHandler{
             
         }
       
-    
+    public void updateProjectContractAmount(Contract__c[] newContracts){
+        SET<Id> projectIds = new SET<Id>();
+
+        for (buildertek__Contract__c cont : newContracts){
+            projectIds.add(cont.buildertek__Project__c);
+        }
+        
+        AggregateResult[] groupedResults=[SELECT buildertek__Project__c, SUM(buildertek__Contract_Amount__c)contractAmt FROM buildertek__Contract__c WHERE  buildertek__Project__c IN:projectIds AND buildertek__Status__c='Approved' AND  RecordType.Name='Prime Contract' GROUP BY buildertek__Project__c];
+
+        // Create a map to store the contractAmt values by project ID
+        Map<Id, Decimal> projectContractAmtMap = new Map<Id, Decimal>();
+        for (AggregateResult result : groupedResults) {
+            Id projectId = (Id)result.get('buildertek__Project__c');
+            Decimal contractAmt = (Decimal)result.get('contractAmt');
+            projectContractAmtMap.put(projectId, contractAmt);
+        }
+
+        // Now you can access the contractAmt value for a specific project ID
+        List<buildertek__Project__c> projectList=[SELECT Id, buildertek__Contract_Amount__c From buildertek__Project__c WHERE Id IN: projectIds];
+        List<buildertek__Project__c> newProjectList= new List<buildertek__Project__c>();
+
+        for(buildertek__Project__c project:projectList){
+            project.buildertek__Contract_Amount__c=projectContractAmtMap.get(project.Id);
+            newProjectList.add(project);
+        }
+        if(newProjectList.size() > 0){
+            update newProjectList;
+        }
+
+    }
    
     
     
