@@ -28,36 +28,21 @@
 		
      },
 	 changePriceBook:function(component, event, helper) {
+		component.set('v.selectedPricebookId', '');
 		let getValue= event.getSource().get('v.value');
 		var temp = getValue;
 		component.set('v.selectedPricebookId', temp[0]);
 
      },
-	 getAllProducts:function(component, event, helper, searchFilter) {
-		var action = component.get("c.getAllProducts");
-		action.setCallback(this, function(response) {
-			var state = response.getState();
-			console.log({state});
-			var result= response.getReturnValue();
-			console.log('Budgert ==>',result);
-			if (state === "SUCCESS") {
-				component.set('v.productList' , result);
-			}
-		});
-		$A.enqueueAction(action);
-	 },
 	 getPricebooksProduct:function(component, event, helper, pricebook, searchFilter) {
 		var action = component.get("c.getProductReletedToPricebook");
-		console.log({state});
 		action.setParams({
 			pricebook:pricebook,
 			prodName:searchFilter
 		});
 		action.setCallback(this, function(response) {
 			var state = response.getState();
-			console.log({state});
 			var result= response.getReturnValue();
-			console.log('product ==>',result);
 			if (state === "SUCCESS") {
 				component.set('v.productList' , result);
 			}

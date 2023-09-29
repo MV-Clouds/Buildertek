@@ -28,7 +28,7 @@
     <ltng:require styles="{!$Resource.ModalPreview62moreMedia}"/>
     <lightning:notificationsLibrary aura:id="notifLib"/>
     <lightning:workspaceAPI aura:id="workspace"/>
-	<c:BT_Spinner/>
+	<!-- <c:BT_Spinner/> -->
 
     <aura:attribute name="listOfFields0" type="List" />
     <aura:attribute name="SalesPrice" type="Decimal" />
@@ -245,13 +245,14 @@
                                                             </span>
                                                         </aura:set>
                                                     </aura:if>
-                                                    <lightning:input   class="productInput" autocomplete="off" type="search" placeholder="Search Product ..." variant="label-hidden" value="{!v.selectedProductName}" onclick="{!c.searchProductData}" onkeyup="{!c.keyupProductData}" />
+                                                    <lightning:input   class="productInput" autocomplete="off" type="search" placeholder="Search Product..." variant="label-hidden" value="{!v.selectedProductName}" onclick="{!c.searchProductData}" onkeyup="{!c.keyupProductData}" />
                                                 </div>
         
                                                 <aura:if isTrue="{!v.displayProduct}" >
+                                                   
                                                     <div id="listbox-id-11" class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid searchResult" role="listbox" style="position: absolute;">
                                                         <ul class="slds-listbox slds-listbox_vertical" role="presentation">
-                                                            <!-- <lightning:spinner class="slds-show" variant="brand" size="small" aura:id="mySpinner2"/> -->
+                                                            <!-- <c:BT_Spinner /> -->
                                                             <aura:iteration items="{!v.productList}" var="result">
                                                                 <li role="presentation" class="slds-listbox__item" data-value="{!result.Id}" onclick="{!c.clickHandlerProduct}">
                                                                     <div class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small slds-media slds-listbox__option slds-listbox__option_entity slds-media_center" role="option">
@@ -269,7 +270,7 @@
                                                             <aura:if isTrue="{!empty(v.productList)}">
                                                                 <span>
                                                                     <p class="blank-lst" style="text-align: center; padding:10px" >
-                                                                        There Are No Product
+                                                                        There are no product
                                                                     </p>
                                                                 </span>
                                                             </aura:if>
@@ -324,9 +325,9 @@
         <!-- </div> -->
     </div>
     </div>
-    <aura:if isTrue="{!v.isLoading}">
+    <!-- <aura:if isTrue="{!v.isLoading}">
         <div aura:id="spinnerId" class="slds-spinner_container">
-            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+            <div class="slds-spinner-brand  slds-spinner slds-spinner-large slds-is-relative" role="alert">
                 <span class="slds-assistive-text">Loading</span>
                 <div class="slds-spinner__dot-a"></div>
                 <div class="slds-spinner__dot-b"></div>
@@ -335,6 +336,6 @@
                 </div>
             </div>
         </div>
-    </aura:if>
+    </aura:if> -->
 
 </aura:component>
