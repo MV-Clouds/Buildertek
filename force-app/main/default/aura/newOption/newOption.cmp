@@ -28,7 +28,7 @@
     <ltng:require styles="{!$Resource.ModalPreview62moreMedia}"/>
     <lightning:notificationsLibrary aura:id="notifLib"/>
     <lightning:workspaceAPI aura:id="workspace"/>
-	<!-- <c:BT_Spinner/> -->
+	<c:BT_Spinner/>
 
     <aura:attribute name="listOfFields0" type="List" />
     <aura:attribute name="SalesPrice" type="Decimal" />
