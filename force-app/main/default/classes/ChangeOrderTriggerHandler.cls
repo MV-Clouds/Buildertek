@@ -1076,9 +1076,17 @@ public without sharing class ChangeOrderTriggerHandler {
                 }  
             }
             System.debug('changeOrderContractIdSet'+changeOrderContractIdSet);
+
+            List<String> desiredStatuses = new List<String>{
+                'Customer Accepted', 
+                'Customer Approved', 
+                'Company Accepted', 
+                'Company Approved', 
+                'Accepted', 
+                'Approved'
+            };
             
-            
-            changeOrdersList = [SELECT Id, Name, buildertek__Contract__c, buildertek__Total_Amount_Tax__c FROM buildertek__Change_Order__c WHERE buildertek__Contract__c IN: changeOrderContractIdSet AND buildertek__Status__c IN ('Customer Accepted', 'Customer Approved')];
+            changeOrdersList = [SELECT Id, Name, buildertek__Contract__c, buildertek__Total_Amount_Tax__c FROM buildertek__Change_Order__c WHERE buildertek__Contract__c IN: changeOrderContractIdSet AND buildertek__Status__c IN: desiredStatuses];
             system.debug('ChangeOrderList.....>' +changeOrdersList);
             
             if(changeOrdersList.size() >  0){
