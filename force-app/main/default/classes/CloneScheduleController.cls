@@ -6,6 +6,12 @@ public without sharing class CloneScheduleController {
             return null;
         }
 
+
+        buildertek__Schedule__c oldSchedule= new buildertek__Schedule__c();
+        oldSchedule.Id=oldScheduleId;
+        oldSchedule.buildertek__Active__c=false;
+        update oldSchedule;
+
         String scheduleObj = 'buildertek__Schedule__c'; 
         String scheduleQuery = 'SELECT ';
         Map<String, Schema.SObjectField> ScheduleFieldMap = Schema.getGlobalDescribe().get(scheduleObj).getDescribe().fields.getMap();
@@ -14,7 +20,9 @@ public without sharing class CloneScheduleController {
         }
         scheduleQuery = scheduleQuery.removeEnd(', ') + ' FROM ' + scheduleObj +' WHERE id=\'' + oldScheduleId + '\'';
         buildertek__Schedule__c originalScheduleRec = Database.query(scheduleQuery);
-        buildertek__Schedule__c scheduleCopy  = originalScheduleRec.clone(false, false, false, false);     
+        buildertek__Schedule__c scheduleCopy  = originalScheduleRec.clone(false, false, false, false);    
+        scheduleCopy.buildertek__Active__c=true;
+ 
         insert scheduleCopy;
 
 
