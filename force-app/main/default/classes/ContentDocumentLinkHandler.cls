@@ -22,15 +22,13 @@ public with sharing class ContentDocumentLinkHandler{
             system.debug('>>>>> Is after trigger'+cdls);
             Set<ID> RFQparentIds = new Set<ID>();
             for (ContentDocumentLink cdl : cdls ) {
-                if (cdl.LinkedEntityId != null) {
-                    String objectName = cdl.LinkedEntityId.getSObjectType().getDescribe().getName();
-                    system.debug('>>>>> objectName'+objectName);
-                    if(objectName == 'buildertek__RFQ__c'){
-                        system.debug('>>>>>'+cdl.LinkedEntityId);
-                        RFQparentIds.add( cdl.LinkedEntityId );  
-                    }
-                    //RFQparentIds.add( cdl.LinkedEntityId );
+                String objectName = cdl.LinkedEntityId.getSObjectType().getDescribe().getName();
+                system.debug('>>>>> objectName'+objectName);
+                if(objectName == 'buildertek__RFQ__c'){
+                    system.debug('>>>>>'+cdl.LinkedEntityId);
+                    RFQparentIds.add( cdl.LinkedEntityId );  
                 }
+                //RFQparentIds.add( cdl.LinkedEntityId );  
             }
             if(!RFQparentIds.isEmpty()){
                 List<buildertek__RFQ_To_Vendor__c> vendorRFQ = [select id,buildertek__Status__c,buildertek__Contact__r.Email,buildertek__RFQ__r.buildertek__Status__c  from buildertek__RFQ_To_Vendor__c where buildertek__RFQ__c IN:RFQparentIds];
