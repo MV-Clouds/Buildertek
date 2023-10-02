@@ -18,6 +18,21 @@
 
     <aura:attribute name="Spinner" type="boolean" default="false" />
 
+    <!-- ============= New Image Preview ============= -->
+    <aura:attribute name="Show_ImagePreview" type="boolean"/>
+    <aura:attribute name="PreviewImageSrc" type="String" />
+    <aura:attribute name="PreviewImageId" type="String" />
+    <aura:attribute name="PreviewImageTitle" type="String" />
+    <aura:attribute name="Is_ImageHavePreview" type="boolean" default="true"/>
+    <aura:attribute name="PreviewImgSpinner" type="boolean" default="false"/>
+    <aura:attribute name="NotFirstImg" type="boolean" default="true"/>
+    <aura:attribute name="NotLastImg" type="boolean" default="true"/>
+    <aura:attribute name="Open_ShareImg_Modal" type="boolean" default="false"/>
+    <aura:attribute name="ShareImg_Modal_title" type="String" />
+    <aura:attribute name="ShareImg_Modal_btn" type="String" />
+    <aura:attribute name="ShareImg_Link" type="String"/>
+    <!-- ============= New Image Preview END ============= -->
+ 
     <aura:if isTrue="{!v.Spinner}">
         <div aura:id="spinnerId" class="slds-spinner_container">
             <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
@@ -117,8 +132,8 @@
                             <aura:if isTrue="{!ci.ContentDocumentLinks}">
                                 <div class="main-file-cmp">
                                     <aura:iteration items="{!ci.ContentDocumentLinks}" var="cd" indexVar="indexNum">
-                                        <div class="slds-m-horizontal_x-small">
-                                            <lightning:carouselImage description="{!cd.ContentDocument.Title}" src="{!orgBaseURL + '/sfc/servlet.shepherd/document/download/' + cd.ContentDocumentId}" onclick="{!c.onImageClick}" id="{!cd.ContentDocumentId+'-'+index}"/>
+                                        <div class="slds-m-horizontal_x-small" id="{!cd.ContentDocumentId}" data-cdid="{!cd.Id}" data-cid="{!ci.Id}" data-cdlindex="{!indexNum}">
+                                            <lightning:carouselImage description="{!cd.ContentDocument.Title}" src="{!orgBaseURL + '/sfc/servlet.shepherd/document/download/' + cd.ContentDocumentId}" onclick="{!c.handle_img_click}" id="{!cd.ContentDocumentId}"/>
                                         </div>
                                     </aura:iteration>
                                 </div>
@@ -160,8 +175,8 @@
                                 <aura:if isTrue="{!ci.ContentDocumentLinks}">
                                     <div class="main-file-cmp">
                                         <aura:iteration items="{!ci.ContentDocumentLinks}" var="cd" indexVar="indexNum">
-                                            <div class="slds-m-horizontal_x-small">
-                                                <lightning:carouselImage description="{!cd.ContentDocument.Title}" src="{!orgBaseURL + '/sfc/servlet.shepherd/document/download/' + cd.ContentDocumentId}" onclick="{!c.onImageClick}" id="{!cd.ContentDocumentId+'-'+index}"/>
+                                            <div class="slds-m-horizontal_x-small" id="{!cd.ContentDocumentId}" data-cdid="{!cd.Id}" data-cid="{!ci.Id}" data-cdlindex="{!indexNum}">
+                                                <lightning:carouselImage description="{!cd.ContentDocument.Title}" src="{!orgBaseURL + '/sfc/servlet.shepherd/document/download/' + cd.ContentDocumentId}" onclick="{!c.handle_img_click}" id="{!cd.ContentDocumentId}"/>
                                             </div>
                                         </aura:iteration>
                                     </div>
@@ -195,5 +210,96 @@
             </div>
         </div>
     </div>
+
+    <!-- ============= New Image Preview ============= -->
+    <aura:if isTrue="{!v.Show_ImagePreview}">
+        <div class="image_preview" aura:id="img_preview" style='background: rgba(0, 0, 0, 0.8);'>
+            <div class="image_control_bar" style="background: #0000008c;" onclick="{!c.stopEventPropogation}">
+                <div class="image_title">
+                    <lightning:icon iconName="doctype:image" alternativeText="Image file" title="Image" size="medium" />
+                    <h2>{!v.PreviewImageTitle}</h2>
+                </div>
+                <!-- <div class="Download_image" onclick="{!c.downloadImage}">
+                    <lightning:icon iconName="utility:download" alternativeText="download!" title="download" size="x-small"/>
+                    <h2>Download</h2>
+                </div> -->
+                <div class="img_options">
+                    <div class="image_distrubution" onclick="{!c.ShareImage_distribution}">
+                        <lightning:icon iconName="utility:share" alternativeText="download!" title="download" size="x-small"/>
+                        <h2>Public link</h2>
+                        <!-- <div class="Share_link_container">
+                            <div class="share_link_div"></div>
+                            <div class="copy_to_clipboard_btn"></div>
+                        </div> -->
+                    </div>
+                    <div class="image_distrubution" onclick="{!c.downloadImage_distribution}">
+                        <lightning:icon iconName="utility:download" alternativeText="download!" title="download" size="x-small"/>
+                        <h2>Download</h2>
+                    </div>
+                </div>
+                <div class="close_img" onclick="{!c.closeImagePreview}">
+                    <lightning:icon iconName="utility:close" alternativeText="close!" title="close" size="small"/>
+                </div>
+            </div>    
+    
+            <div class="img_preview_container" >
+                <!-- <img class="image_content" src="{!v.PreviewImageSrc}" onload="{!c.Handle_imageLoaded}" onerror="{!c.Handle_imageNotLoaded}" onclick="{!c.stopEventPropogation}"/> -->
+
+                <aura:if isTrue="{!v.Is_ImageHavePreview}">
+                    <img class="image_content" src="{!v.PreviewImageSrc}" onload="{!c.Handle_imageLoaded}" onerror="{!c.Handle_imageNotLoaded}" onclick="{!c.stopEventPropogation}"/>
+                    <aura:set attribute="else">
+                        <h2 style="color: white; font-size: 1rem;"> Sorry, This Image Preview Does Not Supported</h2>
+                    </aura:set>
+                </aura:if>
+
+                <aura:if isTrue="{!v.PreviewImgSpinner}">
+                    <div aura:id="spinnerId" class="slds-spinner_container" style="position: absolute; background : #04040466">
+                        <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                            <span class="slds-assistive-text">Loading</span>
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                        </div>
+                    </div>      
+                </aura:if>
+            </div>
+    
+            <div class="Next_Previous_btn">
+                <aura:if isTrue="{!v.NotFirstImg}">
+                    <div class="Previous_img_btn" onclick="{!c.ChangeImg}" data-name="Previous_Image">
+                        <lightning:icon iconName="utility:chevronleft" title="Previous" size="small"/>
+                    </div>
+                </aura:if>
+                <aura:if isTrue="{!v.NotLastImg}">
+                    <div class="Next_img_btn" onclick="{!c.ChangeImg}" data-name="Next_Image">
+                        <lightning:icon iconName="utility:chevronright"  title="Next" size="small"/>
+                    </div>
+                </aura:if>
+            </div>
+            
+    
+        </div>
+        <aura:if isTrue="{!v.Open_ShareImg_Modal}">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close" onclick="{!c.close_ShareImg_Model}" alternativeText="close" variant="bare-inverse" class="slds-modal__close" />
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">{!v.ShareImg_Modal_title}</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <center>
+                            <div class="Share_link_container">
+                                <div class="share_link_div">
+                                    <h3>{!v.ShareImg_Link}</h3>
+                                </div>
+                                <div class="copy_to_clipboard_btn" onclick="{!c.copy_share_link}">{!v.ShareImg_Modal_btn}</div>
+                            </div>
+                        </center>
+                    </div>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </aura:if>
+    </aura:if>
+    <!-- ============= New Image Preview END ============= -->
 
 </aura:component>
