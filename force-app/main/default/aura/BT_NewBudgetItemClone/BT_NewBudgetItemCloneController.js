@@ -4883,6 +4883,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
             var opts = [
                 {label: "Phase", value:"buildertek__Group__c"},
                 {label: "Sub Group", value:"buildertek__Sub_Grouping__c"},
+                {label: "Cost Code", value:"buildertek__Cost_Code_Name__c"},
             ]
             component.set("v.GroupingOptions", opts);
         }
@@ -4899,8 +4900,8 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
 
      },
      returnToNormalVIew: function(component, event, helper){
-        //component.set("v.valueofField1", '');
-        //component.set("v.valueofField2", '');
+        // component.set("v.valueofField1", '');
+        // component.set("v.valueofField2", '');
         // component.set("v.valueofField3", '');
         // component.set("v.valueofField4", '');
         
