@@ -6,11 +6,13 @@ import { loadScript, loadStyle } from "lightning/platformResourceLoader";
 import GanttStyle from "@salesforce/resourceUrl/BT_Bryntum_NewGanttCss";
 import GANTTModule from "@salesforce/resourceUrl/BT_Bryntum_NewGantt_ModuleJS";
 import { NavigationMixin } from "lightning/navigation";
+import { refreshApex } from "@salesforce/apex";
 
 // import GanttStyle from "@salesforce/resourceUrl/BT_Bryntum_NewGanttCss";
 import GanttToolbarMixin from "./lib/GanttToolbar";
 import data from "./data/launch-saas";
 import scheduleWrapperDataFromApex from "@salesforce/apex/bryntumGanttController.getScheduleWrapperAtLoading";
+import saveResourceForRecord from "@salesforce/apex/bryntumGanttController.saveResourceForRecord";
 import upsertDataOnSaveChanges from "@salesforce/apex/bryntumGanttController.upsertDataOnSaveChanges";
 import getPickListValuesIntoList from "@salesforce/apex/bryntumGanttController.getPickListValuesIntoList";
 import {
@@ -41,12 +43,15 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
   @api showImportPopup;
   @api recordId;
   @api taskRecordId;
+  @track showContractor = false;
+  @track showEditResourcePopup = false;
   @track selectedContactApiName;
 
   //Phase list
   @track phaseNameList;
 
   //new
+  @api showEditResourcePopup = false;
   @api selectedResourceContact;
   @api selectedContactApiName;
   @api resourceLookup = {};
@@ -54,6 +59,14 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
   @api contratctorLookup = {};
   @api contractorResourceFilterVal = "";
   @api internalResourceFilterVal = "";
+  //@api saveSelectedContact;
+  //@api saveSelectedContactApiName;
+
+  //Added for contractor
+  @api showContractor = false;
+  @api selectedResourceAccount;
+  @track contracFieldApiName;
+  @track contractorname;
 
   @api newTaskRecordCreate = {
     sObjectType: "buildertek__Project_Task__c",
@@ -149,12 +162,10 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
 
   loadLibraries() {
     Promise.all([
-      console.log("Lodding libraries"),
       // loadScript(this, GANTT + "/gantt.lwc.module.min.js"),
       // loadStyle(this, GANTT + "/gantt.stockholm-1.css"),
       loadScript(this, GANTTModule),
       loadStyle(this, GanttStyle + "/gantt.stockholm.css"),
-      console.log("Loaded libraries"),
     ])
       .then(() => {
         // this.handleHideSpinner();
@@ -222,13 +233,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
       scheduleid: this.SchedulerId,
     })
       .then((response) => {
-        console.log("response ", JSON.parse(JSON.stringify(response)));
-        var records = response;
-        console.log({
-          records,
-        });
         var data = response.lstOfSObjs;
-        console.log("data-->", data);
         this.scheduleItemsDataList = response.lstOfSObjs;
         this.contractorAndResources = response.listOfContractorAndResources;
         this.internalResources = response.listOfInternalResources;
@@ -241,14 +246,12 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           JSON.parse(JSON.stringify(this.internalResources))
         );
         this.scheduleData = response.scheduleObj;
-        console.log("scheduleData", this.scheduleData);
         this.storeRes = response.filesandattacmentList;
 
         var scheduleItemsList = [];
         var scheduleItemsListClone = [];
         let scheduleItemsMap = new Map();
         let taskMap = new Map();
-        console.log("after variables");
         for (var i in data) {
           if (
             data[i].Id != undefined &&
@@ -268,7 +271,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
             scheduleItemsMap.set(data[i].buildertek__Phase__c, data[i]);
           }
         }
-        console.log("after first for loop");
         for (var i = 0; i < scheduleItemsList.length; i++) {
           if (
             scheduleItemsList[i] != undefined &&
@@ -290,13 +292,11 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
             }
           }
         }
-        console.log("after second for loop");
         for (const [key, value] of scheduleItemsMap.entries()) {
           if (value != undefined) {
             scheduleItemsListClone.push(value);
           }
         }
-        console.log("after third for loop");
         let recordsMap = new Map();
         for (var i in scheduleItemsListClone) {
           if (scheduleItemsListClone[i].buildertek__Phase__c) {
@@ -320,7 +320,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
               .push(JSON.parse(JSON.stringify(scheduleItemsListClone[i])));
           }
         }
-        console.log("after fourth for loop");
 
         var result = Array.from(recordsMap.entries());
         var groupData = [];
@@ -330,12 +329,12 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           newObj["value"] = result[i][1];
           groupData.push(newObj);
         }
-        console.log("after fifth for loop");
 
         this.scheduleItemsData = groupData;
 
         if (this.template.querySelector(".container").children.length) {
           this.template.querySelector(".container").innerHTML = "";
+          this.template.querySelector(".container1").innerHTML = "";
           // this.handleHideSpinner();
           this.createGanttChartInitially();
           // this.createGantt();
@@ -378,6 +377,90 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
       });
   }
 
+  handleAccountSelection(event) {
+    if (event.detail.fieldNameapi == "buildertek__Dependency__c") {
+      this.newTaskRecordCreate["buildertek__Dependency__c"] = event.detail.Id;
+      this.predecessorLookup["Id"] = event.detail.Id;
+      this.predecessorLookup["Name"] = event.detail.selectedName;
+    } else if (event.detail.fieldNameapi == "buildertek__Resource__c") {
+      this.newTaskRecordCreate["buildertek__Resource__c"] = event.detail.Id;
+      this.resourceLookup["Id"] = event.detail.Id;
+      this.resourceLookup["Name"] = event.detail.selectedName;
+    } else if (event.detail.fieldNameapi == "buildertek__Contractor__c") {
+      this.newTaskRecordCreate["buildertek__Contractor__c"] = event.detail.Id;
+      this.contratctorLookup["Id"] = event.detail.Id;
+      this.contratctorLookup["Name"] = event.detail.selectedName;
+    } else if (
+      event.detail.fieldNameapi == "buildertek__Contractor_Resource__c"
+    ) {
+      this.newTaskRecordCreate["buildertek__Contractor_Resource__c"] =
+        event.detail.Id;
+      this.contractorResourceLookup["Id"] = event.detail.Id;
+      this.contractorResourceLookup["Name"] = event.detail.selectedName;
+    }
+  }
+
+  handlecontactSelection(event) {
+    this.selectedResourceContact = event.detail.Id;
+  }
+
+  handleaccountSelectionContractor(event) {
+    this.selectedResourceAccount = event.detail.Id;
+    this.contracFieldApiName = event.detail.fieldNameapi;
+    this.contractorname = event.target.value;
+  }
+
+  saveSelectedContact() {
+    var that = this;
+    console.log("checking method*&");
+    if (!this.taskRecordId.includes("_generated")) {
+      console.log("^ other side condition ^");
+      //Added for contractor ****Start****
+      if (this.contracFieldApiName === "buildertek__Contractor__c") {
+        console.log("^ In If ^");
+        that.showContractor = false; //Added for contractor
+        this.isLoaded = true;
+        console.log("taskRecordId:-", this.taskRecordId);
+        console.log("selectedResourceAccount:-", this.selectedResourceAccount);
+        console.log("contracFieldApiName:-", this.contracFieldApiName);
+        saveResourceForRecord({
+          taskId: this.taskRecordId,
+          resourceId: this.selectedResourceAccount,
+          resourceApiName: this.contracFieldApiName,
+        }).then(function (response) {
+          const filterChangeEvent = new CustomEvent("filterchange", {
+            detail: {
+              message: "refresh page",
+            },
+          });
+          that.dispatchEvent(filterChangeEvent);
+          that.getScheduleWrapperDataFromApex();
+          that.showEditResourcePopup = false;
+        });
+        that.contracFieldApiName = "";
+      }
+      //Added for contractor ****End****
+      else {
+        console.log("^ In else ^");
+        that.showEditResourcePopup = false;
+        this.isLoaded = true;
+
+        saveResourceForRecord({
+          taskId: this.taskRecordId,
+          resourceId: this.selectedResourceContact,
+          resourceApiName: this.selectedContactApiName,
+        }).then(function (response) {
+          const filterChangeEvent = new CustomEvent("filterchange", {
+            detail: {
+              message: "refresh page",
+            },
+          });
+          that.dispatchEvent(filterChangeEvent);
+          that.getScheduleWrapperDataFromApex();
+        });
+      }
+    }
+  }
 
   closeEditPopup(event) {
     event.preventDefault();
@@ -400,9 +483,11 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     this.newTaskCompletion = null;
     this.showEditPopup = false;
     this.showDeletePopup = false;
+    this.showEditResourcePopup = false;
     this.saveCommentSpinner = false;
     this.newNotesList = [];
 
+    this.showContractor = false; //Added for contractor
     Object.assign(this.newTaskRecordCreate, this.newTaskRecordClone);
   }
 
@@ -432,9 +517,9 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           rowPhaseElement.innerHTML.indexOf("slds-icon-custom-custom62") == -1
         ) {
           if (rowPhaseElement.children.length) {
-            if (rowPhaseElement.children[2].children.length) {
-              rowPhaseElement.children[2].children[0].innerHTML =
-                iconElement + rowPhaseElement.children[2].children[0].innerHTML;
+            if (rowPhaseElement.children[3].children.length) {
+              rowPhaseElement.children[3].children[0].innerHTML =
+                iconElement + rowPhaseElement.children[3].children[0].innerHTML;
             }
           }
         }
@@ -450,14 +535,19 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           rowPhaseElement.innerHTML.indexOf("slds-icon-custom-custom70") == -1
         ) {
           if (rowPhaseElement.children.length) {
-            if (rowPhaseElement.children[2].children.length) {
-              rowPhaseElement.children[2].children[0].innerHTML =
-                iconElement + rowPhaseElement.children[2].children[0].innerHTML;
+            if (rowPhaseElement.children[3].children.length) {
+              rowPhaseElement.children[3].children[0].innerHTML =
+                iconElement + rowPhaseElement.children[3].children[0].innerHTML;
             }
           }
         }
       }
     }
+  }
+
+  addtaskeventcall(taskrecord) {
+    console.log("In addtaskeventcall method");
+    console.log(taskrecord);
   }
 
   createGanttChartInitially() {
@@ -472,16 +562,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     var rows = [];
 
     var scheduleDataList = this.scheduleItemsDataList;
-    console.log("scheduleDataList ==> ", {
-      scheduleDataList,
-    });
-
-    console.log(
-      "scheduleDataList after logic changed ",
-      JSON.parse(JSON.stringify(scheduleDataList))
-    );
     this.scheduleItemsDataList = scheduleDataList;
-    console.log("scheduleItemsData :--- ", this.scheduleItemsData);
     var formatedSchData = formatApexDatatoJSData(
       this.scheduleData,
       this.scheduleItemsData,
@@ -501,7 +582,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     assignmentRowData = formatedSchData["assignmentRowData"];
 
     let resourceData = makeComboBoxDataForResourceData(this.contractorAndResources, this.internalResources);
-    this.handleHideSpinner();
+
     const project = new bryntum.gantt.ProjectModel({
       calendar: data.project.calendar,
       // startDate: data.project.startDate,
@@ -520,8 +601,8 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     project.calendar = "business";
 
     let contractorComboData = makeComboBoxDataForContractor(this.contractorAndResources);
-    this.handleHideSpinner();
-    const gantt = new bryntum.gantt.Gantt({
+
+    let gantt = new bryntum.gantt.Gantt({
       project,
       appendTo: this.template.querySelector(".container"),
       // startDate: "2019-07-01",
@@ -539,11 +620,41 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           draggable: false,
         },
         {
+          type: "action",
+          text: "",
+          width: 30,
+          actions: [
+            {
+              cls: "b-fa b-fa-check",
+              onClick: ({ record }) => {
+                if (record.type == "Task") {
+                  if (record.percentDone == 100) {
+                    record.set("percentDone", 0);
+                  } else {
+                    record.set("percentDone", 100);
+                  }
+                }
+              },
+              renderer: ({ action, record }) => {
+                if (record.type == "Task" && record.name != "Milestone Complete") {
+                  if (record.percentDone == 100) {
+                    return `<i class="b-action-item ${action.cls}" style="color: #5ee14c;"></i>`;
+                  } else {
+                    return `<i class="b-action-item ${action.cls}"></i>`;
+                  }
+                } else {
+                  return `<i class="b-action-item ${action.cls}" style="display:none;"></i>`;
+                }
+              },
+            },
+          ],
+        },
+        {
           type: "percentdone",
           draggable: false,
           showCircle: true,
-          width: 100,
-          text: "% Complete",
+          width: 50,
+          text: "% Done",
         },
         {
           type: "name",
@@ -577,7 +688,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
         {
           type: "predecessor",
           draggable: false,
-          width: 120,
+          width: 180,
           editor: false,
           renderer: (record) => {
             populateIcons(record);
@@ -636,6 +747,19 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
               type: "Combo",
               items: contractorComboData,
               name: "contractorId",
+              listeners:{
+                change : (event) => {
+                  // Use a debounce mechanism to delay execution
+                  if (this.debouncedChange) {
+                    clearTimeout(this.debouncedChange);
+                  }
+                  this.debouncedChange = setTimeout(() => {
+                    if (event.value != event.oldValue && this.taskRecordId != null && this.taskRecordId != undefined) {
+                      project.taskStore.getById(this.taskRecordId).assignments = [];
+                    }
+                  }, 300);
+                }
+              },
             },
           ],
           renderer: (record) => {
@@ -652,7 +776,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
         },
         {
           type : 'resourceassignment',
-          width : 180,
+          width : 120,
           showAvatars : true,
           draggable : false,
           editor      : {
@@ -671,13 +795,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
                   cellMenu   : false,
               },
             },
-            listeners: {
-              paint: ({ source }) => {
-                let contractorId = source._projectEvent._data.contractorId;
-                console.log('source :- ', source);
-                source.store.filter(record => (record.resource._data.type == 'Internal Resources' || record.resource._data.contractorId == contractorId));
-              }
-            }
           },
           itemTpl : assignment => assignment.resourceName
         },
@@ -781,7 +898,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
 
       subGridConfigs: {
         locked: {
-          flex: 3,
+          flex: 5,
         },
         normal: {
           flex: 4,
@@ -912,8 +1029,16 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     });
 
     gantt.on("cellClick", ({ record }) => {
-      console.log("cell event");
       gantt.scrollTaskIntoView(record);
+    });
+
+    gantt.on('startCellEdit', (editorContext) => {
+      if ( editorContext.editorContext.column.type == 'resourceassignment' ) {
+        let contractorId = editorContext.editorContext.record._data.contractorId;
+        editorContext.editorContext.editor.inputField.picker.onShow = ({source}) => {
+          source.store.filter(record => (record.resource.type == 'Internal Resources' || record.resource.contractorId == contractorId));
+        };
+      }
     });
 
     gantt.on('beforeTaskChange', ({event}) => {
@@ -932,15 +1057,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
 
     gantt.callGanttComponent = this;
 
-    gantt.on("addSuccessor", (event) => {
-      // Get the data of the new task.
-      const taskData = event.task;
-
-      debugger;
-      // Do something with the data.
-      console.log("New task data: ", taskData);
-    });
-
     gantt.on("link", function (event) {
       const linkType = event.record.type; // 'StartToEnd' or 'EndToStart'
       const sourceTask = event.sourceRecord;
@@ -953,6 +1069,66 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
       } else if (linkType === "EndToStart") {
         // Disable link creation for successors (End of one task to Start of another)
         event.preventDefault();
+      }
+    });
+
+    //Resources data
+    gantt.addListener("cellClick", (event) => {
+      if (event.column.data.text == "Internal Resource") {
+        if (event.target.id == "editInternalResource") {
+          if (event.target.dataset.resource) {
+            this.taskRecordId = event.record._data.id;
+            this.showEditResourcePopup = true;
+            console.log("taskReocrdId:=- " + this.taskRecordId);
+            this.selectedContactApiName = "buildertek__Resource__c";
+            this.selectedResourceContact = event.record._data.internalresource;
+          }
+        } else if (event.target.classList.contains("addinternalresource")) {
+          this.taskRecordId = event.record._data.id;
+          console.log("taskReocrdId:=- " + this.taskRecordId);
+          this.showEditResourcePopup = true;
+          this.selectedContactApiName = "buildertek__Resource__c";
+          this.selectedResourceContact = "";
+        }
+      }
+      //Added for Contractor
+      if (event.column.data.text == "Contractor") {
+        if (event.target.id == "editcontractor") {
+          if (event.target.dataset.resource) {
+            this.taskRecordId = event.record._data.id;
+            console.log("taskReocrdId:=- " + this.taskRecordId);
+            this.showContractor = true;
+            this.selectedContactApiName = "buildertek__Contractor__c";
+            this.selectedResourceAccount = event.record._data.contractoracc;
+          }
+        } else if (event.target.classList.contains("addcontractor")) {
+          this.taskRecordId = event.record._data.id;
+          console.log("taskReocrdId:=- " + this.taskRecordId);
+          this.showContractor = true;
+          this.selectedContactApiName = "buildertek__Contractor__c";
+          this.selectedResourceAccount = "";
+        }
+      }
+      if (event.column.data.text == "Contractor Resource") {
+        if (event.target.id == "editcontractorResource") {
+          if (event.target.dataset.resource) {
+            this.taskRecordId = event.record._data.id;
+            this.showEditResourcePopup = true;
+            console.log("taskReocrdId:=- " + this.taskRecordId);
+            this.selectedContactApiName = "buildertek__Contractor_Resource__c";
+            this.selectedResourceContact =
+              event.record._data.contractorresource;
+          }
+        } else if (event.target.classList.contains("addcontractorresource")) {
+          this.taskRecordId = event.record._data.id;
+          this.showEditResourcePopup = true;
+          console.log("taskReocrdId:=- " + this.taskRecordId);
+          this.selectedContactApiName = "buildertek__Contractor_Resource__c";
+          this.selectedResourceContact = "";
+        }
+      }
+      if (event.column.text == "Contractor") {
+        this.taskRecordId = event.record.id;
       }
     });
 
@@ -981,7 +1157,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     project.commitAsync().then(() => {
       // console.timeEnd("load data");
       const stm = gantt.project.stm;
-      console.log("stm", stm);
 
       stm.enable();
       stm.autoRecord = true;

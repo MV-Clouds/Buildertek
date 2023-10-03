@@ -10,11 +10,9 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
 
     var taskListForPhase = scheduleItemsDataList;
     var firstRowDup = {};
-    console.log('taskListForPhase :- ' , JSON.parse(JSON.stringify(taskListForPhase)));
     firstRowDup["id"] = scheduleData.Id;
     firstRowDup["name"] = scheduleData.buildertek__Description__c;
     firstRowDup["startDate"] = scheduleData.buildertek__Initial_Start_Date__c;
-    console.log('scheduleData.startDate ',scheduleData.startDate);
     firstRowDup["expanded"] = true
     firstRowDup["type"] = 'Project'
     firstRowDup['customtype'] = 'Project'
@@ -28,7 +26,6 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
     var phIndex = -1;
     for(var i=0;i<taskListForPhase.length;i++){
         if(taskListForPhase[i].buildertek__Phase__c && taskPhaseRow){
-            console.log('method 1 in helper');
 
             if(taskPhaseRow['name'] != taskListForPhase[i].buildertek__Phase__c){
                 phIndex = phIndex+1;
@@ -113,6 +110,7 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
             }
             rowChilObj["expanded"] = true
             rowChilObj["order"] = taskListForPhase[i].buildertek__Order__c
+            rowChilObj["markAsDone"] = taskListForPhase[i].buildertek__Completed__c;
             var dependencyRow = {};
                 if(taskListForPhase[i].buildertek__Dependency__c){
                     dependencyRow["id" ]  = taskListForPhase[i].Id+'_'+taskListForPhase[i].buildertek__Dependency__c
@@ -198,7 +196,6 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
                 firstRowDup['children'].push(taskPhaseRow);
             }
         }else if(taskListForPhase[i].buildertek__Phase__c && !taskPhaseRow){
-            console.log('method 2 in helper');
 
             taskPhaseRow = {};
             phIndex = phIndex+1;
@@ -212,7 +209,7 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
             taskPhaseRow["children"] = []
             // taskPhaseRow["constraintType"] = 'startnoearlierthan'
             var rowChilObj = {};
-            rowChilObj["type"] = 'Task'
+            rowChilObj["type"] = 'Task';
             rowChilObj["customtype"] = taskListForPhase[i].buildertek__Type__c
                 if(taskListForPhase[i].buildertek__Type__c == 'Milestone'){
                 rowChilObj["cls"] = 'milestoneTypeColor'
@@ -222,7 +219,6 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
                 if(taskListForPhase[i].buildertek__Indent_Task__c){
                 rowChilObj["iconCls"] = "b-fa b-fa-arrow-left indentTrue"
             }
-            console.log('taskListForPhase[i].buildertek__Phase__c ',taskListForPhase[i].buildertek__Phase__c);
             rowChilObj['phase'] = taskListForPhase[i].buildertek__Phase__c
                 //     if(taskListForPhase[i].buildertek__Dependency__c){
                 //     // rowChilObj["constraintType"] = ''
@@ -275,6 +271,7 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
 
             rowChilObj["expanded"] = true
             rowChilObj["order"] = taskListForPhase[i].buildertek__Order__c
+            rowChilObj["markAsDone"] = taskListForPhase[i].buildertek__Completed__c;
 
             var dependencyRow = {};
                 if(taskListForPhase[i].buildertek__Dependency__c){
@@ -337,11 +334,9 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
 
 
             taskPhaseRow["children"].push(rowChilObj);
-            console.log('taskPhaseRow ',taskPhaseRow)
             firstRowDup['children'].push(taskPhaseRow);
             newPhaseFlag = false;
         }else if(!taskListForPhase[i].buildertek__Phase__c){
-            console.log('method 3 in helper');
             phIndex = phIndex+1;
             var rowChilObj = {};
             rowChilObj["type"] = 'Task'
@@ -403,6 +398,7 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
 
             rowChilObj["expanded"] = true
             rowChilObj["order"] = taskListForPhase[i].buildertek__Order__c
+            rowChilObj["markAsDone"] = taskListForPhase[i].buildertek__Completed__c;
             // if(taskListForPhase[i].buildertek__ConstraintType__c == 'None' || taskListForPhase[i].buildertek__ConstraintType__c == '--None--' || taskListForPhase[i].buildertek__ConstraintType__c == null || taskListForPhase[i].buildertek__ConstraintType__c == undefined){
                 rowChilObj["constraintDate"] =  scheduleData.buildertek__Start__c;
                 rowChilObj["constraintType"] =  "startnoearlierthan";
@@ -475,7 +471,6 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
         }
 
     }
-    console.log('firstRowDup ',firstRowDup);
     rows.push(firstRowDup);
     formattedData['rows'] = rows;
     formattedData['resourceRowData'] = resourceRowData;
@@ -498,8 +493,8 @@ function convertJSONtoApexData(data, taskData, dependenciesData, resourceData) {
     var rowData = [];
     const phasedatamap = new Map();
     const contractordatamap = new Map();
+    const markAsDonemap = new Map();
 
-    console.log('data !-->', {data})
     if (data) {
         data.forEach(element => {
             if(element.hasOwnProperty('NewPhase')){
@@ -507,6 +502,9 @@ function convertJSONtoApexData(data, taskData, dependenciesData, resourceData) {
             }
             if(element._data.hasOwnProperty('contractorId')){
                 contractordatamap.set(element.id, element._data.contractorId);
+            }
+            if(element._data.hasOwnProperty('markAsDone')){
+                markAsDonemap.set(element.id, element._data.markAsDone);
             }
         });
         if (data.length > 0) {
@@ -522,7 +520,6 @@ function convertJSONtoApexData(data, taskData, dependenciesData, resourceData) {
             for (let j = 0; j < taskData.length; j++) {
                 getChildren(taskData[j])
             }
-            console.log('rowdata:- ', rowData);
             var updateDataList = [];
             var updateDataCloneList = [];
             for (var i = 0; i < rowData.length; i++) {
@@ -546,11 +543,9 @@ function convertJSONtoApexData(data, taskData, dependenciesData, resourceData) {
 
                 updateData['buildertek__Order__c'] = i + 1;
                 //var startdate = new Date(rowData[i]['startDate'])
-                // console.log('test',new Date(rowData[i]['endDate']).toLocaleDateString())
                 var enddate = new Date(rowData[i]['endDate']).toLocaleDateString().split('/')
                 //var enddate = new Date(rowData[i]['endDate']).toJSON();
                 var enddate = new Date(rowData[i]['endDate'])
-                // console.log('test', rowData[i]['startDate'])
                 updateData['buildertek__Start__c'] = rowData[i]['startDate'].split('T')[0]
                 //updateData['buildertek__Finish__c'] = enddate[2] + '-'+ enddate[1] + '-'+enddate[0]
                 //updateData['buildertek__Finish__c'] = enddate.split('T')[0]
@@ -564,8 +559,6 @@ function convertJSONtoApexData(data, taskData, dependenciesData, resourceData) {
                     updateData['buildertek__ConstraintDate__c'] = null
                     updateData['buildertek__ConstraintType__c'] = 'None'
                 }
-                console.log('check Constraint date ',rowData[i]['constraintDate']);
-                console.log('check Constraint type ',rowData[i]['constraintType']);
                 if (rowData[i]['customtype']) {
                     updateData['buildertek__Type__c'] = rowData[i]['customtype']
                 }else{
@@ -589,7 +582,6 @@ function convertJSONtoApexData(data, taskData, dependenciesData, resourceData) {
                 }
                 //updateData['buildertek__Indent_Task__c'] = rowData[i]['iconCls'].includes('indentTrue')
                 if (rowData[i]['parentId']) {
-                    // console.log(rowData[i]['parentId'])
                     if (rowData[i]['parentId'].split('_')[1]) {
                         updateData['buildertek__Phase__c'] = rowData[i]['parentId'].split('_')[1]
                     }
@@ -610,20 +602,18 @@ function convertJSONtoApexData(data, taskData, dependenciesData, resourceData) {
                         updateData['buildertek__Dependency__c'] = null;
                     }
                 }
-                console.log('phasedatamap -->', phasedatamap);
-                console.log('hasownproperty updateData -->', updateData.Id );
+
                 if(phasedatamap.has(updateData.Id)){
-                    console.log('updating phase data');
                     updateData['buildertek__Phase__c'] = phasedatamap.get(updateData.Id);
                 }
-                const keys = phasedatamap.keys();
 
                 if(contractordatamap.has(updateData.Id)){
-                    console.log('updating Contractor data');
                     updateData['buildertek__Contractor__c'] = contractordatamap.get(updateData.Id);
                 }
 
-                console.log('DemoGenretedId updateData:- ',{updateData});
+                if(markAsDonemap.has(updateData.Id)){
+                    updateData['buildertek__Completed__c'] = markAsDonemap.get(updateData.Id);
+                }
 
                 updateDataClone = Object.assign({}, updateData);
 
@@ -650,7 +640,6 @@ function recordsTobeDeleted(oldListOfTaskRecords, newListOfTaskRecords) {
     const setOfNewRecordId = new Set();
     const listOfRecordIdToBeDeleted = [];
     newListOfTaskRecords.forEach(newTaskRecord => {
-        // console.log('newTaskRecord in recordtobedeleted :- ',newTaskRecord);
         var taskId = newTaskRecord.Id
         if(!(taskId.includes('_generatedt_'))){
             setOfNewRecordId.add(newTaskRecord.Id);

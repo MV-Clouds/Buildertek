@@ -13,7 +13,7 @@ public with sharing class bryntumGanttController {
 
         String strQuery = 'SELECT ';
 
-        strQuery += 'Id,Name,buildertek__Type__c,buildertek__Indent_Task__c,buildertek__Reference_for_Import__c,buildertek__Lag__c,buildertek__Schedule__c,buildertek__Budget__c,buildertek__ConstraintType__c,buildertek__ConstraintDate__c,buildertek__DependencyStatus__c,buildertek__Add_To_All_Active_Schedules__c,buildertek__Notes__c,buildertek__Schedule__r.Name,buildertek__Schedule__r.buildertek__Description__c,buildertek__Start__c,buildertek__Finish__c,buildertek__Duration__c,buildertek__Contractor__c,buildertek__Contractor__r.Name,buildertek__Phase__c,buildertek__Completion__c, buildertek__Dependency__c,buildertek__Dependency__r.Name,buildertek__Contractor_Resource__c,buildertek__Contractor_Resource__r.Name,buildertek__Resource__c, buildertek__Resource__r.Name,buildertek__Contractor_Resource_1__c,buildertek__Contractor_Resource_1__r.Name,buildertek__Contractor_Resource_2__c,buildertek__Contractor_Resource_2__r.Name,buildertek__Contractor_Resource_3__c,buildertek__Contractor_Resource_3__r.Name,buildertek__Internal_Resource_1__c,buildertek__Internal_Resource_1__r.Name,buildertek__Internal_Resource_3__c,buildertek__Internal_Resource_3__r.Name,buildertek__Internal_Resource_4__c,buildertek__Internal_Resource_4__r.Name,buildertek__Milestone__c,buildertek__Order__c,buildertek__Budget_Line__c,CreatedDate FROM buildertek__Project_Task__c where buildertek__Schedule__c = :  scheduleid Order By buildertek__Order__c NULLS LAST,CreatedDate';
+        strQuery += 'Id,Name,buildertek__Type__c,buildertek__Indent_Task__c,buildertek__Completed__c, buildertek__Reference_for_Import__c,buildertek__Lag__c,buildertek__Schedule__c,buildertek__Budget__c,buildertek__ConstraintType__c,buildertek__ConstraintDate__c,buildertek__DependencyStatus__c,buildertek__Add_To_All_Active_Schedules__c,buildertek__Notes__c,buildertek__Schedule__r.Name,buildertek__Schedule__r.buildertek__Description__c,buildertek__Start__c,buildertek__Finish__c,buildertek__Duration__c,buildertek__Contractor__c,buildertek__Contractor__r.Name,buildertek__Phase__c,buildertek__Completion__c, buildertek__Dependency__c,buildertek__Dependency__r.Name,buildertek__Contractor_Resource__c,buildertek__Contractor_Resource__r.Name,buildertek__Resource__c, buildertek__Resource__r.Name,buildertek__Contractor_Resource_1__c,buildertek__Contractor_Resource_1__r.Name,buildertek__Contractor_Resource_2__c,buildertek__Contractor_Resource_2__r.Name,buildertek__Contractor_Resource_3__c,buildertek__Contractor_Resource_3__r.Name,buildertek__Internal_Resource_1__c,buildertek__Internal_Resource_1__r.Name,buildertek__Internal_Resource_3__c,buildertek__Internal_Resource_3__r.Name,buildertek__Internal_Resource_4__c,buildertek__Internal_Resource_4__r.Name,buildertek__Milestone__c,buildertek__Order__c,buildertek__Budget_Line__c,CreatedDate FROM buildertek__Project_Task__c where buildertek__Schedule__c = :  scheduleid Order By buildertek__Order__c NULLS LAST,CreatedDate';
         //CreatedDate//Order by buildertek__Milestone__c , Order__c ASC NULLS LAST, Auto_Number__c ASC
         system.debug('strQuery---' + strQuery);
 
@@ -235,6 +235,63 @@ public with sharing class bryntumGanttController {
                 from buildertek__Project_Task__c
                 where buildertek__Schedule__c = :mId
                 order by createdDate];
+    }
+
+    @AuraEnabled
+    public static buildertek__Project_Task__c saveResourceForRecord(Id taskId, String resourceId, String resourceApiName){
+        System.debug('check param here');
+        System.debug('taskID '+taskId);
+        System.debug('resourceID '+resourceId);
+        System.debug('resourceAPIName '+resourceApiName);
+        string rel = resourceApiName.split('__c')[0] + '__r.Name';
+        String queryStr = 'Select Id,Name,' + resourceApiName + ',' + rel + ' From buildertek__Project_Task__c Where Id=:taskId';
+        String apiName = resourceApiName;
+        System.debug('apiName>>>' + apiName);
+        buildertek__Project_Task__c updateTask = Database.query(queryStr);
+        List<buildertek__Project_Task__c> updateTaskResourceList = new List<buildertek__Project_Task__c>();
+        if (resourceApiName == 'buildertek__Resource__c'){
+            if (resourceId != null){
+                system.debug(updateTask.buildertek__Resource__c);
+                system.debug(resourceId);
+                buildertek__Project_Task__c projTask = new buildertek__Project_Task__c();
+                projTask.Id = updateTask.Id;
+                projTask.buildertek__Resource__c = resourceId;
+                updateTaskResourceList.add(projTask);
+                update updateTaskResourceList;
+                system.debug(updateTaskResourceList[0].buildertek__Resource__c);
+            }
+        } else if (apiName == 'buildertek__Contractor_Resource__c'){
+            if (resourceId != null){
+                Contact con = [SELECT Id, AccountId from Contact Where id = :resourceId];
+                buildertek__Project_Task__c projTask = new buildertek__Project_Task__c();
+                projTask.Id = updateTask.Id;
+                projTask.buildertek__Contractor_Resource__c = resourceId;
+                projTask.buildertek__Contractor__c = con.AccountId;
+                updateTaskResourceList.add(projTask);
+                update updateTaskResourceList;
+            }
+        }
+
+
+        //added for contractor
+        else if (apiName == 'buildertek__Contractor__c'){
+
+            System.debug('In contractor>>>>');
+            System.debug('resourceId>>>' + resourceId);
+            System.debug('resourceApiName>>>' + resourceApiName);
+            if (resourceId != null){
+                Account acc = [SELECT Id, Name from Account Where Id = :resourceId];
+                buildertek__Project_Task__c projTask = new buildertek__Project_Task__c();
+                projTask.Id = updateTask.Id;
+                // projTask.buildertek__Contractor_Resource__c = resourceId;
+                projTask.buildertek__Contractor__c = acc.Id;
+                updateTaskResourceList.add(projTask);
+                update updateTaskResourceList;
+            }
+        }
+
+
+        return updateTask;
     }
 
     @AuraEnabled
