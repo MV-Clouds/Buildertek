@@ -5,7 +5,7 @@ public without sharing class PreviewQuoteController{
         if (Schema.sObjectType.Emailtemplate.fields.Id.isAccessible() && Schema.sObjectType.Emailtemplate.fields.Name.isAccessible() && Schema.sObjectType.Emailtemplate.fields.folderid.isAccessible() && Schema.sObjectType.Folder.fields.Name.isAccessible()){
             temrec = [Select Id, Name, folder.name, DeveloperName
                       from Emailtemplate
-                      where folder.name = 'BT Quote' AND DeveloperName != 'quote_top' AND DeveloperName != 'quote_bottom'];
+                      where folder.name = 'BT Quote' AND DeveloperName != 'quote_top' AND DeveloperName != 'quote_bottom' ORDER BY Name ASC];
         }
         System.debug('Template ========>>>>>'+temrec);
         return temrec;
