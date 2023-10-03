@@ -500,6 +500,31 @@ public with sharing class bryntumGanttController {
         }
     }
 
+    /* @Author        Nishit Suthar
+     * Date           03-10-2023
+     * Description :  This method is used for changing original start and end date with current start and end date.
+     */
+    @AuraEnabled
+    public static String changeOriginalDates(String recordId){
+        try{
+            List<buildertek__Project_Task__c> scheduleTaskList = [SELECT Id, Name, buildertek__Start__c, buildertek__Finish__c, buildertek__Original_Start_Date__c, buildertek__Original_End_Date__c
+                                                                  FROM buildertek__Project_Task__c
+                                                                  WHERE buildertek__Schedule__c = :recordId
+                                                                  FOR  UPDATE ];
+            for (buildertek__Project_Task__c st : scheduleTaskList){
+                st.buildertek__Original_Start_Date__c = st.buildertek__Start__c;
+                st.buildertek__Original_End_Date__c = st.buildertek__Finish__c;
+            }
+            update scheduleTaskList;
+            return 'Success';
+
+        } catch (Exception e){
+            String data = 'Error => ' + e.getMessage() + ' || Line No => ' + e.getLineNumber();
+            System.debug(data);
+            return data;
+        }
+    }
+
 
     /* @Author        Nishit Suthar
      * Date           24-08-2023

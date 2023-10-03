@@ -294,6 +294,14 @@ export default base => class GanttToolbar extends base {
                         },
                         {
                             type     : 'button',
+                            text     : 'Set Original Dates',
+                            color    : 'b-blue',
+                            ref      : 'editOriginalDate',
+                            icon     : 'b-fa-file-export',
+                            onAction : 'up.onEditOriginalDate'
+                        },
+                        {
+                            type     : 'button',
                             text     : 'Import Schedule',
                             color    : 'b-blue',
                             ref      : 'excelImportBtn',
@@ -345,6 +353,10 @@ export default base => class GanttToolbar extends base {
 
         undoBtn.disabled = !stm.canUndo;
         redoBtn.disabled = !stm.canRedo;
+    }
+
+    onEditOriginalDate(){
+        this.gantt.callGanttComponent.openOriginDateModal()
     }
 
     updateStartDateField() {
