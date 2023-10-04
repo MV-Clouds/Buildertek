@@ -8,6 +8,7 @@
 	<aura:attribute name="selectedFiles" type="sObject[]" default="[]"/>
     <aura:attribute name="selectedFillIds" type="sObject[]" default="[]"/>
 
+    
 	
 	<aura:attribute name="pdfFileName" type="String"/>
 	<aura:attribute name="templatefolderName" type="String" />
