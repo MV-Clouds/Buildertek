@@ -12,7 +12,7 @@ public with sharing class importTakeoff {
     public static void fetchTakeoffLines(List<String> listOfTakeoffIds, String quoteId) {
         try {
             System.debug('quoteId: ' + quoteId);
-            List<buildertek__Project_Takeoff_Lines__c> takeoffLineList = new List<buildertek__Project_Takeoff_Lines__c>([SELECT Id, Name, buildertek__Build_Phase__c, buildertek__Build_Phase__r.Name, buildertek__Project_Takeoff__c,buildertek__Quantity__c, buildertek__Product_Type__c, buildertek__Cost_Code__c,buildertek__Product__r.Name FROM buildertek__Project_Takeoff_Lines__c WHERE buildertek__Project_Takeoff__c IN :listOfTakeoffIds]);
+            List<buildertek__Project_Takeoff_Lines__c> takeoffLineList = new List<buildertek__Project_Takeoff_Lines__c>([SELECT Id, Name, buildertek__Build_Phase__c, buildertek__Build_Phase__r.Name, buildertek__Project_Takeoff__c,buildertek__Quantity__c, buildertek__Product_Type__c, buildertek__Cost_Code__c,buildertek__Product__r.Name, buildertek__Project_Takeoff__r.Name FROM buildertek__Project_Takeoff_Lines__c WHERE buildertek__Project_Takeoff__c IN :listOfTakeoffIds]);
             Id grouppingId;
             List<buildertek__Quote_Item__c> quoteItems = [SELECT buildertek__Grouping__r.Id FROM buildertek__Quote_Item__c WHERE buildertek__Grouping__r.Name = 'TakeOff' LIMIT 1];
 
@@ -40,8 +40,13 @@ public with sharing class importTakeoff {
                 quoteLine.buildertek__Product__c = takeoffline.buildertek__Product__c;
                 
                 String productName = takeoffline.buildertek__Product__r.Name;
-                quoteLine.Name = (productName != null && productName.length() > 79) ? productName.substring(0, 79) : productName;
-                quoteLine.buildertek__Item_Name__c = (productName != null && productName.length() > 255) ? productName.substring(0, 254) : productName;
+                if (productName != null) {
+                    quoteLine.Name = (productName.length() > 79) ? productName.substring(0, 79) : productName;
+                    quoteLine.buildertek__Item_Name__c = (productName.length() > 255) ? productName.substring(0, 254) : productName;
+                } else {
+                    quoteLine.Name = takeoffline.buildertek__Project_Takeoff__r.Name;
+                    quoteLine.buildertek__Item_Name__c = takeoffline.buildertek__Project_Takeoff__r.Name;
+                }
 
                 System.debug('quoteLine.buildertek__Product__c: ' + quoteLine.buildertek__Product__c);
                 quotelineList.add(quoteLine);
