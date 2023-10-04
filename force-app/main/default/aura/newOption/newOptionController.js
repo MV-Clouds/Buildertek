@@ -64,6 +64,10 @@
         helper.changeSelectionType(component, event, helper);
      },
 
+     changePricebook:function(component, event, helper) {
+        helper.changePriceBook(component, event, helper);
+     },
+
     handleSubmit: function (component, event, helper) {
 
 
@@ -76,6 +80,7 @@
         let budgetLineName=component.get('v.selectedBudgetLineName');
         let budgetLineId=component.get('v.selectedBudgetLineId');
         let budgetId=component.get('v.selectedBudgetId');
+        let productId=component.get('v.selectedProductId');
 
         
         console.log({budgetLineId});
@@ -94,9 +99,16 @@
             fields["buildertek__Budget__c"] = component.get("v.selectedBudgetId");
         }
 
+        if(productId == ''){
+            fields["buildertek__Product__c"] = '';
+        }else{
+            fields["buildertek__Product__c"] = component.get("v.selectedProductId");
+        }
+
         fields["Name"] = component.get("v.optName");
         fields["buildertek__Options_Name__c"] = component.get("v.optLongName");
         fields["buildertek__Markup__c"] = component.get("v.markupValue");    
+
         var allData = JSON.stringify(fields);
         var action = component.get("c.saveData");
         action.setParams({
@@ -170,6 +182,7 @@
         console.log('searchBudgetData');
         component.set('v.displayBudget', true);
         component.set('v.displayBudgetLine', false);
+        component.set('v.displayProduct', false);
 
 
         var selectionTypeId = component.get('v.selectionTypeId');
@@ -187,6 +200,41 @@
 
         event.stopPropagation();
  
+    },
+    searchProductData: function(component, event, helper) {
+        component.set('v.displayProduct', true);
+        component.set('v.displayBudgetLine', false);
+        component.set('v.displayBudget', false);
+        var pricebook =component.get("v.selectedPricebookId");
+        if (pricebook == null || pricebook =='' || pricebook == undefined) {
+            component.set("v.productList" , null);            
+        } else{
+            helper.getPricebooksProduct(component, event, helper, pricebook);
+        }
+        event.stopPropagation();
+    },
+    keyupProductData:function(component, event, helper) {
+        component.set('v.displayProduct', true);
+
+            var allRecords = component.get("v.productList");
+            var searchFilter = event.getSource().get("v.value").toUpperCase();
+            var tempArray = [];
+            var i;
+            for (i = 0; i < allRecords.length; i++) {
+                if ((allRecords[i].Name && allRecords[i].Name.toUpperCase().indexOf(searchFilter) != -1)) {
+                    tempArray.push(allRecords[i]);
+                }else{
+                    component.set('v.selectedProductId' , ' ')
+                }
+            }
+            component.set("v.productList", tempArray);
+            let pricebook =component.get("v.selectedPricebookId");
+
+            if (pricebook == null || pricebook =='' || pricebook == undefined) {
+                component.set("v.productList" , null);
+            } else{
+                    helper.getPricebooksProduct(component, event, helper , pricebook, searchFilter);
+            }
     },
     keyupBudgetData:function(component, event, helper) {
 
@@ -269,6 +317,7 @@
         console.log('searchBudgetLineData');
         component.set('v.displayBudgetLine', true);
         component.set('v.displayBudget', false);
+        component.set('v.displayProduct', false);
 
         console.log('<<<<<<<<<<---------->>>>>' ,  component.get('v.selectedBudgetName'));
 
@@ -298,11 +347,49 @@
         // event.stopPropagation();
 
     },
+    clickHandlerProduct: function(component, event, helper){
+        component.set('v.displayProduct', false);   
+        var recordId = event.currentTarget.dataset.value;
+        console.log('clickHandlerProduct',recordId);
+        component.set('v.selectedProductId', recordId);
+        var productList = component.get("v.productList");
+        productList.forEach(element => {
+            if (recordId == element.Id) {
+                component.set('v.selectedProductName', element.Name);
+                component.set('v.selectedProductId', element.Id);
+            }
+        });
+        var action = component.get("c.getProduct");
+        action.setParams({
+            productId: recordId
+        });
+        action.setCallback(this, function(response) {
+            var state = response.getState();
+            console.log({state});
+            var result= response.getReturnValue();
+            console.log({result});
+
+            if (state === "SUCCESS") {
+                console.log({result});
+                component.set('v.optName' , result.Name);
+                component.set('v.optLongName' , result.Name);
+                console.log(result.PricebookEntries);
+                // console.log(result.PricebookEntries[0].UnitPrice);
+                if(result.PricebookEntries != undefined){
+                    console.log(result.PricebookEntries[0].UnitPrice);
+                    component.set('v.SalesPrice' , result.PricebookEntries[0].UnitPrice);
+                }else{
+                    component.set('v.SalesPrice' , 0);
+
+                }
+
+            }
+        });
+        $A.enqueueAction(action);
+    },
     clickHandlerBudgetLine: function(component, event, helper){
 
-        console.log('clickHandlerBudgetLine');
         component.set('v.displayBudgetLine', false);
-        console.log('----------->>>>>' ,  component.get('v.selectedBudgetName'));
         var recordId = event.currentTarget.dataset.value;
         console.log('recordId ==> '+recordId);
         component.set('v.selectedBudgetLineId', recordId);
@@ -354,6 +441,7 @@
         
         component.set('v.displayBudget', false);
         component.set('v.displayBudgetLine', false);
+        component.set('v.displayProduct', false);
     },
 
     changeProduct:function(component, event, helper){
@@ -382,10 +470,6 @@
                     component.set('v.SalesPrice' , 0);
 
                 }
-
-
-                
-
 
             }
         });

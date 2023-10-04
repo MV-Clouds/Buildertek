@@ -13,6 +13,56 @@ public class newOptionClass {
         Product2 prod = [SELECT Id, Name, buildertek__Manufacturer__c, (select Id, Name, UnitPrice, buildertek__Unit_Cost__c,Product2Id from PricebookEntries) FROM Product2 WHERE Id =: productId LIMIT 1];
         return prod;
     }
+
+    @AuraEnabled
+    public static List<Product2> getProductReletedToPricebook(String pricebook , String prodName){
+        String filterValue='%'+prodName+'%';
+
+        List<Product2> productList = [SELECT Id, Name FROM Product2 WHERE buildertek__Product_Type__r.Name != 'Exclude'];
+        List<Product2> productList1 = [SELECT Id, Name FROM Product2 ];
+        List<Pricebook2> pricebookRec= [SELECT Id, Name, buildertek__Exclude__c FROM Pricebook2 WHERE  Id=:pricebook LIMIT 1];
+
+        if(pricebookRec.size() > 0){
+            List<PricebookEntry> pricebookEntryList = new  List<PricebookEntry>();
+            if(pricebookRec[0].buildertek__Exclude__c == true){
+                if(prodName !=null ){
+                    pricebookEntryList=[SELECT Id,Pricebook2Id, Product2Id FROM PricebookEntry WHERE Pricebook2Id=:pricebookRec[0].Id AND Product2Id IN :productList AND Product2.Name LIKE :filterValue LIMIT 100 ];
+                }else{
+                    pricebookEntryList=[SELECT Id,Pricebook2Id, Product2Id FROM PricebookEntry WHERE Pricebook2Id=:pricebookRec[0].Id AND Product2Id IN :productList LIMIT 100 ];
+                }
+
+                Set<Id> productIds= new Set<Id>();
+                for(PricebookEntry pricebookEntryRec : pricebookEntryList){
+                    productIds.add(pricebookEntryRec.Product2Id);
+                }
+                List<Product2> filterProductList=[SELECT Id , Name From Product2 WHERE Id IN:productIds ORDER BY Name ASC];
+                return filterProductList;
+            }
+            else{
+                if(prodName !=null ){
+                pricebookEntryList=[SELECT Id,Pricebook2Id, Product2Id FROM PricebookEntry WHERE Pricebook2Id=:pricebookRec[0].Id AND Product2Id IN :productList1 AND Product2.Name LIKE :filterValue LIMIT 100 ];
+                }else{
+                    pricebookEntryList=[SELECT Id,Pricebook2Id, Product2Id FROM PricebookEntry WHERE Pricebook2Id=:pricebookRec[0].Id AND Product2Id IN :productList1 LIMIT 100 ];
+                }
+                Set<Id> productIds= new Set<Id>();
+                for(PricebookEntry pricebookEntryRec : pricebookEntryList){
+                    productIds.add(pricebookEntryRec.Product2Id);
+                }
+                List<Product2> filterProductList=[SELECT Id , Name From Product2 WHERE Id IN:productIds ORDER BY Name ASC];
+                return filterProductList;
+            }
+        
+        }else{
+            return null;
+        }
+    }
+
+    @AuraEnabled
+    public static List<Pricebook2> getPriceBook(){
+        List<Pricebook2> priceBooks = [SELECT Id, Name, buildertek__Exclude__c FROM Pricebook2 ];
+        return priceBooks;
+    }
+
     @AuraEnabled
     public static List<buildertek__Budget__c> getBudget(String seleTypeId){
         Set<Id> selectionCategoryIds= new Set<Id>();

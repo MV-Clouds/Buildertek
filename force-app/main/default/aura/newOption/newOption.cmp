@@ -52,6 +52,12 @@
     <aura:attribute name="selectedBudgetId" type="String" default="" />
     <aura:attribute name="selectedBudgetLineId" type="String" default="" />
 
+    <aura:attribute name="productList" type="List" />
+    <aura:attribute name="displayProduct" type="boolean" default="false" />
+    <aura:attribute name="selectedProductName" type="String" default="" />
+    <aura:attribute name="selectedProductId" type="String" default="" />
+    <aura:attribute name="selectedPricebookId" type="String" default="" />
+  
     <aura:attribute name="selectedBudgetName" type="String" default="" />
     <aura:attribute name="selectedBudgetLineName" type="String" default="" />
     <aura:attribute name="optName" type="String" default="" />
@@ -93,11 +99,17 @@
                         
 
                         <aura:iteration items="{!v.listOfFields0}" var="field">
-							<aura:if isTrue="{!(field.name == 'buildertek__Question_Group__c' || field.name == 'buildertek__Budget_Line__c' || field.name == 'buildertek__Cost__c' || field.name == 'buildertek__Budget__c' || field.name == 'buildertek__Markup__c' ||field.name == 'buildertek__Product__c' || field.name == 'Name' || field.name == 'buildertek__Options_Name__c' )}">
+							<aura:if isTrue="{!(field.name == 'buildertek__Question_Group__c' || field.name == 'buildertek__Budget_Line__c' || field.name == 'buildertek__Price_Book__c' || field.name == 'buildertek__Cost__c' || field.name == 'buildertek__Budget__c' || field.name == 'buildertek__Markup__c' ||field.name == 'buildertek__Product__c' || field.name == 'Name' || field.name == 'buildertek__Options_Name__c' )}">
 
 								<aura:if isTrue="{!field.name == 'buildertek__Question_Group__c'}">
 									<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
 										<lightning:inputField aura:id='selection' fieldName="{!field.name}" onchange="{!c.changeSelectionType}" value="{!v.selectionTypeId}" />
+									</lightning:layoutItem>
+								</aura:if>
+
+								<aura:if isTrue="{!field.name == 'buildertek__Price_Book__c'}">
+									<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+										<lightning:inputField aura:id='selection' fieldName="{!field.name}" onchange="{!c.changePricebook}" value="{!v.selectedPricebookId}" />
 									</lightning:layoutItem>
 								</aura:if>
 
@@ -216,9 +228,61 @@
                                     </lightning:layoutItem>
                                 </aura:if>
                                 <aura:if isTrue="{!field.name == 'buildertek__Product__c'}">
-                                    <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                                        <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                                            <div style="position: relative">
+                                                
+                                                <label>Product</label>
+                                                <div class="slds-input-has-icon slds-input-has-iconright">
+                                                    <aura:if isTrue="{!v.selectedProductName == ''}">
+                                                        <span class="slds-icon_container slds-combobox__input-entity-icon searchIcon" title="record">
+                                                            <lightning:icon class="slds-icon slds-icon slds-icon_small" iconName="utility:search" size="x-small" alternativeText="icon"/>
+                                                            <span class="slds-assistive-text"></span>
+                                                        </span>
+                                                        <aura:set attribute="else">
+                                                            <span class="slds-icon_container slds-combobox__input-entity-icon" title="record">
+                                                                <lightning:icon class="slds-icon slds-icon slds-icon_small" iconName="custom:custom5" size="x-small" alternativeText="icon"/>
+                                                                <span class="slds-assistive-text"></span>
+                                                            </span>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                    <lightning:input   class="productInput" autocomplete="off" type="search" placeholder="Search Product..." variant="label-hidden" value="{!v.selectedProductName}" onclick="{!c.searchProductData}" onkeyup="{!c.keyupProductData}" />
+                                                </div>
+        
+                                                <aura:if isTrue="{!v.displayProduct}" >
+                                                   
+                                                    <div id="listbox-id-11" class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid searchResult" role="listbox" style="position: absolute;">
+                                                        <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                                                            <!-- <c:BT_Spinner /> -->
+                                                            <aura:iteration items="{!v.productList}" var="result">
+                                                                <li role="presentation" class="slds-listbox__item" data-value="{!result.Id}" onclick="{!c.clickHandlerProduct}">
+                                                                    <div class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small slds-media slds-listbox__option slds-listbox__option_entity slds-media_center" role="option">
+                                                                        <span class="slds-media__figure slds-listbox__option-icon ">
+                                                                            <lightning:icon iconName="custom:custom5" size="small" alternativeText="Approved" title="Approved" />
+                                                                        </span>
+                                                                        <span class="slds-media__body">
+                                                                            <span class="slds-truncate" title="Products">
+                                                                                <span>{!result.Name}</span>
+                                                                            </span>
+                                                                        </span>
+                                                                    </div>
+                                                                </li>
+                                                            </aura:iteration>
+                                                            <aura:if isTrue="{!empty(v.productList)}">
+                                                                <span>
+                                                                    <p class="blank-lst" style="text-align: center; padding:10px" >
+                                                                        There are no product
+                                                                    </p>
+                                                                </span>
+                                                            </aura:if>
+                                                        </ul>
+                                                    </div>
+                                                </aura:if>
+                                            </div>
+                                            
+                                        </lightning:layoutItem>
+                                    <!-- <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
                                         <lightning:inputField fieldName="{!field.name}" onchange="{!c.changeProduct}" />
-                                    </lightning:layoutItem>
+                                    </lightning:layoutItem> -->
                                 </aura:if>
                                 <aura:if isTrue="{!field.name == 'Name'}">
                                     <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
@@ -261,9 +325,9 @@
         <!-- </div> -->
     </div>
     </div>
-    <aura:if isTrue="{!v.isLoading}">
+    <!-- <aura:if isTrue="{!v.isLoading}">
         <div aura:id="spinnerId" class="slds-spinner_container">
-            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+            <div class="slds-spinner-brand  slds-spinner slds-spinner-large slds-is-relative" role="alert">
                 <span class="slds-assistive-text">Loading</span>
                 <div class="slds-spinner__dot-a"></div>
                 <div class="slds-spinner__dot-b"></div>
@@ -272,6 +336,6 @@
                 </div>
             </div>
         </div>
-    </aura:if>
+    </aura:if> -->
 
 </aura:component>

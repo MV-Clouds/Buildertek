@@ -21,6 +21,13 @@
 .THIS .budgetLineInput .slds-input__icon_left{
     display: none;
 }
+.THIS .productInput .slds-input{
+    padding-left: 2rem;
+}
+
+.THIS .productInput .slds-input__icon_left{
+    display: none;
+}
 
 .THIS .searchIcon{
     padding-left: 5px; 

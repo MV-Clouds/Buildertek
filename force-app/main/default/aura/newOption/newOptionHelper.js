@@ -27,6 +27,28 @@
         $A.enqueueAction(action);
 		
      },
+	 changePriceBook:function(component, event, helper) {
+		component.set('v.selectedPricebookId', '');
+		let getValue= event.getSource().get('v.value');
+		var temp = getValue;
+		component.set('v.selectedPricebookId', temp[0]);
+
+     },
+	 getPricebooksProduct:function(component, event, helper, pricebook, searchFilter) {
+		var action = component.get("c.getProductReletedToPricebook");
+		action.setParams({
+			pricebook:pricebook,
+			prodName:searchFilter
+		});
+		action.setCallback(this, function(response) {
+			var state = response.getState();
+			var result= response.getReturnValue();
+			if (state === "SUCCESS") {
+				component.set('v.productList' , result);
+			}
+		});
+		$A.enqueueAction(action);
+	 },
 	 getAlBudget:function(component, event, helper) {
 		var action = component.get("c.getAllBudget1");
 		action.setCallback(this, function(response) {
