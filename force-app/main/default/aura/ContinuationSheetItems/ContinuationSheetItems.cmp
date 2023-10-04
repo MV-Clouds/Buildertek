@@ -105,7 +105,7 @@
     <!-- Attribute Declration For Pagination End-->
     <lightning:workspaceAPI aura:id="workspace" />
     <aura:html tag="style">
-        .buildertekContinuationSheetItems.mainDiv {
+        .buildertekContinuationSheetItems.mainDivs {
         height: 60vh!important; 
         background: white!important;
         }
@@ -116,7 +116,7 @@
         
     </aura:html>
     
-    <div class="mainDiv">
+    <div class="mainDivs">
         <div class="slds-page-header slds-page-header_record-home">
             <div class="slds-page-header__row">
                 <div class="slds-page-header__col-title">
