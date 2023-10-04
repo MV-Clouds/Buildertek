@@ -307,7 +307,8 @@ export default class PublickFileManageLWC extends NavigationMixin(LightningEleme
         .then((response) =>{
             console.log("Response on confirm click:- ",response);
             if(response == 'Success'){
-                this.template.querySelector('c-toast-component').showToast('success', 'Files are added to the selected folders and ready to be viewed publicly', 3000);
+                // this.template.querySelector('c-toast-component').showToast('success', 'Files are added to the selected folders and ready to be viewed publicly', 3000);
+                this.showToast('success', 'Files are added to the selected folders and ready to be viewed publicly', 'Success!');
                 this.showfiles=false;
                 this.showfiletable = false;
                 this.showfilemessage = false;
