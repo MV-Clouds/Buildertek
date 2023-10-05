@@ -105,7 +105,7 @@
     <!-- Attribute Declration For Pagination End-->
     <lightning:workspaceAPI aura:id="workspace" />
     <aura:html tag="style">
-        .buildertekContinuationSheetItems.mainDiv {
+        .buildertekContinuationSheetItems.mainDivs {
         height: 60vh!important; 
         background: white!important;
         }
@@ -116,7 +116,7 @@
         
     </aura:html>
     
-    <div class="mainDiv">
+    <div class="mainDivs">
         <div class="slds-page-header slds-page-header_record-home">
             <div class="slds-page-header__row">
                 <div class="slds-page-header__col-title">
@@ -176,16 +176,15 @@
                     
                 </aura:if> 
                 
-                
                 <aura:if isTrue="{!!v.isCommUser}">
                     
                     <aura:if isTrue="{!and(v.isPATypeApp,!v.isARPaymentAppImportAvailable)}">
                         
                         <aura:if isTrue="{!v.disableImportButton}">
-                            <lightning:button iconPosition="left" onclick="{!c.importVendorSubmittedApp}" label="Import Company Approved Payment App"
+                            <lightning:button iconPosition="left" onclick="{!c.importVendorSubmittedApp}" label="Import Approved Payment App"
                                               class="sldsButtonGroup"  disabled="true"/>
                             <aura:set attribute="else">
-                                <lightning:button iconPosition="left" onclick="{!c.importVendorSubmittedApp}" label="Import Company Approved Payment App"
+                                <lightning:button iconPosition="left" onclick="{!c.importVendorSubmittedApp}" label="Import Approved Payment App"
                                                   class="sldsButtonGroup"  disabled="{!v.IsSaveDisable}"/>
                             </aura:set>
                         </aura:if> 
