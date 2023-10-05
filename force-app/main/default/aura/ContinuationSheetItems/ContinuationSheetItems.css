@@ -15,38 +15,38 @@
     width: max-content;
 }
 @media only screen and (max-width: 2560px) and (min-width: 1920px){
-	.THIS.mainDiv{
+	.THIS.mainDivs{
         height: 90vh !important;
         background: white !important;
     }
    
 }
 @media only screen and (max-width: 1920px) and (min-width: 1681px){
-	.THIS.mainDiv{
+	.THIS.mainDivs{
         height: 87vh !important;
         background: white !important;
     }	   
 }
 @media only screen and (max-width: 1680px) and (min-width: 1661px){
-	.THIS.mainDiv{
+	.THIS.mainDivs{
         height: 70vh !important;
         background: white !important;
     }
 }
 @media only screen and (max-width: 1600px) and (min-width: 1441px){
-	.THIS.mainDiv{
+	.THIS.mainDivs{
         height: 70vh !important;
         background: white !important;
     }
 }
 @media only screen and (max-width: 1440px) and (min-width: 1281px){
-	.THIS.mainDiv{
+	.THIS.mainDivs{
         height: 70vh !important;
         background: white !important;
     }
 }
 @media only screen and (max-width: 1280px) and (min-width: 1180px){
-	.THIS.mainDiv{
+	.THIS.mainDivs{
         height: 50vh !important;
         background: white !important;
     }	    
@@ -60,13 +60,13 @@
     }	    
 }
 @media only screen and (max-width: 1079px) and (min-width: 980px){
-	.THIS.mainDiv{
+	.THIS.mainDivs{
         height: 70vh !important;
         background: white !important;
     }	    
 }
 @media only screen and (max-width: 979px) and (min-width: 720px){
-	.THIS.mainDiv{
+	.THIS.mainDivs{
         height: 70vh !important;
         background: white !important;
     }	    
