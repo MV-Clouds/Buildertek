@@ -46,7 +46,7 @@
                     <tr class="slds-text-title_caps">
                         <th scope="col"
                             style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-left-radius:5px;vertical-align: middle;line-height: 2; width:30px;">
-                            <ui:inputCheckbox aura:id="checkAllTakeoff" change="{!c.selectAll}" />
+                            <!-- <ui:inputCheckbox aura:id="checkAllTakeoff" change="{!c.selectAll}" /> -->
                         </th>
                         <th
                             style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">

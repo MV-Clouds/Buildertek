@@ -42,13 +42,7 @@
         var isChecked = checkbox.get("v.value");
         var recordId = checkbox.get("v.text");
         var checkedRecordIds = component.get("v.checkedRecordIds");
-        var selectAllCheckbox = component.find("checkAllTakeoff");
-        var isAllChecked = selectAllCheckbox.get("v.value");
-        
-        if(isAllChecked){
-            selectAllCheckbox.set("v.value",false);
-        }
-
+        console.log(`isChecked: ${isChecked} recordId: ${recordId}`);
         if (isChecked) {
             checkedRecordIds.push(recordId);
         } else {
