@@ -54,7 +54,7 @@
             
         }
         
-        debugger;
+        // debugger;
         var action2 = component.get("c.isSovSubmitted");
         var recId = component.get("v.commrecordId")
         if(!recId){
@@ -64,7 +64,7 @@
             recordId: recId
         });
         action2.setCallback(this, function(response){
-            debugger;
+            // debugger;
             if(response.getState() === "SUCCESS"){
                 
                 var result = response.getReturnValue();
@@ -87,7 +87,7 @@
             }
         });
         $A.enqueueAction(action2);
-        debugger;
+        // debugger;
         var action = component.get("c.getContinuationSheetLines");
         action.setParams({
             recordId : recordId //component.get("v.recordId")    
@@ -95,7 +95,7 @@
         action.setCallback(this, function(response){
             if(response.getState() === "SUCCESS"){
                 
-                debugger;
+                // debugger;
                 var result = response.getReturnValue();
                 var sortedSheetLines = result.sheetLines;
               //  alert(sortedSheetLines);
@@ -112,7 +112,7 @@
                     }
                     
                 }
-                debugger;
+                // debugger;
                 component.set("v.continuationSheet", result.continuationSheet);
                 component.set("v.continuationSheetLines", sortedSheetLines);         
                 component.set("v.scheduleValueTotal", result.scheduleValueTotal);
@@ -159,7 +159,7 @@
                 
                 component.set("v.PeriodTo", result.continuationSheet.buildertek__SOV_Payment_Application__r ? result.continuationSheet.buildertek__SOV_Payment_Application__r.buildertek__Period_To__c : '');
                 component.set("v.balanceTotal", result.balanceTotal);
-                debugger;
+                // debugger;
                 component.set("v.continuationSheetId",  result.continuationSheet.Id);
                 component.set("v.isApplication", result.isApplication);
                 if(result.sheetLines){
@@ -183,6 +183,7 @@
                 .catch(function(error) {
                     console.log(error);
                 });
+
                 
             }  
             else{

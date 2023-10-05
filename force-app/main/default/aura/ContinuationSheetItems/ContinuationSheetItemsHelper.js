@@ -226,7 +226,7 @@
             
         }
         component.set("v.groupedRecords",result.groupHierarchy)
-        console.log(result.groupHierarchy)   
+        console.log("groupedRecords >> ",result.groupHierarchy)   
         //$A.enqueueAction(totalByGroupAction);
     },
     Submitpayment : function(component, event, helper) {
