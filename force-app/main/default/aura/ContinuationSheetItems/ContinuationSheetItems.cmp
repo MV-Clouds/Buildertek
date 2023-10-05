@@ -181,10 +181,10 @@
                     <aura:if isTrue="{!and(v.isPATypeApp,!v.isARPaymentAppImportAvailable)}">
                         
                         <aura:if isTrue="{!v.disableImportButton}">
-                            <lightning:button iconPosition="left" onclick="{!c.importVendorSubmittedApp}" label="Import Company Approved Payment App"
+                            <lightning:button iconPosition="left" onclick="{!c.importVendorSubmittedApp}" label="Import Approved Payment App"
                                               class="sldsButtonGroup"  disabled="true"/>
                             <aura:set attribute="else">
-                                <lightning:button iconPosition="left" onclick="{!c.importVendorSubmittedApp}" label="Import Company Approved Payment App"
+                                <lightning:button iconPosition="left" onclick="{!c.importVendorSubmittedApp}" label="Import Approved Payment App"
                                                   class="sldsButtonGroup"  disabled="{!v.IsSaveDisable}"/>
                             </aura:set>
                         </aura:if> 
