@@ -176,6 +176,7 @@
                     
                 </aura:if> 
                 
+                
                 <aura:if isTrue="{!!v.isCommUser}">
                     
                     <aura:if isTrue="{!and(v.isPATypeApp,!v.isARPaymentAppImportAvailable)}">
