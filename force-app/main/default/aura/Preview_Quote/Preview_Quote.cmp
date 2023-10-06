@@ -21,6 +21,12 @@
     <aura:attribute name="parentId" type="string" />
     <aura:attribute name="fileimageId" type="string" />
     <aura:attribute name="memoquote" type="string" />
+    <aura:attribute name="templateEmailBody" type="string" />
+    <aura:attribute name="companyName" type="string" />
+    <aura:attribute name="siteURL" type="string" />
+    <aura:attribute name="salesRep" type="string" />
+    <aura:attribute name="orgName" type="string" />
+    
 
 
     <aura:handler name="init" value="{!this}" action="{!c.init}" />
@@ -114,6 +120,27 @@
                                             </aura:set>
                                         </lightning:pill>
                                     </aura:iteration>
+                                </div>
+                            </div>
+                            <div class="slds-form-element slds-email-composer__combobox" style="padding-top: 10px;padding-bottom: 10px;">
+                                <label class="slds-form-element__label" for="recipients-memo">Email<br/> Body</label>
+                                <div class="slds-form-element__control">
+                                    <div class="slds-combobox_container slds-has-inline-listbox emailBodyrk" style="padding-left: 2rem;">
+                                        <lightning:inputRichText aura:id="bodyId" placeholder="Email Body" value="{!v.templateEmailBody}" class="slds-size--1-of-1"/>
+                                    </div>
+                                    <div style="padding-left: 3rem;padding-top: 5px;">
+                                        <p>Please <a href="{!v.siteURL}" target="_blank">click here</a> to view and accept your proposal.</p>
+                                        <aura:if isTrue="{!v.salesRep != null}">
+                                            <p style="padding-top: 10px;">Sincerely</p>
+                                            <p>{!v.salesRep}</p>
+                                            <p><a href="{!v.companyName}">{!v.companyName}</a></p>
+                                        <aura:set attribute="else">
+                                            <p style="padding-top: 10px;">Sincerely</p>
+                                            <p>{!v.orgName}</p>
+                                            <p><a href="{!v.companyName}">{!v.companyName}</a></p>
+                                        </aura:set>    
+                                        </aura:if>
+                                    </div>
                                 </div>
                             </div>
                             <div class="slds-form-element slds-email-composer__combobox" style="padding-top: 10px;padding-bottom: 10px;">

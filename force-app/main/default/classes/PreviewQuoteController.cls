@@ -123,8 +123,8 @@ public without sharing class PreviewQuoteController{
     }
 
     @AuraEnabled
-    public static String sendProposal(String htmlBody, String recordId, String templateId, List<String> to, List<String> cc, List<String> emailIds, string memovalue){
-       // try{
+    public static String sendProposal(String htmlBody, String recordId, String templateId, List<String> to, List<String> cc, List<String> emailIds, string memovalue, String emailBodyValue){
+       try {
             String fileid = '';
             String body = '';
             String subject='';
@@ -173,7 +173,7 @@ public without sharing class PreviewQuoteController{
         system.debug('recordId----' + recordId);
             system.debug('templateId----' + templateId);
             list<buildertek__Quote__c> quoterecbody = new list<buildertek__Quote__c>();
-            quoterecbody = [select id, Name, buildertek__Status__c, buildertek__TemplateId__c,buildertek__Template_Name__c, buildertek__To_Emails__c,buildertek__Date_Sent_To_Customer__c,buildertek__Memo__c
+            quoterecbody = [select id, Name, buildertek__Status__c, buildertek__TemplateId__c,buildertek__Template_Name__c, buildertek__To_Emails__c,buildertek__Date_Sent_To_Customer__c,buildertek__Memo__c,buildertek__Preview_Email_Body__c
                             from buildertek__Quote__c
                             where Id = :recordId
                             limit 1];
@@ -183,6 +183,9 @@ public without sharing class PreviewQuoteController{
                    quoterecbody[0].buildertek__Template_Name__c	 = et[0].Name;
                 }
                 quoterecbody[0].buildertek__Memo__c = memovalue;
+                emailBodyValue = emailBodyValue.replaceAll('<p><br></p>', '<br>');
+                emailBodyValue = emailBodyValue.replaceAll('<p>', '<p style="margin-top: 0.1em; margin-bottom: 0em; ">');
+                quoterecbody[0].buildertek__Preview_Email_Body__c = emailBodyValue;
 
                 string toemail = string.join(to,',');
 
@@ -394,10 +397,15 @@ public without sharing class PreviewQuoteController{
         system.debug('updatedquoterec----------->'+quoterec);
 
             return message;
+        } catch (Exception e) {
+            String errorMessage = e.getMessage();
+            return errorMessage;
+        
+        }
     }
 
     @AuraEnabled
-    public static String acceptandsendProposal(string signName, String htmlBody, String recordId, String templateId, List<String> to, List<String> cc, string fileid, List<String> emailIds, string memovalue){
+    public static String acceptandsendProposal(string signName, String htmlBody, String recordId, String templateId, List<String> to, List<String> cc, string fileid, List<String> emailIds, string memovalue, String emailBodyValue){
 
         try{
             String body = '';
@@ -591,7 +599,7 @@ public without sharing class PreviewQuoteController{
             }
             list<buildertek__Quote__c> quoterec;
 
-            quoterec = [select id, Name, buildertek__Status__c, buildertek__Date_Sent_To_Customer__c, buildertek__Date_Accepted_by_Customer__c
+            quoterec = [select id, Name, buildertek__Status__c, buildertek__Date_Sent_To_Customer__c, buildertek__Date_Accepted_by_Customer__c, buildertek__Preview_Email_Body__c
                         from buildertek__Quote__c
                         where Id = :recordId
                         limit 1];
@@ -603,6 +611,9 @@ public without sharing class PreviewQuoteController{
                 quoterec[0].buildertek__Date_Accepted_by_Customer__c = system.now();
                 quoterec[0].buildertek__Date_Sent_To_Customer__c = System.today();
                 quoterec[0].buildertek__Memo__c = memovalue;
+                emailBodyValue = emailBodyValue.replaceAll('<p><br></p>', '<br>');
+                emailBodyValue = emailBodyValue.replaceAll('<p>', '<p style="margin-top: 0.1em; margin-bottom: 0em; ">');
+                quoterec[0].buildertek__Preview_Email_Body__c = emailBodyValue;
                 update quoterec;
 
             }
@@ -721,17 +732,61 @@ public without sharing class PreviewQuoteController{
             return message;
         }
     }
-    @AuraEnabled
-    public static buildertek__Quote__c getmemoval(String recordId){
-        Contact con;
-        buildertek__Quote__c qut;
-        if (Schema.sObjectType.buildertek__Quote__c.fields.Id.isAccessible() && Schema.sObjectType.buildertek__Quote__c.fields.buildertek__Primary_Contact__c.isAccessible()){
+    // @AuraEnabled
+    // public static buildertek__Quote__c getmemoval(String recordId){
+    //     Contact con;
+    //     buildertek__Quote__c qut;
+    //     if (Schema.sObjectType.buildertek__Quote__c.fields.Id.isAccessible() && Schema.sObjectType.buildertek__Quote__c.fields.buildertek__Primary_Contact__c.isAccessible()){
 
-            qut = [SELECT Id, buildertek__Memo__c
-                   FROM buildertek__Quote__c
-                   WHERE Id = :recordId];
-        }
-        return qut;
+    //         qut = [SELECT Id, buildertek__Memo__c, buildertek__Email_Body__c, TemplateId__c, buildertek__Sales_Rep__r.Name
+    //                FROM buildertek__Quote__c
+    //                WHERE Id = :recordId];
+    //     }
+    //     List<buildertek__ConfirmationPageSiteURL__c> confirmationurl = buildertek__ConfirmationPageSiteURL__c.getall().values();
+    //     string SiteUrl;
+    //     if (confirmationurl.size() > 0){
+    //         SiteUrl = confirmationurl[0].buildertek__SiteURL__c;
+    //     }
+    //     return qut;
+    // }
+    public class QuoteAndSiteUrlWrapper {
+        public String memo { get; set; }
+        public String emailBody { get; set; }
+        public String companyname { get; set; }
+        public String salesRepName { get; set; }
+        public String siteUrl { get; set; }
+        public String templateId { get; set; }
+        public String orgName { get; set; }
     }
+    @AuraEnabled
+    public static String getmemoval(String recordId) {
+        try {
+            QuoteAndSiteUrlWrapper retObj = new QuoteAndSiteUrlWrapper();
+                List<buildertek__Quote__c> qut = [SELECT buildertek__Memo__c, buildertek__Email_Body__c, TemplateId__c, buildertek__Sales_Rep__r.Name FROM buildertek__Quote__c WHERE Id = :recordId];
+        
+                    retObj.memo = qut[0].buildertek__Memo__c;
+                    retObj.emailBody = qut[0].buildertek__Email_Body__c;
+                    retObj.salesRepName = qut[0].buildertek__Sales_Rep__r.Name;
+                    retObj.templateId = qut[0].TemplateId__c;
+        
+            List<buildertek__ConfirmationPageSiteURL__c> confirmationurl = buildertek__ConfirmationPageSiteURL__c.getAll().values();
+            if (!confirmationurl.isEmpty()) {
+                String star = confirmationurl[0].buildertek__SiteURL__c +'buildertek__ConfirmationPage?Id='+recordId+'&templateId='+retObj.templateId;
+                retObj.siteUrl = star;
+            }
+
+            List<Organization> org = [SELECT Id,Name from Organization limit 1];
+            retObj.orgName = org[0].Name;
+
+            retObj.companyname = System.Label.company_website;
+        
+            return JSON.serialize(retObj);
+        } catch (Exception ex) {
+            String errorMessage = ex.getMessage();
+            return errorMessage;
+        }
+        
+    }
+    
 
 }

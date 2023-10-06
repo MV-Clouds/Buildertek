@@ -6,8 +6,8 @@
                 controller="ImportBudgetController" access="global">
     <aura:attribute name="recordId" type="Id" />
 	 <lightning:workspaceAPI aura:id="workspace"/>
-    <aura:handler event="aura:waiting" action="{!c.waiting}" />
-    <aura:handler event="aura:doneWaiting" action="{!c.doneWaiting}" />
+    <!-- <aura:handler event="aura:waiting" action="{!c.waiting}" />
+    <aura:handler event="aura:doneWaiting" action="{!c.doneWaiting}" /> -->
     <aura:attribute name="Spinner" type="boolean" default="false" />
     <aura:attribute name="HaveCreateAccess" type="boolean" default="true"/>
 
