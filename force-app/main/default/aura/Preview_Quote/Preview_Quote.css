@@ -51,3 +51,6 @@
 .THIS .addPadd{
   padding-left: inherit !important;
 }
+.THIS .emailBodyrk .lightningInputRichText{
+  width: 100% !important;
+}
