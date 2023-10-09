@@ -449,9 +449,11 @@
                                             <td style = "text-align:center;">
                                                 D
                                             </td>
-                                            <td style = "text-align:center;">
+                                            <!-- New Filed - Completion  -->
+                                            <!-- <td style = "text-align:center;">
                                                 
-                                            </td>
+                                            </td> -->
+                                            <!-- New Filed - Completion END -->
                                             <td style = "text-align:center;">
                                                 E
                                             </td>
@@ -492,9 +494,11 @@
                                                 <div style="text-align:center">Work Completed </div> 
                                                 <div style="text-align:center">From Previous App ({!v.currencycode})  </div>
                                             </td>
-                                            <td style = "width:8%">
+                                            <!-- New Filed - Completion  -->
+                                            <!-- <td style = "width:8%">
                                                 <div style="text-align:center">Completion %  </div>
-                                            </td>
+                                            </td> -->
+                                            <!-- New Filed - Completion END-->
                                             <td style = "width:8%">
                                                 <div style="text-align:center">Work Completed </div> 
                                                 <div style="text-align:center">This Period ({!v.currencycode})  </div>
@@ -605,26 +609,26 @@
                                                 </td>
 
                                                 <!-- New Filed - Completion  -->
-                                                <td style = "padding-top: 5px;padding-bottom: 5px;padding-right: 10px;-left: 10px;">
+                                                <!-- <td style = "padding-top: 5px;padding-bottom: 5px;padding-right: 10px;-left: 10px;">
                                                     <aura:if isTrue="{!and(v.IsCOEnable, group1.grouping1Name == 'Change Orders')}">
                                                         <aura:if isTrue="{!v.isCommUser}">
-                                                            <lightning:input type="text" value="{!(item.buildertek__Completion__c ? item.buildertek__Completion__c : 0)+'%'}" aura:id="buildertek__Work_Completed__c" variant="label-hidden"  step="0.01" onchange="{!c.changeValueInGrp}"  name="{!'customrec_'+parentGroupIndex+'_'+subGroupIndex+'_'+recIndex}" disabled="true"/> <!-- {!c.changeValue} -->
+                                                            <lightning:input type="text" value="{!(item.buildertek__Completion__c ? item.buildertek__Completion__c : 0)+'%'}" aura:id="buildertek__Work_Completed__c" variant="label-hidden"  step="0.01" onchange="{!c.changeValueInGrp}"  name="{!'customrec_'+parentGroupIndex+'_'+subGroupIndex+'_'+recIndex}" disabled="true"/> 
                                                             <aura:set attribute="else">
-                                                                <lightning:input type="text" value="{!(item.buildertek__Completion__c ? item.buildertek__Completion__c : 0)+'%'}" aura:id="buildertek__Work_Completed__c" variant="label-hidden"  step="0.01" onchange="{!c.changeValueInGrp}"  name="{!'customrec_'+parentGroupIndex+'_'+subGroupIndex+'_'+recIndex}" disabled="true"/> <!-- {!c.changeValue} -->
+                                                                <lightning:input type="text" value="{!(item.buildertek__Completion__c ? item.buildertek__Completion__c : 0)+'%'}" aura:id="buildertek__Work_Completed__c" variant="label-hidden"  step="0.01" onchange="{!c.changeValueInGrp}"  name="{!'customrec_'+parentGroupIndex+'_'+subGroupIndex+'_'+recIndex}" disabled="true"/>
                                                             </aura:set>
                                                         </aura:if>
                                                         <aura:set attribute="else">
                                                             <aura:if isTrue="{!v.isCommUser}">
                                                                 <aura:if isTrue="{!OR(item.buildertek__Status__c == 'Vendor Submitted',item.buildertek__Status__c == 'Accepted')}">
-                                                                    <lightning:input type="number" value="{!item.buildertek__Completion__c ? item.buildertek__Completion__c : 0}" aura:id="buildertek__Completion__c" variant="label-hidden" formatter="currency" step="0.01" onchange="{!c.changeValueInGrp}"  name="{!'customrec_'+parentGroupIndex+'_'+subGroupIndex+'_'+recIndex}" disabled="true"/> <!-- {!c.changeValue} -->
+                                                                    <lightning:input type="number" value="{!item.buildertek__Completion__c ? item.buildertek__Completion__c : 0}" aura:id="buildertek__Completion__c" variant="label-hidden" formatter="currency" step="0.01" onchange="{!c.changeValueInGrp}"  name="{!'customrec_'+parentGroupIndex+'_'+subGroupIndex+'_'+recIndex}" disabled="true"/> 
                                                                     <aura:set attribute="else">
                                                                         <aura:if isTrue="{!item.buildertek__Status__c == 'Rejected'}">
-                                                                            <lightning:input type="text" value="{!(item.buildertek__Completion__c ? item.buildertek__Completion__c : 0)+'%'}" aura:id="buildertek__Completion__c" variant="label-hidden" formatter="currency" step="0.01" onchange="{!c.changeValueInGrp}"  name="{!'customrec_'+parentGroupIndex+'_'+subGroupIndex+'_'+recIndex}" disabled="false"/> <!-- {!c.changeValue} -->
+                                                                            <lightning:input type="text" value="{!(item.buildertek__Completion__c ? item.buildertek__Completion__c : 0)+'%'}" aura:id="buildertek__Completion__c" variant="label-hidden" formatter="currency" step="0.01" onchange="{!c.changeValueInGrp}"  name="{!'customrec_'+parentGroupIndex+'_'+subGroupIndex+'_'+recIndex}" disabled="false"/> 
                                                                             <aura:set attribute="else">
                                                                                 <aura:if isTrue="{!item.buildertek__Vendor_G_C__c == 100}">
-                                                                                    <lightning:input type="text" value="{!(item.buildertek__Completion__c ? item.buildertek__Completion__c : 0)+'%'}" aura:id="buildertek__Completion__c" variant="label-hidden" formatter="currency" step="0.01" onchange="{!c.changeValueInGrp}"  name="{!'customrec_'+parentGroupIndex+'_'+subGroupIndex+'_'+recIndex}" disabled="true"/> <!-- {!c.changeValue} -->
+                                                                                    <lightning:input type="text" value="{!(item.buildertek__Completion__c ? item.buildertek__Completion__c : 0)+'%'}" aura:id="buildertek__Completion__c" variant="label-hidden" formatter="currency" step="0.01" onchange="{!c.changeValueInGrp}"  name="{!'customrec_'+parentGroupIndex+'_'+subGroupIndex+'_'+recIndex}" disabled="true"/> 
                                                                                     <aura:set attribute="else">
-                                                                                        <lightning:input type="number" value="{!item.buildertek__Completion__c ? item.buildertek__Completion__c : 0}" aura:id="buildertek__Completion__c" variant="label-hidden" formatter="currency" step="0.01" onchange="{!c.changeValueInGrp}"  name="{!'customrec_'+parentGroupIndex+'_'+subGroupIndex+'_'+recIndex}" disabled="false"/> <!-- {!c.changeValue} -->
+                                                                                        <lightning:input type="number" value="{!item.buildertek__Completion__c ? item.buildertek__Completion__c : 0}" aura:id="buildertek__Completion__c" variant="label-hidden" formatter="currency" step="0.01" onchange="{!c.changeValueInGrp}"  name="{!'customrec_'+parentGroupIndex+'_'+subGroupIndex+'_'+recIndex}" disabled="false"/> 
                                                                                     </aura:set>
                                                                                 </aura:if>
                                                                             </aura:set>
@@ -634,12 +638,12 @@
 
                                                                 <aura:set attribute="else">
                                                                     <aura:if isTrue="{!item.buildertek__Status__c == 'Accepted'}">
-                                                                        <lightning:input type="text" value="{!(item.buildertek__Completion__c ? item.buildertek__Completion__c : 0)+'%'}" aura:id="buildertek__Completion__c" variant="label-hidden"  step="0.01" onchange="{!c.changeValueInGrp}"  name="{!'customrec_'+parentGroupIndex+'_'+subGroupIndex+'_'+recIndex}" disabled="true"/> <!-- {!c.changeValue} -->
+                                                                        <lightning:input type="text" value="{!(item.buildertek__Completion__c ? item.buildertek__Completion__c : 0)+'%'}" aura:id="buildertek__Completion__c" variant="label-hidden"  step="0.01" onchange="{!c.changeValueInGrp}"  name="{!'customrec_'+parentGroupIndex+'_'+subGroupIndex+'_'+recIndex}" disabled="true"/> 
                                                                         <aura:set attribute="else">
                                                                             <aura:if isTrue="{!v.diasbaleCompletionField == 'customrec_'+parentGroupIndex+'_'+subGroupIndex+'_'+recIndex}">
-                                                                                <lightning:input type="text" value="{!(item.buildertek__Completion__c ? item.buildertek__Completion__c : 0)+'%'}" aura:id="buildertek__Completion__c" variant="label-hidden"  step="0.01" onchange="{!c.changeValueInGrp}"  name="{!'customrec_'+parentGroupIndex+'_'+subGroupIndex+'_'+recIndex}" disabled="true"/> <!-- {!c.changeValue} -->
+                                                                                <lightning:input type="text" value="{!(item.buildertek__Completion__c ? item.buildertek__Completion__c : 0)+'%'}" aura:id="buildertek__Completion__c" variant="label-hidden"  step="0.01" onchange="{!c.changeValueInGrp}"  name="{!'customrec_'+parentGroupIndex+'_'+subGroupIndex+'_'+recIndex}" disabled="true"/> 
                                                                                 <aura:set attribute="else">
-                                                                                    <lightning:input type="number" value="{!item.buildertek__Completion__c ? item.buildertek__Completion__c : 0}" aura:id="buildertek__Completion__c" variant="label-hidden" max="100"  step="0.01" onchange="{!c.changeValueInGrp}"  name="{!'customrec_'+parentGroupIndex+'_'+subGroupIndex+'_'+recIndex}" disabled="false"/> <!-- {!c.changeValue} -->
+                                                                                    <lightning:input type="number" value="{!item.buildertek__Completion__c ? item.buildertek__Completion__c : 0}" aura:id="buildertek__Completion__c" variant="label-hidden" max="100"  step="0.01" onchange="{!c.changeValueInGrp}"  name="{!'customrec_'+parentGroupIndex+'_'+subGroupIndex+'_'+recIndex}" disabled="false"/>
                                                                                 </aura:set>
                                                                             </aura:if>                                                                        
                                                                         </aura:set>
@@ -649,7 +653,7 @@
                                                             </aura:if>
                                                         </aura:set>
                                                     </aura:if>
-                                                </td>
+                                                </td> -->
                                                 <!-- New Filed - Completion End -->
 
                                                 <td style = "padding-top: 5px;padding-bottom: 5px;padding-right: 10px;-left: 10px;">
