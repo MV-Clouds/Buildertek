@@ -317,19 +317,29 @@ export default base => class GanttToolbar extends base {
                             tooltip    : 'Highlight critical paths',
                             toggleable : true,
                             onAction   : 'up.onCriticalPathsClick'
-                        }
+                        },
+                        {
+                            type      : 'datefield',
+                            ref       : 'startDateField',
+                            label     : 'Project start',
+                            // required  : true, (done on load)
+                            flex      : '1 2 17em',
+                            listeners : {
+                                change : 'up.onStartDateChange'
+                            }
+                        },
                     ]
                 },
-                {
-                    type      : 'datefield',
-                    ref       : 'startDateField',
-                    label     : 'Project start',
-                    // required  : true, (done on load)
-                    flex      : '1 2 17em',
-                    listeners : {
-                        change : 'up.onStartDateChange'
-                    }
-                },
+                // {
+                //     type      : 'datefield',
+                //     ref       : 'startDateField',
+                //     label     : 'Project start',
+                //     // required  : true, (done on load)
+                //     flex      : '1 2 17em',
+                //     listeners : {
+                //         change : 'up.onStartDateChange'
+                //     }
+                // },
             ]
         };
     }
