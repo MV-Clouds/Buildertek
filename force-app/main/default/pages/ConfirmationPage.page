@@ -341,7 +341,13 @@
                     <br/>
                 <center>
                        <div id="acceptid" class="validErrormsg" style="color:red;font-size:18px; display: none;">
-                       You have already Accepted/Rejected this Quote. Please contact your Sales Representative for assistance. </div>
+                            <apex:outputPanel rendered="{!If(objectAPIName =='buildertek__Purchase_Order__c',true,false)}">
+                                You have already Accepted/Rejected this Purchase Order. Please contact your Sales Representative for assistance.
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!If(objectAPIName !='buildertek__Purchase_Order__c',true,false)}">
+                                You have already Accepted/Rejected this Quote. Please contact your Sales Representative for assistance. 
+                            </apex:outputPanel>
+                    </div>
                        <!--<div id="acceptid" class="validErrormsg" style="color:red;font-size:18px; display: none;">
                        This Quote has already been Accepted, please contact your Sales Representative with any questions. </div>-->
                         </center>
@@ -400,7 +406,14 @@
                                         <p class="slds-text-heading--label"></p>
                                         <apex:outputPanel rendered="{! IF(orderRejected==true, false, true) }">
                                             <center>
-                                                <h1 class="slds-text-heading--medium" style="font-size: 20px;text-align:center;background-color: Green;color: white;">You have successfully signed and accepted your Quote. Thank you for your business.</h1>
+                                                <h1 class="slds-text-heading--medium" style="font-size: 20px;text-align:center;background-color: Green;color: white;">
+                                                    <apex:outputPanel rendered="{!If(objectAPIName =='buildertek__Purchase_Order__c',true,false)}">
+                                                        You have successfully signed and accepted your Purchase Order. Thank you for your business.
+                                                    </apex:outputPanel>
+                                                    <apex:outputPanel rendered="{!If(objectAPIName !='buildertek__Purchase_Order__c',true,false)}">
+                                                        You have successfully signed and accepted your Quote. Thank you for your business.
+                                                    </apex:outputPanel>
+                                                </h1>
                                             </center>
                                         </apex:outputPanel>
                                         <apex:outputPanel rendered="{!IF(orderRejected==true, true, false)}">

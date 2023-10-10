@@ -70,6 +70,7 @@ public without sharing class ConfirmationController{
         isAccepted  = false;
         // std = ApexPages.StandardSetController;
         //        System.debug('Constrctor 2::'+std);
+        isOrderLien = false;
         contractstatus = true;
         orderRejected = false;
         isOrderLien = false;
@@ -125,7 +126,28 @@ public without sharing class ConfirmationController{
             }else{
                 isAccepted  = false;
             }
+        }
 
+        if(objectAPIName.contains('buildertek__Purchase_Order__c')){
+            isOrderLien = true;
+            buildertek__Purchase_Order__c porec;
+            porec = [select id, Name, buildertek__Status__c, buildertek__Date_Lien_Release_Signed__c, buildertek__Original_Date_Lien_Release_Sent__c, buildertek__Rejection_Reason__c
+                     from buildertek__Purchase_Order__c
+                     where id = :recordID
+                     limit 1];
+            if(porec != null && porec.buildertek__Status__c == 'Vendor Accepted'){
+                quoteMessage = 'This Purchase Order has already been Accepted, please contact your Sales Representative with any questions.';
+                isAccepted  = true;
+                Result = 'Accepted';
+                RejectResult = 'Accepted';
+            }else if(porec != null && porec.buildertek__Status__c == 'Vendor Rejected'){
+                quoteMessage = 'This Purchase Order has already been Rejected, please contact your Sales Representative with any questions.';
+                isAccepted  = true;
+                Result = 'Accepted';
+                RejectResult = 'Rejected';
+            }else{
+                isAccepted  = false;
+            }
         }
        // }
        /* if(recordID != null){
@@ -608,10 +630,10 @@ Messaging.sendEmail(new Messaging.SingleEmailMessage[] { email });  */
                 if (isOrderLien){
                     porec.buildertek__Date_Lien_Release_Signed__c = Date.valueOf(Datetime.now().format('yyyy-MM-dd'));
                     porec.buildertek__Date_Confirmed__c = Date.today();
+                    porec.buildertek__Status__c = 'Vendor Accepted';
                 } else{
                     porec.buildertek__Customer_Accepted_Date__c = nowDT;
                     porec.buildertek__Rejection_Reason__c = '';
-                    porec.buildertek__Status__c = 'Vendor Accepted';
 
                 }
                 update porec;
