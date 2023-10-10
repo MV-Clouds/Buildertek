@@ -48,14 +48,14 @@
 }
 
 .THIS .tHeader{
-    background: linear-gradient(to bottom, #3086d2 0%, #8abada 100%); 
+    background: rgba(27, 82, 151, 1.0); 
     color:#fff;
     line-height: 2;
 }
 
 .THIS .subHeader{
     font-weight: 900; 
-    background: linear-gradient(to bottom, #3086d2 0%, #8abada 100%); 
+    background: rgba(27, 82, 151, 1.0); 
     color:#fff;
 }
 
@@ -129,4 +129,9 @@
 
 .THIS .slds-input {
     width: 100%;
+}
+
+.THIS .slds-table:not(.slds-no-row-hover) tbody tr:hover>th{
+    background-color: #fcfcfc;
+    color: rgba(27, 82, 151, 1.0);
 }
