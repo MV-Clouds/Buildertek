@@ -125,7 +125,39 @@ public without sharing class ConfirmationController{
             }else{
                 isAccepted  = false;
             }
+        }
 
+        if(objectAPIName.contains('buildertek__Purchase_Order__c')){
+            buildertek__Purchase_Order__c porec;
+            porec = [select id, Name, buildertek__Status__c, buildertek__Rejection_Reason__c
+                     from buildertek__Purchase_Order__c
+                     where id = :recordID
+                     limit 1];
+            
+            if(isOrderLien == false){
+                if(porec != null && porec.buildertek__Status__c == 'Vendor Accepted'){
+                    quoteMessage = 'This Purchase Order has already been Accepted, please contact your Sales Representative with any questions.';
+                    isAccepted  = true;
+                    Result = 'Accepted';
+                    RejectResult = 'Accepted';
+                }else if(porec != null && porec.buildertek__Status__c == 'Vendor Rejected'){
+                    quoteMessage = 'This Purchase Order has already been Rejected, please contact your Sales Representative with any questions.';
+                    isAccepted  = true;
+                    Result = 'Accepted';
+                    RejectResult = 'Rejected';
+                }else{
+                    isAccepted  = false;
+                }
+            }else{
+                if(porec != null && porec.buildertek__Status__c == 'Lien Release Accepted'){
+                    quoteMessage = 'This Lien Release has already been Accepted, please contact your Sales Representative with any questions.';
+                    isAccepted  = true;
+                    Result = 'Accepted';
+                    RejectResult = 'Accepted';
+                }else{
+                    isAccepted  = false;
+                }
+            }
         }
        // }
        /* if(recordID != null){
@@ -608,6 +640,7 @@ Messaging.sendEmail(new Messaging.SingleEmailMessage[] { email });  */
                 if (isOrderLien){
                     porec.buildertek__Date_Lien_Release_Signed__c = Date.valueOf(Datetime.now().format('yyyy-MM-dd'));
                     porec.buildertek__Date_Confirmed__c = Date.today();
+                    porec.buildertek__Status__c = 'Lien Release Accepted';
                 } else{
                     porec.buildertek__Customer_Accepted_Date__c = nowDT;
                     porec.buildertek__Rejection_Reason__c = '';
