@@ -165,7 +165,7 @@ public class ContinuationSheetLineTriggerHandler {
                     NewChildIds.add(conSheet.Id);
                 }
             }        
-            
+            System.debug('conSheetList[0].ID ' + conSheetList[0].Id);
             buildertek__SOV_Payment_Application__c PaymentApp = [select Id, Name, buildertek__Total_Balance_To_Finish__c, buildertek__Total_Completed__c,buildertek__Net_Change_by_Change_Orders__c, buildertek__Total_Material_Stored_To_Date__c, buildertek__Original_Contract_Sum__c from buildertek__SOV_Payment_Application__c where Id =: conSheetList[0].buildertek__SOV_Payment_Application__c  Limit 10000];
             
             List<buildertek__SOV_Payment_Application__c> newPaymentApp = [select Id,RecordType.Name, Name,buildertek__Application_Number__c, buildertek__Total_Balance_To_Finish__c,buildertek__Net_Change_by_Change_Orders__c, buildertek__Total_Completed__c, buildertek__Total_Material_Stored_To_Date__c, buildertek__Original_Contract_Sum__c from buildertek__SOV_Payment_Application__c where Id =:PaymentApp.Id  Limit 10000];
@@ -927,6 +927,45 @@ public class ContinuationSheetLineTriggerHandler {
         
         
         
+    }
+
+    public void UpdateProjectFieldBasedOnConSheetLinesStatusOnAfterUpdate(list<buildertek__SOV_Continuation_Sheet_Lines__c> oldconsheetline, list<buildertek__SOV_Continuation_Sheet_Lines__c> newconsheetline, Map<Id, buildertek__SOV_Continuation_Sheet_Lines__c> oldconsheetlineMap, Map<Id, buildertek__SOV_Continuation_Sheet_Lines__c> newconsheetlineMap){
+
+            system.debug('newconsheetline ====> : ' + newconsheetline);
+            Set<Id> changedConSheetIds = new Set<Id>();
+            list<buildertek__SOV_Continuation_Sheet_Lines__c> UpdateCSL = new list<buildertek__SOV_Continuation_Sheet_Lines__c>();
+
+            for(buildertek__SOV_Continuation_Sheet_Lines__c CSL : newconsheetline){
+                if(CSL.buildertek__SOV_Continuation_Sheet__c != null && CSL.buildertek__SOV_Continuation_Sheet__c != oldconsheetlineMap.get(CSL.Id).buildertek__SOV_Continuation_Sheet__c){
+                    changedConSheetIds.add(CSL.Id);
+                }
+            }
+
+            if(changedConSheetIds.size() > 0){
+                list <buildertek__SOV_Continuation_Sheet_Lines__c> CSLs = [SELECT Id, Name , buildertek__SOV_Continuation_Sheet__r.buildertek__SOV_Payment_Application__r.buildertek__Project__c, buildertek__Schedule__c, buildertek__Schedule_Item__c,buildertek__BT_Project__c
+                FROM buildertek__SOV_Continuation_Sheet_Lines__c WHERE Id IN : changedConSheetIds];
+
+                for(buildertek__SOV_Continuation_Sheet_Lines__c csl : CSLs){
+                    if(csl.buildertek__Schedule__c != null || csl.buildertek__Schedule__c != ''){
+                        csl.buildertek__Schedule__c = null;
+                    }
+                    if(csl.buildertek__Schedule_Item__c != null || csl.buildertek__Schedule_Item__c != ''){
+                        csl.buildertek__Schedule_Item__c = null;
+                    }
+
+                    System.debug('csl.buildertek__SOV_Continuation_Sheet__r.buildertek__SOV_Payment_Application__r.buildertek__Project__c : ' + csl.buildertek__SOV_Continuation_Sheet__r.buildertek__SOV_Payment_Application__r.buildertek__Project__c);
+                    csl.buildertek__BT_Project__c = csl.buildertek__SOV_Continuation_Sheet__r.buildertek__SOV_Payment_Application__r.buildertek__Project__c;
+                    UpdateCSL.add(csl);
+                }
+
+                if(UpdateCSL.size() > 0){
+                    ContinuationSheetLineTriggerHandler.blnSkipSheetLineTrigger = true;
+                    update UpdateCSL;
+                    ContinuationSheetLineTriggerHandler.blnSkipSheetLineTrigger = false;
+                    System.debug('UpdateCSL updated');
+                }
+            }
+
     }
     
   
