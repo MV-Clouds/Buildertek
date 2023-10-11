@@ -266,7 +266,6 @@
                             <lightning:formattedText value="{!v.continuationSheet.buildertek__SOV_Payment_Application__r.buildertek__Project__r.Name}" />
                         </div>
                         
-                        
                         <div>
                             <label><b> Work Completed Total:</b></label>&nbsp;&nbsp;
                             <!--<lightning:formattedDateTime value="{!v.continuationSheet.buildertek__Period_To__c}" />
