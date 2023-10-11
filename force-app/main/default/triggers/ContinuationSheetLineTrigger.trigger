@@ -44,6 +44,7 @@ trigger ContinuationSheetLineTrigger on SOV_Continuation_Sheet_Lines__c (after i
             ContinuationSheetLineTriggerHandler.updatePaymentAppStatusBasedOnConSheetLinesStatusOnAfterUpdate(Trigger.New, Trigger.oldMap);
         }
         
+        
         handler.isAllLinesCompleted(Trigger.old, Trigger.new, Trigger.oldMap, Trigger.newMap);
         
         
