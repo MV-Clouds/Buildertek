@@ -98,7 +98,7 @@
             if(toastEvent){
             toastEvent.setParams({
                 "title": "Error",
-                "message": "Please select atleast one product.",
+                "message": "Please select at least one Product.",
                 "type": "error",
                 "duration": 5000
             });

@@ -321,10 +321,15 @@
 					component.set("v.Spinner", false);
 					var workspaceAPI = component.find("workspace");
 					workspaceAPI.getFocusedTabInfo().then(function(response) {
-
-					var focusedTabId = response.tabId;
+						
+						var focusedTabId = response.tabId;
 						workspaceAPI.closeTab({tabId: focusedTabId});
 					});
+					window.setTimeout(
+						$A.getCallback(function () {
+							$A.get('e.force:refreshView').fire();
+						}), 1000
+					);
 				}
 				else if (state === "ERROR") {
 					component.set("v.Spinner", false);
