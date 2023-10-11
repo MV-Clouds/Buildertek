@@ -1312,14 +1312,23 @@
                                                                                     value="{!value.originalValue}"
                                                                                     class="inputCss" />
                                                                             </aura:if>
-                                                                            <aura:if
-                                                                                isTrue="{!value.fieldType == 'string'}">
+                                                                            <aura:if isTrue="{!value.fieldType == 'string'}">
+                                                                                <aura:if isTrue="{!value.fieldName == 'buildertek__Item_Name__c'}">
+                                                                                    <div class="textAreaDiv">
+                                                                                        <lightning:formattedRichText
+                                                                                            value="{!value.originalValue}"
+                                                                                            class="textAreaCss" />
+                                                                                    </div>
+                                                                                    <aura:set attribute="else">
+                                                                                        <lightning:formattedNumber
+                                                                                            value="{!value.originalValue/100}"
+                                                                                            style="percent"
+                                                                                            minimumFractionDigits="2"
+                                                                                            class="inputCss" />
+                                                                                    </aura:set>
+                                                                                </aura:if>
 
-                                                                                <lightning:formattedNumber
-                                                                                    value="{!value.originalValue/100}"
-                                                                                    style="percent"
-                                                                                    minimumFractionDigits="2"
-                                                                                    class="inputCss" />
+                                                                                
                                                                             </aura:if>
                                                                             <aura:if isTrue="{!value.fieldType == 'textarea'}">
                                                                                 <div class="textAreaDiv">

@@ -183,9 +183,11 @@ public without sharing class PreviewQuoteController{
                    quoterecbody[0].buildertek__Template_Name__c	 = et[0].Name;
                 }
                 quoterecbody[0].buildertek__Memo__c = memovalue;
-                emailBodyValue = emailBodyValue.replaceAll('<p><br></p>', '<br>');
-                emailBodyValue = emailBodyValue.replaceAll('<p>', '<p style="margin-top: 0.1em; margin-bottom: 0em; ">');
-                quoterecbody[0].buildertek__Preview_Email_Body__c = emailBodyValue;
+                if (String.isNotBlank(emailBodyValue) && emailBodyValue != null) {
+                    emailBodyValue = emailBodyValue.replaceAll('<p><br></p>', '<br>');
+                    emailBodyValue = emailBodyValue.replaceAll('<p>', '<p style="margin-top: 0.1em; margin-bottom: 0em; ">');
+                    quoterecbody[0].buildertek__Preview_Email_Body__c = emailBodyValue;
+                }
 
                 string toemail = string.join(to,',');
 
@@ -611,9 +613,11 @@ public without sharing class PreviewQuoteController{
                 quoterec[0].buildertek__Date_Accepted_by_Customer__c = system.now();
                 quoterec[0].buildertek__Date_Sent_To_Customer__c = System.today();
                 quoterec[0].buildertek__Memo__c = memovalue;
-                emailBodyValue = emailBodyValue.replaceAll('<p><br></p>', '<br>');
-                emailBodyValue = emailBodyValue.replaceAll('<p>', '<p style="margin-top: 0.1em; margin-bottom: 0em; ">');
-                quoterec[0].buildertek__Preview_Email_Body__c = emailBodyValue;
+                if (String.isNotBlank(emailBodyValue) && emailBodyValue != null) {
+                    emailBodyValue = emailBodyValue.replaceAll('<p><br></p>', '<br>');
+                    emailBodyValue = emailBodyValue.replaceAll('<p>', '<p style="margin-top: 0.1em; margin-bottom: 0em; ">');
+                    quoterec[0].buildertek__Preview_Email_Body__c = emailBodyValue;
+                }
                 update quoterec;
 
             }
