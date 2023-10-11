@@ -11,19 +11,13 @@
     <aura:attribute name="sProductName" type="String" /> 
     <aura:attribute name="selectedRecords" type="List" default="[]" />
     <aura:attribute name="onlyUpdatedQuoteLines" type="List" default="[]" />
-    <!-- <aura:attribute name="getPhase" type="String" /> -->
     <aura:attribute name="checked" type="boolean"  />
     <aura:attribute name="MassSaveButtonDisabled" type="boolean" default="true" />
-    <!-- <aura:attribute name="quoteLineGroupOptions" type="List" /> -->
-    <!-- <aura:attribute name="selectedQuoteLineGroupId" type="Id" /> -->
     <aura:attribute name="productFamilyOptions" type="List" />
     <aura:attribute name="prevInput" type="String" />
     <aura:attribute name="searchTimeout" type="Object" />
-    <!-- <aura:attribute name="selectedRecId" type="String" default=""/> -->
-    <!-- <aura:attribute name="selecteProducts" type="Boolean" default="true" /> -->
     <aura:attribute name="showModel" type="Boolean" default="false" />
     <aura:attribute name="Spinner" type="boolean" />
-    <!-- <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/> -->
     <lightning:workspaceAPI aura:id="workspace" />
     <aura:if isTrue="{!v.Spinner}">
             <div class="slds-spinner_container">
@@ -47,7 +41,7 @@
 
         <div class="slds-border_top slds-box slds-box_xx-small" style="overflow: auto;" id="test" >
             <div class="slds slds-m-top_medium slds-p-horizontal_medium" >
-                <!-- Table -->
+                <!-- Quote Line Table -->
                 <table class="slds-table slds-table_bordered slds-table_fixed-layout" role="grid">
                     <thead>
                         <tr class="slds-text-title_caps">
@@ -146,6 +140,7 @@
                         </lightning:layout>
                         <br />
                         <div style="height: auto; min-height:150px;">
+                                            <!-- Product Table -->
                              <table class="slds-table slds-table_cell-buffer slds-table_bordered" aria-label="Example default base table of Products">
                                 <thead>
                                     <tr class="slds-line-height_reset">

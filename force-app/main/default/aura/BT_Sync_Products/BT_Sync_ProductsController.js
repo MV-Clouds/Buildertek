@@ -92,19 +92,20 @@
         var updatedquoteLineList = [];
         var  quoteLineNeedToUpdateId= component.get("v.quoteLineId"); // The ID you want to match for the update
         var product = component.get("v.selectedRecords"); // The new value you want to set
-        if (product.length == 0) {
-            component.set('v.Spinner', false);
-            var toastEvent = $A.get("e.force:showToast");
-            if(toastEvent){
-            toastEvent.setParams({
-                "title": "Error",
-                "message": "Please select at least one Product.",
-                "type": "error",
-                "duration": 5000
-            });
-            toastEvent.fire();
-        }
-        }
+        
+            if (product.length == 0) {
+                component.set('v.Spinner', false);
+                var toastEvent = $A.get("e.force:showToast");
+                if(toastEvent){
+                    toastEvent.setParams({
+                        "title": "Error",
+                        "message": "Please select at least one Product.",
+                        "type": "error",
+                        "duration": 5000
+                    });
+                    toastEvent.fire();
+                }
+            }
             for (var i = 0; i < quoteLineList.length; i++) {
                 var record = quoteLineList[i];
                 if (record.Id === quoteLineNeedToUpdateId) { // Check if the ID matches

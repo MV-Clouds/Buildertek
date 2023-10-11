@@ -84,24 +84,6 @@
                             value: value
                         });
                     });
-                    // if(component.get('v.getPhase') != undefined){
-                    //     var quotelineGroupOptions = component.get("v.quoteLineGroupOptions");
-                    //     var name = '';
-                    //     quotelineGroupOptions.forEach(function(element){
-                    //         if(element.value == component.get('v.getPhase')){
-                    //             name = element.key;
-                    //         }
-                    //     });
-                    //     var productFamily = '';
-                    //     productFamilyList.forEach(function(element){
-                    //         if(element.key == name){
-                    //             productFamily = element.value;
-                    //         }
-                    //     });
-                    //     if(productFamily != ''){
-                    //         component.set("v.sProductFamily", productFamily);
-                    //     }
-                    // }
                     component.set("v.productFamilyOptions", productFamilyList);
                 }
                 component.set("v.Spinner", false);
@@ -149,20 +131,6 @@
             component.set("v.pricebookoptions", pricebookOptions);
         });
         $A.enqueueAction(action);
-
-        // var action1 = component.get("c.getQuoteLineGroups");
-        // action1.setCallback(this, function(response){
-        //     var result = response.getReturnValue();
-        //     var quoteLineGroupOptions = [];
-        //     var selectedProducts = [];
-        //         result.forEach(element => {
-        //             quoteLineGroupOptions.push({ key: element.Name, value: element.Id });
-        //         });
-
-        //     component.set("v.quoteLineGroupOptions", quoteLineGroupOptions);
-        //     component.set("v.selectedQuoteLineGroupId", '');
-        // });  
-        // $A.enqueueAction(action1);     
 	}, 
 	changeProductFamilyHelper : function(component, event, helper , priceBookId, productFamilyId){
         component.set("v.Spinner", true);
