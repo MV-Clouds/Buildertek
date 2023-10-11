@@ -389,7 +389,7 @@
                                             </tr>
                                             <aura:set attribute="else">
 
-                                                <tr class="slds-scrollable" style="background: #f1f1f1;">
+                                                <tr class="slds-scrollable" style="background: #fcfcfc;">
                                                     <td class="firstCol"></td>
                                                     <td class="firstCol"></td>
                                                     <td style = "padding-left : 30px;">
