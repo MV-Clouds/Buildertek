@@ -473,7 +473,15 @@ public with sharing class BT_SendEmailController{
                     subject = subject + ' Quote - [ref:' + recordId + ']';
                 }
                 //subject = subject + ' Quote - [ref:' + recordId + ']';
-                body = body;
+
+                // ------------  Changes for BUIL-3535 starts from here  -------------------
+
+                body = body.replaceAll('<p><br></p>', '<br>');
+                body = body.replaceAll('<p>', '<p style="margin-top: 0em; margin-bottom: 0em; ">');
+                // body = body;
+
+                // ------------  Changes for BUIL-3535 ends here  -------------------
+
                 system.debug('Final body -------> ' + body);
 
             }
