@@ -21,7 +21,7 @@ public class ImportSelectionSheet {
             Map<Id,buildertek__Answer_Choice__c> answerChoiceMap = new Map<Id,buildertek__Answer_Choice__c>();
 
             for (buildertek__Section__c check : sections) {
-                System.debug('list of '+check);
+                System.debug('list of '+check.Id);
             }
 
             if(sections.size()>0){
@@ -34,6 +34,7 @@ public class ImportSelectionSheet {
                 insert sectionMap.values();
 
                 List<buildertek__Question_Group__c> questiongroups =[SELECT Id, Name, buildertek__Section__c, buildertek__Parent__c, buildertek__Sort_Id__c, buildertek__Title__c, buildertek__Instructions__c, buildertek__Allowance_Available__c, buildertek__Allowance_Remaining__c, buildertek__Date_Selected__c, buildertek__Selected_By__c, buildertek__Selected_By_Name__c, buildertek__Allowance_Used__c, buildertek__of_Options_Required__c, buildertek__Total_Options_Submitted__c FROM buildertek__Question_Group__c WHERE buildertek__Section__c In : sections];
+                System.debug('buildertek__Question_Group__c >> '+ questiongroups);
                 if(questiongroups.size()>0){
                     for(buildertek__Question_Group__c questiongroup : questiongroups){
                         buildertek__Question_Group__c questiongroupClone = questiongroup.clone(false,true);
