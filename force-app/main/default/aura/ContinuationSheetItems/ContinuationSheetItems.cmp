@@ -904,6 +904,9 @@
                                                     <b><lightning:formattedNumber value="{!group1.fromPrevApp}" style="currency" maximumFractionDigits ="2" currencyCode="{!v.currencycode}" currencyDisplayAs="code"/></b>     
                                                 </td>
                                                 <td style="padding-right:0.6rem">
+                                                    <!-- <b><lightning:formattedNumber value="{!group1.fromPrevApp}" style="currency" maximumFractionDigits ="2" currencyCode="{!v.currencycode}" currencyDisplayAs="code"/></b>      -->
+                                                </td>
+                                                <td style="padding-right:0.6rem">
                                                     <b><lightning:formattedNumber value="{!group1.workCompleted}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code"/></b>     
                                                 </td>
                                                 <td style="padding-right:0.6rem">
@@ -951,6 +954,8 @@
                                         </td>
                                         <td style="padding-right:0.6rem">
                                             <b><lightning:formattedNumber value="{!v.workFromPrevAppTotal}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code"/></b>     
+                                        </td>
+                                        <td style="padding-right:0.6rem">
                                         </td>
                                         <td style="padding-right:0.6rem">
                                             <b><lightning:formattedNumber value="{!v.workcompletedTotal}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code"/></b>     
