@@ -79,11 +79,17 @@ public class ClonePaymentApp {
             }
             
             List<buildertek__SOV_Payment_Application__c> payList = [select Id,buildertek__Old_PaymentApp_Id__c from buildertek__SOV_Payment_Application__c where buildertek__Old_PaymentApp_Id__c =:paymentold.id];
-           
+            
             system.debug('payList------>'+payList);
             //  ClonePaymentAppwithoutSharing innerClassHandler = New ClonePaymentAppwithoutSharing();
-            buildertek__SOV_Continuation__c conSheet = [select Id, Name, buildertek__IsNextPayment__c,buildertek__SOV_Payment_Application__r.buildertek__Status__c, buildertek__SOV_Payment_Application__r.buildertek__PA_Type__c, buildertek__SOV_Payment_Application__r.RecordTypeId, buildertek__SOV_Payment_Application__r.recordtype.name  from buildertek__SOV_Continuation__c where buildertek__SOV_Payment_Application__c =: paymentold.id];
-            
+            List<buildertek__SOV_Continuation__c> conSheet = [select Id, Name, buildertek__IsNextPayment__c,buildertek__SOV_Payment_Application__r.buildertek__Status__c, buildertek__SOV_Payment_Application__r.buildertek__PA_Type__c, buildertek__SOV_Payment_Application__r.RecordTypeId, buildertek__SOV_Payment_Application__r.recordtype.name  from buildertek__SOV_Continuation__c where buildertek__SOV_Payment_Application__c =: paymentold.id];
+            innerclass inn = new innerclass(); 
+            if (conSheet.size()> 1) {
+                inn.multipleContinuationSheet = true;
+            } else {
+                inn.multipleContinuationSheet = false;
+
+            }
             List<Id> sovConIds = New List<Id>();
             List<buildertek__SOV_Continuation__c> sovConList = [SELECT Id, buildertek__SOV_Payment_Application__c FROM buildertek__SOV_Continuation__c WHERE buildertek__SOV_Payment_Application__c =: paymentold.id];
             
@@ -103,9 +109,8 @@ public class ClonePaymentApp {
                 }
             }
             
-            innerclass inn = new innerclass(); 
             inn.userrec = userRec[0]; 
-            inn.payment = conSheet;
+            inn.payment = conSheet[0];
             inn.isAllVendorAppsApproved = AllVendorsApproved;
             if(payList.isEmpty()){
                 inn.validIsNext = true;
@@ -141,6 +146,8 @@ public class ClonePaymentApp {
         public boolean NoSOVLines;
         @AuraEnabled
         public boolean isAllVendorAppsApproved;
+        @AuraEnabled
+        public boolean multipleContinuationSheet;
     }
     
     @AuraEnabled

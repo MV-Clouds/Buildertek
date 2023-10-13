@@ -13,21 +13,36 @@
             });
             $A.enqueueAction(action);
         
-        
-        // debugger;
-        component.set("v.Spinner", true);
-        component.set("v.showMessage", true);
-        // debugger;
-        var action = component.get("c.getIsNextPAyment");
-        action.setParams({"recordId": component.get("v.recordId")});
-        action.setCallback(this, function(response) {
-            var state = response.getState(); 
-            if(state === "SUCCESS") {
-                var resultData = response.getReturnValue();
-                console.log(resultData.payment);
-                console.log(resultData.payment.buildertek__SOV_Payment_Application__r.buildertek__Status__c );
+            
+            // debugger;
+            component.set("v.Spinner", true);
+            component.set("v.showMessage", true);
+            // debugger;
+            var action = component.get("c.getIsNextPAyment");
+            action.setParams({"recordId": component.get("v.recordId")});
+            action.setCallback(this, function(response) {
+                var state = response.getState(); 
+                if(state === "SUCCESS") {
+                    var resultData = response.getReturnValue();
+                // console.log(resultData.payment);
+                // console.log(resultData.payment.buildertek__SOV_Payment_Application__r.buildertek__Status__c );
                 //if((resultData.payment.buildertek__IsNextPayment__c == true) /*&& resultData.userrec.isPortalEnabled == true*/){
-                if(resultData.NoSOVLines == true){
+                if(resultData.multipleContinuationSheet == true){
+                    component.set("v.Spinner", false);
+                    component.set("v.showMessage", false);
+                    $A.get("e.force:closeQuickAction").fire();
+                    var toastEvent = $A.get("e.force:showToast");
+                    toastEvent.setParams({
+                        title: '',
+                        message: 'There are multiple Continuation Sheet Lines for this Payment Application please make sure there is only one continuation sheet for the payment application.',
+                        duration: "5000",
+                        key: "info_alt",
+                        type: "error",
+                        mode: "pester",
+                    });
+                    toastEvent.fire();
+                }
+                else if(resultData.NoSOVLines == true){
                     component.set("v.Spinner", false);
                     component.set("v.showMessage", false);
                     $A.get("e.force:closeQuickAction").fire();
@@ -189,6 +204,20 @@
                             });
                             $A.enqueueAction(action);
                         }
+            }else{
+                component.set("v.Spinner", false);
+                    component.set("v.showMessage", false);
+                    $A.get("e.force:closeQuickAction").fire();
+                    var toastEvent = $A.get("e.force:showToast");
+                    toastEvent.setParams({
+                        title: '',
+                        message: 'Something went wrong.',
+                        duration: "5000",
+                        key: "info_alt",
+                        type: "error",
+                        mode: "pester",
+                    });
+                    toastEvent.fire();
             }
         });
         $A.enqueueAction(action);
