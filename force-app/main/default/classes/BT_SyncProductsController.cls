@@ -251,4 +251,16 @@ public class BT_SyncProductsController {
         update UpdateQlList;
     }  
 
+    @AuraEnabled
+    public static Boolean checkQuoteLineItems(String quoteId){
+        Boolean allQuoteLineItemsHaveProducts = true;
+        List<buildertek__Quote_Item__c> quoteLineItems = [SELECT Id, buildertek__Product__c FROM buildertek__Quote_Item__c WHERE buildertek__Quote__c =:quoteId];
+        for(buildertek__Quote_Item__c quoteLineItem : quoteLineItems){
+            if(quoteLineItem.buildertek__Product__c == null){
+                allQuoteLineItemsHaveProducts = false;
+            }
+        }
+        return allQuoteLineItemsHaveProducts;
+    }
+
 }

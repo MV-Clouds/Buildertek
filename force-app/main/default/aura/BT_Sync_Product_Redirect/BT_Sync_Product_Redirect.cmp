@@ -1,4 +1,4 @@
-<aura:component  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction,forceCommunity:availableForAllPageTypes,forceCommunity:layout" access="global" >
+<aura:component controller="BT_SyncProductsController"  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction,forceCommunity:availableForAllPageTypes,forceCommunity:layout" access="global" >
     <aura:attribute name="recordId" type="String" />
 	<aura:html tag="style">
         .slds-modal__content {
