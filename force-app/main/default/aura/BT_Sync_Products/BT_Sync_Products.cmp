@@ -84,7 +84,7 @@
                     </tbody>
                 </table>
                 <aura:if isTrue="{!v.quoteLineList.length == 0}">
-                    <center class="elseMsg">There are no quote lines without product!!! </center>
+                    <center class="elseMsg">All the quote lines have been sycn'd to a Product </center>
                 </aura:if>
             </div>
         </div>
