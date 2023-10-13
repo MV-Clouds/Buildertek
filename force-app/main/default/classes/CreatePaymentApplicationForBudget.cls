@@ -297,6 +297,7 @@ continutionSheet.Name =*/
                                                                                     buildertek__Grouping__c,
                                                                                     buildertek__Grouping2__c,buildertek__Status__c,
                                                                                     buildertek__Budget_Grouping__c,buildertek__Rejection_Reason__c,
+                                                                                    buildertek__Completion__c,
                                                                                     //For Community User  - start
                                                                                     buildertek__Vendor_Scheduled_Value__c,
                                                                                     buildertek__Vendor_Work_Completed_from_Previous_Appl__c,
@@ -409,6 +410,7 @@ continutionSheet.Name =*/
                                                     SUM(buildertek__Vendor_Total__c) totalWork,
                                                     SUM(buildertek__Vendor_G_C__c) gcTotal,
                                                     SUM(buildertek__Vendor_Balance_To_Finish__c) balanceTotal,
+                                                    SUM(buildertek__Completion__c) completionPercent,
                                                     buildertek__SOV_Continuation_Sheet__c
                                                     FROM buildertek__SOV_Continuation_Sheet_Lines__c
                                                     WHERE buildertek__SOV_Continuation_Sheet__c =: continuationSheet.Id

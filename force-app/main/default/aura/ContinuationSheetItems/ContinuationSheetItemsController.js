@@ -54,7 +54,7 @@
             
         }
         
-        debugger;
+        // // debugger;
         var action2 = component.get("c.isSovSubmitted");
         var recId = component.get("v.commrecordId")
         if(!recId){
@@ -64,7 +64,7 @@
             recordId: recId
         });
         action2.setCallback(this, function(response){
-            debugger;
+            // // debugger;
             if(response.getState() === "SUCCESS"){
                 
                 var result = response.getReturnValue();
@@ -87,7 +87,7 @@
             }
         });
         $A.enqueueAction(action2);
-        debugger;
+        // // debugger;
         var action = component.get("c.getContinuationSheetLines");
         action.setParams({
             recordId : recordId //component.get("v.recordId")    
@@ -95,7 +95,7 @@
         action.setCallback(this, function(response){
             if(response.getState() === "SUCCESS"){
                 
-                debugger;
+                // // debugger;
                 var result = response.getReturnValue();
                 var sortedSheetLines = result.sheetLines;
               //  alert(sortedSheetLines);
@@ -112,7 +112,7 @@
                     }
                     
                 }
-                debugger;
+                // // debugger;
                 component.set("v.continuationSheet", result.continuationSheet);
                 component.set("v.continuationSheetLines", sortedSheetLines);         
                 component.set("v.scheduleValueTotal", result.scheduleValueTotal);
@@ -159,7 +159,7 @@
                 
                 component.set("v.PeriodTo", result.continuationSheet.buildertek__SOV_Payment_Application__r ? result.continuationSheet.buildertek__SOV_Payment_Application__r.buildertek__Period_To__c : '');
                 component.set("v.balanceTotal", result.balanceTotal);
-                debugger;
+                // // debugger;
                 component.set("v.continuationSheetId",  result.continuationSheet.Id);
                 component.set("v.isApplication", result.isApplication);
                 if(result.sheetLines){
@@ -183,6 +183,7 @@
                 .catch(function(error) {
                     console.log(error);
                 });
+
                 
             }  
             else{
@@ -229,7 +230,7 @@
         $A.get('e.force:refreshView').fire();
     },
     handleSubmit: function (component, event, helper) {
-        debugger;
+        // debugger;
         
         component.set("v.Spinner", true); 
         
@@ -286,7 +287,7 @@
             $A.enqueueAction(action2);   
             
         }else{
-            debugger;
+            // debugger;
           //  component.find('recordViewForm').submit(fields); 
            
            var fields = event.getParam("fields");
@@ -332,7 +333,7 @@
     },
     onRecordSuccess: function (component, event, helper) {
         
-        debugger;
+        // debugger;
         
         component.set("v.Spinner", false);
         var payload = event.getParams().response;
@@ -467,7 +468,7 @@
             
         }
         if(component.get("v.isDescription") == false){
-            debugger;
+            // debugger;
             var action = component.get("c.updateSheetLines");
             action.setParams({
                 sheetLines : JSON.stringify(updatedLines),
@@ -764,256 +765,354 @@
     
     
     changeValueInGrp : function(component, event, helper) {
-        debugger;
-        var recordId = event.getSource().get("v.name");
-        component.set("v.IsbuttonDisable", false);
-        var linesInGroup = component.get("v.groupedRecords")
-        
-        var localId = event.getSource().getLocalId();
-        var value = event.getSource().get("v.value");
-        event.getSource().set("v.value",value)
-        
-        var workCompletedThisPeriod
-        var inputField = event.getSource();
-        
-        if(localId == "buildertek__Work_Completed__c"){
-            workCompletedThisPeriod = event.getSource().get("v.value");
-        }
-        
-         var materialPresentlyStored
-        
-        if(localId == "buildertek__Material_Presently_Stored__c"){
-            materialPresentlyStored = event.getSource().get("v.value");
-        }
-        
-        
-        var updatedLinesInGroup = component.get("v.groupedRecords");
-        var updatedLines = [];
-        
-        if(recordId.indexOf('customrec_') > -1){
-            var index = recordId.split("customrec_")[1];
-            var parentGrpIndex = Number(index.split("_")[0])
-            var subGrpIndex = Number(index.split("_")[1])
-            var recIndex = Number(index.split("_")[2])
-       
-            if(updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex]){
-                var recordItem = updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex];
-                if(!value){
-                    value = 0;
-                }
-                
-                if(component.get("v.isCommUser") == true){
-                    if(localId == "buildertek__Scheduled_Value__c"){
-                        updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Scheduled_Value__c = parseInt(value);
-                    }  
-                }else{
-                    if(localId == "buildertek__Scheduled_Value__c"){
-                        updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Scheduled_Value__c = parseInt(value);
-                    } 
-                }
-                
-                
-                if(component.get("v.isCommUser") == true){
-                    if(localId == "buildertek__Work_Completed_from_Previous_Application__c"){
-                        updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Vendor_Work_Completed_from_Previous_Appl__c = parseInt(value);
-                    } 
-                }else{
-                    if(localId == "buildertek__Work_Completed_from_Previous_Application__c"){
-                        updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Work_Completed_from_Previous_Application__c = parseInt(value);
-                    }
-                }
-                
-                if(component.get("v.isCommUser") == true){
-                    if(localId == "buildertek__Work_Completed__c"){
-                        updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Vendor_Work_Completed_This_Period__c = Number(value);
-                    }
-                }else{
-                    if(localId == "buildertek__Work_Completed__c"){
-                        updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Work_Completed__c = Number(value);
-                    }  
-                }
-                
-                if(component.get("v.isCommUser") == true){
-                    if(localId == "buildertek__Material_Presently_Stored__c"){
-                        updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Vendor_Material_Presently_Stored__c = parseFloat(value);
-                    }
-                }else{
-                    if(localId == "buildertek__Material_Presently_Stored__c"){
-                        updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Material_Presently_Stored__c = parseFloat(value);
-                    } 
-                }
-                
-                if(component.get("v.isCommUser") == true){
-                    updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Vendor_Total__c = parseFloat(recordItem.buildertek__Vendor_Material_Presently_Stored__c) + parseInt(recordItem.buildertek__Vendor_Work_Completed_from_Previous_Appl__c) + parseFloat(recordItem.buildertek__Vendor_Work_Completed_This_Period__c);
-                    var gcPercent =  (parseInt(recordItem.buildertek__Vendor_Total__c) / parseInt(recordItem.buildertek__Scheduled_Value__c))*100;
-                    updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Vendor_G_C__c = gcPercent.toFixed(2);
-                    updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Vendor_Balance_To_Finish__c = Number(recordItem.buildertek__Scheduled_Value__c) - Number(recordItem.buildertek__Vendor_Total__c);
-                    
-                }else{
-                    updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Total__c = parseFloat(recordItem.buildertek__Material_Presently_Stored__c) + parseInt(recordItem.buildertek__Work_Completed_from_Previous_Application__c) + parseFloat(recordItem.buildertek__Work_Completed__c);
-                    var gcPercent =  (parseInt(recordItem.buildertek__Total__c) / parseInt(recordItem.buildertek__Scheduled_Value__c))*100;
-                    updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__G_C__c = gcPercent.toFixed(2);
-                    updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Balance_To_Finish__c = Number(recordItem.buildertek__Scheduled_Value__c) - Number(recordItem.buildertek__Total__c);
-                    
-                }
-                
-                if(component.get("v.isCommUser") == true){
-                    var balToFinish = Number(recordItem.buildertek__Scheduled_Value__c) - (Number(recordItem.buildertek__Vendor_Total__c)-workCompletedThisPeriod);
-                    var balToFinish45 = Number(recordItem.buildertek__Scheduled_Value__c) - (Number(recordItem.buildertek__Vendor_Total__c)-materialPresentlyStored);
-                    
-                }else{
-                    var balToFinish = Number(recordItem.buildertek__Scheduled_Value__c) - (Number(recordItem.buildertek__Total__c)-workCompletedThisPeriod);
-                    var balToFinish45 = Number(recordItem.buildertek__Scheduled_Value__c) - (Number(recordItem.buildertek__Total__c)-materialPresentlyStored);
-                    
-                }
-                
-                if(localId == "buildertek__Work_Completed__c"){
-                    if(workCompletedThisPeriod > balToFinish ){
-                        
-                        inputField.setCustomValidity("Work Completed This Period must be less than Balance To Finish");
-                        component.set("v.isGCPercent",true);
-                        
-                    }else{
-                        inputField.setCustomValidity("");
-                        component.set("v.isGCPercent",false);
-                    }
-                }
-                 if(localId == "buildertek__Material_Presently_Stored__c"){
-                    if(materialPresentlyStored > balToFinish45){
-                        inputField.setCustomValidity("Material Presently Stored must be less than Balance To Finish");
-                         component.set("v.isGCPercent",true);
-                    }else{
-                        inputField.setCustomValidity("");
-                         component.set("v.isGCPercent",false);
-                    }   
-                }
+        try{
+
+            var recordId = event.getSource().get("v.name");
+            console.log('RecordID NAme : ', recordId);
+            component.set("v.IsbuttonDisable", false);
+            try {
+                var WorkCompletedInput = component.find('buildertek__Work_Completed__c');
+                    WorkCompletedInput.forEach(ele => {
+                        if(ele.get("v.name") == recordId){
+                            console.log('WorkCompletedInput : ', ele.get("v.name"));
+                        }
+                    })
+            } catch (error) {
+                console.log('error :: ', error.stack);
+            }
+            var linesInGroup = component.get("v.groupedRecords")
+            
+            var localId = event.getSource().getLocalId();
+            console.log('local id ', localId);
+            // debugger;
+            var value = event.getSource().get("v.value");
+            event.getSource().set("v.value",value)
+            
+            var workCompletedThisPeriod
+            var inputField = event.getSource();
+            
+            if(localId == "buildertek__Work_Completed__c"){
+                workCompletedThisPeriod = event.getSource().get("v.value");
             }
             
-        }else if(updatedLinesInGroup){
-            for(var pindex=0; pindex<updatedLinesInGroup.length; pindex++){
-                var subgrpRecords = updatedLinesInGroup[pindex].subGroupRecords;
-                for(var sunindex =0; sunindex<subgrpRecords.length;sunindex++){
-                    var records = subgrpRecords[sunindex].records;
-                    for(var recIndex = 0 ; recIndex < records.length;recIndex++){
-                        updatedLines.push(records[recIndex]);
-                        if(recordId == records[recIndex].Id){
-                            if(!value){
-                                value = 0;
+             var materialPresentlyStored
+            
+            if(localId == "buildertek__Material_Presently_Stored__c"){
+                materialPresentlyStored = event.getSource().get("v.value");
+            }
+            
+            
+            var updatedLinesInGroup = component.get("v.groupedRecords");
+            var updatedLines = [];
+            
+            if(recordId.indexOf('customrec_') > -1){
+                var index = recordId.split("customrec_")[1];
+                var parentGrpIndex = Number(index.split("_")[0])
+                var subGrpIndex = Number(index.split("_")[1])
+                var recIndex = Number(index.split("_")[2])
+    
+           
+                if(updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex]){
+                    var recordItem = updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex];
+                    console.log('recordItem : ', recordItem);
+                    if(!value){
+                        value = 0;
+                    }
+                    
+                    if(component.get("v.isCommUser") == true){
+                        if(localId == "buildertek__Scheduled_Value__c"){
+                            updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Scheduled_Value__c = parseInt(value);
+                        }  
+                    }else{
+                        if(localId == "buildertek__Scheduled_Value__c"){
+                            updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Scheduled_Value__c = parseInt(value);
+                        } 
+                    }
+                    
+                    
+                    if(component.get("v.isCommUser") == true){
+                        if(localId == "buildertek__Work_Completed_from_Previous_Application__c"){
+                            updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Vendor_Work_Completed_from_Previous_Appl__c = parseInt(value);
+                        } 
+                    }else{
+                        if(localId == "buildertek__Work_Completed_from_Previous_Application__c"){
+                            updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Work_Completed_from_Previous_Application__c = parseInt(value);
+                        }
+                    }
+    
+                    if(component.get("v.isCommUser") == true){
+                        if(localId == "buildertek__Completion__c"){
+                            updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Completion__c = parseFloat(value);
+                        } 
+                    }else{
+                        if(localId == "buildertek__Completion__c"){
+                            updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Completion__c = parseFloat(value);
+                        }
+                    }
+                    
+                    if(component.get("v.isCommUser") == true){
+                        if(localId == "buildertek__Work_Completed__c"){
+                            updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Vendor_Work_Completed_This_Period__c = Number(value);
+                        }
+                    }else{
+                        if(localId == "buildertek__Work_Completed__c"){
+                            updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Work_Completed__c = Number(value);
+                        }  
+                    }
+                    
+                    if(component.get("v.isCommUser") == true){
+                        if(localId == "buildertek__Material_Presently_Stored__c"){
+                            updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Vendor_Material_Presently_Stored__c = parseFloat(value);
+                        }
+                    }else{
+                        if(localId == "buildertek__Material_Presently_Stored__c"){
+                            updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Material_Presently_Stored__c = parseFloat(value);
+                        } 
+                    }
+    
+                    // If field blank in backend then set field value to zero...
+                    if(!recordItem.buildertek__Scheduled_Value__c){
+                        updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Scheduled_Value__c = 0
+                    }
+                    if(!recordItem.buildertek__Vendor_Work_Completed_from_Previous_Appl__c){
+                        updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Vendor_Work_Completed_from_Previous_Appl__c = 0
+                    }
+                    if(!recordItem.buildertek__Work_Completed_from_Previous_Application__c){
+                        updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Work_Completed_from_Previous_Application__c = 0
+                    }
+                    if(!recordItem.buildertek__Completion__c){
+                        updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Completion__c = 0
+                    }
+                    if(!recordItem.buildertek__Vendor_Work_Completed_This_Period__c){
+                        updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Vendor_Work_Completed_This_Period__c = 0
+                    }
+                    if(!recordItem.buildertek__Work_Completed__c){
+                        updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Work_Completed__c = 0
+                    }
+                    if(!recordItem.buildertek__Vendor_Material_Presently_Stored__c){
+                        updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Vendor_Material_Presently_Stored__c = 0
+                    }
+                    if(!recordItem.buildertek__Vendor_Total__c){
+                        updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Vendor_Total__c = 0
+                    }
+
+                    if(localId == "buildertek__Completion__c" || localId == "buildertek__Material_Presently_Stored__c"){
+                        if(component.get("v.isCommUser") == true){
+                            updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Vendor_Work_Completed_This_Period__c = ((parseInt(recordItem.buildertek__Scheduled_Value__c) - (parseInt(recordItem.buildertek__Work_Completed_from_Previous_Application__c)) - parseFloat(recordItem.buildertek__Vendor_Material_Presently_Stored__c)) * parseFloat(recordItem.buildertek__Completion__c) )/ 100; // ---
+                        }
+                        else{
+                            updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Work_Completed__c = ((parseInt(recordItem.buildertek__Scheduled_Value__c) - (parseInt(recordItem.buildertek__Work_Completed_from_Previous_Application__c)) - parseFloat(recordItem.buildertek__Material_Presently_Stored__c)) * parseFloat(recordItem.buildertek__Completion__c) )/ 100; // ---
+                            console.log('(parseFloat(recordItem.buildertek__Vendor_Material_Presently_Stored__c) : ', recordItem.buildertek__Vendor_Material_Presently_Stored__c);
+                            console.log('buildertek__Work_Completed__c : ', updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Work_Completed__c);
+                        }
+
+                        // if(parseFloat(value) != 0){
+                        //     component.set("v.diasbaleWorkCompField", recordId);
+    
+                            if(parseFloat(value) > 100){
+                                inputField.setCustomValidity("Completion % must be less than 100");
                             }
-                            if(component.get("v.isCommUser") == true){
-                                if(localId == "buildertek__Scheduled_Value__c"){
-                                    records[recIndex].buildertek__Scheduled_Value__c = parseInt(value);
-                                }  
-                            }else{
-                                if(localId == "buildertek__Scheduled_Value__c"){
-                                    records[recIndex].buildertek__Scheduled_Value__c = parseInt(value);
-                                }  
+                            else{
+                                inputField.setCustomValidity("");
                             }
+                        // }
+                        // else{
+                        //     component.set("v.diasbaleWorkCompField", "false");
+                        // }
+                    }
+    
+                    if(localId == "buildertek__Work_Completed__c"){
+
+                        if(component.get("v.isCommUser") == true){
+                            updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Completion__c = ((parseInt(recordItem.buildertek__Work_Completed__c) * 100) / (parseInt(recordItem.buildertek__Vendor_Work_Completed_This_Period__c) - parseInt(recordItem.buildertek__Work_Completed_from_Previous_Application__c) - parseFloat(recordItem.buildertek__Vendor_Material_Presently_Stored__c))).toFixed(2);
+                        }
+                        else{
+                            updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Completion__c = ((parseInt(recordItem.buildertek__Work_Completed__c) * 100) / (parseInt(recordItem.buildertek__Scheduled_Value__c) - parseInt(recordItem.buildertek__Work_Completed_from_Previous_Application__c) - parseFloat(recordItem.buildertek__Material_Presently_Stored__c))).toFixed(2);
+                        }
+
+                        // if(parseFloat(value) != 0){
+                        //     component.set("v.diasbaleCompletionField", recordId);
+                        // }
+                        // else{
+                        //     component.set("v.diasbaleCompletionField", "false");
+                        // }
+                    }
+
+                    if(component.get("v.isCommUser") == true){
+                        updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Vendor_Total__c = parseFloat(recordItem.buildertek__Vendor_Material_Presently_Stored__c) + parseInt(recordItem.buildertek__Vendor_Work_Completed_from_Previous_Appl__c) + parseFloat(recordItem.buildertek__Vendor_Work_Completed_This_Period__c);
+                        var gcPercent =  (parseInt(recordItem.buildertek__Vendor_Total__c) / parseInt(recordItem.buildertek__Scheduled_Value__c))*100;
+                        updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Vendor_G_C__c = gcPercent.toFixed(2);
+                        updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Vendor_Balance_To_Finish__c = Number(recordItem.buildertek__Scheduled_Value__c) - Number(recordItem.buildertek__Vendor_Total__c);
+                    }else{
+                        updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Total__c = parseFloat(recordItem.buildertek__Material_Presently_Stored__c) + parseFloat(recordItem.buildertek__Work_Completed_from_Previous_Application__c) + parseFloat(recordItem.buildertek__Work_Completed__c);
+                        var gcPercent =  (parseInt(recordItem.buildertek__Total__c) / parseInt(recordItem.buildertek__Scheduled_Value__c))*100;
+                        updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__G_C__c = gcPercent.toFixed(2);
+                        updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Balance_To_Finish__c = Number(recordItem.buildertek__Scheduled_Value__c) - Number(recordItem.buildertek__Total__c);
+                    }
+                    
+                    if(component.get("v.isCommUser") == true){
+                        var balToFinish = Number(recordItem.buildertek__Scheduled_Value__c) - (Number(recordItem.buildertek__Vendor_Total__c)-workCompletedThisPeriod);
+                        var balToFinish45 = Number(recordItem.buildertek__Scheduled_Value__c) - (Number(recordItem.buildertek__Vendor_Total__c)-materialPresentlyStored);
+                        
+                    }else{
+                        var balToFinish = Number(recordItem.buildertek__Scheduled_Value__c) - (Number(recordItem.buildertek__Total__c)-workCompletedThisPeriod);
+                        var balToFinish45 = Number(recordItem.buildertek__Scheduled_Value__c) - (Number(recordItem.buildertek__Total__c)-materialPresentlyStored);
+                        
+                    }
+                    
+                    if(localId == "buildertek__Work_Completed__c"){
+                        if(workCompletedThisPeriod > balToFinish ){
                             
-                            if(component.get("v.isCommUser") == true){
-                                if(localId == "buildertek__Work_Completed_from_Previous_Application__c"){
-                                    records[recIndex].buildertek__Vendor_Work_Completed_from_Previous_Appl__c = parseInt(value);
-                                }  
-                            }else{
-                                if(localId == "buildertek__Work_Completed_from_Previous_Application__c"){
-                                    records[recIndex].buildertek__Work_Completed_from_Previous_Application__c = parseInt(value);
-                                }  
-                            }
+                            inputField.setCustomValidity("Work Completed This Period must be less than Balance To Finish");
+                            component.set("v.isGCPercent",true);
                             
-                            if(component.get("v.isCommUser") == true){
-                                if(localId == "buildertek__Work_Completed__c"){
-                                    records[recIndex].buildertek__Vendor_Work_Completed_This_Period__c =Number(value);
-                                } 
-                            }else{
-                                if(localId == "buildertek__Work_Completed__c"){
-                                    records[recIndex].buildertek__Work_Completed__c =Number(value);
-                                } 
-                            }
-                            
-                            if(component.get("v.isCommUser") == true){
-                                if(localId == "buildertek__Material_Presently_Stored__c"){
-                                    records[recIndex].buildertek__Vendor_Material_Presently_Stored__c = parseFloat(value);
-                                }
-                            }else{
-                                if(localId == "buildertek__Material_Presently_Stored__c"){
-                                    records[recIndex].buildertek__Material_Presently_Stored__c = parseFloat(value);
-                                }
-                            }
-                            
-                            if(component.get("v.isCommUser") == true){
-                                records[recIndex].buildertek__Vendor_Total__c = parseFloat(records[recIndex].buildertek__Vendor_Material_Presently_Stored__c) + parseInt(records[recIndex].buildertek__Vendor_Work_Completed_from_Previous_Appl__c) + parseFloat(records[recIndex].buildertek__Vendor_Work_Completed_This_Period__c);
-                               var gcPercent = (parseInt(records[recIndex].buildertek__Vendor_Total__c) / parseInt(records[recIndex].buildertek__Scheduled_Value__c))*100;
-                                records[recIndex].buildertek__Vendor_G_C__c = gcPercent.toFixed(2);
-                                records[recIndex].buildertek__Vendor_Balance_To_Finish__c = Number(records[recIndex].buildertek__Scheduled_Value__c) - Number(records[recIndex].buildertek__Vendor_Total__c);
-                            }else{
-                                records[recIndex].buildertek__Total__c = parseFloat(records[recIndex].buildertek__Material_Presently_Stored__c) + parseInt(records[recIndex].buildertek__Work_Completed_from_Previous_Application__c) + parseFloat(records[recIndex].buildertek__Work_Completed__c);
-                               var gcPercent =  (parseInt(records[recIndex].buildertek__Total__c) / parseInt(records[recIndex].buildertek__Scheduled_Value__c))*100;
-                                records[recIndex].buildertek__G_C__c =gcPercent.toFixed(2);
-                                records[recIndex].buildertek__Balance_To_Finish__c = Number(records[recIndex].buildertek__Scheduled_Value__c) - Number(records[recIndex].buildertek__Total__c);
-                            }
-                            
-                            if(component.get("v.isCommUser") == true){
-                                if(localId == "buildertek__Work_Completed__c"){
-                                    if(workCompletedThisPeriod > parseInt(records[recIndex].buildertek__Vendor_Balance_To_Finish__c)){
-                                         component.set("v.isGCPercent",true);
-                                        inputField.setCustomValidity("Work Completed This Period must be less than Balance To Finish");
-                                    }else{
-                                        inputField.setCustomValidity("");
-                                         component.set("v.isGCPercent",false);
-                                    }
-                                    
-                                }
-                                if(localId == "buildertek__Material_Presently_Stored__c"){
-                                    if(materialPresentlyStored > parseInt(records[recIndex].buildertek__Vendor_Balance_To_Finish__c)){
-                                        inputField.setCustomValidity("Material Presently Stored must be less than Balance To Finish");
-                                         component.set("v.isGCPercent",true);
-                                    }else{
-                                        inputField.setCustomValidity("");
-                                         component.set("v.isGCPercent",false);
-                                    }   
-                                }
-                            }else{
-                                if(localId == "buildertek__Work_Completed__c"){
-                                    if(workCompletedThisPeriod > parseInt(records[recIndex].buildertek__Balance_To_Finish__c)){
-                                         component.set("v.isGCPercent",true);
-                                        inputField.setCustomValidity("Work Completed This Period must be less than Balance To Finish");
-                                    }else{
-                                        inputField.setCustomValidity("");
-                                         component.set("v.isGCPercent",false);
-                                    }
-                                    
-                                }
-                                if(localId == "buildertek__Material_Presently_Stored__c"){
-                                    if(materialPresentlyStored > parseInt(records[recIndex].buildertek__Balance_To_Finish__c)){
-                                        inputField.setCustomValidity("Material Presently Stored must be less than Balance To Finish");
-                                         component.set("v.isGCPercent",true);
-                                    }else{
-                                        inputField.setCustomValidity("");
-                                         component.set("v.isGCPercent",false);
-                                    }   
+                        }else{
+                            inputField.setCustomValidity("");
+                            component.set("v.isGCPercent",false);
+                        }
+                    }
+                     if(localId == "buildertek__Material_Presently_Stored__c"){
+                        if(materialPresentlyStored > balToFinish45){
+                            inputField.setCustomValidity("Material Presently Stored must be less than Balance To Finish");
+                             component.set("v.isGCPercent",true);
+                        }else{
+                            inputField.setCustomValidity("");
+                             component.set("v.isGCPercent",false);
+                        }   
+                    }
                 }
+                
+            }else if(updatedLinesInGroup){
+                for(var pindex=0; pindex<updatedLinesInGroup.length; pindex++){
+                    var subgrpRecords = updatedLinesInGroup[pindex].subGroupRecords;
+                    for(var sunindex =0; sunindex<subgrpRecords.length;sunindex++){
+                        var records = subgrpRecords[sunindex].records;
+                        for(var recIndex = 0 ; recIndex < records.length;recIndex++){
+                            updatedLines.push(records[recIndex]);
+                            if(recordId == records[recIndex].Id){
+                                if(!value){
+                                    value = 0;
+                                }
+                                if(component.get("v.isCommUser") == true){
+                                    if(localId == "buildertek__Scheduled_Value__c"){
+                                        records[recIndex].buildertek__Scheduled_Value__c = parseInt(value);
+                                    }  
+                                }else{
+                                    if(localId == "buildertek__Scheduled_Value__c"){
+                                        records[recIndex].buildertek__Scheduled_Value__c = parseInt(value);
+                                    }  
+                                }
+                                
+                                if(component.get("v.isCommUser") == true){
+                                    if(localId == "buildertek__Work_Completed_from_Previous_Application__c"){
+                                        records[recIndex].buildertek__Vendor_Work_Completed_from_Previous_Appl__c = parseInt(value);
+                                    }  
+                                }else{
+                                    if(localId == "buildertek__Work_Completed_from_Previous_Application__c"){
+                                        records[recIndex].buildertek__Work_Completed_from_Previous_Application__c = parseInt(value);
+                                    }  
+                                }
+                                
+                                if(component.get("v.isCommUser") == true){
+                                    if(localId == "buildertek__Work_Completed__c"){
+                                        records[recIndex].buildertek__Vendor_Work_Completed_This_Period__c =Number(value);
+                                    } 
+                                }else{
+                                    if(localId == "buildertek__Work_Completed__c"){
+                                        records[recIndex].buildertek__Work_Completed__c =Number(value);
+                                    } 
+                                }
+                                
+                                if(component.get("v.isCommUser") == true){
+                                    if(localId == "buildertek__Material_Presently_Stored__c"){
+                                        records[recIndex].buildertek__Vendor_Material_Presently_Stored__c = parseFloat(value);
+                                    }
+                                }else{
+                                    if(localId == "buildertek__Material_Presently_Stored__c"){
+                                        records[recIndex].buildertek__Material_Presently_Stored__c = parseFloat(value);
+                                    }
+                                }
+                                
+                                if(component.get("v.isCommUser") == true){
+                                    records[recIndex].buildertek__Vendor_Total__c = parseFloat(records[recIndex].buildertek__Vendor_Material_Presently_Stored__c) + parseInt(records[recIndex].buildertek__Vendor_Work_Completed_from_Previous_Appl__c) + parseFloat(records[recIndex].buildertek__Vendor_Work_Completed_This_Period__c);
+                                   var gcPercent = (parseInt(records[recIndex].buildertek__Vendor_Total__c) / parseInt(records[recIndex].buildertek__Scheduled_Value__c))*100;
+                                    records[recIndex].buildertek__Vendor_G_C__c = gcPercent.toFixed(2);
+                                    records[recIndex].buildertek__Vendor_Balance_To_Finish__c = Number(records[recIndex].buildertek__Scheduled_Value__c) - Number(records[recIndex].buildertek__Vendor_Total__c);
+                                }else{
+                                    records[recIndex].buildertek__Total__c = parseFloat(records[recIndex].buildertek__Material_Presently_Stored__c) + parseInt(records[recIndex].buildertek__Work_Completed_from_Previous_Application__c) + parseFloat(records[recIndex].buildertek__Work_Completed__c);
+                                   var gcPercent =  (parseInt(records[recIndex].buildertek__Total__c) / parseInt(records[recIndex].buildertek__Scheduled_Value__c))*100;
+                                    records[recIndex].buildertek__G_C__c =gcPercent.toFixed(2);
+                                    records[recIndex].buildertek__Balance_To_Finish__c = Number(records[recIndex].buildertek__Scheduled_Value__c) - Number(records[recIndex].buildertek__Total__c);
+                                    console.log('changes 2');
+                                }
+                                
+                                if(component.get("v.isCommUser") == true){
+                                    if(localId == "buildertek__Work_Completed__c"){
+                                        if(workCompletedThisPeriod > parseInt(records[recIndex].buildertek__Vendor_Balance_To_Finish__c)){
+                                             component.set("v.isGCPercent",true);
+                                            inputField.setCustomValidity("Work Completed This Period must be less than Balance To Finish");
+                                        }else{
+                                            inputField.setCustomValidity("");
+                                             component.set("v.isGCPercent",false);
+                                        }
+                                        
+                                    }
+                                    if(localId == "buildertek__Material_Presently_Stored__c"){
+                                        if(materialPresentlyStored > parseInt(records[recIndex].buildertek__Vendor_Balance_To_Finish__c)){
+                                            inputField.setCustomValidity("Material Presently Stored must be less than Balance To Finish");
+                                             component.set("v.isGCPercent",true);
+                                        }else{
+                                            inputField.setCustomValidity("");
+                                             component.set("v.isGCPercent",false);
+                                        }   
+                                    }
+                                }else{
+                                    if(localId == "buildertek__Work_Completed__c"){
+                                        if(workCompletedThisPeriod > parseInt(records[recIndex].buildertek__Balance_To_Finish__c)){
+                                             component.set("v.isGCPercent",true);
+                                            inputField.setCustomValidity("Work Completed This Period must be less than Balance To Finish");
+                                        }else{
+                                            inputField.setCustomValidity("");
+                                             component.set("v.isGCPercent",false);
+                                        }
+                                        
+                                    }
+                                    if(localId == "buildertek__Material_Presently_Stored__c"){
+                                        if(materialPresentlyStored > parseInt(records[recIndex].buildertek__Balance_To_Finish__c)){
+                                            inputField.setCustomValidity("Material Presently Stored must be less than Balance To Finish");
+                                             component.set("v.isGCPercent",true);
+                                        }else{
+                                            inputField.setCustomValidity("");
+                                             component.set("v.isGCPercent",false);
+                                        }   
+                    }
+                                }
+                                
+                                break;
                             }
-                            
-                            break;
                         }
                     }
                 }
             }
-        }
-        console.log(updatedLines);
-        
-        console.log(updatedLinesInGroup);
-        if(value){
-            if(value.indexOf('.') > 0 ){
-                if(value.split('.')[1].length != 0){
+            console.log(updatedLines);
+            
+            console.log(updatedLinesInGroup);
+            if(value){
+                if(value.indexOf('.') > 0 ){
+                    if(value.split('.')[1].length != 0){
+                        component.set("v.groupedRecords", updatedLinesInGroup);
+                    }
+                }else{
                     component.set("v.groupedRecords", updatedLinesInGroup);
                 }
             }else{
                 component.set("v.groupedRecords", updatedLinesInGroup);
             }
-        }else{
-            component.set("v.groupedRecords", updatedLinesInGroup);
         }
+        catch(error){
+            console.log('error : ', error.stack);
+        }
+        // // debugger;
         
         
     },
@@ -1039,7 +1138,7 @@
     },
     
     addNewRowInGroup : function(component, event, helper){
-        debugger;
+        // debugger;
         var linesInGroup = component.get("v.groupedRecords")
         var index = event.currentTarget.dataset.index.split('_');
         var parentGrpIndex = Number(index[0])
@@ -1248,7 +1347,7 @@
                 rejectreason : component.get('v.rejectionreason')
             });
             actionrRejectLink.setCallback(this, function (response) {
-                debugger;
+                // debugger;
                 var toastEvent = $A.get("e.force:showToast");
                 if (component.isValid() && response.getState() === "SUCCESS") {
                     if (response.getReturnValue() == 'success') {
@@ -1576,7 +1675,7 @@
     },
     
     addChangeOrders : function (component, event, helper) {
-        debugger;
+        // debugger;
         component.set("v.Spinner", true);
         
         var action = component.get("c.getApprovedCOs");
@@ -1669,7 +1768,7 @@
     },
     
     selectAll : function(component, event, helper){
-        debugger;
+        // debugger;
         
         
         
@@ -1721,7 +1820,7 @@
     },
     
     createContinuationSheetLines : function (component, event, helper) {
-        debugger;
+        // debugger;
         component.set("v.Spinner", true);
         var changeOrdersList = component.get("v.changeOrdersList");
         var myPageRef = component.get("v.pageReference");
@@ -1738,9 +1837,9 @@
         for(var i=0 ; i < coList.length;i++){
             coIds.push(coList[i]); 
         }
-        debugger;
+        // debugger;
         if(coIds.length > 0){
-            debugger;
+            // debugger;
             var action = component.get("c.createSheetLinesNew");  
             action.setParams({
                 coIds : coIds,
@@ -1947,7 +2046,7 @@
     confirmsignlienrelease : function (component, event, helper) {
         component.set('v.Isbtvalue', false);
         component.set('v.Issignlienrelease', true);
-        debugger;
+        // debugger;
         var wrapper = document.getElementById("signature-pad");
         helper.getTemplateBody(component, event, helper);
         if (wrapper != undefined) {
@@ -1996,7 +2095,7 @@
         }
     },
     importVendorSubmittedApp: function (component, event, helper) {
-  debugger;
+  // debugger;
         var recordId = component.get("v.ClonerecordId");
         var action = component.get("c.getVendorSubmittedPaymentApps");
         action.setParams({
@@ -2102,7 +2201,7 @@
     
     
     acceptAllContinuationLines : function(component, event, helper) {
-        debugger;
+        // debugger;
         
         
         component.set("v.Spinner", true);

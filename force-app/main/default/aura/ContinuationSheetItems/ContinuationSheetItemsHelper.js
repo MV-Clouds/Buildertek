@@ -16,7 +16,7 @@
     
     
     getIsCOEnable : function (component, event, helper) {
-        debugger;
+        // debugger;
         var btadminaction = component.get("c.getChangeOrderBtValue");
         btadminaction.setCallback(this, function(response){
             if(response.getState() === 'SUCCESS'){
@@ -36,7 +36,7 @@
     getrelatedrfqvendorlist : function(component, event, helper){
         
           
-        debugger;
+        // debugger;
         component.set('v.mycolumns', [
             {label: 'Project', fieldName: 'buildertek__Project__c', type: 'text'},
             {label: 'Vendor', fieldName: 'buildertek__Owner_Account__c', type: 'text'},
@@ -86,7 +86,7 @@
         
     },
     groupRecords : function(component, event, helper) {
-        debugger;
+        // debugger;
         var result = {};
         var records = component.get("v.continuationSheetLines")
         component.set("v.sheetLineInGrp",records)
@@ -106,7 +106,7 @@
                    
                     
                     if(component.get("v.isCommUser") == true){
-                        debugger;
+                        // debugger;
                         var result = Array.from(recordsMap.entries());
                         for (var i in result) {
                             var obj = {};
@@ -148,7 +148,7 @@
                         return listOfRecords;
                     }
                     else{
-                        debugger;
+                        // debugger;
                         var result = Array.from(recordsMap.entries());
                         for (var i in result) {
                             var obj = {};
@@ -226,7 +226,7 @@
             
         }
         component.set("v.groupedRecords",result.groupHierarchy)
-        console.log(result.groupHierarchy)   
+        console.log("groupedRecords >> ",result.groupHierarchy)   
         //$A.enqueueAction(totalByGroupAction);
     },
     Submitpayment : function(component, event, helper) {
@@ -283,7 +283,7 @@
         });
         signatureaction.setCallback(this, function (e) {
             if (e.getState() == 'SUCCESS') {
-                debugger;
+                // debugger;
                 var result = e.getReturnValue();
                 component.set("v.Spinner", false);
                 component.set("v.Spinner2", false);
@@ -316,7 +316,7 @@
         });
         action.setCallback(this, function (response) {
             var state = response.getState();
-            debugger;
+            // debugger;
             if (state === "SUCCESS") {
                 var result = response.getReturnValue();
                 component.set("v.quoteLines", result);
@@ -326,7 +326,7 @@
     },
     
     getPaymentRec: function (component, event, helper) {
-        debugger;
+        // debugger;
         var recordId = component.get("v.ClonerecordId");
         // alert(recordId);
         var action = component.get("c.getPaymentRecord");
@@ -335,7 +335,7 @@
         });
         action.setCallback(this, function (response) {
             var state = response.getState();
-            debugger;
+            // debugger;
             if (state === "SUCCESS") {
                 var result = response.getReturnValue();
                 if(result){
