@@ -2,6 +2,7 @@
     <!-- <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/>-->
     <aura:attribute name="isARPaymentApp" type = "Boolean" default="false"/>
     <aura:attribute name="isGCPercent" type = "Boolean" default="false"/>
+    <aura:attribute name="CompletionPerOutOfBound" type = "Boolean" default="false"/>
     <aura:attribute name="currencycode" type="String"/>
     <aura:attribute name="isARPaymentAppImportAvailable" type = "Boolean" default="false"/>
     <aura:attribute name="continuationSheetId" type="string" />
