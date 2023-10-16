@@ -2,6 +2,7 @@
     <!-- <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/>-->
     <aura:attribute name="isARPaymentApp" type = "Boolean" default="false"/>
     <aura:attribute name="isGCPercent" type = "Boolean" default="false"/>
+    <aura:attribute name="CompletionPerOutOfBound" type = "Boolean" default="false"/>
     <aura:attribute name="currencycode" type="String"/>
     <aura:attribute name="isARPaymentAppImportAvailable" type = "Boolean" default="false"/>
     <aura:attribute name="continuationSheetId" type="string" />
@@ -904,6 +905,9 @@
                                                     <b><lightning:formattedNumber value="{!group1.fromPrevApp}" style="currency" maximumFractionDigits ="2" currencyCode="{!v.currencycode}" currencyDisplayAs="code"/></b>     
                                                 </td>
                                                 <td style="padding-right:0.6rem">
+                                                    <!-- <b><lightning:formattedNumber value="{!group1.fromPrevApp}" style="currency" maximumFractionDigits ="2" currencyCode="{!v.currencycode}" currencyDisplayAs="code"/></b>      -->
+                                                </td>
+                                                <td style="padding-right:0.6rem">
                                                     <b><lightning:formattedNumber value="{!group1.workCompleted}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code"/></b>     
                                                 </td>
                                                 <td style="padding-right:0.6rem">
@@ -951,6 +955,8 @@
                                         </td>
                                         <td style="padding-right:0.6rem">
                                             <b><lightning:formattedNumber value="{!v.workFromPrevAppTotal}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code"/></b>     
+                                        </td>
+                                        <td style="padding-right:0.6rem">
                                         </td>
                                         <td style="padding-right:0.6rem">
                                             <b><lightning:formattedNumber value="{!v.workcompletedTotal}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code"/></b>     

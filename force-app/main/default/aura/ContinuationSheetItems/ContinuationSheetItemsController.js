@@ -519,7 +519,19 @@
         
         component.set("v.isError", false);
         
-        if(component.get("v.isGCPercent") == true ){
+        if(component.get("v.CompletionPerOutOfBound") == true ){
+            component.set("v.Spinner", false);
+            var toastEvent = $A.get("e.force:showToast");
+            toastEvent.setParams({
+                title: '',
+                message: 'Percentage Work Completed This Period (%) must be between 0 to 100.',
+                duration: "5000",
+                key: "info_alt",
+                type: "error",
+                mode: "pester",
+            });
+            toastEvent.fire(); 
+        }else if(component.get("v.isGCPercent") == true ){
             component.set("v.Spinner", false);
             var toastEvent = $A.get("e.force:showToast");
             toastEvent.setParams({
@@ -794,7 +806,6 @@
             if(localId == "buildertek__Work_Completed__c"){
                 workCompletedThisPeriod = event.getSource().get("v.value");
             }
-            
              var materialPresentlyStored
             
             if(localId == "buildertek__Material_Presently_Stored__c"){
@@ -908,19 +919,21 @@
 
                         // if(parseFloat(value) != 0){
                         //     component.set("v.diasbaleWorkCompField", recordId);
-    
+                        if(localId == "buildertek__Completion__c"){
                             if(parseFloat(value) > 100){
-                                inputField.setCustomValidity("Completion % must be less than 100");
+                                component.set("v.CompletionPerOutOfBound", true);
+                                inputField.setCustomValidity("Completion % must between 0 to 100");
                             }
                             else{
+                                component.set("v.CompletionPerOutOfBound", false);
                                 inputField.setCustomValidity("");
                             }
+                        }
                         // }
                         // else{
                         //     component.set("v.diasbaleWorkCompField", "false");
                         // }
                     }
-    
                     if(localId == "buildertek__Work_Completed__c"){
 
                         if(component.get("v.isCommUser") == true){
