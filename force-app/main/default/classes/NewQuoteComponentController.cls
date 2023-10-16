@@ -64,7 +64,7 @@ public with sharing class NewQuoteComponentController {
     public static masterQuoteWrapper getAllMasterQuote(Integer recordLimit, Integer recordOffset){
         masterQuoteWrapper  masterQuoteWrapperRecords= new masterQuoteWrapper();
         masterQuoteWrapperRecords.quoteList= new List<buildertek__Quote__c>();
-        masterQuoteWrapperRecords.quoteList=[SELECT Id, Name, buildertek__Description__c , buildertek__Type__c  From buildertek__Quote__c WHERE buildertek__Type__c = 'Master' ORDER BY Name ASC LIMIT :recordLimit Offset :recordOffset];
+        masterQuoteWrapperRecords.quoteList=[SELECT Id, Name , buildertek__Status__c, buildertek__Description__c , buildertek__Type__c  From buildertek__Quote__c WHERE buildertek__Type__c = 'Master' ORDER BY Name ASC LIMIT :recordLimit Offset :recordOffset ];
        
        
         AggregateResult results = [SELECT Count(Id) TotalQuotes  From buildertek__Quote__c WHERE buildertek__Type__c = 'Master' ];
@@ -119,7 +119,7 @@ public with sharing class NewQuoteComponentController {
 
     public static void cloneQuoteSection(String quoteId , String masterQuoteId){
 
-        buildertek__Quote__c quoteList=[SELECT Id,buildertek__Memo__c, buildertek__Email_Body__c, buildertek__Section_I__c, buildertek__Section_II__c, buildertek__Section_III__c, buildertek__Section_IV__c , buildertek__Section_IX__c, buildertek__Section_V__c, buildertek__Section_VI__c, buildertek__Section_VII__c, buildertek__Section_VIII__c, buildertek__Section_X__c ,buildertek__Footer__c FROM buildertek__Quote__c WHERE Id=:masterQuoteId LIMIT 1 ];
+        buildertek__Quote__c quoteList=[SELECT Id,buildertek__Memo__c, buildertek__Email_Body__c, buildertek__Section_I__c, buildertek__Section_II__c, buildertek__Section_III__c, buildertek__Section_IV__c , buildertek__Section_IX__c, buildertek__Section_V__c, buildertek__Section_VI__c, buildertek__Section_VII__c, buildertek__Section_VIII__c, buildertek__Section_X__c ,buildertek__Section_XI__c, buildertek__Section_XII__c, buildertek__Section_XIII__c,buildertek__Section_XIV__c, buildertek__Section_XIX__c, buildertek__Section_XV__c, buildertek__Section_XVI__c, buildertek__Section_XVII__c, buildertek__Section_XVIII__c, buildertek__Section_XX__c, buildertek__Section_XXI__c, buildertek__Section_XXII__c,  buildertek__Footer__c FROM buildertek__Quote__c WHERE Id=:masterQuoteId LIMIT 1 ];
 
         buildertek__Quote__c quoteRec= quoteList.clone(false, false, false, false);
         quoteRec.Id=quoteId;

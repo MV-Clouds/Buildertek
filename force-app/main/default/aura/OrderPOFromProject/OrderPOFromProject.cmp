@@ -234,7 +234,7 @@
                     <aura:iteration items="{!v.PaginationList}" var="rec" indexVar="groupIndex">
                         <aura:if isTrue="{!rec.poRecInner}">
                             <aura:if isTrue="{!rec.groupName != null}">
-                                <tr class="groupHeader" style = "background : #9db3c7; color:#000" >
+                                <tr class="groupHeader" style = "background : #f3f3f3; color:#000" >
                                     
                                     <td title = "{!rec.groupName}" colspan="9">
                                         <div class="slds-grid slds-gutters">
@@ -254,7 +254,7 @@
                                 </tr>
                                 
                                 <aura:set attribute="else">
-                                    <tr class="groupHeader" style = "background : #9db3c7; color:#000" >
+                                    <tr class="groupHeader" style = "background : #f3f3f3; color:#000" >
                                       
                                         <td title = "{!rec.groupName}" colspan="9">
                                             <div class="slds-grid slds-gutters">

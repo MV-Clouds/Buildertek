@@ -392,6 +392,7 @@ public without sharing class PreviewQuoteController{
                     quoterec[0].buildertek__Date_Sent_To_Customer__c = System.today();
                 }
                 quoterec[0].buildertek__Memo__c = '';
+                quoterec[0].buildertek__Preview_Email_Body__c = '';
                 update quoterec;
 
             }
@@ -613,11 +614,11 @@ public without sharing class PreviewQuoteController{
                 quoterec[0].buildertek__Date_Accepted_by_Customer__c = system.now();
                 quoterec[0].buildertek__Date_Sent_To_Customer__c = System.today();
                 quoterec[0].buildertek__Memo__c = memovalue;
-                if (String.isNotBlank(emailBodyValue) && emailBodyValue != null) {
-                    emailBodyValue = emailBodyValue.replaceAll('<p><br></p>', '<br>');
-                    emailBodyValue = emailBodyValue.replaceAll('<p>', '<p style="margin-top: 0.1em; margin-bottom: 0em; ">');
-                    quoterec[0].buildertek__Preview_Email_Body__c = emailBodyValue;
-                }
+                // if (String.isNotBlank(emailBodyValue) && emailBodyValue != null) {
+                //     emailBodyValue = emailBodyValue.replaceAll('<p><br></p>', '<br>');
+                //     emailBodyValue = emailBodyValue.replaceAll('<p>', '<p style="margin-top: 0.1em; margin-bottom: 0em; ">');
+                //     quoterec[0].buildertek__Preview_Email_Body__c = emailBodyValue;
+                // }
                 update quoterec;
 
             }
