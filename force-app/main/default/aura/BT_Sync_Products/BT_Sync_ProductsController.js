@@ -40,28 +40,31 @@
         helper.changeProductFamilyHelper(component, event, helper , priceBookId, selectedProductFamily);
     },
     searchInDatatable: function(component, event, helper){
-        var checkboxes = component.find("checkboxInput");
-        checkboxes.forEach(function(checkbox) {
-            checkbox.set("v.checked", false);
-        });
-        component.set("v.selectedRecords", []);
-        var inputElement = event.getSource().get('v.value');
-            var prevInput = component.get('v.prevInput');
-            var searchTimeout = component.get('v.searchTimeout');
-            
-            clearTimeout(searchTimeout);
-                if (inputElement === prevInput) {
-                    helper.searchDatatableHelper(component, event, helper);
-                } else {
-                    searchTimeout = setTimeout($A.getCallback(function() {
-                        if (inputElement === component.get('v.sProductName')) {
-                            helper.searchDatatableHelper(component, event, helper);
-                        }
-                    }), 2000);
-                    component.set('v.searchTimeout', searchTimeout);
-                }
-            component.set('v.prevInput', inputElement);
-        
+        if (component.get("v.selectedPricebookId") != '') {
+            var checkboxes = component.find("checkboxInput");
+            checkboxes.forEach(function(checkbox) {
+                checkbox.set("v.checked", false);
+            });
+            component.set("v.selectedRecords", []);
+            var inputElement = event.getSource().get('v.value');
+                var prevInput = component.get('v.prevInput');
+                var searchTimeout = component.get('v.searchTimeout');
+                
+                clearTimeout(searchTimeout);
+                    if (inputElement === prevInput) {
+                        helper.searchDatatableHelper(component, event, helper);
+                    } else {
+                        searchTimeout = setTimeout($A.getCallback(function() {
+                            if (inputElement === component.get('v.sProductName')) {
+                                helper.searchDatatableHelper(component, event, helper);
+                            }
+                        }), 2000);
+                        component.set('v.searchTimeout', searchTimeout);
+                    }
+                component.set('v.prevInput', inputElement);
+        }else {
+            var inputElement = event.getSource().get('v.value');
+        }
     }, 
     checkboxChange: function(component, event, helper) {
         var selectedRecords = [];
