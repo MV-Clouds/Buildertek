@@ -17,7 +17,7 @@
                     toastEvent.setParams({
                         "title": "All Takeoff Line have Products",
                         "type": "error",
-                        "message": "All Takeoff Line have been sycn'd to a product."
+                        "message": "All Takeoff Line have been sync'd to a product."
 
                     });
                     toastEvent.fire();
