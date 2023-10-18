@@ -15,7 +15,7 @@
                     toastEvent.setParams({
                         "title": "All Quote Line have Products",
                         "type": "error",
-                        "message": "All Quote Line have been sync'd to a product."
+                        "message": "All Quote Line have been sycgit n'd to a product."
 
                     });
                     toastEvent.fire();
