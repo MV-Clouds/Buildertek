@@ -12,9 +12,10 @@ public with sharing class importTakeoff {
     public static void fetchTakeoffLines(List<String> listOfTakeoffIds, String quoteId) {
         try {
             System.debug('quoteId: ' + quoteId);
-            List<buildertek__Project_Takeoff_Lines__c> takeoffLineList = new List<buildertek__Project_Takeoff_Lines__c>([SELECT Id, Name, buildertek__Build_Phase__c, buildertek__Build_Phase__r.Name, buildertek__Project_Takeoff__c,buildertek__Quantity__c, buildertek__Product_Type__c, buildertek__Cost_Code__c,buildertek__Product__r.Name FROM buildertek__Project_Takeoff_Lines__c WHERE buildertek__Project_Takeoff__c IN :listOfTakeoffIds]);
+            List<buildertek__Project_Takeoff_Lines__c> takeoffLineList = new List<buildertek__Project_Takeoff_Lines__c>([SELECT Id, Name, buildertek__Build_Phase__c, buildertek__Build_Phase__r.Name, buildertek__Project_Takeoff__c,buildertek__Quantity__c, buildertek__Product_Type__c, buildertek__Cost_Code__c, buildertek__Product__r.Name FROM buildertek__Project_Takeoff_Lines__c WHERE buildertek__Project_Takeoff__c IN :listOfTakeoffIds]);
             Id grouppingId;
             List<buildertek__Quote_Item__c> quoteItems = [SELECT buildertek__Grouping__r.Id FROM buildertek__Quote_Item__c WHERE buildertek__Grouping__r.Name = 'TakeOff' LIMIT 1];
+            List<buildertek__quote__c> quoteList = [SELECT Id, buildertek__Markup__c, buildertek__Discount__c FROM buildertek__quote__c where Id = :quoteId];
 
             if (!quoteItems.isEmpty() && quoteItems[0].buildertek__Grouping__r != null) {
                 grouppingId = quoteItems[0].buildertek__Grouping__r.Id;
@@ -37,6 +38,8 @@ public with sharing class importTakeoff {
                 quoteLine.buildertek__Build_Phase__c = takeoffline.buildertek__Build_Phase__c;
                 quoteLine.buildertek__Grouping__c = grouppingId;
                 quoteLine.buildertek__quote__c = quoteId;
+                quoteLine.buildertek__Markup__c = quoteList[0].buildertek__Markup__c;
+                quoteLine.buildertek__Additional_Discount__c = quoteList[0].buildertek__Discount__c;
                 quoteLine.buildertek__Product__c = takeoffline.buildertek__Product__c;
                 
                 String productName = takeoffline.buildertek__Product__r.Name;
