@@ -1,20 +1,3 @@
-<aura:component implements="flexipage:availableForAllPageTypes,force:hasSObjectName,force:appHostable,forceCommunity:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction,lightning:actionOverride"
-    access="GLOBAL" controller="BT_NewGanttChartCls">
-
-    <aura:attribute name="isOldGantt" type="Boolean" default="false" />
-    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
-    <lightning:workspaceAPI aura:id="workspace" />
-
-    <aura:if isTrue="{!v.isOldGantt}">
-        <!-- Code when is true -->
-        <c:New_Schedule_Override />
-        <aura:set attribute="else">
-            <c:New_Schedule_Override />
-        </aura:set>
-        <aura:set attribute="else">
-            <!-- Code when is false -->
-            <c:createNewSchedule oncloseclicked="{!c.handleFilterChange}" />
-        </aura:set>
-    </aura:if>
-
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction,lightning:actionOverride" access="GLOBAL">
+    <c:createNewSchedule />
 </aura:component>

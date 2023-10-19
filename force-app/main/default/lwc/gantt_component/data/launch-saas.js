@@ -2,8 +2,8 @@ export default {
     "success" : true,
 
     "project" : {
-        "calendar"  : "general",
-        "startDate" : "2023-02-15"
+        "calendar"  : "business",
+        "startDate" : "2023-05-14"
     },
 
     "calendars" : {
@@ -16,12 +16,6 @@ export default {
                         "recurrentStartDate" : "on Sat at 0:00",
                         "recurrentEndDate"   : "on Mon at 0:00",
                         "isWorking"          : false
-                    },
-                    {
-                        "startDate": "2023-03-06",
-                        "endDate": "2023-03-07",
-                        "isWorking": false,
-                        "name": "Vacation",
                     }
                 ],
                 "expanded" : true,
@@ -29,7 +23,7 @@ export default {
                     {
                         "id"           : "business",
                         "name"         : "Business",
-                        "hoursPerDay"  : 8,
+                        "hoursPerDay"  : 16,
                         "daysPerWeek"  : 5,
                         "daysPerMonth" : 20,
                         "intervals"    : [
@@ -69,33 +63,29 @@ export default {
             {
                 "id": 1000,
                 "name": "Launch SaaS Product",
-                "percentDone": 70,
+                "percentDone": 50,
                 "startDate": "2019-01-14",
                 "expanded": true,
-                "type": "Project",
-                "endDate": "",
                 "children": [
                     {
                         "id": 1,
                         "name": "Setup web server",
-                        "percentDone": 0,
-                        "duration": undefined,
-                        "startDate": "",
+                        "percentDone": 50,
+                        "duration": 10,
+                        "startDate": "2019-01-14",
                         "expanded": true,
-                        "type": "Phase",
                         "children": [
                             {
                                 "id": 11,
-                                "name": "Install Apache test",
+                                "name": "Install Apache",
                                 "percentDone": 50,
                                 "startDate": "2019-01-14",
                                 "rollup": true,
-                                "duration": 1,
+                                "duration": 3,
                                 "color": "teal",
-                                "endDate": "2019-01-14",
+                                "endDate": "2019-01-17",
                                 "cost": 200,
-                                "type": "Task"
-                                /*"baselines": [
+                                "baselines": [
                                     {
                                         "startDate": "2019-01-13T23:00:00",
                                         "endDate": "2019-01-16T23:00:00"
@@ -108,7 +98,7 @@ export default {
                                         "startDate": "2019-01-13T23:00:00",
                                         "endDate": "2019-01-16T23:00:00"
                                     }
-                                ]*/
+                                ]
                             },
                             {
                                 "id": 12,
@@ -116,9 +106,8 @@ export default {
                                 "percentDone": 50,
                                 "startDate": "2019-01-14",
                                 "duration": 3,
-                                "endDate": "2019-01-16",
+                                "endDate": "2019-01-17",
                                 "showInTimeline": true,
-                                "type" :'Task',
                                 "cost": 1000,
                                 "baselines": [
                                     {
@@ -144,7 +133,6 @@ export default {
                                 "duration": 3,
                                 "endDate": "2019-01-17",
                                 "cost": 1200,
-                                "type" :'Task',
                                 "baselines": [
                                     {
                                         "startDate": "2019-01-13T23:00:00",
@@ -168,7 +156,6 @@ export default {
                                 "duration": 2,
                                 "endDate": "2019-01-16",
                                 "cost": 750,
-                                "type" :'Task',
                                 "baselines": [
                                     {
                                         "startDate": "2019-01-13T23:00:00",
@@ -190,9 +177,8 @@ export default {
                                 "percentDone": 0,
                                 "startDate": "2019-01-21",
                                 "duration": 2,
-                                "endDate": "2019-01-22",
+                                "endDate": "2019-01-23",
                                 "cost": 5000,
-                                "type" :'Task',
                                 "baselines": [
                                     {
                                         "startDate": "2019-01-20T23:00:00",
@@ -209,7 +195,7 @@ export default {
                                 ]
                             }
                         ],
-                        "endDate": "",
+                        "endDate": "2019-01-23",
                         "baselines": [
                             {
                                 "startDate": "2019-01-13T23:00:00",
@@ -225,13 +211,12 @@ export default {
                             }
                         ]
                     },
-                     {
+                    {
                         "id": 2,
                         "name": "Website Design",
                         "percentDone": 60,
                         "startDate": "2019-01-23",
                         "expanded": true,
-                        "type": "Phase",
                         "children": [
                             {
                                 "id": 21,
@@ -241,7 +226,6 @@ export default {
                                 "duration": 5,
                                 "endDate": "2019-01-30",
                                 "cost": 500,
-                                "type": "Task",
                                 "baselines": [
                                     {
                                         "startDate": "2019-01-22T23:00:00",
@@ -265,7 +249,6 @@ export default {
                                 "duration": 1,
                                 "endDate": "2019-01-31",
                                 "cost": 1000,
-                                "type": "Task",
                                 "baselines": [
                                     {
                                         "startDate": "2019-01-27T23:00:00",
@@ -290,7 +273,6 @@ export default {
                                 "showInTimeline": true,
                                 "endDate": "2019-02-02",
                                 "cost": 1000,
-                                "type": "Task",
                                 "baselines": [
                                     {
                                         "startDate": "2019-01-28T23:00:00",
@@ -313,8 +295,6 @@ export default {
                                 "startDate": "2019-02-04",
                                 "duration": 0,
                                 "cost": 500,
-                                "type": "Task",
-                                "milestone": true,
                                 "baselines": [
                                     {
                                         "startDate": "2019-01-30T23:00:00",
@@ -338,7 +318,6 @@ export default {
                                 "duration": 7,
                                 "endDate": "2019-02-13",
                                 "cost": 11000,
-                                "type": "Task",
                                 "baselines": [
                                     {
                                         "startDate": "2019-01-30T23:00:00",
@@ -377,7 +356,6 @@ export default {
                         "percentDone": 20,
                         "startDate": "2019-01-14",
                         "expanded": true,
-                        "type": "Phase",
                         "children": [
                             {
                                 "id": 31,
@@ -387,7 +365,6 @@ export default {
                                 "duration": 5,
                                 "endDate": "2019-01-19",
                                 "cost": 6000,
-                                "type": "Task",
                                 "baselines": [
                                     {
                                         "startDate": "2019-01-13T23:00:00",
@@ -410,7 +387,6 @@ export default {
                                 "duration": 5,
                                 "startDate": "2019-01-21",
                                 "expanded": true,
-                                "type": "Phase",
                                 "children": [
                                     {
                                         "id": 331,
@@ -421,7 +397,6 @@ export default {
                                         "endDate": "2019-02-02",
                                         "showInTimeline": true,
                                         "cost": 7000,
-                                        "type": "Task",
                                         "baselines": [
                                             {
                                                 "startDate": "2019-01-20T23:00:00",
@@ -446,7 +421,6 @@ export default {
                                         "endDate": "2019-01-26",
                                         "showInTimeline": true,
                                         "cost": 5000,
-                                        "type": "Task",
                                         "baselines": [
                                             {
                                                 "startDate": "2019-01-20T23:00:00",
@@ -470,7 +444,6 @@ export default {
                                         "duration": 10,
                                         "endDate": "2019-02-02",
                                         "cost": 2500,
-                                        "type": "Task",
                                         "baselines": [
                                             {
                                                 "startDate": "2019-01-20T23:00:00",
@@ -494,7 +467,6 @@ export default {
                                         "duration": 1,
                                         "endDate": "2019-01-22",
                                         "cost": 250,
-                                        "type": "Task",
                                         "baselines": [
                                             {
                                                 "startDate": "2019-01-20T23:00:00",
@@ -550,13 +522,11 @@ export default {
                         "percentDone": 60,
                         "startDate": "2019-02-04",
                         "expanded": true,
-                        "type": "Phase",
                         "children": [
                             {
                                 "id": 400,
                                 "name": "Phase #1",
                                 "expanded": true,
-                                "type": "Phase",
                                 "children": [
                                     {
                                         "id": 41,
@@ -566,7 +536,6 @@ export default {
                                         "startDate": "2019-02-04",
                                         "endDate": "2019-02-09",
                                         "cost": 8000,
-                                        "type": "Task",
                                         "baselines": [
                                             {
                                                 "startDate": "2019-02-03T23:00:00",
@@ -590,7 +559,6 @@ export default {
                                         "startDate": "2019-02-04",
                                         "endDate": "2019-02-07",
                                         "cost": 4700,
-                                        "type": "Task",
                                         "baselines": [
                                             {
                                                 "startDate": "2019-02-03T23:00:00",
@@ -614,7 +582,6 @@ export default {
                                         "startDate": "2019-02-04",
                                         "endDate": "2019-02-08",
                                         "cost": 5800,
-                                        "type": "Task",
                                         "baselines": [
                                             {
                                                 "startDate": "2019-02-03T23:00:00",
@@ -639,7 +606,6 @@ export default {
                                         "startDate": "2019-02-04",
                                         "endDate": "2019-02-07",
                                         "cost": 7000,
-                                        "type": "Task",
                                         "baselines": [
                                             {
                                                 "startDate": "2019-02-03T23:00:00",
@@ -663,7 +629,6 @@ export default {
                                         "startDate": "2019-02-11",
                                         "endDate": "2019-02-13",
                                         "cost": 16000,
-                                        "type": "Task",
                                         "baselines": [
                                             {
                                                 "startDate": "2019-02-11",
@@ -689,7 +654,6 @@ export default {
                                         "showInTimeline": true,
                                         "rollup": true,
                                         "cost": 500,
-                                        "type": "Task",
                                         "baselines": [
                                             {
                                                 "startDate": "2019-02-11",
@@ -727,7 +691,6 @@ export default {
                                 "id": 401,
                                 "name": "Phase #2",
                                 "expanded": true,
-                                "type": "Phase",
                                 "children": [
                                     {
                                         "id": 4011,
@@ -737,7 +700,6 @@ export default {
                                         "startDate": "2019-02-11",
                                         "endDate": "2019-03-02",
                                         "cost": 1200,
-                                        "type": "Task",
                                         "baselines": [
                                             {
                                                 "startDate": "2019-02-10T23:00:00",
@@ -761,7 +723,6 @@ export default {
                                         "startDate": "2019-02-11",
                                         "endDate": "2019-02-16",
                                         "cost": 2500,
-                                        "type": "Task",
                                         "baselines": [
                                             {
                                                 "startDate": "2019-02-10T23:00:00",
@@ -785,7 +746,6 @@ export default {
                                         "startDate": "2019-02-11",
                                         "endDate": "2019-03-12",
                                         "cost": 4100,
-                                        "type": "Task",
                                         "baselines": [
                                             {
                                                 "startDate": "2019-02-10T23:00:00",
@@ -809,7 +769,6 @@ export default {
                                         "startDate": "2019-02-11",
                                         "endDate": "2019-03-09",
                                         "cost": 1100,
-                                        "type": "Task",
                                         "baselines": [
                                             {
                                                 "startDate": "2019-02-10T23:00:00",
@@ -833,7 +792,6 @@ export default {
                                         "startDate": "2019-02-11",
                                         "endDate": "2019-02-15",
                                         "cost": 3000,
-                                        "type": "Task",
                                         "baselines": [
                                             {
                                                 "startDate": "2019-02-10T23:00:00",
@@ -871,7 +829,6 @@ export default {
                                 "id": 402,
                                 "name": "Acceptance phase",
                                 "expanded": true,
-                                "type": "Phase",
                                 "children": [
                                     {
                                         "id": 4031,
@@ -881,7 +838,6 @@ export default {
                                         "startDate": "2019-03-12",
                                         "endDate": "2019-03-15",
                                         "cost": 10000,
-                                        "type": "Task",
                                         "baselines": [
                                             {
                                                 "startDate": "2019-03-11T23:00:00",
@@ -905,7 +861,6 @@ export default {
                                         "startDate": "2019-03-12",
                                         "endDate": "2019-03-14",
                                         "cost": 5000,
-                                        "type": "Task",
                                         "baselines": [
                                             {
                                                 "startDate": "2019-03-11T23:00:00",
@@ -929,7 +884,6 @@ export default {
                                         "startDate": "2019-03-12",
                                         "endDate": "2019-03-16",
                                         "cost": 1000,
-                                        "type": "Task",
                                         "baselines": [
                                             {
                                                 "startDate": "2019-03-11T23:00:00",
@@ -953,7 +907,6 @@ export default {
                                         "startDate": "2019-03-12",
                                         "endDate": "2019-03-15",
                                         "cost": 1200,
-                                        "type": "Task",
                                         "baselines": [
                                             {
                                                 "startDate": "2019-03-11T23:00:00",
@@ -977,7 +930,6 @@ export default {
                                         "startDate": "2019-03-15",
                                         "endDate": "2019-03-16",
                                         "cost": 250,
-                                        "type": "Task",
                                         "baselines": [
                                             {
                                                 "startDate": "2019-03-14T23:00:00",
@@ -1000,9 +952,8 @@ export default {
                                         "percentDone": 0,
                                         "duration": 1,
                                         "startDate": "2019-03-12",
-                                        "endDate": "2019-03-12",
+                                        "endDate": "2019-03-13",
                                         "cost": 2500,
-                                        "type": "Task",
                                         "baselines": [
                                             {
                                                 "startDate": "2019-03-11T23:00:00",
@@ -1054,7 +1005,7 @@ export default {
                         ]
                     }
                 ],
-
+                "endDate": "2019-03-16",
                 "baselines": [
                     {
                         "startDate": "2019-01-13T23:00:00",
@@ -1073,18 +1024,7 @@ export default {
         ]
     },
 
-
-
-    /*
-            dependency types
-            type-1 : start-start
-            type-2 : start-end
-            type-3 : end-start //generally used
-            type-4 : end-end
-
-        */
-
-     "dependencies" : {
+    "dependencies" : {
         "rows" : [
             {
                 "id"       : 1,
@@ -1185,22 +1125,22 @@ export default {
         ]
     },
 
-     "resources" : {
+    "resources" : {
         "rows" : [
-            { "id" : 1, "name" : "Celia", "city" : "Barcelona", "calendar" : "general" }, //, "image" : "celia.jpg"
-            { "id" : 2, "name" : "Lee", "city" : "London", "calendar" : "general" }, //"image" : "lee.jpg"
-            { "id" : 3, "name" : "Macy", "city" : "New York","calendar" : "general" }, //, "image" : "macy.jpg"
-            { "id" : 4, "name" : "Madison", "city" : "Barcelona", "calendar" : "general" }, //,"image" : "madison.jpg"
-            { "id" : 5, "name" : "Rob", "city" : "Rome", "calendar" : "business" }, //, "image" : "rob.jpg"
-            { "id" : 6, "name" : "Dave", "city" : "Barcelona", "calendar" : "night"  }, //, "image" : "dave.jpg"
-            { "id" : 7, "name" : "Dan", "city" : "London", "calendar" : "night"}, //, "image" : "dan.jpg"
-            { "id" : 8, "name" : "George", "city" : "New York", "calendar" : "general" }, //, "image" : "george.jpg"
-            { "id" : 9, "name" : "Gloria", "city" : "Rome", "calendar" : "general" }, //, "image" : "gloria.jpg"
-            { "id" : 10, "name" : "Henrik", "city" : "London", "calendar" : "general" } //, "image" : "henrik.jpg"
+            { "id" : 1, "name" : "Celia", "city" : "Barcelona", "calendar" : "general", "image" : "celia.jpg" },
+            { "id" : 2, "name" : "Lee", "city" : "London", "calendar" : "general", "image" : "lee.jpg"  },
+            { "id" : 3, "name" : "Macy", "city" : "New York","calendar" : "general", "image" : "macy.jpg"  },
+            { "id" : 4, "name" : "Madison", "city" : "Barcelona", "calendar" : "general","image" : "madison.jpg"  },
+            { "id" : 5, "name" : "Rob", "city" : "Rome", "calendar" : "business", "image" : "rob.jpg"  },
+            { "id" : 6, "name" : "Dave", "city" : "Barcelona", "calendar" : "night", "image" : "dave.jpg"  },
+            { "id" : 7, "name" : "Dan", "city" : "London", "calendar" : "night", "image" : "dan.jpg"  },
+            { "id" : 8, "name" : "George", "city" : "New York", "calendar" : "general", "image" : "george.jpg"  },
+            { "id" : 9, "name" : "Gloria", "city" : "Rome", "calendar" : "general", "image" : "gloria.jpg"  },
+            { "id" : 10, "name" : "Henrik", "city" : "London", "calendar" : "general", "image" : "henrik.jpg"  }
         ]
     },
 
-     "assignments" : {
+    "assignments" : {
         "rows" : [
             { "id" : 1, "event" : 11,  "resource" : 1 },
             { "id" : 2, "event" : 12,  "resource" : 1 },

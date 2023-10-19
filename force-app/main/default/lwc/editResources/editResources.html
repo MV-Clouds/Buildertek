@@ -1,7 +1,7 @@
 <template>
     <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-07" aria-modal="true" aria-describedby="modal-content-id-7" class="slds-modal slds-fade-in-open">
         <div class="slds-modal__container" style="max-width:70rem;width:70%;">
-            
+
             <header class="slds-modal__header">
               <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closePopup}>
                   <lightning-icon icon-name="utility:close"
@@ -30,7 +30,7 @@
                                 <b>Processing, Please Wait</b>
                         </div>
                     </div>
-                </div> 
+                </div>
                 <div if:false={isLoadedResources}>
                     <div if:false={showAddContactBtn}>
                         <div if:false={showCreateContactPopup}>
@@ -38,16 +38,16 @@
                                 <div class="filterSection">
                                     <lightning-input
                                         data-searchname = 'contact'
-                                        style="width: 50%; display: inline-block; padding: 0% 1% 1% 2%;"   
+                                        style="width: 50%; display: inline-block; padding: 0% 1% 1% 2%;"
                                         autocomplete="off"
                                         name="enter-search"
                                         type="search"
                                         placeholder="Search Contact..."
-                                        value={searchVal} 
+                                        value={searchVal}
                                         onchange={serchCon}>
                                     </lightning-input>
-                                
-                        
+
+
                                     <lightning-input
                                         data-searchname = 'account'
                                         style="width: 50%; display: inline-block; padding: 0% 1% 1% 2%;"
@@ -55,7 +55,7 @@
                                         name="enter-search"
                                         type="search"
                                         placeholder="Search Account..."
-                                        value={searchAccVal} 
+                                        value={searchAccVal}
                                         onchange={serchCon}>
                                     </lightning-input>
                                 </div>
@@ -96,12 +96,12 @@
                             </template>
                         </div>
                     </div>
-                    
-                    
+
+
                     <div if:true={showAddContactBtn}>
                         <lightning-button  variant="brand"  label="Add Contact" onclick={addNewContact}></lightning-button>
                     </div>
-                        
+
                     <div if:false={showAddContactBtn}>
                         <div if:true={showCreateContactPopup} style="padding-top: 3rem;">
                             <lightning-record-edit-form
@@ -126,17 +126,17 @@
             </div>
             <footer class="slds-modal__footer">
               <div style="float:left;">
-                <lightning-button disabled={disablePrev} variant="brand"  label="Previous"
+                <lightning-button disabled={disablePrevBtn} variant="brand"  label="Previous"
                     onclick={handlePrevious}  class="next-prev_button"></lightning-button>
                 <lightning-button disabled={disableNext}  variant="brand" style="margin-left:0.5rem;"
                     label="Next" onclick={handleNext} class="next-prev_button"></lightning-button>
-                
+
               </div>
               <div>
                 <button class="slds-button slds-button_neutral" variant="neutral" title="Close" label="Close" onclick={closePopup}>Close</button>
-                <button class="slds-button slds-button_brand" variant="brand" title="Save" label="Save" onclick={saveResource}>Save</button>                                                                                
+                <button class="slds-button slds-button_brand" variant="brand" title="Save" label="Save" onclick={saveResource}>Save</button>
               </div>
-              
+
            </footer>
         </div>
       </section>

@@ -2,7 +2,7 @@ import { LightningElement, track,api } from 'lwc';
 import getContacts from '@salesforce/apex/editResourcesController.getContacts';
 import getContactsDup from '@salesforce/apex/editResourcesController.getContactsDup';
 
- 
+
 export default class LwcRadioGroup extends LightningElement {
     @api isLoadedResources =false;
     @api conList;
@@ -28,6 +28,7 @@ export default class LwcRadioGroup extends LightningElement {
     //CHB-64
     @api recordId;
     @api taskid
+    @track disablePrevBtn = true;
 
     connectedCallback(){
         console.log('RecordID---->'+this.taskid);
@@ -44,7 +45,9 @@ export default class LwcRadioGroup extends LightningElement {
         var acc = this.searchAccVal;
         var selectedId = ''
         selectedId = this.selectedResourceid ? this.selectedResourceid : '' ;
-        this.getContactsList()
+        // this.getContactsList();
+        this.showAddContactBtn = true;
+        this.disableNext = true;
         //this.getContacts(pageNumber, pageSize,selectedId, contact,acc);
     }
 
@@ -88,13 +91,13 @@ export default class LwcRadioGroup extends LightningElement {
                 that.disablePrev = false;
             }
 
-            if(!that.conList.length){
-                that.showAddContactBtn = true;
-            }else if(!that.conList.length){
-                that.showAddContactBtn = false;
-            }
+            // if(!that.conList.length){
+            //     that.showAddContactBtn = true;
+            // }else if(!that.conList.length){
+            //     that.showAddContactBtn = false;
+            // }
             //component.set("v.rfqRecordList", resultData.recordList);
-                
+
             /* that.conList = response;
             that.options = response */
             //that.value = that.selectedResourceid;
@@ -134,16 +137,16 @@ export default class LwcRadioGroup extends LightningElement {
             this.pageNumber = 1
         }
         if(event.target.dataset.searchname == 'account'){
-            
+
             this.searchAccVal = event.target.value.trim()
         }
         if(event.target.dataset.searchname == 'contact'){
             this.searchVal = event.target.value.trim()
         }
-        
+
         this.getContactsList();
     }
-    
+
 
     //new contact
     addNewContact(){
@@ -172,7 +175,5 @@ export default class LwcRadioGroup extends LightningElement {
             this.getContactsList();
         },800)
        // this.accountId = event.detail.id;
-        
     }
-
 }

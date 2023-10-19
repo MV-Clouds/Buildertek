@@ -1,9 +1,6 @@
-import insertUpdateTask from '@salesforce/apex/BT_NewGanttChartCls.insertUpdateTask';
-import {
-    ShowToastEvent
-} from "lightning/platformShowToastEvent";
-
-function formatData(scheduleData, scheduleItemsData, scheduleItemsDataList) {
+import  insertUpdateTask from '@salesforce/apex/BT_NewGanttChartCls.insertUpdateTask';
+import { ShowToastEvent } from "lightning/platformShowToastEvent";
+function formatData(scheduleData,scheduleItemsData,scheduleItemsDataList){
     var taskData = scheduleItemsData;
     var taskDependencyData = [];
     var resourceRowData = [];
@@ -15,7 +12,6 @@ function formatData(scheduleData, scheduleItemsData, scheduleItemsDataList) {
 
     var taskListForPhase = scheduleItemsDataList;
     var firstRowDup = {};
-    console.log('taskListForPhase :- ' + JSON.stringify(taskListForPhase));
     firstRowDup["id"] = scheduleData.Id;
     firstRowDup["name"] = scheduleData.Name
     firstRowDup["startDate"] = ""
@@ -46,71 +42,71 @@ function formatData(scheduleData, scheduleItemsData, scheduleItemsDataList) {
                 taskPhaseRow["endDate"] = ""
                 taskPhaseRow["children"] = []
                 taskPhaseRow["customtype"] = 'Phase'
-                // taskPhaseRow["children"].push(taskListForPhase[i])
+               // taskPhaseRow["children"].push(taskListForPhase[i])
                 taskPhaseRow["constraintType"] = 'none'
                 newPhaseFlag = false;
             }
-            var rowChilObj = {};
-            rowChilObj["type"] = 'Task'
-            rowChilObj["customtype"] = taskListForPhase[i].buildertek__Type__c
+                var rowChilObj = {};
+                rowChilObj["type"] = 'Task'
+                rowChilObj["customtype"] = taskListForPhase[i].buildertek__Type__c
                 if(taskListForPhase[i].buildertek__Type__c == 'Milestone'){
-                rowChilObj["cls"] = 'milestoneTypeColor'
-            }
-            rowChilObj["iconCls"] = "b-fa b-fa-arrow-right"
-            rowChilObj["indentVal"] = taskListForPhase[i].buildertek__Indent_Task__c;
+                    rowChilObj["cls"] = 'milestoneTypeColor'
+                }
+                rowChilObj["iconCls"] = "b-fa b-fa-arrow-right"
+                rowChilObj["indentVal"] = taskListForPhase[i].buildertek__Indent_Task__c;
                 if(taskListForPhase[i].buildertek__Indent_Task__c){
-                rowChilObj["iconCls"] = "b-fa b-fa-arrow-left indentTrue"
-                //rowChilObj["cls"] = 'indentTaskColor'
-            }
-            rowChilObj['phase'] = taskListForPhase[i].buildertek__Phase__c
+                    rowChilObj["iconCls"] = "b-fa b-fa-arrow-left indentTrue"
+                    //rowChilObj["cls"] = 'indentTaskColor'
+                }
+                rowChilObj['phase'] = taskListForPhase[i].buildertek__Phase__c
 
-            //rowChilObj["constraintType"] = 'startnoearlierthan'
+                //rowChilObj["constraintType"] = 'startnoearlierthan'
                 if(taskListForPhase[i].buildertek__Dependency__c){
-                rowChilObj["constraintType"] = ''
+                    rowChilObj["constraintType"] = ''
                 }else{
-                rowChilObj["constraintType"] = 'startnoearlierthan'
-            }
+                    rowChilObj["constraintType"] = 'startnoearlierthan'
+                }
 
                 if(scheduleItemIdsList.indexOf(taskListForPhase[i].Id) < 0){
-                scheduleItemIdsList.push(taskListForPhase[i].Id)
-            }
-            rowChilObj["id"] = taskListForPhase[i].Id
-            rowChilObj["name"] = taskListForPhase[i].Name
-            rowChilObj["percentDone"] = taskListForPhase[i].buildertek__Completion__c
-            rowChilObj["startDate"] = taskListForPhase[i].buildertek__Start__c
-            rowChilObj['predecessor'] = taskListForPhase[i].buildertek__Dependency__c;
+                    scheduleItemIdsList.push(taskListForPhase[i].Id)
+                }
+                rowChilObj["id"] = taskListForPhase[i].Id
+                rowChilObj["name"] = taskListForPhase[i].Name
+                rowChilObj["percentDone"] = taskListForPhase[i].buildertek__Completion__c
+                rowChilObj["startDate"] = taskListForPhase[i].buildertek__Start__c
+                rowChilObj['predecessor'] = taskListForPhase[i].buildertek__Dependency__c;
 
-            if (taskListForPhase[i].hasOwnProperty('buildertek__Dependency__c') == true) {
-                rowChilObj['predecessorName'] = taskListForPhase[i].buildertek__Dependency__r.Name;
-            } else {
-                rowChilObj['predecessorName'] = '';
-            }
+                if (taskListForPhase[i].hasOwnProperty('buildertek__Dependency__c') == true) {
+                    rowChilObj['predecessorName'] = taskListForPhase[i].buildertek__Dependency__r.Name;
+                } else {
+                    rowChilObj['predecessorName'] = '';
+                }
 
-            rowChilObj['internalresource'] = taskListForPhase[i].buildertek__Resource__c;
+                rowChilObj['internalresource'] = taskListForPhase[i].buildertek__Resource__c;
 
                 if(taskListForPhase[i].buildertek__Resource__c){
-                rowChilObj['internalresourcename'] = taskListForPhase[i].buildertek__Resource__r.Name;
+                    rowChilObj['internalresourcename'] = taskListForPhase[i].buildertek__Resource__r.Name;
                 }else{
-                rowChilObj['internalresourcename'] = '';
-            }
+                    rowChilObj['internalresourcename'] = '';
+                }
 
-            rowChilObj['contractorresource'] = taskListForPhase[i].buildertek__Contractor_Resource__c;
+                rowChilObj['contractorresource'] = taskListForPhase[i].buildertek__Contractor_Resource__c;
 
                 if(taskListForPhase[i].buildertek__Contractor_Resource__c){
-                rowChilObj['contractorresourcename'] = taskListForPhase[i].buildertek__Contractor_Resource__r.Name;
+                    rowChilObj['contractorresourcename'] = taskListForPhase[i].buildertek__Contractor_Resource__r.Name;
                 }else{
-                rowChilObj['contractorresourcename'] = '';
-            }
-            rowChilObj['contractoracc'] = taskListForPhase[i].buildertek__Contractor__c;
+                    rowChilObj['contractorresourcename'] = '';
+                }
+                rowChilObj['contractoracc'] = taskListForPhase[i].buildertek__Contractor__c;
 
                 if(taskListForPhase[i].buildertek__Contractor__c){
                     rowChilObj["contractorname"] = taskListForPhase[i].buildertek__Contractor__r.Name;  //Added for contractor
                 }else{
-                rowChilObj["contractorname"] = '';
-            }
+                    rowChilObj["contractorname"] = '';
+                }
 
-            rowChilObj['notes'] = taskListForPhase[i].buildertek__Notes__c;
-            // console.log('JUMBIO IN METHOD');
+                rowChilObj['notes'] = taskListForPhase[i].buildertek__Notes__c;
+                // console.log('JUMBIO IN METHOD');
                 if(taskListForPhase[i].buildertek__Lag__c != undefined && taskListForPhase[i].buildertek__Lag__c != null && taskListForPhase[i].buildertek__Lag__c != 0){
                     var startDate = new Date(taskListForPhase[i].buildertek__Start__c);
                     // commented this line because it is adding extra lags in the backend data
@@ -118,109 +114,109 @@ function formatData(scheduleData, scheduleItemsData, scheduleItemsDataList) {
                     // startDate.setDate(startDate.getDate() + (taskListForPhase[i].buildertek__Lag__c));
                     rowChilObj["startDate"] = new Date(startDate.getFullYear(),startDate.getMonth(),startDate.getDate(),0,0,0)
                 }
-            // console.log('start,',taskListForPhase[i].buildertek__Start__c)
-            rowChilObj["duration"] = taskListForPhase[i].buildertek__Duration__c
+               // console.log('start,',taskListForPhase[i].buildertek__Start__c)
+                rowChilObj["duration"] = taskListForPhase[i].buildertek__Duration__c
 
 
-            // console.log('contart',taskListForPhase[i])
-            //rowChilObj["constraintDate"] = new Date(constraintDate)
+               // console.log('contart',taskListForPhase[i])
+                //rowChilObj["constraintDate"] = new Date(constraintDate)
                 if(taskListForPhase[i].buildertek__Milestone__c){
-                rowChilObj["duration"] = 0
-                rowChilObj["durationMile"] = taskListForPhase[i].buildertek__Duration__c;
-                rowChilObj["cls"] = 'milestoneCompleteColor'
-                rowChilObj['orgmilestone'] = taskListForPhase[i].buildertek__Milestone__c;
-                //rowChilObj['milestone'] = true;
-            }
-            rowChilObj["expanded"] = true
-            rowChilObj["order"] = taskListForPhase[i].buildertek__Order__c
-            // rowChilObj["endDate"] = taskData[i].value[j].buildertek__Finish__c
-            //row["children"].push(rowChilObj);
-            var dependencyRow = {};
+                    rowChilObj["duration"] = 0
+                    rowChilObj["durationMile"] = taskListForPhase[i].buildertek__Duration__c;
+                    rowChilObj["cls"] = 'milestoneCompleteColor'
+                    rowChilObj['orgmilestone'] = taskListForPhase[i].buildertek__Milestone__c;
+                    //rowChilObj['milestone'] = true;
+                }
+                rowChilObj["expanded"] = true
+                rowChilObj["order"] = taskListForPhase[i].buildertek__Order__c
+                // rowChilObj["endDate"] = taskData[i].value[j].buildertek__Finish__c
+                //row["children"].push(rowChilObj);
+                var dependencyRow = {};
                 if(taskListForPhase[i].buildertek__Dependency__c){
                     dependencyRow["id" ]  = taskListForPhase[i].Id+'_'+taskListForPhase[i].buildertek__Dependency__c
-                dependencyRow["fromTask"] = taskListForPhase[i].buildertek__Dependency__c
+                    dependencyRow["fromTask"] = taskListForPhase[i].buildertek__Dependency__c
                     dependencyRow["toTask"]  = taskListForPhase[i].Id
                     dependencyRow["lag"]  = taskListForPhase[i].buildertek__Lag__c
-                taskDependencyData.push(dependencyRow)
-            }
+                    taskDependencyData.push(dependencyRow)
+                }
 
 
                 if(!taskListForPhase[i].buildertek__Milestone__c && taskListForPhase[i].buildertek__Resource__c){
                     if(resourceRowIdList.indexOf(taskListForPhase[i].buildertek__Resource__c) < 0){
-                    var resourceRow = {}
-                    resourceRow['id'] = taskListForPhase[i].buildertek__Resource__c;
-                    resourceRow['name'] = taskListForPhase[i].buildertek__Resource__r.Name;
-                    resourceRow['calendar'] = "general";
-                    resourceRowData.push(resourceRow)
-                    resourceRowIdList.push(taskListForPhase[i].buildertek__Resource__c)
+                        var resourceRow = {}
+                        resourceRow['id'] = taskListForPhase[i].buildertek__Resource__c;
+                        resourceRow['name'] = taskListForPhase[i].buildertek__Resource__r.Name;
+                        resourceRow['calendar'] = "general";
+                        resourceRowData.push(resourceRow)
+                        resourceRowIdList.push(taskListForPhase[i].buildertek__Resource__c)
+                    }
+
                 }
+                /* if(!taskListForPhase[i].buildertek__Milestone__c && taskListForPhase[i].buildertek__Contractor__c){
 
-            }
-            /* if(!taskListForPhase[i].buildertek__Milestone__c && taskListForPhase[i].buildertek__Contractor__c){
+                    if(resourceRowIdList.indexOf(taskListForPhase[i].buildertek__Contractor__c) < 0){
+                        var resourceRow = {}
+                        resourceRow['id'] = taskListForPhase[i].buildertek__Contractor__c
+                        resourceRow['name'] = taskListForPhase[i].buildertek__Contractor__r.Name;
+                        resourceRow['calendar'] = "general";
+                        resourceRowData.push(resourceRow)
+                        resourceRowIdList.push(resourceRow['id'])
+                    }
 
-                if(resourceRowIdList.indexOf(taskListForPhase[i].buildertek__Contractor__c) < 0){
-                    var resourceRow = {}
-                    resourceRow['id'] = taskListForPhase[i].buildertek__Contractor__c
-                    resourceRow['name'] = taskListForPhase[i].buildertek__Contractor__r.Name;
-                    resourceRow['calendar'] = "general";
-                    resourceRowData.push(resourceRow)
-                    resourceRowIdList.push(resourceRow['id'])
-                }
-
-            } */
+                } */
                 if(!taskListForPhase[i].buildertek__Milestone__c && taskListForPhase[i].buildertek__Contractor_Resource__c){
 
                     if(resourceRowIdList.indexOf(taskListForPhase[i].buildertek__Contractor_Resource__c) < 0){
-                    var resourceRow = {}
-                    resourceRow['id'] = taskListForPhase[i].buildertek__Contractor_Resource__c
-                    resourceRow['name'] = taskListForPhase[i].buildertek__Contractor_Resource__r.Name;
-                    resourceRow['calendar'] = "general";
-                    resourceRowData.push(resourceRow)
-                    resourceRowIdList.push(resourceRow['id'])
+                        var resourceRow = {}
+                        resourceRow['id'] = taskListForPhase[i].buildertek__Contractor_Resource__c
+                        resourceRow['name'] = taskListForPhase[i].buildertek__Contractor_Resource__r.Name;
+                        resourceRow['calendar'] = "general";
+                        resourceRowData.push(resourceRow)
+                        resourceRowIdList.push(resourceRow['id'])
+                    }
                 }
-            }
 
 
                 if(!taskListForPhase[i].buildertek__Milestone__c && taskListForPhase[i].buildertek__Resource__c){
-                var assignmentRow = {}
+                    var assignmentRow = {}
                     assignmentRow['id'] = taskListForPhase[i].Id+'_'+taskListForPhase[i].buildertek__Resource__c+'__index_'+i+'Resource_Name'+taskListForPhase[i].buildertek__Resource__r.Name;
-                assignmentRow['event'] = taskListForPhase[i].Id
-                assignmentRow['resource'] = taskListForPhase[i].buildertek__Resource__c;
-                assignmentRowData.push(assignmentRow)
-            }
-            /*  if(!taskListForPhase[i].buildertek__Milestone__c && taskListForPhase[i].buildertek__Contractor__c){
-                 var assignmentRow = {}
-                 assignmentRow['id'] = taskListForPhase[i].Id+'_'+taskListForPhase[i].buildertek__Contractor__c+'__index_'+i+'Contractor';
-                 assignmentRow['event'] = taskListForPhase[i].Id
-                 assignmentRow['resource'] = taskListForPhase[i].buildertek__Contractor__c;
-                 assignmentRowData.push(assignmentRow)
-             } */
+                    assignmentRow['event'] = taskListForPhase[i].Id
+                    assignmentRow['resource'] = taskListForPhase[i].buildertek__Resource__c;
+                    assignmentRowData.push(assignmentRow)
+                }
+               /*  if(!taskListForPhase[i].buildertek__Milestone__c && taskListForPhase[i].buildertek__Contractor__c){
+                    var assignmentRow = {}
+                    assignmentRow['id'] = taskListForPhase[i].Id+'_'+taskListForPhase[i].buildertek__Contractor__c+'__index_'+i+'Contractor';
+                    assignmentRow['event'] = taskListForPhase[i].Id
+                    assignmentRow['resource'] = taskListForPhase[i].buildertek__Contractor__c;
+                    assignmentRowData.push(assignmentRow)
+                } */
                 if(!taskListForPhase[i].buildertek__Milestone__c && taskListForPhase[i].buildertek__Contractor_Resource__c){
-                var assignmentRow = {}
+                    var assignmentRow = {}
                     assignmentRow['id'] = taskListForPhase[i].Id+'_'+taskListForPhase[i].buildertek__Contractor_Resource__c+'__index'+i+'ContractorResource_Name'+taskListForPhase[i].buildertek__Contractor_Resource__r.Name;
-                assignmentRow['event'] = taskListForPhase[i].Id
-                assignmentRow['resource'] = taskListForPhase[i].buildertek__Contractor_Resource__c;
-                assignmentRowData.push(assignmentRow)
-            }
-            taskPhaseRow["children"].push(rowChilObj);
+                    assignmentRow['event'] = taskListForPhase[i].Id
+                    assignmentRow['resource'] = taskListForPhase[i].buildertek__Contractor_Resource__c;
+                    assignmentRowData.push(assignmentRow)
+                }
+                taskPhaseRow["children"].push(rowChilObj);
 
-            // console.log(taskPhaseRow)
-            var found = false;
+               // console.log(taskPhaseRow)
+                var found = false;
                if(firstRowDup['children'].length){
                    for(var k=0;k<firstRowDup['children'].length;k++){
                        if(firstRowDup['children'][k].id == taskPhaseRow['id']){
                         firstRowDup['children'][k] = taskPhaseRow
                         found = true
-                    }
-                }
-                //firstRowDup['children'].phIndex = taskPhaseRow
+                       }
+                   }
+                    //firstRowDup['children'].phIndex = taskPhaseRow
                }else{
-                firstRowDup['children'].push(taskPhaseRow);
-                found = true
-            }
+                    firstRowDup['children'].push(taskPhaseRow);
+                    found = true
+               }
                if(!found){
-                firstRowDup['children'].push(taskPhaseRow);
-            }
+                    firstRowDup['children'].push(taskPhaseRow);
+               }
             //firstRowDup['children'].push(taskPhaseRow);
         }else if(taskListForPhase[i].buildertek__Phase__c && !taskPhaseRow){
             // console.log('method 2 in helper');
@@ -238,66 +234,66 @@ function formatData(scheduleData, scheduleItemsData, scheduleItemsDataList) {
             //taskPhaseRow["children"].push(taskListForPhase[i])
             taskPhaseRow["constraintType"] = 'none'
             var rowChilObj = {};
-            rowChilObj["type"] = 'Task'
-            rowChilObj["customtype"] = taskListForPhase[i].buildertek__Type__c
+                rowChilObj["type"] = 'Task'
+                rowChilObj["customtype"] = taskListForPhase[i].buildertek__Type__c
                 if(taskListForPhase[i].buildertek__Type__c == 'Milestone'){
-                rowChilObj["cls"] = 'milestoneTypeColor'
-            }
-            rowChilObj["iconCls"] = "b-fa b-fa-arrow-right"
-            rowChilObj["indentVal"] = taskListForPhase[i].buildertek__Indent_Task__c;
+                    rowChilObj["cls"] = 'milestoneTypeColor'
+                }
+                rowChilObj["iconCls"] = "b-fa b-fa-arrow-right"
+                rowChilObj["indentVal"] = taskListForPhase[i].buildertek__Indent_Task__c;
                 if(taskListForPhase[i].buildertek__Indent_Task__c){
-                rowChilObj["iconCls"] = "b-fa b-fa-arrow-left indentTrue"
-                //rowChilObj["cls"] = 'indentTaskColor'
-            }
-            rowChilObj['phase'] = taskListForPhase[i].buildertek__Phase__c
-            //rowChilObj["constraintType"] = 'startnoearlierthan'
+                    rowChilObj["iconCls"] = "b-fa b-fa-arrow-left indentTrue"
+                    //rowChilObj["cls"] = 'indentTaskColor'
+                }
+                rowChilObj['phase'] = taskListForPhase[i].buildertek__Phase__c
+                //rowChilObj["constraintType"] = 'startnoearlierthan'
                 if(taskListForPhase[i].buildertek__Dependency__c){
-                rowChilObj["constraintType"] = ''
+                    rowChilObj["constraintType"] = ''
                 }else{
-                rowChilObj["constraintType"] = 'startnoearlierthan'
-            }
+                    rowChilObj["constraintType"] = 'startnoearlierthan'
+                }
                 if(scheduleItemIdsList.indexOf(taskListForPhase[i].Id) < 0){
-                scheduleItemIdsList.push(taskListForPhase[i].Id)
-            }
-            rowChilObj["id"] = taskListForPhase[i].Id
-            rowChilObj["name"] = taskListForPhase[i].Name
-            rowChilObj["percentDone"] = taskListForPhase[i].buildertek__Completion__c
-            rowChilObj["startDate"] = taskListForPhase[i].buildertek__Start__c
+                    scheduleItemIdsList.push(taskListForPhase[i].Id)
+                }
+                rowChilObj["id"] = taskListForPhase[i].Id
+                rowChilObj["name"] = taskListForPhase[i].Name
+                rowChilObj["percentDone"] = taskListForPhase[i].buildertek__Completion__c
+                rowChilObj["startDate"] = taskListForPhase[i].buildertek__Start__c
 
-            rowChilObj['predecessor'] = taskListForPhase[i].buildertek__Dependency__c;
+                rowChilObj['predecessor'] = taskListForPhase[i].buildertek__Dependency__c;
 
-            if (taskListForPhase[i].hasOwnProperty('buildertek__Dependency__c') == true) {
-                rowChilObj['predecessorName'] = taskListForPhase[i].buildertek__Dependency__r.Name;
-            } else {
-                rowChilObj['predecessorName'] = '';
-            }
+                if (taskListForPhase[i].hasOwnProperty('buildertek__Dependency__c') == true) {
+                    rowChilObj['predecessorName'] = taskListForPhase[i].buildertek__Dependency__r.Name;
+                } else {
+                    rowChilObj['predecessorName'] = '';
+                }
 
-            rowChilObj['internalresource'] = taskListForPhase[i].buildertek__Resource__c;
+                rowChilObj['internalresource'] = taskListForPhase[i].buildertek__Resource__c;
 
                 if(taskListForPhase[i].buildertek__Resource__c){
-                rowChilObj['internalresourcename'] = taskListForPhase[i].buildertek__Resource__r.Name;
+                    rowChilObj['internalresourcename'] = taskListForPhase[i].buildertek__Resource__r.Name;
                 }else{
-                rowChilObj['internalresourcename'] = '';
-            }
+                    rowChilObj['internalresourcename'] = '';
+                }
 
-            rowChilObj['contractorresource'] = taskListForPhase[i].buildertek__Contractor_Resource__c;
+                rowChilObj['contractorresource'] = taskListForPhase[i].buildertek__Contractor_Resource__c;
 
                 if(taskListForPhase[i].buildertek__Contractor_Resource__c){
-                rowChilObj['contractorresourcename'] = taskListForPhase[i].buildertek__Contractor_Resource__r.Name;
+                    rowChilObj['contractorresourcename'] = taskListForPhase[i].buildertek__Contractor_Resource__r.Name;
                 }else{
-                rowChilObj['contractorresourcename'] = ''
-            }
-            rowChilObj['contractoracc'] = taskListForPhase[i].buildertek__Contractor__c;
+                    rowChilObj['contractorresourcename'] = ''
+                }
+                rowChilObj['contractoracc'] = taskListForPhase[i].buildertek__Contractor__c;
 
                 if(taskListForPhase[i].buildertek__Contractor__c){
                     rowChilObj["contractorname"] = taskListForPhase[i].buildertek__Contractor__r.Name;  //Added for contractor
                 }else{
-                rowChilObj["contractorname"] = '';
-            }
+                    rowChilObj["contractorname"] = '';
+                }
 
-            rowChilObj['notes'] = taskListForPhase[i].buildertek__Notes__c;
+                rowChilObj['notes'] = taskListForPhase[i].buildertek__Notes__c;
 
-            // console.log('JUMBIO IN METHOD 2');
+                // console.log('JUMBIO IN METHOD 2');
                 if(taskListForPhase[i].buildertek__Lag__c != undefined && taskListForPhase[i].buildertek__Lag__c != null && taskListForPhase[i].buildertek__Lag__c != 0){
                 var startDate = new Date(taskListForPhase[i].buildertek__Start__c);
                 // startDate.setDate(startDate.getDate() + (taskListForPhase[i].buildertek__Lag__c));
@@ -306,100 +302,100 @@ function formatData(scheduleData, scheduleItemsData, scheduleItemsDataList) {
                 // console.log('method 2 id and start date '+startDate+' id '+taskListForPhase[i].Id);
                 rowChilObj["startDate"] = new Date(startDate.getFullYear(),startDate.getMonth(),startDate.getDate(),0,0,0)
                 }
-            //console.log('start,',taskListForPhase[i].buildertek__Start__c)
-            rowChilObj["duration"] = taskListForPhase[i].buildertek__Duration__c
+                //console.log('start,',taskListForPhase[i].buildertek__Start__c)
+                rowChilObj["duration"] = taskListForPhase[i].buildertek__Duration__c
 
 
-            // var constraintDate = new Date(taskData[i].value[j].buildertek__Start__c);
-            //if(taskData[i].value[j].buildertek__Lag__c){
-            //constraintDate.setDate(constraintDate.getDate() + (taskData[i].value[j].buildertek__Lag__c));
-            // }
+                // var constraintDate = new Date(taskData[i].value[j].buildertek__Start__c);
+                //if(taskData[i].value[j].buildertek__Lag__c){
+                //constraintDate.setDate(constraintDate.getDate() + (taskData[i].value[j].buildertek__Lag__c));
+               // }
 
-            // console.log('contart',constraintDate)
-            // console.log('contart',taskListForPhase[i])
-            //rowChilObj["constraintDate"] = new Date(constraintDate)
+               // console.log('contart',constraintDate)
+               // console.log('contart',taskListForPhase[i])
+                //rowChilObj["constraintDate"] = new Date(constraintDate)
                 if(taskListForPhase[i].buildertek__Milestone__c){
-                rowChilObj["duration"] = 0;
-                rowChilObj["cls"] = 'milestoneCompleteColor'
-                rowChilObj['orgmilestone'] = taskListForPhase[i].buildertek__Milestone__c;
-                //rowChilObj['type'] = 'Milestone';
-                //rowChilObj['milestone'] = true;
-            }
+                    rowChilObj["duration"] = 0;
+                    rowChilObj["cls"] = 'milestoneCompleteColor'
+                    rowChilObj['orgmilestone'] = taskListForPhase[i].buildertek__Milestone__c;
+                    //rowChilObj['type'] = 'Milestone';
+                    //rowChilObj['milestone'] = true;
+                }
 
-            rowChilObj["expanded"] = true
-            rowChilObj["order"] = taskListForPhase[i].buildertek__Order__c
-            //rowChilObj["endDate"] = taskData[i].value[j].buildertek__Finish__c
-            //row["children"].push(rowChilObj);
-            var dependencyRow = {};
+                rowChilObj["expanded"] = true
+                rowChilObj["order"] = taskListForPhase[i].buildertek__Order__c
+                //rowChilObj["endDate"] = taskData[i].value[j].buildertek__Finish__c
+                //row["children"].push(rowChilObj);
+                var dependencyRow = {};
                 if(taskListForPhase[i].buildertek__Dependency__c){
                     dependencyRow["id" ]  = taskListForPhase[i].Id+'_'+taskListForPhase[i].buildertek__Dependency__c
                 dependencyRow["fromTask"] = taskListForPhase[i].buildertek__Dependency__c
                 dependencyRow["toTask"]  = taskListForPhase[i].Id
                 dependencyRow["lag"]  = taskListForPhase[i].buildertek__Lag__c
                 taskDependencyData.push(dependencyRow)
-            }
+                }
 
 
                 if(!taskListForPhase[i].buildertek__Milestone__c && taskListForPhase[i].buildertek__Resource__c){
                     if(resourceRowIdList.indexOf(taskListForPhase[i].buildertek__Resource__c) < 0){
-                    var resourceRow = {}
-                    resourceRow['id'] = taskListForPhase[i].buildertek__Resource__c;
-                    resourceRow['name'] = taskListForPhase[i].buildertek__Resource__r.Name;
-                    resourceRow['calendar'] = "general";
-                    resourceRowData.push(resourceRow)
-                    resourceRowIdList.push(resourceRow['id'])
+                        var resourceRow = {}
+                        resourceRow['id'] = taskListForPhase[i].buildertek__Resource__c;
+                        resourceRow['name'] = taskListForPhase[i].buildertek__Resource__r.Name;
+                        resourceRow['calendar'] = "general";
+                        resourceRowData.push(resourceRow)
+                        resourceRowIdList.push(resourceRow['id'])
+                    }
+
                 }
+                /* if(!taskListForPhase[i].buildertek__Milestone__c && taskListForPhase[i].buildertek__Contractor__c){
 
-            }
-            /* if(!taskListForPhase[i].buildertek__Milestone__c && taskListForPhase[i].buildertek__Contractor__c){
+                    if(resourceRowIdList.indexOf(taskListForPhase[i].buildertek__Contractor__c) < 0){
+                        var resourceRow = {}
+                        resourceRow['id'] = taskListForPhase[i].buildertek__Contractor__c
+                        resourceRow['name'] = taskListForPhase[i].buildertek__Contractor__r.Name;
+                        resourceRow['calendar'] = "general";
+                        resourceRowData.push(resourceRow)
+                        resourceRowIdList.push(resourceRow['id'])
+                    }
 
-                if(resourceRowIdList.indexOf(taskListForPhase[i].buildertek__Contractor__c) < 0){
-                    var resourceRow = {}
-                    resourceRow['id'] = taskListForPhase[i].buildertek__Contractor__c
-                    resourceRow['name'] = taskListForPhase[i].buildertek__Contractor__r.Name;
-                    resourceRow['calendar'] = "general";
-                    resourceRowData.push(resourceRow)
-                    resourceRowIdList.push(resourceRow['id'])
-                }
-
-            } */
+                } */
                 if(!taskListForPhase[i].buildertek__Milestone__c && taskListForPhase[i].buildertek__Contractor_Resource__c){
 
                     if(resourceRowIdList.indexOf(taskListForPhase[i].buildertek__Contractor_Resource__c) < 0){
-                    var resourceRow = {}
-                    resourceRow['id'] = taskListForPhase[i].buildertek__Contractor_Resource__c
-                    resourceRow['name'] = taskListForPhase[i].buildertek__Contractor_Resource__r.Name;
-                    resourceRow['calendar'] = "general";
-                    resourceRowData.push(resourceRow)
-                    resourceRowIdList.push(resourceRow['id'])
+                        var resourceRow = {}
+                        resourceRow['id'] = taskListForPhase[i].buildertek__Contractor_Resource__c
+                        resourceRow['name'] = taskListForPhase[i].buildertek__Contractor_Resource__r.Name;
+                        resourceRow['calendar'] = "general";
+                        resourceRowData.push(resourceRow)
+                        resourceRowIdList.push(resourceRow['id'])
+                    }
                 }
-            }
 
 
                 if(!taskListForPhase[i].buildertek__Milestone__c && taskListForPhase[i].buildertek__Resource__c){
-                var assignmentRow = {}
+                    var assignmentRow = {}
                     assignmentRow['id'] = taskListForPhase[i].Id+'_'+taskListForPhase[i].buildertek__Resource__c+'__index_'+i+'Resource_Name'+taskListForPhase[i].buildertek__Resource__r.Name;
-                assignmentRow['event'] = taskListForPhase[i].Id
-                assignmentRow['resource'] = taskListForPhase[i].buildertek__Resource__c;
-                assignmentRowData.push(assignmentRow)
-            }
-            /* if(!taskListForPhase[i].buildertek__Milestone__c && taskListForPhase[i].buildertek__Contractor__c){
-                var assignmentRow = {}
-                assignmentRow['id'] = taskListForPhase[i].Id+'_'+taskListForPhase[i].buildertek__Contractor__c+'__index_'+i+'Contractor';
-                assignmentRow['event'] = taskListForPhase[i].Id
-                assignmentRow['resource'] = taskListForPhase[i].buildertek__Contractor__c;
-                assignmentRowData.push(assignmentRow)
-            } */
+                    assignmentRow['event'] = taskListForPhase[i].Id
+                    assignmentRow['resource'] = taskListForPhase[i].buildertek__Resource__c;
+                    assignmentRowData.push(assignmentRow)
+                }
+                /* if(!taskListForPhase[i].buildertek__Milestone__c && taskListForPhase[i].buildertek__Contractor__c){
+                    var assignmentRow = {}
+                    assignmentRow['id'] = taskListForPhase[i].Id+'_'+taskListForPhase[i].buildertek__Contractor__c+'__index_'+i+'Contractor';
+                    assignmentRow['event'] = taskListForPhase[i].Id
+                    assignmentRow['resource'] = taskListForPhase[i].buildertek__Contractor__c;
+                    assignmentRowData.push(assignmentRow)
+                } */
                 if(!taskListForPhase[i].buildertek__Milestone__c && taskListForPhase[i].buildertek__Contractor_Resource__c){
-                var assignmentRow = {}
+                    var assignmentRow = {}
                     assignmentRow['id'] = taskListForPhase[i].Id+'_'+taskListForPhase[i].buildertek__Contractor_Resource__c+'__index'+i+'ContractorResource_Name'+taskListForPhase[i].buildertek__Contractor_Resource__r.Name;
-                assignmentRow['event'] = taskListForPhase[i].Id
-                assignmentRow['resource'] = taskListForPhase[i].buildertek__Contractor_Resource__c;
-                assignmentRowData.push(assignmentRow)
-            }
-            taskPhaseRow["children"].push(rowChilObj);
-            // console.log(taskPhaseRow)
-            newPhaseFlag = false;
+                    assignmentRow['event'] = taskListForPhase[i].Id
+                    assignmentRow['resource'] = taskListForPhase[i].buildertek__Contractor_Resource__c;
+                    assignmentRowData.push(assignmentRow)
+                }
+                taskPhaseRow["children"].push(rowChilObj);
+               // console.log(taskPhaseRow)
+                newPhaseFlag = false;
         }else if(!taskListForPhase[i].buildertek__Phase__c){
             // console.log('method 3 in helper');
             phIndex = phIndex+1;
@@ -478,7 +474,7 @@ function formatData(scheduleData, scheduleItemsData, scheduleItemsDataList) {
 
 
 
-            // console.log('contart',taskListForPhase[i])
+           // console.log('contart',taskListForPhase[i])
             //rowChilObj["constraintDate"] = new Date(constraintDate)
             if(taskListForPhase[i].buildertek__Milestone__c){
                 rowChilObj["duration"] = 0
@@ -626,8 +622,8 @@ function saveeditRecordMethod(event,thisVal){
                     if(thisVal.newTaskRecordCreate['buildertek__Dependency__c']){
                         var newDependencies = [
                             {
-                            fromTask: thisVal.recordTaskParent,
-                            toTask: addedTaskFromPlusIcon,
+                                fromTask: thisVal.recordTaskParent,
+                                toTask: addedTaskFromPlusIcon,
                                 type: 2  // EndToStart
                             }
                         ]
@@ -661,8 +657,8 @@ function saveeditRecordMethod(event,thisVal){
                             }
                             var newDependencies = [
                                 {
-                                fromTask: dependentTask,
-                                toTask: addedTaskFromPlusIcon,
+                                    fromTask: dependentTask,
+                                    toTask: addedTaskFromPlusIcon,
                                     type: 2  // EndToStart
                                 }
                             ]
@@ -680,8 +676,8 @@ function saveeditRecordMethod(event,thisVal){
                             }
                             var newDependencies = [
                                 {
-                                fromTask: dependentTask,
-                                toTask: addedTaskFromPlusIcon,
+                                    fromTask: dependentTask,
+                                    toTask: addedTaskFromPlusIcon,
                                     type: 2  // EndToStart
                                 }
                             ]
@@ -698,12 +694,12 @@ function saveeditRecordMethod(event,thisVal){
                                 startDate : thisVal.newTaskRecordCreate['buildertek__Start__c']+'T00:00:00+05:30',
                                 endDate : thisVal.newTaskRecordCreate['buildertek__Finish__c']+'T00:00:00+05:30',
                                 type : 'Task',
-                            parentId: schId,
-                            percentDone: thisVal.newTaskRecordCreate['buildertek__Completion__c'],
-                            indentVal: false,
-                            customtype: thisVal.newTaskRecordCreate['buildertek__Type__c'],
+                                parentId: schId,
+                                percentDone: thisVal.newTaskRecordCreate['buildertek__Completion__c'],
+                                indentVal: false,
+                                customtype: thisVal.newTaskRecordCreate['buildertek__Type__c'],
                                 expanded:true,
-                            iconCls: 'b-fa b-fa-arrow-right',
+                                iconCls: 'b-fa b-fa-arrow-right',
                                 constraintType : thisVal.newTaskRecordCreate['buildertek__Dependency__c'] ? '' : 'startnoearlierthan'
                             }
                         );
@@ -714,8 +710,8 @@ function saveeditRecordMethod(event,thisVal){
                             }
                             var newDependencies = [
                                 {
-                                fromTask: dependentTask,
-                                toTask: addedTaskFromPlusIcon,
+                                    fromTask: dependentTask,
+                                    toTask: addedTaskFromPlusIcon,
                                     type: 2  // EndToStart
                                 }
                             ]
@@ -744,11 +740,11 @@ function saveeditRecordMethod(event,thisVal){
                                     endDate : thisVal.newTaskRecordCreate['buildertek__Finish__c']+'T00:00:00+05:30',
                                     type : 'Task',
                                     parentId: schId+'_'+thisVal.newTaskRecordCreate['buildertek__Phase__c'] ,
-                                percentDone: thisVal.newTaskRecordCreate['buildertek__Completion__c'],
-                                indentVal: false,
-                                customtype: thisVal.newTaskRecordCreate['buildertek__Type__c'],
+                                    percentDone: thisVal.newTaskRecordCreate['buildertek__Completion__c'],
+                                    indentVal: false,
+                                    customtype: thisVal.newTaskRecordCreate['buildertek__Type__c'],
                                     expanded:true,
-                                iconCls: 'b-fa b-fa-arrow-right',
+                                    iconCls: 'b-fa b-fa-arrow-right',
                                     constraintType : thisVal.newTaskRecordCreate['buildertek__Dependency__c'] ? '' : 'startnoearlierthan'
                                 }
                             );
@@ -760,12 +756,12 @@ function saveeditRecordMethod(event,thisVal){
                                     startDate : thisVal.newTaskRecordCreate['buildertek__Start__c']+'T00:00:00+05:30',
                                     endDate : thisVal.newTaskRecordCreate['buildertek__Finish__c']+'T00:00:00+05:30',
                                     type : 'Phase',
-                                parentId: schId,
-                                percentDone: thisVal.newTaskRecordCreate['buildertek__Completion__c'],
-                                indentVal: false,
-                                customtype: thisVal.newTaskRecordCreate['buildertek__Type__c'],
+                                    parentId: schId,
+                                    percentDone: thisVal.newTaskRecordCreate['buildertek__Completion__c'],
+                                    indentVal: false,
+                                    customtype: thisVal.newTaskRecordCreate['buildertek__Type__c'],
                                     expanded:true,
-                                iconCls: '',
+                                    iconCls: '',
                                     constraintType : thisVal.newTaskRecordCreate['buildertek__Dependency__c'] ? '' : 'startnoearlierthan'
                                 }
                             );
@@ -777,13 +773,13 @@ function saveeditRecordMethod(event,thisVal){
                                     endDate : thisVal.newTaskRecordCreate['buildertek__Finish__c']+'T00:00:00+05:30',
                                     type : 'Task',
                                     parentId: schId+'_'+thisVal.newTaskRecordCreate['buildertek__Phase__c'] ,
-                                percentDone: thisVal.newTaskRecordCreate['buildertek__Completion__c'],
-                                indentVal: false,
-                                customtype: thisVal.newTaskRecordCreate['buildertek__Type__c'],
+                                    percentDone: thisVal.newTaskRecordCreate['buildertek__Completion__c'],
+                                    indentVal: false,
+                                    customtype: thisVal.newTaskRecordCreate['buildertek__Type__c'],
                                     expanded:true,
-                                iconCls: 'b-fa b-fa-arrow-right',
+                                    iconCls: 'b-fa b-fa-arrow-right',
                                     constraintType : thisVal.newTaskRecordCreate['buildertek__Dependency__c'] ? '' : 'startnoearlierthan'
-                        }
+                                }
                             );
                         }
                     }else{
@@ -794,14 +790,14 @@ function saveeditRecordMethod(event,thisVal){
                                 startDate : thisVal.newTaskRecordCreate['buildertek__Start__c']+'T00:00:00+05:30',
                                 endDate : thisVal.newTaskRecordCreate['buildertek__Finish__c']+'T00:00:00+05:30',
                                 type : 'Task',
-                            parentId: schId,
-                            percentDone: thisVal.newTaskRecordCreate['buildertek__Completion__c'],
-                            indentVal: false,
-                            customtype: thisVal.newTaskRecordCreate['buildertek__Type__c'],
+                                parentId: schId,
+                                percentDone: thisVal.newTaskRecordCreate['buildertek__Completion__c'],
+                                indentVal: false,
+                                customtype: thisVal.newTaskRecordCreate['buildertek__Type__c'],
                                 expanded:true,
-                            iconCls: 'b-fa b-fa-arrow-right',
+                                iconCls: 'b-fa b-fa-arrow-right',
                                 constraintType : thisVal.newTaskRecordCreate['buildertek__Dependency__c'] ? '' : 'startnoearlierthan'
-                    }
+                            }
                         );
                     }
                     if(thisVal.newTaskRecordCreate['buildertek__Dependency__c']){
@@ -811,8 +807,8 @@ function saveeditRecordMethod(event,thisVal){
                         }
                         var newDependencies = [
                             {
-                            fromTask: dependentTask,
-                            toTask: addedTaskFromPlusIcon,
+                                fromTask: dependentTask,
+                                toTask: addedTaskFromPlusIcon,
                                 type: 2  // EndToStart
                             }
                         ]
@@ -838,11 +834,11 @@ function saveeditRecordMethod(event,thisVal){
                                 endDate : thisVal.newTaskRecordCreate['buildertek__Finish__c']+'T00:00:00+05:30',
                                 type : 'Task',
                                 parentId: schId+'_'+thisVal.newTaskRecordCreate['buildertek__Phase__c'] ,
-                            percentDone: thisVal.newTaskRecordCreate['buildertek__Completion__c'],
-                            indentVal: false,
-                            customtype: thisVal.newTaskRecordCreate['buildertek__Type__c'],
+                                percentDone: thisVal.newTaskRecordCreate['buildertek__Completion__c'],
+                                indentVal: false,
+                                customtype: thisVal.newTaskRecordCreate['buildertek__Type__c'],
                                 expanded:true,
-                            iconCls: 'b-fa b-fa-arrow-right',
+                                iconCls: 'b-fa b-fa-arrow-right',
                                 constraintType : thisVal.newTaskRecordCreate['buildertek__Dependency__c'] ? '' : 'startnoearlierthan'
                             }
                         );
@@ -854,12 +850,12 @@ function saveeditRecordMethod(event,thisVal){
                                 startDate : thisVal.newTaskRecordCreate['buildertek__Start__c']+'T00:00:00+05:30',
                                 endDate : thisVal.newTaskRecordCreate['buildertek__Finish__c']+'T00:00:00+05:30',
                                 type : 'Phase',
-                            parentId: schId,
-                            percentDone: thisVal.newTaskRecordCreate['buildertek__Completion__c'],
-                            indentVal: false,
-                            customtype: thisVal.newTaskRecordCreate['buildertek__Type__c'],
+                                parentId: schId,
+                                percentDone: thisVal.newTaskRecordCreate['buildertek__Completion__c'],
+                                indentVal: false,
+                                customtype: thisVal.newTaskRecordCreate['buildertek__Type__c'],
                                 expanded:true,
-                            iconCls: '',
+                                iconCls: '',
                                 constraintType : thisVal.newTaskRecordCreate['buildertek__Dependency__c'] ? '' : 'startnoearlierthan'
                             }
                         );
@@ -871,13 +867,13 @@ function saveeditRecordMethod(event,thisVal){
                                 endDate : thisVal.newTaskRecordCreate['buildertek__Finish__c']+'T00:00:00+05:30',
                                 type : 'Task',
                                 parentId: schId+'_'+thisVal.newTaskRecordCreate['buildertek__Phase__c'] ,
-                            percentDone: thisVal.newTaskRecordCreate['buildertek__Completion__c'],
-                            indentVal: false,
-                            customtype: thisVal.newTaskRecordCreate['buildertek__Type__c'],
+                                percentDone: thisVal.newTaskRecordCreate['buildertek__Completion__c'],
+                                indentVal: false,
+                                customtype: thisVal.newTaskRecordCreate['buildertek__Type__c'],
                                 expanded:true,
-                            iconCls: 'b-fa b-fa-arrow-right',
+                                iconCls: 'b-fa b-fa-arrow-right',
                                 constraintType : thisVal.newTaskRecordCreate['buildertek__Dependency__c'] ? '' : 'startnoearlierthan'
-                    }
+                            }
                         );
                     }
                 }else{
@@ -889,13 +885,13 @@ function saveeditRecordMethod(event,thisVal){
                             endDate : thisVal.newTaskRecordCreate['buildertek__Finish__c']+'T00:00:00+05:30',
                             type : 'Task',
                             parentId: thisVal.newTaskRecordCreate['buildertek__Phase__c'] ? schId+'_'+thisVal.newTaskRecordCreate['buildertek__Phase__c'] :schId ,
-                        percentDone: thisVal.newTaskRecordCreate['buildertek__Completion__c'],
-                        indentVal: false,
-                        customtype: thisVal.newTaskRecordCreate['buildertek__Type__c'],
+                            percentDone: thisVal.newTaskRecordCreate['buildertek__Completion__c'],
+                            indentVal: false,
+                            customtype: thisVal.newTaskRecordCreate['buildertek__Type__c'],
                             expanded:true,
-                        iconCls: 'b-fa b-fa-arrow-right',
+                            iconCls: 'b-fa b-fa-arrow-right',
                             constraintType : thisVal.newTaskRecordCreate['buildertek__Dependency__c'] ? '' : 'startnoearlierthan'
-                }
+                        }
                     );
                 }
                 if(thisVal.newTaskRecordCreate['buildertek__Dependency__c']){
@@ -905,8 +901,8 @@ function saveeditRecordMethod(event,thisVal){
                     }
                     var newDependencies = [
                         {
-                        fromTask: dependentTask,
-                        toTask: addedTaskFromPlusIcon,
+                            fromTask: dependentTask,
+                            toTask: addedTaskFromPlusIcon,
                             type: 2  // EndToStart
                         }
                     ]
@@ -1008,11 +1004,11 @@ function customInsertPhaseMethod(schId,thisVal){
                     endDate : thisVal.newTaskRecordCreate['buildertek__Finish__c']+'T00:00:00+05:30',
                     type : 'Task',
                     parentId: schId+'_'+thisVal.newTaskRecordCreate['buildertek__Phase__c'] ,
-                percentDone: thisVal.newTaskRecordCreate['buildertek__Completion__c'],
-                indentVal: false,
-                customtype: thisVal.newTaskRecordCreate['buildertek__Type__c'],
+                    percentDone: thisVal.newTaskRecordCreate['buildertek__Completion__c'],
+                    indentVal: false,
+                    customtype: thisVal.newTaskRecordCreate['buildertek__Type__c'],
                     expanded:true,
-                iconCls: 'b-fa b-fa-arrow-right',
+                    iconCls: 'b-fa b-fa-arrow-right',
                     constraintType : thisVal.newTaskRecordCreate['buildertek__Dependency__c'] ? '' : 'startnoearlierthan'
                 }
             );
@@ -1024,12 +1020,12 @@ function customInsertPhaseMethod(schId,thisVal){
                     startDate : thisVal.newTaskRecordCreate['buildertek__Start__c']+'T00:00:00+05:30',
                     endDate : thisVal.newTaskRecordCreate['buildertek__Finish__c']+'T00:00:00+05:30',
                     type : 'Phase',
-                parentId: schId,
-                percentDone: thisVal.newTaskRecordCreate['buildertek__Completion__c'],
-                indentVal: false,
-                customtype: thisVal.newTaskRecordCreate['buildertek__Type__c'],
+                    parentId: schId,
+                    percentDone: thisVal.newTaskRecordCreate['buildertek__Completion__c'],
+                    indentVal: false,
+                    customtype: thisVal.newTaskRecordCreate['buildertek__Type__c'],
                     expanded:true,
-                iconCls: '',
+                    iconCls: '',
                     constraintType : thisVal.newTaskRecordCreate['buildertek__Dependency__c'] ? '' : 'startnoearlierthan'
                 }
             );
@@ -1041,13 +1037,13 @@ function customInsertPhaseMethod(schId,thisVal){
                     endDate : thisVal.newTaskRecordCreate['buildertek__Finish__c']+'T00:00:00+05:30',
                     type : 'Task',
                     parentId: schId+'_'+thisVal.newTaskRecordCreate['buildertek__Phase__c'] ,
-                percentDone: thisVal.newTaskRecordCreate['buildertek__Completion__c'],
-                indentVal: false,
-                customtype: thisVal.newTaskRecordCreate['buildertek__Type__c'],
+                    percentDone: thisVal.newTaskRecordCreate['buildertek__Completion__c'],
+                    indentVal: false,
+                    customtype: thisVal.newTaskRecordCreate['buildertek__Type__c'],
                     expanded:true,
-                iconCls: 'b-fa b-fa-arrow-right',
+                    iconCls: 'b-fa b-fa-arrow-right',
                     constraintType : thisVal.newTaskRecordCreate['buildertek__Dependency__c'] ? '' : 'startnoearlierthan'
-        }
+                }
             );
         }
     }else{
@@ -1058,12 +1054,12 @@ function customInsertPhaseMethod(schId,thisVal){
                 startDate : thisVal.newTaskRecordCreate['buildertek__Start__c']+'T00:00:00+05:30',
                 endDate : thisVal.newTaskRecordCreate['buildertek__Finish__c']+'T00:00:00+05:30',
                 type : 'Task',
-            parentId: schId,
-            percentDone: thisVal.newTaskRecordCreate['buildertek__Completion__c'],
-            indentVal: false,
-            customtype: thisVal.newTaskRecordCreate['buildertek__Type__c'],
+                parentId: schId,
+                percentDone: thisVal.newTaskRecordCreate['buildertek__Completion__c'],
+                indentVal: false,
+                customtype: thisVal.newTaskRecordCreate['buildertek__Type__c'],
                 expanded:true,
-            iconCls: 'b-fa b-fa-arrow-right',
+                iconCls: 'b-fa b-fa-arrow-right',
                 constraintType : thisVal.newTaskRecordCreate['buildertek__Dependency__c'] ? '' : 'startnoearlierthan'
             }
         );
@@ -1081,11 +1077,11 @@ function customInsertTaskMethod(schId,thisVal,dependentTask){
             endDate : thisVal.newTaskRecordCreate['buildertek__Finish__c']+'T00:00:00+05:30',
             type : 'Task',
             parentId: schId+'_'+thisVal.newTaskRecordCreate['buildertek__Phase__c'] ,
-        percentDone: thisVal.newTaskRecordCreate['buildertek__Completion__c'],
-        indentVal: false,
-        customtype: thisVal.newTaskRecordCreate['buildertek__Type__c'],
+            percentDone: thisVal.newTaskRecordCreate['buildertek__Completion__c'],
+            indentVal: false,
+            customtype: thisVal.newTaskRecordCreate['buildertek__Type__c'],
             expanded:true,
-        iconCls: 'b-fa b-fa-arrow-right',
+            iconCls: 'b-fa b-fa-arrow-right',
             constraintType : thisVal.newTaskRecordCreate['buildertek__Dependency__c'] ? '' : 'startnoearlierthan'
         }
     );
