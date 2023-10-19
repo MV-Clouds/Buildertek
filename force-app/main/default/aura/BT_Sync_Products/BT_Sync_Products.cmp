@@ -132,7 +132,7 @@
                                     </ui:inputSelect>
                                 </div>
                             </lightning:layoutItem>
-                            <div class="slds-p-around_medium slds-size_4-of-12" style="padding-top: 38px;">
+                            <div class="slds-p-around_medium slds-size_4-of-12" style="padding-top: 34px;">
                                 <span>
                                     <lightning:input type="search" label="Search" variant="label-hidden" value="{!v.sProductName}" onchange="{!c.searchInDatatable}" placeholder="Search Product Name" />
                                 </span>
