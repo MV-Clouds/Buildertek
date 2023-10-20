@@ -105,16 +105,19 @@
                                 <th class="" scope="col" style="width:15% !important">
                                     <div class="trncatediv" title="Product Description">Product Description</div>
                                 </th>
+                                <th class="" scope="col" style="width:10% !important">
+                                    <div class="slds-truncate" title="Cost Code">Cost Code</div>
+                                </th>
                                 <th class="" scope="col" style="width:15% !important">
                                     <div class="slds-truncate" title="Product Code">Product Code</div>
                                 </th>
                                 <th class="" scope="col" style="width:10% !important">
                                     <div class="slds-truncate" title="Vendor">Vendor</div>
                                 </th>
-                                <th class="" scope="col" style="width:10% !important">
+                                <th class="" scope="col" style="width:5% !important">
                                     <div class="slds-truncate" title="Unit Cost">Unit Cost</div>
                                 </th>
-                                <th class="" scope="col" style="width:10% !important">
+                                <th class="" scope="col" style="width:5% !important">
                                     <div class="slds-truncate" title="List Price">List Price</div>
                                 </th>
                             </tr>
@@ -142,6 +145,11 @@
                                             {!product.Description}
                                         </div>
                                     </td>
+                                    <td data-label="Product Code" style="width:10% !important">                                        
+                                        <div class="slds-truncate" title='{!product.ProductCode}'>
+                                            {!product.CostCode}
+                                        </div>
+                                    </td>
                                     <td data-label="Product Code" style="width:15% !important">                                        
                                         <div class="slds-truncate" title='{!product.ProductCode}'>
                                             {!product.ProductCode}
@@ -152,12 +160,12 @@
                                             {!product.Vendor}
                                         </div>
                                     </td>
-                                    <td data-label="Unit Cost" style="width:10% !important">
+                                    <td data-label="Unit Cost" style="width:5% !important">
                                         <div class="slds-truncate" title='{!product.UnitCost}' >
                                             <lightning:formattedNumber value="{!product.UnitCost}" style="currency"/>
                                         </div>
                                     </td>
-                                    <td data-label="List Price" style="width:10% !important">
+                                    <td data-label="List Price" style="width:5% !important">
                                         <div class="slds-truncate" title='{!product.UnitPrice}' >
                                             <lightning:formattedNumber value="{!product.UnitPrice}" style="currency"/>
                                         </div>
@@ -214,6 +222,9 @@
                                     <div class="slds-truncate" title="Unit Cost">Unit Cost</div>
                                 </th>
                                 <th class="" scope="col">
+                                    <div class="slds-truncate" title="Cost Code">Cost Code</div>
+                                </th>
+                                <th class="" scope="col">
                                     <div class="slds-truncate" title="List Price">List Price</div>
                                 </th>
                                 <th class="" scope="col">
@@ -253,6 +264,9 @@
                                     </td>
                                     <td>
                                         <lightning:input name="input6" label="" value="{!item.buildertek__Unit_Cost__c}" formatter="currency" type="number" maximumFractionDigits="5" step="0.01" />
+                                    </td>
+                                    <td>
+                                        <lightning:input name="input8" label="" value="{!item.buildertek__Cost_Code__c}" disabled="true"/>
                                     </td>
                                     <td>
                                         <lightning:input name="input2" label="" value="{!item.buildertek__Unit_Price__c}" formatter="currency" type="number" maximumFractionDigits="5" step="0.01" />
