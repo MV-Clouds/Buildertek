@@ -18,7 +18,7 @@
     openPopupModel:function(component, event, helper) {
         component.set("v.Spinner", true);
         var Id=  event.currentTarget.dataset.iconattr;
-        component.set("v.quoteLineId",Id);
+        component.set("v.takeoffLineId",Id);
         component.set("v.selectedPricebookId", '');
         component.set("v.tableDataList", []);
         component.set("v.showModel",true);
@@ -40,6 +40,7 @@
         helper.changeProductFamilyHelper(component, event, helper , priceBookId, selectedProductFamily);
     },
     searchInDatatable: function(component, event, helper){
+        console.log("Method called" , component.get("v.selectedPricebookId"));
         if (component.get("v.selectedPricebookId") != '') {
             var checkboxes = component.find("checkboxInput");
             checkboxes.forEach(function(checkbox) {
@@ -90,10 +91,10 @@
     },
     saveProduct: function(component, event, helper){
         component.set("v.Spinner", true);
-        var onlyUpdatedQuoteLines = [];
-        var quoteLineList = component.get("v.quoteLineList");
+        var onlyUpdatedTakeoffLines = [];
+        var takeoffLineList = component.get("v.takeoffLineList");
         var updatedquoteLineList = [];
-        var  quoteLineNeedToUpdateId= component.get("v.quoteLineId"); // The ID you want to match for the update
+        var  quoteLineNeedToUpdateId= component.get("v.takeoffLineId"); // The ID you want to match for the update
         var product = component.get("v.selectedRecords"); // The new value you want to set
         
             if (product.length == 0) {
@@ -109,8 +110,8 @@
                     toastEvent.fire();
                 }
             }
-            for (var i = 0; i < quoteLineList.length; i++) {
-                var record = quoteLineList[i];
+            for (var i = 0; i < takeoffLineList.length; i++) {
+                var record = takeoffLineList[i];
                 if (record.Id === quoteLineNeedToUpdateId) { // Check if the ID matches
                     record.buildertek__Product__r = {Id : product[0].Id , Name : product[0].Name}; // Update the specific field
                     record.buildertek__Product__c = product[0].Id;
@@ -120,15 +121,15 @@
                 }
             }
 
-            component.set("v.quoteLineList", updatedquoteLineList);
+            component.set("v.takeoffLineList", updatedquoteLineList);
             for (var i = 0; i < updatedquoteLineList.length; i++) {
                 var record = updatedquoteLineList[i];
                 if (record.buildertek__Product__r) {
-                    onlyUpdatedQuoteLines.push(record);
+                    onlyUpdatedTakeoffLines.push(record);
                 }
             }
-            component.set("v.onlyUpdatedQuoteLines",onlyUpdatedQuoteLines);
-            if (onlyUpdatedQuoteLines.length > 0 ) {
+            component.set("v.onlyUpdatedTakeoffLines",onlyUpdatedTakeoffLines);
+            if (onlyUpdatedTakeoffLines.length > 0 ) {
                 component.set("v.MassSaveButtonDisabled", false);
             } else {
                 component.set("v.MassSaveButtonDisabled", true );  
@@ -156,8 +157,8 @@
     removeProduct: function(component, event, helper){
         var removeQlId=  event.currentTarget.dataset.iconattr;
         var updatedquoteLineList =[];
-        var onlyUpdatedQuoteLines =[];
-        var removeProd = component.get("v.quoteLineList");
+        var onlyUpdatedTakeoffLines =[];
+        var removeProd = component.get("v.takeoffLineList");
 
         for (var i = 0; i < removeProd.length; i++) {
             var record = removeProd[i];
@@ -169,15 +170,15 @@
                 updatedquoteLineList.push(record); // Add the unmodified record to the updatedList
             }
         }
-        component.set("v.quoteLineList" , updatedquoteLineList);
+        component.set("v.takeoffLineList" , updatedquoteLineList);
             for (var i = 0; i < updatedquoteLineList.length; i++) {
                 var record = updatedquoteLineList[i];
                 if (record.buildertek__Product__r) {
-                    onlyUpdatedQuoteLines.push(record);
+                    onlyUpdatedTakeoffLines.push(record);
                 }
             }
-            component.set("v.onlyUpdatedQuoteLines",onlyUpdatedQuoteLines);
-            if (onlyUpdatedQuoteLines.length > 0 ) {
+            component.set("v.onlyUpdatedTakeoffLines",onlyUpdatedTakeoffLines);
+            if (onlyUpdatedTakeoffLines.length > 0 ) {
                 component.set("v.MassSaveButtonDisabled", false);
             } else {
                 component.set("v.MassSaveButtonDisabled", true );  

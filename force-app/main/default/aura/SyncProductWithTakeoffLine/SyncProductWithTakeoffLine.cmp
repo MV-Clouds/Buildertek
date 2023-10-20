@@ -1,16 +1,16 @@
-<aura:component controller="BT_SyncProductsController" implements="force:appHostable,flexipage:availableForAllPageTypes,lightning:isUrlAddressable,flexipage:availableForRecordHome,force:hasRecordId,lightning:isUrlAddressable,forceCommunity:availableForAllPageTypes,forceCommunity:layout" access="global" >
+<aura:component controller="SyncProductWithTakeoffLines" implements="force:appHostable,flexipage:availableForAllPageTypes,lightning:isUrlAddressable,flexipage:availableForRecordHome,force:hasRecordId,lightning:isUrlAddressable,forceCommunity:availableForAllPageTypes,forceCommunity:layout" access="global" >
     <aura:handler name="change" value="{!v.pageReference}" action="{!c.doInit}" />
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
     <aura:attribute name="recordId" type="String"/>
-    <aura:attribute name="quoteLineList" type="List"/>
-    <aura:attribute name="quoteLineId" type="String"/>
+    <aura:attribute name="takeoffLineList" type="List"/>
+    <aura:attribute name="takeoffLineId" type="String"/>
     <aura:attribute name="tableDataList" type="List" />
     <aura:attribute name="pricebookoptions" type="List"/>
     <aura:attribute name="selectedPricebookId" type="String" default="" />
     <aura:attribute name="sProductFamily" type="String" />
     <aura:attribute name="sProductName" type="String" /> 
     <aura:attribute name="selectedRecords" type="List" default="[]" />
-    <aura:attribute name="onlyUpdatedQuoteLines" type="List" default="[]" />
+    <aura:attribute name="onlyUpdatedTakeoffLines" type="List" default="[]" />
     <aura:attribute name="checked" type="boolean"  />
     <aura:attribute name="MassSaveButtonDisabled" type="boolean" default="true" />
     <aura:attribute name="productFamilyOptions" type="List" />
@@ -46,20 +46,20 @@
                     <thead>
                         <tr class="slds-text-title_caps">
                             <th width="30%" style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
-                                Quote Line Name
+                                Takeoff Line Name
                             </th>
                             <th width="39%" style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
                                 Product
                             </th>
                             <th width="10%" style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
-                                Phase
+                                Category (PL)
                             </th>
                             <th width="21%" style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2; padding:4px 15px !important;"> </th>
                         </tr>
                     </thead>
                     <tbody>
-                        <aura:if isTrue="{!v.quoteLineList.length > 0}">
-                            <aura:iteration items="{!v.quoteLineList}" var="rec" indexVar="index" >
+                        <aura:if isTrue="{!v.takeoffLineList.length > 0}">
+                            <aura:iteration items="{!v.takeoffLineList}" var="rec" indexVar="index" >
                                 <tr class="slds-hint-parent">
                                     <td width="30%" role="gridcell">
                                         <ui:outputText value="{!rec.Name}" />
@@ -68,7 +68,7 @@
                                         <ui:outputText value="{!rec.buildertek__Product__r.Name}" />
                                     </td>
                                     <td width="10%" role="gridcell">
-                                        <ui:outputText value="{!rec.buildertek__Grouping__r.Name}" />
+                                        <ui:outputText value="{!rec.buildertek__Category__c}" />
                                     </td>
                                     <td width="21%" role="gridcell" style="text-align: center;">
                                         <div data-iconattr="{!rec.Id}" style="display: inline-block ;" data-id="!rec.Id" data-index="!index" onclick="{!c.openPopupModel}" >
@@ -83,8 +83,8 @@
                         </aura:if>
                     </tbody>
                 </table>
-                <aura:if isTrue="{!v.quoteLineList.length == 0}">
-                    <center class="elseMsg">All the quote lines have been sycn'd to a Product </center>
+                <aura:if isTrue="{!v.takeoffLineList.length == 0}">
+                    <center class="elseMsg">All the takeoff lines have been sycn'd to a Product </center>
                 </aura:if>
             </div>
         </div>

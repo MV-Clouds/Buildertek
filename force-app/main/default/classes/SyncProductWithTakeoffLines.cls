@@ -1,4 +1,4 @@
-public class BT_SyncProductsController {
+public class SyncProductWithTakeoffLines {
     public class pricebookWrapper{
         @AuraEnabled
         public List<pricebook2> priceWrapList;
@@ -59,9 +59,9 @@ public class BT_SyncProductsController {
         List<pricebook2> PriceList = [SELECT Id, Name FROM pricebook2 ORDER BY Name ASC ];
         priceWrap.priceWrapList=PriceList;
         if(recordId != null){
-            buildertek__Quote__c quoteRecord = [Select Id, Name , buildertek__Project__c , buildertek__Project__r.buildertek__Price_Book__c , buildertek__Project__r.buildertek__Price_Book__r.Name From buildertek__Quote__c  WHERE Id = :recordId];
-            if(quoteRecord.buildertek__Project__c != null && quoteRecord.buildertek__Project__r.buildertek__Price_Book__c !=null){
-                pricebook2 selectedPriceList = [SELECT Id, Name FROM pricebook2 where Id=:quoteRecord.buildertek__Project__r.buildertek__Price_Book__c LIMIT 1];
+            buildertek__Project_Takeoff__c takeOffRecord = [Select Id, Name , buildertek__Project__c , buildertek__Project__r.buildertek__Price_Book__c , buildertek__Project__r.buildertek__Price_Book__r.Name From buildertek__Project_Takeoff__c  WHERE Id = :recordId];
+            if(takeOffRecord.buildertek__Project__c != null && takeOffRecord.buildertek__Project__r.buildertek__Price_Book__c !=null){
+                pricebook2 selectedPriceList = [SELECT Id, Name FROM pricebook2 where Id=:takeOffRecord.buildertek__Project__r.buildertek__Price_Book__c LIMIT 1];
                 priceWrap.defaultValue= selectedPriceList;
             }
         }
@@ -69,10 +69,10 @@ public class BT_SyncProductsController {
         return priceWrapper;
     }
     @AuraEnabled
-    public static List<buildertek__Quote_Item__c> getQuoteLineRecordList(String recordId) {
-       
-        List<buildertek__Quote_Item__c>  QuoteLineList = [SELECT Id, Name, buildertek__Product__r.Id ,buildertek__Product__r.Name,buildertek__Grouping__r.Name FROM buildertek__Quote_Item__c WHERE buildertek__Quote__c =:recordId AND buildertek__Product__c ='' ORDER BY Name ASC];
-        return QuoteLineList;
+    public static List<buildertek__Project_Takeoff_Lines__c> getTakeoffLineRecordList(String recordId) {
+        
+        List<buildertek__Project_Takeoff_Lines__c>  TakeoffLineList = [SELECT Id, Name, buildertek__Product__r.Id ,buildertek__Product__r.Name,buildertek__Category__c FROM buildertek__Project_Takeoff_Lines__c WHERE buildertek__Project_Takeoff__c =:recordId AND buildertek__Product__c ='' ORDER BY Name ASC];
+        return TakeoffLineList;
     }
     @AuraEnabled
     public static List<productWrapper> getProductsthroughPriceBook2(string pbookId) {
@@ -210,38 +210,38 @@ public class BT_SyncProductsController {
         return products;
     } 
     @AuraEnabled
-    public static void massUpdateQuoteLine(String onlyUpdatedQuoteLines){
-       List<buildertek__Quote_Item__c> UpdateQl = (list<buildertek__Quote_Item__c>)JSON.deserialize(onlyUpdatedQuoteLines, List<buildertek__Quote_Item__c>.class);
-       update UpdateQl;
-       List<buildertek__Quote_Item__c> UpdateQlList = new List<buildertek__Quote_Item__c>();
-       Set<Id> qlIds = new Set<Id>();
-       Set<Id> prodIds = new Set<Id>();
-       for(buildertek__Quote_Item__c Ql: UpdateQl){
-            qlIds.add(Ql.Id);
+    public static void massUpdateTakeoffLine(String onlyUpdatedTakeoffLines){
+        List<buildertek__Project_Takeoff_Lines__c> UpdateTakeoffline = (list<buildertek__Project_Takeoff_Lines__c>)JSON.deserialize(onlyUpdatedTakeoffLines, List<buildertek__Project_Takeoff_Lines__c>.class);
+        update UpdateTakeoffline;
+        List<buildertek__Project_Takeoff_Lines__c> UpdateTakeofflineList = new List<buildertek__Project_Takeoff_Lines__c>();
+        Set<Id> takofLineIds = new Set<Id>();
+        Set<Id> prodIds = new Set<Id>();
+        for(buildertek__Project_Takeoff_Lines__c Ql: UpdateTakeoffline){
+            takofLineIds.add(Ql.Id);
             prodIds.add(Ql.buildertek__Product__c);
-       }
-       List<Product2> prdList = [SELECT Id,Name FROM Product2 WHERE ID IN:prodIds];
-       List<buildertek__Quote_Item__c> UpQl = [SELECT ID,Name , buildertek__Item_Name__c,buildertek__Product__c FROM buildertek__Quote_Item__c WHERE Id IN:qlIds ];
+        }
+        List<Product2> prdList = [SELECT Id,Name FROM Product2 WHERE ID IN:prodIds];
+        List<buildertek__Project_Takeoff_Lines__c> UpTakeofflne = [SELECT Id,Name ,buildertek__Product__c FROM buildertek__Project_Takeoff_Lines__c WHERE Id IN:takofLineIds ];
 
-       for(buildertek__Quote_Item__c ql : UpQl){
+        for(buildertek__Project_Takeoff_Lines__c ql : UpTakeofflne){
             for(Product2 prd: prdList){
-                if ((ql.buildertek__Product__c == prd.Id) && (ql.buildertek__Item_Name__c == null || ql.buildertek__Item_Name__c == '')) {
-                    ql.buildertek__Item_Name__c = prd.Name;
-                    UpdateQlList.add(ql);
+                if (ql.buildertek__Product__c == prd.Id) {
+                    UpdateTakeofflineList.add(ql);
                 }
             }
         }
-        update UpdateQlList;
+        update UpdateTakeofflineList;
     }  
+
     @AuraEnabled
-    public static Boolean checkQuoteLineItems(String quoteId){
-        Boolean allQuoteLineItemsHaveProducts = true;
-        List<buildertek__Quote_Item__c> quoteLineItems = [SELECT Id, buildertek__Product__c FROM buildertek__Quote_Item__c WHERE buildertek__Quote__c =:quoteId];
-        for(buildertek__Quote_Item__c quoteLineItem : quoteLineItems){
+    public static Boolean checkTakeoffLineItems(String takeOffId){
+        Boolean allTakeoffLineItemsHaveProducts = true;
+        List<buildertek__Project_Takeoff_Lines__c> takeoffLineItems = [SELECT Id, buildertek__Product__c FROM buildertek__Project_Takeoff_Lines__c WHERE buildertek__Project_Takeoff__c =:takeOffId];
+        for(buildertek__Project_Takeoff_Lines__c quoteLineItem : takeoffLineItems){
             if(quoteLineItem.buildertek__Product__c == null){
-                allQuoteLineItemsHaveProducts = false;
+                allTakeoffLineItemsHaveProducts = false;
             }
         }
-        return allQuoteLineItemsHaveProducts;
+        return allTakeoffLineItemsHaveProducts;
     }
 }
