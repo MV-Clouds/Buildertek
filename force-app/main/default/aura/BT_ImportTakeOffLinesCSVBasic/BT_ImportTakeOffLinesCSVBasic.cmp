@@ -1,0 +1,55 @@
+<aura:component implements="force:appHostable,force:lightningQuickActionWithoutHeader,flexipage:availableForRecordHome,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes"
+                controller="ImportTakeOffLinesBasic" access="global">
+    <aura:attribute name="recordId" type="Id" />
+	<lightning:workspaceAPI aura:id="workspace"/>
+    <aura:attribute name="Spinner" type="boolean" default="false" />
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
+    
+       <div class="slds-modal__header" style="font-size:17px;">
+        Import TakeOff Lines (Basic)
+    </div>
+        <div class="slds-modal__content slds-p-around--large">
+    <div class="slds-box slds-theme_default slds-box_small">
+        <p>
+            <strong>Note: </strong> This import functionality will import Product, Product SKU, Product Code, Build Phase, Category (PL), Trade Type, Location, Quantity, UOM and Cost Code.
+        </p>
+    </div>
+        </div>
+    <br />
+    <div class="container" style = "height:15vh;">
+            
+        <input type="file" aura:id="file" class="slds-file-selector__input slds-assistive-text"
+            onchange="{!c.onFileSelected}" accept=".csv" id="file-upload-input-01"
+            aria-labelledby="file-selector-primary-label file-selector-secondary-label" />
+        <label   class="slds-file-selector__body" for="file-upload-input-01" id="file-selector-secondary-label">
+             
+            <span  style = "margin-left:1.5rem;" class="slds-file-selector__button slds-button slds-button_neutral">
+                <lightning:icon iconName="utility:upload" size="small" />
+                &nbsp;Select File
+            </span>
+       </label>
+        &nbsp;&nbsp;
+        
+                 <button class="slds-button slds-button--brand" onclick="{!c.downloadCsv}" style =" float:right; margin-right:1.5rem;">Download CSV</button> <br/><br/>
+                
+        <span style  = "padding-left:1.5rem;" id="fileName" class="slds-file-selector__text slds-medium-show"></span>
+
+        <aura:if isTrue="{!v.Spinner}">
+            <div aura:id="spinnerId" class="slds-spinner_container">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative"
+                    role="alert">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+            </aura:if>
+    </div>
+         <div class="slds-modal__footer">
+        <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}">Cancel</button>
+              <ui:button class="slds-button slds-button_brand" label="Import TakeOff Lines" press="{!c.save}" />
+    </div>
+
+    <lightning:notificationsLibrary aura:id="notifLib" />
+
+</aura:component>
