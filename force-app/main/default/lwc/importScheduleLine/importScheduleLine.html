@@ -1,23 +1,9 @@
 <template>
-    <div class="slds-m-around_xx-large">
+    <div class="slds-m-around_xx-large" if:false={Spinner}>
         <!-- <template if:true={isOpen}> -->
             <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
                 <div class="slds-modal__container">
-                    <template if:true={Spinner}>
-                        <div class="slds-spinner_container" style="position:fixed;">
-                            <div class="slds-spinner--brand slds-spinner slds-spinner--large slds-is-relative" role="alert">
-                                <span class="slds-assistive-text">Loading</span>
-                                <div class="slds-spinner__dot-a"></div>
-                                <div class="slds-spinner__dot-b"></div>
-                                <div class="custom-loading-text">
-                                    <template if:true={showMessage}>
-                                        <b>Processing, Please Wait</b>
-                                    </template>
-                                </div>
-                            </div>
-                        </div>
-                    </template>
                     
                     <header class="slds-modal__header">
                         <lightning-button-icon icon-name="utility:close" onclick={hideModalBox1} alternative-text="close"
@@ -70,4 +56,18 @@
             <div class="slds-backdrop slds-backdrop_open"></div>
         <!-- </template> -->
     </div>
+    <template if:true={Spinner}>
+        <div class="slds-spinner_container" style="position:fixed;">
+            <div class="slds-spinner--brand slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                    <template if:true={showMessage}>
+                        <b>Processing, Please Wait</b>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </template>
 </template>

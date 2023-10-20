@@ -325,7 +325,6 @@ export default class importScheduleLine extends LightningElement {
                 console.log({ state });
                 if (state === "SUCCESS") {
                     if (response === "SUCCESS") {
-                        this.Spinner = false;
                         this.showMessage = false;
                         this.isOpen = false;
 
