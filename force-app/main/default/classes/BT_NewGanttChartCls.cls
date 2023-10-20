@@ -380,6 +380,10 @@ public class BT_NewGanttChartCls{
             System.debug('start date for updated Project Task ==> ' + updatedprojecttask.buildertek__Start__c);
             System.debug('end date for updated Project Task ==> ' + updatedprojecttask.buildertek__Finish__c);
             updatedprojecttask.Name = updatedprojecttask.Name;
+
+            if (updatedprojecttask.buildertek__Completion__c != null) {
+                updatedprojecttask.buildertek__Completion__c = updatedprojecttask.buildertek__Completion__c.setScale(2);
+            }
             update updatedprojecttask;
             return updatedprojecttask;
         } else{
@@ -439,7 +443,7 @@ public class BT_NewGanttChartCls{
             newTask.buildertek__Contractor_Resource__c = updatedprojecttask.buildertek__Contractor_Resource__c;
             newTask.buildertek__Budget__c = updatedprojecttask.buildertek__Budget__c;
             newTask.buildertek__Notes__c = updatedprojecttask.buildertek__Notes__c;
-            newTask.buildertek__Completion__c = updatedprojecttask.buildertek__Completion__c;
+            newTask.buildertek__Completion__c = updatedprojecttask.buildertek__Completion__c.setScale(2);
             newTask.buildertek__Add_To_All_Active_Schedules__c = updatedprojecttask.buildertek__Add_To_All_Active_Schedules__c;
 
             /* before insert code */
@@ -613,11 +617,11 @@ public class BT_NewGanttChartCls{
             projectTaskMap.put(pt.Id, pt);
         }
 
-        for (buildertek__Project_Task__c pt : updatedprojecttaskList) {
-            if (pt.buildertek__Dependency__c != null) {
-                pt.buildertek__Lag__c = ProjectTaskTriggerHandler.calculateDuration(projectTaskMap.get(pt.buildertek__Dependency__c).buildertek__Finish__c, pt.buildertek__Start__c)-1;
-            }
-        }
+        // for (buildertek__Project_Task__c pt : updatedprojecttaskList) {
+        //     if (pt.buildertek__Dependency__c != null) {
+        //         pt.buildertek__Lag__c = ProjectTaskTriggerHandler.calculateDuration(projectTaskMap.get(pt.buildertek__Dependency__c).buildertek__Finish__c, pt.buildertek__Start__c)-1;
+        //     }
+        // }
 
         for (buildertek__Project_Task__c pt : updatedprojecttaskList) {
             System.debug('New check project task in save changes + '+pt);

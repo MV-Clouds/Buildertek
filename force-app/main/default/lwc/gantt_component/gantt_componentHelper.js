@@ -497,8 +497,9 @@ function convertJSONtoApexData(data, taskData, dependenciesData, resourceData) {
 
     if (data) {
         data.forEach(element => {
-            if(element.hasOwnProperty('NewPhase')){
-                phasedatamap.set(element.id, element.NewPhase);
+            console.log('element:- ',element._data);
+            if(element._data.hasOwnProperty('NewPhase')){
+                phasedatamap.set(element.id, element._data.NewPhase);
             }
             if(element._data.hasOwnProperty('contractorId')){
                 contractordatamap.set(element.id, element._data.contractorId);
@@ -531,11 +532,10 @@ function convertJSONtoApexData(data, taskData, dependenciesData, resourceData) {
                     endDate.setDate(endDate.getDate())
                 } else {
                     endDate = new Date(rowData[i].endDate);
-                    //endDate.setDate(endDate.getDate() + 1)
-                }
+                                    }
 
                 rowData[i].endDate = endDate;
-                // if (rowData[i]['id'].indexOf('_generate') == -1) {
+                // if (rowData[i]['id'].indexOf('_generate') == -1)
                     updateData['Id'] = rowData[i]['id']
                 // }
                 updateData['buildertek__Schedule__c'] = taskData[0].id;
@@ -602,7 +602,7 @@ function convertJSONtoApexData(data, taskData, dependenciesData, resourceData) {
                         updateData['buildertek__Dependency__c'] = null;
                     }
                 }
-
+                console.log('hasownproperty updateData -->', updateData.Id );
                 if(phasedatamap.has(updateData.Id)){
                     updateData['buildertek__Phase__c'] = phasedatamap.get(updateData.Id);
                 }
