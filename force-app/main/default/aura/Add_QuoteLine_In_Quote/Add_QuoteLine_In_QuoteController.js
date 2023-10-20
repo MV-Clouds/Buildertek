@@ -21,30 +21,34 @@
       helper.changeProductFamilyHelper(component, event, helper , selectedPricebook, selectedProductFamily);
   },
 
-  searchInDatatable: function(component, event, helper){
-    console.log('in method');
-    var inputElement = event.getSource().get('v.value');
-        var prevInput = component.get('v.prevInput');
-        var searchTimeout = component.get('v.searchTimeout');
-        
-        clearTimeout(searchTimeout);
+   searchInDatatable: function(component, event, helper){
+     console.log('in method');
+        if (component.get("v.selectedPricebookId") != '') {
+            var inputElement = event.getSource().get('v.value');
+                var prevInput = component.get('v.prevInput');
+                var searchTimeout = component.get('v.searchTimeout');
+                
+                clearTimeout(searchTimeout);
 
-        // if (inputElement.trim() !== '') {
-            // console.log('in if');
-            if (inputElement === prevInput) {
-                helper.searchDatatableHelper(component, event, helper);
-            } else {
-                searchTimeout = setTimeout($A.getCallback(function() {
-                    if (inputElement === component.get('v.sProductName')) {
+                // if (inputElement.trim() !== '') {
+                    // console.log('in if');
+                    if (inputElement === prevInput) {
                         helper.searchDatatableHelper(component, event, helper);
+                    } else {
+                        searchTimeout = setTimeout($A.getCallback(function() {
+                            if (inputElement === component.get('v.sProductName')) {
+                                helper.searchDatatableHelper(component, event, helper);
+                            }
+                        }), 2000);
+                        component.set('v.searchTimeout', searchTimeout);
                     }
-                }), 2000);
-                component.set('v.searchTimeout', searchTimeout);
-            }
-            component.set('v.prevInput', inputElement);
-        // } 
+                    component.set('v.prevInput', inputElement);
+            // } 
+        }else{
+            var inputElement = event.getSource().get('v.value');
+        }
     
-   },  
+    },  
 
    goToEditModal: function(component, event, helper) {
        helper.goToEditModalHelper(component, event, helper);
