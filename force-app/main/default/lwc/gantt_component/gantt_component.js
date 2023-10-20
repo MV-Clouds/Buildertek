@@ -15,6 +15,7 @@ import scheduleWrapperDataFromApex from "@salesforce/apex/bryntumGanttController
 import saveResourceForRecord from "@salesforce/apex/bryntumGanttController.saveResourceForRecord";
 import upsertDataOnSaveChanges from "@salesforce/apex/bryntumGanttController.upsertDataOnSaveChanges";
 import getPickListValuesIntoList from "@salesforce/apex/bryntumGanttController.getPickListValuesIntoList";
+import changeOriginalDates from "@salesforce/apex/bryntumGanttController.changeOriginalDates";
 import {
   formatApexDatatoJSData,
   recordsTobeDeleted,
@@ -49,7 +50,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
 
   //Phase list
   @track phaseNameList;
-
+  @track showOriginalDateModal = false;
   //new
   @api showEditResourcePopup = false;
   @api selectedResourceContact;
@@ -1316,5 +1317,48 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
       },
       false
     );
+  }
+  openOriginDateModal() {
+    this.showOriginalDateModal = true;
+  }
+
+  closeModal() {
+    this.showOriginalDateModal = false;
+  }
+
+  changeOriginalDate() {
+    this.spinnerDataTable = true;
+    this.showOriginalDateModal = false;
+    var that = this;
+    var recId = this.recordId;
+    changeOriginalDates({
+      recordId: recId,
+    })
+      .then(function (response) {
+        // console.log("response");
+        // console.log({ response });
+        that.dispatchEvent(
+          new ShowToastEvent({
+            title: "Success",
+            message: "Original Dates Changed Successfully.",
+            variant: "success",
+          })
+        );
+        that.spinnerDataTable = false;
+      })
+      .catch(function (error) {
+        console.log("error");
+        console.log({
+          error,
+        });
+        that.dispatchEvent(
+          new ShowToastEvent({
+            title: "Try Again",
+            message: "Something Went Wrong, Please Try Again",
+            variant: "warning",
+          })
+        );
+        that.spinnerDataTable = false;
+      });
   }
 }
