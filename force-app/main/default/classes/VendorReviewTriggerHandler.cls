@@ -73,6 +73,10 @@ public class VendorReviewTriggerHandler {
                 Account contractToUpdate = new Account();
                     contractToUpdate.Id = contractId;
                    contractToUpdate.buildertek__Total_Rating__c = avgrate;
+                   //contractToUpdate.buildertek__Total_Rating__c it should not be null, it should be 0
+                   if(contractToUpdate.buildertek__Total_Rating__c == null){
+                       contractToUpdate.buildertek__Total_Rating__c = 0;
+                     }
                     contractToUpdateList.add(contractToUpdate);     
                 
                    
@@ -179,6 +183,9 @@ public class VendorReviewTriggerHandler {
                 Account contractToUpdate = new Account();
                     contractToUpdate.Id = contractId;
                    contractToUpdate.buildertek__Total_Rating__c = avgrate;
+                   if(contractToUpdate.buildertek__Total_Rating__c == null){
+                    contractToUpdate.buildertek__Total_Rating__c = 0;
+                  }
                     contractToUpdateList.add(contractToUpdate);     
                 
                    
