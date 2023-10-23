@@ -952,7 +952,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
                 endDate: {
                   weight: 100,
                 },
-                colorField:true,
                 divider: false,
                 newCustomField: {
                   type: "Combo",
