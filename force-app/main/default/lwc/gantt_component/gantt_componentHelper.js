@@ -59,7 +59,16 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
 
             }
             rowChilObj['phase'] = taskListForPhase[i].buildertek__Phase__c;
-            rowChilObj['eventColor'] = taskListForPhase[i].buildertek__task_color__c;
+
+            //*comparing task finish date with today date and setting color accordingly
+            const taskFinishDate = new Date(taskListForPhase[i].buildertek__Finish__c);
+            const todayDate = new Date();
+
+            if (taskFinishDate < todayDate) {
+                rowChilObj['eventColor'] = 'red';
+            } else {
+                rowChilObj['eventColor'] = taskListForPhase[i].buildertek__task_color__c;
+            }
 
 
                 if(taskListForPhase[i].buildertek__Dependency__c){
@@ -222,7 +231,16 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
                 rowChilObj["iconCls"] = "b-fa b-fa-arrow-left indentTrue"
             }
             rowChilObj['phase'] = taskListForPhase[i].buildertek__Phase__c
-            rowChilObj['eventColor'] = taskListForPhase[i].buildertek__task_color__c;
+
+            //*comparing task finish date with today date and setting color accordingly
+            const taskFinishDate = new Date(taskListForPhase[i].buildertek__Finish__c);
+            const todayDate = new Date();
+
+            if (taskFinishDate < todayDate) {
+                rowChilObj['eventColor'] = 'red';
+            } else {
+                rowChilObj['eventColor'] = taskListForPhase[i].buildertek__task_color__c;
+            }
                 //     if(taskListForPhase[i].buildertek__Dependency__c){
                 //     // rowChilObj["constraintType"] = ''
                 //     }else{
@@ -354,7 +372,17 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
                 rowChilObj["iconCls"] = "b-fa b-fa-arrow-left indentTrue"
             }
             rowChilObj['phase'] = taskListForPhase[i].buildertek__Phase__c;
-            rowChilObj['eventColor'] = taskListForPhase[i].buildertek__task_color__c;
+
+            //*comparing task finish date with today date and setting color accordingly
+            const taskFinishDate = new Date(taskListForPhase[i].buildertek__Finish__c);
+            const todayDate = new Date();
+
+            if (taskFinishDate < todayDate) {
+                rowChilObj['eventColor'] = 'red';
+            } else {
+                rowChilObj['eventColor'] = taskListForPhase[i].buildertek__task_color__c;
+            }
+
             if(taskListForPhase[i].buildertek__Dependency__c){
                 // rowChilObj["constraintType"] = ''
             }else{
