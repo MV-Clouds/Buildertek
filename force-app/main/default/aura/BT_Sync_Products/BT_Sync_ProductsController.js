@@ -41,10 +41,12 @@
     },
     searchInDatatable: function(component, event, helper){
         if (component.get("v.selectedPricebookId") != '') {
-            var checkboxes = component.find("checkboxInput");
-            checkboxes.forEach(function(checkbox) {
-                checkbox.set("v.checked", false);
-            });
+        //     if(component.get("v.tableDataList").length > 0){
+        //     var checkboxes = component.find("checkboxInput");
+        //     checkboxes.forEach(function(checkbox) {
+        //         checkbox.set("v.checked", false);
+        //     });
+        // }
             component.set("v.selectedRecords", []);
             var inputElement = event.getSource().get('v.value');
                 var prevInput = component.get('v.prevInput');

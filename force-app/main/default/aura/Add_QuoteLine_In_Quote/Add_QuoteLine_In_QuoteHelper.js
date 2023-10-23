@@ -66,10 +66,12 @@
     }, 
 
     changePricebookHelper : function(component, event, helper , priceBookId){
+        component.set('v.showVendorTableDataList', false);
         // component.find("selectAll").set("v.checked", false);
         component.set('v.Spinner', true);
         component.set("v.sProductFamily", '');
         component.set("v.sProductName", '');
+        component.set("v.sVendorName", '');
         // var selectedPricebook = component.find("selectedPricebook").get("v.value");
         console.log('selectedPricebook => '+priceBookId);
         if (priceBookId != '') {
@@ -163,6 +165,7 @@
         }
     }, 
     changeProductFamilyHelper : function(component, event, helper , priceBookId, productFamilyId){
+        component.set('v.showVendorTableDataList', false);
         console.log('method is calllll');
         component.set('v.Spinner', true);
         console.log('selectedPricebook====>',priceBookId);
@@ -225,8 +228,10 @@
 
 
     searchDatatableHelper : function(component, event, helper){
+        component.set('v.showVendorTableDataList', false);
         console.log('searchDatatableHelper method is called------');
         component.set('v.Spinner', true);
+        component.set("v.sVendorName", '');
         if (component.get("v.selectedPricebookId") != '') {
             let sProductFamily = component.get("v.sProductFamily");
             let sProductName = component.get("v.sProductName");
@@ -332,7 +337,59 @@
         }
     }, 
 
+    searchVendorDatatableHelper : function(component, event, helper){
+        component.set('v.Spinner', true); 
+        console.log('searchDatatableHelper vendoor method is called------'); 
+        var tableDataList = component.get("v.tableDataList");
+        console.log(tableDataList);
+        console.log(component.get("v.showVendorTableDataList"));
+        let VendorName = component.get("v.sVendorName");
+        console.log("as-->" ,VendorName);
+        var filteredData = [];
+        if (VendorName == '' || VendorName == null) {
+            component.set('v.vendortableDataList' , tableDataList);
+            component.set('v.Spinner', false);
+        }else{
+        for (var i = 0; i < tableDataList.length; i++) {
+            var item = tableDataList[i];
+            if (item.Vendor && item.Vendor.toLowerCase().includes(VendorName)) {
+                filteredData.push(item);
+            }
+
+        }
+        var rows = filteredData;
+        var selectedRecords = component.get("v.selectedRecords");
+                            rows.forEach(function(row) {
+                                var matchingRecord = selectedRecords.find(function(record) {
+                                    return record.Id === row.Id;
+                                });
+                                if (matchingRecord) {
+                                    row.Selected = true;
+                                }
+                            });
+
+                            // Sort the records with selected ones on top
+                            rows.sort(function(a, b) {
+                                if (a.Selected && !b.Selected) {
+                                    return -1; // a comes before b
+                                } else if (!a.Selected && b.Selected) {
+                                    return 1; // b comes before a
+                                }
+                                return 0; // no change in order
+                            });
+                            
+                            component.set("v.quoteLineList", rows);
+        component.set('v.vendortableDataList' , filteredData);
+        console.log(component.get("v.vendortableDataList"));
+        component.set('v.Spinner', false);
+    }
+        
+        // component.set('v.showVendorTableDataList', false);
+        
+    }, 
+
     goToEditModalHelper: function(component, event, helper) {
+        console.log("CAAALING");
         
         var quoteLineList = component.get("v.selectedRecords");
         console.log('quoteLineList => ',{quoteLineList});
@@ -351,10 +408,12 @@
             console.log(phaseValue);
             console.log(phaseValue!= undefined);
             if(element.Selected){
+                console.log("ELEMENT----->" , element.CostCode);
                 selectedProducts.push({
                     'Id':element.Id,
                     'Name': element.Name,
                     'buildertek__Unit_Price__c': element.UnitPrice,
+                    'buildertek__Cost_Code__c': element.CostCode,
                     'buildertek__Grouping__c': element.Phase ? element.Phase : noGroupingId,
                     'buildertek__Quantity__c': '1',
                     'buildertek__Additional_Discount__c': element.Discount ? element.Discount : 0,
@@ -368,6 +427,7 @@
 
                 })
                 console.log('Quantity Unit Of Measure => ', element.QuantityUnitOfMeasure);
+                console.log('Quantity Unit Of Measure New => ', element.CostCode);
             }
 
             // =====BUIL-3198 ====
