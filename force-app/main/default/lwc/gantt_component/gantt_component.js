@@ -803,6 +803,10 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
         //   type: "addnew",
         // },
         {
+          type : 'eventcolor',
+          text : 'Color'
+        },
+        {
           type: "action",
           draggable: false,
           // text    : 'Attach File',
@@ -948,6 +952,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
                 endDate: {
                   weight: 100,
                 },
+                colorField:true,
                 divider: false,
                 newCustomField: {
                   type: "Combo",
