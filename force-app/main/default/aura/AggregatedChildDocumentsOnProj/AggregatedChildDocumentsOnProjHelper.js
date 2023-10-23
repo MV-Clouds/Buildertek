@@ -7,15 +7,25 @@
           let state=response.getState();
           if(state == 'SUCCESS'){
               let result=response.getReturnValue();
-              console.log(result);
+              console.log('result', result);
 
               var objectNameMap = [];
-
+              
               for(var key in result){
                   if(key.includes('buildertek')){
                       objectNameMap.push({key: key, value: result[key]});
                   }
               }
+              for(var i=0; i<objectNameMap.length; i++){
+                    for(var j=i+1; j<objectNameMap.length; j++){
+                        if(objectNameMap[i].value > objectNameMap[j].value){
+                            var temp = objectNameMap[i];
+                            objectNameMap[i] = objectNameMap[j];
+                            objectNameMap[j] = temp;
+                        }
+                    }
+                }
+                console.log(objectNameMap);
               component.set('v.childObjectNameMap' ,objectNameMap );
               console.log(component.get('v.childObjectNameMap'));
 
