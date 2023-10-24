@@ -61,10 +61,12 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
             rowChilObj['phase'] = taskListForPhase[i].buildertek__Phase__c;
 
             //*comparing task finish date with today date and setting color accordingly
-            const taskFinishDate = new Date(taskListForPhase[i].buildertek__Finish__c);
-            const todayDate = new Date();
+            let taskFinishDate = new Date(taskListForPhase[i].buildertek__Finish__c);
+            taskFinishDate.setHours(0, 0, 0, 0);
+            let todayDate = new Date();
+            todayDate.setHours(0, 0, 0, 0);
 
-            if (taskFinishDate < todayDate) {
+            if ((taskFinishDate < todayDate) && taskListForPhase[i].buildertek__Completion__c != 100) {
                 rowChilObj['eventColor'] = 'red';
             } else {
                 rowChilObj['eventColor'] = taskListForPhase[i].buildertek__task_color__c;
@@ -233,10 +235,12 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
             rowChilObj['phase'] = taskListForPhase[i].buildertek__Phase__c
 
             //*comparing task finish date with today date and setting color accordingly
-            const taskFinishDate = new Date(taskListForPhase[i].buildertek__Finish__c);
-            const todayDate = new Date();
+            let taskFinishDate = new Date(taskListForPhase[i].buildertek__Finish__c);
+            taskFinishDate.setHours(0, 0, 0, 0);
+            let todayDate = new Date();
+            todayDate.setHours(0, 0, 0, 0);
 
-            if (taskFinishDate < todayDate) {
+            if ((taskFinishDate < todayDate) && taskListForPhase[i].buildertek__Completion__c != 100) {
                 rowChilObj['eventColor'] = 'red';
             } else {
                 rowChilObj['eventColor'] = taskListForPhase[i].buildertek__task_color__c;
@@ -374,10 +378,12 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
             rowChilObj['phase'] = taskListForPhase[i].buildertek__Phase__c;
 
             //*comparing task finish date with today date and setting color accordingly
-            const taskFinishDate = new Date(taskListForPhase[i].buildertek__Finish__c);
-            const todayDate = new Date();
+            let taskFinishDate = new Date(taskListForPhase[i].buildertek__Finish__c);
+            taskFinishDate.setHours(0, 0, 0, 0);
+            let todayDate = new Date();
+            todayDate.setHours(0, 0, 0, 0);
 
-            if (taskFinishDate < todayDate) {
+            if ((taskFinishDate < todayDate) && taskListForPhase[i].buildertek__Completion__c != 100) {
                 rowChilObj['eventColor'] = 'red';
             } else {
                 rowChilObj['eventColor'] = taskListForPhase[i].buildertek__task_color__c;
