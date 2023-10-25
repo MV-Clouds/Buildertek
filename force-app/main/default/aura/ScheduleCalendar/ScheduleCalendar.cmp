@@ -28,7 +28,6 @@
     <aura:attribute name="ProjectRecordList" type="sObject[]" />
 
     <!-- <aura:handler name="selectedSearchValue" event="c:BT_SelectedSearchValue" action="{!c.handleComponentEvent}"/> -->
-
      <aura:handler name="oSelectedRecordEvent" event="c:selectedsObjectRecordEvent" action="{!c.handleComponentEvent}"/>
 
     <aura:handler  event="c:ClearLookupvalueEvent" action="{!c.ClearhandleComponentEvent}"/>
@@ -70,12 +69,12 @@
                             </ui:inputSelect>
                         </div>
                     </div> -->
-                    <div class="slds-col slds-size_2.5-of-12" style="padding-left: 1rem;">
+                    <!-- <div class="slds-col slds-size_2.5-of-12" style="padding-left: 1rem;">
                         <div class="slds-form-element__control" style="margin:0.5rem;">
                             <b> Project :</b>   <c:customLookup aura:id="projectId"  objectAPIName="buildertek__Project__c" IconName="custom:custom24" selectedRecord="{!v.selectedproject}" fromComp="resourceCenter" SelectMultiRecord="true"/>
-                            <!-- <c:BT_SearchWithDropDown label="Project" inputValue="All" results="{!v.projectsList}" myInputId="projectId" myULId="projectULId" selectedOption="{!v.selectedProjectId}"/> -->
+                            <c:BT_SearchWithDropDown label="Project" inputValue="All" results="{!v.projectsList}" myInputId="projectId" myULId="projectULId" selectedOption="{!v.selectedProjectId}"/>
                         </div>
-                    </div>
+                    </div> -->
                     <div class="slds-col slds-size_2.5-of-12">
                         <div class="slds-form-element__control" style="margin:0.5rem;">
                             <b> Trade Type : </b> <c:customLookup aura:id="tradetypeid" objectAPIName="buildertek__Trade_Type__c" IconName="custom:custom67" selectedRecord="{!v.selectedTradetype}" fromComp="resourceCenter" />
