@@ -269,7 +269,8 @@ public without sharing class QuoteTriggerHandler {
                 System.debug('Jaimin : Quote Id is '+qutrec.Id);
                 System.debug('Jaimin : Quote Owner is '+qutrec.OwnerId);
 
-                if(qutrec.buildertek__Status__c == 'Customer Accepted'  && oldQuotesMap.get(qutrec.id).buildertek__Status__c != qutrec.buildertek__Status__c){
+                // if(qutrec.buildertek__Status__c == 'Customer Accepted'  && oldQuotesMap.get(qutrec.id).buildertek__Status__c != qutrec.buildertek__Status__c){
+                if(false){
                     // string emailbody = '<html><body><h3>  Your Quote has been Accepted </h3>'  + '<br/>';
                     User user = [SELECT Id, Email, Name FROM User WHERE Id =:qutrec.OwnerId];
                     List<EmailTemplate> templates = [SELECT Id, DeveloperName FROM EmailTemplate WHERE DeveloperName = 'QuoteAccepted'];
