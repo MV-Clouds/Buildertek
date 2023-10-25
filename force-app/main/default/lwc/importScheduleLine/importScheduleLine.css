@@ -11,12 +11,13 @@
     margin-left: 14%;
     background-color: #3a84d8;
     color: white;
+    text-align: center;
     padding: 5px;
 }
 
 .import {
     width: 70px;
-    padding-left: 10px;
+    padding-left: 14px;
     background-color: #3a84d8;
     color: white;
 }
@@ -26,5 +27,46 @@
     border: #ccc;
     color: #3a84d8;
     width: 70px;
-    padding-left: 10px;
+    padding-left: 14px;
 }
+
+.slds-modal__container {
+    max-width: 52rem !important;
+    width: 52% !important;
+}
+
+.cuf-content {
+    padding: 0 0rem !important;
+}
+
+.slds-p-around--medium {
+    padding: 0rem !important;
+}
+
+.slds-modal__content {
+    height: unset !important;
+    max-height: unset !important;
+    box-shadow: none !important;
+}
+
+.slds-modal__container {
+    max-width: 72rem !important;
+    width: 72% !important;
+}
+
+.scrollable {
+    height: 400px;
+    overflow-y: auto;
+}
+.slds-grid{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* .DESKTOP.open .modal-container{
+	display: none !important;
+}
+.DESKTOP.open.active .modal-container{
+	display: block !important;
+} */
