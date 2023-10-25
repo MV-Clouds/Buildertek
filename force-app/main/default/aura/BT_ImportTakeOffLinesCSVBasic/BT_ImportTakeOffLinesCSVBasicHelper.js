@@ -29,16 +29,7 @@
 
             fr.readAsDataURL(file);
         } else {
-            //  document.getElementById("uploadingCSVSpinnerText").innerHTML = "";
-            var toastEvent = $A.get("e.force:showToast");
-            toastEvent.setParams({
-            mode: "sticky",
-            message: "Please select file to import",
-            type: "error",
-            duration: "5000",
-            mode: "dismissible",
-            });
-            toastEvent.fire();
+            helper.showToast(component, "error", "Please select file to import");
         }
     },
    
@@ -54,60 +45,59 @@
        return csvStringResult;        
    },
 
- upload: function (component, helper, file, fileContents) {
-    component.set('v.Spinner', true);
+upload: function (component, helper, file, fileContents) {
     var action = component.get("c.importRecords");
     action.setParams({
         takeOffId: component.get("v.recordId"),
         fileData: fileContents,
     });
 
-   action.setCallback(this, function (response) {
-     var state = response.getState();
-     if (state === "SUCCESS") {
+    action.setCallback(this, function (response) {
+      var state = response.getState();
+      if (state === "SUCCESS") {
 
-       var result = response.getReturnValue();
-       console.log("result ", result);
-       if (result.isSuccess) {
-         //  alert("succ");
-         helper.showToast(component, "success", result.strMessage);
-         window.setTimeout(
-           $A.getCallback(function() {
-             window.location.reload();
-           }), 2000
-         );
-       } else {
-         helper.showToast(component, "error", result.strMessage);
-       }
-       
-     } else {
+        var result = response.getReturnValue();
+        console.log("result ", result);
+        if (result.isSuccess) {
+          helper.showToast(component, "success", result.strMessage);
+          window.setTimeout(
+            $A.getCallback(function() {
+              window.location.reload();
+            }), 2000
+          );
+        } else {
+          helper.showToast(component, "error", result.strMessage);
+        }
+        
+      } else {
+        var errors = response.getError();
+        var error = "";
 
-       var errors = response.getError();
-       var error = "";
+        if (errors) {
+          if (errors[0] && errors[0].message) {
+            error = error + errors[0].message;
+          }
 
-       if (errors) {
-         if (errors[0] && errors[0].message) {
-           error = error + errors[0].message;
-         }
+          helper.showToast(component, "error", error);
+        } else {
+          helper.showToast(
+            component,
+            "error",
+            "Unknown error, please try again."
+          );
+        }
+      }
 
-         helper.showToast(component, "error", error);
-       } else {
-         helper.showToast(
-           component,
-           "error",
-           "Unknown error, please try again."
-         );
-       }
-     }
+      $A.get("e.force:closeQuickAction").fire();
+    });
 
-     $A.get("e.force:closeQuickAction").fire();
-     // $A.get('e.force:refreshView').fire();
-   });
-
-   $A.enqueueAction(action);
- },
+    $A.enqueueAction(action);
+},
 
  showToast: function (component, type, message) {
+    $A.get("e.c:BT_SpinnerEvent").setParams({
+        "action": "HIDE"
+    }).fire();
    var toastEvent = $A.get("e.force:showToast");
 
    toastEvent.setParams({

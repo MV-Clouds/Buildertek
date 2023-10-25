@@ -2,7 +2,6 @@
                 controller="ImportTakeOffLinesBasic" access="global">
     <aura:attribute name="recordId" type="Id" />
 	<lightning:workspaceAPI aura:id="workspace"/>
-    <aura:attribute name="Spinner" type="boolean" default="false" />
     <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
     
        <div class="slds-modal__header" style="font-size:17px;">
@@ -33,17 +32,6 @@
                  <button class="slds-button slds-button--brand" onclick="{!c.downloadCsv}" style =" float:right; margin-right:1.5rem;">Download CSV</button> <br/><br/>
                 
         <span style  = "padding-left:1.5rem;" id="fileName" class="slds-file-selector__text slds-medium-show"></span>
-
-        <aura:if isTrue="{!v.Spinner}">
-            <div aura:id="spinnerId" class="slds-spinner_container">
-                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative"
-                    role="alert">
-                    <span class="slds-assistive-text">Loading</span>
-                    <div class="slds-spinner__dot-a"></div>
-                    <div class="slds-spinner__dot-b"></div>
-                </div>
-            </div>
-            </aura:if>
     </div>
          <div class="slds-modal__footer">
         <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}">Cancel</button>
@@ -51,5 +39,6 @@
     </div>
 
     <lightning:notificationsLibrary aura:id="notifLib" />
+    <c:BT_Spinner />
 
 </aura:component>
