@@ -1463,9 +1463,18 @@ insert s;*/
                 aggregateFields += ', ' + sumOfFields;
             }
         }
+
+        buildertek__Admin_Interface_Node_Configuration__c adminInterfaceNodeConfigurations = [Select Id, buildertek__Budget_Grouping_Data__c
+                                                                                              from buildertek__Admin_Interface_Node_Configuration__c
+                                                                                              WHERE Name = :'Budget Configuration'];
+
         String myqueries = '';
       string myquerie = '';
-                myqueries = 'select buildertek__Budget__c  ' + aggregateFields + ' from buildertek__Budget_Item__c where buildertek__Budget__c =: recordId ORDER BY buildertek__CostCodeDivision__c ASC NULLS LAST, Name Asc limit ' + recordToDisply + ' OFFSET ' + offset;
+                if(adminInterfaceNodeConfigurations.buildertek__Budget_Grouping_Data__c == 'Group By Category'){
+                    myqueries = 'select buildertek__Budget__c  ' + aggregateFields + ' from buildertek__Budget_Item__c where buildertek__Budget__c =: recordId ORDER BY buildertek__Group__r.buildertek__Sort_Id__c ASC NULLS LAST,buildertek__Group__r.Name ASC, Name Asc limit ' + recordToDisply + ' OFFSET ' + offset;
+                }else{
+                    myqueries = 'select buildertek__Budget__c  ' + aggregateFields + ' from buildertek__Budget_Item__c where buildertek__Budget__c =: recordId ORDER BY buildertek__CostCodeDivision__c ASC NULLS LAST, Name Asc limit ' + recordToDisply + ' OFFSET ' + offset;
+                }
                // myquerie = 'select buildertek__Budget__c  ' + aggregateFields + ' from buildertek__Budget_Item__c where buildertek__Budget__c =: recordId and buildertek__Group_Name__c = No Grouping Order By buildertek__Group_Name__c ASC limit ' + recordToDisply + ' OFFSET ' + offset;
 
            // if(nullspoRecList.size()>0){
