@@ -132,7 +132,7 @@
 
             $A.get("e.c:BT_SpinnerEvent").setParams({
                 "action": "HIDE"
-            }).fire(); 
+            }).fire();  
         }
 
 

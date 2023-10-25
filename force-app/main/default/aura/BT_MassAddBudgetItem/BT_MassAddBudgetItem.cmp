@@ -56,7 +56,7 @@
                                 <div class="slds-truncate" title="Description">Description</div>
                             </th>
                             <th scope="col" class="table-Header">
-                                <div class="slds-truncate" title="Group">Group</div>
+                                <div class="slds-truncate" title="Group">Phase</div>
                             </th>
                             <th scope="col" class="table-Header">
                                 <div class="slds-truncate" title="UOM">UOM</div>
@@ -104,21 +104,23 @@
                                 <td>
                                     <aura:html tag="style">
                                         .mainDiv{
-                                            padding-top:0% !important;
+                                            <!-- CSS Chages with BUIL-3502 == Keep in master -->
+                                            max-width: 27vw !important;
+                                            padding-top:1% !important;
 
                                         }
-                                        .pillSize{
-
-                                            padding-top: 2% !important;
-                                            padding-bottom: 2% !important;
-                                        }
+                                        <!-- .pillSize{
+                                            width: 45vw;
+                                            padding-top: 1% !important;
+                                            padding-bottom: 1% !important;
+                                        } -->
                                         .subDiv{
-                                            width:100% !important;
-                                            margin-top:0 !important;
+                                            <!-- width:100% !important; -->
+                                            margin-top:-23px !important;
                                         }
                                     </aura:html>
                                     
-
+                                    <label class="slds-form-element__label" for="lookup-348"></label>
                                     <c:BT_LightningLookup objectAPIName="Product2"  IconName="standard:product" selectedRecord="{!budgetLineWrapper.selectedLookUpRecord}" aura:id="productId"   parentId="{!budgetLineWrapper.pricebookEntryId}" prodctfamly="{!budgetLineWrapper.productFamily != '' ? budgetLineWrapper.productFamily : 'All Families'}" />
 
                                 </td>
@@ -173,7 +175,7 @@
                                         </lightning:select>
                                     </aura:if> -->
 
-                                    <aura:html tag="style">
+                                    <!-- <aura:html tag="style">
                                         .mainDiv{
                                             padding-top:0% !important;
 
@@ -187,9 +189,21 @@
                                             width:100% !important;
                                             margin-top:0 !important;
                                         }
-                                    </aura:html>
+                                    </aura:html> -->
                                     
-                                    <c:BT_LightningLookup objectAPIName="Account"  IconName="standard:account" selectedRecord="{!budgetLineWrapper.BudgetLine.buildertek__Contractor__c}" aura:id="accountId"  />
+                                    <!-- <c:BT_LightningLookup objectAPIName="Account"  IconName="standard:account" selectedRecord="{!budgetLineWrapper.BudgetLine.buildertek__Contractor__c}" aura:id="accountId"  /> -->
+                                    <aura:if isTrue="{!budgetLineWrapper.BudgetLine.buildertek__Product__c != ''}">
+                                        <lightning:select name="{!index}" value="{!budgetLineWrapper.BudgetLine.buildertek__Contractor__c}" class="vendor-class pointer1">
+                                        <aura:iteration items="{!v.vendorList}" var="vendorOption">
+                                                <option name="{!budgetLineWrapper}" value="{!vendorOption.value}">{!vendorOption.label}</option>
+                                            </aura:iteration>
+                                        </lightning:select>
+                                    </aura:if>
+                                    <aura:if isTrue="{!budgetLineWrapper.BudgetLine.buildertek__Product__c == ''}">
+                                        <lightning:select name="" value="" class="vendor-class pointer1">
+                                            <option name="" value="">--Select Vendor--</option>
+                                        </lightning:select>
+                                    </aura:if>
 
                                     
                                 </td>
