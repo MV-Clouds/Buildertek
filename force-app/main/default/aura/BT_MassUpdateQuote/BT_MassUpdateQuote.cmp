@@ -79,7 +79,7 @@
                                 <div class="slds-truncate" title="Quote Line Description"> Description</div>
                             </th>
                             <th scope="col" class="table-Header">
-                                <div class="slds-truncate" title="Grouping">Group</div>
+                                <div class="slds-truncate" title="Grouping">Phase</div>
                             </th> 
                             <th scope="col" class="table-Header">
                                 <div class="slds-truncate" title="Notes">Notes</div>

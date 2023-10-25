@@ -333,6 +333,7 @@
     }, 
 
     goToEditModalHelper: function(component, event, helper) {
+        console.log("CAAALING");
         
         var quoteLineList = component.get("v.selectedRecords");
         console.log('quoteLineList => ',{quoteLineList});
@@ -351,10 +352,12 @@
             console.log(phaseValue);
             console.log(phaseValue!= undefined);
             if(element.Selected){
+                console.log("ELEMENT----->" , element.CostCode);
                 selectedProducts.push({
                     'Id':element.Id,
                     'Name': element.Name,
                     'buildertek__Unit_Price__c': element.UnitPrice,
+                    'buildertek__Cost_Code__c': element.CostCode,
                     'buildertek__Grouping__c': element.Phase ? element.Phase : noGroupingId,
                     'buildertek__Quantity__c': '1',
                     'buildertek__Additional_Discount__c': element.Discount ? element.Discount : 0,
@@ -368,6 +371,7 @@
 
                 })
                 console.log('Quantity Unit Of Measure => ', element.QuantityUnitOfMeasure);
+                console.log('Quantity Unit Of Measure New => ', element.CostCode);
             }
 
             // =====BUIL-3198 ====
