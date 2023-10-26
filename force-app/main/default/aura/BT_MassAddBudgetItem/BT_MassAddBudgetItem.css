@@ -33,3 +33,8 @@
       background-color:rgba(27, 82, 151, 1.0); 
       color:white;
   }
+
+  .THIS .slds-form-element__label {
+    padding-bottom: 1.2rem !important;
+    margin-top: -5px !important;
+}

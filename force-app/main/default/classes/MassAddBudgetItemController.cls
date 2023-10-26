@@ -230,7 +230,7 @@ public with sharing class MassAddBudgetItemController {
             wrapper.productList=[Select Id , Name From Product2 WHERE ID NOT IN:ProdIds LIMIT 800];
 
         } else {
-            wrapper.priceBookList = [select id, UnitPrice, pricebook2Id, buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Discount__c, Product2Id, Product2.Name FROM PricebookEntry where product2Id = :productId and pricebook2Id =: pricebookId LIMIT 800];
+            wrapper.priceBookList = [select id, UnitPrice, pricebook2Id, buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Discount__c, Product2Id, Product2.Name, Product2.buildertek__Vendor__c, Product2.buildertek__Cost_Code__c FROM PricebookEntry where product2Id = :productId and pricebook2Id =: pricebookId LIMIT 800];
         }
         return wrapper;
 
