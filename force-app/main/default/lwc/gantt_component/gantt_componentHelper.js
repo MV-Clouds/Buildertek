@@ -58,7 +58,8 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
                 rowChilObj["iconCls"] = "b-fa b-fa-arrow-left indentTrue"
 
             }
-            rowChilObj['phase'] = taskListForPhase[i].buildertek__Phase__c
+            rowChilObj['phase'] = taskListForPhase[i].buildertek__Phase__c;
+            rowChilObj['eventColor'] = taskListForPhase[i].buildertek__task_color__c;
 
 
                 if(taskListForPhase[i].buildertek__Dependency__c){
@@ -107,6 +108,7 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
                 rowChilObj["durationMile"] = taskListForPhase[i].buildertek__Duration__c;
                 rowChilObj["cls"] = 'milestoneCompleteColor'
                 rowChilObj['orgmilestone'] = taskListForPhase[i].buildertek__Milestone__c;
+                rowChilObj['eventColor'] = '';
             }
             rowChilObj["expanded"] = true
             rowChilObj["order"] = taskListForPhase[i].buildertek__Order__c
@@ -220,6 +222,7 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
                 rowChilObj["iconCls"] = "b-fa b-fa-arrow-left indentTrue"
             }
             rowChilObj['phase'] = taskListForPhase[i].buildertek__Phase__c
+            rowChilObj['eventColor'] = taskListForPhase[i].buildertek__task_color__c;
                 //     if(taskListForPhase[i].buildertek__Dependency__c){
                 //     // rowChilObj["constraintType"] = ''
                 //     }else{
@@ -267,6 +270,7 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
                 rowChilObj["duration"] = 0;
                 rowChilObj["cls"] = 'milestoneCompleteColor'
                 rowChilObj['orgmilestone'] = taskListForPhase[i].buildertek__Milestone__c;
+                rowChilObj['eventColor'] = '';
             }
 
             rowChilObj["expanded"] = true
@@ -349,7 +353,8 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
             if(taskListForPhase[i].buildertek__Indent_Task__c){
                 rowChilObj["iconCls"] = "b-fa b-fa-arrow-left indentTrue"
             }
-            rowChilObj['phase'] = taskListForPhase[i].buildertek__Phase__c
+            rowChilObj['phase'] = taskListForPhase[i].buildertek__Phase__c;
+            rowChilObj['eventColor'] = taskListForPhase[i].buildertek__task_color__c;
             if(taskListForPhase[i].buildertek__Dependency__c){
                 // rowChilObj["constraintType"] = ''
             }else{
@@ -413,6 +418,7 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
                 rowChilObj['orgmilestone'] = taskListForPhase[i].buildertek__Milestone__c;
                 rowChilObj["constraintDate"] =  taskListForPhase[i].buildertek__End_date__c;
                 rowChilObj["constraintType"] =  'muststarton';
+                rowChilObj['eventColor'] = '';
             }
 
                         firstRowDup['children'].push(rowChilObj);
@@ -552,6 +558,7 @@ function convertJSONtoApexData(data, taskData, dependenciesData, resourceData) {
                 updateData['buildertek__Finish__c'] = enddate.getFullYear() + '-' + Number(enddate.getMonth() + 1) + '-' + enddate.getDate();
                 updateData['buildertek__Duration__c'] = rowData[i]['duration']
                 updateData['buildertek__Completion__c'] = rowData[i]['percentDone']
+                updateData['buildertek__task_color__c'] = rowData[i]['eventColor']
                 if (rowData[i]['constraintDate'] != null && rowData[i]['constraintType'] != null) {
                     updateData['buildertek__ConstraintDate__c'] = rowData[i]['constraintDate'].split('T')[0];
                     updateData['buildertek__ConstraintType__c'] = rowData[i]['constraintType']
