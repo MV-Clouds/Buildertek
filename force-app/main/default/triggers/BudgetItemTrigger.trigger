@@ -6,6 +6,7 @@ trigger BudgetItemTrigger on Budget_Item__c (after delete, after insert, after u
         if(Trigger.isInsert && Trigger.isBefore){
             system.debug('Trigger.New: ' + Trigger.New);
             handler.OnBeforeInsert(Trigger.new);
+            handler.insertCostCode(Trigger.new);
         }
          
         else if(Trigger.isInsert && Trigger.isAfter){
