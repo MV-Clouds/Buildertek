@@ -1471,7 +1471,7 @@ insert s;*/
         String myqueries = '';
       string myquerie = '';
                 if(adminInterfaceNodeConfigurations.buildertek__Budget_Grouping_Data__c == 'Group By Category'){
-                    myqueries = 'select buildertek__Budget__c  ' + aggregateFields + ' from buildertek__Budget_Item__c where buildertek__Budget__c =: recordId ORDER BY buildertek__Group__r.buildertek__Sort_Id__c ASC NULLS LAST,buildertek__Group__r.Name ASC, Name Asc limit ' + recordToDisply + ' OFFSET ' + offset;
+                    myqueries = 'select buildertek__Budget__c  ' + aggregateFields + ' from buildertek__Budget_Item__c where buildertek__Budget__c =: recordId ORDER BY buildertek__Group__r.buildertek__Sorting_Id__c ASC NULLS LAST,buildertek__Group__r.Name ASC, Name Asc limit ' + recordToDisply + ' OFFSET ' + offset;
                 }else{
                     myqueries = 'select buildertek__Budget__c  ' + aggregateFields + ' from buildertek__Budget_Item__c where buildertek__Budget__c =: recordId ORDER BY buildertek__CostCodeDivision__c ASC NULLS LAST, Name Asc limit ' + recordToDisply + ' OFFSET ' + offset;
                 }
