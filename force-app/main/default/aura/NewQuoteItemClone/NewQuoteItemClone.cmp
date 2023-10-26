@@ -1149,39 +1149,26 @@
                                                                 </span>
                                                             </div>
                                                         </td>
-                                                        <td scope="row" class="slds-cell-edit" data-label="Name">
-                                                            <aura:if
-                                                                isTrue="{!or(and(and(v.isEditMode, v.fieldName == 'Name'), v.quoteItemId == tar.recordId),and(v.enableMassUpdate))}">
-                                                                <ui:inputText aura:id="inputId"
-                                                                    value="{!tar.recordName}"
-                                                                    change="{!c.updateQuoteData}" blur="{!c.onblur}" />
-                                                                <aura:set attribute="else">
-                                                                    <div class="slds-truncate"
-                                                                        title="{!tar.recordName}" style="white-space: nowrap; word-wrap: break-word;">
-                                                                        <a href="javascript:void(0);" role="menuitem"
-                                                                            tabindex="-1" data-record="{!tar.recordId}"
-                                                                            onclick="{!c.doView}">
-                                                                            {!tar.recordName}
-                                                                        </a>
-                                                                        <!-- <button
-                                                                            class="slds-button slds-button_icon slds-cell-edit__button slds-m-left_x-small"
-                                                                            tabindex="-1" title="">
-                                                                            <span style="display:none;"
-                                                                                data-id="{!tar.recordId}"
-                                                                                data-label="Name"
-                                                                                data-group="{!tar.groupId}"
-                                                                                onclick="{!c.inlineEdit}">
-                                                                                <lightning:icon iconName="utility:edit"
-                                                                                    size="xx-small"
-                                                                                    alternativeText="edit" />
-                                                                            </span>
-                                                                            <span
-                                                                                class="slds-assistive-text">Edit</span>
-                                                                        </button> -->
-                                                                    </div>
-                                                                </aura:set>
-                                                            </aura:if>
-                                                        </td>
+                                                        <!-- <aura:if isTrue="{!tar.recordName}">
+                                                            <td scope="row" class="slds-cell-edit" data-label="Name">
+                                                                <aura:if
+                                                                    isTrue="{!or(and(and(v.isEditMode, v.fieldName == 'Name'), v.quoteItemId == tar.recordId),and(v.enableMassUpdate))}">
+                                                                    <ui:inputText aura:id="inputId"
+                                                                        value="{!tar.recordName}"
+                                                                        change="{!c.updateQuoteData}" blur="{!c.onblur}" />
+                                                                    <aura:set attribute="else">
+                                                                        <div class="slds-truncate"
+                                                                            title="{!tar.recordName}" style="white-space: nowrap; word-wrap: break-word;">
+                                                                            <a href="javascript:void(0);" role="menuitem"
+                                                                                tabindex="-1" data-record="{!tar.recordId}"
+                                                                                onclick="{!c.doView}">
+                                                                                {!tar.recordName}
+                                                                            </a>
+                                                                        </div>
+                                                                    </aura:set>
+                                                                </aura:if>
+                                                            </td>
+                                                        </aura:if> -->
                                                         <aura:iteration items="{!tar.recordList}" var="value">
                                                             <td class="ShowIconClass" data-myvalue="{!value}">
                                                                 <aura:if isTrue="{!
@@ -1209,7 +1196,10 @@
                                                                                                                 or(
                                                                                                                     value.fieldName == 'buildertek__Priority__c' ,
                                                                                                                     or(
-                                                                                                                        value.fieldName == 'buildertek__Tax__c', value.fieldName == 'buildertek__Additional_Costs__c'
+                                                                                                                        value.fieldName == 'buildertek__Tax__c',
+                                                                                                                        or(
+                                                                                                                            value.fieldName == 'Name', value.fieldName == 'buildertek__Additional_Costs__c'
+                                                                                                                        ) 
                                                                                                                     )
 
                                                                                                                 )
@@ -1320,15 +1310,24 @@
                                                                                             class="textAreaCss" />
                                                                                     </div>
                                                                                     <aura:set attribute="else">
-                                                                                        <lightning:formattedNumber
-                                                                                            value="{!value.originalValue/100}"
-                                                                                            style="percent"
-                                                                                            minimumFractionDigits="2"
-                                                                                            class="inputCss" />
+                                                                                        <aura:if isTrue="{!value.fieldName == 'Name'}">
+                                                                                            <div class="slds-truncate" style="white-space: nowrap; word-wrap: break-word;">
+                                                                                                <a href="javascript:void(0);" role="menuitem"
+                                                                                                    tabindex="-1" data-record="{!tar.recordId}"
+                                                                                                    onclick="{!c.doView}">
+                                                                                                    {!tar.recordName}
+                                                                                                </a>
+                                                                                            </div>
+                                                                                            <aura:set attribute="else">
+                                                                                                <lightning:formattedNumber
+                                                                                                    value="{!value.originalValue/100}"
+                                                                                                    style="percent"
+                                                                                                    minimumFractionDigits="2"
+                                                                                                    class="inputCss" />
+                                                                                            </aura:set>
+                                                                                        </aura:if>
                                                                                     </aura:set>
                                                                                 </aura:if>
-
-                                                                                
                                                                             </aura:if>
                                                                             <aura:if isTrue="{!value.fieldType == 'textarea'}">
                                                                                 <div class="textAreaDiv">
@@ -1342,10 +1341,12 @@
                                                                                 {!value.originalValue}
                                                                             </aura:if>
                                                                             <aura:if isTrue="{!value.referenceValue}">
-                                                                                <ui:outputURL
-                                                                                    value="{!'/one/one.app?#/sObject/'+ value.originalValue + '/view'}"
-                                                                                    target="_blank"
-                                                                                    label="{!value.referenceValue}" />
+                                                                                <div class="textAreaDiv1 textAreaCss">
+                                                                                    <ui:outputURL
+                                                                                        value="{!'/one/one.app?#/sObject/'+ value.originalValue + '/view'}"
+                                                                                        target="_blank"
+                                                                                        label="{!value.referenceValue}" />
+                                                                                </div>
                                                                             </aura:if>
                                                                             <!-- <button
                                                                                 class="slds-button slds-button_icon slds-cell-edit__button slds-m-left_x-small"

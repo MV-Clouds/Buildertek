@@ -241,6 +241,11 @@
     width: 200px;
 
 }
+.THIS .textAreaDiv1{
+    max-width: 30rem;
+    width: max-content;
+
+}
 
 .THIS .tableRow {
     background-color: #F3F3F3;
