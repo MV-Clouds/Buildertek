@@ -28,7 +28,12 @@
                     if (state === "SUCCESS") {
                         helper.showToast("Success", "Success", "New Check-In Created Successfully", "5000");
                         if (pressedBtn == 'saveBtn') {
-                            helper.navigateToRecord(component, event, helper, result)
+                            var projectId = component.get("v.projectId");
+                            if (projectId != undefined & projectId != null) {
+                                helper.closeModel1(component, event, helper, result);
+                            } else {
+                                helper.navigateToRecord(component, event, helper, result);
+                            }
                         } else if (pressedBtn == 'saveAndNewBtn') {
                             component.set('v.checkInRec.Name', '');
                             component.set('v.checkInRec.buildertek__Notes__c', '');
@@ -54,7 +59,8 @@
                             component.set('v.checkInRec.buildertek__Status__c', 'No Issues');
 
                             var recordId = component.get("v.recordId");
-                            if (recordId == null || recordId == undefined) {
+                            var projectId1 = component.get("v.projectId");
+                            if ((recordId == null || recordId == undefined) && (projectId1 == null || projectId1 == undefined)) {
                                 component.set('v.checkInRec.buildertek__Project__c', '');
                             }
 
@@ -141,5 +147,13 @@
             "booleanValue" : false
         });
         compEvent.fire();
+    },
+    closeModel1 : function(component, event, helper) {
+        try {
+            component.set("v.Spinner", false);
+            location.reload();
+        } catch (error) {
+            console.log('eroor---->',error);
+        }
     },
 })

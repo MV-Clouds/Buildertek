@@ -5,6 +5,7 @@
     <aura:registerEvent name="popUpBooleanValue" type="c:CloseCheckInEvent"/>
 
     <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="projectId" type="String" />
 
     <aura:attribute name="filetype" type="List" default="['.png', '.jpg', '.jpeg',  '.gif', '.svg', '.webp', '.heic']" />
     <aura:attribute name="uploadedFileId" type="list" />

@@ -1,6 +1,5 @@
 ({  
     doInit : function(component, event, helper) {
-
         var action = component.get("c.getOrgBaseURL");
         action.setParams({});
         action.setCallback(this, function (response) {
@@ -15,13 +14,20 @@
 
 	    var recordId = component.get("v.recordId");
         console.log('recordID ==>' + recordId);
+        var projectId = component.get("v.projectId");
+        console.log('projectId ==>' + projectId);
         if (recordId != undefined & recordId != null) {
             console.log('1');
             component.set('v.checkInRec.buildertek__Project__c', recordId);
             component.set('v.desableProjectSelection', true);
             console.log('2');
         } else {
-            component.set('v.desableProjectSelection', false);
+            if (projectId != undefined & projectId != null) {
+                component.set('v.checkInRec.buildertek__Project__c', projectId);
+                component.set('v.desableProjectSelection', true);
+            } else {
+                component.set('v.desableProjectSelection', false);
+            }
         }
 
         /*  for Date Created Default value */
