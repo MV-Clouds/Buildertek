@@ -87,12 +87,13 @@
    },
    
    goToProductModal: function(component, event, helper) {
-    var quoteLineList = component.get("v.quoteLineList");
+    console.log(component.get("v.tableDataList"));
+    var quoteLineList = component.get("v.tableDataList");
     component.set("v.sProductName", '');
     component.set("v.sVendorName", '');
     var selectedRecords = [];
     var remainingRecords = [];
-
+    
     quoteLineList.forEach(element => {
         if (element.Selected) {
             selectedRecords.push(element);
@@ -100,11 +101,17 @@
             remainingRecords.push(element);
         }
     });
-
+    console.log('remainingRecords',remainingRecords);
     // Sort the remaining records in ascending order based on Family and then Name
     remainingRecords.sort(function(a, b) {
         // Compare by Family first
-        var familyComparison = a.Family.localeCompare(b.Family);
+        if(!a.Family){
+            a.Family = '';
+        }
+        if(!b.Family){
+            b.Family = '';
+        } 
+        var familyComparison = a.Family.localeCompare(b.Family); 
         
         // If Family is the same, compare by Name
         if (familyComparison === 0) {
@@ -113,11 +120,13 @@
             return familyComparison;
         }
     });
-
+    console.log('remainingRecords after sorting',remainingRecords);
+    
     // Concatenate selected records with sorted remaining records
     var sortedList = selectedRecords.concat(remainingRecords);
-
+    console.log('sortedList',sortedList);
     component.set("v.tableDataList", sortedList);
+    console.log('CONSOLE LOG_---->',component.get("v.tableDataList"));
     component.set("v.selecteProducts", true);
 },
 
