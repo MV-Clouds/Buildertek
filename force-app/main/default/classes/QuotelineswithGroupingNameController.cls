@@ -55,7 +55,7 @@ global  without sharing class QuotelineswithGroupingNameController {
 
          wrapperlst = new list<wrapperClass>();
          Totalquotelineamount = 0.0;
-        string query = 'Select '+ queryfields ;
+        string query = 'Select Id, Name, '+ queryfields ;
         string statusval = 'Accept';
         query += ' from buildertek__Quote_Item__c where buildertek__Quote__c = \''+quoteid +'\' AND buildertek__Status__c =\''+ statusval +'\''+'Order By buildertek__Priority__c ASC';
         system.debug('query---->'+query);
