@@ -455,7 +455,8 @@
                                 if (toggleVal2) {
                                     if (result.tarTable != undefined && result.tarTable.ListOfEachRecord != undefined) {
                                         var records = result.tarTable.ListOfEachRecord;
-                                        result.groupHierarchy = Object.values(groupRecords(records)).sort((a, b) => a.groupName.localeCompare(b.groupName));
+                                        result.groupHierarchy = Object.values(groupRecords(records));
+                                        // result.groupHierarchy = Object.values(groupRecords(records)).sort((a, b) => a.groupName.localeCompare(b.groupName));
                                         console.log("Group Name By ASC" , result.groupHierarchy);
                                         // alert(JSON.stringify(records)); 
                                         function groupRecords(data) {
