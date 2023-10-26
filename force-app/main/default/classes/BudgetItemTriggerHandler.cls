@@ -141,4 +141,36 @@ public with sharing class BudgetItemTriggerHandler {
  	public void OnAfterDelete(Budget_Item__c[] oldBudgetItems){
     	
  	}
+
+	public void insertCostCode(List<Budget_Item__c> newBudgetItems) {
+		try {
+			List<String> productIds = new List<String>();
+		
+			// Collect Product IDs from Budget Lines
+			for (Budget_Item__c budgetItem : newBudgetItems) {
+				productIds.add(budgetItem.buildertek__Product__c);
+			}
+			System.debug('karan test-->'+productIds);
+		
+			// Query the Product2 object to retrieve cost codes
+			Map<String, Product2> productCostCodes = new Map<String, Product2>();
+			for (Product2 product : [SELECT Id, buildertek__Cost_Code__c FROM Product2 WHERE Id IN :productIds AND buildertek__Cost_Code__c != null]) {
+				productCostCodes.put(product.Id, product);
+			}
+		
+			// Update the Budget Line Records
+			for (Budget_Item__c budgetItem : newBudgetItems) {
+				Product2 product = productCostCodes.get(budgetItem.buildertek__Product__c);
+				if (product != null) {
+					if (budgetItem.buildertek__Cost_Code__c == null) {
+						budgetItem.buildertek__Cost_Code__c = product.buildertek__Cost_Code__c;
+					}
+				}
+			}
+		} catch (Exception e) {
+			System.debug('error--->'+e.getMessage());
+			System.debug('error line--->'+e.getLineNumber());
+		}
+	}
+	
 }
