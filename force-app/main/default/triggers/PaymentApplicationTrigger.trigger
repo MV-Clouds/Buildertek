@@ -33,6 +33,7 @@ handler.OnBeforeupdate(Trigger.new, Trigger.oldMap);
         }else{
             handler.OnAfterupdate(Trigger.old, Trigger.new, Trigger.oldMap, Trigger.newMap);
             handler.updateSheetLinesStatusWhenPaymentAppStatusChanges(Trigger.old, Trigger.new, Trigger.oldMap, Trigger.newMap);
+            handler.updateConSheetLineProjectFieldonAfterUpdate(Trigger.old, Trigger.new, Trigger.oldMap, Trigger.newMap);
             
         }
         

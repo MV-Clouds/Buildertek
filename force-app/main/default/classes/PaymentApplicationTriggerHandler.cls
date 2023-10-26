@@ -934,6 +934,46 @@ PaymentApplicationTriggerHandler.blnSkipPayAppInsertTrigger = false;
 */
         
     }
+
+    public void updateConSheetLineProjectFieldonAfterUpdate(List<buildertek__SOV_Payment_Application__c> oldPayment, List<buildertek__SOV_Payment_Application__c> newPayment,Map<Id, buildertek__SOV_Payment_Application__c> oldPaymetnMap, Map<Id, buildertek__SOV_Payment_Application__c> newPaymentMap){
+        try {
+            Set<Id> paymentIDSet = new Set<Id>();
+            list<buildertek__SOV_Continuation_Sheet_Lines__c> UpdateCSL = new list<buildertek__SOV_Continuation_Sheet_Lines__c>();
+
+            for(buildertek__SOV_Payment_Application__c PA : newPayment){
+                if(PA.buildertek__Project__c != oldPaymetnMap.get(PA.Id).buildertek__Project__c){
+                    paymentIDSet.add(PA.Id);
+                }
+            }
+
+            if(paymentIDSet.size() > 0){
+                list<buildertek__SOV_Continuation_Sheet_Lines__c> CSLs = [SELECT Id, Name , buildertek__SOV_Continuation_Sheet__r.buildertek__SOV_Payment_Application__r.buildertek__Project__c, buildertek__Schedule__c, buildertek__Schedule_Item__c,buildertek__BT_Project__c FROM buildertek__SOV_Continuation_Sheet_Lines__c WHERE buildertek__SOV_Continuation_Sheet__r.buildertek__SOV_Payment_Application__c IN: paymentIDSet];
+                for(buildertek__SOV_Continuation_Sheet_Lines__c csl : CSLs){
+                    if(csl.buildertek__Schedule__c != null || csl.buildertek__Schedule__c != ''){
+                        csl.buildertek__Schedule__c = null;
+                    }
+                    if(csl.buildertek__Schedule_Item__c != null || csl.buildertek__Schedule_Item__c != ''){
+                        csl.buildertek__Schedule_Item__c = null;
+                    }
+
+                    csl.buildertek__BT_Project__c = csl.buildertek__SOV_Continuation_Sheet__r.buildertek__SOV_Payment_Application__r.buildertek__Project__c;
+                    UpdateCSL.add(csl);
+                }
+
+                if(UpdateCSL.size() > 0){
+                    ContinuationSheetLineTriggerHandler.blnSkipSheetLineTrigger = true;
+                    update UpdateCSL;
+                    ContinuationSheetLineTriggerHandler.blnSkipSheetLineTrigger = false;
+                    System.debug('UpdateCSL updated');
+                }
+
+            }
+            
+        } 
+        catch(Exception e) {
+            System.debug('error in updateConSheetLineProjectFieldonAfterUpdate message ' + e.getMessage());
+        }
+    }
     
 
     
