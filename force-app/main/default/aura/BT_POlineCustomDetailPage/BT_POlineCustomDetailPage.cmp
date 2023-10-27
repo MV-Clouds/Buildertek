@@ -4,6 +4,8 @@ access="global" controller="BT_POlineCustomDetailPageController">
 <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> 
 <aura:attribute name="listOfFields" type="List" />
 <aura:attribute name="TotalFields" type="Integer" />
+<aura:attribute name="isLoading" type="Boolean" default="false" />
+<aura:attribute name="SelectedProject" type="String" default="" />
 <!-- <aura:attribute name="RecordID" type="String" /> -->
 <aura:attribute name="POline" type="buildertek__Purchase_Order_Item__c" default="{ 'sobjectType': 'buildertek__Purchase_Order_Item__c'}" />
 <aura:attribute name="viewMode" type="Boolean" default="true" />
@@ -15,8 +17,8 @@ access="global" controller="BT_POlineCustomDetailPageController">
                             <aura:if isTrue="{!and(field.name != 'CreatedById', field.name != 'LastModifiedById')}">
                                 <div class="slds-col slds-size_1-of-2">
                                     <div class="field-container">
-                                        <lightning:outputField class="bottom-line" fieldName="{!field.name}" />
-                                        <lightning:buttonIcon iconName="utility:edit" size="small" variant="bare" onclick="{!c.editRecord}" />
+                                            <lightning:outputField class="bottom-line" fieldName="{!field.name}" />
+                                            <lightning:buttonIcon iconName="utility:edit" size="small" variant="bare" onclick="{!c.editRecord}" />
                                     </div>
                                 </div>
                             </aura:if>
@@ -52,7 +54,12 @@ access="global" controller="BT_POlineCustomDetailPageController">
                             <aura:iteration items="{!v.listOfFields}" var="field" indexVar="index">
                                 <aura:if isTrue="{!or(field.name == 'CreatedById', field.name == 'LastModifiedById')}">
                                     <div class="slds-col slds-size_1-of-2">
-                                        <lightning:inputField fieldName="{!field.name}" aura:id="inputFields"/>
+                                        <aura:if isTrue="{!field.name == 'buildertek__Product__c'}">
+                                            <lightning:inputField fieldName="{!field.name}" aura:id="inputFields" value="{!v.SelectedProject}" onchange="{!c.projectChange}"/>
+                                            <aura:set attribute="else">
+                                                <lightning:inputField fieldName="{!field.name}" aura:id="inputFields" onchange="{!c.projectChange}"/>
+                                            </aura:set>
+                                        </aura:if>
                                     </div>
                                 </aura:if>
                             </aura:iteration>
@@ -64,5 +71,18 @@ access="global" controller="BT_POlineCustomDetailPageController">
                     </lightning:recordEditForm>
                 </aura:set>
             </aura:if>
+
+        <aura:if isTrue="{!v.isLoading}">
+            <div aura:id="spinnerId" class="slds-spinner_container">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                    <div class="custom-loading-text">
+                        <b>Processing, Please Wait</b>
+                    </div>
+                </div>
+            </div>
+        </aura:if>
 
 </aura:component>	

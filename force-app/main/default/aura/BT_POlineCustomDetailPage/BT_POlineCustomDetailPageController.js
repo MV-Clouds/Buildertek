@@ -1,5 +1,6 @@
 ({
     doInit : function(component, event, helper) {
+        component.set('v.isLoading', true);
         console.log('record Id :: ', component.get("v.recordId"));
         var Fields = [];
         var getFields = component.get("c.getFieldSet");
@@ -40,6 +41,7 @@
                 var result = response.getReturnValue();
                 console.log('result :: ', result);
                 component.set("v.POline", result);
+                component.set("v.isLoading", false);
             } else {
                 var toastEvent = $A.get("e.force:showToast");
 				toastEvent.setParams({
@@ -48,34 +50,38 @@
 					"message": "Something Went Wrong."
 				});
 				toastEvent.fire();
+                component.set("v.isLoading", false);
+
             }
         });
         $A.enqueueAction(getRecordData);
-
-        try {
-        } catch (error) {
-            console.log('error in get field set :=> ', error.stack);
-        }
     },
 
     editRecord : function(component, event, helper) {
-        try {
+            component.set("v.isLoading", true);
             console.log('Edit Record');
-            // helper.doInithelper(component, event, helper)
             component.set("v.viewMode", false);
-            
-        } catch (error) {
-            console.log('error in editRecord ', error.stack);
-            
-        }
+            component.set("v.isLoading", false);
     },
 
     leaveEditForm : function(component, event, helper){
+        component.set("v.isLoading", true);
         $A.get('e.force:refreshView').fire();
         component.set("v.viewMode", true);
+        component.set("v.isLoading", false);
+
     }, 
 
+    projectChange : function(component, event, helper){
+        try {
+            console.log('project Change', component.get("v.SelectedProject"));
+        } catch (error) {
+            console.log('error in project change : ', error.stack);
+        }
+    },
+
     saveRecord : function(component, event, helper){
+        component.set("v.isLoading", true);
         console.log('Save Record', component.get('v.POline'));
         event.preventDefault();
         var fields = event.getParam("fields");
@@ -93,6 +99,7 @@
             console.log('state ==> '+state);
             if (state === "SUCCESS") {
                 $A.get('e.force:refreshView').fire();
+                component.set("v.isLoading", false);
             } else {
                 var toastEvent = $A.get("e.force:showToast");
 				toastEvent.setParams({
@@ -101,8 +108,10 @@
 					"message": "Something Went Wrong."
 				});
 				toastEvent.fire();
+                component.set("v.isLoading", false);
             }
         });
         $A.enqueueAction(action);
+        
     }, 
 })
