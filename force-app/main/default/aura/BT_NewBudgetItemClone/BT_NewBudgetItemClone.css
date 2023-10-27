@@ -259,7 +259,7 @@
 .THIS .rkclass{
     display: flex;
     flex-direction: row;
-    gap: 25px;
+    gap: 3vw;
 }
 .THIS .rkclasses{
     display: flex;
