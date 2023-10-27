@@ -42,7 +42,8 @@
     <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open">
 
     <aura:if isTrue="{!v.Spinner}">
-            <div class="slds-spinner_container">
+        <div class="slds-spinner_container">
+                <H1>Hello world</H1>
                 <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
                     <span class="slds-assistive-text">Loading</span>
                     <div class="slds-spinner__dot-a"></div>
@@ -247,6 +248,9 @@
                         <center class="elseMsg">Please Select a PriceBook.</center>
                         <aura:set attribute="else" >
                             <aura:if isTrue="{!v.tableDataList.length == 0}">
+                                <center class="elseMsg">No Products Found!!!</center>
+                            </aura:if>
+                            <aura:if isTrue="{!v.vendortableDataList.length == 0}">
                                 <center class="elseMsg">No Products Found!!!</center>
                             </aura:if>
                         </aura:set>

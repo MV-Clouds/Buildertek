@@ -89,7 +89,7 @@
    goToProductModal: function(component, event, helper) {
     console.log(component.get("v.tableDataList"));
     var quoteLineList = component.get("v.tableDataList");
-    component.set("v.sProductName", '');
+    // component.set("v.sProductName", '');
     component.set("v.sVendorName", '');
     var selectedRecords = [];
     var remainingRecords = [];
@@ -281,7 +281,7 @@ console.log('selectedRecordIds------>',component.get("v.selectedRecords"));
     });
     component.set('v.selectedRecords', updatedSelectedRecords);
 
-    var quoteLineList = component.get('v.quoteLineList');
+    var quoteLineList = component.get('v.tableDataList');
     quoteLineList.forEach(function(element) {
         if (element.Id === currentId) {
             element.Selected = false;

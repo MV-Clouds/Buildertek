@@ -331,6 +331,8 @@
                 helper.changeProductFamilyHelper(component, event, helper , selectedPricebook, selectedProductFamily);
             }
             else if (sProductName == '' && sProductFamily == '') {
+                alert("HELLO");
+                console.log('sProductName', sProductName);
                 var selectedPricebook = component.find("selectedPricebook").get("v.value");
                 helper.changePricebookHelper(component, event, helper , selectedPricebook);
             }
@@ -339,6 +341,7 @@
 
     searchVendorDatatableHelper : function(component, event, helper){
         component.set('v.Spinner', true); 
+        console.log('component.)--->' ,component.get("v.Spinner"));
         console.log('searchDatatableHelper vendoor method is called------'); 
         var tableDataList = component.get("v.tableDataList");
         console.log('tableDataList',tableDataList);
@@ -348,7 +351,27 @@
         var filteredData = [];
         if (VendorName == '' || VendorName == null) {
             console.log('IN If',tableDataList);
-            component.set('v.vendortableDataList' , tableDataList);
+            var rows = tableDataList;
+            var selectedRecords = component.get("v.selectedRecords");
+            rows.forEach(function(row) {
+                var matchingRecord = selectedRecords.find(function(record) {
+                    return record.Id === row.Id;
+                });
+                if (matchingRecord) {
+                    row.Selected = true;
+                }
+            });
+            
+            // Sort the records with selected ones on top
+            rows.sort(function(a, b) {
+                if (a.Selected && !b.Selected) {
+                    return -1; // a comes before b
+                } else if (!a.Selected && b.Selected) {
+                    return 1; // b comes before a
+                }
+                return 0; // no change in order
+            });
+            component.set('v.vendortableDataList' , rows);
             component.set('v.Spinner', false);
         }else{
             console.log("ELSE");
@@ -380,8 +403,7 @@
             }
             return 0; // no change in order
         });
-        console.log('ROWS-->',rows);
-            debugger;                
+        console.log('ROWS-->',rows);              
         // component.set("v.tableDataList", rows);
         component.set("v.quoteLineList", rows);
         component.set('v.vendortableDataList' , filteredData);
