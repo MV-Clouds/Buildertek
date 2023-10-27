@@ -1,4 +1,68 @@
-<aura:component>
-    Welcome to Purchase Order Line
+<aura:component implements="force:appHostable,force:lightningQuickAction,flexipage:availableForRecordHome,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes"
+access="global" controller="BT_POlineCustomDetailPageController">
+
+<aura:handler name="init" value="{!this}" action="{!c.doInit}" /> 
+<aura:attribute name="listOfFields" type="List" />
+<aura:attribute name="TotalFields" type="Integer" />
+<!-- <aura:attribute name="RecordID" type="String" /> -->
+<aura:attribute name="POline" type="buildertek__Purchase_Order_Item__c" default="{ 'sobjectType': 'buildertek__Purchase_Order_Item__c'}" />
+<aura:attribute name="viewMode" type="Boolean" default="true" />
+
+            <aura:if isTrue="{!v.viewMode}">
+                <lightning:recordViewForm recordId="{!v.POline.Id}" objectApiName="buildertek__Purchase_Order_Item__c">
+                    <div class="grid">
+                        <aura:iteration items="{!v.listOfFields}" var="field" indexVar="index">
+                            <aura:if isTrue="{!and(field.name != 'CreatedById', field.name != 'LastModifiedById')}">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <div class="field-container">
+                                        <lightning:outputField class="bottom-line" fieldName="{!field.name}" />
+                                        <lightning:buttonIcon iconName="utility:edit" size="small" variant="bare" onclick="{!c.editRecord}" />
+                                    </div>
+                                </div>
+                            </aura:if>
+                            </aura:iteration>
+                    </div>
+                    <div class="headingDiv "> System Information </div>
+                    <div class="grid">
+                        <aura:iteration items="{!v.listOfFields}" var="field" indexVar="index">
+                            <aura:if isTrue="{!or(field.name == 'CreatedById', field.name == 'LastModifiedById')}">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <div class="field-container">
+                                        <lightning:outputField class="bottom-line" fieldName="{!field.name}" />
+                                    </div>
+                                </div>
+                            </aura:if>
+                        </aura:iteration>
+                    </div>
+                </lightning:recordViewForm>
+
+                <aura:set attribute="else">
+                    <lightning:recordEditForm recordId="{!v.POline.Id}" objectApiName="buildertek__Purchase_Order_Item__c" onsubmit="{!c.saveRecord}">
+                        <div class="grid">
+                            <aura:iteration items="{!v.listOfFields}" var="field">
+                                <aura:if isTrue="{!and(field.name != 'CreatedById', field.name != 'LastModifiedById')}">
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <lightning:inputField fieldName="{!field.name}" aura:id="inputFields"/>
+                                    </div>
+                                </aura:if>
+                            </aura:iteration>
+                        </div>
+                        <div class="headingDiv "> System Information </div>
+                        <div class="grid">
+                            <aura:iteration items="{!v.listOfFields}" var="field" indexVar="index">
+                                <aura:if isTrue="{!or(field.name == 'CreatedById', field.name == 'LastModifiedById')}">
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <lightning:inputField fieldName="{!field.name}" aura:id="inputFields"/>
+                                    </div>
+                                </aura:if>
+                            </aura:iteration>
+                        </div>
+                        <div class="save" >
+                            <lightning:button label="Cancel" title="Cancel" onclick="{!c.leaveEditForm}" class="slds-m-left_x-small"/>
+                            <lightning:button variant="brand" label="Save" type="submit" title="Save" class="saveBtn"/>
+                        </div>
+                    </lightning:recordEditForm>
+                </aura:set>
+            </aura:if>
 
 </aura:component>	
