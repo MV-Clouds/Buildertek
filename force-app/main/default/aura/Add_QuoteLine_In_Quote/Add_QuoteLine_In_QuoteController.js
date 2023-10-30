@@ -93,8 +93,14 @@
                             selectedRecordsIds.push(element.Id);
                         });
                         console.log('selectedRecordsIds--->',selectedRecordsIds);
+                        // quoteLineList.forEach(element => {
+                        //     if(selectedRecordsIds.includes(element.Id)){
+                        //         remainingRecords.push(element);
+                        //     }
+                        // });
+                        //add the remaining records on bottom
                         quoteLineList.forEach(element => {
-                            if(selectedRecordsIds.includes(element.Id)){
+                            if(!selectedRecordsIds.includes(element.Id)){
                                 remainingRecords.push(element);
                             }
                         });
