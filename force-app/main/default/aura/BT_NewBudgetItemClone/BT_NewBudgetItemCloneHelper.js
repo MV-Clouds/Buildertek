@@ -2905,7 +2905,7 @@
     
     },
 
-    getCompactLayoutFields:function(component, event, helper){
+    getFieldsFromFieldset:function(component, event, helper){
         let action = component.get("c.getCompactLayoutFields");
         action.setParams({
             budgetId: component.get("v.recordId")
