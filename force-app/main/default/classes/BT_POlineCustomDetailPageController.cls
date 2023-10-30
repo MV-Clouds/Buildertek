@@ -75,4 +75,97 @@ public with sharing class BT_POlineCustomDetailPageController {
         update UpdatedRecord;
         return 'Updated Record : ' + UpdatedRecord.Name;
     }
+
+    @AuraEnabled
+    public static list<pricebook2> getPricebooks(){
+        list<pricebook2> procebooks = [select Id, Name from pricebook2 where buildertek__BT_Visible__c = true AND isActive = true ORDER BY Name ASC];
+           if(procebooks.size() > 0){
+            return procebooks;
+           }
+           else {
+            return null;
+           }
+    }
+
+    @AuraEnabled
+    public static List<productWrapper> getRelatedProductFamily(String PricebookId){
+        try {
+            system.debug('PricebookId >> ' +  PricebookId);
+            List<PriceBookEntry> pEntries = [SELECT Id,Product2Id, Product2.buildertek__Quote_Group__c , Product2.Name, Product2.ProductCode, Product2.Description, toLabel(Product2.Family), 
+            Product2.IsActive,buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Discount__c, Pricebook2.Name, UnitPrice, Product2.QuantityUnitOfMeasure  
+            FROM PricebookEntry WHERE Pricebook2Id=:PricebookId AND IsActive = True 
+            ORDER BY Product2.Family ASC NULLS LAST, Product2.Name ASC NULLS LAST LIMIT 1000];
+
+            List<productWrapper> products = new List<productWrapper>();
+            for (PriceBookEntry pEntry: pEntries) {
+            productWrapper aProduct = new productWrapper();
+            aProduct.Id = pEntry.Product2Id;
+            aProduct.Name = pEntry.Product2.Name;
+            aProduct.ProductCode = pEntry.Product2.ProductCode;
+            aProduct.Description = pEntry.Product2.Description;
+            aProduct.Family = pEntry.Product2.Family;
+            aProduct.IsActive = pEntry.Product2.IsActive;
+            aProduct.UnitPrice = pEntry.UnitPrice;            
+            aProduct.Size = pEntry.Pricebook2.Name;
+            aProduct.Selected = false;
+            aProduct.MarkUp = pEntry.buildertek__Markup__c;
+            aProduct.Discount = pEntry.buildertek__Discount__c;
+            aProduct.UnitCost = pEntry.buildertek__Unit_Cost__c;
+            aProduct.Phase = pEntry.Product2.buildertek__Quote_Group__c;
+            aProduct.QuantityUnitOfMeasure = pEntry.Product2.QuantityUnitOfMeasure;     
+            products.add(aProduct);
+            }
+
+            system.debug('products >> ' +  products);
+
+            return products;
+        } catch (Exception e) {
+            System.debug('Exception : ' + e);
+            return null;
+        }
+    }
+
+    public class productWrapper{
+        @AuraEnabled
+        public Id Id;
+
+        @AuraEnabled
+        public String Name;
+
+        @AuraEnabled
+        public String ProductCode;
+
+        @AuraEnabled
+        public String Description;
+
+        @AuraEnabled
+        public String Family;
+
+        @AuraEnabled
+        public Boolean IsActive;
+
+        @AuraEnabled
+        public Decimal UnitPrice;
+
+        @AuraEnabled
+        public String Size;
+
+        @AuraEnabled
+        public Boolean Selected;
+        
+        @AuraEnabled
+        public Decimal UnitCost;
+        
+        @AuraEnabled
+        public String Phase;
+        
+        @AuraEnabled
+        public Decimal MarkUp;
+
+        @AuraEnabled
+        public Decimal Discount;
+
+        @AuraEnabled
+        public String QuantityUnitOfMeasure;
+    }
 }

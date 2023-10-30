@@ -2,59 +2,10 @@
     doInit : function(component, event, helper) {
         component.set('v.isLoading', true);
         console.log('record Id :: ', component.get("v.recordId"));
-        var Fields = [];
-        var getFields = component.get("c.getFieldSet");
-        getFields.setParams({
-            objectName: 'buildertek__Purchase_Order_Item__c',
-            fieldSetName: 'buildertek__Edit_Purchase_Order_Line'
-        });
-        getFields.setCallback(this, function (response) {
-            if (response.getState() == 'SUCCESS' && response.getReturnValue()) {
-                var listOfFields = JSON.parse(response.getReturnValue());
-               
-                listOfFields.map(ele => {
-                    Fields.push(ele.name);
-                })
-                console.log({listOfFields});
-                component.set("v.listOfFields", listOfFields);
-                component.set("v.TotalFields", listOfFields.length);
-                console.log('TotalFields : ', component.get("v.TotalFields"));
-                component.set("v.isLoading", false);
-            }
-        });
-        $A.enqueueAction(getFields);
-        console.log('Fields  :: ', Fields);
-        console.log('Fields 2 :: ', JSON.stringify(Fields));
+        helper.doinitHelper(component, event);
+        helper.getPriceBooksHelper(component, event);
 
-        // component.set("v.RecordID", component.get("v.recordId"))
-
-        var getRecordData = component.get("c.getRecordData");
-        getRecordData.setParams({
-            recordId : component.get("v.recordId"),
-            FieldsToQuery : JSON.stringify(Fields)
-        });
-        getRecordData.setCallback(this, function (response) {
-            var state = response.getState();
-            console.log('status :: ', state);
-            console.log('error :: ', response.getError());
-            if (state === "SUCCESS") {
-                var result = response.getReturnValue();
-                console.log('result :: ', result);
-                component.set("v.POline", result);
-                component.set("v.isLoading", false);
-            } else {
-                var toastEvent = $A.get("e.force:showToast");
-				toastEvent.setParams({
-					"type": "Error",
-					"title": "Error!",
-					"message": "Something Went Wrong."
-				});
-				toastEvent.fire();
-                component.set("v.isLoading", false);
-
-            }
-        });
-        $A.enqueueAction(getRecordData);
+        // component.set("v.RecordID", component.get("v.recordId"))     
     },
 
     editRecord : function(component, event, helper) {
@@ -114,4 +65,113 @@
         $A.enqueueAction(action);
         
     }, 
+
+    searchRecordData: function (component, event, helper){
+        try {
+            var field = event.getSource().get("v.title");
+            console.log('field >> ', field);
+            if(field == 'PB'){
+                component.set("v.displayPB", true);
+            }
+            else if(field == 'PF'){
+                component.set("v.displayPF", true);
+            }
+            event.stopPropagation();
+        } catch (error) {
+            console.log('error in searchRecordData', error.stack);
+        }
+
+    },
+
+    keyupSearchData: function(component, event, helper){
+        try {
+            var field = event.getSource().get("v.title");
+            if(field == 'PB'){
+                var listofAllPB=component.get('v.PriceBookList');
+                var searchFilter = event.getSource().get("v.value").toUpperCase();
+                var tempArray = [];
+                var i;
+                for (i = 0; i < listofAllPB.length; i++) {
+                    console.log(listofAllPB[i].Name);
+                    console.log(listofAllPB[i].Name.toUpperCase().indexOf(searchFilter) != -1);
+                    if ((listofAllPB[i].Name && listofAllPB[i].Name.toUpperCase().indexOf(searchFilter) != -1)) {
+                            tempArray.push(listofAllPB[i]);
+                    }else{
+                        component.set('v.selectedPBId' , ' ')
+                    }
+                }
+        
+                component.set("v.PriceBookListSearched", tempArray);
+                console.log({searchFilter});
+                if(searchFilter == undefined || searchFilter == ''){
+                    component.set("v.PriceBookListSearched", listofAllPB);
+                }
+            }
+                else if(field == 'PF'){
+            }
+            
+        } catch (error) {
+            console.log('error in keyupSearchData', error.stack);
+        }
+    },
+
+    hidePBList : function(component, event, helper) {
+        component.set('v.displayPB', false);
+    },
+
+    hidePFList: function(component, event, helper){
+        component.set('v.displayPF', false);
+    },
+
+    preventHide: function(component, event, helper) {
+        event.preventDefault();
+    },
+
+    clearInput: function(component, event, helper) {
+        try {
+            var field = event.getSource().get("v.title");
+            console.log('field clear >> ', field);
+            if(field == 'PB'){
+                component.set('v.selectedPBName','');
+                component.set('v.selectedPBId','');
+                component.set('v.ProductFamilyListSearched', []);
+            }
+            else if(field == 'PF'){
+                component.set('v.selectedPFName','');
+            }
+        } catch (error) {
+            console.log('error in clearInput', error.stack);
+        }
+    },
+
+    clickonPBHandler : function (component, event, helper){
+        component.set('v.displayPB', false);
+        var recordId = event.currentTarget.dataset.value;
+        console.log('recordId ==> '+recordId);
+        component.set('v.selectedPBId', recordId);
+
+        var PriceBookListSearched = component.get("v.PriceBookListSearched");
+        PriceBookListSearched.forEach(element => {
+            // console.log('element => ',element);
+            if (recordId == element.Id) {
+                component.set('v.selectedPBName', element.Name);
+
+            }
+        });
+
+        helper.getRelatedProductFamilyHelper(component, event);
+    },
+
+    clickonPFHandler : function (component, event, helper){
+        component.set('v.displayPF', false);
+        var record = event.currentTarget.dataset.value;
+        console.log('record ==> '+record);
+        component.set('v.selectedPFName', record);
+
+    },
+
+    // searchPFData : function(component, event, helper){
+    //     console.log('data-field >> ', event.getSource().get("v.title"));
+    // }
+
 })
