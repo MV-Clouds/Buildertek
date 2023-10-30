@@ -166,6 +166,8 @@
     changeProductFamilyHelper : function(component, event, helper , priceBookId, productFamilyId){
         console.log('method is calllll');
         component.set('v.Spinner', true);
+        component.set("v.sProductName", '');
+        component.set("v.sVendorName", '');
         console.log('selectedPricebook====>',priceBookId);
         console.log('selectedProductFamily=====>',productFamilyId);
         let sProductFamily = component.get("v.sProductFamily");
@@ -208,10 +210,6 @@
 
                     component.set("v.quoteLineList", updatedRows);
                     component.set("v.tableDataList", updatedRows);
-
-                    if(sVendorName != ''){
-                        component.set("v.sVendorName", '');
-                    }
                     //--------------------------------------------------------------------------
                 }
                 component.set('v.Spinner', false);
