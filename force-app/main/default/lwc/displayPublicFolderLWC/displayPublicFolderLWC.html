@@ -17,14 +17,18 @@
                 <thead>
                     <tr>
                         <th>Name</th>
-                        <th>Public URL</th>
+                        <th>File Type</th>
+                        <th>Size</th>
+                        <th>Created Date</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <template for:each={folderWrap.publicFileList} for:item="file">
+                    <template for:each={listFiles} for:item="file">
                         <tr key={file.Id}>
-                            <td>{file.buildertek__File_Name__c}</td>
-                            <td> <a href={file.buildertek__Public_URL__c} target="_blank"> View </a> </td>
+                            <td> <a href={file.publicURL} target="_blank"> {file.fileName} </a> </td>
+                            <td>{file.fileType}</td>
+                            <td>{file.fileSize}</td>
+                            <td>{file.fileCreatedDate}</td>
                         </tr>
                     </template>
                 </tbody>
