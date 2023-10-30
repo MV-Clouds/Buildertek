@@ -17,35 +17,35 @@ public with sharing class ImportTakeOffLinesBasic{
 				List<List<String>> listCSVData;
 				String strFileData;
 				Blob fileContent = EncodingUtil.base64Decode(fileData);
-				try{
-					strFileData = fileContent.toString();
-				} catch (Exception ex){
-					try{
-						strFileData = EncodingUtil.base64Encode(fileContent);
-						System.debug('Message:0:' + ex.getMessage());
-						System.debug('Line:0:' + ex.getLineNumber());
-					} catch (Exception iex){
-						response.isSuccess = false;
-						response.strMessage = iex.getMessage();
-						System.debug('Message:1:' + iex.getMessage());
-						System.debug('Line:1:' + iex.getLineNumber());
-					}
-				}
+				strFileData = fileContent.toString();
 				System.debug('strFileData--->'+strFileData);
 				if (!String.isBlank(strFileData) && response.isSuccess){
 					List<buildertek__Project_Takeoff_Lines__c> schItemToInsert = new List<buildertek__Project_Takeoff_Lines__c>();
 					wrapper = getListOfFileContentsAsStrings(strFileData);
 					listCSVData = wrapper.listOfFileContentsAsStrings;
 					productNames = wrapper.productNames;
+					Id productFamilyId = null;
 
 					Map<String, Product2> existingProductMap = new Map<String, Product2>();
 					Map<String, buildertek__Build_Phase__c> buildPhasemap = new Map<String, buildertek__Build_Phase__c>();
 					Map<String, buildertek__Trade_Type__c> existingTradeTypeMap = new Map<String, buildertek__Trade_Type__c>();
 					Map<String, buildertek__Cost_Codes__c> existingCostCodeMap = new Map<String, buildertek__Cost_Codes__c>();
+					Map<String, PricebookEntry> PBEMap = new Map<String, PricebookEntry>();
+					Map<String, Pricebook2> PBMap = new Map<String, Pricebook2>();
 
 					// Find existing products
 					for (Product2 prod : [SELECT Id, Name FROM Product2]) {
 						existingProductMap.put(prod.Name, prod);
+					}
+
+					// Find existing pricebooks
+					for (Pricebook2 pricebook : [SELECT Id, Name FROM Pricebook2]) {
+						PBMap.put(pricebook.Name, pricebook);
+					}
+
+					// Find existing pricebookentries
+					for (PricebookEntry pricebookentry : [SELECT Id, Name, Pricebook2Id, Product2Id, Product2.Name, Pricebook2.Name FROM PricebookEntry]) {
+						PBEMap.put(pricebookentry.Name, pricebookentry);
 					}
 
 					// Find existing build phases
@@ -75,10 +75,12 @@ public with sharing class ImportTakeOffLinesBasic{
 											String withoutOuterQuotes = tempProductNames.replaceAll('^"|"$', '');
 											String finalString = withoutOuterQuotes.replaceAll('""', '"');
 											if (existingProductMap.containsKey(finalString)){
+												productFamilyId = existingProductMap.get(finalString).Id;
 												takeoffLines.buildertek__Product__c = existingProductMap.get(finalString).Id;
 											}
 										} else {
 											if (existingProductMap.containsKey(tempProductNames)){
+												productFamilyId = existingProductMap.get(tempProductNames).Id;
 												takeoffLines.buildertek__Product__c = existingProductMap.get(tempProductNames).Id;
 											}
 										}
@@ -86,6 +88,21 @@ public with sharing class ImportTakeOffLinesBasic{
 									}
 									
 								}
+
+								when 'Price Book' {
+									String tempPBphase = listCSVData.get(intIndex).get(intInnerIndex);
+									if (String.isNotBlank(tempPBphase) && PBMap.containsKey(tempPBphase) && productFamilyId != null) {
+										for (PricebookEntry pbe : PBEMap.values()) {
+											if (pbe.Pricebook2Id == PBMap.get(tempPBphase).Id &&
+												pbe.Product2Id == productFamilyId) {
+												takeoffLines.buildertek__Price_Book__c = PBMap.get(tempPBphase).Id;
+												break;
+											}
+										}
+										productFamilyId = null;
+									}
+								}
+								
 
 								when 'Product SKU'{
 									if (String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))){
@@ -100,11 +117,9 @@ public with sharing class ImportTakeOffLinesBasic{
 								}
 
 								when 'Build Phase'{
-									if (String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))){
-										String tempbuildphase = listCSVData.get(intIndex).get(intInnerIndex);
-										if (buildPhasemap.containsKey(tempbuildphase)){
-											takeoffLines.buildertek__Build_Phase__c = buildPhasemap.get(tempbuildphase).Id;
-										} 
+									String tempbuildphase = listCSVData.get(intIndex).get(intInnerIndex);
+									if (String.isNotBlank(tempbuildphase) && buildPhasemap.containsKey(tempbuildphase)){
+										takeoffLines.buildertek__Build_Phase__c = buildPhasemap.get(tempbuildphase).Id;
 									}
 								}
 
@@ -115,11 +130,9 @@ public with sharing class ImportTakeOffLinesBasic{
 								}
 
 								when 'Trade Type'{
-									if (String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))){
-										String temptradetype = listCSVData.get(intIndex).get(intInnerIndex);
-										if (existingTradeTypeMap.containsKey(temptradetype)){
-											takeoffLines.buildertek__Trade_Type__c = existingTradeTypeMap.get(temptradetype).Id;
-										} 
+									String temptradetype = listCSVData.get(intIndex).get(intInnerIndex);
+									if (String.isNotBlank(temptradetype) && existingTradeTypeMap.containsKey(temptradetype)){
+										takeoffLines.buildertek__Trade_Type__c = existingTradeTypeMap.get(temptradetype).Id;
 									}
 								}
 
@@ -143,11 +156,9 @@ public with sharing class ImportTakeOffLinesBasic{
 								}
 
                                 when 'Cost Code'{
-									if (String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))){
-										String tempcostcode = listCSVData.get(intIndex).get(intInnerIndex);
-										if (existingCostCodeMap.containsKey(tempcostcode)){
+									String tempcostcode = listCSVData.get(intIndex).get(intInnerIndex);
+									if (String.isNotBlank(tempcostcode) && existingCostCodeMap.containsKey(tempcostcode)){
 											takeoffLines.buildertek__Cost_Code__c = existingCostCodeMap.get(tempcostcode).Id;
-										} 
 									}
 								}
 
