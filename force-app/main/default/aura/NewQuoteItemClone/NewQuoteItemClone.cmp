@@ -1304,7 +1304,7 @@
                                                                             </aura:if>
                                                                             <aura:if isTrue="{!value.fieldType == 'string'}">
                                                                                 <aura:if isTrue="{!value.fieldName == 'buildertek__Item_Name__c'}">
-                                                                                    <div class="textAreaDiv">
+                                                                                    <div class="textAreaDiv1">
                                                                                         <lightning:formattedRichText
                                                                                             value="{!value.originalValue}"
                                                                                             class="textAreaCss" />
@@ -1330,7 +1330,7 @@
                                                                                 </aura:if>
                                                                             </aura:if>
                                                                             <aura:if isTrue="{!value.fieldType == 'textarea'}">
-                                                                                <div class="textAreaDiv">
+                                                                                <div class="textAreaDiv1">
                                                                                     <lightning:formattedRichText
                                                                                         value="{!value.originalValue}"
                                                                                         class="textAreaCss" />
