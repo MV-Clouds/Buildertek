@@ -685,7 +685,7 @@ Throws [Exceptions]:
 
         list<PricebookEntry> pList;
 
-        pList = [select id, UnitPrice, buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Discount__c
+        pList = [select id, UnitPrice, buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Discount__c, Product2.buildertek__Cost_Code__c
                 from PricebookEntry
                 where product2Id = :productId and pricebook2Id =: pricebookId];
 
@@ -1463,9 +1463,18 @@ insert s;*/
                 aggregateFields += ', ' + sumOfFields;
             }
         }
+
+        buildertek__Admin_Interface_Node_Configuration__c adminInterfaceNodeConfigurations = [Select Id, buildertek__Budget_Grouping_Data__c
+                                                                                              from buildertek__Admin_Interface_Node_Configuration__c
+                                                                                              WHERE Name = :'Budget Configuration'];
+
         String myqueries = '';
       string myquerie = '';
-                myqueries = 'select buildertek__Budget__c  ' + aggregateFields + ' from buildertek__Budget_Item__c where buildertek__Budget__c =: recordId ORDER BY buildertek__CostCodeDivision__c ASC NULLS LAST, Name Asc limit ' + recordToDisply + ' OFFSET ' + offset;
+                if(adminInterfaceNodeConfigurations.buildertek__Budget_Grouping_Data__c == 'Group By Category'){
+                    myqueries = 'select buildertek__Budget__c  ' + aggregateFields + ' from buildertek__Budget_Item__c where buildertek__Budget__c =: recordId ORDER BY buildertek__Group__r.buildertek__Sorting_Id__c ASC NULLS LAST,buildertek__Group__r.Name ASC, Name Asc limit ' + recordToDisply + ' OFFSET ' + offset;
+                }else{
+                    myqueries = 'select buildertek__Budget__c  ' + aggregateFields + ' from buildertek__Budget_Item__c where buildertek__Budget__c =: recordId ORDER BY buildertek__CostCodeDivision__c ASC NULLS LAST, Name Asc limit ' + recordToDisply + ' OFFSET ' + offset;
+                }
                // myquerie = 'select buildertek__Budget__c  ' + aggregateFields + ' from buildertek__Budget_Item__c where buildertek__Budget__c =: recordId and buildertek__Group_Name__c = No Grouping Order By buildertek__Group_Name__c ASC limit ' + recordToDisply + ' OFFSET ' + offset;
 
            // if(nullspoRecList.size()>0){
@@ -3272,6 +3281,23 @@ buildertek__Budget__c budgetCopy = Database.query(query);*/
         public Integer total{ get; set; }
     }
 
+    public class CompactLayoutFieldWrapper {
+        @AuraEnabled
+        public String fieldLabel;
+        
+        @AuraEnabled
+        public String fieldType;
+        
+        @AuraEnabled
+        public Object fieldValue;
+        
+        public CompactLayoutFieldWrapper(String label,String fieldType,Object value) {
+            fieldLabel = label;
+            this.fieldType = fieldType;
+            fieldValue = value;
+        }
+    }
+
     @AuraEnabled
     public static List<String> groupingLevels(){
         buildertek__Admin_Interface_Node_Configuration__c adminInterfaceNodeConfigurations = [Select Id, buildertek__Budget_Grouping_Level_1__c,
@@ -3291,7 +3317,50 @@ buildertek__Budget__c budgetCopy = Database.query(query);*/
         return groupingLevels;
     }   
 
+    @AuraEnabled
+    public static List<CompactLayoutFieldWrapper> getCompactLayoutFields(String budgetId) {
+        List<CompactLayoutFieldWrapper> compactLayoutWrapperList = new List<CompactLayoutFieldWrapper>();
+        String ObjectName = 'buildertek__Budget__c';
+        String fieldSetName = 'buildertek__Budget_Compact_Layout';
+        Map<String, Schema.SObjectType> GlobalDescribeMap = Schema.getGlobalDescribe(); 
+        
+        Schema.SObjectType SObjectTypeObj = GlobalDescribeMap.get(ObjectName);
+        Schema.DescribeSObjectResult DescribeSObjectResultObj = SObjectTypeObj.getDescribe();
+        Schema.FieldSet fieldSetObj = DescribeSObjectResultObj.FieldSets.getMap().get(fieldSetName);
+        
+        List<Schema.FieldSetMember> fieldSetMemberList = fieldSetObj.getFields();
+    
+        String query = 'SELECT ';
+        for (Schema.FieldSetMember fieldSetMemberObj : fieldSetMemberList) {
+            query += fieldSetMemberObj.getFieldPath() + ', ';
+        }
+        query = query.removeEnd(', ');
+        query += ' FROM buildertek__Budget__c WHERE Id = :budgetId';
+        
+        List<buildertek__Budget__c> records = Database.query(query);
+       
+        
+        buildertek__Budget__c budgetRecord = records[0];
+        
+        for (Schema.FieldSetMember fieldSetMemberObj : fieldSetMemberList) {
+            String fieldLabel = fieldSetMemberObj.getLabel();
+            String fieldPath = fieldSetMemberObj.getFieldPath();
+            String fieldType = String.valueOf(fieldSetMemberObj.getType());
+            CompactLayoutFieldWrapper conWrapper = new CompactLayoutFieldWrapper(fieldLabel, fieldType, budgetRecord.get(fieldPath));
+            compactLayoutWrapperList.add(conWrapper);
+            System.debug('conWrapper: ' + conWrapper.fieldLabel);
+        }
 
+        System.debug('compactLayoutWrapperList: ' + compactLayoutWrapperList);
+        
+        return compactLayoutWrapperList;
+    }
+    
+    @AuraEnabled
+    public static List<buildertek__Cost_Codes__c> getCostCodes(){
+        List<buildertek__Cost_Codes__c> costCodes = [SELECT Id, Name FROM buildertek__Cost_Codes__c ORDER BY Name ASC];
+        return costCodes;
+    }
 
 
 }

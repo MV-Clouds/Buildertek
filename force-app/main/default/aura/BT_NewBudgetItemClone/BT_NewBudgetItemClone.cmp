@@ -314,6 +314,8 @@
     <aura:attribute name="TotalRecordCount" type="Integer" default="0" />
     <aura:attribute name="CollapeCount" type="Integer" default="0" />
     <aura:attribute name="displayRecordList" type="List" />
+    <aura:attribute name="budgetFields" type="List" />
+    <aura:attribute name="costCodeList" type="List" />
 
     
     <aura:HTML tag="style">
@@ -376,7 +378,7 @@
         <aura:if isTrue="{!v.isbudget}">
             <div class="slds-modal__header rkclass" style="text-align: left;">
                 <a href="{!v.fromWhereBudgetIsOpen}" style="font-size:17px;padding-right: 50px;" onclick="{!c.closetab}">{!v.budgetName} </a>
-                <div class="rkclass">
+                <!-- <div class="rkclass">
                     <div class="rkclasses">
                         <p>Original Budget </p><lightning:formattedNumber value="{!v.OriginalBudget}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code" />
                     </div>
@@ -395,7 +397,26 @@
                     <div class="rkclasses">
                         <p>Projected Gross Margin (%) </p><lightning:formattedNumber value="{!v.ProjectedGrossMargin/100}" style="percent" minimumFractionDigits="2" />
                     </div> 
-                <!-- </div> -->
+                </div> -->
+                <div class="rkclass">
+                    <aura:iteration items="{!v.budgetFields}" var="item">
+                        <div class="rkclasses">
+                            <p style="padding-bottom:5px;">{!item.fieldLabel}</p>
+                            <aura:if isTrue="{!item.fieldType == 'CURRENCY'}">
+                                <lightning:formattedNumber value="{!item.fieldValue}" style="currency" currencyCode="{!v.currencycode}"
+                                    currencyDisplayAs="code" />
+                                <aura:set attribute="else">
+                                    <aura:if isTrue="{!item.fieldType == 'PERCENT'}">
+                                        <lightning:formattedNumber value="{!item.fieldValue/100}" style="percent"
+                                            minimumFractionDigits="2" />
+                                        <aura:set attribute="else">
+                                            <p>{!item.fieldValue}</p>
+                                        </aura:set>
+                                    </aura:if>
+                                </aura:set>
+                            </aura:if>
+                        </div>
+                    </aura:iteration>
                 </div>
             </div>
         </aura:if>
@@ -720,7 +741,14 @@
                                                 </td> -->
                                                 
                                                 <td>
-                                                    <c:BT_LookUp aura:id="costCodeId" _field="buildertek__Cost_Code__c" _sobject="buildertek__Budget_Item__c" _value="{!v.newBudgetLine.buildertek__Cost_Code__c}" _label="" _filter="" />
+                                                    <!-- <c:BT_LookUp aura:id="costCodeId" _field="buildertek__Cost_Code__c" _sobject="buildertek__Budget_Item__c" _value="{!v.newBudgetLine.buildertek__Cost_Code__c}" _label="" _filter="" /> -->
+                                                    <div class="hidelabel">
+                                                        <lightning:select value="{!v.newBudgetLine.buildertek__Cost_Code__c}">
+                                                            <aura:iteration items="{!v.costCodeList}" var="costCodeOption">
+                                                                <option value="{!costCodeOption.value}">{!costCodeOption.label}</option>
+                                                            </aura:iteration>
+                                                        </lightning:select>
+                                                    </div>
                                                     <!--  <c:customLookup aura:id="costcodeId" objectAPIName="buildertek__Cost_Codes__c"
                                                                     IconName="standard:account" selectedRecord="{!v.selectedCostcode}" />-->
                                                     <!--<force:inputField aura:id="accountId" value="{!v.newBudgetLine.buildertek__Contractor__c}" />-->

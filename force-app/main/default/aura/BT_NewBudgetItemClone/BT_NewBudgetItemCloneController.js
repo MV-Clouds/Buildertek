@@ -173,7 +173,9 @@
         helper.getGroupingLevels(component, event, helper);
 
         helper.applyCSSBasedOnURL(component);
+        helper.getCostCodes(component, event, helper);
 
+        helper.getCompactLayoutFields(component, event, helper);
     },
 
     checkToogle: function (component, event, helper) {
@@ -2214,8 +2216,8 @@ helper.getProductDetails(component,event,helper);
                         var url = location.href;
                         var baseURL = url.substring(0, url.indexOf('/', 14));
                         var result = respo.getReturnValue();
-                        var group = component.find('costCodeId');
-                        group.set("v._text_value", '');
+                        // var group = component.find('costCodeId');
+                        // group.set("v._text_value", '');
                         var costCode = component.find('groupId');
                         costCode.set("v._text_value", '');
                         var product = component.get('v.selectedLookUpRecord');
