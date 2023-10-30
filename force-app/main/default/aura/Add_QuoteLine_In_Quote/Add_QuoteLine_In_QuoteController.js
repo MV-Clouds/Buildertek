@@ -48,39 +48,7 @@
             var inputElement = event.getSource().get('v.value');
         }
     
-    }, 
-    searchVendorInDatatable: function(component, event, helper){
-        console.log('in search vendor method');
-           if (component.get("v.selectedPricebookId") != '') {
-            component.set("v.showVendorTableDataList" , true);
-               var inputElement = event.getSource().get('v.value');
-                   var prevVendorInput = component.get('v.prevVendorInput');
-                   var searchTimeout = component.get('v.searchTimeoutNew');
-                   
-                   clearTimeout(searchTimeout);
-   
-                   // if (inputElement.trim() !== '') {
-                       // console.log('in if');
-                       console.log("called");
-                       if (inputElement === prevVendorInput) {
-                        console.log("called");
-                           helper.searchVendorDatatableHelper(component, event, helper);
-                       } else {
-                        console.log("call 2");
-                        searchTimeout = setTimeout($A.getCallback(function() { 
-                               if (inputElement === component.get('v.sVendorName')) {
-                                   helper.searchVendorDatatableHelper(component, event, helper);
-                               }
-                           }), 2000);
-                           component.set('v.searchTimeoutNew', searchTimeout);
-                       }
-                       component.set('v.prevVendorInput', inputElement);
-               // } 
-           }else{
-               var inputElement = event.getSource().get('v.value');
-           }
-       
-       },  
+    },  
 
     searchVendorInDatatable: function(component, event, helper){
         var searchTimeout = component.get('v.searchTimeout');
@@ -151,9 +119,10 @@
    goToProductModal: function(component, event, helper) {
     var quoteLineList = component.get("v.quoteLineList");
     component.set("v.sProductName", '');
+    component.set("v.sVendorName", '');
     var selectedRecords = [];
     var remainingRecords = [];
-    
+
     quoteLineList.forEach(element => {
         if (element.Selected) {
             selectedRecords.push(element);
@@ -161,7 +130,7 @@
             remainingRecords.push(element);
         }
     });
-    console.log('remainingRecords',remainingRecords);
+
     // Sort the remaining records in ascending order based on Family and then Name
     remainingRecords.sort(function(a, b) {
         if (!a.Family) {
@@ -171,13 +140,7 @@
             b.Family = '';
         }
         // Compare by Family first
-        if(!a.Family){
-            a.Family = '';
-        }
-        if(!b.Family){
-            b.Family = '';
-        } 
-        var familyComparison = a.Family.localeCompare(b.Family); 
+        var familyComparison = a.Family.localeCompare(b.Family);
         
         // If Family is the same, compare by Name
         if (familyComparison === 0) {
@@ -186,13 +149,11 @@
             return familyComparison;
         }
     });
-    console.log('remainingRecords after sorting',remainingRecords);
-    
+
     // Concatenate selected records with sorted remaining records
     var sortedList = selectedRecords.concat(remainingRecords);
-    console.log('sortedList',sortedList);
+
     component.set("v.tableDataList", sortedList);
-    console.log('CONSOLE LOG_---->',component.get("v.tableDataList"));
     component.set("v.selecteProducts", true);
 },
 
@@ -347,7 +308,7 @@ console.log('selectedRecordIds------>',component.get("v.selectedRecords"));
     });
     component.set('v.selectedRecords', updatedSelectedRecords);
 
-    var quoteLineList = component.get('v.tableDataList');
+    var quoteLineList = component.get('v.quoteLineList');
     quoteLineList.forEach(function(element) {
         if (element.Id === currentId) {
             element.Selected = false;
