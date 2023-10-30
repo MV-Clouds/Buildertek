@@ -171,6 +171,7 @@
         console.log('selectedPricebook====>',priceBookId);
         console.log('selectedProductFamily=====>',productFamilyId);
         let sProductFamily = component.get("v.sProductFamily");
+        let sVendorName = component.get("v.sVendorName");
         console.log('sProductFamily=====>',sProductFamily);
         if (priceBookId != '' && productFamilyId != '') {
             
@@ -210,7 +211,9 @@
                     component.set("v.quoteLineList", updatedRows);
                     component.set("v.tableDataList", updatedRows);
 
-
+                    if(sVendorName != ''){
+                        component.set("v.sVendorName", '');
+                    }
                     //--------------------------------------------------------------------------
                 }
                 component.set('v.Spinner', false);
@@ -233,6 +236,7 @@
         component.set('v.Spinner', true);
         component.set("v.sVendorName", '');
         if (component.get("v.selectedPricebookId") != '') {
+            let sVendorName = component.get("v.sVendorName");
             let sProductFamily = component.get("v.sProductFamily");
             let sProductName = component.get("v.sProductName");
             let sPriceBook = component.get("v.selectedPricebookId");
@@ -261,7 +265,7 @@
                                     row.Selected = true;
                                 }
                             });
-
+                            
                             // Sort the records with selected ones on top
                             rows.sort(function(a, b) {
                                 if (a.Selected && !b.Selected) {
@@ -271,6 +275,16 @@
                                 }
                                 return 0; // no change in order
                             });
+
+                            if (sVendorName != '') {
+                                // rows.forEach(element => {
+                                //     if (element.Vendor == sVendorName) {
+                                //         tableDataList.push(element);
+                                //     }
+                                // });
+                                //make attribute of vendorName and set it to null
+                                component.set("v.sVendorName", '');
+                            } 
                             
                             component.set("v.quoteLineList", rows);
                             component.set("v.tableDataList", rows);
