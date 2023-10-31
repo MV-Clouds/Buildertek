@@ -24,12 +24,14 @@
      <aura:handler  event="c:BT_BudgetItemLookupEvent"  action="{!c.handleChildBudgetLineLookupEvent}"/>
     <aura:attribute name="massBudgetLineIndex" type="Integer" />
     <aura:attribute name="childValue" type="String" default="haveValue" />
+    <aura:attribute name="costcodeValue" type="String" default="haveValue" />
+    <aura:attribute name="unitcostValue" type="String" default="haveValue" />
 
     
     <!-- https://www.lightningdesignsystem.com/components/lookups/ --> 
     
     <div  aura:id="searchRes" class="mainDiv slds-form-element slds-lookup slds-is-close" data-select="single">
-        <!-- <label class="slds-form-element__label" for="lookup-348">{!v.label}</label> -->
+        <label class="slds-form-element__label" for="lookup-348">{!v.label}</label>
         <!--This part is for display search bar for lookup-->  
         <div class="slds-form-element__control subDiv">
             

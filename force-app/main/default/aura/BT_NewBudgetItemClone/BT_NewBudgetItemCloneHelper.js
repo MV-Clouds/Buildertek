@@ -2909,23 +2909,6 @@
         $A.enqueueAction(action);
     
     },
-
-    getCompactLayoutFields:function(component, event, helper){
-        let action = component.get("c.getCompactLayoutFields");
-        action.setParams({
-            budgetId: component.get("v.recordId")
-        });
-        action.setCallback(this, function(response) {
-            if(response.getState() == 'SUCCESS'){
-                let result = response.getReturnValue();
-                component.set("v.budgetFields", result);
-                console.log('compactLayout ==>',response.getReturnValue());
-            } else{
-                console.log('Error calling Apex method: ' + state);
-            }
-        });
-        $A.enqueueAction(action);
-    },
     getCostCodes : function(component, event, helper) {
         var action = component.get("c.getCostCodes");
         action.setCallback(this, function(response) {
@@ -2951,5 +2934,20 @@
         );
         $A.enqueueAction(action);
     },
-    
+
+    getFieldsFromFieldset:function(component, event, helper){
+        let action = component.get("c.getFieldsFromFieldset");
+        action.setParams({
+            budgetId: component.get("v.recordId")
+        });
+        action.setCallback(this, function(response) {
+            if(response.getState() == 'SUCCESS'){
+                let result = response.getReturnValue();
+                component.set("v.budgetFields", result);
+            } else{
+                console.log('Error calling Apex method: ' + state);
+            }
+        });
+        $A.enqueueAction(action);
+    } 
 })

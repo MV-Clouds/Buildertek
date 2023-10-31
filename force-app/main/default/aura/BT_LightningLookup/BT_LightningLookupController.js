@@ -99,6 +99,8 @@
             compEvent.fire();
         }
         component.set('v.childValue' , '');
+        component.set('v.costcodeValue' , '');
+        component.set('v.unitcostValue' , '');
          
         
     },
