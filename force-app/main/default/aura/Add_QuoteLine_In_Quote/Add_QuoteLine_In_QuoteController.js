@@ -83,9 +83,9 @@
                         console.log('tableDataList--->',component.get("v.tableDataList"));
                         component.set("v.Spinner", false);
                     }else{
+                        component.set("v.Spinner", false);
                         console.log("Jaimin is here")
                         //bring selected records to top
-                        component.set("v.Spinner", false);
                         var selectedRecords = component.get("v.selectedRecords");
                         var remainingRecords = [];
                         var selectedRecordsIds = [];
@@ -93,19 +93,17 @@
                             selectedRecordsIds.push(element.Id);
                         });
                         console.log('selectedRecordsIds--->',selectedRecordsIds);
-                        // quoteLineList.forEach(element => {
-                        //     if(selectedRecordsIds.includes(element.Id)){
-                        //         remainingRecords.push(element);
-                        //     }
-                        // });
-                        //add the remaining records on bottom
                         quoteLineList.forEach(element => {
                             if(!selectedRecordsIds.includes(element.Id)){
                                 remainingRecords.push(element);
                             }
                         });
                         console.log('remainingRecords--->',remainingRecords);
-                        var sortedList = remainingRecords.concat(quoteLineList);
+                        // make tableDataList as null then assign remainingRecords to tableDataList and then add selectedRecords on top of it
+                        component.set("v.tableDataList", null);
+                        component.set("v.tableDataList", remainingRecords);
+                        console.log('tableDataList--->',component.get("v.tableDataList"));
+                        var sortedList = selectedRecords.concat(component.get("v.tableDataList"));
                         console.log('sortedList--->',sortedList);
                         component.set("v.tableDataList", sortedList);
                         console.log('tableDataList--->',component.get("v.tableDataList"));
