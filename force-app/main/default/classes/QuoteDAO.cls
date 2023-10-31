@@ -707,6 +707,7 @@ public with sharing class QuoteDAO{
         //string Quotename =  QuoteRec.Name;
 
         QuoteLineToInsert.buildertek__Product__c = QuoteRec.buildertek__Product__c;
+        QuoteLineToInsert.buildertek__Item_Name__c = QuoteRec.Name;
         if (QuoteRec.Name != null && QuoteRec.Name.length() > 79){
             QuoteLineToInsert.Name = QuoteRec.Name.left(78);
             QuoteLineToInsert.buildertek__Description__c = QuoteRec.Name;
@@ -2097,6 +2098,7 @@ public with sharing class QuoteDAO{
             System.debug('Record => ' + qql);
             buildertek__Quote_Item__c newQline = new    buildertek__Quote_Item__c();
             newQline.Name = qql.Name;
+            newQline.buildertek__Item_Name__c = newQline.Name;
             if (newQline.Name.length() > 80){
                 newQline.Name = newQline.Name.substring(0, 79);
             }

@@ -138,8 +138,10 @@ public with sharing class ImportCsvQuoteController {
                                                 String truncatedProductName = productName.substring(0, 80); // Take the first 75 characters
                                                 quote.Name = truncatedProductName.replace('"', ''); // Assign truncated name
                                                 quote.buildertek__Description__c = productName.replace('"', '');
+                                                quote.buildertek__Item_Name__c = productName.replace('"', '');
                                             } else {
                                                 quote.Name = productName.replace('"', ''); // ------- changes for ticket AC-40 [END]------------------
+                                                quote.buildertek__Item_Name__c = productName.replace('"', '');
                                             }
                                         }
                                     }
