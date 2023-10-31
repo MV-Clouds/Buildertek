@@ -32,7 +32,7 @@ export default class DisplayPublicFolderLWC extends LightningElement {
                     fileWrapper.fileType = fileDetails[i].cv.FileType;
                     // fileWrapper.fileSize = Math.round(fileDetails[i].cv.ContentSize/1024) + ' KB';
                     if(fileDetails[i].cv.ContentSize < 1024){
-                        fileWrapper.fileSize = fileDetails[i].cv.ContentSize + ' Bytes';
+                        fileWrapper.fileSize = fileDetails[i].cv.ContentSize + ' B';
                     }else if(fileDetails[i].cv.ContentSize >= 1024 && fileDetails[i].cv.ContentSize < 1048576){
                         fileWrapper.fileSize = Math.round(fileDetails[i].cv.ContentSize/1024) + ' KB';
                     }else if(fileDetails[i].cv.ContentSize >= 1048576 && fileDetails[i].cv.ContentSize < 1073741824){
