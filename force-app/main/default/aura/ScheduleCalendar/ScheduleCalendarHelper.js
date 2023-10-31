@@ -19,10 +19,11 @@
 
         var tradeTypeId = Object.keys(JSON.parse(JSON.stringify(component.get("v.selectedTradetype")))) ? JSON.parse(JSON.stringify(component.get("v.selectedTradetype"))).Id  : '';
         var vendorId = Object.keys(JSON.parse(JSON.stringify(component.get("v.selectedVendor")))) ? JSON.parse(JSON.stringify(component.get("v.selectedVendor"))).Id : '';
-        var projectId = Object.keys(JSON.parse(JSON.stringify(component.get("v.selectedproject")))) ? JSON.parse(JSON.stringify(component.get("v.selectedproject"))).Id : '';
+        // var projectId = Object.keys(JSON.parse(JSON.stringify(component.get("v.selectedproject")))) ? JSON.parse(JSON.stringify(component.get("v.selectedproject"))).Id : '';
+        var projectId = component.get("v.RecordId");
 
 
-        projectInputVal = Object.keys(JSON.parse(JSON.stringify(component.get("v.selectedproject")))) ? JSON.parse(JSON.stringify(component.get("v.selectedproject"))).Name : '';
+        // projectInputVal = Object.keys(JSON.parse(JSON.stringify(component.get("v.selectedproject")))) ? JSON.parse(JSON.stringify(component.get("v.selectedproject"))).Name : '';
         tradeTypeInputVal = Object.keys(JSON.parse(JSON.stringify(component.get("v.selectedTradetype")))) ? JSON.parse(JSON.stringify(component.get("v.selectedTradetype"))).Name  : '';
         vendorInputVal = Object.keys(JSON.parse(JSON.stringify(component.get("v.selectedVendor")))) ? JSON.parse(JSON.stringify(component.get("v.selectedVendor"))).Name : '';
 
@@ -34,7 +35,7 @@
 
         component.set("v.selectedVendorIdName",vendorInputVal);
         component.set("v.selectedTradeTypeIdName",tradeTypeInputVal);
-        component.set("v.selectedProjectIdName",projectInputVal);
+        // component.set("v.selectedProjectIdName",projectInputVal);
 
         /*if(projectInputVal == ""){
             component.set("v.selectedProjectId","All");
@@ -87,7 +88,7 @@
         }*/
 
         // var status = component.get("v.selectedScheduleStatus");
-        var projectId = component.get("v.selectedProjectId");
+        var projectId = component.get("v.recordId");
         var tradeTypeId = component.get("v.selectedTradeTypeId");
         var vendorId = component.get("v.selectedVendorId");
         //alert('status -------> '+status);
@@ -96,11 +97,12 @@
        // alert('vendorId -------> '+vendorId);
 
        var projectIdList = [];
-       var ProjectRecordList = component.get("v.ProjectRecordList");
-       ProjectRecordList.forEach(element => {
-            projectIdList.push(element.Id);
-       });
-
+    //    var ProjectRecordList = component.get("v.ProjectRecordList");
+    //    ProjectRecordList.forEach(element => {
+    //         projectIdList.push(element.Id);
+    //    });
+    console.log('rID------->>',component.get("v.recordId"));
+        projectIdList.push(projectId);
        console.log('projectIdList ==> ',{projectIdList});
         var defaultDate = component.get("v.defaultDate");
     	var action = component.get("c.getProjects");
@@ -158,6 +160,7 @@
                 var color;
                 console.log('projectsList in sch ------> '+JSON.stringify(component.get("v.projectsList")));
                 var projectsList = component.get("v.projectsList")
+                console.log('ProjectList',projectsList);
                 result.forEach(function(key) {
                     for (var i = 0; i < projectsList.length; i++) {
                         if(key.buildertek__Schedule__r.buildertek__Project__c == projectsList[i].Id){
