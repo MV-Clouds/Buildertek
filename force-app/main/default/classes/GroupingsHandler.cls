@@ -12,15 +12,19 @@ public without sharing class GroupingsHandler {
 
         List<buildertek__Budget_Line_Group__c> BudgetLineGroups = [SELECT Id, Name, buildertek__Description__c, buildertek__Sorting_Id__c FROM buildertek__Budget_Line_Group__c ];
         List<buildertek__Quote_Line_Group__c> QuoteLineGroups = [SELECT Id, Name, buildertek__Description__c, buildertek__Sort_Id__c FROM buildertek__Quote_Line_Group__c ];
+        List<buildertek__Contract_Line_Group__c> ContractLineGroups = [SELECT Id, Name, buildertek__Description__c, buildertek__Sort_Id__c FROM buildertek__Contract_Line_Group__c ];
 
         List<buildertek__Budget_Line_Group__c> BudgetLineGroupsToInsert = new List<buildertek__Budget_Line_Group__c>();
         List<buildertek__Quote_Line_Group__c> QuoteLineGroupsToInsert = new List<buildertek__Quote_Line_Group__c>();
+        List<buildertek__Contract_Line_Group__c> ContractLineGroupsToInsert = new List<buildertek__Contract_Line_Group__c>();
 
         List<buildertek__Budget_Line_Group__c> BudgetLineGroupsToUpdate = new List<buildertek__Budget_Line_Group__c>();
         List<buildertek__Quote_Line_Group__c> QuoteLineGroupsToUpdate = new List<buildertek__Quote_Line_Group__c>();
+        List<buildertek__Contract_Line_Group__c> ContractLineGroupsToUpdate = new List<buildertek__Contract_Line_Group__c>();
 
         boolean BudgetGroupingexists = false;
         boolean QuoteGroupingexists = false;
+        boolean ContractGroupingexists = false;
 
         for (BT_Grouping__c newGrouping : newGroupings) {
             for (buildertek__Budget_Line_Group__c BudgetLineGroup : BudgetLineGroups) {
@@ -55,6 +59,25 @@ public without sharing class GroupingsHandler {
                 // QuoteLineGroup.buildertek__Sort_Id__c = newGrouping.buildertek__Sort_Id__c;
                 QuoteLineGroupsToInsert.add(QuoteLineGroup);
             }
+            QuoteGroupingexists = false;
+
+            for (buildertek__Contract_Line_Group__c ContractLineGroup : ContractLineGroups) {
+                if (ContractLineGroup.Name == newGrouping.Name) {
+                    ContractGroupingexists = true;
+                    ContractLineGroup.buildertek__Description__c = newGrouping.buildertek__Description__c;
+                    // ContractLineGroup.buildertek__Sort_Id__c = newGrouping.buildertek__Sort_Id__c;
+                    ContractLineGroupsToUpdate.add(ContractLineGroup);
+                }
+            }
+            if (!ContractGroupingexists) {
+                buildertek__Contract_Line_Group__c ContractLineGroup = new buildertek__Contract_Line_Group__c();
+                ContractLineGroup.Name = newGrouping.Name;
+                ContractLineGroup.buildertek__Description__c = newGrouping.buildertek__Description__c;
+                // ContractLineGroup.buildertek__Sort_Id__c = newGrouping.buildertek__Sort_Id__c;
+                ContractLineGroupsToInsert.add(ContractLineGroup);
+            }
+            ContractGroupingexists = false;
+
         }
 
         if (BudgetLineGroupsToInsert.size() > 0) {
@@ -72,18 +95,30 @@ public without sharing class GroupingsHandler {
         if (QuoteLineGroupsToUpdate.size() > 0) {
             update QuoteLineGroupsToUpdate;
         }
+
+        if (ContractLineGroupsToInsert.size() > 0) {
+            insert ContractLineGroupsToInsert;
+        }
+
+        if (ContractLineGroupsToUpdate.size() > 0) {
+            update ContractLineGroupsToUpdate;
+        }
+
     }
 
     public void afterUpdate(List<BT_Grouping__c> newGroupings, Map<Id, BT_Grouping__c> newGroupingsMap, List<BT_Grouping__c> oldGroupings, Map<Id, BT_Grouping__c> oldGroupingsMap) {
 
         List<buildertek__Budget_Line_Group__c> BudgetLineGroups = [SELECT Id, Name, buildertek__Description__c, buildertek__Sorting_Id__c FROM buildertek__Budget_Line_Group__c ];
         List<buildertek__Quote_Line_Group__c> QuoteLineGroups = [SELECT Id, Name, buildertek__Description__c, buildertek__Sort_Id__c FROM buildertek__Quote_Line_Group__c ];
+        List<buildertek__Contract_Line_Group__c> ContractLineGroups = [SELECT Id, Name, buildertek__Description__c, buildertek__Sort_Id__c FROM buildertek__Contract_Line_Group__c ];
 
         List<buildertek__Budget_Line_Group__c> BudgetLineGroupsToUpdate = new List<buildertek__Budget_Line_Group__c>();
         List<buildertek__Quote_Line_Group__c> QuoteLineGroupsToUpdate = new List<buildertek__Quote_Line_Group__c>();
+        List<buildertek__Contract_Line_Group__c> ContractLineGroupsToUpdate = new List<buildertek__Contract_Line_Group__c>();
 
         List<buildertek__Budget_Line_Group__c> BudgetLineGroupstoDelete = new List<buildertek__Budget_Line_Group__c>();
         List<buildertek__Quote_Line_Group__c> QuoteLineGroupstoDelete = new List<buildertek__Quote_Line_Group__c>();
+        List<buildertek__Contract_Line_Group__c> ContractLineGroupstoDelete = new List<buildertek__Contract_Line_Group__c>();
 
         Boolean NameExists = false;
 
@@ -112,6 +147,17 @@ public without sharing class GroupingsHandler {
                             QuoteLineGroup.buildertek__Description__c = newGrouping.buildertek__Description__c;
                             // QuoteLineGroup.buildertek__Sort_Id__c = newGrouping.buildertek__Sort_Id__c;
                             QuoteLineGroupsToUpdate.add(QuoteLineGroup);
+                        }
+                    }
+
+                    //iterate over contract line groups
+                    for(buildertek__Contract_Line_Group__c ContractLineGroup : ContractLineGroups) {
+                        //if the contract line group name is the same as the new grouping name
+                        if(ContractLineGroup.Name == newGrouping.Name) {
+                            //update the contract line group
+                            ContractLineGroup.buildertek__Description__c = newGrouping.buildertek__Description__c;
+                            // ContractLineGroup.buildertek__Sort_Id__c = newGrouping.buildertek__Sort_Id__c;
+                            ContractLineGroupsToUpdate.add(ContractLineGroup);
                         }
                     }
                 }
@@ -166,6 +212,30 @@ public without sharing class GroupingsHandler {
                         }
                     }
                 }
+
+                //iterate over contract line groups
+                for(buildertek__Contract_Line_Group__c ContractLineGroup : ContractLineGroups) {
+                    //if the contract line group name is the same as the new grouping name
+                    if(ContractLineGroup.Name == oldGrouping.Name) {
+                        Boolean ContractNameExists = false;
+                        for(buildertek__Contract_Line_Group__c ContractLineGroup2 : ContractLineGroups) {
+                            if(ContractLineGroup2.Name == newGrouping.Name) {
+                                ContractNameExists = true;
+                                ContractLineGroup2.Name = newGrouping.Name;
+                                ContractLineGroup2.buildertek__Description__c = newGrouping.buildertek__Description__c;
+                                // ContractLineGroup2.buildertek__Sort_Id__c = newGrouping.buildertek__Sort_Id__c;
+                                ContractLineGroupsToUpdate.add(ContractLineGroup2);
+                                // ContractLineGroupstoDelete.add(ContractLineGroup);
+                            }
+                        }
+                        if(!ContractNameExists) {
+                            ContractLineGroup.Name = newGrouping.Name;
+                            ContractLineGroup.buildertek__Description__c = newGrouping.buildertek__Description__c;
+                            // ContractLineGroup.buildertek__Sort_Id__c = newGrouping.buildertek__Sort_Id__c;
+                            ContractLineGroupsToUpdate.add(ContractLineGroup);
+                        }
+                    }
+                }
                 
 
             }
@@ -186,6 +256,14 @@ public without sharing class GroupingsHandler {
         if (QuoteLineGroupstoDelete.size() > 0) {
             delete QuoteLineGroupstoDelete;
         }
+
+        if (ContractLineGroupsToUpdate.size() > 0) {
+            update ContractLineGroupsToUpdate;
+        }
+
+        if (ContractLineGroupstoDelete.size() > 0) {
+            delete ContractLineGroupstoDelete;
+        }
     }
 
     public void beforeDelete(List<BT_Grouping__c> oldGroupings, Map<Id, BT_Grouping__c> oldGroupingsMap) {
@@ -194,9 +272,11 @@ public without sharing class GroupingsHandler {
 
         List<buildertek__Budget_Line_Group__c> BudgetLineGroups = [SELECT Id, Name, buildertek__Description__c, buildertek__Sorting_Id__c FROM buildertek__Budget_Line_Group__c ];
         List<buildertek__Quote_Line_Group__c> QuoteLineGroups = [SELECT Id, Name, buildertek__Description__c, buildertek__Sort_Id__c FROM buildertek__Quote_Line_Group__c ];
+        List<buildertek__Contract_Line_Group__c> ContractLineGroups = [SELECT Id, Name, buildertek__Description__c, buildertek__Sort_Id__c FROM buildertek__Contract_Line_Group__c ];
 
         List<buildertek__Budget_Line_Group__c> BudgetLineGroupstoDelete = new List<buildertek__Budget_Line_Group__c>();
         List<buildertek__Quote_Line_Group__c> QuoteLineGroupstoDelete = new List<buildertek__Quote_Line_Group__c>();
+        List <buildertek__Contract_Line_Group__c> ContractLineGroupstoDelete = new List<buildertek__Contract_Line_Group__c>();
 
         for (BT_Grouping__c oldGrouping : oldGroupings) {
             for (buildertek__Budget_Line_Group__c BudgetLineGroup : BudgetLineGroups) {
@@ -211,6 +291,13 @@ public without sharing class GroupingsHandler {
                     QuoteLineGroupstoDelete.add(QuoteLineGroup);
                 }
             }
+            for (buildertek__Contract_Line_Group__c ContractLineGroup : ContractLineGroups) {
+                if (ContractLineGroup.Name == oldGrouping.Name) {
+                    System.debug('ContractLineGroup ' + ContractLineGroup);
+                    ContractLineGroupstoDelete.add(ContractLineGroup);
+                }
+            }
+
         }
 
         if (BudgetLineGroupstoDelete.size() > 0) {
@@ -219,6 +306,10 @@ public without sharing class GroupingsHandler {
 
         if (QuoteLineGroupstoDelete.size() > 0) {
             delete QuoteLineGroupstoDelete;
+        }
+
+        if (ContractLineGroupstoDelete.size() > 0) {
+            delete ContractLineGroupstoDelete;
         }
 
         System.debug('Before Delete End');
