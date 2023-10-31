@@ -1131,8 +1131,9 @@
                                                         <td style="text-align:left;">
                                                             <div class="slds-truncate">
                                                                 <span data-id="{!tar.recordId}"
-                                                                    onclick="{!c.onclickDuplicate}">
-                                                                    <lightning:icon iconName="utility:copy"
+                                                                    data-record="{!tar.recordId}"
+                                                                    onclick="{!c.doView}">
+                                                                    <lightning:icon iconName="utility:open"
                                                                         size="xx-small" />
                                                                     &nbsp;
                                                                 </span>
@@ -1530,8 +1531,8 @@
                                                         </td>
                                                         <td style="text-align:left;">
                                                             <div class="slds-truncate">
-                                                                <span data-id="{!quoteItem.Id}"  onclick="{!c.onclickDuplicate}">
-                                                                    <lightning:icon iconName="utility:copy" size="xx-small" />
+                                                                <span data-id="{!quoteItem.Id}" data-record="{!quoteItem.Id}" onclick="{!c.doView}">
+                                                                    <lightning:icon iconName="utility:open" size="xx-small" />
                                                                     &nbsp;
                                                                 </span>
                                                                 <span data-id="{!quoteItem.Id}" onclick="{!c.editQuote}">
@@ -1699,8 +1700,8 @@
                                                             </td>
                                                             <td style="text-align:left;">
                                                                 <div class="slds-truncate">
-                                                                    <span data-id="{!quoteItem.Id}" onclick="{!c.onclickDuplicate}">
-                                                                        <lightning:icon iconName="utility:copy" size="xx-small" />
+                                                                    <span data-id="{!quoteItem.Id}" data-record="{!quoteItem.Id}" onclick="{!c.doView}">
+                                                                        <lightning:icon iconName="utility:open" size="xx-small" />
                                                                         &nbsp;
                                                                     </span>
                                                                     <span  data-id="{!quoteItem.Id}" onclick="{!c.editQuote}">
@@ -1900,8 +1901,8 @@
                                                                 </td>
                                                                  <td style="text-align:left;">
                                                                 <div class="slds-truncate">
-                                                                    <span data-id="{!quoteItem.Id}"  onclick="{!c.onclickDuplicate}">
-                                                                        <lightning:icon iconName="utility:copy" size="xx-small" />
+                                                                    <span data-id="{!quoteItem.Id}" data-record="{!quoteItem.Id}" onclick="{!c.doView}">
+                                                                        <lightning:icon iconName="utility:open" size="xx-small" />
                                                                         &nbsp;
                                                                     </span>
                                                                     <span  data-id="{!quoteItem.Id}" onclick="{!c.editQuote}">
@@ -2136,8 +2137,8 @@
                                                                      <td class="blankDiv" > </td>
                                                                     <td style="text-align:left;">
                                                                         <div class="slds-truncate">
-                                                                            <span data-id="{!quoteItem.Id}" onclick="{!c.onclickDuplicate}">
-                                                                                <lightning:icon iconName="utility:copy"  size="xx-small" />
+                                                                            <span data-id="{!quoteItem.Id}" data-record="{!quoteItem.Id}" onclick="{!c.doView}">
+                                                                                <lightning:icon iconName="utility:open"  size="xx-small" />
                                                                                 &nbsp;
                                                                             </span>
                                                                             <span  data-id="{!quoteItem.Id}" onclick="{!c.editQuote}">
