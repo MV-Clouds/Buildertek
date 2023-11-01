@@ -20,7 +20,11 @@ public without sharing class displayPublicFolderCls {
             fileMap.put(file.buildertek__Content_Version__c, file);
         }
 
+        Set<Id> cvIds = new Set<Id>();
         List<ContentVersion> contentVersionList = [SELECT Id, Title, ContentDocumentId, ContentUrl, FileType, FileExtension, VersionNumber, Description, ContentSize FROM ContentVersion WHERE Id IN: fileMap.keySet()];
+        for (ContentVersion cv : contentVersionList) {
+            cvIds.add(cv.Id);
+        }
 
         List<FileWrapper> fileWrapperList = new List<FileWrapper>();
 
@@ -30,6 +34,15 @@ public without sharing class displayPublicFolderCls {
             fw.cv = conv;
             fileWrapperList.add(fw);
         }
+
+        List<buildertek__Public_File__c> deleteList = new List<buildertek__Public_File__c>();
+        for (buildertek__Public_File__c file : fileList) {
+            if (!cvIds.contains(file.buildertek__Content_Version__c)) {
+                deleteList.add(file);
+            }
+        }
+
+        delete deleteList;
 
         folderWrap.publicFolder = folder;
         folderWrap.publicJunctionList = junctionList;
@@ -56,6 +69,8 @@ public without sharing class displayPublicFolderCls {
         @AuraEnabled
         public ContentVersion cv;
     }
+
+
 
 
 
