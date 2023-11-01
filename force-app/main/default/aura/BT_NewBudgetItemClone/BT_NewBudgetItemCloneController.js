@@ -174,6 +174,7 @@
 
         helper.applyCSSBasedOnURL(component);
 
+        helper.getFieldsFromFieldset(component, event, helper);
     },
 
     checkToogle: function (component, event, helper) {
