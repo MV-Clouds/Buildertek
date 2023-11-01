@@ -50,6 +50,72 @@
     
     },  
 
+    searchVendorInDatatable: function(component, event, helper){
+        var searchTimeout = component.get('v.searchTimeout');
+        console.log('in Vendor method');
+        clearTimeout(searchTimeout);
+        var inputElement = event.getSource().get('v.value');
+
+        searchTimeout = setTimeout($A.getCallback(function() {
+            if(component.get("v.selectedPricebookId") != ''){
+                var inputElement = event.getSource().get('v.value');
+                var tableDataList = component.get("v.tableDataList");
+                var quoteLineList = component.get("v.quoteLineList");
+                
+                console.log('inputElement--->',inputElement);
+                // console.log('tableDataList--->',tableDataList);
+                // console.log('quoteLineList--->',quoteLineList);
+                component.set("v.Spinner", true);
+                setTimeout($A.getCallback(function() {
+                    if(inputElement != '' && inputElement != undefined && inputElement != null){
+                        var filterRecord = [];
+                        quoteLineList.forEach(element => {
+                            if(!element.Vendor){
+                                element.Vendor = '';
+                            }
+                            if(element.Vendor.toLowerCase().includes(inputElement.toLowerCase())){
+                                filterRecord.push(element);
+                            }
+                        });
+                        console.log('filterRecord--->',filterRecord);
+            
+                        component.set("v.tableDataList", filterRecord);
+                        console.log('tableDataList--->',component.get("v.tableDataList"));
+                        component.set("v.Spinner", false);
+                    }else{
+                        component.set("v.Spinner", false);
+                        console.log("Jaimin is here")
+                        //bring selected records to top
+                        var selectedRecords = component.get("v.selectedRecords");
+                        var remainingRecords = [];
+                        var selectedRecordsIds = [];
+                        selectedRecords.forEach(element => {
+                            selectedRecordsIds.push(element.Id);
+                        });
+                        console.log('selectedRecordsIds--->',selectedRecordsIds);
+                        quoteLineList.forEach(element => {
+                            if(!selectedRecordsIds.includes(element.Id)){
+                                remainingRecords.push(element);
+                            }
+                        });
+                        console.log('remainingRecords--->',remainingRecords);
+                        // make tableDataList as null then assign remainingRecords to tableDataList and then add selectedRecords on top of it
+                        component.set("v.tableDataList", null);
+                        component.set("v.tableDataList", remainingRecords);
+                        console.log('tableDataList--->',component.get("v.tableDataList"));
+                        var sortedList = selectedRecords.concat(component.get("v.tableDataList"));
+                        console.log('sortedList--->',sortedList);
+                        component.set("v.tableDataList", sortedList);
+                        console.log('tableDataList--->',component.get("v.tableDataList"));
+                    }
+                }), 2000);
+    
+            }
+        }
+        ), 2000);
+        component.set('v.searchTimeout', searchTimeout);
+    },
+
    goToEditModal: function(component, event, helper) {
        helper.goToEditModalHelper(component, event, helper);
    },
@@ -57,6 +123,7 @@
    goToProductModal: function(component, event, helper) {
     var quoteLineList = component.get("v.quoteLineList");
     component.set("v.sProductName", '');
+    component.set("v.sVendorName", '');
     var selectedRecords = [];
     var remainingRecords = [];
 
@@ -70,6 +137,12 @@
 
     // Sort the remaining records in ascending order based on Family and then Name
     remainingRecords.sort(function(a, b) {
+        if (!a.Family) {
+            a.Family = '';
+        }
+        if (!b.Family ) {
+            b.Family = '';
+        }
         // Compare by Family first
         var familyComparison = a.Family.localeCompare(b.Family);
         
