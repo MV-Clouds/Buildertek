@@ -14,8 +14,9 @@
     justify-items: start;
 }
 .THIS .slds-size_1-of-2{
-    width: 96%;
+    width: 100%;
     margin: 0 1%;
+    padding-right: 8px;
     /* margin-top: 20px; */
 }
 
@@ -30,7 +31,7 @@
 
 .THIS .field-container lightning-primitive-icon{
     /* color: rgb(243, 243, 243); */
-    margin-bottom: 10px;
+    /* margin-bottom: 10px; */
 }
 .THIS .headingDiv{
     margin-top: 20px;
@@ -72,7 +73,7 @@
     display: flex;
     padding-left: 1%;
     flex-direction: row;
-    width: 96%;
+    width: 100%;
     justify-content: space-between;
 }
 

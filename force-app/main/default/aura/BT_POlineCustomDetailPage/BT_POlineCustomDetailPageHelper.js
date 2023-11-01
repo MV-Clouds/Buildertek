@@ -32,22 +32,42 @@
         getRecordData.setCallback(this, function (response) {
             var state = response.getState();
             console.log('status :: ', state);
-            console.log('error :: ', response.getError());
             if (state === "SUCCESS") {
                 var result = response.getReturnValue();
                 console.log('result :: ', result);
-                component.set("v.POline", result);
-                component.set("v.isLoading", false);
+                console.log("0.1");
+                try {
+                    console.log("0.5", component.get("v.recordId"));
+                    // component.set("v.POlineid", component.get("v.recordId"));
+                    console.log("1");
+                    if(result.buildertek__Product__r){
+                        console.log("2");
+                        console.log('InitialProductName > ', result.buildertek__Product__r.Name); 
+                        console.log("3");
+                        component.set("v.selectedPRODId", result.buildertek__Product__r.Id);
+                        console.log("4");
+                        component.set("v.selectedPRODName", result.buildertek__Product__r.Name);
+                    }
+                    console.log("5");
+                    var searchTimeout = setTimeout($A.getCallback(function() {
+                        component.set("v.POlineInit", result);
+                        console.log("6");
+                        // console.log('polist >> ', component.get("v.POlineInit"));
+                        component.set("v.POline", result);
+                    }), 1000);
+                } catch (error) {
+                    console.log('error >> ', error.stack);
+                    
+                }
             } else {
                 var toastEvent = $A.get("e.force:showToast");
 				toastEvent.setParams({
-					"type": "Error",
+                    "type": "Error",
 					"title": "Error!",
 					"message": "Something Went Wrong."
 				});
 				toastEvent.fire();
                 component.set("v.isLoading", false);
-
             }
         });
         $A.enqueueAction(getRecordData);
@@ -65,39 +85,104 @@
                 console.log('ProductFamilyList :: ', result);
                 component.set("v.PriceBookList", result);
                 component.set("v.PriceBookListSearched", result);
-
+            }
+            else{
+                var toastEvent = $A.get("e.force:showToast");
+				toastEvent.setParams({
+					"type": "Error",
+					"title": "Error!",
+					"message": "Something Went Wrong."
+				});
+				toastEvent.fire();
+                component.set("v.isLoading", false);
             }
         });
         $A.enqueueAction(getPricebooks);
 
     },
 
-    getRelatedProductFamilyHelper : function(component, event){
+    getProductRelatedtoPBHelper : function(component, event){
+        component.set("v.isLoading", true);
+
         console.log('component.get("v.selectedPBId") >> ',component.get("v.selectedPBId"));
-        var getRelatedProductFamily = component.get("c.getRelatedProductFamily");
-        getRelatedProductFamily.setParams({
+        var getProductRelatedtoPB = component.get("c.getProductRelatedtoPB");
+        getProductRelatedtoPB.setParams({
             PricebookId : component.get("v.selectedPBId")
         });
-        getRelatedProductFamily.setCallback(this, function (response){
+        getProductRelatedtoPB.setCallback(this, function (response){
             var state = response.getState();
             var result = response.getReturnValue();
             if(state == "SUCCESS"){
-                console.log('ProductFamilyList :: ', result);
+                console.log('getProductRelatedtoPB :: ', result);
                 var ProductFamilyList = [];
                 var ProductFamilySet = new Set();
+                var ProductList = [];
                 result.forEach(ele => {
                     if(ele.Family){
                         ProductFamilySet.add(ele.Family);
                     }
+                    ProductList.push(ele);
                 });
+
                 ProductFamilyList = Array.from(ProductFamilySet);  // converted Set Into Array for iteration in aura
                 console.log('ProductFamilyList >> ', ProductFamilyList);
                 component.set("v.ProductFamilyList", ProductFamilyList);
                 component.set("v.ProductFamilyListSearched", ProductFamilyList);
-
+                
+                console.log('ProductList >> ', ProductList);
+                component.set("v.ProductList", ProductList);
+                component.set("v.ProductListSearched", ProductList);
+                
+                component.set("v.isLoading", false);
+            }
+            else{
+                var toastEvent = $A.get("e.force:showToast");
+				toastEvent.setParams({
+					"type": "Error",
+					"title": "Error!",
+					"message": "Something Went Wrong."
+				});
+				toastEvent.fire();
+                component.set("v.isLoading", false);
             }
         });
-        $A.enqueueAction(getRelatedProductFamily);
+        $A.enqueueAction(getProductRelatedtoPB);
 
-    }
+    },
+
+    getProductRelatedToPFhandler : function(component, event){
+
+        component.set("v.isLoading", true);
+        var getProductRelatedToPF = component.get("c.getProductRelatedToPF");
+        getProductRelatedToPF.setParams({
+            PricebookId : component.get("v.selectedPBId"),
+            Product_Family : component.get("v.selectedPFName")
+        });
+        getProductRelatedToPF.setCallback(this, function (response){
+            var state = response.getState();
+            var result = response.getReturnValue();
+            if(state == "SUCCESS"){
+                console.log('getProductRelatedToPF :: ', result);
+
+                component.set("v.ProductList", result);
+                component.set("v.ProductListSearched", result);
+
+                component.set("v.isLoading", false);
+
+            }
+            else{
+                var toastEvent = $A.get("e.force:showToast");
+				toastEvent.setParams({
+					"type": "Error",
+					"title": "Error!",
+					"message": "Something Went Wrong."
+				});
+				toastEvent.fire();
+                component.set("v.isLoading", false);
+            }
+        })
+
+        $A.enqueueAction(getProductRelatedToPF);
+
+    },
 })
