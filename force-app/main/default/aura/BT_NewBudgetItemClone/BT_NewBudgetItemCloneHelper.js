@@ -2944,10 +2944,14 @@
             if(response.getState() == 'SUCCESS'){
                 let result = response.getReturnValue();
                 component.set("v.budgetFields", result);
+
+                console.log('compactLayout ==>',response.getReturnValue());
+
             } else{
                 console.log('Error calling Apex method: ' + state);
             }
         });
         $A.enqueueAction(action);
     } 
+
 })

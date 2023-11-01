@@ -803,6 +803,10 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
         //   type: "addnew",
         // },
         {
+          type : 'eventcolor',
+          text : 'Color'
+        },
+        {
           type: "action",
           draggable: false,
           // text    : 'Attach File',

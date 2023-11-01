@@ -42,11 +42,10 @@ trigger ContinuationSheetLineTrigger on SOV_Continuation_Sheet_Lines__c (after i
         }else{
             handler.afterUpdate(Trigger.old, Trigger.new, Trigger.oldMap, Trigger.newMap);
             ContinuationSheetLineTriggerHandler.updatePaymentAppStatusBasedOnConSheetLinesStatusOnAfterUpdate(Trigger.New, Trigger.oldMap);
+            handler.UpdateProjectFieldBasedOnConSheetLinesStatusOnAfterUpdate(Trigger.old, Trigger.new, Trigger.oldMap, Trigger.newMap);
         }
         
         handler.isAllLinesCompleted(Trigger.old, Trigger.new, Trigger.oldMap, Trigger.newMap);
-        
-        
     }
     
    

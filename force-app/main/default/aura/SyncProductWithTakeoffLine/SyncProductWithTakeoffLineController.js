@@ -42,10 +42,10 @@
     searchInDatatable: function(component, event, helper){
         console.log("Method called" , component.get("v.selectedPricebookId"));
         if (component.get("v.selectedPricebookId") != '') {
-            var checkboxes = component.find("checkboxInput");
-            checkboxes.forEach(function(checkbox) {
-                checkbox.set("v.checked", false);
-            });
+            // var checkboxes = component.find("checkboxInput");
+            // checkboxes.forEach(function(checkbox) {
+            //     checkbox.set("v.checked", false);
+            // });
             component.set("v.selectedRecords", []);
             var inputElement = event.getSource().get('v.value');
                 var prevInput = component.get('v.prevInput');

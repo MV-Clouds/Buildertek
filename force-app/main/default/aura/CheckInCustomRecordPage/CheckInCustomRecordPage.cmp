@@ -50,7 +50,7 @@
 
             <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
                 <div class="slds-modal__container">
-                    <c:CreateNewCheckInBtn/>
+                    <c:CreateNewCheckInBtn projectId="{!v.recordId}"/>
                 </div>
             </section>
             <div class="slds-backdrop slds-backdrop_open"></div>
@@ -71,144 +71,153 @@
         </aura:if>
 
 
-
-        <div class="main-table-div">
-            <div class="tbl-header">
-                <div class="tbl-hd-th id-cell">No.</div>
-                <div class="tbl-hd-th name-cell">Name</div>
-                <div class="tbl-hd-th status-cell st-txt">Status</div>
-                <div class="tbl-hd-th notes-cell js-center pd-none-div">Notes</div>
-                <!-- <div class="tbl-hd-th photo-cell pc-hdr hgt-aut">Attached Photos</div> -->
-                
-                <aura:if isTrue="{!!v.isRecordTabPage}">
-                    <div class="tbl-hd-th photo-cell pc-hdr hgt-aut">Attached Photos</div>
-                </aura:if>
-
-                <aura:if isTrue="{!v.isRecordTabPage}">
-                    <div class="tbl-hd-th photo-cell pc-hdr hgt-aut">
-                        <div>Attached Photos</div>
-                        <div class="inline-crt-btn"><lightning:button class="chkn-btn" variant="brand-outline" label="Creat Check-In" title="Creat Check-In" onclick="{! c.handleCreateCheckIn }" /></div>
-                    </div>
-                </aura:if>
-                
+        <aura:if isTrue="{!empty(v.checkIns)}">
+            <div class="no-check-in-div">
+                <lightning:button variant="brand" label="Create Check-In's" title="Create Check-In's" onclick="{! c.handleCreateCheckIn }" />
             </div>
-
-            <div class="tbl-body">
-
-                <aura:if isTrue="{!empty(v.checkIns)}">
-                    <div class="no-check-in-div">
-                        No check-Ins to show
-                    </div>
-                </aura:if>
-
-                <aura:iteration items="{!v.checkIns}" var="ci" indexVar="index">
-                    <div class="ci-row">
-                        <div class="td-txt id-cell num-txt"> {!v.offset + index + 1}</div>
-                        <!-- <div class="td-txt name-cell">{!ci.Name}</div> -->
-                        <div class="td-txt name-cell">
-                            <!-- <a href="{!orgBaseURL + '/' + ci.Id }" target="_blank">{!ci.Name}</a> -->
-                            <div class="notes-div notes">
-                                <a href="{!orgBaseURL + '/' + ci.Id }" target="_blank">{!ci.Name}</a>
-                            </div>
-                        </div>
-                        <div class="td-txt status-cell">
-                            <div class="status-clr-div" data-status="{!ci.buildertek__Status__c}">{!ci.buildertek__Status__c}</div>
-                        </div>
-                        <div class="td-txt notes-cell">
-                            <div class="notes-border-div notes">{!ci.buildertek__Notes__c}</div>
-                        </div>
-                        <div class="td-txt photo-cell ph-hg-at">
-
-                            <!-- <aura:if isTrue="{!ci.ContentDocumentLinks}">
-                                <div class="main-file-cmp">
-                                    <aura:iteration items="{!ci.ContentDocumentLinks}" var="cd">
-                                        <div class="slds-m-horizontal_x-small">
-                                            <lightning:fileCard fileId="{!cd.ContentDocumentId}" />
-                                        </div>
-                                    </aura:iteration>
-                                </div>
-                            </aura:if> -->
-
-                            <aura:if isTrue="{!ci.ContentDocumentLinks}">
-                                <div class="main-file-cmp">
-                                    <aura:iteration items="{!ci.ContentDocumentLinks}" var="cd" indexVar="indexNum">
-                                        <div class="slds-m-horizontal_x-small" id="{!cd.ContentDocumentId}" data-cdid="{!cd.Id}" data-cid="{!ci.Id}" data-cdlindex="{!indexNum}">
-                                            <lightning:carouselImage description="{!cd.ContentDocument.Title}" src="{!orgBaseURL + '/sfc/servlet.shepherd/document/download/' + cd.ContentDocumentId}" onclick="{!c.handle_img_click}" id="{!cd.ContentDocumentId}"/>
-                                        </div>
-                                    </aura:iteration>
-                                </div>
-                            </aura:if>
-
-                            <aura:if isTrue="{!!ci.ContentDocumentLinks}">
-                                <div class="no-file-div">No Files Available</div>
-                            </aura:if>
-
-                        </div>
-                    </div>
-
-                    <!-- for Tablet-view statrt-->
-
-                    <div class="ci-row-tab">
-                        <div class="pt-1-tab">
-                            <div class="id-tab">
-                                <div class="hdr-tab">No:</div>
-                                <div class="txt-tab pd-1-tab">{!v.offset + index + 1}</div>
-                            </div>
-                            <div class="name-tab">
-                                <div class="hdr-tab cn-tab-hdr">Name:</div>
-                                <div class="txt-tab notes-tab">
-                                    <div class="notes-div ">
-                                        <a href="{!orgBaseURL + '/' + ci.Id }">{!ci.Name}</a>
-                                    </div>    
-                                </div>
-                            </div>
-                            <div class="status-tab">
-                                <div class="hdr-tab">Status: &nbsp;</div>
-                                <div class="status-clr-div" data-status="{!ci.buildertek__Status__c}">{!ci.buildertek__Status__c}</div>
-                            </div>
-                        </div>
-
-                        <div class="pt-2-tab">
-                            <div class="txt-tab note-tab notes">{!ci.buildertek__Notes__c}</div>
-                            <div class="file-div-tab">
-                                
-                                <aura:if isTrue="{!ci.ContentDocumentLinks}">
-                                    <div class="main-file-cmp">
-                                        <aura:iteration items="{!ci.ContentDocumentLinks}" var="cd" indexVar="indexNum">
-                                            <div class="slds-m-horizontal_x-small" id="{!cd.ContentDocumentId}" data-cdid="{!cd.Id}" data-cid="{!ci.Id}" data-cdlindex="{!indexNum}">
-                                                <lightning:carouselImage description="{!cd.ContentDocument.Title}" src="{!orgBaseURL + '/sfc/servlet.shepherd/document/download/' + cd.ContentDocumentId}" onclick="{!c.handle_img_click}" id="{!cd.ContentDocumentId}"/>
-                                            </div>
-                                        </aura:iteration>
-                                    </div>
-                                </aura:if>
-                                
-                                <aura:if isTrue="{!!ci.ContentDocumentLinks}">
-                                    <div class="no-file-div">No Files Available</div>
-                                </aura:if>
-
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- for Tablet-view end -->
-
-                </aura:iteration>
-            </div>
-
-            <div class="tbl-footer">
-                <ui:button class="prv-btn active-btn slds-button slds-button--neutral" press="{!c.Previous}" disabled="{!v.prev}">
-                    <span>Previous</span>
-                </ui:button>
-
-                <div class="pagintaion-num-div">
-                    <div> {!v.currentPage} of {!v.totalPage}</div>
+            <aura:set attribute="else">
+                <div style="padding: 5px;">
+                    <center><lightning:button variant="brand" label="New Check-In's" title="New Check-In's" onclick="{! c.handleCreateCheckIn }" /></center>
                 </div>
+                <div class="main-table-div">
+                    <div class="tbl-header">
+                        <div class="tbl-hd-th id-cell">No.</div>
+                        <div class="tbl-hd-th name-cell">Name</div>
+                        <div class="tbl-hd-th status-cell st-txt">Status</div>
+                        <div class="tbl-hd-th notes-cell js-center pd-none-div">Notes</div>
+                        <!-- <div class="tbl-hd-th photo-cell pc-hdr hgt-aut">Attached Photos</div> -->
+                        
+                        <aura:if isTrue="{!!v.isRecordTabPage}">
+                            <div class="tbl-hd-th photo-cell pc-hdr hgt-aut">Attached Photos</div>
+                        </aura:if>
 
-                <ui:button class="next-btn active-btn slds-button slds-button--neutral" press="{!c.Next}" disabled="{!v.next}" >
-                    <span>Next</span>
-                </ui:button>
-            </div>
-        </div>
+                        <aura:if isTrue="{!v.isRecordTabPage}">
+                            <div class="tbl-hd-th photo-cell pc-hdr hgt-aut">
+                                <div>Attached Photos</div>
+                                <div class="inline-crt-btn"><lightning:button class="chkn-btn" variant="brand-outline" label="Creat Check-In" title="Creat Check-In" onclick="{! c.handleCreateCheckIn }" /></div>
+                            </div>
+                        </aura:if>
+                        
+                    </div>
+
+                    <div class="tbl-body">
+
+                        <!-- <aura:if isTrue="{!empty(v.checkIns)}">
+                            <div class="no-check-in-div">
+                                No check-Ins to show
+                            </div>
+                        </aura:if> -->
+
+                        <aura:iteration items="{!v.checkIns}" var="ci" indexVar="index">
+                            <div class="ci-row">
+                                <div class="td-txt id-cell num-txt"> {!v.offset + index + 1}</div>
+                                <!-- <div class="td-txt name-cell">{!ci.Name}</div> -->
+                                <div class="td-txt name-cell">
+                                    <!-- <a href="{!orgBaseURL + '/' + ci.Id }" target="_blank">{!ci.Name}</a> -->
+                                    <div class="notes-div notes">
+                                        <a href="{!orgBaseURL + '/' + ci.Id }" target="_blank">{!ci.Name}</a>
+                                    </div>
+                                </div>
+                                <div class="td-txt status-cell">
+                                    <div class="status-clr-div" data-status="{!ci.buildertek__Status__c}">{!ci.buildertek__Status__c}</div>
+                                </div>
+                                <div class="td-txt notes-cell">
+                                    <div class="notes-border-div notes">{!ci.buildertek__Notes__c}</div>
+                                </div>
+                                <div class="td-txt photo-cell ph-hg-at">
+
+                                    <!-- <aura:if isTrue="{!ci.ContentDocumentLinks}">
+                                        <div class="main-file-cmp">
+                                            <aura:iteration items="{!ci.ContentDocumentLinks}" var="cd">
+                                                <div class="slds-m-horizontal_x-small">
+                                                    <lightning:fileCard fileId="{!cd.ContentDocumentId}" />
+                                                </div>
+                                            </aura:iteration>
+                                        </div>
+                                    </aura:if> -->
+
+                                    <aura:if isTrue="{!ci.ContentDocumentLinks}">
+                                        <div class="main-file-cmp">
+                                            <aura:iteration items="{!ci.ContentDocumentLinks}" var="cd" indexVar="indexNum">
+                                                <div class="slds-m-horizontal_x-small" id="{!cd.ContentDocumentId}" data-cdid="{!cd.Id}" data-cid="{!ci.Id}" data-cdlindex="{!indexNum}">
+                                                    <lightning:carouselImage description="{!cd.ContentDocument.Title}" src="{!orgBaseURL + '/sfc/servlet.shepherd/document/download/' + cd.ContentDocumentId}" onclick="{!c.handle_img_click}" id="{!cd.ContentDocumentId}"/>
+                                                </div>
+                                            </aura:iteration>
+                                        </div>
+                                    </aura:if>
+
+                                    <aura:if isTrue="{!!ci.ContentDocumentLinks}">
+                                        <div class="no-file-div">No Files Available</div>
+                                    </aura:if>
+
+                                </div>
+                            </div>
+
+                            <!-- for Tablet-view statrt-->
+
+                            <div class="ci-row-tab">
+                                <div class="pt-1-tab">
+                                    <div class="id-tab">
+                                        <div class="hdr-tab">No:</div>
+                                        <div class="txt-tab pd-1-tab">{!v.offset + index + 1}</div>
+                                    </div>
+                                    <div class="name-tab">
+                                        <div class="hdr-tab cn-tab-hdr">Name:</div>
+                                        <div class="txt-tab notes-tab">
+                                            <div class="notes-div ">
+                                                <a href="{!orgBaseURL + '/' + ci.Id }">{!ci.Name}</a>
+                                            </div>    
+                                        </div>
+                                    </div>
+                                    <div class="status-tab">
+                                        <div class="hdr-tab">Status: &nbsp;</div>
+                                        <div class="status-clr-div" data-status="{!ci.buildertek__Status__c}">{!ci.buildertek__Status__c}</div>
+                                    </div>
+                                </div>
+
+                                <div class="pt-2-tab">
+                                    <div class="txt-tab note-tab notes">{!ci.buildertek__Notes__c}</div>
+                                    <div class="file-div-tab">
+                                        
+                                        <aura:if isTrue="{!ci.ContentDocumentLinks}">
+                                            <div class="main-file-cmp">
+                                                <aura:iteration items="{!ci.ContentDocumentLinks}" var="cd" indexVar="indexNum">
+                                                    <div class="slds-m-horizontal_x-small" id="{!cd.ContentDocumentId}" data-cdid="{!cd.Id}" data-cid="{!ci.Id}" data-cdlindex="{!indexNum}">
+                                                        <lightning:carouselImage description="{!cd.ContentDocument.Title}" src="{!orgBaseURL + '/sfc/servlet.shepherd/document/download/' + cd.ContentDocumentId}" onclick="{!c.handle_img_click}" id="{!cd.ContentDocumentId}"/>
+                                                    </div>
+                                                </aura:iteration>
+                                            </div>
+                                        </aura:if>
+                                        
+                                        <aura:if isTrue="{!!ci.ContentDocumentLinks}">
+                                            <div class="no-file-div">No Files Available</div>
+                                        </aura:if>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- for Tablet-view end -->
+
+                        </aura:iteration>
+                    </div>
+
+                    <div class="tbl-footer">
+                        <ui:button class="prv-btn active-btn slds-button slds-button--neutral" press="{!c.Previous}" disabled="{!v.prev}">
+                            <span>Previous</span>
+                        </ui:button>
+
+                        <div class="pagintaion-num-div">
+                            <div> {!v.currentPage} of {!v.totalPage}</div>
+                        </div>
+
+                        <ui:button class="next-btn active-btn slds-button slds-button--neutral" press="{!c.Next}" disabled="{!v.next}" >
+                            <span>Next</span>
+                        </ui:button>
+                    </div>
+                </div>
+            </aura:set>
+        </aura:if>
     </div>
 
     <!-- ============= New Image Preview ============= -->

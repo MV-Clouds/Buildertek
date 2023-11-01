@@ -21,7 +21,7 @@ public class ImportSelectionSheet {
             Map<Id,buildertek__Answer_Choice__c> answerChoiceMap = new Map<Id,buildertek__Answer_Choice__c>();
 
             for (buildertek__Section__c check : sections) {
-                System.debug('list of '+check);
+                System.debug('list of '+check.Id);
             }
 
             if(sections.size()>0){
@@ -34,6 +34,7 @@ public class ImportSelectionSheet {
                 insert sectionMap.values();
 
                 List<buildertek__Question_Group__c> questiongroups =[SELECT Id, Name, buildertek__Section__c, buildertek__Parent__c, buildertek__Sort_Id__c, buildertek__Title__c, buildertek__Instructions__c, buildertek__Allowance_Available__c, buildertek__Allowance_Remaining__c, buildertek__Date_Selected__c, buildertek__Selected_By__c, buildertek__Selected_By_Name__c, buildertek__Allowance_Used__c, buildertek__of_Options_Required__c, buildertek__Total_Options_Submitted__c FROM buildertek__Question_Group__c WHERE buildertek__Section__c In : sections];
+                System.debug('buildertek__Question_Group__c >> '+ questiongroups);
                 if(questiongroups.size()>0){
                     for(buildertek__Question_Group__c questiongroup : questiongroups){
                         buildertek__Question_Group__c questiongroupClone = questiongroup.clone(false,true);
@@ -43,7 +44,7 @@ public class ImportSelectionSheet {
                     System.debug('questionGroupMap '+questionGroupMap);
                     insert questionGroupMap.values();
 
-                    List<buildertek__Question__c> questions =[SELECT Id, Name, buildertek__Question_HTML__c, buildertek__Question_Text__c, buildertek__Display_Layout__c, buildertek__Help_Text__c, buildertek__Question_Type__c, buildertek__Choice_Template__c, buildertek__Repository_Area__c, buildertek__Auto_Number__c, buildertek__Sort_Id__c, buildertek__Question_Group__c, buildertek__Text_Question_Response_Data_Type__c, buildertek__Mandatory__c, buildertek__Cost__c, buildertek__Section__c, buildertek__Additional_Cost__c, buildertek__Instructions__c, buildertek__Vendor__c, buildertek__Manufacturer__c, buildertek__Image_Id__c, buildertek__Document_Id__c, buildertek__Product__c, buildertek__Display_Layout1__c, buildertek__Is_Selected_Item__c, buildertek__StockKeepingUnit__c, buildertek__ProductCode__c, buildertek__Finish__c, buildertek__Color__c, buildertek__Options_Name__c FROM buildertek__Question__c WHERE buildertek__Question_Group__c In : questiongroups];
+                    List<buildertek__Question__c> questions =[SELECT Id, Name, buildertek__Question_HTML__c,buildertek__Selected__c,buildertek__Default_Option__c, buildertek__Question_Text__c, buildertek__Display_Layout__c, buildertek__Help_Text__c, buildertek__Question_Type__c, buildertek__Choice_Template__c, buildertek__Repository_Area__c, buildertek__Auto_Number__c, buildertek__Sort_Id__c, buildertek__Question_Group__c, buildertek__Text_Question_Response_Data_Type__c, buildertek__Mandatory__c, buildertek__Cost__c, buildertek__Section__c, buildertek__Additional_Cost__c, buildertek__Instructions__c, buildertek__Vendor__c, buildertek__Manufacturer__c, buildertek__Image_Id__c, buildertek__Document_Id__c, buildertek__Product__c, buildertek__Display_Layout1__c, buildertek__Is_Selected_Item__c, buildertek__StockKeepingUnit__c, buildertek__ProductCode__c, buildertek__Finish__c, buildertek__Color__c, buildertek__Options_Name__c FROM buildertek__Question__c WHERE buildertek__Question_Group__c In : questiongroups];
                     if(questions.size()>0){
                         for(buildertek__Question__c question : questions){
                             buildertek__Question__c questionClone = question.clone(false,true);

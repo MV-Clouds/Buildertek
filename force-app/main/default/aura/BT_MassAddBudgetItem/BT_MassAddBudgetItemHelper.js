@@ -412,9 +412,10 @@
 
                 const setBudgetLineWrapper= (pricebookList , index)=>{
                     console.log(budgetLineWrapperList[index]);
-                    budgetLineWrapperList[index].BudgetLine.buildertek__Unit_Price__c=pricebookList.UnitPrice;
+                    budgetLineWrapperList[index].BudgetLine.buildertek__Unit_Price__c=pricebookList.buildertek__Unit_Cost__c;
                     budgetLineWrapperList[index].BudgetLine.Name=pricebookList.Product2.Name;
                     budgetLineWrapperList[index].BudgetLine.buildertek__Quantity__c = 1;
+                    budgetLineWrapperList[index].BudgetLine.buildertek__Contractor__c = pricebookList.Product2.buildertek__Vendor__c;
                     console.log(component.get("v.budgetLineGroups"));
                     budgetLineWrapperList[index].GroupingOptions = component.get("v.budgetLineGroups");
 

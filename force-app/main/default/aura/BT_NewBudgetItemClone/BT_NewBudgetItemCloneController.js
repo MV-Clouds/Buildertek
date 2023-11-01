@@ -176,6 +176,7 @@
         helper.getCostCodes(component, event, helper);
         helper.getFieldsFromFieldset(component, event, helper);
 
+        helper.getFieldsFromFieldset(component, event, helper);
     },
 
     checkToogle: function (component, event, helper) {

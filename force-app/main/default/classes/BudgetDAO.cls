@@ -3281,17 +3281,17 @@ buildertek__Budget__c budgetCopy = Database.query(query);*/
         public Integer total{ get; set; }
     }
 
-    public class CompactLayoutFieldWrapper {
+    public class fieldsetWrapper {
         @AuraEnabled
         public String fieldLabel;
-        
+
         @AuraEnabled
         public String fieldType;
         
         @AuraEnabled
         public Object fieldValue;
-        
-        public CompactLayoutFieldWrapper(String label,String fieldType,Object value) {
+
+        public fieldsetWrapper(String label,String fieldType,Object value) {
             fieldLabel = label;
             this.fieldType = fieldType;
             fieldValue = value;
@@ -3318,8 +3318,15 @@ buildertek__Budget__c budgetCopy = Database.query(query);*/
     }   
 
     @AuraEnabled
-    public static List<CompactLayoutFieldWrapper> getCompactLayoutFields(String budgetId) {
-        List<CompactLayoutFieldWrapper> compactLayoutWrapperList = new List<CompactLayoutFieldWrapper>();
+    public static List<buildertek__Cost_Codes__c> getCostCodes(){
+        List<buildertek__Cost_Codes__c> costCodes = [SELECT Id, Name FROM buildertek__Cost_Codes__c ORDER BY Name ASC];
+        return costCodes;
+    }
+
+    // * Return list of wrapper class to display fields from fieldset in view budget line 
+    @AuraEnabled
+    public static List<fieldsetWrapper> getFieldsFromFieldset(String budgetId) {
+        List<fieldsetWrapper> fieldsetWrapperList = new List<fieldsetWrapper>();
         String ObjectName = 'buildertek__Budget__c';
         String fieldSetName = 'buildertek__Budget_Compact_Layout';
         Map<String, Schema.SObjectType> GlobalDescribeMap = Schema.getGlobalDescribe(); 
@@ -3346,20 +3353,14 @@ buildertek__Budget__c budgetCopy = Database.query(query);*/
             String fieldLabel = fieldSetMemberObj.getLabel();
             String fieldPath = fieldSetMemberObj.getFieldPath();
             String fieldType = String.valueOf(fieldSetMemberObj.getType());
-            CompactLayoutFieldWrapper conWrapper = new CompactLayoutFieldWrapper(fieldLabel, fieldType, budgetRecord.get(fieldPath));
-            compactLayoutWrapperList.add(conWrapper);
+            fieldsetWrapper conWrapper = new fieldsetWrapper(fieldLabel, fieldType, budgetRecord.get(fieldPath));
+            fieldsetWrapperList.add(conWrapper);
             System.debug('conWrapper: ' + conWrapper.fieldLabel);
         }
 
-        System.debug('compactLayoutWrapperList: ' + compactLayoutWrapperList);
-        
-        return compactLayoutWrapperList;
-    }
-    
-    @AuraEnabled
-    public static List<buildertek__Cost_Codes__c> getCostCodes(){
-        List<buildertek__Cost_Codes__c> costCodes = [SELECT Id, Name FROM buildertek__Cost_Codes__c ORDER BY Name ASC];
-        return costCodes;
+        System.debug('fieldsetWrapperList: ' + fieldsetWrapperList);
+
+        return fieldsetWrapperList;
     }
 
 

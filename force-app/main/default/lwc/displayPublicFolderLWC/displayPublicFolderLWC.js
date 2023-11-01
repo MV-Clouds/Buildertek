@@ -8,6 +8,7 @@ export default class DisplayPublicFolderLWC extends LightningElement {
     @track folderWrap = {};
     @track folderDetails = {};
     @track noFiles = false;
+    @track listFiles = [];
 
     connectedCallback(){
         console.log('folderId ==> '+this.folderId);
@@ -20,6 +21,35 @@ export default class DisplayPublicFolderLWC extends LightningElement {
                 console.log('Result ==> ',result);
                 this.folderWrap = result;
                 this.folderDetails = result.publicFolder;
+                let fileDetails = result.fileWrapperList;
+
+                let fileWrapperList = [];
+                let fileWrapper = {};
+                for(let i=0; i<fileDetails.length; i++){
+                    fileWrapper = {};
+                    fileWrapper.fileName = fileDetails[i].publicFile.buildertek__File_Name__c;
+                    fileWrapper.fileId = fileDetails[i].publicFile.Id;
+                    fileWrapper.fileType = fileDetails[i].cv.FileType;
+                    // fileWrapper.fileSize = Math.round(fileDetails[i].cv.ContentSize/1024) + ' KB';
+                    if(fileDetails[i].cv.ContentSize < 1024){
+                        fileWrapper.fileSize = fileDetails[i].cv.ContentSize + ' Bytes';
+                    }else if(fileDetails[i].cv.ContentSize >= 1024 && fileDetails[i].cv.ContentSize < 1048576){
+                        fileWrapper.fileSize = Math.round(fileDetails[i].cv.ContentSize/1024) + ' KB';
+                    }else if(fileDetails[i].cv.ContentSize >= 1048576 && fileDetails[i].cv.ContentSize < 1073741824){
+                        fileWrapper.fileSize = Math.round(fileDetails[i].cv.ContentSize/1048576) + ' MB';
+                    }else if(fileDetails[i].cv.ContentSize >= 1073741824){
+                        fileWrapper.fileSize = Math.round(fileDetails[i].cv.ContentSize/1073741824) + ' GB';
+                    }
+                    fileWrapper.fileCreatedDate = fileDetails[i].publicFile.CreatedDate.slice(0,10);
+                    fileWrapper.publicURL = fileDetails[i].publicFile.buildertek__Public_URL__c;
+                    fileWrapperList.push(fileWrapper);
+                }
+
+                // console.log('fileWrapperList ==> ',fileWrapperList);
+
+                this.listFiles = fileWrapperList;
+                console.log('this.listFiles ==> ',JSON.stringify(this.listFiles));
+
 
                 if (result.publicFolder.buildertek__File_Count__c == 0) {
                     this.noFiles = true;
