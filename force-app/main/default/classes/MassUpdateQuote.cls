@@ -292,6 +292,7 @@ public with sharing class MassUpdateQuote{
             if(obj.Name != null){
                 // quoteLine.Name = obj.Name;
                 quoteLine.Name = obj.Name.length() > 80 ? obj.Name.substring(0,79) : obj.name;
+                quoteLine.buildertek__Item_Name__c = obj.Name;
             }
             if(obj.buildertek__Grouping__c != null){
                 quoteLine.buildertek__Grouping__c = obj.buildertek__Grouping__c;
