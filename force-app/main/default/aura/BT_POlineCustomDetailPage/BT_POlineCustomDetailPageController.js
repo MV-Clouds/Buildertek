@@ -1,32 +1,35 @@
 ({
     doInit : function(component, event, helper) {
-        component.set('v.isLoading', true);
-        console.log('record Id :: ', component.get("v.recordId"));
-        helper.doinitHelper(component, event);
-        helper.getPriceBooksHelper(component, event);
-
-        // component.set("v.RecordID", component.get("v.recordId"))     
+        try {
+            component.set('v.isLoading', true);
+            console.log('record Id :: ', component.get("v.recordId"));
+            helper.doinitHelper(component, event);
+            helper.getPriceBooksHelper(component, event);    
+        } catch (error) {
+            console.log('error --> ', error.stack); 
+        }
     },
 
     editRecord : function(component, event, helper) {
             component.set("v.isLoading", true);
             console.log('Edit Record');
             component.set("v.viewMode", false);
-            component.set("v.isLoading", false);
-
-            component.set('v.selectedPBName','');
-            component.set('v.selectedPBId','');
-            component.set('v.selectedPFName','');
-            var POlineInit = component.get("v.POlineInit");
-            component.set("v.POline", POlineInit);
-            // console.log("Poline >> ", component.get("v.POline"));
+            helper.doinitHelper(component, event);
     },
 
     leaveEditForm : function(component, event, helper){
-        component.set("v.isLoading", true);
-        $A.get('e.force:refreshView').fire();
-        component.set("v.viewMode", true);
-        component.set("v.isLoading", false);
+        try {
+            component.set("v.isLoading", true);
+            $A.get('e.force:refreshView').fire();
+            component.set("v.viewMode", true);
+            component.set('v.selectedPBName', null);
+            component.set('v.selectedPBId', null);
+            component.set('v.selectedPFName', null);
+            // helper.RestoreProductRelatedDetail(component, event);
+            component.set("v.isLoading", false);
+        } catch (error) {
+            console.log('error ==> ', error.stack);
+        }
 
     }, 
 
@@ -58,6 +61,13 @@
             console.log('state ==> '+state);
             if (state === "SUCCESS") {
                 $A.get('e.force:refreshView').fire();
+                var toastEvent = $A.get("e.force:showToast");
+				toastEvent.setParams({
+					"type": "Success",
+					"title": "Success",
+					"message": "Record Successfully Saved."
+				});
+				toastEvent.fire();
                 component.set("v.isLoading", false);
             } else {
                 var toastEvent = $A.get("e.force:showToast");
@@ -168,16 +178,17 @@
         }
     },
 
-    hidePBList : function(component, event, helper) {
-        component.set('v.displayPB', false);
-    },
-
-    hidePFList: function(component, event, helper){
-        component.set('v.displayPF', false);
-    },
-
-    hidePRODList: function(component, event, helper){
-        component.set('v.displayPROD', false);
+    hideList: function (component, event, helper) {
+        var field = event.getSource().get("v.title");
+        if(field == 'PB'){
+            component.set('v.displayPB', false);
+        }
+        else if(field == 'PF'){
+            component.set('v.displayPF', false);
+        }
+        else if(field == 'PROD'){
+            component.set('v.displayPROD', false);
+        }
     },
 
     preventHide: function(component, event, helper) {
@@ -189,31 +200,24 @@
             var field = event.getSource().get("v.title");
             console.log('field clear >> ', field);
             if(field == 'PB'){
-                component.set('v.selectedPBName','');
-                component.set('v.selectedPBId','');
+                component.set('v.selectedPBName', null);
+                component.set('v.selectedPBId', null);
 
-                // component.set('v.ProductFamilyListSearched', []);
-                // component.set('v.ProductListSearched', []);
-                component.set('v.selectedPFName','');
+                component.set('v.selectedPFName', null);
+                component.set("v.ProductFamilyListSearched", null);
+                component.set("v.ProductListSearched", null);
 
-
-                component.set('v.selectedPRODName','');
-                component.set('v.selectedPRODId','');
+                helper.RestoreProductRelatedDetail(component, event);
 
             }
             else if(field == 'PF'){
                 component.set("v.isLoading", true);
                 component.set('v.selectedPFName','');
-
-                component.set('v.selectedPRODName','');
-                component.set('v.selectedPRODId','');
-
-                helper.getProductRelatedtoPBHelper(component, event); // When you create Product Family get prodct related to Price book Only
+                helper.RestoreProductRelatedDetail(component, event);
+                helper.getProductRelatedtoPBHelper(component, event); // When you clear Product Family get products related to Price book Only
             }
             else if(field == 'PROD'){
-                console.log('prod');
-                component.set('v.selectedPRODName','');
-                component.set('v.selectedPRODId','');
+                helper.RestoreProductRelatedDetail(component, event);
             }
         } catch (error) {
             console.log('error in clearInput', error.stack);
@@ -232,8 +236,7 @@
         if(previousSelectedPB != recordId){
             component.set('v.selectedPFName','');
 
-            component.set('v.selectedPRODName','');
-            component.set('v.selectedPRODId','');
+            helper.RestoreProductRelatedDetail(component, event);
         }
 
         var PriceBookListSearched = component.get("v.PriceBookListSearched");
@@ -255,12 +258,9 @@
         component.set('v.selectedPFName', record);
         
         if(PrevousSelectedPF != record){
-            component.set('v.selectedPRODName','');
-            component.set('v.selectedPRODId','');
+            helper.RestoreProductRelatedDetail(component, event);
         }
         helper.getProductRelatedToPFhandler(component, event);
-
-
     },
 
     clickonPRODHandler :  function (component, event, helper){
@@ -280,10 +280,17 @@
                     if (recordId == element.Id) {
                         console.log('selected product >>', element)
                         component.set('v.selectedPRODName', element.Name);
-                        updatedPOline.buildertek__Unit_Price__c = element.UnitCost ? element.UnitCost : 0 ;
+                        updatedPOline.buildertek__Unit_Price__c = element.UnitCost ? element.UnitCost : null ;
                         updatedPOline.buildertek__Cost_Code__c = element.CostCode ? element.CostCode : null ;
-                        updatedPOline.buildertek__Product__r.Name = component.get("v.selectedPRODName");
-                        updatedPOline.buildertek__Product__r.Id = component.get("v.selectedPRODId");
+                        updatedPOline.Name = component.get("v.selectedPRODName");
+                        if(updatedPOline.buildertek__Product__c){
+                            updatedPOline.buildertek__Product__r.Name = component.get("v.selectedPRODName");
+                            updatedPOline.buildertek__Product__r.Id = component.get("v.selectedPRODId");
+                        }
+                        else{
+                            var buildertek__Product = {buildertek__Product__c : component.get("v.selectedPRODId"), buildertek__Product__r : {Name : component.get("v.selectedPRODName"), Id : component.get("v.selectedPRODId")}}
+                            Object.assign(updatedPOline, buildertek__Product)
+                        }
                         updatedPOline.buildertek__Quantity__c = 1 ;
                     }
                 });

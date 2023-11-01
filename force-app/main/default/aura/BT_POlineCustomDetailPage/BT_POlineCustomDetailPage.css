@@ -17,12 +17,12 @@
     width: 100%;
     margin: 0 1%;
     padding-right: 8px;
-    /* margin-top: 20px; */
+    /* margin-top: 0.5rem; */
 }
 
 .THIS .bottom-line{
     border-bottom: solid 1px rgb(229, 229, 229);
-    margin-bottom: 0.3rem;
+    /* margin-bottom: 0.3rem; */
 }
 
 .THIS .field-container{
@@ -50,7 +50,7 @@
 }
 
 .THIS .save .saveBtn{
-    padding-left: 10px;
+    /* padding-left: 10px; */
 }
 
 .THIS .custom-loading-text {
@@ -71,14 +71,14 @@
 }
 .THIS .CustomLookupField{
     display: flex;
-    padding-left: 1%;
+    /* padding-left: 1%; */
     flex-direction: row;
     width: 100%;
     justify-content: space-between;
 }
 
 .THIS .inputSize{
-    width: 67%;
+    width: 65.5%;
     margin-right: 1%;
 }
 
@@ -101,6 +101,9 @@
 .THIS .slds-has-error .slds-input {
     --slds-c-input-color-border: var(--lwc-borderWidthThin,1px) solid var(--slds-c-input-color-border, var(--sds-c-input-color-border, var(--slds-g-color-border-base-4, var(--lwc-colorBorderInput,rgb(201, 201, 201)))));
     --slds-c-input-shadow: var(--slds-c-input-shadow, var(--sds-c-input-shadow)) inset;
+}
+.THIS .standard_field .slds-input{
+    --slds-c-input-spacing-horizontal-start: 12px;
 }
 .THIS .rkclasses .slds-input{
     padding-left: 10px !important;
