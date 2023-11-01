@@ -1,6 +1,11 @@
 <aura:component controller="ScheduleSummaryController" implements="force:appHostable,flexipage:availableForAllPageTypes,force:hasRecordId" access="global">
 
 <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+<aura:attribute name="tasks" type="buildertek__Project_Task__c[]" />
+<aura:attribute name="pastDueTasks" type="buildertek__Project_Task__c[]" />
+<aura:attribute name="dueThisWeekTasks" type="buildertek__Project_Task__c[]" />
+<aura:attribute name="dueNextWeekTasks" type="buildertek__Project_Task__c[]" />
+
     <div class="mainContainer">
         <header style="background: #1b5297;padding: 11px 20px;">
             <div class="left-box" style="display: inline-block;vertical-align: middle;width: 30%;">
@@ -26,61 +31,37 @@
             <div class="subcontain">
                 <center>Pass Due</center>
                 <div class="rkdiv">
-                    <div class="subrkdiv1">
-                        <p>Task Name : 0025</p>
-                        <p>Finish Date : 27 Oct 2023</p>
-                        <p>Completion(%) : 50 %</p>
-                    </div>
-                    <div class="subrkdiv1">
-                        <p>Task Name : 0026</p>
-                        <p>Finish Date : 27 Oct 2023</p>
-                        <p>Completion(%) : 50 %</p>
-                    </div>
-                    <div class="subrkdiv1">
-                        <p>Task Name : 0027</p>
-                        <p>Finish Date : 27 Oct 2023</p>
-                        <p>Completion(%) : 50 %</p>
-                    </div>
-                    <div class="subrkdiv1">
-                        <p>Task Name : 0028</p>
-                        <p>Finish Date : 27 Oct 2023</p>
-                        <p>Completion(%) : 50 %</p>
-                    </div>
-                    <div class="subrkdiv1">
-                        <p>Task Name : 0029</p>
-                        <p>Finish Date : 27 Oct 2023</p>
-                        <p>Completion(%) : 50 %</p>
-                    </div>
-                    <div class="subrkdiv1">
-                        <p>Task Name : 0030</p>
-                        <p>Finish Date : 27 Oct 2023</p>
-                        <p>Completion(%) : 50 %</p>
-                    </div>
-                    <div class="subrkdiv1">
-                        <p>Task Name : 0031</p>
-                        <p>Finish Date : 27 Oct 2023</p>
-                        <p>Completion(%) : 50 %</p>
-                    </div>
+                    <aura:iteration items="{!v.pastDueTasks}" var="task">
+                        <div class="subrkdiv1">
+                            <p>Task Name: {!task.Name}</p>
+                            <p>Finish Date: {!task.buildertek__Finish__c}</p>
+                            <p>Completion(%): {!task.buildertek__Completion__c}%</p>
+                        </div>
+                    </aura:iteration>
                 </div>
             </div>
             <div class="subcontain">
                 <center>Due This Week</center>
                 <div class="rkdiv">
-                    <div class="subrkdiv2">
-                        <p>Task Name : 0025</p>
-                        <p>Finish Date : 27 Oct 2023</p>
-                        <p>Completion(%) : 50 %</p>
-                    </div>
+                    <aura:iteration items="{!v.dueThisWeekTasks}" var="task">
+                        <div class="subrkdiv2">
+                            <p>Task Name: {!task.Name}</p>
+                            <p>Finish Date: {!task.buildertek__Finish__c}</p>
+                            <p>Completion(%): {!task.buildertek__Completion__c}%</p>
+                        </div>
+                    </aura:iteration>
                 </div>
             </div>
             <div class="subcontain">
                 <center>Due Next Week</center>
                 <div class="rkdiv">
-                    <div class="subrkdiv3">
-                        <p>Task Name : 0025</p>
-                        <p>Finish Date : 27 Oct 2023</p>
-                        <p>Completion(%) : 50 %</p>
-                    </div>
+                    <aura:iteration items="{!v.dueNextWeekTasks}" var="task">
+                        <div class="subrkdiv3">
+                            <p>Task Name: {!task.Name}</p>
+                            <p>Finish Date: {!task.buildertek__Finish__c}</p>
+                            <p>Completion(%): {!task.buildertek__Completion__c}%</p>
+                        </div>
+                    </aura:iteration>
                 </div>
             </div>
         </div>
