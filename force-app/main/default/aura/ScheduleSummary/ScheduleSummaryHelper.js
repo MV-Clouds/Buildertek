@@ -32,9 +32,18 @@
             var dueThisWeekTasks = tasks.filter(task => new Date(task.buildertek__Finish__c) >= thisWeekStart && new Date(task.buildertek__Finish__c) <= thisWeekEnd);
             var nextWeekStart = new Date(thisWeekEnd);
             nextWeekStart.setDate(thisWeekEnd.getDate() + 1); // Start of next week (Sunday)
+            console.log('nextWeekStart--->',nextWeekStart);
             var nextWeekEnd = new Date(nextWeekStart);
             nextWeekEnd.setDate(nextWeekStart.getDate() + 6); // End of next week (Saturday)
+            console.log('nextWeekEnd--->',nextWeekEnd);
+            var finish = new Date(tasks[0].buildertek__Finish__c);
+            console.log('finishdate--->',finish);
             var dueNextWeekTasks = tasks.filter(task => new Date(task.buildertek__Finish__c) >= nextWeekStart && new Date(task.buildertek__Finish__c) <= nextWeekEnd);
+            if (new Date(tasks[0].buildertek__Finish__c) == nextWeekStart) {
+                alert("Hello");
+            } else {
+                alert("Bye");
+            }
 
             component.set("v.pastDueTasks", pastDueTasks);
             component.set("v.dueThisWeekTasks", dueThisWeekTasks);

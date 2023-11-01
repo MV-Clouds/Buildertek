@@ -33,7 +33,10 @@
                 <div class="rkdiv">
                     <aura:iteration items="{!v.pastDueTasks}" var="task">
                         <div class="subrkdiv1">
-                            <p>Task Name: {!task.Name}</p>
+                            <p>Task Name: <ui:outputURL
+                                value="{!'/one/one.app?#/sObject/'+ task.Id + '/view'}"
+                                target="_blank"
+                                label="{!task.Name}" /></p>
                             <p>Finish Date: {!task.buildertek__Finish__c}</p>
                             <p>Completion(%): {!task.buildertek__Completion__c}%</p>
                         </div>
@@ -45,7 +48,10 @@
                 <div class="rkdiv">
                     <aura:iteration items="{!v.dueThisWeekTasks}" var="task">
                         <div class="subrkdiv2">
-                            <p>Task Name: {!task.Name}</p>
+                            <p>Task Name: <ui:outputURL
+                                value="{!'/one/one.app?#/sObject/'+ task.Id + '/view'}"
+                                target="_blank"
+                                label="{!task.Name}" /></p>
                             <p>Finish Date: {!task.buildertek__Finish__c}</p>
                             <p>Completion(%): {!task.buildertek__Completion__c}%</p>
                         </div>
@@ -57,7 +63,10 @@
                 <div class="rkdiv">
                     <aura:iteration items="{!v.dueNextWeekTasks}" var="task">
                         <div class="subrkdiv3">
-                            <p>Task Name: {!task.Name}</p>
+                            <p>Task Name: <ui:outputURL
+                                value="{!'/one/one.app?#/sObject/'+ task.Id + '/view'}"
+                                target="_blank"
+                                label="{!task.Name}" /></p>
                             <p>Finish Date: {!task.buildertek__Finish__c}</p>
                             <p>Completion(%): {!task.buildertek__Completion__c}%</p>
                         </div>
