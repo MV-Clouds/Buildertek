@@ -14,7 +14,7 @@ table {
     width: 100%;
     min-width: 35rem;
     border-collapse: collapse;
-    box-shadow: rgba(185, 188, 191, 0.2) 0px 0px 24px 5px;
+    box-shadow: rgba(185, 188, 191, 0.5) 8px 7px 4px 3px;
     margin-top: 2vh;
     border-radius: 5px;
     font-family: arial;
@@ -41,7 +41,6 @@ table tbody tr td {
     background: linear-gradient(to bottom, #6BC9FD, white);
     padding: 2%;
     border-radius: 5px;
-    /* min-width: 95%; */
 }
 
 .fileName {
