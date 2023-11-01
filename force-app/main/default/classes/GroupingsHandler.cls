@@ -13,18 +13,22 @@ public without sharing class GroupingsHandler {
         List<buildertek__Budget_Line_Group__c> BudgetLineGroups = [SELECT Id, Name, buildertek__Description__c, buildertek__Sorting_Id__c FROM buildertek__Budget_Line_Group__c ];
         List<buildertek__Quote_Line_Group__c> QuoteLineGroups = [SELECT Id, Name, buildertek__Description__c, buildertek__Sort_Id__c FROM buildertek__Quote_Line_Group__c ];
         List<buildertek__Contract_Line_Group__c> ContractLineGroups = [SELECT Id, Name, buildertek__Description__c, buildertek__Sort_Id__c FROM buildertek__Contract_Line_Group__c ];
+        List<buildertek__Build_Phase__c> BuildPhases = [SELECT Id, Name FROM buildertek__Build_Phase__c ];
 
         List<buildertek__Budget_Line_Group__c> BudgetLineGroupsToInsert = new List<buildertek__Budget_Line_Group__c>();
         List<buildertek__Quote_Line_Group__c> QuoteLineGroupsToInsert = new List<buildertek__Quote_Line_Group__c>();
         List<buildertek__Contract_Line_Group__c> ContractLineGroupsToInsert = new List<buildertek__Contract_Line_Group__c>();
+        List<buildertek__Build_Phase__c> BuildPhasesToInsert = new List<buildertek__Build_Phase__c>();
 
         List<buildertek__Budget_Line_Group__c> BudgetLineGroupsToUpdate = new List<buildertek__Budget_Line_Group__c>();
         List<buildertek__Quote_Line_Group__c> QuoteLineGroupsToUpdate = new List<buildertek__Quote_Line_Group__c>();
         List<buildertek__Contract_Line_Group__c> ContractLineGroupsToUpdate = new List<buildertek__Contract_Line_Group__c>();
+        List<buildertek__Build_Phase__c> BuildPhasesToUpdate = new List<buildertek__Build_Phase__c>();
 
         boolean BudgetGroupingexists = false;
         boolean QuoteGroupingexists = false;
         boolean ContractGroupingexists = false;
+        boolean BuildPhaseexists = false;
 
         for (BT_Grouping__c newGrouping : newGroupings) {
             for (buildertek__Budget_Line_Group__c BudgetLineGroup : BudgetLineGroups) {
@@ -78,6 +82,21 @@ public without sharing class GroupingsHandler {
             }
             ContractGroupingexists = false;
 
+            for (buildertek__Build_Phase__c BuildPhase : BuildPhases) {
+                if (BuildPhase.Name == newGrouping.Name) {
+                    BuildPhaseexists = true;
+                    //code should be written over here if Build Phase inculdes any other field
+                    //contractLineGroup.buildertek__Description__c = newGrouping.buildertek__Description__c;
+                    // BuildPhasesToUpdate.add(BuildPhase);
+                }
+            }
+            if (!BuildPhaseexists) {
+                buildertek__Build_Phase__c BuildPhase = new buildertek__Build_Phase__c();
+                BuildPhase.Name = newGrouping.Name;
+                // BuildPhase.buildertek__Description__c = newGrouping.buildertek__Description__c;
+                BuildPhasesToInsert.add(BuildPhase);
+            }
+
         }
 
         if (BudgetLineGroupsToInsert.size() > 0) {
@@ -104,6 +123,14 @@ public without sharing class GroupingsHandler {
             update ContractLineGroupsToUpdate;
         }
 
+        if (BuildPhasesToInsert.size() > 0) {
+            insert BuildPhasesToInsert;
+        }
+
+        if (BuildPhasesToUpdate.size() > 0) {
+            update BuildPhasesToUpdate;
+        }
+
     }
 
     public void afterUpdate(List<BT_Grouping__c> newGroupings, Map<Id, BT_Grouping__c> newGroupingsMap, List<BT_Grouping__c> oldGroupings, Map<Id, BT_Grouping__c> oldGroupingsMap) {
@@ -111,14 +138,17 @@ public without sharing class GroupingsHandler {
         List<buildertek__Budget_Line_Group__c> BudgetLineGroups = [SELECT Id, Name, buildertek__Description__c, buildertek__Sorting_Id__c FROM buildertek__Budget_Line_Group__c ];
         List<buildertek__Quote_Line_Group__c> QuoteLineGroups = [SELECT Id, Name, buildertek__Description__c, buildertek__Sort_Id__c FROM buildertek__Quote_Line_Group__c ];
         List<buildertek__Contract_Line_Group__c> ContractLineGroups = [SELECT Id, Name, buildertek__Description__c, buildertek__Sort_Id__c FROM buildertek__Contract_Line_Group__c ];
+        List<buildertek__Build_Phase__c> BuildPhases = [SELECT Id, Name FROM buildertek__Build_Phase__c ];
 
         List<buildertek__Budget_Line_Group__c> BudgetLineGroupsToUpdate = new List<buildertek__Budget_Line_Group__c>();
         List<buildertek__Quote_Line_Group__c> QuoteLineGroupsToUpdate = new List<buildertek__Quote_Line_Group__c>();
         List<buildertek__Contract_Line_Group__c> ContractLineGroupsToUpdate = new List<buildertek__Contract_Line_Group__c>();
+        List<buildertek__Build_Phase__c> BuildPhasesToUpdate = new List<buildertek__Build_Phase__c>();
 
         List<buildertek__Budget_Line_Group__c> BudgetLineGroupstoDelete = new List<buildertek__Budget_Line_Group__c>();
         List<buildertek__Quote_Line_Group__c> QuoteLineGroupstoDelete = new List<buildertek__Quote_Line_Group__c>();
         List<buildertek__Contract_Line_Group__c> ContractLineGroupstoDelete = new List<buildertek__Contract_Line_Group__c>();
+        List<buildertek__Build_Phase__c> BuildPhasestoDelete = new List<buildertek__Build_Phase__c>();
 
         Boolean NameExists = false;
 
@@ -158,6 +188,16 @@ public without sharing class GroupingsHandler {
                             ContractLineGroup.buildertek__Description__c = newGrouping.buildertek__Description__c;
                             // ContractLineGroup.buildertek__Sort_Id__c = newGrouping.buildertek__Sort_Id__c;
                             ContractLineGroupsToUpdate.add(ContractLineGroup);
+                        }
+                    }
+
+                    //iterate over build phases
+                    for(buildertek__Build_Phase__c BuildPhase : BuildPhases) {
+                        //if the build phase name is the same as the new grouping name
+                        if(BuildPhase.Name == newGrouping.Name) {
+                            //update the build phase
+                            // BuildPhase.buildertek__Description__c = newGrouping.buildertek__Description__c;
+                            // BuildPhasesToUpdate.add(BuildPhase);
                         }
                     }
                 }
@@ -236,6 +276,28 @@ public without sharing class GroupingsHandler {
                         }
                     }
                 }
+
+                //iterate over build phases
+                for(buildertek__Build_Phase__c BuildPhase : BuildPhases) {
+                    //if the build phase name is the same as the new grouping name
+                    if(BuildPhase.Name == oldGrouping.Name) {
+                        Boolean BuildNameExists = false;
+                        for(buildertek__Build_Phase__c BuildPhase2 : BuildPhases) {
+                            if(BuildPhase2.Name == newGrouping.Name) {
+                                BuildNameExists = true;
+                                BuildPhase2.Name = newGrouping.Name;
+                                // BuildPhase2.buildertek__Description__c = newGrouping.buildertek__Description__c;
+                                BuildPhasesToUpdate.add(BuildPhase2);
+                                // BuildPhasestoDelete.add(BuildPhase);
+                            }
+                        }
+                        if(!BuildNameExists) {
+                            BuildPhase.Name = newGrouping.Name;
+                            // BuildPhase.buildertek__Description__c = newGrouping.buildertek__Description__c;
+                            BuildPhasesToUpdate.add(BuildPhase);
+                        }
+                    }
+                }
                 
 
             }
@@ -264,6 +326,14 @@ public without sharing class GroupingsHandler {
         if (ContractLineGroupstoDelete.size() > 0) {
             delete ContractLineGroupstoDelete;
         }
+
+        if (BuildPhasesToUpdate.size() > 0) {
+            update BuildPhasesToUpdate;
+        }
+
+        if (BuildPhasestoDelete.size() > 0) {
+            delete BuildPhasestoDelete;
+        }
     }
 
     public void beforeDelete(List<BT_Grouping__c> oldGroupings, Map<Id, BT_Grouping__c> oldGroupingsMap) {
@@ -273,10 +343,12 @@ public without sharing class GroupingsHandler {
         List<buildertek__Budget_Line_Group__c> BudgetLineGroups = [SELECT Id, Name, buildertek__Description__c, buildertek__Sorting_Id__c FROM buildertek__Budget_Line_Group__c ];
         List<buildertek__Quote_Line_Group__c> QuoteLineGroups = [SELECT Id, Name, buildertek__Description__c, buildertek__Sort_Id__c FROM buildertek__Quote_Line_Group__c ];
         List<buildertek__Contract_Line_Group__c> ContractLineGroups = [SELECT Id, Name, buildertek__Description__c, buildertek__Sort_Id__c FROM buildertek__Contract_Line_Group__c ];
+        List<buildertek__Build_Phase__c> BuildPhases = [SELECT Id, Name FROM buildertek__Build_Phase__c ];
 
         List<buildertek__Budget_Line_Group__c> BudgetLineGroupstoDelete = new List<buildertek__Budget_Line_Group__c>();
         List<buildertek__Quote_Line_Group__c> QuoteLineGroupstoDelete = new List<buildertek__Quote_Line_Group__c>();
         List <buildertek__Contract_Line_Group__c> ContractLineGroupstoDelete = new List<buildertek__Contract_Line_Group__c>();
+        List<buildertek__Build_Phase__c> BuildPhasestoDelete = new List<buildertek__Build_Phase__c>();
 
         for (BT_Grouping__c oldGrouping : oldGroupings) {
             for (buildertek__Budget_Line_Group__c BudgetLineGroup : BudgetLineGroups) {
@@ -297,6 +369,12 @@ public without sharing class GroupingsHandler {
                     ContractLineGroupstoDelete.add(ContractLineGroup);
                 }
             }
+            for (buildertek__Build_Phase__c BuildPhase : BuildPhases) {
+                if (BuildPhase.Name == oldGrouping.Name) {
+                    System.debug('BuildPhase ' + BuildPhase);
+                    BuildPhasestoDelete.add(BuildPhase);
+                }
+            }
 
         }
 
@@ -310,6 +388,10 @@ public without sharing class GroupingsHandler {
 
         if (ContractLineGroupstoDelete.size() > 0) {
             delete ContractLineGroupstoDelete;
+        }
+
+        if (BuildPhasestoDelete.size() > 0) {
+            delete BuildPhasestoDelete;
         }
 
         System.debug('Before Delete End');
