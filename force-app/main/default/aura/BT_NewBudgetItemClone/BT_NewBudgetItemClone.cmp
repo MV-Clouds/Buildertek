@@ -314,6 +314,8 @@
     <aura:attribute name="TotalRecordCount" type="Integer" default="0" />
     <aura:attribute name="CollapeCount" type="Integer" default="0" />
     <aura:attribute name="displayRecordList" type="List" />
+
+    <aura:attribute name="costCodeList" type="List" />
     <aura:attribute name="budgetFields" type="List" />
 
     
@@ -377,6 +379,7 @@
         <aura:if isTrue="{!v.isbudget}">
             <div class="slds-modal__header rkclass" style="text-align: left;">
                 <a href="{!v.fromWhereBudgetIsOpen}" style="font-size:17px;padding-right: 50px;" onclick="{!c.closetab}">{!v.budgetName} </a>
+
                 <!-- <div class="rkclass">
                     <div class="rkclasses">
                         <p>Original Budget </p><lightning:formattedNumber value="{!v.OriginalBudget}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code" />
@@ -678,17 +681,18 @@
                                                             padding-top:1% !important;
     
                                                         }
-                                                        <!-- .pillSize{
-                                                            width: 45vw;
+                                                        .pillSize{
+                                                            width: 15vw !important;
+                                                            height: 35px !important;
                                                             padding-top: 1% !important;
                                                             padding-bottom: 1% !important;
-                                                        } -->
+                                                        }
                                                         .subDiv{
                                                             <!-- width:100% !important; -->
                                                             margin-top:-23px !important;
                                                         }
                                                     </aura:html>                                                    
-                                                    <c:BT_LightningLookup aura:id="productId" objectAPIName="Product2" IconName="standard:product" selectedRecord="{!v.selectedLookUpRecord}" parentId="{!v.pricebookName }" prodctfamly="{!v.productfamily}" />
+                                                    <c:BT_LightningLookup aura:id="productId" objectAPIName="Product2" IconName="standard:product" selectedRecord="{!v.selectedLookUpRecord}" parentId="{!v.pricebookName }" prodctfamly="{!v.productfamily}" childValue="{!v.newBudgetLine.Name}" costcodeValue="{!v.newBudgetLine.buildertek__Cost_Code__c}" unitcostValue="{!v.newBudgetLine.buildertek__Unit_Price__c}"/>
                                                     <label class="slds-form-element__label" for="lookup-348"></label>
                                                 </td>
                                                 <td>
@@ -740,7 +744,14 @@
                                                 </td> -->
                                                 
                                                 <td>
-                                                    <c:BT_LookUp aura:id="costCodeId" _field="buildertek__Cost_Code__c" _sobject="buildertek__Budget_Item__c" _value="{!v.newBudgetLine.buildertek__Cost_Code__c}" _label="" _filter="" />
+                                                    <!-- <c:BT_LookUp aura:id="costCodeId" _field="buildertek__Cost_Code__c" _sobject="buildertek__Budget_Item__c" _value="{!v.newBudgetLine.buildertek__Cost_Code__c}" _label="" _filter="" /> -->
+                                                    <div class="hidelabel">
+                                                        <lightning:select value="{!v.newBudgetLine.buildertek__Cost_Code__c}">
+                                                            <aura:iteration items="{!v.costCodeList}" var="costCodeOption">
+                                                                <option value="{!costCodeOption.value}">{!costCodeOption.label}</option>
+                                                            </aura:iteration>
+                                                        </lightning:select>
+                                                    </div>
                                                     <!--  <c:customLookup aura:id="costcodeId" objectAPIName="buildertek__Cost_Codes__c"
                                                                     IconName="standard:account" selectedRecord="{!v.selectedCostcode}" />-->
                                                     <!--<force:inputField aura:id="accountId" value="{!v.newBudgetLine.buildertek__Contractor__c}" />-->

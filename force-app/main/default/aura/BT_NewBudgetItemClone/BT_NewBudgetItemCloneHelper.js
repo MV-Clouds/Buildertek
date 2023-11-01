@@ -202,6 +202,11 @@
                     getProductDetails.buildertek__Discount__c =
                         res[0].buildertek__Discount__c;
                 }
+
+                if (res[0].Product2.buildertek__Cost_Code__c != null) {
+                    getProductDetails.buildertek__Cost_Code__c =
+                        res[0].Product2.buildertek__Cost_Code__c;
+                }
             } else {
                 getProductDetails.buildertek__Unit_Cost__c = 0;
                 getProductDetails.buildertek__Unit_Price__c = 0;
@@ -2351,8 +2356,8 @@
 
     },
     changeEventHelper: function(component, event, helper) {
-        var group = component.find('costCodeId');
-        group.set("v._text_value", '');
+        // var group = component.find('costCodeId');
+        // group.set("v._text_value", '');
         var product = component.get('v.selectedLookUpRecord');
         var compEvent = $A.get('e.c:BT_CLearLightningLookupEvent');
         compEvent.setParams({
@@ -2904,9 +2909,34 @@
         $A.enqueueAction(action);
     
     },
+    getCostCodes : function(component, event, helper) {
+        var action = component.get("c.getCostCodes");
+        action.setCallback(this, function(response) {
+            var state = response.getState();
+            if(state === "SUCCESS") {
+                var costCodes = response.getReturnValue();
+                var costCodeList = [];
+                costCodeList.push({
+                    label: 'Select Cost Code',
+                    value: ''
+                });
+                for(var i = 0; i < costCodes.length; i++) {
+                    costCodeList.push({
+                        label: costCodes[i].Name,
+                        value: costCodes[i].Id
+                    });
+                }
+                component.set("v.costCodeList", costCodeList);
+            } else{
+                console.log('Error calling Apex method: ' + state);
+            }
+        }
+        );
+        $A.enqueueAction(action);
+    },
 
     getFieldsFromFieldset:function(component, event, helper){
-        let action = component.get("c.getCompactLayoutFields");
+        let action = component.get("c.getFieldsFromFieldset");
         action.setParams({
             budgetId: component.get("v.recordId")
         });
@@ -2914,12 +2944,14 @@
             if(response.getState() == 'SUCCESS'){
                 let result = response.getReturnValue();
                 component.set("v.budgetFields", result);
+
                 console.log('compactLayout ==>',response.getReturnValue());
+
             } else{
                 console.log('Error calling Apex method: ' + state);
             }
         });
         $A.enqueueAction(action);
-    }
-    
+    } 
+
 })

@@ -350,3 +350,9 @@
     height: fit-content !important; 
     max-height: 70vh !important;
 }
+.THIS .hidelabel .slds-form-element__label{
+    display: none !important;
+}
+.THIS .hidelabel .slds-select{
+    height: 35px !important;
+}

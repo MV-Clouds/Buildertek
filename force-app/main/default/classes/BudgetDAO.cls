@@ -685,7 +685,7 @@ Throws [Exceptions]:
 
         list<PricebookEntry> pList;
 
-        pList = [select id, UnitPrice, buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Discount__c
+        pList = [select id, UnitPrice, buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Discount__c, Product2.buildertek__Cost_Code__c
                 from PricebookEntry
                 where product2Id = :productId and pricebook2Id =: pricebookId];
 
@@ -3284,13 +3284,13 @@ buildertek__Budget__c budgetCopy = Database.query(query);*/
     public class fieldsetWrapper {
         @AuraEnabled
         public String fieldLabel;
-        
+
         @AuraEnabled
         public String fieldType;
         
         @AuraEnabled
         public Object fieldValue;
-        
+
         public fieldsetWrapper(String label,String fieldType,Object value) {
             fieldLabel = label;
             this.fieldType = fieldType;
@@ -3317,7 +3317,13 @@ buildertek__Budget__c budgetCopy = Database.query(query);*/
         return groupingLevels;
     }   
 
-    // * Return list of wrapper class to display fields from fieldset in view budget line
+    @AuraEnabled
+    public static List<buildertek__Cost_Codes__c> getCostCodes(){
+        List<buildertek__Cost_Codes__c> costCodes = [SELECT Id, Name FROM buildertek__Cost_Codes__c ORDER BY Name ASC];
+        return costCodes;
+    }
+
+    // * Return list of wrapper class to display fields from fieldset in view budget line 
     @AuraEnabled
     public static List<fieldsetWrapper> getFieldsFromFieldset(String budgetId) {
         List<fieldsetWrapper> fieldsetWrapperList = new List<fieldsetWrapper>();
@@ -3353,7 +3359,7 @@ buildertek__Budget__c budgetCopy = Database.query(query);*/
         }
 
         System.debug('fieldsetWrapperList: ' + fieldsetWrapperList);
-        
+
         return fieldsetWrapperList;
     }
 
