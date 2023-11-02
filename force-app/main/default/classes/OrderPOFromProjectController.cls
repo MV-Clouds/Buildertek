@@ -441,7 +441,7 @@ public class OrderPOFromProjectController {
         decimal totalPOBalance = (decimal)result1 .get('totalPOBalance');
 
 
-        List<AggregateResult> totalPaidPurchaseOrders  = [SELECT SUM(buildertek__Paid_Amount__c )totalPaid, buildertek__Status__c FROM buildertek__Purchase_Order__c WHERE buildertek__Status__c = 'Paid' AND buildertek__Project__c =: recId GROUP BY buildertek__Status__c LIMIT 1];
+        List<AggregateResult> totalPaidPurchaseOrders  = [SELECT SUM(buildertek__Paid_Amount__c )totalPaid, buildertek__Status__c FROM buildertek__Purchase_Order__c WHERE (buildertek__Status__c = 'Paid' OR buildertek__Status__c = 'Partially Paid') AND buildertek__Project__c =: recId GROUP BY buildertek__Status__c LIMIT 1];
 
         if(totalPaidPurchaseOrders.size() > 0){
             totalPaid = (decimal)totalPaidPurchaseOrders[0].get('totalPaid');
@@ -454,7 +454,7 @@ public class OrderPOFromProjectController {
         }
 
 
-        totalPaidPOs = [SELECT COUNT() FROM buildertek__Purchase_Order__c WHERE buildertek__Status__c = 'Paid' AND  buildertek__Project__c =: recId];
+        totalPaidPOs = [SELECT COUNT() FROM buildertek__Purchase_Order__c WHERE (buildertek__Status__c = 'Paid' OR buildertek__Status__c = 'Partially Paid') AND  buildertek__Project__c =: recId];
 
         if(totalPaidPOs > 0){
             paidPercent = totalPaidPOs;
