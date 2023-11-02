@@ -1,4 +1,10 @@
-.detail-div{
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.detail-div {
     padding: 10px;
     font-size: 18px;
     color: black;
@@ -8,28 +14,83 @@ table {
     width: 100%;
     min-width: 35rem;
     border-collapse: collapse;
-    background-color: #fff;
-    box-shadow: rgba(185, 188, 191, 0.2) 0px 0px 24px 5px;
+    box-shadow: 4px 4px 6px 2px rgba(0, 0, 0, 0.5);
+    margin-top: 2vh;
     border-radius: 5px;
     font-family: arial;
-    overflow: auto;
+    overflow-y: scroll;
+    height: 30rem;
 }
 
 table thead th {
     padding: 10px 16px;
     text-align: left;
-    background-color: #009ddc;
-    color: #fff;
-    border-right: 1px solid #eee;
 }
 
 table tbody tr td {
     padding: 10px 16px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #ccc;
 }
 
-.footer-div{
+.footer-div {
     text-align: center;
     padding: 8%;
     font-size: 20px;
+}
+
+.container {
+    /* background: linear-gradient(to bottom, #6BC9FD, white); */
+    background-color: white;
+    padding: 2%;
+    border-radius: 5px;
+    /* min-width: 95%; */
+}
+
+.fileName {
+    font-size: 28px;
+    color: black;
+    font-weight: 500;
+}
+
+.description {
+    margin: 2vh auto;
+    text-align: justify;
+    font-size: 20px;
+}
+
+.searchDiv {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 4vh;
+}
+
+.fileContainer {
+    margin: 2vh auto;
+    border-radius: 5px;
+    padding: 1%;
+    font-size: 15px;
+    transition: background-color 0.3s;
+
+    &:hover {
+        background-color: #f0f0f0;
+        cursor: pointer;
+    }
+}
+
+.header {
+    font-size: large;
+    font-weight: 400;
+    color: black;
+    margin: 1%;
+}
+
+table tbody tr td a {
+    text-decoration: none;
+    color: #0070d2;
+    transition: color 0.3s;
+
+    &:hover {
+        color: #005bb8;
+    }
 }

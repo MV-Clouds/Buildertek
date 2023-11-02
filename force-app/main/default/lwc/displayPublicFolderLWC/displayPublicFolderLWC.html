@@ -4,28 +4,37 @@
         <lightning-spinner alternative-text="Loading" variant="brand"></lightning-spinner>
     </template>
 
-    <div class="container slds-align_absolute-center">
+    <div class="container">
         <div>
-            
+
             <div class="detail-div">
-                <div> <b>Folder Name :</b> {folderDetails.Name}</div>
-                <div> <b>Description :</b> {folderDetails.buildertek__Description__c}</div>
-                <div> <b>No. Of Files :</b> {folderDetails.buildertek__File_Count__c} </div>
+                <div>
+                    <p class="fileName">{folderDetails.Name}</p>
+                </div>
+                <div>
+                    <p class="description">{folderDetails.buildertek__Description__c}</p>
+                </div>
+                <div class="searchDiv">
+                    <p>No. Of Files : {folderDetails.buildertek__File_Count__c} </p>
+                </div>
             </div>
 
             <table>
-                <thead>
+                <thead class="header">
                     <tr>
-                        <th>Name</th>
-                        <th>File Type</th>
+                        <th colspan="2">File Name</th>
+                        <th>Type</th>
                         <th>Size</th>
                         <th>Created Date</th>
                     </tr>
                 </thead>
                 <tbody>
                     <template for:each={listFiles} for:item="file">
-                        <tr key={file.Id}>
-                            <td> <a href={file.publicURL} target="_blank"> {file.fileName} </a> </td>
+                        <tr key={file.Id} class="fileContainer">
+                            <td width="1%">
+                                <lightning-icon icon-name='doctype:unknown' size='x-small'></lightning-icon>
+                            </td>
+                            <td><a href={file.publicURL} target="_blank">{file.fileName}</a></td>
                             <td>{file.fileType}</td>
                             <td>{file.fileSize}</td>
                             <td>{file.fileCreatedDate}</td>
@@ -33,12 +42,11 @@
                     </template>
                 </tbody>
             </table>
-
-        <template if:true={noFiles}>
-            <div class="footer-div">
-                No Files Available Under This Folder
-            </div>
-        </template>
+            <template if:true={noFiles}>
+                <div class="footer-div">
+                    No Files Available Under This Folder
+                </div>
+            </template>
 
         </div>
     </div>
