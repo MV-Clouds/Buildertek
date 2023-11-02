@@ -126,8 +126,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     console.log("Connected Callback new gantt chart");
     console.log("ReocrdID:- ", this.recordId);
 
-    // this.handleShowSpinner();
-
     if (this.SchedulerId == null || this.SchedulerId == undefined) {
       if (this.recordId == null || this.recordId == undefined) {
         // this.SchedulerId = "a2zDm0000004bPuIAI"; // trail org
@@ -336,11 +334,11 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
         if (this.template.querySelector(".container").children.length) {
           this.template.querySelector(".container").innerHTML = "";
           this.template.querySelector(".container1").innerHTML = "";
-          // this.handleHideSpinner();
+          this.handleHideSpinner();
           this.createGanttChartInitially();
           // this.createGantt();
         } else {
-          // this.handleHideSpinner();
+          this.handleHideSpinner();
           this.createGanttChartInitially();
           // this.createGantt();
           // this.isLoaded = false;
@@ -984,7 +982,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
                 subtask: false,
                 successor: false,
                 predecessor: false,
-                milestone: false,
+                // milestone: false,
               },
             },
           },
@@ -1009,8 +1007,8 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           // put your location here where you want to disable the task menu
           if (
             record._data.type == "Phase" ||
-            record._data.type == "Project" ||
-            record._data.customtype == "Milestone"
+            record._data.type == "Project"
+            // record._data.customtype == "Milestone"
           ) {
             // return false to prevent showing the task menu
             return false;
