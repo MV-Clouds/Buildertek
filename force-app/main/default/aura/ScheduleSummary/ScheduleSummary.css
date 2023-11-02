@@ -54,7 +54,7 @@
     margin-left: 20px;
     margin-right: 20px;
 }
-.THIS p{
+/* .THIS p{
     font-family: Lato;
     font-size: 20px;
     font-weight: 400;
@@ -62,4 +62,57 @@
     letter-spacing: 0px;
     text-align: left;
 
+} */
+
+ .THIS .poppins {
+    color:#000000;
+    /* font-size: xx-large; */
+    font-size: 16px; 
+    font-weight: 700;
+    line-height: 24px;
+    letter-spacing: 0px;
+    text-align: left;
+ }
+ .THIS .truncateName{
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--lwc-brandTextLink,rgb(1, 118, 211));
+    text-decoration: none;
+    transition: color .1s linear;
+ }
+ .THIS .rkclass{
+    color: var(--slds-g-color-neutral-base-30, var(--lwc-colorTextLabel,rgb(68, 68, 68)));
+    font-size: var(--lwc-formLabelFontSize,0.75rem);
+    padding-right: var(--lwc-spacingXSmall,0.5rem);
+    padding-top: var(--lwc-spacingXxSmall,0.25rem);
+    margin-bottom: var(--lwc-spacingXxxSmall,0.125rem);
+}
+.THIS .rkclasses .slds-input{
+    padding-left: 10px !important;
+}
+.THIS .rkclasses1 .slds-input{
+    padding-left: 35px !important;
+}
+.THIS .contractorInput .slds-input__icon_left{
+    display: none;
+}
+.THIS .contractorInput .slds-input__icon_right{
+    display: none;
+}
+.THIS .crossicon{
+    right: calc(var(--lwc-spacingXxSmall,0.25rem) + 1px) !important;
+    left: unset !important;
+}
+.THIS .crossicon .slds-button_icon-border{
+    border: unset !important;
+}
+.THIS .custom-loading-text {
+    transform: rotate(-90deg);
+    position: absolute;
+    top: -0.5rem;
+    left: 1rem;
+    white-space: nowrap;
+    font-size: 20px;
 }

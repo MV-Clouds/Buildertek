@@ -1,11 +1,31 @@
 <aura:component controller="ScheduleSummaryController" implements="force:appHostable,flexipage:availableForAllPageTypes,force:hasRecordId" access="global">
 
 <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
-<aura:attribute name="tasks" type="buildertek__Project_Task__c[]" />
-<aura:attribute name="pastDueTasks" type="buildertek__Project_Task__c[]" />
-<aura:attribute name="dueThisWeekTasks" type="buildertek__Project_Task__c[]" />
-<aura:attribute name="dueNextWeekTasks" type="buildertek__Project_Task__c[]" />
+<aura:attribute name="tasks" type="Project_Task__c[]" />
+<aura:attribute name="taskListInit" type="Project_Task__c[]" />
+<aura:attribute name="pastDueTasks" type="Project_Task__c[]" />
+<aura:attribute name="dueThisWeekTasks" type="Project_Task__c[]" />
+<aura:attribute name="dueNextWeekTasks" type="Project_Task__c[]" />
+<aura:attribute name="Message" type="String" />
 
+<aura:attribute name="selectedContractorName" type="String" default="" />
+<aura:attribute name="displayContractor" type="boolean" default="false" />
+<aura:attribute name="contractorList" type="List" />
+<aura:attribute name="allContractorRecords" type="List" />
+<aura:attribute name="selectedContractorId" type="Id" default="" />
+<aura:html tag="style">
+    .buildertekCustomLookup .pillSize {
+        width: 100%;
+        padding-top: 0% !important;
+        padding-bottom: 0% !important;
+    }
+    .buildertekScheduleSummary .container {
+        display: flex;
+        justify-content: center;
+        flex-direction: row;
+        margin-top: 8vh;
+    }
+</aura:html>
     <div class="mainContainer">
         <header style="background: #1b5297;padding: 11px 20px;">
             <div class="left-box" style="display: inline-block;vertical-align: middle;width: 30%;">
@@ -16,29 +36,95 @@
             <div class="slds-col slds-size_12-of-12 slds-m-top_small">
                 <div class="slds-grid slds-wrap slds-grid--pull-padded">
                     <div class="slds-col slds-size_11-of-12">
-                        <div class="slds-form-element__control" style="margin:0.5rem;padding-left: 20px;">
-                            <b> Vendor : </b> <c:customLookup aura:id="accountId" objectAPIName="Account" IconName="standard:account" selectedRecord="{!v.selectedVendor}" fromComp="resourceCenter" />
+                        <div class="slds-form-element__control">
+                            <div style="display: flex;padding-left: 1%;flex-direction: column;" >
+                                <label class="rkclass">Contractor:</label>
+                                <div class="slds-input-has-icon slds-input-has-iconright" style="width:99%;" >
+                                    <aura:if isTrue="{!v.selectedContractorName == ''}">
+                                        <span class="slds-icon_container slds-combobox__input-entity-icon searchIcon crossicon" title="record">
+                                            <lightning:icon class="slds-icon slds-icon slds-icon_small" iconName="utility:search" size="x-small" alternativeText="icon"/>
+                                            <span class="slds-assistive-text"></span>
+                                        </span>
+                                        <aura:set attribute="else">
+                                            <span class="slds-icon_container slds-combobox__input-entity-icon" title="record">
+                                                <lightning:icon class="slds-icon slds-icon slds-icon_small" iconName="custom:custom5" size="x-small" alternativeText="icon"/>
+                                                <span class="slds-assistive-text"></span>
+                                            </span>
+                                        </aura:set>
+                                    </aura:if>
+                                    <lightning:input aura:id="contractorInput" class="contractorInput" autocomplete="off" type="search" placeholder="Search Contractor..." variant="label-hidden" value="{!v.selectedContractorName}"  onclick="{!c.searchContractorData}" onkeyup="{!c.keyupContractorData}" onblur="{!c.hideList}"/>
+                                    <aura:if isTrue="{!not(empty(v.selectedContractorName))}">
+                                        <span class="slds-icon_container slds-combobox__input-entity-icon searchIcon crossicon" title="record">
+                                            <lightning:buttonIcon iconName="utility:clear" alternativeText="Clear" onclick="{!c.clearInput}" class="slds-icon slds-icon slds-icon_small" />
+                                            <span class="slds-assistive-text"></span>
+                                        </span>
+                                        <aura:set attribute="else">
+                                            <span class="slds-icon_container slds-combobox__input-entity-icon ">
+                                                <lightning:icon iconName="custom:custom5" size="small" alternativeText="Approved" title="Approved" />
+                                            </span>
+                                        </aura:set>
+                                    </aura:if>
+
+                                    <aura:if isTrue="{!v.displayContractor}" >
+                                    <div id="listbox-id-11" class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid searchResult" role="listbox" style="position: absolute;" onmousedown="{!c.preventHide}">
+                                        <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                                            <aura:iteration items="{!v.contractorList}" var="result">
+                                                <li role="presentation" class="slds-listbox__item" data-value="{!result.Id}" onclick="{!c.clickHandlerContractor}">
+                                                    <div class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small slds-media slds-listbox__option slds-listbox__option_entity slds-media_center" role="option">
+                                                        <span class="slds-media__figure slds-listbox__option-icon ">
+                                                            <lightning:icon iconName="custom:custom5" size="small" alternativeText="Approved" title="Approved" />
+                                                        </span>
+                                                        <span class="slds-media__body">
+                                                            <span class="slds-truncate" title="All Opportunities">
+                                                                <span>{!result.Name}</span>
+                                                            </span>
+                                                        </span>
+                                                    </div>
+                                                </li>
+                                            </aura:iteration>
+                                    
+                                            
+                                            <aura:if isTrue="{(!v.contractorList) > 0}">
+                                                <span>
+                                                    <p class="blank-lst" style="text-align: center; padding:10px">
+                                                        {!v.Message}
+                                                    </p>
+                                                </span>
+                                                <aura:set attribute="else">
+                                                    <span>
+                                                        <p class="blank-lst" style="text-align: center; padding:10px">
+                                                            {!v.Message}
+                                                        </p>
+                                                    </span>
+                                                </aura:set>
+                                            </aura:if>
+                                        </ul>
+                                    </div>
+                                </aura:if>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="slds-col slds-size_1-of-12">
-                    	<lightning:button class="slds-m-top_large" variant="brand" label="Filter" title="Filter" />
+                    <div class="slds-col slds-size_1-of-12" style="margin-top: -4px;
+                    ">
+                    	<lightning:button class="slds-m-top_large" variant="brand" label="Filter" title="Filter" onclick="{!c.filterRec}" />
                     </div>
                 </div>
             </div>
         </div>
         <div class="container">
             <div class="subcontain">
-                <center>Pass Due</center>
+                <center>Past Due</center>
                 <div class="rkdiv">
                     <aura:iteration items="{!v.pastDueTasks}" var="task">
                         <div class="subrkdiv1">
-                            <p>Task Name: <ui:outputURL
+                            <p class="poppins truncateName"> <ui:outputURL
                                 value="{!'/one/one.app?#/sObject/'+ task.Id + '/view'}"
                                 target="_blank"
                                 label="{!task.Name}" /></p>
-                            <p>Finish Date: {!task.buildertek__Finish__c}</p>
-                            <p>Completion(%): {!task.buildertek__Completion__c}%</p>
+                            <p class="poppins">Finish Date: {!task.buildertek__Finish__c}</p>
+                            <p class="poppins">Completion(%): {!task.buildertek__Completion__c}%</p>
                         </div>
                     </aura:iteration>
                 </div>
@@ -48,12 +134,12 @@
                 <div class="rkdiv">
                     <aura:iteration items="{!v.dueThisWeekTasks}" var="task">
                         <div class="subrkdiv2">
-                            <p>Task Name: <ui:outputURL
+                            <p class="poppins truncateName"> <ui:outputURL
                                 value="{!'/one/one.app?#/sObject/'+ task.Id + '/view'}"
                                 target="_blank"
-                                label="{!task.Name}" /></p>
-                            <p>Finish Date: {!task.buildertek__Finish__c}</p>
-                            <p>Completion(%): {!task.buildertek__Completion__c}%</p>
+                                label="{!task.Name}"/></p>
+                            <p class="poppins">Finish Date: {!task.buildertek__Finish__c}</p>
+                            <p class="poppins">Completion(%): {!task.buildertek__Completion__c}%</p>
                         </div>
                     </aura:iteration>
                 </div>
@@ -63,16 +149,17 @@
                 <div class="rkdiv">
                     <aura:iteration items="{!v.dueNextWeekTasks}" var="task">
                         <div class="subrkdiv3">
-                            <p>Task Name: <ui:outputURL
+                            <p class="poppins truncateName"> <ui:outputURL
                                 value="{!'/one/one.app?#/sObject/'+ task.Id + '/view'}"
                                 target="_blank"
                                 label="{!task.Name}" /></p>
-                            <p>Finish Date: {!task.buildertek__Finish__c}</p>
-                            <p>Completion(%): {!task.buildertek__Completion__c}%</p>
+                            <p class="poppins">Finish Date: {!task.buildertek__Finish__c}</p>
+                            <p class="poppins">Completion(%): {!task.buildertek__Completion__c}%</p>
                         </div>
                     </aura:iteration>
                 </div>
             </div>
         </div>
+        
     </div>
 </aura:component>
