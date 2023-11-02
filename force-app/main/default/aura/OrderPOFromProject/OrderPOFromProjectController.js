@@ -402,6 +402,20 @@
 
 		if (budgetIds.length > 0) {
 			component.set("v.selectedPOList", true);
+var action = component.get("c.addEmailTemplateId");
+			console.log('1234');
+			console.log('budgetIds--->',budgetIds);
+			action.setParams({
+				POIDs: budgetIds
+			});
+			action.setCallback(this, function (response) {
+				var state = response.getState();
+				if (state === "SUCCESS") {
+					console.log('Success');
+				} else{
+                    console.log('Fail')
+				}
+			})
 		} else {
 			component.set("v.Spinner", false);
 			var toastEvent = $A.get("e.force:showToast");

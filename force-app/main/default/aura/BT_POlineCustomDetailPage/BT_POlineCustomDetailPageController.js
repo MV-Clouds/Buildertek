@@ -1,44 +1,37 @@
 ({
     doInit : function(component, event, helper) {
-        try {
+
             component.set('v.isLoading', true);
-            console.log('record Id :: ', component.get("v.recordId"));
-            helper.doinitHelper(component, event);
+            // console.log('record Id :: ', component.get("v.recordId"));
+            var InitalLoading = true;
+            helper.doinitHelper(component, event, InitalLoading);
             helper.getPriceBooksHelper(component, event);    
-        } catch (error) {
-            console.log('error --> ', error.stack); 
-        }
     },
 
     editRecord : function(component, event, helper) {
             component.set("v.isLoading", true);
             console.log('Edit Record');
             component.set("v.viewMode", false);
-            helper.doinitHelper(component, event);
+            var InitalLoading = false;
+            helper.doinitHelper(component, event, InitalLoading);
     },
 
     leaveEditForm : function(component, event, helper){
-        try {
             component.set("v.isLoading", true);
             $A.get('e.force:refreshView').fire();
             component.set("v.viewMode", true);
             component.set('v.selectedPBName', null);
             component.set('v.selectedPBId', null);
             component.set('v.selectedPFName', null);
+            component.set("v.ProductFamilyListSearched", null);
+            component.set("v.ProductListSearched", null);
             // helper.RestoreProductRelatedDetail(component, event);
             component.set("v.isLoading", false);
-        } catch (error) {
-            console.log('error ==> ', error.stack);
-        }
 
     }, 
 
     projectChange : function(component, event, helper){
-        try {
             console.log('project Change', component.get("v.SelectedProject"));
-        } catch (error) {
-            console.log('error in project change : ', error.stack);
-        }
     },
 
     saveRecord : function(component, event, helper){
@@ -48,7 +41,7 @@
         var fields = event.getParam("fields");
         fields['buildertek__Product__c'] = component.get("v.selectedPRODId");
         console.log('fields', JSON.parse(JSON.stringify(fields)));
-        console.log('recordId : ' + component.get("v.recordId"));
+        // console.log('recordId : ' + component.get("v.recordId"));
         var updatedData = JSON.stringify(fields);
         var action = component.get("c.updateRecord");
         action.setParams({            
@@ -58,7 +51,7 @@
         action.setCallback(this, function (response) {
             component.set("v.viewMode", true);
             var state = response.getState();
-            console.log('state ==> '+state);
+            // console.log('state ==> '+state);
             if (state === "SUCCESS") {
                 $A.get('e.force:refreshView').fire();
                 var toastEvent = $A.get("e.force:showToast");
@@ -85,9 +78,8 @@
     }, 
 
     searchRecordData: function (component, event, helper){
-        try {
             var field = event.getSource().get("v.title");
-            console.log('field >> ', field);
+            // console.log('field >> ', field);
             if(field == 'PB'){
                 component.set("v.displayPB", true);
             }
@@ -98,14 +90,10 @@
                 component.set("v.displayPROD", true);
             }
             event.stopPropagation();
-        } catch (error) {
-            console.log('error in searchRecordData', error.stack);
-        }
 
     },
 
     keyupSearchData: function(component, event, helper){
-        try {
             var field = event.getSource().get("v.title");
             if(field == 'PB'){
                 var listofAllPB=component.get('v.PriceBookList');
@@ -113,8 +101,8 @@
                 var tempArray = [];
                 var i;
                 for (i = 0; i < listofAllPB.length; i++) {
-                    console.log(listofAllPB[i].Name);
-                    console.log(listofAllPB[i].toUpperCase().indexOf(searchFilter) != -1);
+                    // console.log(listofAllPB[i].Name);
+                    // console.log(listofAllPB[i].toUpperCase().indexOf(searchFilter) != -1);
                     if ((listofAllPB[i].Name && listofAllPB[i].Name.toUpperCase().indexOf(searchFilter) != -1)) {
                             tempArray.push(listofAllPB[i]);
                     }else{
@@ -123,7 +111,7 @@
                 }
         
                 component.set("v.PriceBookListSearched", tempArray);
-                console.log({searchFilter});
+                // console.log({searchFilter});
                 if(searchFilter == undefined || searchFilter == ''){
                     component.set("v.PriceBookListSearched", listofAllPB);
                 }
@@ -135,8 +123,8 @@
                 var tempArray = [];
                 var i;
                 for (i = 0; i < listofAllPF.length; i++) {
-                    console.log(listofAllPF[i].Name);
-                    console.log(listofAllPF[i].Name.toUpperCase().indexOf(searchFilter) != -1);
+                    // console.log(listofAllPF[i].Name);
+                    // console.log(listofAllPF[i].Name.toUpperCase().indexOf(searchFilter) != -1);
                     if ((listofAllPF[i].Name && listofAllPF[i].Name.toUpperCase().indexOf(searchFilter) != -1)) {
                             tempArray.push(listoflistofAllPFAllPB[i]);
                     }else{
@@ -145,7 +133,7 @@
                 }
         
                 component.set("v.ProductFamilyListSearched", tempArray);
-                console.log({searchFilter});
+                // console.log({searchFilter});
                 if(searchFilter == undefined || searchFilter == ''){
                     component.set("v.ProductFamilyListSearched", listofAllPF);
                 }
@@ -157,8 +145,8 @@
                 var tempArray = [];
                 var i;
                 for (i = 0; i < listofAllPROD.length; i++) {
-                    console.log(listofAllPROD[i].Name);
-                    console.log(listofAllPROD[i].Name.toUpperCase().indexOf(searchFilter) != -1);
+                    // console.log(listofAllPROD[i].Name);
+                    // console.log(listofAllPROD[i].Name.toUpperCase().indexOf(searchFilter) != -1);
                     if ((listofAllPROD[i].Name && listofAllPROD[i].Name.toUpperCase().indexOf(searchFilter) != -1)) {
                             tempArray.push(listofAllPROD[i]);
                     }else{
@@ -167,15 +155,11 @@
                 }
         
                 component.set("v.ProductListSearched", tempArray);
-                console.log({searchFilter});
+                // console.log({searchFilter});
                 if(searchFilter == undefined || searchFilter == ''){
                     component.set("v.ProductListSearched", listofAllPROD);
                 }
             }
-            
-        } catch (error) {
-            console.log('error in keyupSearchData', error.stack);
-        }
     },
 
     hideList: function (component, event, helper) {
@@ -196,9 +180,8 @@
     },
 
     clearInput: function(component, event, helper) {
-        try {
             var field = event.getSource().get("v.title");
-            console.log('field clear >> ', field);
+            // console.log('field clear >> ', field);
             if(field == 'PB'){
                 component.set('v.selectedPBName', null);
                 component.set('v.selectedPBId', null);
@@ -219,9 +202,6 @@
             else if(field == 'PROD'){
                 helper.RestoreProductRelatedDetail(component, event);
             }
-        } catch (error) {
-            console.log('error in clearInput', error.stack);
-        }
     },
 
     clickonPBHandler : function (component, event, helper){
@@ -230,7 +210,7 @@
         var previousSelectedPB = component.get('v.selectedPBId');
 
         var recordId = event.currentTarget.dataset.value;
-        console.log('recordId ==> '+recordId);
+        // console.log('recordId ==> '+recordId);
         component.set('v.selectedPBId', recordId);
 
         if(previousSelectedPB != recordId){
@@ -254,7 +234,7 @@
         var PrevousSelectedPF = component.get("v.selectedPFName")
 
         var record = event.currentTarget.dataset.value;
-        console.log('record ==> '+record);
+        // console.log('record ==> '+record);
         component.set('v.selectedPFName', record);
         
         if(PrevousSelectedPF != record){
@@ -264,16 +244,15 @@
     },
 
     clickonPRODHandler :  function (component, event, helper){
-        try {
             component.set("v.isLoading", true);
             component.set('v.displayPROD', false);
             var previusPROD = component.get("v.selectedPRODId");
             var recordId = event.currentTarget.dataset.value;
-            console.log('recordId ==> '+recordId);
+            // console.log('recordId ==> '+recordId);
             if(previusPROD != recordId){
                 component.set('v.selectedPRODId', recordId);
                 var updatedPOline = component.get("v.POline");
-                console.log('previus PO >> ', updatedPOline);
+                // console.log('previus PO >> ', updatedPOline);
                 
                 var ProductListSearched = component.get("v.ProductListSearched");
                 ProductListSearched.forEach(element => {
@@ -300,11 +279,6 @@
             }
     
             component.set("v.isLoading", false);
-            
-        } catch (error) {
-            console.log('error in clickonPRODHandler > ', error.stack);
-            
-        }
     },
 
 })

@@ -1,5 +1,6 @@
 ({
-    doinitHelper : function(component, event){
+    doinitHelper : function(component, event, InitalLoading){
+
         try {
             
             var Fields = [];
@@ -32,11 +33,10 @@
             });
             getRecordData.setCallback(this, function (response) {
                 var state = response.getState();
-                console.log('status :: ', state);
+                // console.log('status :: ', state);
                 if (state === "SUCCESS") {
                     var result = response.getReturnValue();
                     console.log('result :: ', result);
-                    try {
                         if(result.buildertek__Product__r){
                             console.log('InitialProductName > ', result.buildertek__Product__r.Name); 
                             component.set("v.selectedPRODId", result.buildertek__Product__r.Id);
@@ -46,17 +46,20 @@
                             component.set("v.selectedPRODId", '');
                             component.set("v.selectedPRODName", '');
                         }
-                        var stopSpinner = setTimeout($A.getCallback(function() {
-                            component.set("v.isLoading", false);
-                        }), 2000);
-                        var searchTimeout = setTimeout($A.getCallback(function() {
+                        if(InitalLoading){
+                            var stopSpinner = setTimeout($A.getCallback(function() {
+                                component.set("v.isLoading", false);
+                            }), 3000);
+                            var searchTimeout = setTimeout($A.getCallback(function() {
+                                component.set("v.POline", result);
+                            }), 1000);
+                            console.log("InitalLoading");
+                        }
+                        else{
                             component.set("v.POline", result);
-                            console.log("6");
-                        }), 1000);
-                    } catch (error) {
-                        console.log('error >> ', error.stack);
-                        
-                    }
+                            component.set("v.isLoading", false);
+                        }
+                   
                 } else {
                     var toastEvent = $A.get("e.force:showToast");
                     toastEvent.setParams({
@@ -70,12 +73,13 @@
             });
             $A.enqueueAction(getRecordData);
         } catch (error) {
-            console.log('Error >> ', error.stack);
+            console.log("error in Inti >> ", error.message);
+            
         }
     },
 
     getPriceBooksHelper: function(component, event){
-        try {
+
             var getPricebooks = component.get("c.getPricebooks");
             // getPricebooks.setParams({
     
@@ -101,17 +105,13 @@
             });
             $A.enqueueAction(getPricebooks);
             
-        } catch (error) {
-            console.log('Error >> ', error.stack);
-        }
 
     },
 
     getProductRelatedtoPBHelper : function(component, event){
-        try {
             component.set("v.isLoading", true);
     
-            console.log('component.get("v.selectedPBId") >> ',component.get("v.selectedPBId"));
+            // console.log('component.get("v.selectedPBId") >> ',component.get("v.selectedPBId"));
             var getProductRelatedtoPB = component.get("c.getProductRelatedtoPB");
             getProductRelatedtoPB.setParams({
                 PricebookId : component.get("v.selectedPBId")
@@ -132,11 +132,11 @@
                     });
     
                     ProductFamilyList = Array.from(ProductFamilySet);  // converted Set Into Array for iteration in aura
-                    console.log('ProductFamilyList >> ', ProductFamilyList);
+                    // console.log('ProductFamilyList >> ', ProductFamilyList);
                     component.set("v.ProductFamilyList", ProductFamilyList);
                     component.set("v.ProductFamilyListSearched", ProductFamilyList);
                     
-                    console.log('ProductList >> ', ProductList);
+                    // console.log('ProductList >> ', ProductList);
                     component.set("v.ProductList", ProductList);
                     component.set("v.ProductListSearched", ProductList);
                     
@@ -154,16 +154,10 @@
                 }
             });
             $A.enqueueAction(getProductRelatedtoPB);
-            
-        } catch (error) {
-            console.log('Error >> ', error.stack);
-        }
 
     },
 
     getProductRelatedToPFhandler : function(component, event){
-
-        try {
             component.set("v.isLoading", true);
             var getProductRelatedToPF = component.get("c.getProductRelatedToPF");
             getProductRelatedToPF.setParams({
@@ -195,11 +189,6 @@
             })
     
             $A.enqueueAction(getProductRelatedToPF);
-            
-        } catch (error) {
-            console.log('Error >> ', error.stack);
-        }
-
     },
 
     RestoreProductRelatedDetail: function(component, event){
