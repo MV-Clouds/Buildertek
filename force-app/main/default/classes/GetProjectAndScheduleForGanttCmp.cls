@@ -46,12 +46,12 @@ public with sharing class GetProjectAndScheduleForGanttCmp {
     }
 
     @AuraEnabled
-    public static String getScheduleDateFromCustomSetting() {
-        String scheduleId = [SELECT Id, Name, buildertek__project_selected__c, buildertek__schedule_selected__c FROM buildertek__Project_Schedule_Selection__c LIMIT 1].buildertek__schedule_selected__c;
-        if (scheduleId != null) {
+    public static buildertek__Project_Schedule_Selection__c getScheduleDateFromCustomSetting() {
+        buildertek__Project_Schedule_Selection__c scheduleId = [SELECT Id, Name, buildertek__project_selected__c, buildertek__schedule_selected__c FROM buildertek__Project_Schedule_Selection__c LIMIT 1];
+        // if (scheduleId != null) {
             return scheduleId;
-        } 
-        return '';
+        // } 
+        // return '';
     }
     
     public class scheduleWrapperClass {

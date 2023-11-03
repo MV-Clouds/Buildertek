@@ -1,4 +1,4 @@
-import { LightningElement, api, track } from "lwc";
+import { LightningElement, api, track, wire } from "lwc";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import getScheduleData from "@salesforce/apex/GetProjectAndScheduleForGanttCmp.getScheduleData";
 import setScheduleDataIntoCustomSetting from "@salesforce/apex/GetProjectAndScheduleForGanttCmp.setScheduleDataIntoCustomSetting";
@@ -9,12 +9,14 @@ export default class GanttProjectSchedulesOptionselectionCmp extends LightningEl
     @track projectOptions = [];
     @track mapOfSchedulesOptionsByProject = {};
     @track SchedulesOptions = [];
+    @track ProjectNameSet = [];
     @track selectedProjectId;
     @track selectedScheduleId;
     @track callscheduleComponent = false;
 
     connectedCallback() {
         this.getScheduleList();
+        // console.log(this.selectedScheduleId);
         this.getScheduleIdFromCustomSetting();
     }
 
@@ -22,8 +24,26 @@ export default class GanttProjectSchedulesOptionselectionCmp extends LightningEl
         getScheduleDateFromCustomSetting()
             .then((result) => {
                 if (result) {
-                    console.log('result', result);
-                    this.selectedScheduleId = result;
+                    this.selectedProjectId = result.buildertek__Project_Selected__c;
+                    this.selectedScheduleId = result.buildertek__Schedule_Selected__c;
+                    console.log('result ==>', result);
+                    var scheduleWithoutProjectList = [];
+                    this.callscheduleComponent = false;
+                    console.log('Selected Project ID:', this.selectedProjectId);
+                    if (this.selectedProjectId == undefined || this.selectedProjectId == '') {
+                        this.scheduleWithoutProjectList.forEach(ele => {
+                            scheduleWithoutProjectList.push({ label: ele.buildertek__Description__c, value: ele.Id });
+                            this.ProjectNameSet.push({ label: 'No Project', value: '' })
+                            this.projectOptions = this.ProjectNameSet;
+                        });
+                        console.log('scheduleWithoutProjectList', scheduleWithoutProjectList);
+                        this.SchedulesOptions = scheduleWithoutProjectList;
+                    } else {
+                        this.mapOfSchedulesOptionsByProject[this.selectedProjectId].forEach(ele => {
+                            scheduleWithoutProjectList.push({ label: ele.buildertek__Description__c, value: ele.Id });
+                        })
+                        this.SchedulesOptions = scheduleWithoutProjectList;
+                    }
                     if (this.selectedScheduleId) {
                         this.handleScheduleClick();
                     }
@@ -47,12 +67,12 @@ export default class GanttProjectSchedulesOptionselectionCmp extends LightningEl
                 console.log('result', result);
                 this.scheduleWithoutProjectList = result.scheduleWithoutProjectList;
                 this.mapOfSchedulesOptionsByProject = result.mapOfSchedulesByProject;
-                var ProjectNameSet = [];
-                ProjectNameSet.push({ label: 'No Project', value: '' })
+                // var ProjectNameSet = [];
+                this.ProjectNameSet.push({ label: 'No Project', value: '' })
                 for (let key in this.mapOfSchedulesOptionsByProject) {
-                    ProjectNameSet.push({ label: this.mapOfSchedulesOptionsByProject[key][0].buildertek__Project__r.Name, value: this.mapOfSchedulesOptionsByProject[key][0].buildertek__Project__r.Id });
+                    this.ProjectNameSet.push({ label: this.mapOfSchedulesOptionsByProject[key][0].buildertek__Project__r.Name, value: this.mapOfSchedulesOptionsByProject[key][0].buildertek__Project__r.Id });
                 }
-                this.projectOptions = ProjectNameSet;
+                this.projectOptions = this.ProjectNameSet;
                 console.log('this.projectOptions', this.projectOptions);
             })
             .catch((error) => {
