@@ -91,9 +91,11 @@
                 component.set("v.totalPOs", result.totalPOs);
                 component.set("v.totalPOAmount", result.totalPOAmount);
                 component.set("v.totalPaidAmount", result.totalPaidAmount);
-                component.set("v.totalRemainingAmount", result.totalRemainingAmount);
+                // component.set("v.totalRemainingAmount", result.totalRemainingAmount);
+                component.set("v.totalRemainingAmount", (result.totalPOAmount - result.totalPaidAmount));   // Changes for BUIL - 3638
                 component.set("v.orderedPercent", result.orderedPercent);
-                component.set("v.paidPercent", result.paidPercent);
+                // component.set("v.paidPercent", result.paidPercent);
+                component.set("v.paidPercent", (result.totalPaidAmount/result.totalPOAmount)*100);          // Changes for BUIL - 3638
 
                 var poFilter = component.get("v.searchItemFilter");
                 var  poLineFilter = component.get("v.searchDescriptionFilter");
