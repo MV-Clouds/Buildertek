@@ -78,6 +78,15 @@ public without sharing class PreviewQuoteController{
         Database.rollback(sp);
         for (Messaging.SingleEmailMessage emailNew : msgList){
             templateBody1 = emailNew.getHTMLBody();
+            templateBody1 = templateBody1.replaceAll('<p><br></p>', '<br>');
+            templateBody1 = templateBody1.replaceAll('<b><br></b>', '<br>');
+            templateBody1 = templateBody1.replaceAll('<p>', '<p style="margin-top: 0px !important; margin-bottom: 0px !important; ">'); 
+            templateBody1 = templateBody1.replaceAll('<b>', '<b style="margin-top: 0px !important; margin-bottom: 0px !important; ">'); 
+            templateBody1 = templateBody1.replaceAll('<strong>', '<strong style="margin-top: 0px !important; margin-bottom: 0px !important; ">'); 
+            templateBody1 = templateBody1.replaceAll('<ol>', '<ol style="margin-top: 0px !important; margin-bottom: 0px !important;font-size:11px !important ">'); 
+            templateBody1 = templateBody1.replaceAll('<span>', '<span style="margin-top: 0px !important; margin-bottom: 0px !important;">'); 
+            templateBody1 = templateBody1.replaceAll('<p class="ql-indent-1">', '<p class="ql-indent-1" style="margin-top: 0px !important; margin-bottom: 0px !important;">'); 
+            
         }
 
         if (theTemplate.Name != 'Quote - HISAB') {
@@ -102,6 +111,15 @@ public without sharing class PreviewQuoteController{
             }
             system.debug('templateBody 2 ----------> ' + templateBody2);
             templateBody = templateBody1 + templateBody2;
+            templateBody = templateBody.replaceAll('<p><br></p>', '<br>');
+            templateBody = templateBody.replaceAll('<b><br></b>', '<br>');
+            templateBody = templateBody.replaceAll('<p>', '<p style="margin-top: 0px !important; margin-bottom: 0px !important; ">'); 
+            templateBody = templateBody.replaceAll('<b>', '<b style="margin-top: 0px !important; margin-bottom: 0px !important; ">'); 
+            templateBody = templateBody.replaceAll('<strong>', '<strong style="margin-top: 0px !important; margin-bottom: 0px !important; ">'); 
+            templateBody = templateBody.replaceAll('<ol>', '<ol style="margin-top: 0px !important; margin-bottom: 0px !important;font-size:11px !important ">'); 
+            templateBody = templateBody.replaceAll('<ul>', '<ul style="margin-top: 0px !important; margin-bottom: 0px !important ">'); 
+            templateBody = templateBody.replaceAll('<span>', '<span style="margin-top: 0px !important; margin-bottom: 0px !important;">'); 
+            templateBody = templateBody.replaceAll('<p class="ql-indent-1">', '<p class="ql-indent-1" style="margin-top: 0px !important; margin-bottom: 0px !important;">'); 
             system.debug('Final templateBody ----------> ' + templateBody);
         } else {
             templateBody = templateBody1;
