@@ -37,7 +37,7 @@
      // declare variables
      var csvStringResult, keys, columnDivider;
      columnDivider = ',';
-     keys = ['Product','Price Book','Product SKU','Product Code','Build Phase','CategoryPL','Trade Type','Location','Quantity','UOM','Cost Code'];
+     keys = ['Product','Price Book', 'Vendor', 'Product SKU','Product Code','Build Phase','CategoryPL','Trade Type','Location','Quantity','UOM','Cost Code'];
    
      csvStringResult = '';
      csvStringResult += keys.join(columnDivider);

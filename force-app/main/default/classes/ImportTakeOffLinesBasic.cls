@@ -30,6 +30,7 @@ public with sharing class ImportTakeOffLinesBasic{
 					Map<String, buildertek__Build_Phase__c> buildPhasemap = new Map<String, buildertek__Build_Phase__c>();
 					Map<String, buildertek__Trade_Type__c> existingTradeTypeMap = new Map<String, buildertek__Trade_Type__c>();
 					Map<String, buildertek__Cost_Codes__c> existingCostCodeMap = new Map<String, buildertek__Cost_Codes__c>();
+					Map<String, Account> accountMap = new Map<String, Account>();
 					Map<String, PricebookEntry> PBEMap = new Map<String, PricebookEntry>();
 					Map<String, Pricebook2> PBMap = new Map<String, Pricebook2>();
 
@@ -41,6 +42,11 @@ public with sharing class ImportTakeOffLinesBasic{
 					// Find existing pricebooks
 					for (Pricebook2 pricebook : [SELECT Id, Name FROM Pricebook2]) {
 						PBMap.put(pricebook.Name, pricebook);
+					}
+
+					// Find existing vendors
+					for (Account Acc : [SELECT Id, Name FROM Account]) {
+						accountMap.put(Acc.Name, Acc);
 					}
 
 					// Find existing pricebookentries
@@ -76,12 +82,12 @@ public with sharing class ImportTakeOffLinesBasic{
 											String finalString = withoutOuterQuotes.replaceAll('""', '"');
 											if (existingProductMap.containsKey(finalString)){
 												productFamilyId = existingProductMap.get(finalString).Id;
-												takeoffLines.buildertek__Product__c = existingProductMap.get(finalString).Id;
+												takeoffLines.buildertek__Product__c = productFamilyId;
 											}
 										} else {
 											if (existingProductMap.containsKey(tempProductNames)){
 												productFamilyId = existingProductMap.get(tempProductNames).Id;
-												takeoffLines.buildertek__Product__c = existingProductMap.get(tempProductNames).Id;
+												takeoffLines.buildertek__Product__c = productFamilyId;
 											}
 										}
 										 
@@ -102,7 +108,27 @@ public with sharing class ImportTakeOffLinesBasic{
 										productFamilyId = null;
 									}
 								}
-								
+
+								when 'Vendor'{
+									if (String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))){
+										String tempVendorNames  = listCSVData.get(intIndex).get(intInnerIndex).replace('\n', '');
+										if (tempVendorNames.startsWith('"') && tempVendorNames.endsWith('"')) {
+											String withoutOuterQuotes = tempVendorNames.replaceAll('^"|"$', '');
+											String finalVendorString = withoutOuterQuotes.replaceAll('""', '"');
+											if (accountMap.containsKey(finalVendorString)){
+												// vendorId = existingProductMap.get(finalVendorString).Id;
+												takeoffLines.buildertek__Vendor__c = accountMap.get(finalVendorString).Id;
+											}
+										} else {
+											if (accountMap.containsKey(tempVendorNames)){
+												// vendorId = existingProductMap.get(finalVendorString).Id;
+												takeoffLines.buildertek__Vendor__c = accountMap.get(tempVendorNames).Id;
+											}
+										}
+										 
+									}
+									
+								}
 
 								when 'Product SKU'{
 									if (String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))){
