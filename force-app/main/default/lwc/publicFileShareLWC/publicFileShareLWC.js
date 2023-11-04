@@ -5,6 +5,7 @@ import ConfirmationPageSiteURL from "@salesforce/apex/PublicFileShareController.
 import deleteFolder from "@salesforce/apex/PublicFileShareController.deleteFolder";
 import {NavigationMixin} from 'lightning/navigation';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import updateFolder from "@salesforce/apex/PublicFileShareController.updateFolder";
 
 export default class PublicFileShareLWC extends NavigationMixin(LightningElement) {
 
@@ -15,10 +16,17 @@ export default class PublicFileShareLWC extends NavigationMixin(LightningElement
     @track showManageFolder = false;
     @track showFolderTable = false;
 
+    @track folderforEdit = {
+        Id : '',
+        Name : '',
+        Description : ''}
+    @track showdeleteFolderPopup = false;
+    @track showEditFolderPopup = false;
     @track showNewFolderPopup = false;
     @track newFolderName = '';
     @track newFolderDescription = '';
     @track FileSiteURL = '';
+    @track deleteFolderId = '';
     connectedCallback() {
         try {
             this.getFolderDataFromApex();
@@ -56,10 +64,12 @@ export default class PublicFileShareLWC extends NavigationMixin(LightningElement
 
     handleNameChange(event) {
         this.newFolderName = event.target.value;
+        this.folderforEdit.Name = event.target.value;
     }
 
     handleDescriptionChange(event) {
         this.newFolderDescription = event.target.value;
+        this.folderforEdit.Description = event.target.value;
     }
 
     createFolder(){
@@ -137,9 +147,15 @@ export default class PublicFileShareLWC extends NavigationMixin(LightningElement
     }
 
     Handle_DeleteFolder(event){
-        this.spinnerDataTable = true
+        this.showdeleteFolderPopup = true;
         console.log('record to delete:- ',event.currentTarget.dataset.key);
-        deleteFolder({publicFolderId : event.currentTarget.dataset.key})
+        this.deleteFolderId = event.currentTarget.dataset.key;
+    }
+    
+    deletefolder(){
+        this.spinnerDataTable = true
+        this.showdeleteFolderPopup = false;
+        deleteFolder({publicFolderId : this.deleteFolderId})
         .then((response) =>{
             console.log("FolderData:- ",response);
             if(response == 'Success'){
@@ -150,5 +166,54 @@ export default class PublicFileShareLWC extends NavigationMixin(LightningElement
             }
             this.spinnerDataTable = false
         });
+        
     }
+
+    closedeleteModal(){
+        this.showdeleteFolderPopup = false;
+    }
+
+    editFolder(event){
+        console.log('record to edit:- ',event.currentTarget.dataset.key);
+        this.showEditFolderPopup = true;
+        this.folderData.forEach(element => {
+            if(element.Id == event.currentTarget.dataset.key){
+                console.log('element :- ',element);
+                this.folderforEdit.Id = element.Id;
+                this.folderforEdit.Name = element.Name;
+                this.folderforEdit.Description = element.buildertek__Description__c;
+            }
+            console.log('folderforEdit :- ',this.folderforEdit);
+        });
+    }
+
+    saveFolderChanges(event){
+        console.log('test saveFolderChanges');
+        this.spinnerDataTable = true
+        updateFolder({publicFolderId : this.folderforEdit.Id, folderName : this.folderforEdit.Name, folderDesc : this.folderforEdit.Description})
+        .then((response) =>{
+            console.log("FolderData:- ",response);
+            if(response == 'Success'){
+                //iterate in folderdata and update the name and description
+                this.folderData.forEach(element => {
+                    if(element.Id == this.folderforEdit.Id){
+                        element.Name = this.folderforEdit.Name;
+                        element.buildertek__Description__c = this.folderforEdit.Description;
+                    }
+                });
+                console.log('folderData :- ',this.folderData);
+                this.showToast('success', 'Folder has been Updated Successfully', 'Success!');
+            } else {
+                this.showToast('error', 'Folder has not been Updated', 'Something Went Wrong!');
+            }
+            this.spinnerDataTable = false
+        });
+        
+        this.showEditFolderPopup = false;
+    }
+
+    closeEditFolder(){
+        this.showEditFolderPopup = false;
+    }
+
 }
