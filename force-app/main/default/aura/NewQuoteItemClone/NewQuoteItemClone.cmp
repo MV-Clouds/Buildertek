@@ -695,7 +695,7 @@
                                                 <div class="slds-truncate" title="Description">Description</div>
                                             </th>
                                             <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white;  ">
-                                                <div class="slds-truncate" title="Phase">Phase</div>
+                                                <div class="slds-truncate" title="Grouping">Grouping</div>
                                             </th>
                                             <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; ">
                                                 <div class="slds-truncate" title="note">Notes</div>
