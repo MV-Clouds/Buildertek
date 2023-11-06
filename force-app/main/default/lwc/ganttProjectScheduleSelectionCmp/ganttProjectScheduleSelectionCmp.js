@@ -14,6 +14,7 @@ export default class GanttProjectSchedulesOptionselectionCmp extends LightningEl
     @track selectedScheduleId;
     @track selectedScheduleIdForJS;
     @track callscheduleComponent = false;
+    @track isDisabled = true;
 
     connectedCallback() {
         this.getScheduleList();
@@ -94,10 +95,12 @@ export default class GanttProjectSchedulesOptionselectionCmp extends LightningEl
         if (event.target.name === 'project') {
             this.selectedProjectId = event.detail.value;
             console.log('Selected Project ID:', this.selectedProjectId);
+            this.isDisabled = true;
         } else if (event.target.name === 'schedule') {
             this.selectedScheduleIdForJS = event.detail.value;
             this.selectedScheduleId = event.detail.value;
             console.log('Selected Schedule ID:', this.selectedScheduleId);
+            this.isDisabled = false;
         }
 
         if (this.selectedProjectId === '') {
@@ -166,6 +169,7 @@ export default class GanttProjectSchedulesOptionselectionCmp extends LightningEl
                 });
         } else if (this.selectedScheduleIdForJS === undefined) {
             this.onloadScheduleData();
+            console.log('=========================');
         } else {
             this.callscheduleComponent = false;
             this.dispatchEvent(
