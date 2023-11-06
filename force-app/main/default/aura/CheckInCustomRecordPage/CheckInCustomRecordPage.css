@@ -55,7 +55,7 @@
 
     /* min-width: 183px;
     width: 183px; */
-    min-width: 160px;
+    min-width: 130px;
     width: 160px;
     text-align: center;
     justify-content: center;
@@ -147,6 +147,13 @@
     padding: 8px;
 
 }
+.THIS .date-cell {
+    min-width: 110px;
+    width: 110px;
+    text-align: center;
+    justify-content: center;
+}
+
 
 .THIS .notes {
     word-wrap: break-word;
@@ -444,7 +451,7 @@
 .THIS .pt-1-tab {
     /* width: -webkit-fill-available; */
     display: flex;
-    
+    flex-wrap: wrap;
     /* height: 60px; */
     min-height: 60px;
     height: auto;
@@ -488,7 +495,10 @@
 
 .THIS .id-tab {
     display: flex;
-    width: 100px;
+    width: 140px;
+}
+.THIS .dateCl{
+    width: 300px !important;
 }
 
 .THIS .name-tab {
@@ -522,8 +532,8 @@
     }
 
     .THIS .note-tab {
-        max-width: 265px;
-        min-width: 265px;
+        max-width: 180px;
+        min-width: 180px;
         margin-right: 16px;
         border: 1px solid rgba(0, 0, 0, 0.3);
         border-radius: 4px;
@@ -609,6 +619,10 @@
     .THIS .tab-dsp-div {
         display: flex;
         align-items: center;
+    }
+    .THIS .name-id-tab{
+        display: flex;
+        flex-direction: column;
     }
 }
 
