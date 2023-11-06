@@ -762,8 +762,7 @@
             component.set("v.newQuote.buildertek__Markup__c", markup);
     
     
-            if(getDescription!= undefined && getDescription!= ''){
-    
+            if(getDescription != undefined && getDescription != '' && getDescription.length <= 255){
                 var action = component.get("c.saveQuoteLineItem");
                 action.setParams({
                     "quoteLineRecord": JSON.stringify(quoteObject)
@@ -821,7 +820,7 @@
                 var toastEvent = $A.get("e.force:showToast");
                 toastEvent.setParams({
                     mode: 'sticky',
-                    message: 'Please Enter Description',
+                    message: 'Ensure that the description is neither left empty nor excessively lengthy.',
                     type: 'error',
                     duration: '10000',
                     mode: 'dismissible'
