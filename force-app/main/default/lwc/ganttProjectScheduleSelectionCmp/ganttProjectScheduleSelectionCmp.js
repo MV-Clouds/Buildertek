@@ -12,6 +12,7 @@ export default class GanttProjectSchedulesOptionselectionCmp extends LightningEl
     @track ProjectNameSet = [];
     @track selectedProjectId;
     @track selectedScheduleId;
+    @track selectedScheduleIdForJS;
     @track callscheduleComponent = false;
 
     connectedCallback() {
@@ -25,7 +26,11 @@ export default class GanttProjectSchedulesOptionselectionCmp extends LightningEl
                 if (result) {
                     this.selectedProjectId = result.buildertek__Project_Selected__c;
                     this.selectedScheduleId = result.buildertek__Schedule_Selected__c;
-                    console.log('result ==>', result);
+                    let checkProjectId = result.hasOwnProperty('buildertek__Project_Selected__c');
+                    if (!checkProjectId) {
+                        this.selectedProjectId = '';
+                    }
+                    console.log('result', result);
                     var scheduleWithoutProjectList = [];
                     this.callscheduleComponent = false;
                     console.log('Selected Project ID:', this.selectedProjectId);
@@ -33,9 +38,6 @@ export default class GanttProjectSchedulesOptionselectionCmp extends LightningEl
                         this.scheduleWithoutProjectList.forEach(ele => {
                             scheduleWithoutProjectList.push({ label: ele.buildertek__Description__c, value: ele.Id });
                         });
-                        this.ProjectNameSet.push({ label: 'No Project', value: '' })
-                        this.projectOptions = this.ProjectNameSet;
-                        console.log('projectOptions', this.projectOptions);
                         console.log('scheduleWithoutProjectList', scheduleWithoutProjectList);
                         this.SchedulesOptions = scheduleWithoutProjectList;
                     } else {
@@ -45,7 +47,7 @@ export default class GanttProjectSchedulesOptionselectionCmp extends LightningEl
                         this.SchedulesOptions = scheduleWithoutProjectList;
                     }
                     if (this.selectedScheduleId) {
-                        this.handleScheduleClick();
+                        this.onloadScheduleData();
                     }
                 }
             })
@@ -93,6 +95,7 @@ export default class GanttProjectSchedulesOptionselectionCmp extends LightningEl
             this.selectedProjectId = event.detail.value;
             console.log('Selected Project ID:', this.selectedProjectId);
         } else if (event.target.name === 'schedule') {
+            this.selectedScheduleIdForJS = event.detail.value;
             this.selectedScheduleId = event.detail.value;
             console.log('Selected Schedule ID:', this.selectedScheduleId);
         }
@@ -111,7 +114,7 @@ export default class GanttProjectSchedulesOptionselectionCmp extends LightningEl
         }
     }
 
-    handleScheduleClick() {
+    onloadScheduleData() {
         if (this.selectedScheduleId) {
             this.callscheduleComponent = true;
             console.log('Project Id ==>', this.selectedProjectId);
@@ -130,6 +133,39 @@ export default class GanttProjectSchedulesOptionselectionCmp extends LightningEl
                         })
                     );
                 });
+        } else {
+            this.callscheduleComponent = false;
+            this.dispatchEvent(
+                new ShowToastEvent({
+                    title: "Error",
+                    message: "Please select schedule",
+                    variant: "error",
+                })
+            );
+        }
+    }
+
+    handleScheduleClick() {
+        if (this.selectedScheduleIdForJS) {
+            this.callscheduleComponent = true;
+            console.log('Project Id ==>', this.selectedProjectId);
+            console.log('Schedule Id ==>', this.selectedScheduleId);
+            setScheduleDataIntoCustomSetting({ ScheduleId: this.selectedScheduleId, ProjectId: this.selectedProjectId })
+                .then((result) => {
+                    console.log('result', result);
+                })
+                .catch((error) => {
+                    console.log('Error in getting schedule list', error);
+                    this.dispatchEvent(
+                        new ShowToastEvent({
+                            title: "Error",
+                            message: error.message,
+                            variant: "error",
+                        })
+                    );
+                });
+        } else if (this.selectedScheduleIdForJS === undefined) {
+            this.onloadScheduleData();
         } else {
             this.callscheduleComponent = false;
             this.dispatchEvent(
