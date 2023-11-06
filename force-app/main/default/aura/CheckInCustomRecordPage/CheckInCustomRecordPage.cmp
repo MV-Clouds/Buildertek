@@ -189,6 +189,7 @@
                                             </div>
                                         </aura:if>
                                         
+                                        
                                         <aura:if isTrue="{!!ci.ContentDocumentLinks}">
                                             <div class="no-file-div">No Files Available</div>
                                         </aura:if>
