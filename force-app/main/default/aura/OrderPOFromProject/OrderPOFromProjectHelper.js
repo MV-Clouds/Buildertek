@@ -147,5 +147,20 @@
         }
         reader.readAsDataURL(file);
     },
-    
+
+    settempId : function(component, poId){
+        var action = component.get("c.addEmailTemplateId");
+        action.setParams({
+            POIDs: poId,
+        });
+        action.setCallback(this, function (response) {
+            var state = response.getState();
+            if (state === "SUCCESS") {
+                console.log('Success');
+            } else{
+                console.log('Fail')
+            }
+        });
+        $A.enqueueAction(action);
+    }
 })

@@ -489,6 +489,7 @@ public class OrderPOFromProjectController {
         system.debug('filedata------->'+filedata);
 
         List<Innerclass> inn;
+        String templateBody1 = '';
         if(filedata != null && filedata != '' && filedata != '[]'){
             system.debug('filedata'+filedata);
             inn = (List<Innerclass>)JSON.deserialize((filedata),List<Innerclass>.Class);
@@ -498,7 +499,7 @@ public class OrderPOFromProjectController {
             system.debug('kdhiic------>'+inn[0].POId);
         }
 
-        EmailTemplate et = [SELECT Id,Subject, Body FROM EmailTemplate WHERE name ='Purchase Order Template' limit 1];
+        EmailTemplate et = [SELECT Id,Subject, Body FROM EmailTemplate WHERE DeveloperName = 'OrderPOFromProject' limit 1];
 
 
         MessageClass msgCls = new MessageClass();
@@ -539,7 +540,7 @@ public class OrderPOFromProjectController {
                     OrderedPOList.add(poRec);
                     //
 
-                    String body = '';
+                    // String body = '';
                     List<Messaging.SingleEmailMessage> lstMsgs = new List<Messaging.SingleEmailMessage>();
                     Messaging.SingleEmailMessage msg = new Messaging.SingleEmailMessage();
                     msg.setTemplateId(et.Id);
@@ -554,31 +555,25 @@ public class OrderPOFromProjectController {
                     Savepoint sp = Database.setSavepoint();
                     Messaging.sendEmail(lstMsgs);
                     Database.rollback(sp);
+                    for (Messaging.SingleEmailMessage emailNew : lstMsgs){
+                        templateBody1 = emailNew.getHTMLBody();
+                    }
 
                     system.debug('after savepoint------->');
 
                     // List<Messaging.Emailfileattachment> signeefileAttachments = new List<Messaging.Emailfileattachment>();
                     // Organization org =[SELECT Id, Name, Street, City, State, PostalCode, Country,  Address, Phone  FROM Organization LIMIT 1];
 
-                    Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
-                    email.setToAddresses(new list<string>{myContact.buildertek__Vendor__r.buildertek__Email_Address__c});
-                    email.setSubject(lstMsgs[0].Subject + ' - ' + myContact.Name + ' [Ref:' + myContact.Id +']'); //Changes for BUIl-3463 
-
-                    body += 'Hi, <br/><br/> ';
-                    body += '</br> Please &nbsp;';
-                    body += '<a href='+ SiteUrl +'buildertek__ConfirmationPage?Id='+myContact.Id+'&templateId='+et.Id+'>Click here</a>';
-                    body += '&nbsp;to confirm your Purchase Order details.</br></br>' ;
-                    // body += '</br/></br>';
-                    // body += '<br/></br>Sincerely,</br>' ;
-                    // body += '<br/>'+org.Name+ '</br>';
-                    // body += '<br/>'+org.Phone+ '</br>';
-                    // body += '<br/>'+org.Street+org.City+ org.State+org.PostalCode+org.Country+'</br><br/>';
+                    Messaging.SingleEmailMessage emails = new Messaging.SingleEmailMessage();
+                    emails.setToAddresses(new list<string>{myContact.buildertek__Vendor__r.buildertek__Email_Address__c});
+                    emails.setSubject(lstMsgs[0].Subject + ' - ' + myContact.Name + ' [Ref:' + myContact.Id +']'); //Changes for BUIl-3463 
 
 
 
 
                     //email.setPlainTextBody(emailBody);
-                    email.setHtmlBody(body);
+                    
+                    emails.setHtmlBody(templateBody1);
 
                     system.debug('myContact.Id------->'+myContact.Id);
 
@@ -613,9 +608,9 @@ public class OrderPOFromProjectController {
                         }
                     }
                     if(fileAttachments.size()>0){
-                        email.setFileAttachments(fileAttachments);
+                        emails.setFileAttachments(fileAttachments);
                     }
-                    mails.add(email);
+                    mails.add(emails);
                 }
             }
             // Step 6: Send all emails in the master list
@@ -714,11 +709,23 @@ public class OrderPOFromProjectController {
         return 'success';
     }
 
-    // @AuraEnabled
-    // public static void addEmail(String emailId, Id recordId){
-    //     Account acc = [SELECT Id, buildertek__Email_Address__c FROM Account WHERE Id = :recordId LIMIT 1];
-    //     acc.buildertek__Email_Address__c = emailId;
-    //     update acc;
-    // }
+    @AuraEnabled
+    public static void addEmailTemplateId(List<String> POIDs){
+        try {
+            List<buildertek__Purchase_Order__c> OrderedPOList =  new List<buildertek__Purchase_Order__c>();
+            EmailTemplate et = [SELECT Id, Name FROM EmailTemplate WHERE DeveloperName = 'Purchase_Order_Template_1' limit 1];
+            List<buildertek__Purchase_Order__c> poList = [Select Id, Name, buildertek__TemplateId__c, buildertek__Template_Name__c from buildertek__Purchase_Order__c Where Id IN: POIDs];
+            for (buildertek__Purchase_Order__c po : poList){
+                buildertek__Purchase_Order__c poRec = new buildertek__Purchase_Order__c();
+                poRec.buildertek__TemplateId__c = et.Id;
+                poRec.buildertek__Template_Name__c = et.Name;
+                poRec.Id = po.Id;
+                OrderedPOList.add(poRec);
+            }
+            update OrderedPOList;
+        } catch (Exception e) {
+            System.debug('error-->'+ e);
+        }
+    }
 
 }
