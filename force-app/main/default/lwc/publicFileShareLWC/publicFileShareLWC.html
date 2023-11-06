@@ -25,10 +25,11 @@
                             <tr>
                                 <th>Name</th>
                                 <th>Description</th>
+                                <th></th>
                                 <th>File Count</th>
                                 <th>Folder Link</th>
                                 <th>Delete</th>
-                                <th>Manage Folder</th>
+                                <th>Manage Files</th>
                             </tr>
                         </thead>
     
@@ -37,6 +38,9 @@
                                 <tr key={item.Id}>
                                     <td>{item.Name}</td>
                                     <td>{item.buildertek__Description__c}</td>
+                                    <td class="action">
+                                        <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" title="Edit" onclick={editFolder} data-key={item.Id} data-nameedit={item.Id}></lightning-icon>                                        
+                                    </td>
                                     <td>{item.buildertek__File_Count__c}</td>
                                     <td>
                                         <div data-link={item.Id} class="copy_btn" onclick={copySiteURL} >
@@ -48,7 +52,7 @@
                                         <lightning-icon icon-name="utility:delete" alternative-text="Delete" size="x-small" title="Delete" onclick={Handle_DeleteFolder} data-key={item.Id} data-deleteicon={item.Id}></lightning-icon>
                                     </td>
                                     <td class="action">
-                                        <button data-id={item.Id} onclick={manageFolder}>Manage Folder</button>
+                                        <button data-id={item.Id} onclick={manageFolder}>Manage Files</button>
                                     </td>
                                 </tr>
                             </template>
@@ -93,6 +97,66 @@
             <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
         </template>
 
+        <template if:true={showEditFolderPopup}>
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container" >
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" onclick={closeCreateFolder}>
+                        <svg width="46" height="46" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+                    </button>
+
+                    <div class="slds-modal__header">
+                        <h1 class="slds-modal__title slds-hyphenate">Edit Folder</h1>
+                    </div>
+    
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <lightning-card>
+                            <div>
+                                <lightning-input label="Name" data-name="Name" value={folderforEdit.Name} onchange={handleNameChange} required></lightning-input>
+                                <lightning-input label="Description" data-name="Description" value={folderforEdit.Description} onchange={handleDescriptionChange}></lightning-input>
+                            </div>
+                        </lightning-card>
+                    </div>
+
+                    <div class="slds-modal__footer">
+                        <lightning-button label="Close" onclick={closeEditFolder} class="slds-m-horizontal_xx-small" ></lightning-button>
+                        <lightning-button label="Save Folder" variant="brand" onclick={saveFolderChanges} class="slds-m-horizontal_xx-small"></lightning-button>
+                    </div>
+    
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+        </template>
+
+        <template if:true={showdeleteFolderPopup}>
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container" >
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" onclick={closeCreateFolder}>
+                        <svg width="46" height="46" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+                    </button>
+
+                    <div class="slds-modal__header">
+                        <h1 class="slds-modal__title slds-hyphenate">Delete Folder</h1>
+                    </div>
+    
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <lightning-card>
+                            <div>
+                                <p>Are you sure you want to delete this folder?</p>
+                            </div>
+                        </lightning-card>
+                    </div>
+
+                    <div class="slds-modal__footer">
+                        <lightning-button label="Cancel" onclick={closedeleteModal} class="slds-m-horizontal_xx-small" ></lightning-button>
+                        <lightning-button label="Delete Folder" variant="brand" onclick={deletefolder} class="slds-m-horizontal_xx-small"></lightning-button>
+                    </div>
+    
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+        </template>
     </template>
     
 
