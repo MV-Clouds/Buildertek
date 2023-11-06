@@ -213,7 +213,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
       event.stopPropagation();
       this.showpopup = false;
       this.fileTaskId = "";
-      this.gettaskrecords();
+      this.getScheduleWrapperDataFromApex();
     }
   }
 
@@ -333,7 +333,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
 
         if (this.template.querySelector(".container").children.length) {
           this.template.querySelector(".container").innerHTML = "";
-          this.template.querySelector(".container1").innerHTML = "";
+          // this.template.querySelector(".container1").innerHTML = "";
           this.handleHideSpinner();
           this.createGanttChartInitially();
           // this.createGantt();
