@@ -16,7 +16,6 @@ export default class GanttProjectSchedulesOptionselectionCmp extends LightningEl
 
     connectedCallback() {
         this.getScheduleList();
-        // console.log(this.selectedScheduleId);
         this.getScheduleIdFromCustomSetting();
     }
 
@@ -33,9 +32,10 @@ export default class GanttProjectSchedulesOptionselectionCmp extends LightningEl
                     if (this.selectedProjectId == undefined || this.selectedProjectId == '') {
                         this.scheduleWithoutProjectList.forEach(ele => {
                             scheduleWithoutProjectList.push({ label: ele.buildertek__Description__c, value: ele.Id });
-                            this.ProjectNameSet.push({ label: 'No Project', value: '' })
-                            this.projectOptions = this.ProjectNameSet;
                         });
+                        this.ProjectNameSet.push({ label: 'No Project', value: '' })
+                        this.projectOptions = this.ProjectNameSet;
+                        console.log('projectOptions', this.projectOptions);
                         console.log('scheduleWithoutProjectList', scheduleWithoutProjectList);
                         this.SchedulesOptions = scheduleWithoutProjectList;
                     } else {
@@ -67,7 +67,6 @@ export default class GanttProjectSchedulesOptionselectionCmp extends LightningEl
                 console.log('result', result);
                 this.scheduleWithoutProjectList = result.scheduleWithoutProjectList;
                 this.mapOfSchedulesOptionsByProject = result.mapOfSchedulesByProject;
-                // var ProjectNameSet = [];
                 this.ProjectNameSet.push({ label: 'No Project', value: '' })
                 for (let key in this.mapOfSchedulesOptionsByProject) {
                     this.ProjectNameSet.push({ label: this.mapOfSchedulesOptionsByProject[key][0].buildertek__Project__r.Name, value: this.mapOfSchedulesOptionsByProject[key][0].buildertek__Project__r.Id });
@@ -120,7 +119,6 @@ export default class GanttProjectSchedulesOptionselectionCmp extends LightningEl
             setScheduleDataIntoCustomSetting({ ScheduleId: this.selectedScheduleId, ProjectId: this.selectedProjectId })
                 .then((result) => {
                     console.log('result', result);
-
                 })
                 .catch((error) => {
                     console.log('Error in getting schedule list', error);
