@@ -90,43 +90,46 @@ table tbody tr td a {
     }
 }
 
- 
- @media only screen and (max-height: 1080px) and (min-height: 990px){
-    .table-container{
-        max-height: 600px; 
+.table-container {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+
+}
+
+@media only screen and (max-height: 990px) and (min-height: 900px) {
+    .table-container {
+        max-height: 600px;
         overflow-y: auto;
     }
 }
-@media only screen and (max-height: 990px) and (min-height: 900px){
-    .table-container{
-        max-height: 600px; 
+
+@media only screen and (max-height: 900px) and (min-height: 810px) {
+    .table-container {
+        max-height: 550px;
         overflow-y: auto;
     }
 }
-@media only screen and (max-height: 900px) and (min-height: 810px){
-    .table-container{
-        max-height: 550px; 
+
+@media only screen and (max-height: 810px) and (min-height: 720px) {
+    .table-container {
+        max-height: 400px;
         overflow-y: auto;
     }
 }
-@media only screen and (max-height: 810px) and (min-height: 720px){
-    .table-container{
-        max-height: 400px; 
+
+@media only screen and (max-height: 720px) and (min-height: 630px) {
+    .table-container {
+        max-height: 350px;
         overflow-y: auto;
     }
 }
-@media only screen and (max-height: 720px) and (min-height: 630px){
-    .table-container{
-        max-height: 350px; 
+
+@media only screen and (max-height: 630px) and (min-height: 540px) {
+    .table-container {
+        max-height: 290px;
         overflow-y: auto;
     }
 }
-@media only screen and (max-height: 630px) and (min-height: 540px){
-    .table-container{
-        max-height: 290px; 
-        overflow-y: auto;
-    }
-} 
+
 .fixed_header thead {
     position: sticky;
     top: 0;
@@ -137,7 +140,8 @@ table tbody tr td a {
     margin: 1%;
 }
 
-.fixed_header th, .fixed_header td {
+.fixed_header th,
+.fixed_header td {
     text-align: left;
     white-space: nowrap;
     padding: 8px;
