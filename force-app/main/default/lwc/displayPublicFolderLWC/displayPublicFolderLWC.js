@@ -12,6 +12,10 @@ export default class DisplayPublicFolderLWC extends LightningElement {
     @track InitialLoad = true;
 
     connectedCallback() {
+        this.fetchFolderData();
+    }
+
+    fetchFolderData() {
         console.log('folderId ==> ' + this.folderId);
         this.showspinner = true;
 
@@ -63,8 +67,8 @@ export default class DisplayPublicFolderLWC extends LightningElement {
                 this.showspinner = false;
                 alert('Something Went Wrong.');
             });
-
     }
+
     renderedCallback() {
         if (this.InitialLoad) {
             const body = document.querySelector('body');
