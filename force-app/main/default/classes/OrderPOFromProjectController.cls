@@ -711,21 +711,17 @@ public class OrderPOFromProjectController {
 
     @AuraEnabled
     public static void addEmailTemplateId(List<String> POIDs){
-        try {
-            List<buildertek__Purchase_Order__c> OrderedPOList =  new List<buildertek__Purchase_Order__c>();
-            EmailTemplate et = [SELECT Id, Name FROM EmailTemplate WHERE DeveloperName = 'Purchase_Order_Template_1' limit 1];
-            List<buildertek__Purchase_Order__c> poList = [Select Id, Name, buildertek__TemplateId__c, buildertek__Template_Name__c from buildertek__Purchase_Order__c Where Id IN: POIDs];
-            for (buildertek__Purchase_Order__c po : poList){
-                buildertek__Purchase_Order__c poRec = new buildertek__Purchase_Order__c();
-                poRec.buildertek__TemplateId__c = et.Id;
-                poRec.buildertek__Template_Name__c = et.Name;
-                poRec.Id = po.Id;
-                OrderedPOList.add(poRec);
-            }
-            update OrderedPOList;
-        } catch (Exception e) {
-            System.debug('error-->'+ e);
+        List<buildertek__Purchase_Order__c> OrderedPOList =  new List<buildertek__Purchase_Order__c>();
+        EmailTemplate et = [SELECT Id, Name FROM EmailTemplate WHERE DeveloperName = 'Purchase_Order_Template_1' limit 1];
+        List<buildertek__Purchase_Order__c> poList = [Select Id, Name, buildertek__TemplateId__c, buildertek__Template_Name__c from buildertek__Purchase_Order__c Where Id IN: POIDs];
+        for (buildertek__Purchase_Order__c po : poList){
+            buildertek__Purchase_Order__c poRec = new buildertek__Purchase_Order__c();
+            poRec.buildertek__TemplateId__c = et.Id;
+            poRec.buildertek__Template_Name__c = et.Name;
+            poRec.Id = po.Id;
+            OrderedPOList.add(poRec);
         }
+        update OrderedPOList;
     }
 
 }

@@ -151,14 +151,21 @@
     settempId : function(component, poId){
         var action = component.get("c.addEmailTemplateId");
         action.setParams({
-            POIDs: poId,
+            POIDs: poId
         });
         action.setCallback(this, function (response) {
             var state = response.getState();
             if (state === "SUCCESS") {
                 console.log('Success');
-            } else{
-                console.log('Fail')
+            } else if (state === "ERROR") {
+                var errors = response.getError();
+                if (errors && errors[0] && errors[0].message) {
+                    console.log('error-->',errors[0].message);
+                } else {
+                    console.log('Unknown error');
+                }
+            } else if (state === "INCOMPLETE") {
+                console.log('Server request incomplete');
             }
         });
         $A.enqueueAction(action);
