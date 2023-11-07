@@ -369,6 +369,7 @@
 		var budgetsList = component.get("v.masterBudgetsList");
 		console.log({budgetsList});
 		var budgetIds = [];
+		var budgetId = [];
 		if (budgetsList != null) {
 
 			for (var i = 0; i < budgetsList.length; i++) {
@@ -377,6 +378,7 @@
 						if (budgetsList[i].poRecInner != null) {
 							if (budgetsList[i].poRecInner[j].poCheck == true) {
 								budgetIds.push(budgetsList[i].poRecInner[j].poRecord);
+								budgetId.push(budgetsList[i].poRecInner[j].poRecord.Id);
 							}
 						}
 					}
@@ -402,6 +404,7 @@
 
 		if (budgetIds.length > 0) {
 			component.set("v.selectedPOList", true);
+		    helper.settempId(component, budgetId);
 		} else {
 			component.set("v.Spinner", false);
 			var toastEvent = $A.get("e.force:showToast");
