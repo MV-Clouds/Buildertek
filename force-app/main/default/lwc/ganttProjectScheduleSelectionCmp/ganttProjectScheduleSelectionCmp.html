@@ -1,0 +1,23 @@
+<template>
+    <lightning-card title="Select Project and Schedule" icon-name="custom:custom14">
+        <div class="slds-p-around_x-small picklistcombo">
+            <div class="picklist">
+                <lightning-combobox name="project" value={selectedProjectId} options={projectOptions}
+                    onchange={handleChange} placeholder="Select Project"></lightning-combobox>
+            </div>
+            <div class="picklist">
+                <lightning-combobox name="schedule" value={selectedScheduleId} options={SchedulesOptions}
+                    onchange={handleChange} placeholder="Select Schedule"></lightning-combobox>
+            </div>
+            <div class="btnContainer">
+                <lightning-button lightning-button variant="brand" type="submit" label="Open Gantt Chart"
+                    onclick={handleScheduleClick} disabled={isDisabled}></lightning-button>
+            </div>
+        </div>
+
+        <div class="scheduleContainer" if:true={callscheduleComponent}>
+            <c-gantt_component record-id={selectedScheduleId}></c-gantt_component>
+        </div>
+
+    </lightning-card>
+</template>
