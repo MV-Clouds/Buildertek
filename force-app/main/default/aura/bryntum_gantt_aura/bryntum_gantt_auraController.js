@@ -2,25 +2,25 @@
     doInit: function(component, event) {
 
         //projName
-        var action = component.get("c.getProject");
-        action.setParams({
-            recordId: component.get('v.recordId'),
-        });
-        action.setCallback(this, function (response) {
-            if (response.getState() == 'SUCCESS' && response.getReturnValue()) {
-                if(response.getReturnValue()){
-                    var scheduleData = response.getReturnValue();
-                    if(scheduleData.buildertek__Description__c){
-                        if(scheduleData.buildertek__Description__c.length > 100){
-                            scheduleData.buildertek__Description__c =  scheduleData.buildertek__Description__c.slice(0,100) + "...";
-                        }
-                    }
-                    component.set("v.projName", scheduleData);
-                }
+        // var action = component.get("c.getProject");
+        // action.setParams({
+        //     recordId: component.get('v.recordId'),
+        // });
+        // action.setCallback(this, function (response) {
+        //     if (response.getState() == 'SUCCESS' && response.getReturnValue()) {
+        //         if(response.getReturnValue()){
+        //             var scheduleData = response.getReturnValue();
+        //             if(scheduleData.buildertek__Description__c){
+        //                 if(scheduleData.buildertek__Description__c.length > 100){
+        //                     scheduleData.buildertek__Description__c =  scheduleData.buildertek__Description__c.slice(0,100) + "...";
+        //                 }
+        //             }
+        //             component.set("v.projName", scheduleData);
+        //         }
 
-            }
-        })
-        $A.enqueueAction(action);
+        //     }
+        // })
+        // $A.enqueueAction(action);
 
         var action2 = component.get("c.chekIsOldGantt");
         action2.setParams({});
