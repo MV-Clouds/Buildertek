@@ -17,7 +17,7 @@
 
     <aura:attribute name="isSchedulePage" type="Boolean" default="false"/>
     <div>
-        <div style="padding: 1rem 0.5rem;background: #f3f4f5;font-size: 1rem;font-style: initial;">
+        <!-- <div style="padding: 1rem 0.5rem;background: #f3f4f5;font-size: 1rem;font-style: initial;">
             <header style="background: #1b5297;padding: 11px 20px;">
                 <div class="left-box" style="display: inline-block;vertical-align: middle;width: 30%;" >
                     <h1 style="margin: 0;color: #fff;font-size: 18px;" >
@@ -42,7 +42,7 @@
                     </h1>
                 </div>
             </header>
-        </div>
+        </div> -->
 
         <aura:if isTrue="{!v.isSchedulePage}">
             <aura:if isTrue="{!v.isOldGantt}">
