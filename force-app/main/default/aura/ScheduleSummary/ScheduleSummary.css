@@ -116,3 +116,10 @@
     white-space: nowrap;
     font-size: 20px;
 }
+.THIS .emptyList{
+    text-align: center;
+    margin-top: 16px;
+    font-size: 16px;
+    /* font-family: emoji; */
+    font-weight: bold;
+}

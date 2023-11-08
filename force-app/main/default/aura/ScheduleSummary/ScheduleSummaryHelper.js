@@ -118,7 +118,18 @@
             var state = response.getState();
             var result= response.getReturnValue();
             if (state === "SUCCESS") {
-                component.set('v.contractorList' ,result);
+                if(result.length > 100){
+                    var contractorListLimited = [];
+                    for(var  i=0; i<=99; i++){
+                        contractorListLimited.push(result[i]);
+                    }
+                    component.set("v.contractorList", contractorListLimited);
+                    // console.log("contractorList => ", contractorListLimited);
+                }
+                else{
+                    component.set('v.contractorList' ,result);
+                }
+                
                 if (result.length > 0) {
                     component.set("v.Message" , '');  
                 }else{
@@ -129,4 +140,19 @@
         });
         $A.enqueueAction(action);
     },
+
+    Cutout_ContractorRecords : function(component, event){
+        var result =  component.get('v.allContractorRecords');
+        if(result.length > 100){
+            var contractorListLimited = [];
+            for(var  i=0; i<=99; i++){
+                contractorListLimited.push(result[i]);
+            }
+            component.set("v.contractorList", contractorListLimited);
+            // console.log("contractorList => ", contractorListLimited);
+        }
+        else{
+            component.set('v.contractorList' ,result);
+        }
+    }
 })

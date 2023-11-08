@@ -6,7 +6,7 @@ public class ScheduleSummaryController {
     }
     @AuraEnabled
     public static List<Account> getContractorRecords() {
-        List<Account> ContractorList =  [SELECT Id, Name FROM Account ORDER BY Name ASC];
+        List<Account> ContractorList =  [SELECT Id, Name FROM Account ORDER BY Name ASC ];
         return ContractorList;
     }
 }
