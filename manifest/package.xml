@@ -10,6 +10,14 @@
         <members>QBTriggerHandler</members>
         <members>QBException</members>
         <members>QBRefreshJSON</members>
+        <members>QBInvoiceJSON</members>
+        <members>QBInvoiceLineJSON</members>
+        <members>QBInvoiceLineResponseJSON</members>
+        <members>QBInvoiceResponseJSON</members>
+        <members>QBReceiptJSON</members>
+        <members>QBReceiptResponseJSON</members>
+        <members>QBRefreshJSON</members>
+        <members>QBRefreshJSON</members>
         <name>ApexClass</name>
     </types>
     <version>55.0</version>

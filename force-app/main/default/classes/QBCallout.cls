@@ -7,7 +7,7 @@ public with sharing class QBCallout {
         List<String> tokens = refresh();
     }
 
-    private List<String> refresh(){
+    public List<String> refresh(){
         // Get custom settings 
         QBData__c QBData = [
             SELECT Id, Name, refresh_token__c, client_id__c, client_secret__c, auth_url__c FROM QBData__c
@@ -82,10 +82,11 @@ public with sharing class QBCallout {
         Http h = new Http();
         HttpRequest req = new HttpRequest();
         HttpResponse res = new HttpResponse();
-        req.setEndpoint(url);
+        // req.setEndpoint(url);
+        req.setEndpoint('callout:Quickbooks_REST_API/v3/company/4620816365353049760/customer?minorversion=69');
         req.setMethod('POST');
         req.setBody(body);
-        req.setHeader('Authorization', 'Bearer ' + qbCallout.accessToken);
+        req.setHeader('Authorization', 'Bearer ');
         req.setheader('Accept', 'application/json');
         req.setHeader('Content-Type', 'application/json');
         res = h.send(req);
