@@ -40,6 +40,7 @@ public without sharing class createInspectionController {
             newInspection.buildertek__Status__c = 'Open';
             newInspection.buildertek__Inspector__c = inspection.buildertek__Inspector__c;
             newInspection.buildertek__Details__c = inspection.buildertek__Details__c;
+            newInspection.buildertek__BT_Permit__c = permitId;
             newInspections.add(newInspection);
         }
         System.debug('newInspections: ' + newInspections);

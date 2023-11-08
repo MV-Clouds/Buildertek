@@ -83,7 +83,7 @@
                     console.log("Result: ", result);
                     component.set("v.Spinner", false);
                     helper.showToast('success', 'Success', 'Inspection Created Successfully !!!', '3');
-                    closeModel(component, event, helper);
+                    $A.get("e.force:closeQuickAction").fire();
                 }
                 else if (state === "ERROR") {
                     var errors = response.getError();
