@@ -19,11 +19,11 @@ public with sharing class QBCallOutService {
             System.debug('ResponseBody >> ' + ResponseBody);
 
             return ResponseBody;
-            
+
         } catch (Exception e ) {
             System.debug('Error Drung APi Callout >> ' + e.getMessage());
             return null;
-        } 
+        }
     }
 
     public static String QBCallOutServiceWithoutNameCred(String APImethodName, String QBEndPoint, String JSONBody) {
@@ -48,11 +48,11 @@ public with sharing class QBCallOutService {
             System.debug('ResponseBody >> ' + ResponseBody);
 
             return ResponseBody;
-            
+
         } catch (Exception e ) {
             System.debug('Error Drung APi QBCallOutServiceWithoutNameCred >> ' + e.getMessage());
             return null;
-        } 
+        }
     }
 
     public static String GenerateAccessToken(){
@@ -81,35 +81,17 @@ public with sharing class QBCallOutService {
                     mapToUpdate.put('buildertek__Refresh_Token__c',newRefreshToken);
                     mapToUpdate.put('buildertek__Access_Token__c',accessToken);
                     mapToUpdate.put('buildertek__Last_Modified_Refresh_Token__c',date.today());
-                    QBCallOutService.createUpdateMetadata(QBMetadata.Name, QBMetadata.Label, mapToUpdate);           
-                } 
+                    QuickbooksConfigController.handleInsertAndUpdate('buildertek__QuickBooks_Setting.QB_bc_buildertek_com','QB_bc@buildertek.com', mapToUpdate);
+                }
                     else {
                     System.debug('Failed to refresh access token. Status Code: ' + res.getStatusCode());
                     System.debug('Response: ' + res.getBody());
                 }
                 return accessToken;
-            
+
         } catch (Exception e) {
             System.debug('Error Drung APi GetAccessToken >> ' + e.getMessage());
             return null;
         }
-    }
-
-    public static void createUpdateMetadata(String fullName, String label, Map<String, Object> fieldWithValuesMap){
-        Metadata.CustomMetadata customMetadata =  new Metadata.CustomMetadata();
-        customMetadata.fullName = fullName;
-        customMetadata.label = label;
-        
-        for(String key : fieldWithValuesMap.keySet()){
-            Metadata.CustomMetadataValue customField = new Metadata.CustomMetadataValue();
-            customField.field = key;
-            customField.value = fieldWithValuesMap.get(key); 
-            customMetadata.values.add(customField);
-        }
-        
-        Metadata.DeployContainer mdContainer = new Metadata.DeployContainer();
-        mdContainer.addMetadata(customMetadata);
-        QBCallOutService callback = new QBCallOutService();
-        Id jobId = Metadata.Operations.enqueueDeployment(mdContainer, callback);
     }
 }
