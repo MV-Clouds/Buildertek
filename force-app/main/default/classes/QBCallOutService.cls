@@ -75,7 +75,15 @@ public with sharing class QBCallOutService {
                     newRefreshToken = (String) responseMap.get('refresh_token');
                     System.debug('Tokens : '+newRefreshToken );
                     System.debug('accessToken : '+accessToken );
-                } else {
+                    // buildertek__QuickBooks_Setting__mdt QBS = new buildertek__QuickBooks_Setting__mdt(buildertek__Refresh_Token__c = newRefreshToken, buildertek__Access_Token__c = accessToken, buildertek__Last_Modified_Refresh_Token__c = date.today());
+
+                    Map<String, Object> mapToUpdate = new Map<String, Object>();
+                    mapToUpdate.put('buildertek__Refresh_Token__c',newRefreshToken);
+                    mapToUpdate.put('buildertek__Access_Token__c',accessToken);
+                    mapToUpdate.put('buildertek__Last_Modified_Refresh_Token__c',date.today());
+                    QBCallOutService.createUpdateMetadata(QBMetadata.Name, QBMetadata.Label, mapToUpdate);           
+                } 
+                    else {
                     System.debug('Failed to refresh access token. Status Code: ' + res.getStatusCode());
                     System.debug('Response: ' + res.getBody());
                 }
@@ -85,5 +93,23 @@ public with sharing class QBCallOutService {
             System.debug('Error Drung APi GetAccessToken >> ' + e.getMessage());
             return null;
         }
+    }
+
+    public static void createUpdateMetadata(String fullName, String label, Map<String, Object> fieldWithValuesMap){
+        Metadata.CustomMetadata customMetadata =  new Metadata.CustomMetadata();
+        customMetadata.fullName = fullName;
+        customMetadata.label = label;
+        
+        for(String key : fieldWithValuesMap.keySet()){
+            Metadata.CustomMetadataValue customField = new Metadata.CustomMetadataValue();
+            customField.field = key;
+            customField.value = fieldWithValuesMap.get(key); 
+            customMetadata.values.add(customField);
+        }
+        
+        Metadata.DeployContainer mdContainer = new Metadata.DeployContainer();
+        mdContainer.addMetadata(customMetadata);
+        QBCallOutService callback = new QBCallOutService();
+        Id jobId = Metadata.Operations.enqueueDeployment(mdContainer, callback);
     }
 }
