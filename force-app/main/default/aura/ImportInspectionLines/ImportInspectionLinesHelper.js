@@ -20,7 +20,6 @@
                         continue;
                     }
                     var data = arr[i].split(',');
-                    var data = arr[i].split(',');
                     if (data.length > headers.length) {
                         this.showToast(component, "error", "Data row has more values than header columns.");
                         return '';
