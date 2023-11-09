@@ -60,7 +60,8 @@ public class QBMap {
         System.debug('customer 1' + customer);
         if( a == 1){
             customer.Active = True;
-            QBCallout.CreateAcc(JSON.serialize(customer, True).replace('"Long_x":', '"Long":') , accId , QBId);
+            // QBCallout.CreateAcc(JSON.serialize(customer, True).replace('"Long_x":', '"Long":') , accId , QBId);
+            QBCallout.CreateCustomerAPICall(JSON.serialize(customer, True).replace('"Long_x":', '"Long":'));
         }else if( a == 2){
             customer.Active = True;
             QBCallout.UpdateAcc(JSON.serialize(customer, True).replace('"Long_x":', '"Long":') , accId , QBId);
