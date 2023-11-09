@@ -2,13 +2,23 @@
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
    
     <types>
-        <members>*</members>
-        <name>AuraDefinitionBundle</name>
+        <members>QBCallout</members>
+        <members>QBCustomerJSON</members>
+        <members>QBCustomerResponseJSON</members>
+        <members>QBMap</members>
+        <members>QBOErrorJSON</members>
+        <members>QBTriggerHandler</members>
+        <members>QBException</members>
+        <members>QBRefreshJSON</members>
+        <members>QBInvoiceJSON</members>
+        <members>QBInvoiceLineJSON</members>
+        <members>QBInvoiceLineResponseJSON</members>
+        <members>QBInvoiceResponseJSON</members>
+        <members>QBReceiptJSON</members>
+        <members>QBReceiptResponseJSON</members>
+        <members>QBRefreshJSON</members>
+        <members>QBRefreshJSON</members>
+        <name>ApexClass</name>
     </types>
-    <types>
-        <members>*</members>
-        <name>LightningComponentBundle</name>
-    </types>
-  
     <version>55.0</version>
 </Package>
