@@ -199,8 +199,8 @@ public with sharing class QBCallout {
             // Initialize URL endpoint
             QBO_Metadata__mdt QBData = [SELECT ID, base_url__c, Company_Id__c, minorversion__c FROM QBO_Metadata__mdt];
             String EndPoint = QBData.base_url__c + '/v3/company/' + QBData.Company_Id__c + '/customer?minorversion=' + QBData.minorversion__c;            
-            String ResponseBody = QBCallOutService.QBCallOutServiceWithoutNameCred('POST',EndPoint, JSONBody);
-            System.debug('ResponseBody without Name Credential : ' + ResponseBody);
+            HttpResponse Response = QBCallOutService.QBCallOutServiceWithoutNameCred(EndPoint, JSONBody);
+            System.debug('ResponseBody without Name Credential : ' + Response);
         }
         catch(Exception e){
             System.debug('error in CreateCustomerAPICall>> '+ e.getMessage());

@@ -57,18 +57,18 @@ public class QBMap {
        // billAddy.CountrySubDivisionCode = acc.BillingCountry;
         customer.BillAddr = billAddy;
 
-        System.debug('customer 1' + customer);
-        if( a == 1){
-            customer.Active = True;
-            // QBCallout.CreateAcc(JSON.serialize(customer, True).replace('"Long_x":', '"Long":') , accId , QBId);
-            QBCallout.CreateCustomerAPICall(JSON.serialize(customer, True).replace('"Long_x":', '"Long":'));
-        }else if( a == 2){
-            customer.Active = True;
-            QBCallout.UpdateAcc(JSON.serialize(customer, True).replace('"Long_x":', '"Long":') , accId , QBId);
-        }else if( a == 3){
-            customer.Active = False;
-            QBCallout.deleteCustomerCall(JSON.serialize(customer, True).replace('"Long_x":', '"Long":') , accId , QBId);
-        }
+        // System.debug('customer 1' + customer);
+        // if( a == 1){
+        //     customer.Active = True;
+        //     QBCallout.CreateAcc(JSON.serialize(customer, True).replace('"Long_x":', '"Long":') , accId , QBId);
+        //     // QBCallout.CreateCustomerAPICall(JSON.serialize(customer, True).replace('"Long_x":', '"Long":'));
+        // }else if( a == 2){
+        //     customer.Active = True;
+        //     QBCallout.UpdateAcc(JSON.serialize(customer, True).replace('"Long_x":', '"Long":') , accId , QBId);
+        // }else if( a == 3){
+        //     customer.Active = False;
+        //     QBCallout.deleteCustomerCall(JSON.serialize(customer, True).replace('"Long_x":', '"Long":') , accId , QBId);
+        // }
 
         return JSON.serialize(customer, True).replace('"Long_x":', '"Long":');
 
@@ -155,5 +155,24 @@ public class QBMap {
 
     }
 
+    public static String mapInvoiceData(buildertek__Billings__c inv){
+        String invId = inv.Id;
+        String QBId = inv.QBO_ID__c;
+
+        Account acc = new Account();
+        acc = [ SELECT Id,BillingAddress,buildertek__Email_Address__c,buildertek__QBO_ID__c FROM Account WHERE Id = :inv.buildertek__Customer_Account__c];
+
+        buildertek__Billable_Lines__c invLines = new buildertek__Billable_Lines__c();
+        invLines = [SELECT buildertek__QBO_ID__c FROM buildertek__Billable_Lines__c WHERE Id = :invId];
+
+        QBInvoiceJSON.Invoice invoice = new QBInvoiceJSON.Invoice();
+        invoice.SyncToken = inv.QBO_SyncToken__c;
+        invoice.DueDate = inv.buildertek__Due_Date__c;
+
+        QBInvoiceJSON.line line = new QBInvoiceJSON.line();
+        line.Description = inv.Name;
+
+        return JSON.serialize(invoice, True).replace('"Long_x":', '"Long":');
+    }
 
     }

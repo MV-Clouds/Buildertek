@@ -26,13 +26,13 @@ public with sharing class QBCallOutService {
         }
     }
 
-    public static String QBCallOutServiceWithoutNameCred(String APImethodName, String QBEndPoint, String JSONBody) {
+    public static HttpResponse QBCallOutServiceWithoutNameCred(String QBEndPoint, String JSONBody) {
         try {
 
             Http h = new Http();
 
             HttpRequest req = new HttpRequest();
-            req.setMethod(APImethodName);
+            req.setMethod('POST');
             req.setEndpoint(QBEndPoint);
             req.setHeader('Authorization','Bearer '+ GenerateAccessToken());
             req.setHeader('Content-Type', 'application/json');
@@ -47,7 +47,7 @@ public with sharing class QBCallOutService {
             System.debug('Response Status Code >> ' + res.getStatusCode() + ' || Response status >> '+ res.getStatus());
             System.debug('ResponseBody >> ' + ResponseBody);
 
-            return ResponseBody;
+            return res;
 
         } catch (Exception e ) {
             System.debug('Error Drung APi QBCallOutServiceWithoutNameCred >> ' + e.getMessage());

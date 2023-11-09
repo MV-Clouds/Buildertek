@@ -126,7 +126,7 @@ public class QBInvoiceJSON {
         public ShipAddr ShipAddr;
         public Boolean FreeFormAddress;
         public SalesTermRef SalesTermRef;
-        public String DueDate;
+        public Date DueDate;
         public String TotalAmt;
         public Boolean ApplyTaxAfterDiscount;
         public String PrintStatus;
