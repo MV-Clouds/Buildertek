@@ -60,7 +60,18 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
 
             }
             rowChilObj['phase'] = taskListForPhase[i].buildertek__Phase__c;
-            rowChilObj['eventColor'] = taskListForPhase[i].buildertek__task_color__c;
+
+            //*comparing task finish date with today date and setting color accordingly
+            let taskFinishDate = new Date(taskListForPhase[i].buildertek__Finish__c);
+            taskFinishDate.setHours(0, 0, 0, 0);
+            let todayDate = new Date();
+            todayDate.setHours(0, 0, 0, 0);
+
+            if ((taskFinishDate < todayDate) && taskListForPhase[i].buildertek__Completion__c != 100) {
+                rowChilObj['eventColor'] = 'red';
+            } else {
+                rowChilObj['eventColor'] = taskListForPhase[i].buildertek__task_color__c;
+            }
 
 
                 if(taskListForPhase[i].buildertek__Dependency__c){
@@ -77,9 +88,9 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
             rowChilObj["percentDone"] = taskListForPhase[i].buildertek__Completion__c
             rowChilObj["startDate"] = taskListForPhase[i].buildertek__Start__c
             // rowChilObj["constraintDate"] = taskListForPhase[i].buildertek__Start__c
+            // rowChilObj["constraintType"] = 'startnoearlierthan'
             rowChilObj["constraintDate"] = projstartdate
             rowChilObj["constraintType"] = 'startnoearlierthan'
-            // rowChilObj["constraintType"] = 'None'
             rowChilObj['predecessor'] = taskListForPhase[i].buildertek__Dependency__c;
 
             if (taskListForPhase[i].hasOwnProperty('buildertek__Dependency__c') == true) {
@@ -103,7 +114,6 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
                     rowChilObj["startDate"] = new Date(startDate.getFullYear(),startDate.getMonth(),startDate.getDate(),0,0,0)
                     // rowChilObj["constraintDate"] = new Date(startDate.getFullYear(),startDate.getMonth(),startDate.getDate(),0,0,0)
                     rowChilObj["constraintDate"] = projstartdate
-                    // rowChilObj["constraintType"] = 'None'
                     rowChilObj["constraintType"] = 'startnoearlierthan'
                 }
             rowChilObj["duration"] = taskListForPhase[i].buildertek__Duration__c
@@ -174,7 +184,6 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
                 // rowChilObj["constraintDate"] =  scheduleData.buildertek__Start__c;
                 rowChilObj["constraintDate"] =  projstartdate;
                 rowChilObj["constraintType"] =  "startnoearlierthan";
-                // rowChilObj["constraintType"] =  "None";
             // } else{
             //     rowChilObj["constraintDate"] =  taskListForPhase[i].buildertek__ConstraintDate__c;
             //     rowChilObj["constraintType"] =  taskListForPhase[i].buildertek__ConstraintType__c;
@@ -229,7 +238,18 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
                 rowChilObj["iconCls"] = "b-fa b-fa-arrow-left indentTrue"
             }
             rowChilObj['phase'] = taskListForPhase[i].buildertek__Phase__c
-            rowChilObj['eventColor'] = taskListForPhase[i].buildertek__task_color__c;
+
+            //*comparing task finish date with today date and setting color accordingly
+            let taskFinishDate = new Date(taskListForPhase[i].buildertek__Finish__c);
+            taskFinishDate.setHours(0, 0, 0, 0);
+            let todayDate = new Date();
+            todayDate.setHours(0, 0, 0, 0);
+
+            if ((taskFinishDate < todayDate) && taskListForPhase[i].buildertek__Completion__c != 100) {
+                rowChilObj['eventColor'] = 'red';
+            } else {
+                rowChilObj['eventColor'] = taskListForPhase[i].buildertek__task_color__c;
+            }
                 //     if(taskListForPhase[i].buildertek__Dependency__c){
                 //     // rowChilObj["constraintType"] = ''
                 //     }else{
@@ -245,7 +265,6 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
             // rowChilObj["constraintDate"] = taskListForPhase[i].buildertek__Start__c
             rowChilObj["constraintDate"] = projstartdate
             rowChilObj["constraintType"] = 'startnoearlierthan'
-            // rowChilObj["constraintType"] = 'None'
 
             rowChilObj['predecessor'] = taskListForPhase[i].buildertek__Dependency__c;
 
@@ -272,7 +291,6 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
                 // rowChilObj["constraintDate"] = new Date(startDate.getFullYear(),startDate.getMonth(),startDate.getDate(),0,0,0)
                 rowChilObj["constraintDate"] = projstartdate
                 rowChilObj["constraintType"] = 'startnoearlierthan'
-                // rowChilObj["constraintType"] = 'None'
                 }
             rowChilObj["duration"] = taskListForPhase[i].buildertek__Duration__c
 
@@ -342,7 +360,6 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
             // if(taskListForPhase[i].buildertek__ConstraintType__c == 'None' || taskListForPhase[i].buildertek__ConstraintType__c == '--None--' || taskListForPhase[i].buildertek__ConstraintType__c == null || taskListForPhase[i].buildertek__ConstraintType__c == undefined){
                 // rowChilObj["constraintDate"] =  scheduleData.buildertek__Start__c;
                 rowChilObj["constraintDate"] =  projstartdate;
-                // rowChilObj["constraintType"] =  "None";
                 rowChilObj["constraintType"] =  "startnoearlierthan";
             // } else{
             //     rowChilObj["constraintDate"] =  taskListForPhase[i].buildertek__ConstraintDate__c;
@@ -367,7 +384,19 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
                 rowChilObj["iconCls"] = "b-fa b-fa-arrow-left indentTrue"
             }
             rowChilObj['phase'] = taskListForPhase[i].buildertek__Phase__c;
-            rowChilObj['eventColor'] = taskListForPhase[i].buildertek__task_color__c;
+
+            //*comparing task finish date with today date and setting color accordingly
+            let taskFinishDate = new Date(taskListForPhase[i].buildertek__Finish__c);
+            taskFinishDate.setHours(0, 0, 0, 0);
+            let todayDate = new Date();
+            todayDate.setHours(0, 0, 0, 0);
+
+            if ((taskFinishDate < todayDate) && taskListForPhase[i].buildertek__Completion__c != 100) {
+                rowChilObj['eventColor'] = 'red';
+            } else {
+                rowChilObj['eventColor'] = taskListForPhase[i].buildertek__task_color__c;
+            }
+
             if(taskListForPhase[i].buildertek__Dependency__c){
                 // rowChilObj["constraintType"] = ''
             }else{
@@ -382,7 +411,6 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
             rowChilObj["startDate"] = taskListForPhase[i].buildertek__Start__c
             // rowChilObj["constraintDate"] = taskListForPhase[i].buildertek__Start__c
             rowChilObj["constraintDate"] = projstartdate
-            // rowChilObj["constraintType"] = 'None'
             rowChilObj["constraintType"] = 'startnoearlierthan'
 
 
@@ -410,9 +438,8 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
             startDate.setDate(startDate.getDate());
 
             rowChilObj["startDate"] = new Date(startDate.getFullYear(),startDate.getMonth(),startDate.getDate(),0,0,0)
-            rowChilObj["constraintDate"] = new Date(startDate.getFullYear(),startDate.getMonth(),startDate.getDate(),0,0,0)
+            // rowChilObj["constraintDate"] = new Date(startDate.getFullYear(),startDate.getMonth(),startDate.getDate(),0,0,0)
             rowChilObj["constraintDate"] = projstartdate
-            // rowChilObj["constraintType"] = 'None'
             rowChilObj["constraintType"] = 'startnoearlierthan'
             }
             rowChilObj["duration"] = taskListForPhase[i].buildertek__Duration__c
@@ -424,7 +451,6 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
             // if(taskListForPhase[i].buildertek__ConstraintType__c == 'None' || taskListForPhase[i].buildertek__ConstraintType__c == '--None--' || taskListForPhase[i].buildertek__ConstraintType__c == null || taskListForPhase[i].buildertek__ConstraintType__c == undefined){
                 // rowChilObj["constraintDate"] =  scheduleData.buildertek__Start__c;
                 rowChilObj["constraintDate"] =  projstartdate;
-                // rowChilObj["constraintType"] =  "None";
                 rowChilObj["constraintType"] =  "startnoearlierthan";
             // } else{
             //     rowChilObj["constraintDate"] =  taskListForPhase[i].buildertek__ConstraintDate__c;
