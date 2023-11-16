@@ -1158,7 +1158,8 @@
                                                                 </aura:if>
 
                                                             </td>
-                                                            <aura:iteration items="{!recs.recordList}" var="value" indexVar="groIndex">
+                                                            <aura:iteration items="{!recs.recordList}" var="value" indexVar="groIndex">        
+                                                                        
                                                                 <aura:if isTrue="{!value.fieldName != 'buildertek__Contractor__c' &amp;&amp; value.fieldName != 'buildertek__CostCodeDivision__c'}" >
                                                                     <td class="ShowIconClass" data-myvalue="{!groIndex}" style="font-size: 0.78rem !important;">
                                                                         <aura:if isTrue="{!or(and(and(v.isEditMode, v.fieldName == value.fieldName), v.quoteItemId == recs.recordId),and(v.enableMassUpdate,
@@ -1336,6 +1337,15 @@
                                                                         </aura:if>
 
                                                                     </td>
+
+                                                                    <aura:set attribute="else">
+                                                                        <aura:if isTrue="{!value.fieldName == 'buildertek__Contractor__c'}">
+                                                                            <td>
+                                                                                <ui:outputURL value="{!'/one/one.app?#/sObject/'+ value.originalValue + '/view'}" target="_blank" label="{!value.referenceValue}" />
+                                                                            </td>
+                                                                        </aura:if>
+                                                                    </aura:set>
+
                                                                     
                                                                 </aura:if>
                                                             </aura:iteration>
