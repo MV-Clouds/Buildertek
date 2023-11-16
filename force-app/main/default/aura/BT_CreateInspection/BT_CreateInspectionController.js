@@ -16,7 +16,7 @@
                 var result = response.getReturnValue();
                 console.log('Master Inspection ==>', { result });
                 component.set("v.inspectionList", result);
-                component.set("v.totalRecords", component.get("v.inspectionList").length);
+                component.set("v.totalRecords", component.get("v.inspectionList").length - 1);
                 component.set("v.startPage", 0);
                 component.set("v.endPage", pageSize - 1);
                 var PaginationList = [];
@@ -31,6 +31,7 @@
 
                 console.log('Start Page ----------> ' + component.get("v.startPage"));
                 console.log('End Page ----------> ' + component.get("v.endPage"));
+                console.log('Total Records ---------> ' + component.get("v.totalRecords"));
             }
         });
         $A.enqueueAction(action);
@@ -82,14 +83,14 @@
                     var result = response.getReturnValue();
                     console.log("Result: ", result);
                     component.set("v.Spinner", false);
-                    helper.showToast('success', 'Success', 'Inspection Created Successfully !!!', '3');
+                    helper.showToast('success', 'Success', 'Inspection Created Successfully!', '3');
                     $A.get("e.force:closeQuickAction").fire();
                 }
                 else if (state === "ERROR") {
                     var errors = response.getError();
                     if (errors && errors[0] && errors[0].message) {
                         console.error("Error: " + errors[0].message);
-                        helper.showToast('error', 'Error', 'Error while creating inspection !!!', '3');
+                        helper.showToast('error', 'Error', 'Error while creating inspection!', '3');
                     }
                     component.set("v.Spinner", false);
                 }
@@ -118,6 +119,7 @@
         component.set("v.startPage", start);
         component.set("v.endPage", end);
         component.set('v.PaginationList', Paginationlist);
+        helper.updateCheckboxValues(component);
     },
 
     previous: function (component, event, helper) {
@@ -140,6 +142,7 @@
         component.set("v.startPage", start);
         component.set("v.endPage", end);
         component.set('v.PaginationList', Paginationlist);
+        helper.updateCheckboxValues(component);
     },
 
     // Handle search result
