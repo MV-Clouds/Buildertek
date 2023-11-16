@@ -136,10 +136,6 @@ public without sharing class BT_GenerateQuotePDF {
         }
         system.debug('templateBody 2 ----------> '+templateBody2);
         templateBody = templateBody1 + templateBody2;
-        templateBody = templateBody.replaceAll('<p><br></p>', '<br>');
-        templateBody = templateBody.replaceAll('<p>', '<p style="margin-top: 0px !important; margin-bottom: 0px !important; ">'); 
-        templateBody = templateBody.replaceAll('<b>', '<b style="margin-top: 0px !important; margin-bottom: 0px !important; ">'); 
-        templateBody = templateBody.replaceAll('<strong>', '<strong style="margin-top: 0px !important; margin-bottom: 0px !important; ">'); 
         system.debug('Final templateBody ----------> '+templateBody);
         strBody = templateBody;
         system.debug('strBody -----> '+strBody);
