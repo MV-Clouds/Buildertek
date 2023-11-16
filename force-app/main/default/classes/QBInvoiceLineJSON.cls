@@ -1,5 +1,8 @@
 public class QBInvoiceLineJSON {
 
+    // public Item Item;
+	public String times;
+
     public class MetaData{
         public String CreateTime;
         public String LastUpdatedTime;
@@ -20,7 +23,6 @@ public class QBInvoiceLineJSON {
 		public String name;
     }
 
-    public class Item{
         public String Id;
         public String domain;
 		public Boolean sparse;
@@ -36,18 +38,18 @@ public class QBInvoiceLineJSON {
         public AssetAccountRef AssetAccountRef;
         public Boolean TrackQtyOnHand;
         public Boolean Taxable;
-        public String UnitPrice;
+        public Decimal UnitPrice;
         public String Type;
         public IncomeAccountRef IncomeAccountRef;
-        public Integer QtyOnHand;
+        public Decimal QtyOnHand;
         public String InvStartDate;
-    }
+
 
     public static QBInvoiceLineJSON parse(String json) {
         return (QBInvoiceLineJSON) System.JSON.deserialize(json, QBInvoiceLineJSON.class);
     }
 
-    public static QBInvoiceLineJSON.Item parseCustomer(String json) {
-        return (QBInvoiceLineJSON.Item) System.JSON.deserialize(json, QBInvoiceLineJSON.Item.class);
+    public static QBInvoiceLineJSON parseCustomer(String json) {
+        return (QBInvoiceLineJSON) System.JSON.deserialize(json, QBInvoiceLineJSON.class);
 }
 }
