@@ -1,48 +1,80 @@
 ({
-    CSV2JSON: function (component,csv) {
+    CSV2JSON: function (component, csv) {
         try {
-            console.log('csv data-->',csv);
-            var arr = []; 
-            arr =  csv.split('\r\n');
+            console.log('csv data-->', csv);
+            var arr = csv.split('\r\n');
             var jsonObj = [];
             var headers = arr[0].split(',');
-            if ( headers[0] !== 'Description' || headers[1] !== 'Status' || headers[2] !== 'Comments' || headers[3] !== 'Date Due') {    
-                this.showToast(component, "Error", "File Header Format is Invalid!"); 
+    
+            if (
+                headers[0] !== 'Description' ||
+                headers[1] !== 'Status' ||
+                headers[2] !== 'Comments' ||
+                headers[3] !== 'Date Due'
+            ) {
+                this.showToast(component, 'Error', 'File Header Format is Invalid!');
                 return '';
             }
+    
             for (var i = 0; i < headers.length; i++) {
                 headers[i] = headers[i].trim().replace(/\s+/g, '');
             }
-            console.log('headers-->',headers);
+    
+            console.log('headers-->', headers);
+    
             if (arr.length > 1) {
-                for(var i = 1; i < arr.length; i++) {
+                for (var i = 1; i < arr.length; i++) {
                     if (arr[i].trim() === '') {
                         continue;
                     }
-                    var data = arr[i].split(',');
+    
+                    console.log('arr[i]:', arr[i]);
+    
+                    var data = [];
+                    var insideQuote = false;
+                    var temp = '';
+    
+                    for (var char of arr[i]) {
+                        if (char === '"') {
+                            insideQuote = !insideQuote;
+                        } else if (char === ',' && !insideQuote) {
+                            data.push(temp.trim());
+                            temp = '';
+                        } else {
+                            temp += char;
+                        }
+                    }
+    
+                    // Add the last value
+                    data.push(temp.trim());
+    
                     if (data.length > headers.length) {
-                        this.showToast(component, "error", "Data row has more values than header columns.");
+                        this.showToast(component, 'error', 'Data row has more values than header columns.');
                         return '';
                     }
+    
                     var obj = {};
-                    for(var j = 0; j < data.length; j++) {
+                    for (var j = 0; j < data.length; j++) {
                         obj[headers[j].trim()] = data[j].trim();
                     }
                     jsonObj.push(obj);
                 }
+    
                 var json = JSON.stringify(jsonObj);
                 return json;
             } else {
-                this.showToast(component, "error", "File is Empty.");
+                this.showToast(component, 'error', 'File is Empty.');
                 return '';
             }
         } catch (error) {
-            console.log('error-->',error);
-            this.showToast(component, "error", error);
+            console.log('error-->', error);
+            this.showToast(component, 'error', error);
             return '';
         }
-        
     },
+    
+    
+    
     
     CreateInspectionLine : function (component,jsonstr){
         var InspectionId = component.get("v.recordId")
@@ -58,7 +90,7 @@
                 console.log('result--->',result);
                 console.log('Result--->',{result});
                 if (result === 'SUCCESS') {
-                    this.showToast(component, "Success", "Inspection Line Inserted Succesfully");
+                    this.showToast(component, "Success", "Inspection Line Inserted Successfully");
                 } else {
                     this.showToast(component, "Error", result);
                 }

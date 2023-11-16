@@ -8,15 +8,20 @@ public with sharing class ImportInspectionLineController {
             List<fieldWrapper> datalist = (List<fieldWrapper>)JSON.deserialize(strfromle, List<fieldWrapper>.class);
 
             for (fieldWrapper wrapper : datalist) {
-                buildertek__Inspection_Line__c InspecLine = new buildertek__Inspection_Line__c();
-                InspecLine.buildertek__Inspection__c = inspecId;
-                InspecLine.buildertek__Description__c = wrapper.Description;
-                InspecLine.buildertek__Status__c = wrapper.Status;
-                InspecLine.buildertek__Comments__c = wrapper.Comments;
-                if (String.isNotBlank(wrapper.DateDue)) {
-                    InspecLine.buildertek__Date_Inspection_Due__c = Date.parse(wrapper.DateDue);
+                if (String.isNotBlank(wrapper.Description) || 
+                    String.isNotBlank(wrapper.Status) || 
+                    String.isNotBlank(wrapper.Comments) || 
+                    String.isNotBlank(wrapper.DateDue)) {
+                    buildertek__Inspection_Line__c InspecLine = new buildertek__Inspection_Line__c();
+                    InspecLine.buildertek__Inspection__c = inspecId;
+                    InspecLine.buildertek__Description__c = wrapper.Description;
+                    InspecLine.buildertek__Status__c = wrapper.Status;
+                    InspecLine.buildertek__Comments__c = wrapper.Comments;
+                    if (String.isNotBlank(wrapper.DateDue)) {
+                        InspecLine.buildertek__Date_Inspection_Due__c = Date.parse(wrapper.DateDue);
+                    }
+                    InspectionLineListtoInsert.add(InspecLine);
                 }
-                InspectionLineListtoInsert.add(InspecLine);
             }
 
             if (!InspectionLineListtoInsert.isEmpty()) {

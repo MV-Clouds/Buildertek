@@ -3,7 +3,8 @@
         component.set("v.Spinner", true);
         var fileInput = component.find("file").getElement();
         var file = fileInput.files[0];
-        if (file){
+        console.log('file-->',file);
+        if (file != undefined){
             console.log("File--->",file);
             var reader = new FileReader();
             reader.readAsText(file, "UTF-8");
@@ -17,6 +18,8 @@
             reader.onerror = function (evt) {
                 console.log("error reading file");
             }
+        } else{
+            helper.showToast(component, "Error", "Please insert a file.");
         }
         
     },  
