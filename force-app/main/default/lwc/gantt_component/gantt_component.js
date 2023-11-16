@@ -62,6 +62,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
   @api internalResourceFilterVal = "";
   //@api saveSelectedContact;
   //@api saveSelectedContactApiName;
+  @track setorignaldates = false;
 
   //Added for contractor
   @api showContractor = false;
@@ -236,6 +237,12 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
       .then((response) => {
         var data = response.lstOfSObjs;
         this.scheduleItemsDataList = response.lstOfSObjs;
+        console.log('scheduleItemsDataList:- ', this.scheduleItemsDataList)
+        console.log('scheduleItemsDataList:- ', this.scheduleItemsDataList.length)
+        if(!this.shceduleItemsDataList){
+          this.setorignaldates = true;
+          console.log('orginaldates:- ',this.setorignaldates)
+        }
         this.contractorAndResources = response.listOfContractorAndResources;
         this.internalResources = response.listOfInternalResources;
         console.log(
@@ -1231,12 +1238,17 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
       childParentObj[element.to] = element.from;
     });
 
+    var id = this.SchedulerId
+    console.log('recordId:- ',this.SchedulerId)
+
     upsertDataOnSaveChanges({
       scheduleRecordStr: JSON.stringify(scheduleData),
       taskRecordsStr: JSON.stringify(newtasklistafterid),
       listOfRecordsToDelete: listOfRecordsToDelete,
       childParentMap : childParentObj,
-      projectTaskMap : projectTaskObj
+      projectTaskMap : projectTaskObj,
+      updateorginaldates : this.setorignaldates,
+      scheduleid : id
     })
       .then(function (response) {
         console.log("response ", {
