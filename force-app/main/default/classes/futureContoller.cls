@@ -156,5 +156,46 @@ public class futureContoller {
 
     }
 
+    public static void updateProjectOnSchedule(String recId){
+        System.debug('recId-----------'+recId);
+            list<buildertek__Schedule__c> scheduleList =[SELECT Id,
+                                                         buildertek__Project__c,
+                                                         buildertek__Start_Date__c,
+                                                         buildertek__End_Date__c,
+                                                         buildertek__Original_Start_Date__c,
+                                                         buildertek__Original_End_Date__c FROM buildertek__Schedule__c where id=:recId];
+            if (scheduleList.size() > 0) {
+                List<buildertek__Schedule__c> scheduleListNew=new List<buildertek__Schedule__c>();
+                String projectId = scheduleList[0].buildertek__Project__c;
+                buildertek__Project__c schProject = new buildertek__Project__c();
+
+                if (!String.isBlank(projectId)) {
+                    schProject = [SELECT Id,
+                                        buildertek__Anticipated_Start_Date__c,
+                                        buildertek__Estimated_Completion_Date__c,
+                                        buildertek__Original_Start_Date__c,
+                                        buildertek__Original_End_Date__c FROM buildertek__Project__c where id=:projectId];
+
+                    if (schProject.buildertek__Original_Start_Date__c == null && schProject.buildertek__Original_End_Date__c== null) {
+                        schProject.buildertek__Original_Start_Date__c = scheduleList[0].buildertek__Original_Start_Date__c;
+                        schProject.buildertek__Original_End_Date__c = scheduleList[0].buildertek__Original_End_Date__c;
+                        schProject.buildertek__Anticipated_Start_Date__c = scheduleList[0].buildertek__Start_Date__c;
+                        schProject.buildertek__Estimated_Completion_Date__c = scheduleList[0].buildertek__End_Date__c;
+                        update schProject;
+                    }
+                }
+
+                // for(buildertek__Schedule__c scheduleRec:scheduleList){
+                //     if ((scheduleRec.buildertek__Start_Date__c!=null && scheduleRec.buildertek__End_Date__c!=null) && (scheduleRec.buildertek__Original_Start_Date__c==null && scheduleRec.buildertek__Original_End_Date__c==null)){
+                //         scheduleRec.buildertek__Original_Start_Date__c=scheduleRec.buildertek__Start_Date__c;
+                //         scheduleRec.buildertek__Original_End_Date__c=scheduleRec.buildertek__End_Date__c;
+                //     }
+                //     scheduleListNew.add(scheduleRec);
+
+                // }
+                // update scheduleListNew;
+            }
+    }
+
 
 }

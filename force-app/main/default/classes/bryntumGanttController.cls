@@ -352,6 +352,7 @@ public with sharing class bryntumGanttController {
                 System.debug('updateorignaldates:- '+updateorginaldates);
                 System.debug('scheduleid:- '+scheduleid);
                 futureContoller.updateScheduleRec(scheduleid);
+                futureContoller.updateProjectOnSchedule(scheduleid);
             }
         } catch (Exception e) {
 
@@ -493,7 +494,8 @@ public with sharing class bryntumGanttController {
         ProjectTaskTriggerHandler.blnSkipTaskTrigger = false;
 
         futureContoller.updateScheduleRec(recordId);
-        
+        futureContoller.updateProjectOnSchedule(recordId);
+
 
     }
 
