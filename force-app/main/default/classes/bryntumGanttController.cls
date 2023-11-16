@@ -487,6 +487,9 @@ public with sharing class bryntumGanttController {
         update projectInsertTaskMap.values();
         ProjectTaskTriggerHandler.blnSkipTaskTrigger = false;
 
+        futureContoller.updateScheduleRec(recordId);
+        
+
     }
 
     @AuraEnabled
