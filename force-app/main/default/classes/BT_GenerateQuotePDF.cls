@@ -93,7 +93,15 @@ public without sharing class BT_GenerateQuotePDF {
         System.debug('Email Results isSuccess = ' +  r[0].IsSuccess());
         Database.rollback(sp); 
         for (Messaging.SingleEmailMessage emailNew : msgList) {                   
-        	templateBody1 = emailNew.getHTMLBody(); 
+        	templateBody1 = emailNew.getHTMLBody();
+            templateBody1 = templateBody1.replaceAll('<p><br></p>', '<br>');
+            templateBody1 = templateBody1.replaceAll('<b><br></b>', '<br>');
+            templateBody1 = templateBody1.replaceAll('<p>', '<p style="margin-top: 0px !important; margin-bottom: 0px !important; ">'); 
+            templateBody1 = templateBody1.replaceAll('<b>', '<b style="margin-top: 0px !important; margin-bottom: 0px !important; ">'); 
+            templateBody1 = templateBody1.replaceAll('<strong>', '<strong style="margin-top: 0px !important; margin-bottom: 0px !important; ">'); 
+            templateBody1 = templateBody1.replaceAll('<ol>', '<ol style="margin-top: 0px !important; margin-bottom: 0px !important;font-size:11px !important ">'); 
+            templateBody1 = templateBody1.replaceAll('<span>', '<span style="margin-top: 0px !important; margin-bottom: 0px !important;">'); 
+            templateBody1 = templateBody1.replaceAll('<p class="ql-indent-1">', '<p class="ql-indent-1" style="margin-top: 0px !important; margin-bottom: 0px !important;">'); 
         }
         
         system.debug('templateBody1 ---------> '+templateBody1);
