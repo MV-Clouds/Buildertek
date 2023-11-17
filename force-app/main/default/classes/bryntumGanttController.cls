@@ -306,7 +306,7 @@ public with sharing class bryntumGanttController {
     }
 
     @AuraEnabled
-    public static String upsertDataOnSaveChanges(String scheduleRecordStr, String taskRecordsStr, List<String> listOfRecordsToDelete, Map<String, String> childParentMap, Map<String, Object> projectTaskMap){
+    public static String upsertDataOnSaveChanges(String scheduleRecordStr, String taskRecordsStr, List<String> listOfRecordsToDelete, Map<String, String> childParentMap, Map<String, Object> projectTaskMap, Boolean updateorginaldates, Id scheduleid){
         String msg;
         buildertek__Schedule__c scheduleRecord = (buildertek__Schedule__c)System.JSON.deserialize(scheduleRecordStr, buildertek__Schedule__c.class);
         List<buildertek__Project_Task__c> taskRecords = (List<buildertek__Project_Task__c>)System.JSON.deserialize(taskRecordsStr, List<buildertek__Project_Task__c>.class);
@@ -348,6 +348,12 @@ public with sharing class bryntumGanttController {
             }
             ProjectTaskTriggerHandler.blnSkipTaskTrigger = false;
             msg = 'Success';
+            if(updateorginaldates){
+                System.debug('updateorignaldates:- '+updateorginaldates);
+                System.debug('scheduleid:- '+scheduleid);
+                futureContoller.updateScheduleRec(scheduleid);
+                futureContoller.updateProjectOnSchedule(scheduleid);
+            }
         } catch (Exception e) {
 
             System.debug('Exception e '+e);
@@ -486,6 +492,10 @@ public with sharing class bryntumGanttController {
         ProjectTaskTriggerHandler.blnSkipTaskTrigger = true;
         update projectInsertTaskMap.values();
         ProjectTaskTriggerHandler.blnSkipTaskTrigger = false;
+
+        futureContoller.updateScheduleRec(recordId);
+        futureContoller.updateProjectOnSchedule(recordId);
+
 
     }
 

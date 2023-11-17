@@ -68,9 +68,7 @@ public with sharing class NewGanttChartTaskTriggerHandler{
                 System.debug('Task before update ==> '+ task);
             }
             upsert mileStoneList;
-            for (buildertek__Project_Task__c task : mileStoneList) {
-                System.debug('Task after update ==> '+ task);
-            }
+            updateProjectAnticipatedDate(newTaskList);
             NewGanttChartTaskTriggerHandler.blnSkipTaskTrigger = false;
             ProjectTaskTriggerHandler.blnSkipTaskTrigger = false;
             System.debug('mileStoneList: ' + mileStoneList);
@@ -88,5 +86,22 @@ public with sharing class NewGanttChartTaskTriggerHandler{
 		}
 		return startDate;
 	}
+
+    public static void updateProjectAnticipatedDate(List<buildertek__Project_Task__c> taskList) {
+        if (taskList.size()>0) {
+            String projectId = taskList[0].buildertek__Project__c;
+
+            if (!String.isBlank(projectId)) {
+                buildertek__Schedule__c scheduleRec = [SELECT Id, Name, buildertek__End_Date__c, buildertek__Start_Date__c, buildertek__Project__c
+                                                       FROM buildertek__Schedule__c
+                                                       WHERE buildertek__Project__c = :projectId ORDER BY buildertek__End_Date__c DESC LIMIT 1];
+
+                buildertek__Project__c projectOnSchedule = new buildertek__Project__c();
+                projectOnSchedule.Id = projectId;
+                projectOnSchedule.buildertek__Estimated_Completion_Date__c = scheduleRec.buildertek__End_Date__c;
+                update projectOnSchedule;
+            }
+        }
+    }
 
 }
