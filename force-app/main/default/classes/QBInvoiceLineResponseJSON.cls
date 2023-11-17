@@ -16,7 +16,7 @@ public class QBInvoiceLineResponseJSON {
 		public ParentRef ParentRef;
 		public Boolean sparse;
 		public String SyncToken;
-		public Integer Level;
+		public Double Level;
 		public String Type;
 		public String Name;
 		public String Id;

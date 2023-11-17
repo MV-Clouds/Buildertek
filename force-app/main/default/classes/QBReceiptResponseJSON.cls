@@ -10,11 +10,11 @@ public without sharing class QBReceiptResponseJSON {
 	// 	public Boolean ProcessPayment;
 	// 	public ProjectRef ProjectRef;
 	// 	public CustomerRef CustomerRef;
-	// 	public Decimal TotalAmt;
+	// 	public Double TotalAmt;
 	// 	public String Id;
 	// 	// public Date TxnDate;
 	// 	public DepositToAccountRef DepositToAccountRef;
-	// 	public Decimal UnappliedAmt;
+	// 	public Double UnappliedAmt;
 	// 	public String domain;
 	// 	public MetaData MetaData;
 	// 	public String SyncToken;
@@ -44,11 +44,11 @@ public without sharing class QBReceiptResponseJSON {
 		public Boolean sparse;
 		public String PaymentRefNum;
 		public list<Line> Line;
-		public Decimal TotalAmt;
+		public Double TotalAmt;
 		public CustomerRef CustomerRef;
 		public String TxnDate;
 		public String Id;
-		public Decimal UnappliedAmt;
+		public Double UnappliedAmt;
 		public PaymentMethodRef PaymentMethodRef;
 		public String domain;
 		public MetaData MetaData;
@@ -64,7 +64,7 @@ public without sharing class QBReceiptResponseJSON {
 	}
 	public class Line{
 		public list<LinkedTxn> LinkedTxn;
-		public Decimal Amount;
+		public Double Amount;
 	}
 	public class CustomerRef{
 		public String value;

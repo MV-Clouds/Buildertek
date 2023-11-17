@@ -9,8 +9,8 @@ public class QBCustomerResponseJSON {
 		public Boolean Taxable;
 		public Boolean Job;
 		public Boolean BillWithParent;
-		public Decimal Balance;
-		public Decimal BalanceWithJobs;
+		public Double Balance;
+		public Double BalanceWithJobs;
 		public CurrencyRef CurrencyRef;
 		public String PreferredDeliveryMethod;
 		public Boolean IsProject;

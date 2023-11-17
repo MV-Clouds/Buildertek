@@ -31,7 +31,8 @@ public class QBInvoiceResponseJSON {
 		public String Id;
 		public SalesItemLineDetail SalesItemLineDetail;
 		public String DetailType;
-		public Decimal Amount;
+		// public Decimal Amount;
+		public Double Amount;
 		public Integer LineNum;
 	}
 	public class ItemRef{
@@ -53,7 +54,8 @@ public class QBInvoiceResponseJSON {
 		public BillAddr BillAddr;
 		public Boolean ApplyTaxAfterDiscount;
 		public MetaData MetaData;
-		public String DueDate;
+		// public String DueDate;
+		public Date DueDate;
 		public Decimal TotalAmt;
 		public list<Line> Line;
 		public String PrintStatus;
@@ -82,6 +84,7 @@ public class QBInvoiceResponseJSON {
 	}
 
     public static QBInvoiceResponseJSON parse(String json) {
+		System.debug('in parse ');
 		return (QBInvoiceResponseJSON) System.JSON.deserialize(json, QBInvoiceResponseJSON.class);
 	}
 }

@@ -17,7 +17,9 @@
         <members>QBReceiptJSON</members>
         <members>QBReceiptResponseJSON</members>
         <members>QBRefreshJSON</members>
-        <members>QBRefreshJSON</members>
+        <members>QBClone</members>
+        <members>QBBatchReqJSON</members>
+        <members>QBBatchResJSON</members>
         <name>ApexClass</name>
     </types>
     <version>55.0</version>

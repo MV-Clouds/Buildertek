@@ -41,7 +41,7 @@ public class QBInvoiceJSON {
     public class SalesItemLineDetail{
         public ItemRef ItemRef;
         public Double UnitPrice;
-        public Integer Qty;
+        public Decimal Qty;
         public ItemAccountRef ItemAccountRef;
         public String TaxCodeRef;
     }
