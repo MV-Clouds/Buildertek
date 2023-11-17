@@ -1,0 +1,16 @@
+.THIS .container{ 
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+    margin-inline: auto;
+}
+.THIS .custom-loading-text {
+    transform: rotate(-90deg);
+    position: absolute;
+    top: -0.5rem;
+    left: 1rem;
+    white-space: nowrap;
+    font-size: 20px;
+}
