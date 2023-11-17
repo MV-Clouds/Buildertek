@@ -34,8 +34,27 @@ public with sharing class ImportTakeOffLinesBasic{
 					Map<String, PricebookEntry> PBEMap = new Map<String, PricebookEntry>();
 					Map<String, Pricebook2> PBMap = new Map<String, Pricebook2>();
 
+					List<String> productList = new List<String>();
+                    List<String> vendorList = new List<String>();
+                    
+                    for(Integer intIndex = 1; intIndex < listCSVData.size(); intIndex++) {
+                        for(Integer intInnerIndex = 0; intInnerIndex < listCSVData.get(intIndex).size(); intInnerIndex++) {
+                            switch on listCSVData.get(0).get(intInnerIndex) {
+                                when 'Product' {
+                                    if(String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))) {
+                                        productList.add(listCSVData.get(intIndex).get(intInnerIndex).replace('\n',''));
+                                    }
+                                }
+                                when 'Vendor' {
+                                    if(String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))) {
+                                       vendorList.add(listCSVData.get(intIndex).get(intInnerIndex).replace('\n',''));
+                                    }
+                                }
+                            }
+                        }
+                    }
 					// Find existing products
-					for (Product2 prod : [SELECT Id, Name FROM Product2]) {
+					for (Product2 prod : [SELECT Id, Name FROM Product2 WHERE Name IN :productList]) {
 						existingProductMap.put(prod.Name, prod);
 					}
 
@@ -45,12 +64,12 @@ public with sharing class ImportTakeOffLinesBasic{
 					}
 
 					// Find existing vendors
-					for (Account Acc : [SELECT Id, Name FROM Account]) {
+					for (Account Acc : [SELECT Id, Name FROM Account WHERE Name IN :vendorList]) {
 						accountMap.put(Acc.Name, Acc);
 					}
 
 					// Find existing pricebookentries
-					for (PricebookEntry pricebookentry : [SELECT Id, Name, Pricebook2Id, Product2Id, Product2.Name, Pricebook2.Name FROM PricebookEntry]) {
+					for (PricebookEntry pricebookentry : [SELECT Id, Name, Pricebook2Id, Product2Id, Product2.Name, Pricebook2.Name FROM PricebookEntry WHERE Product2.Name IN :productList]) {
 						PBEMap.put(pricebookentry.Name, pricebookentry);
 					}
 
