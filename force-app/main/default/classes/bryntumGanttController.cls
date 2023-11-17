@@ -533,15 +533,29 @@ public with sharing class bryntumGanttController {
     @AuraEnabled
     public static String changeOriginalDates(String recordId){
         try{
-            List<buildertek__Project_Task__c> scheduleTaskList = [SELECT Id, Name, buildertek__Start__c, buildertek__Finish__c, buildertek__Original_Start_Date__c, buildertek__Original_End_Date__c
+            List<buildertek__Project_Task__c> scheduleTaskList = [SELECT Id, Name, buildertek__Project__c,buildertek__Schedule__r.buildertek__Original_Start_Date__c,buildertek__Schedule__r.buildertek__Original_End_Date__c, buildertek__Start__c, buildertek__Finish__c, buildertek__Original_Start_Date__c, buildertek__Original_End_Date__c
                                                                   FROM buildertek__Project_Task__c
                                                                   WHERE buildertek__Schedule__c = :recordId
                                                                   FOR  UPDATE ];
-            for (buildertek__Project_Task__c st : scheduleTaskList){
-                st.buildertek__Original_Start_Date__c = st.buildertek__Start__c;
-                st.buildertek__Original_End_Date__c = st.buildertek__Finish__c;
+            if (scheduleTaskList.size() > 0) {
+
+                for (buildertek__Project_Task__c st : scheduleTaskList){
+                    st.buildertek__Original_Start_Date__c = st.buildertek__Start__c;
+                    st.buildertek__Original_End_Date__c = st.buildertek__Finish__c;
+                }
+
+                update scheduleTaskList;
+
+                if (scheduleTaskList[0].buildertek__Project__c != null) {
+                    buildertek__Project__c taskProject = new buildertek__Project__c();
+                    taskProject.Id = scheduleTaskList[0].buildertek__Project__c;
+                    taskProject.buildertek__Original_Start_Date__c = scheduleTaskList[0].buildertek__Schedule__r.buildertek__Original_Start_Date__c;
+                    taskProject.buildertek__Original_End_Date__c = scheduleTaskList[0].buildertek__Schedule__r.buildertek__Original_End_Date__c;
+                    ProjectTaskTriggerHandler.blnSkipTaskTrigger = true;
+                    update taskProject;
+                    ProjectTaskTriggerHandler.blnSkipTaskTrigger = false;
+                }
             }
-            update scheduleTaskList;
             return 'Success';
 
         } catch (Exception e){
