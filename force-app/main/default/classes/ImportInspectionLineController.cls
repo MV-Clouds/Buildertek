@@ -29,6 +29,10 @@ public with sharing class ImportInspectionLineController {
                 returnresponse = 'SUCCESS';
             }
         } catch (Exception e) {
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
             returnresponse = 'ERROR: ' + e.getMessage();
             System.debug('error-->' + e.getMessage());
             System.debug('error line--->' + e.getLineNumber());

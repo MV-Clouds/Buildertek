@@ -1,6 +1,5 @@
 ({    
     CreateRecord: function (component, event, helper) {
-        component.set("v.Spinner", true);
         var fileInput = component.find("file").getElement();
         var file = fileInput.files[0];
         console.log('file-->',file);

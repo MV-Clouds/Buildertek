@@ -76,34 +76,31 @@
     
     
     
-    CreateInspectionLine : function (component,jsonstr){
-        var InspectionId = component.get("v.recordId")
+    CreateInspectionLine: function(component, jsonstr) {
+        component.set("v.Spinner", true);
+        var InspectionId = component.get("v.recordId");
         var action = component.get('c.insertData');
         action.setParams({
-            inspecId : InspectionId,
-            strfromle : jsonstr
+            inspecId: InspectionId,
+            strfromle: jsonstr
         });
         action.setCallback(this, function(response) {
-            var state = response.getState();
-            if (state === "SUCCESS") {
-                var result = response.getReturnValue();
-                console.log('result--->',result);
-                console.log('Result--->',{result});
-                if (result === 'SUCCESS') {
-                    this.showToast(component, "Success", "Inspection Line Inserted Successfully");
-                } else {
-                    this.showToast(component, "Error", result);
-                }
-                $A.get("e.force:closeQuickAction").fire();               
-                $A.get('e.force:refreshView').fire();
+            var result = response.getReturnValue();
+            console.log('Result--->', { result });
+            
+            component.set("v.Spinner", false);
+            
+            if (result === 'SUCCESS') {
+                this.showToast(component, 'Success', 'Inspection Line Inserted Successfully.');
             } else {
-                this.showToast(component, "Error", "Something went wrong.");
+                this.showToast(component, 'Error', result);
             }
+            $A.get("e.force:closeQuickAction").fire();
+            $A.get('e.force:refreshView').fire();
         }); 
-        
-        $A.enqueueAction(action);    
-        
+        $A.enqueueAction(action);
     },
+    
     
     convertArrayOfObjectsToCSV : function(component,event,helper){
         var csvStringResult, keys, columnDivider;
@@ -117,7 +114,6 @@
     },
 
     showToast: function (component, type, message) {
-        component.set("v.Spinner", false);
         var toastEvent = $A.get("e.force:showToast");
       
         toastEvent.setParams({
