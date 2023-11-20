@@ -20,7 +20,13 @@
         <members>QBClone</members>
         <members>QBBatchReqJSON</members>
         <members>QBBatchResJSON</members>
+        <members>QBIntegrationQueue</members>
         <name>ApexClass</name>
     </types>
+    <types>
+        <members>CreateQBInvoice</members>
+        <name>AuraDefinitionBundle</name>
+    </types>
+
     <version>55.0</version>
 </Package>

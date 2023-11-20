@@ -2,7 +2,7 @@ public class QBInvoiceResponseJSON {
     public Invoice Invoice;
 
 	public class TxnTaxDetail{
-		public Integer TotalTax;
+		public Double TotalTax;
 	}
 	public class TaxCodeRef{
 		public String value;
@@ -31,23 +31,27 @@ public class QBInvoiceResponseJSON {
 		public String Id;
 		public SalesItemLineDetail SalesItemLineDetail;
 		public String DetailType;
-		// public Decimal Amount;
+		// public Double Amount;
 		public Double Amount;
-		public Integer LineNum;
+		public Double LineNum;
 	}
 	public class ItemRef{
 		public String value;
 		public String name;
 	}
+	// public class LinkedTxn{
+	// 	public String TxnId;
+	// 	public String TxnType;
+	// }
 	public class Invoice{
 		public String SyncToken;
-		public list<String> LinkedTxn;
+		// public LinkedTxn LinkedTxn;
 		public ShipAddr ShipAddr;
 		public TxnTaxDetail TxnTaxDetail;
 		public String EmailStatus;
 		public CustomerRef CustomerRef;
-		public Integer Deposit;
-		public Decimal Balance;
+		public Double Deposit;
+		public Double Balance;
 		public ProjectRef ProjectRef;
 		public Boolean sparse;
 		public String DocNumber;
@@ -56,7 +60,7 @@ public class QBInvoiceResponseJSON {
 		public MetaData MetaData;
 		// public String DueDate;
 		public Date DueDate;
-		public Decimal TotalAmt;
+		public Double TotalAmt;
 		public list<Line> Line;
 		public String PrintStatus;
 		public list<CustomField> CustomField;

@@ -3,12 +3,16 @@ public without sharing class QBIntegrationQueueable{
     @future(callout=true)
     public static void QBIntegrationMethod(Id Sales_invoice_Id, Id receiptID){
         try {
-            buildertek__Billings__c SI = [SELECT Id, Name, buildertek__Customer_Account__c, buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c,buildertek__Due_Date__c,buildertek__Amount__c,buildertek__Total_Amount_Tax__c FROM buildertek__Billings__c WHERE Id =: Sales_invoice_Id LIMIT 1];
+            buildertek__Billings__c SI = [SELECT Id, Name, buildertek__Customer_Account__c, buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c,buildertek__Project__r.buildertek__Customer__c,buildertek__Due_Date__c,buildertek__Amount__c,buildertek__Total_Amount_Tax__c FROM buildertek__Billings__c WHERE Id =: Sales_invoice_Id LIMIT 1];
             Account acc = new Account();
             if(SI.buildertek__Customer_Account__c != null){
                 acc = [SELECT ID, Name,buildertek__Email_Address__c,Fax,buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c, Description,ShippingCity,ShippingStreet,ShippingState,ShippingPostalCode,ShippingLatitude,ShippingLongitude,ShippingCountry,Phone,BillingCity,BillingStreet,BillingState,BillingPostalCode,BillingLatitude,BillingLongitude,BillingCountry FROM Account WHERE Id =: SI.buildertek__Customer_Account__c limit 1];
             }
-            List<buildertek__Billable_Lines__c> SILine = [SELECT Id, Name, buildertek__Billings__c,buildertek__Billings__r.Name,buildertek__Quantity__c,buildertek__QBO_ID__c,QBO_SyncToken__c,Description__c,Unit_Price__c,Type__c FROM buildertek__Billable_Lines__c WHERE buildertek__Billings__c =: Sales_invoice_Id];
+            else if(SI.buildertek__Customer_Account__c == null){
+                system.debug('Project Id ' + SI.buildertek__Project__r.buildertek__Customer__c);
+                acc = [SELECT ID, Name,buildertek__Email_Address__c,Fax,buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c, Description,ShippingCity,ShippingStreet,ShippingState,ShippingPostalCode,ShippingLatitude,ShippingLongitude,ShippingCountry,Phone,BillingCity,BillingStreet,BillingState,BillingPostalCode,BillingLatitude,BillingLongitude,BillingCountry FROM Account WHERE Id =: SI.buildertek__Project__r.buildertek__Customer__c limit 1];
+            }
+            List<buildertek__Billable_Lines__c> SILine = [SELECT Id, Name, buildertek__Billings__c,buildertek__Billings__r.Name,buildertek__Item_Name__c,buildertek__Quantity__c,buildertek__QBO_ID__c,QBO_SyncToken__c,Description__c,Unit_Price__c,Type__c FROM buildertek__Billable_Lines__c WHERE buildertek__Billings__c =: Sales_invoice_Id];
 
             buildertek__QuickBooks_Setting__mdt QBMetadata = [SELECT Id, DeveloperName,buildertek__Base_Url__c, buildertek__minorversion__c, MasterLabel, buildertek__Access_Token__c, buildertek__Client_Id__c, buildertek__Client_Secret__c, buildertek__Refresh_Token__c, buildertek__Scope__c, buildertek__Company_Id__c FROM buildertek__QuickBooks_Setting__mdt LIMIT 1];
             
@@ -66,6 +70,7 @@ public without sharing class QBIntegrationQueueable{
                         if(SILine[0].buildertek__QBO_ID__c == null){
                             String InvoiceItem_EndPoint = QBMetadata.buildertek__Base_Url__c + '/v3/company/' + QBMetadata.buildertek__Company_Id__c + '/item?minorversion=' + QBMetadata.buildertek__minorversion__c;            
                             String InvoiceItem_RequestBody = QBMap.mapInvoiceLineData(SILine[0]);
+
                             system.debug('InvoiceItem Request Body >>' +  InvoiceItem_RequestBody);
                             HttpResponse InvoiceItem_Response = QBCallOutService.QBCallOutServiceWithoutNameCred(InvoiceItem_EndPoint , InvoiceItem_RequestBody, Get_Access_Token);
 
@@ -108,17 +113,21 @@ public without sharing class QBIntegrationQueueable{
                                             System.debug('payment response :: '+ payment);
                                             String paymentQBID = payment.Id;
 
+                                            UpdateReceipt(receipt.Id, payment.Id);
+
                                         }
                                         else{
                                             QBException.QB_response( Payment_Response.getStatusCode(),  Payment_Response.getBody(), 'QBIntegrationQueueable', 'QBIntegrationMethod');
                                         }
+
+                                        UpdateSalesInvoice(SI.Id, invoiceQBID);
                                     }
                                     else{
                                         QBException.QB_response( Invoice_Response.getStatusCode(),  Invoice_Response.getBody(), 'QBIntegrationQueueable', 'QBIntegrationMethod');
                                     }
                                 }
 
-                                // UpdateSIline(SILine[0].ID, InvoiceLineQBId);
+                                UpdateSIline(SILine[0].ID, InvoiceLineQBId);
                             }
                             else {
                                 QBException.QB_response( InvoiceItem_Response.getStatusCode(),  InvoiceItem_Response.getBody(), 'QBIntegrationQueueable', 'QBIntegrationMethod');
@@ -129,13 +138,13 @@ public without sharing class QBIntegrationQueueable{
                         }
                     }
                     System.debug('calling update account');
-                    // UpdateAccount(acc.Id, CustomerQBID);
+                    UpdateAccount(acc.Id, CustomerQBID);
                 }
                 else {
                     QBException.QB_response( Customer_Response.getStatusCode(),  Customer_Response.getBody(), 'QBIntegrationQueueable', 'QBIntegrationMethod');
                 }
         } catch (Exception e) {
-            System.debug('Error in Create_Customer_invoice_item_payment : ' + e.getMessage() +'\n'+ e);
+            System.debug('Error in Create_Customer_invoice_item_payment : ' + e.getMessage() +'\n'+ e+ '\n' + e.getStackTraceString());
         }
     }
 
@@ -185,24 +194,32 @@ public without sharing class QBIntegrationQueueable{
                                     System.debug('payment response :: '+ payment);
                                     String paymentQBID = payment.Id;
 
+                                    UpdateReceipt(receipt.Id, payment.Id);
+
                                 }
                                 else{
                                     QBException.QB_response( Payment_Response.getStatusCode(),  Payment_Response.getBody(), 'QBIntegrationQueueable', 'QBIntegrationMethod');
                                 }
+                                // Do Not Move this Method Above the API Callout... It will Block API Callout...
+                                UpdateSalesInvoice(SI.Id, invoiceQBID);
                             }
                             else{
                                 QBException.QB_response( Invoice_Response.getStatusCode(),  Invoice_Response.getBody(), 'QBIntegrationQueueable', 'QBIntegrationMethod');
                             }
                         }
+                        else {
+                            System.debug('Invoice Already Available in QB ');
+                            Create_Payment_In_QB(SILine, SI, acc, QBMetadata, Get_Access_Token, receiptID);
+                        }
 
-                        // UpdateSIline(SILine[0].ID, InvoiceLineQBId);
+                        UpdateSIline(SILine[0].ID, InvoiceLineQBId);
                     }
                     else {
                         QBException.QB_response( InvoiceItem_Response.getStatusCode(),  InvoiceItem_Response.getBody(), 'QBIntegrationQueueable', 'QBIntegrationMethod');
                     }
             
         } catch (Exception e) {
-             System.debug('Error in CreateQBSIlines : ' + e.getMessage() +'\n'+ e);
+             System.debug('Error in Create_item_invoice_Payment_in_QB : ' + e.getMessage() +'\n'+ e+ '\n' + e.getStackTraceString());
         }
     }
 
@@ -236,16 +253,20 @@ public without sharing class QBIntegrationQueueable{
                     System.debug('payment response :: '+ payment);
                     String paymentQBID = payment.Id;
 
+                    UpdateReceipt(receipt.Id, payment.Id);
+
                 }
                 else{
                     QBException.QB_response( Payment_Response.getStatusCode(),  Payment_Response.getBody(), 'QBIntegrationQueueable', 'QBIntegrationMethod');
                 }
+
+                UpdateSalesInvoice(SI.Id, invoiceQBID);
             }
             else{
                 QBException.QB_response( Invoice_Response.getStatusCode(),  Invoice_Response.getBody(), 'QBIntegrationQueueable', 'QBIntegrationMethod');
             }
         } catch (Exception e) {
-            System.debug('Error in Create_QB_inoice_Payment : ' + e.getMessage() +'\n'+ e);
+            System.debug('Error in Create_inoice_Payment_in_QB : ' + e.getMessage() +'\n'+ e + '\n' + e.getStackTraceString());
 
         }
     }
@@ -264,6 +285,7 @@ public without sharing class QBIntegrationQueueable{
                 payment = Payment_Response_desr.Payment;
                 System.debug('payment response :: '+ payment);
                 String paymentQBID = payment.Id;
+                UpdateReceipt(receipt.Id, payment.Id);
 
             }
             else{
@@ -271,7 +293,7 @@ public without sharing class QBIntegrationQueueable{
             }
             
         } catch (Exception e) {
-            System.debug('Error in Create_QB_Payment : ' + e.getMessage() +'\n'+ e);
+            System.debug('Error in Create_Payment_In_QB : ' + e.getMessage() +'\n'+ e);
         }
     }
 
@@ -309,5 +331,54 @@ public without sharing class QBIntegrationQueueable{
         }
     }
 
+    public static void UpdateReceipt(String receipt_Id, String QB_Payment_Id){
+        try {
+            system.debug('Receipt going to Update');
+            buildertek__Receipt__c receipt = [SELECT Id, Name , buildertek__QBO_ID__c FROM buildertek__Receipt__c WHERE ID =:receipt_Id LIMIT 1];
+            receipt.buildertek__QBO_ID__c = QB_Payment_Id;
+            update receipt;
+        } catch (Exception e) {
+            System.debug('Error in UpdateSalesInvoice : ' + e.getMessage() +'\n'+ e);
+        }
+    }
+
+    public static void createInvoceLineBatches(List<buildertek__Billable_Lines__c> SILines, buildertek__Billings__c SI, Account acc, buildertek__QuickBooks_Setting__mdt QBMetadata, Boolean Get_Access_Token, String receiptID) {
+        try {
+            System.debug('\n in createBatches \n');
+            // Ensure SILines is not empty before processing batches
+                Integer totalItems = SILines.size();
+                Integer batchSize = 30;
+                Integer totalBatches = (totalItems + batchSize - 1) / batchSize; // Calculate total batches needed
+
+                for (Integer i = 0; i < totalBatches; i++) {
+                    Integer startIdx = i * batchSize;
+                    Integer endIdx = Math.min((i + 1) * batchSize, totalItems);
+
+                    List<buildertek__Billable_Lines__c> itemsBatch = new List<buildertek__Billable_Lines__c>();
+
+                    // Create the sublist for the current batch
+                    for (Integer j = startIdx; j < endIdx; j++) {
+                        if(SILines[j].buildertek__QBO_ID__c == null){
+                            itemsBatch.add(SILines[j]);
+                        }
+                    }
+
+                    if(itemsBatch.size() > 0){
+                        String InvoiceLine_RequestBody = QBMap.MapInvoiceLineToBatch(itemsBatch);
+                        System.debug('InvoiceLine_RequestBody : ' + +InvoiceLine_RequestBody);
+                        String InvoiceItem_EndPoint = 'https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365355801090/batch';            
+                        HttpResponse InvoiceItem_Response = QBCallOutService.QBCallOutServiceWithoutNameCred(InvoiceItem_EndPoint , InvoiceLine_RequestBody, Get_Access_Token);
+                        if(InvoiceItem_Response.getStatusCode() == 200 ){
+                            if(i == (totalBatches-1)){
+                                // create invoice
+                            }
+                        }
+                    }
+
+                }
+        } catch (Exception e) {
+            System.debug('Exception in createBatches: ' + e.getMessage());
+        }
+    }
 
 }

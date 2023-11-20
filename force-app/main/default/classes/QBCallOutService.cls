@@ -27,21 +27,59 @@ public with sharing class QBCallOutService {
         }
     }
 
+    public static HttpResponse QBCallOutService_With_NameCred(String QBEndPoint, String JSONBody){
+        try {            
+                Http h = new Http();
+                
+                HttpRequest req = new HttpRequest();
+                req.setMethod('POST');
+                req.setHeader('Authorization','Bearer ');
+                req.setEndpoint(QBEndPoint);
+                req.setHeader('Content-Type', 'application/json');
+                req.setHeader('Accept','application/json');
+                // req.setHeader('Authorization',ReqHeader);
+                req.setBody(JSONBody);
+    
+    
+                HttpResponse res = new HttpResponse();
+                res = h.send(req);
+                String ResponseBody = res.getBody();
+                System.debug('Response Status Code >> ' + res.getStatusCode() + ' || Response status >> '+ res.getStatus());
+                System.debug('ResponseBody >> ' + ResponseBody);
+    
+                return res;
+        } catch (Exception e) {
+            System.debug('Error Drung APi QBCallOutServiceWithoutNameCred >> ' + e.getMessage());
+            return null;
+        }
+    }
+
     public static HttpResponse QBCallOutServiceWithoutNameCred(String QBEndPoint, String JSONBody, Boolean Get_Access_Token) {
         try {
 
             String Access_Token;
-            if(Get_Access_Token == true){
-                 Access_Token = GenerateAccessToken();
-            }
-
+            String SetQBEndPoint;
+                        // req.setEndpoint('callout:Quickbooks_REST_API/v3/company/4620816365353049760/customer?minorversion=69');
+            buildertek__QuickBooks_Setting__mdt QBMetadata = [SELECT Id, DeveloperName,buildertek__Base_Url__c, buildertek__minorversion__c, MasterLabel, buildertek__Access_Token__c, buildertek__Client_Id__c, buildertek__Client_Secret__c, buildertek__Refresh_Token__c, buildertek__Scope__c, buildertek__Company_Id__c FROM buildertek__QuickBooks_Setting__mdt LIMIT 1];
+            
             if(Access_Token != '' || Access_Token != null){
                 Http h = new Http();
-    
+                
                 HttpRequest req = new HttpRequest();
                 req.setMethod('POST');
-                req.setEndpoint(QBEndPoint);
-                req.setHeader('Authorization','Bearer '+ Access_Token );
+                if(Get_Access_Token == true){
+                     Access_Token = GenerateAccessToken();
+                     SetQBEndPoint = QBMetadata.buildertek__Base_Url__c + QBEndPoint;
+                    System.debug('access tocken endpoint : ' + SetQBEndPoint);
+                     req.setEndpoint(SetQBEndPoint);
+                     req.setHeader('Authorization','Bearer '+ Access_Token );
+                }
+                else{
+                    SetQBEndPoint = 'callout:Quickbooks_REST_API'+ QBEndPoint;
+                    System.debug('name cred End Point : ' + SetQBEndPoint);
+                    req.setEndpoint(SetQBEndPoint);
+                    req.setHeader('Authorization','Bearer ');
+                }
                 req.setHeader('Content-Type', 'application/json');
                 req.setHeader('Accept','application/json');
                 // req.setHeader('Authorization',ReqHeader);
@@ -106,4 +144,5 @@ public with sharing class QBCallOutService {
             return null;
         }
     }
+    
 }

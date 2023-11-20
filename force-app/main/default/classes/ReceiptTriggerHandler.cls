@@ -52,11 +52,14 @@ public without sharing class ReceiptTriggerHandler {
         try {
 
             for(buildertek__Receipt__c rec : newReceiptList){
-                // QBIntegrationQueueable.QBIntegrationMethod(rec.buildertek__Billing__c);
+                // QBIntegrationQueueable.QBIntegrationMethod(rec.buildertek__Billing__c, rec.Id);
+                boolean Create_Payment = true;
+                QBIntegrationQueue.QBcallouts(rec.buildertek__Billing__c, rec.Id, Create_Payment);
+                // QBPaymentCreation.CreateQBPayment(rec.Id);
             }
             
         } catch (Exception e) {
-            System.debug('Error in QBIntegrationOnInsert Trigger handler >> ' + e.getMessage());
+            System.debug('Error in QBIntegrationOnInsert Trigger handler >> ' + e.getMessage() + '\n' + e);
         }
     }
 

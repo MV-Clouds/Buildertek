@@ -57,24 +57,155 @@ public without sharing class QBMap {
         billAddy.Country = acc.BillingCountry;
        // billAddy.CountrySubDivisionCode = acc.BillingCountry;
         customer.BillAddr = billAddy;
-
-        // System.debug('customer 1' + customer);
-        // if( a == 1){
-        //     customer.Active = True;
-        //     QBCallout.CreateAcc(JSON.serialize(customer, True).replace('"Long_x":', '"Long":') , accId , QBId);
-        //     // QBCallout.CreateCustomerAPICall(JSON.serialize(customer, True).replace('"Long_x":', '"Long":'));
-        // }else if( a == 2){
-        //     customer.Active = True;
-        //     QBCallout.UpdateAcc(JSON.serialize(customer, True).replace('"Long_x":', '"Long":') , accId , QBId);
-        // }else if( a == 3){
-        //     customer.Active = False;
-        //     QBCallout.deleteCustomerCall(JSON.serialize(customer, True).replace('"Long_x":', '"Long":') , accId , QBId);
-        // }
-
         return JSON.serialize(customer, True).replace('"Long_x":', '"Long":');
  
     }
 
+
+
+    public static String MapInvoiceLineToBatch(List<buildertek__Billable_Lines__c> SILine) {
+        try {
+            System.debug('\n in createProducts \n');
+            QBBatchReqJSON batchItemRequest = new QBBatchReqJSON();
+            
+            for (buildertek__Billable_Lines__c item : SILine) {
+                String lineId = item.Id;
+                batchItemRequest.addBatchItem(
+                    String.valueOf(item.Id),
+                    false, // Set TrackQtyOnHand as needed
+                    item.buildertek__Item_Name__c +'-'+ item.Name,
+                    item.buildertek__Quantity__c,
+                    item.Unit_Price__c,
+                    'Sales of Product Income',
+                    '79', // Assuming a fixed value for income account value
+                    'Services'
+                );
+            }
+            
+            // Now perform the API callout using QBBatchReqJSON class
+            // createInvoiceLines(batchItemRequest);
+            return JSON.serialize(batchItemRequest);
+        } catch (Exception e) {
+            System.debug('Exception in createProduct :: '  + e.getMessage());
+            return null;
+        }
+    }
+
+    public static String mapInvoiceDataBatch(buildertek__Billings__c inv, String CustomerId, Map<Id, List<String>> lineIdsMap) {
+        try {
+            System.debug(' in mapInvoiceData method');
+            String invId = inv.Id;
+            String invQBId = inv.QBO_ID__c;
+            
+            QBInvoiceJSON invoice = new QBInvoiceJSON();
+            invoice.TotalAmt = String.valueOf(inv.buildertek__Total_Amount_Tax__c);
+            invoice.Balance = inv.buildertek__Total_Amount_Tax__c;
+            invoice.Line = new List<QBInvoiceJSON.line>();
+    
+            // Iterate through the lineIdsMap to add line items to invoice
+            Integer lineNumber = 1;
+            for (String lineId : lineIdsMap.keySet()) {
+                List<String> qbIdAndNameList = lineIdsMap.get(lineId);
+                String qbId = '';
+                String qbName = '';
+                String qbTotal = '';
+
+                if (qbIdAndNameList != null) {
+                    qbId = qbIdAndNameList[0]; // Retrieve QuickBooks ID
+                    qbName = qbIdAndNameList[1]; // Retrieve QuickBooks Name
+                    qbTotal = qbIdAndNameList[2];
+                }
+
+                QBInvoiceJSON.line Linee = new QBInvoiceJSON.line();
+                Linee.DetailType = 'SalesItemLineDetail';
+                Linee.Amount = Double.valueOf(qbTotal);
+                Linee.Id = qbId;
+                Linee.LineNum = String.valueOf(lineNumber);
+                Linee.SalesItemLineDetail = new QBInvoiceJSON.SalesItemLineDetail();
+                
+                QBInvoiceJSON.SalesItemLineDetail SILD = new QBInvoiceJSON.SalesItemLineDetail();
+                SILD.ItemRef = new QBInvoiceJSON.ItemRef();
+                
+                QBInvoiceJSON.ItemRef ItemRef = new QBInvoiceJSON.ItemRef();
+                ItemRef.name = qbName;
+                ItemRef.value = qbId; // Retrieve the line ID from the map
+                
+                SILD.ItemRef = ItemRef;
+                Linee.SalesItemLineDetail = SILD;
+                invoice.Line.add(Linee);
+                
+                lineNumber++;
+            }
+            
+            invoice.CustomerRef = new QBInvoiceJSON.CustomerRef();
+            QBInvoiceJSON.CustomerRef customer = new QBInvoiceJSON.CustomerRef();
+            customer.value = CustomerId;
+            invoice.CustomerRef = customer;
+            
+            // System.debug('Invoice request Body :: ' + JSON.serialize(invoice, True).replace('"Long_x":', '"Long":'));
+            
+            return JSON.serialize(invoice, True).replace('"Long_x":', '"Long":');
+        } catch (Exception e) {
+            System.debug('exception in mapInvoiceData :: ' + e.getMessage());
+            return null;
+        }
+    }
+    
+    public static string mapReceipt_PaymetData(buildertek__Receipt__c receipt, String CustomerId, String invoiceQBID){
+        try {
+
+            QBReceiptJSON QBPayment = new QBReceiptJSON();
+            System.debug('PAyment Amount :: ' + receipt.buildertek__Amount__c );
+            if(receipt.buildertek__Amount__c == null ){
+                QBPayment.TotalAmt = 0;
+            }
+            else{
+                QBPayment.TotalAmt = receipt.buildertek__Amount__c;
+            }
+            QBPayment.CustomerRef = new QBReceiptJSON.CustomerRef();
+            QBPayment.Line = new list<QBReceiptJSON.Line>();  
+
+            QBReceiptJSON.CustomerRef QBPayment_cust = new QBReceiptJSON.CustomerRef();
+            QBPayment_cust.value = CustomerId;
+            QBPayment.CustomerRef = QBPayment_cust;
+
+            QBReceiptJSON.Line line = new QBReceiptJSON.Line();
+            line.Amount = receipt.buildertek__Amount__c;
+            line.LinkedTxn = new list<QBReceiptJSON.LinkedTxn>();
+
+            QBReceiptJSON.LinkedTxn linkedLine = new QBReceiptJSON.LinkedTxn();
+            linkedLine.TxnType = 'Invoice';
+            linkedLine.TxnId = invoiceQBID;
+
+            line.LinkedTxn.add(linkedLine);
+            QBPayment.Line.add(line);
+
+            return JSON.serialize(QBPayment, True);
+        } catch (Exception e ) {
+            system.debug('error in mapReceipt_PaymetData >> ' + e.getMessage() +'\n'+ e );
+            return null;
+        }
+    }
+
+
+
+    public static string mapReceipt_PaymetData_Hard(buildertek__Receipt__c receipt){
+        try {
+
+            QBReceiptJSON QBPayment = new QBReceiptJSON();
+            QBPayment.TotalAmt = receipt.buildertek__Amount__c;
+            QBPayment.CustomerRef = new QBReceiptJSON.CustomerRef();
+
+            QBReceiptJSON.CustomerRef QBPayment_cust = new QBReceiptJSON.CustomerRef();
+            QBPayment_cust.value = '113';
+            QBPayment.CustomerRef = QBPayment_cust;
+
+            return JSON.serialize(QBPayment, True);
+        } catch (Exception e ) {
+            system.debug('error in mapReceipt_PaymetData >> ' + e.getMessage() +'\n'+ e );
+            return null;
+        }
+    } 
     public static String mapInvoiceLineData(buildertek__Billable_Lines__c newline){
         try {
         String lineId = newline.Id;
@@ -114,8 +245,6 @@ public without sharing class QBMap {
             return null;
         }
     }
-
-    
     public static String mapInvoiceData(buildertek__Billings__c inv, String CustomerId, String LineiD, String LineName){
         String invId = inv.Id;
         String QBId = inv.QBO_ID__c;
@@ -152,141 +281,5 @@ public without sharing class QBMap {
         // System.debug('Invoice request Body :: ' + JSON.serialize(invoice, True).replace('"Long_x":', '"Long":'));
 
         return JSON.serialize(invoice, True).replace('"Long_x":', '"Long":');
-    }
-
-
-    public static string mapReceipt_PaymetData(buildertek__Receipt__c receipt, String CustomerId, String invoiceQBID){
-        try {
-
-            QBReceiptJSON QBPayment = new QBReceiptJSON();
-            System.debug('PAyment Amount :: ' + receipt.buildertek__Amount__c );
-            QBPayment.TotalAmt = receipt.buildertek__Amount__c;
-            QBPayment.CustomerRef = new QBReceiptJSON.CustomerRef();
-            QBPayment.Line = new list<QBReceiptJSON.Line>();  
-
-            QBReceiptJSON.CustomerRef QBPayment_cust = new QBReceiptJSON.CustomerRef();
-            QBPayment_cust.value = CustomerId;
-            QBPayment.CustomerRef = QBPayment_cust;
-
-            QBReceiptJSON.Line line = new QBReceiptJSON.Line();
-            line.Amount = receipt.buildertek__Amount__c;
-            line.LinkedTxn = new list<QBReceiptJSON.LinkedTxn>();
-
-            QBReceiptJSON.LinkedTxn linkedLine = new QBReceiptJSON.LinkedTxn();
-            linkedLine.TxnType = 'Invoice';
-            linkedLine.TxnId = invoiceQBID;
-
-            line.LinkedTxn.add(linkedLine);
-            QBPayment.Line.add(line);
-
-            return JSON.serialize(QBPayment, True);
-        } catch (Exception e ) {
-            system.debug('error in mapReceipt_PaymetData >> ' + e.getMessage() +'\n'+ e );
-            return null;
-        }
-    }
-
-    public static string mapReceipt_PaymetData_Hard(buildertek__Receipt__c receipt){
-        try {
-
-            QBReceiptJSON QBPayment = new QBReceiptJSON();
-            QBPayment.TotalAmt = receipt.buildertek__Amount__c;
-            QBPayment.CustomerRef = new QBReceiptJSON.CustomerRef();
-
-            QBReceiptJSON.CustomerRef QBPayment_cust = new QBReceiptJSON.CustomerRef();
-            QBPayment_cust.value = '113';
-            QBPayment.CustomerRef = QBPayment_cust;
-
-            return JSON.serialize(QBPayment, True);
-        } catch (Exception e ) {
-            system.debug('error in mapReceipt_PaymetData >> ' + e.getMessage() +'\n'+ e );
-            return null;
-        }
-    } 
-
-    public static String MapInvoiceLineToBatch(List<buildertek__Billable_Lines__c> SILine) {
-        try {
-            System.debug('\n in createProducts \n');
-            QBBatchReqJSON batchItemRequest = new QBBatchReqJSON();
-            
-            for (buildertek__Billable_Lines__c item : SILine) {
-                String lineId = item.Id;
-                batchItemRequest.addBatchItem(
-                    String.valueOf(item.Id),
-                    false, // Set TrackQtyOnHand as needed
-                    item.buildertek__Item_Name__c +'-'+ lineId.right(4).substring(0,4),
-                    item.buildertek__Quantity__c,
-                    item.Unit_Price__c,
-                    'Sales of Product Income',
-                    '79', // Assuming a fixed value for income account value
-                    'Services'
-                );
-            }
-            
-            // Now perform the API callout using QBBatchReqJSON class
-            // createInvoiceLines(batchItemRequest);
-            return JSON.serialize(batchItemRequest);
-        } catch (Exception e) {
-            System.debug('Exception in createProduct :: '  + e.getMessage());
-            return null;
-        }
-    }
-
-    public static String mapInvoiceDataBatch(buildertek__Billings__c inv, String CustomerId, Map<Id, List<String>> lineIdsMap) {
-        try {
-            System.debug(' in mapInvoiceData method');
-            String invId = inv.Id;
-            String invQBId = inv.QBO_ID__c;
-            
-            QBInvoiceJSON invoice = new QBInvoiceJSON();
-            invoice.TotalAmt = String.valueOf(inv.buildertek__Total_Amount_Tax__c);
-            invoice.Balance = inv.buildertek__Total_Amount_Tax__c;
-            invoice.Line = new List<QBInvoiceJSON.line>();
-    
-            // Iterate through the lineIdsMap to add line items to invoice
-            Integer lineNumber = 1;
-            for (String lineId : lineIdsMap.keySet()) {
-                List<String> qbIdAndNameList = lineIdsMap.get(lineId);
-                String qbId = '';
-                String qbName = '';
-
-                if (qbIdAndNameList != null) {
-                    qbId = qbIdAndNameList[0]; // Retrieve QuickBooks ID
-                    qbName = qbIdAndNameList[1]; // Retrieve QuickBooks Name
-                }
-
-                QBInvoiceJSON.line Linee = new QBInvoiceJSON.line();
-                Linee.DetailType = 'SalesItemLineDetail';
-                Linee.Amount = inv.buildertek__Total_Amount_Tax__c;
-                Linee.Id = qbId;
-                Linee.LineNum = String.valueOf(lineNumber);
-                Linee.SalesItemLineDetail = new QBInvoiceJSON.SalesItemLineDetail();
-                
-                QBInvoiceJSON.SalesItemLineDetail SILD = new QBInvoiceJSON.SalesItemLineDetail();
-                SILD.ItemRef = new QBInvoiceJSON.ItemRef();
-                
-                QBInvoiceJSON.ItemRef ItemRef = new QBInvoiceJSON.ItemRef();
-                ItemRef.name = qbName;
-                ItemRef.value = qbId; // Retrieve the line ID from the map
-                
-                SILD.ItemRef = ItemRef;
-                Linee.SalesItemLineDetail = SILD;
-                invoice.Line.add(Linee);
-                
-                lineNumber++;
-            }
-            
-            invoice.CustomerRef = new QBInvoiceJSON.CustomerRef();
-            QBInvoiceJSON.CustomerRef customer = new QBInvoiceJSON.CustomerRef();
-            customer.value = CustomerId;
-            invoice.CustomerRef = customer;
-            
-            // System.debug('Invoice request Body :: ' + JSON.serialize(invoice, True).replace('"Long_x":', '"Long":'));
-            
-            return JSON.serialize(invoice, True).replace('"Long_x":', '"Long":');
-        } catch (Exception e) {
-            System.debug('exception in mapInvoiceData :: ' + e.getMessage());
-            return null;
-        }
     }
 }

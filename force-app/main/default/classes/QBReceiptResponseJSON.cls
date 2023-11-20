@@ -1,35 +1,4 @@
 public without sharing class QBReceiptResponseJSON {
-    // public Payment Payment;
-
-	// public class ProjectRef{
-	// 	public String value;
-	// }
-	// public class Payment{
-	// 	public Boolean sparse;
-	// 	public list<String> Line;
-	// 	public Boolean ProcessPayment;
-	// 	public ProjectRef ProjectRef;
-	// 	public CustomerRef CustomerRef;
-	// 	public Double TotalAmt;
-	// 	public String Id;
-	// 	// public Date TxnDate;
-	// 	public DepositToAccountRef DepositToAccountRef;
-	// 	public Double UnappliedAmt;
-	// 	public String domain;
-	// 	public MetaData MetaData;
-	// 	public String SyncToken;
-	// }
-	// public class MetaData{
-	// 	public String CreateTime;
-	// 	public String LastUpdatedTime;
-	// }
-	// public class DepositToAccountRef{
-	// 	public String value;
-	// }
-	// public class CustomerRef{
-	// 	public String name;
-	// 	public String value;
-	// }
 
 	public Payment Payment;
 		// public String time;

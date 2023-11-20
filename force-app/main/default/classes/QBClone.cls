@@ -1,16 +1,16 @@
 public without sharing class QBClone{
-    public static final String invSfId = 'a0t1K00000k6pqkQAA';
+    public static final String invSfId = 'a0t1K00000oi0TVQAY';
     public static final buildertek__Billings__c SI = [SELECT Id, Name, buildertek__Customer_Account__c, buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c,buildertek__Due_Date__c,buildertek__Amount__c,buildertek__Total_Amount_Tax__c FROM buildertek__Billings__c WHERE Id =:invSfId LIMIT 1];
-    public static final List<buildertek__Billable_Lines__c> SILines = [SELECT Id, Name,buildertek__Item_Name__c, buildertek__Billings__c,buildertek__Billings__r.Name,buildertek__Quantity__c,buildertek__QBO_ID__c,QBO_SyncToken__c,Description__c,Unit_Price__c,Type__c FROM buildertek__Billable_Lines__c WHERE buildertek__Billings__c =:invSfId];
+    public static final List<buildertek__Billable_Lines__c> SILines = [SELECT Id, Name,buildertek__Item_Name__c, buildertek__Billings__c,buildertek__Billings__r.Name,buildertek__Quantity__c,buildertek__QBO_ID__c,QBO_SyncToken__c,buildertek__Billable_Lines__c.buildertek__Total__c,Description__c,Unit_Price__c,Type__c FROM buildertek__Billable_Lines__c WHERE buildertek__Billings__c =:invSfId];
     public static final Map<Id, List<String>> salesforceIdToQbIdMap = new Map<Id, List<String>>();
     public static Integer totalBatches = 0;
     public static Map<Integer, Map<Id, List<String>>> batchResponses = new Map<Integer, Map<Id, List<String>>>();
     public static String accessToken = null;
 
+    @future(callout=true)
     public static void createBatches() {
         try {
             System.debug('in createBatches method');
-            // Ensure SILines is not empty before processing batches
             if (SILines != null && !SILines.isEmpty()) {
                 Integer totalItems = SILines.size();
                 Integer batchSize = 30;
@@ -27,11 +27,8 @@ public without sharing class QBClone{
                         itemsBatch.add(SILines[j]);
                     }
                     System.debug('************** Batch length ************************* ' + itemsBatch.size());
-                    // Call the QuickBooksAPIHandler.createProducts method to handle this batch
                     createProducts(itemsBatch, i);
                 }
-                // createInvoice();
-                // createInvoiceAsync();
             } else {
                 System.debug('SILines is empty. No batches to process.');
             }
@@ -52,16 +49,13 @@ public without sharing class QBClone{
                     false, // Set TrackQtyOnHand as needed ==> if true then we need asset & expense account required
                     item.buildertek__Item_Name__c +'-'+ lineId.right(4).substring(0,4),
                     item.buildertek__Quantity__c,
-                    item.Unit_Price__c,
+                    item.buildertek__Total__c,
                     'Sales of Product Income',
                     '79', // Assuming a fixed value for income account value
                     'Services'
                 );
             }
-            
-            // Convert BatchItemRequest to JSON
             String batchPayload = JSON.serialize(batchItemRequest);
-            // Now perform the API callout
             createInvoiceLines(batchPayload, batchIndex);
         } catch (Exception e) {
             System.debug('Exception in createProduct :: '  + e.getMessage());
@@ -71,8 +65,6 @@ public without sharing class QBClone{
     public static void createInvoiceLines(String body, Integer batchIndex) {
         try {
             System.debug('in createInvoiceLines method ');
-            
-            // Perform the HTTP Request (similar to previous examples)
             HttpRequest req = new HttpRequest();
             req.setEndpoint('https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365355801090/batch');
             req.setMethod('POST');
@@ -84,9 +76,7 @@ public without sharing class QBClone{
             HTTPResponse res = new Http().send(req);
 
             if (res.getStatusCode() == 200) {
-                // Successful callout, handle response if needed
                 System.debug('Batch operation successful. Response: ' + res.getBody());
-                // Parse the response body into QBBatchResJSON
                 QBBatchResJSON response = QBBatchResJSON.parse(res.getBody());
 
                 // Check if the response contains BatchItemResponse and extract Salesforce and QB IDs
@@ -96,31 +86,21 @@ public without sharing class QBClone{
                             salesforceIdToQbIdMap.put(
                                 // Assuming SalesforceId__c is of type Id and QbId__c is of type String
                                 Id.valueOf(batchItem.bId), // Salesforce ID
-                                new List<String> { batchItem.Item.Id , batchItem.Item.Name } // QuickBooks ID
+                                new List<String> { batchItem.Item.Id , batchItem.Item.Name , String.valueOf(batchItem.Item.UnitPrice)} // QuickBooks ID
                             );
                         }
                     }
                 }
                 System.debug('Map ==> ' + salesforceIdToQbIdMap);
 
-                // createInvoice();
                 if (!salesforceIdToQbIdMap.isEmpty()) {
                     for (buildertek__Billable_Lines__c record : SILines) {
-                        // Check if the Salesforce ID exists in the mapping and update the QuickBooks ID
                         List<String> qbIdAndNameList = salesforceIdToQbIdMap.get(record.Id);
         
-                        // Assuming the list contains QB ID and QB Name in index 0 and 1 respectively
-                        if (qbIdAndNameList != null && qbIdAndNameList.size() >= 2) {
+                        if (qbIdAndNameList != null) {
                             record.buildertek__QBO_ID__c = qbIdAndNameList[0]; // Assign QuickBooks ID
-                            // Optionally, you can also use qbIdAndNameList[1] to access QuickBooks Name if needed
                         }
-                    }
-            
-                    try {
-                        update SILines;
                         batchResponses.put(batchIndex, new Map<Id, List<String>>(salesforceIdToQbIdMap));
-                    } catch (Exception ex) {
-                        System.debug('Exception in updating records :: ' + ex.getMessage());
                     }
                 }
                 // Check if this is the last batch, then process the invoice
@@ -128,7 +108,6 @@ public without sharing class QBClone{
                     createInvoice();
                 }
             } else {
-                // Handle errors or failed callout
                 System.debug('Batch operation failed with status code: ' + res.getStatusCode());
                 System.debug('Response: ' + res.getBody());
             }
@@ -154,15 +133,17 @@ public without sharing class QBClone{
                 List<String> qbIdAndNameList = lineIdsMap.get(lineId);
                 String qbId = '';
                 String qbName = '';
+                String qbTotal = '';
 
                 if (qbIdAndNameList != null) {
                     qbId = qbIdAndNameList[0]; // Retrieve QuickBooks ID
                     qbName = qbIdAndNameList[1]; // Retrieve QuickBooks Name
+                    qbTotal = qbIdAndNameList[2];
                 }
 
                 QBInvoiceJSON.line Linee = new QBInvoiceJSON.line();
                 Linee.DetailType = 'SalesItemLineDetail';
-                Linee.Amount = inv.buildertek__Total_Amount_Tax__c;
+                Linee.Amount = Double.valueOf(qbTotal);
                 Linee.Id = qbId;
                 Linee.LineNum = String.valueOf(lineNumber);
                 Linee.SalesItemLineDetail = new QBInvoiceJSON.SalesItemLineDetail();
@@ -172,7 +153,7 @@ public without sharing class QBClone{
                 
                 QBInvoiceJSON.ItemRef ItemRef = new QBInvoiceJSON.ItemRef();
                 ItemRef.name = qbName;
-                ItemRef.value = qbId; // Retrieve the line ID from the map
+                ItemRef.value = qbId;
                 
                 SILD.ItemRef = ItemRef;
                 Linee.SalesItemLineDetail = SILD;
@@ -185,9 +166,7 @@ public without sharing class QBClone{
             QBInvoiceJSON.CustomerRef customer = new QBInvoiceJSON.CustomerRef();
             customer.value = CustomerId;
             invoice.CustomerRef = customer;
-            
-            // System.debug('Invoice request Body :: ' + JSON.serialize(invoice, True).replace('"Long_x":', '"Long":'));
-            
+
             return JSON.serialize(invoice, True).replace('"Long_x":', '"Long":');
         } catch (Exception e) {
             System.debug('exception in mapInvoiceData :: ' + e.getMessage());
@@ -196,11 +175,11 @@ public without sharing class QBClone{
     }
 
     public static void createInvoice() {
+        System.debug(' IN createInvoice method');
         if(batchResponses.size() == totalBatches){
             String invoiceQBID = '';
             try {
-                System.debug(' IN createInvoice method');
-                // Perform the HTTP Request (similar to previous examples)
+                System.debug(' IN if');
                 HttpRequest req = new HttpRequest();
                 req.setEndpoint('https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365355801090/invoice');
                 req.setMethod('POST');
@@ -220,24 +199,27 @@ public without sharing class QBClone{
                     QBInvoiceResponseJSON Invoice_Response_desr = QBInvoiceResponseJSON.parse(res.getBody());
                     QBInvoiceResponseJSON.Invoice inv = new QBInvoiceResponseJSON.Invoice();
                     inv = Invoice_Response_desr.Invoice;
-                    // System.debug('response invoice :: '+ invoice);
                     invoiceQBID = inv.Id;
+
+                    try {
+                        system.debug('sales Invoice & lines going to Update');
+                        SI.buildertek__QBO_ID__c = invoiceQBID;
+                        // update SILines;
+                        // update SI;
+                    } catch (Exception e) {
+                        System.debug('Error in UpdateSalesInvoice : ' + e.getMessage() +'\n'+ e);
+                    }
                 } else {
-                    // Handle errors or failed callout
                     System.debug('invoice creation failed with status code: ' + res.getStatusCode());
                     System.debug('Response: ' + res.getBody());
                 }
             } catch (Exception e) {
                 System.debug('Exception in createInvoice :: ' + e.getMessage());
             }
-
-            try {
-                system.debug('sales Invoice going to Update');
-                SI.buildertek__QBO_ID__c = invoiceQBID;
-                update SI;
-            } catch (Exception e) {
-                System.debug('Error in UpdateSalesInvoice : ' + e.getMessage() +'\n'+ e);
-            }
+        } else{
+            System.debug('***batches are not executed as needed***');
+            System.debug(batchResponses.size());
+            System.debug(totalBatches);
         }
     }
     
@@ -251,8 +233,6 @@ public without sharing class QBClone{
             String refreshToken = 'AB11708932155Bq3C6WB9DJKYLYh7ov1vXCum0FBuoPcSR0VdX';
             String client_Id = 'ABvVdisEK9DpoYAJkGljKkoeXvEcAKN4kwIYKpLjOBa2Aqwwyj';
             String client_Secret = 'CHYm7V8VWjZ4v44LerLwvU6tHV7RPrwsgyCE5Odu';
-            // String accessToken = '';
-            // String newRefreshToken = '';
             
             HttpRequest req = new HttpRequest();
             req.setEndpoint('https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer');
@@ -268,7 +248,6 @@ public without sharing class QBClone{
                 System.debug(accessToken);
                 accessToken = (String) responseMap.get('access_token');
                 System.debug(accessToken);
-                // newRefreshToken = (String) responseMap.get('refresh_token');
                 return accessToken;
             } else {
                 System.debug('Failed to refresh access token. Status Code: ' + res.getStatusCode());
