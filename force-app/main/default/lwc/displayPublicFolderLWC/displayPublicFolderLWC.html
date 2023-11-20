@@ -8,12 +8,20 @@
         <div>
 
             <div class="detail-div">
-                <div>
-                    <p class="fileName">{folderDetails.Name}</p>
+                <div style="display: flex; justify-content: space-between; align-items: center; gap:3rem;">
+                    <div style="flex: 1;">
+                        <div>
+                            <p class="fileName">{folderDetails.Name}</p>
+                        </div>
+                        <div>
+                            <p class="description">{folderDetails.buildertek__Description__c}</p>
+                        </div>
+                    </div>
+                    <div>
+                        <img src={imageUrl} width={width} height={height} alt="bt_logo.png" border="0" style="height: auto; background: transparent; font-family: sans-serif; font-size: 15px; line-height: 15px; color: #555555;"/>
+                    </div>
                 </div>
-                <div>
-                    <p class="description">{folderDetails.buildertek__Description__c}</p>
-                </div>
+                
                 <div class="searchDiv">
                     <p>No. Of Files : {folderDetails.buildertek__File_Count__c} </p>
                 </div>
