@@ -69,7 +69,7 @@
                     </lightning:layoutItem>
                     <lightning:layoutItem padding="around-small" size="3">
                         <label class="slds-form-element__label slds-size_5-of-12" >Product Family</label>
-                        <div >
+                        <div>
                             <ui:inputSelect aura:id="selectedProductFamily" value="{!v.sProductFamily}" change="{!c.changeProductFamily}" class="pricebook-class">
                                 <aura:if isTrue="{!v.selectedPricebookId}">
                                     <aura:iteration items="{!v.productFamilyOptions}" var="option" >
@@ -79,18 +79,20 @@
                             </ui:inputSelect>
                         </div>
                     </lightning:layoutItem>
-                    <div class="slds-p-around_medium slds-size_3-of-12" style="padding-top: 38px;">
-                        <!-- <label class="slds-form-element__label slds-size_4-of-12" >Product Name</label> -->
-                        <span>
-                            <lightning:input type="search" label="Searh" variant="label-hidden" value="{!v.sProductName}" onchange="{!c.searchInDatatable}" placeholder="Search Product Name" />
-                        </span>
-                    </div>
-                    <div class="slds-p-around_medium slds-size_3-of-12" style="padding-top: 38px;">
-                        <!-- <label class="slds-form-element__label slds-size_4-of-12" >Product Name</label> -->
-                        <span>
-                            <lightning:input type="search" label="Searh" variant="label-hidden" value="{!v.sVendorName}" onchange="{!c.searchVendorInDatatable}" placeholder="Search Vendor Name" />
-                        </span>
-                    </div>
+                    <lightning:layoutItem padding="around-small" size="3">
+                        <label class="slds-form-element__label slds-size_5-of-12" >Product Name</label>
+                        <div>
+                            <!-- <lightning:input class="pricebook-class" type="search" label="Searh" variant="label-hidden" value="{!v.sProductName}" onchange="{!c.searchInDatatable}" placeholder="Search Product Name"/> -->
+                            <ui:inputText class="pricebook-class" value="{!v.sProductName}" placeholder="Search Product Name" click="" change="{!c.searchInDatatable}"/>
+                        </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem padding="around-small" size="3">
+                        <label class="slds-form-element__label slds-size_4-of-12" >Vendor</label>
+                        <div>
+                            <!-- <lightning:input class="pricebook-class" type="search" label="Searh" variant="label-hidden" value="{!v.sVendorName}" onchange="{!c.searchVendorInDatatable}" placeholder="Search Vendor Name"/> -->
+                            <ui:inputText class="pricebook-class" value="{!v.sVendorName}" placeholder="Search Vendor Name" click="" change="{!c.searchVendorInDatatable}"/>
+                        </div>
+                    </lightning:layoutItem>
                 </lightning:layout>
                 <br />
                 <div style="height: auto; min-height:150px;">
