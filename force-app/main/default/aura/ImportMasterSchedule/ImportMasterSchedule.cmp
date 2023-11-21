@@ -19,7 +19,6 @@
     <lightning:workspaceAPI aura:id="workspace"/>
     <lightning:navigation aura:id="navigation"/>
     <!-- Attribute Declration For Pagination End-->
-    <aura:attribute name="selectedRecordId" type="String" />
 
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> 
     <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/> 
@@ -74,7 +73,8 @@
     			        <tr class="slds-hint-parent">
     			            
                                 <td width="3%">
-                                    <input type="radio" name="selectRecord" value="{! rec.masterscheduleRecord.Id }" onchange="{! c.handleRadioChange }" />
+                                    <!-- <input type="radio" name="selectRecord" value="{! rec.masterscheduleRecord.Id }" onchange="{! c.handleRadioChange }" /> -->
+                                    <ui:inputCheckbox aura:id="checkContractor" value="{rec.ScheduleCheck}" text="{!rec.masterscheduleRecord.Id}" change="{!c.handleCheck}" />
                                 </td>
                                                       
         			            <td width="37%" role="gridcell">

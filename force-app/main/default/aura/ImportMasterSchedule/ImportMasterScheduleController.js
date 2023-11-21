@@ -49,13 +49,20 @@
         $A.enqueueAction(action);
     },
 
-    handleRadioChange: function(component, event, helper) {
+    handleCheck: function (component, event, helper) {
         component.set("v.isError", false);
-        var selectedRecordId = event.target.value;
-        component.set("v.selectedRecordId", selectedRecordId);
-        console.log('selectedRecordId ===>',selectedRecordId);
+        var checkbox = event.getSource();
+        var Submittals = component.get("v.masterSchedulesList");
+        for (var i = 0; i < Submittals.length; i++) {
+            if (Submittals[i].masterscheduleRecord.Id == checkbox.get("v.text") && Submittals[i].scheduleCheck == false) {
+                Submittals[i].scheduleCheck = true;
+            } else if (Submittals[i].masterscheduleRecord.Id == checkbox.get("v.text") && Submittals[i].scheduleCheck == true) {
+                Submittals[i].scheduleCheck = false;
+            }
+        }
+        component.set("v.masterSchedulesList", Submittals);
     },
-    
+
     // selectAll: function (component, event, helper) {
     //     component.set("v.isError", false);
     //     var selectedHeaderCheck = event.getSource().get("v.value");
@@ -143,63 +150,65 @@
 
         //window.open(baseURL + '.lightning.force.com/lightning/r/buildertek__Schedule__c/' + escape(recordId) + '/view', '_self');
     },
-    
+
     importSchedule: function (component, event, helper) {
-        var selectedRecordId = component.get("v.selectedRecordId");
-    
-        if (!selectedRecordId) {
+        var SchedulesList = component.get("v.masterSchedulesList");
+        var ScheduleIdsList = SchedulesList
+            .filter(schedule => schedule.scheduleCheck)
+            .map(schedule => schedule.masterscheduleRecord.Id);
+
+        console.log('ScheduleIdsList ===>', ScheduleIdsList);
+
+        if (ScheduleIdsList.length === 0) {
             component.set("v.Spinner", false);
             component.set("v.isError", true);
             component.set("v.ErrorMessage", 'Please select at least one schedule to import.');
             return;
         }
-    
+
         component.set("v.Spinner", true);
         component.set("v.showMessage", true);
         component.set("v.isError", false);
-    
+
         var action = component.get("c.createScheduleLineFromMasterSchedule");
         action.setParams({
             recordId: component.get("v.RecordId"),
-            masterId: selectedRecordId
+            masterIdList: ScheduleIdsList
         });
-    
+
         action.setCallback(this, function (response) {
             var state = response.getState();
             if (state === "SUCCESS") {
                 var result = response.getReturnValue();
-                console.log('result ===>', { result });
+                console.log('result ===>', result);
+
                 if (result.Status === 'Success') {
                     component.set("v.isSucess", true);
                     component.set("v.SucessMessage", result.Message);
                     component.set("v.Spinner", false);
                     component.set("v.showMessage", false);
-    
-                    var recordId = component.get("v.RecordId");
-                    if (component.get('v.isNewGantt')) {
+                    if(component.get('v.isNewGantt')){
                         var workspaceAPI = component.find("workspace");
-                        if (workspaceAPI && workspaceAPI.getFocusedTabInfo) {
-                            workspaceAPI.getFocusedTabInfo().then(function (response) {
-                                var focusedTabId = response.tabId;
-                                workspaceAPI.closeTab({ tabId: focusedTabId }).then(function () {
-                                    workspaceAPI.openTab({
-                                        url: '/lightning/r/buildertek__Schedule__c/' + recordId + '/view',
-                                        focus: true
-                                    }).then(function (tabId) {
-                                        workspaceAPI.refreshTab({
-                                            tabId: tabId,
-                                            includeAllSubtabs: true
-                                        });
-                                    });
-                                });
-                            }).catch(function (error) {
-                                console.log(error);
+                        workspaceAPI.getFocusedTabInfo()
+                        .then(function (response) {
+                            var focusedTabId = response.tabId;
+                            workspaceAPI.closeTab({
+                                tabId: focusedTabId
                             });
-                        } else {
-                            window.open('/lightning/r/buildertek__Schedule__c/' + recordId + '/view', '_top');
-                        }
-                    } else {
-                        window.open('/'+recordId, "_top");
+                        })
+
+                        .catch(function (error) {
+                            var navEvt = $A.get("e.force:navigateToSObject");
+                            navEvt.setParams({
+                                "recordId": component.get('v.recordId'),
+                                "slideDevName": "related"
+                            });
+                            navEvt.fire();
+                        });
+                        window.location.reload();
+
+                    }else{
+                        window.open('/apex/BT_Task_Manager?recordId=' + escape(recordId), '_self')
                     }
                 } else {
                     component.set("v.Spinner", false);
@@ -212,7 +221,7 @@
     
         $A.enqueueAction(action);
     },
-    
+
     next: function (component, event, helper) {
         component.set("v.isError", false);
         var sObjectList = component.get("v.masterSchedulesList");
@@ -256,4 +265,29 @@
         component.set('v.PaginationList', Paginationlist);
     },
 
+    closeNrefresh : function(component, event, helper) {
+        var workspaceAPI = component.find("workspace");
+        workspaceAPI.getFocusedTabInfo().then(function (response) {
+            var focusedTabId = response.tabId;
+            workspaceAPI.closeTab({
+                tabId: focusedTabId
+            });
+        })
+
+        .catch(function (error) {
+            var navEvt = $A.get("e.force:navigateToSObject");
+            navEvt.setParams({
+                "recordId": component.get('v.recordId'),
+                "slideDevName": "related"
+            });
+            navEvt.fire();
+        });
+        $A.get("e.force:closeQuickAction").fire();
+        window.setTimeout(
+            $A.getCallback(function () {
+                $A.get('e.force:refreshView').fire();
+                window.location.reload();
+            }), 1000
+        );
+    },
 })
