@@ -1,0 +1,100 @@
+<aura:component implements="force:hasRecordId,force:lightningQuickActionWithoutHeader,lightning:actionOverride" access="global" controller="NewTakeOffComponentController" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <ltng:require styles="{!$Resource.ModalPreview62moreMedia}"/>
+    <lightning:notificationsLibrary aura:id="notifLib"/>
+    <lightning:workspaceAPI aura:id="workspace"/>
+    <aura:attribute name="listOfFields0" type="List" />
+    <aura:attribute name="isSaveNew" type="boolean" default="false"/>
+    <aura:attribute name="saveAndNew" type="Boolean" default="false" />
+   <aura:attribute name="parentprojectRecordId" type="String" default="" />
+   <aura:attribute name="parentRecordId" type="String" default="" />
+   <aura:attribute name="parentOppRecordId" type="String" default="" />
+
+    <!--Declare Attributes-->
+    <lightning:navigation aura:id="navService"/>
+    <aura:attribute name="masterTakeOffData" type="Object"/>
+    <aura:attribute name="columns" type="List"/>
+    <aura:attribute name="selectedMasterTakeOffId" type="String" />
+    <aura:attribute name="maxRowSelection" type="Integer" default="1"/>
+    <aura:attribute name="selectedRows" type="List" />
+    <aura:attribute name="enableInfiniteLoading" type="Boolean" default="true"/>
+    <aura:attribute name="initialRows" type="Integer" default="900"/>
+    <aura:attribute name="rowsToLoad" type="Integer" default="900"/>
+    <aura:attribute name="totalNumberOfRows" type="Integer"/>
+    <aura:attribute name="showRowNumberColumn" type="Boolean" default="false"/>
+    <aura:attribute name="rowNumberOffset" type="Integer" default="0"/>
+    <aura:attribute name="rowsToAdd" type="Integer" default="900"/>
+    <aura:attribute name="currentCount" type="Integer" default="900"/>
+
+
+
+
+    <aura:html tag="style">
+        .slds-modal__container{
+            width: 100% !important;
+            padding: 0 !important;
+            max-width: 85rem !important;
+        }
+    </aura:html>
+    <div class="slds-modal__container">
+        <header class="slds-modal__header">
+            <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New BT Takeoff</h2>
+        </header>
+        <div class="slds-modal__content" id="modal-content-id-1" >
+            <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__Project_Takeoff__c" onsubmit="{!c.handleSubmit}" density="Comfy" >
+                <div class="mainContent" >
+                    <div class="slds-p-around_medium" style="background-color:white;">
+                        <lightning:layout multipleRows="true">
+                            <aura:iteration items="{!v.listOfFields0}" var="field">
+                                <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                                    <aura:if isTrue="{!or(field.name=='buildertek__Project__c',field.name=='Name')}">
+                                        <aura:if isTrue="{!field.name=='Name'}" >
+                                            <lightning:inputField fieldName="Name"  required="true"/>
+                                        </aura:if>
+                                        <aura:if isTrue="{!field.name=='buildertek__Project__c'}" >
+                                            <lightning:inputField fieldName="{!field.name}" value="{!v.parentprojectRecordId}" />
+                                        </aura:if>
+
+                                        <aura:set attribute="else">
+                                            <aura:if isTrue="{!field.name=='buildertek__Opportunity__c'}" >
+                                                <lightning:inputField fieldName="{!field.name}" value="{!v.parentOppRecordId}" />
+                                                <aura:set attribute="else">
+                                                    <lightning:inputField fieldName="{!field.name}"/>
+                                                </aura:set>
+                                            </aura:if>
+                                        </aura:set>
+                                    </aura:if>
+                                </lightning:layoutItem>
+                            </aura:iteration>
+                        </lightning:layout>
+                    </div>
+                <h3 class="slds-section-title-divider" style="font-weight: bold;background: #e5e5e5; padding: 10px;text-align: center;">Master TakeOffs</h3>
+                <div style="height:48%; overflow: auto; " class="lazy-loading-container slds-is-relative" >
+                    <lightning:datatable 
+                            columns="{!v.columns}"
+                            data="{!v.masterTakeOffData}"
+                            keyField="Id"
+                            showRowNumberColumn="true"
+                            rowNumberOffset="0"
+                            selectedRows="{!v.selectedRows}"
+                            onrowselection="{!c.handleSelectedRow}"
+                            enableInfiniteLoading="true"
+                            loadMoreOffset="{!v.loadMoreOffset}"
+                            onloadmore="{!c.handleLoadMoreTakeOffs}"
+                            maxRowSelection="{! v.maxRowSelection }" /> 
+                    
+                </div>
+                
+                </div>
+                <footer aura:id="footer" class="slds-modal__footer">
+                    <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{! c.closeModel }" />
+                    <lightning:button variant="neutral" type="submit" title="Save &amp; New" label="Save &amp; New" onclick="{!c.handlesaveNnew}" />
+                    <lightning:button variant="brand" type="submit" name="save" label="Save" disabled="{!v.isDisabled}"/>
+                </footer>
+            </lightning:recordEditForm>
+        </div>
+
+        <c:BT_Spinner />
+
+    </div>
+</aura:component>
