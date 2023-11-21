@@ -1,25 +1,25 @@
 public with sharing class ImportMasterSchedules{
-    /**/
-    @AuraEnabled
-    public static object getMasterSchedule(String recordId){
-        List<buildertek__Schedule__c> schedulesList;
-        /* if (Schema.sObjectType.buildertek__Schedule__c.fields.Id.isAccessible() &&
-         Schema.sObjectType.buildertek__Schedule__c.fields.Name.isAccessible() &&
-         Schema.sObjectType.buildertek__Schedule__c.fields.buildertek__Description__c.isAccessible() &&
-         Schema.sObjectType.buildertek__Schedule__c.fields.buildertek__Type__c.isAccessible() ){  */
-        schedulesList = [SELECT Id, Name, buildertek__Description__c, buildertek__Type__c, buildertek__Community__c
-                         FROM buildertek__Schedule__c
-                         WHERE buildertek__Type__c = 'Master' AND Id != :recordId];
-        //}
-        List<MasterScheduleClass> MasterScheduleClassList = new List<MasterScheduleClass>();
-        for (buildertek__Schedule__c sch : schedulesList){
-            MasterScheduleClass MasterScheduleClassRecord = new MasterScheduleClass();
-            MasterScheduleClassRecord.masterscheduleRecord = sch;
-            MasterScheduleClassRecord.scheduleCheck = false;
-            MasterScheduleClassList.add(MasterScheduleClassRecord);
-        }
-        return MasterScheduleClassList;
-    }
+   
+    // @AuraEnabled
+    // public static object getMasterSchedule(String recordId){
+    //     List<buildertek__Schedule__c> schedulesList;
+    //     /* if (Schema.sObjectType.buildertek__Schedule__c.fields.Id.isAccessible() &&
+    //      Schema.sObjectType.buildertek__Schedule__c.fields.Name.isAccessible() &&
+    //      Schema.sObjectType.buildertek__Schedule__c.fields.buildertek__Description__c.isAccessible() &&
+    //      Schema.sObjectType.buildertek__Schedule__c.fields.buildertek__Type__c.isAccessible() ){  */
+    //     schedulesList = [SELECT Id, Name, buildertek__Description__c, buildertek__Type__c, buildertek__Community__c
+    //                      FROM buildertek__Schedule__c
+    //                      WHERE buildertek__Type__c = 'Master' AND Id != :recordId];
+    //     //}
+    //     List<MasterScheduleClass> MasterScheduleClassList = new List<MasterScheduleClass>();
+    //     for (buildertek__Schedule__c sch : schedulesList){
+    //         MasterScheduleClass MasterScheduleClassRecord = new MasterScheduleClass();
+    //         MasterScheduleClassRecord.masterscheduleRecord = sch;
+    //         MasterScheduleClassRecord.scheduleCheck = false;
+    //         MasterScheduleClassList.add(MasterScheduleClassRecord);
+    //     }
+    //     return MasterScheduleClassList;
+    // }
 
     @AuraEnabled
     public static MessageClass importMasterScheduleLines(List<String> scheduleRecIds, String recordId, Date initialDate, String projectManagerId){
