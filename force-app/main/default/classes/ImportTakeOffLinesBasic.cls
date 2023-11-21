@@ -30,11 +30,31 @@ public with sharing class ImportTakeOffLinesBasic{
 					Map<String, buildertek__Build_Phase__c> buildPhasemap = new Map<String, buildertek__Build_Phase__c>();
 					Map<String, buildertek__Trade_Type__c> existingTradeTypeMap = new Map<String, buildertek__Trade_Type__c>();
 					Map<String, buildertek__Cost_Codes__c> existingCostCodeMap = new Map<String, buildertek__Cost_Codes__c>();
+					Map<String, Account> accountMap = new Map<String, Account>();
 					Map<String, PricebookEntry> PBEMap = new Map<String, PricebookEntry>();
 					Map<String, Pricebook2> PBMap = new Map<String, Pricebook2>();
 
+					List<String> productList = new List<String>();
+                    List<String> vendorList = new List<String>();
+                    
+                    for(Integer intIndex = 1; intIndex < listCSVData.size(); intIndex++) {
+                        for(Integer intInnerIndex = 0; intInnerIndex < listCSVData.get(intIndex).size(); intInnerIndex++) {
+                            switch on listCSVData.get(0).get(intInnerIndex) {
+                                when 'Product' {
+                                    if(String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))) {
+                                        productList.add(listCSVData.get(intIndex).get(intInnerIndex).replace('\n',''));
+                                    }
+                                }
+                                when 'Vendor' {
+                                    if(String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))) {
+                                       vendorList.add(listCSVData.get(intIndex).get(intInnerIndex).replace('\n',''));
+                                    }
+                                }
+                            }
+                        }
+                    }
 					// Find existing products
-					for (Product2 prod : [SELECT Id, Name FROM Product2]) {
+					for (Product2 prod : [SELECT Id, Name FROM Product2 WHERE Name IN :productList]) {
 						existingProductMap.put(prod.Name, prod);
 					}
 
@@ -43,8 +63,13 @@ public with sharing class ImportTakeOffLinesBasic{
 						PBMap.put(pricebook.Name, pricebook);
 					}
 
+					// Find existing vendors
+					for (Account Acc : [SELECT Id, Name FROM Account WHERE Name IN :vendorList]) {
+						accountMap.put(Acc.Name, Acc);
+					}
+
 					// Find existing pricebookentries
-					for (PricebookEntry pricebookentry : [SELECT Id, Name, Pricebook2Id, Product2Id, Product2.Name, Pricebook2.Name FROM PricebookEntry]) {
+					for (PricebookEntry pricebookentry : [SELECT Id, Name, Pricebook2Id, Product2Id, Product2.Name, Pricebook2.Name FROM PricebookEntry WHERE Product2.Name IN :productList]) {
 						PBEMap.put(pricebookentry.Name, pricebookentry);
 					}
 
@@ -76,12 +101,12 @@ public with sharing class ImportTakeOffLinesBasic{
 											String finalString = withoutOuterQuotes.replaceAll('""', '"');
 											if (existingProductMap.containsKey(finalString)){
 												productFamilyId = existingProductMap.get(finalString).Id;
-												takeoffLines.buildertek__Product__c = existingProductMap.get(finalString).Id;
+												takeoffLines.buildertek__Product__c = productFamilyId;
 											}
 										} else {
 											if (existingProductMap.containsKey(tempProductNames)){
 												productFamilyId = existingProductMap.get(tempProductNames).Id;
-												takeoffLines.buildertek__Product__c = existingProductMap.get(tempProductNames).Id;
+												takeoffLines.buildertek__Product__c = productFamilyId;
 											}
 										}
 										 
@@ -102,7 +127,27 @@ public with sharing class ImportTakeOffLinesBasic{
 										productFamilyId = null;
 									}
 								}
-								
+
+								when 'Vendor'{
+									if (String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))){
+										String tempVendorNames  = listCSVData.get(intIndex).get(intInnerIndex).replace('\n', '');
+										if (tempVendorNames.startsWith('"') && tempVendorNames.endsWith('"')) {
+											String withoutOuterQuotes = tempVendorNames.replaceAll('^"|"$', '');
+											String finalVendorString = withoutOuterQuotes.replaceAll('""', '"');
+											if (accountMap.containsKey(finalVendorString)){
+												// vendorId = existingProductMap.get(finalVendorString).Id;
+												takeoffLines.buildertek__Vendor__c = accountMap.get(finalVendorString).Id;
+											}
+										} else {
+											if (accountMap.containsKey(tempVendorNames)){
+												// vendorId = existingProductMap.get(finalVendorString).Id;
+												takeoffLines.buildertek__Vendor__c = accountMap.get(tempVendorNames).Id;
+											}
+										}
+										 
+									}
+									
+								}
 
 								when 'Product SKU'{
 									if (String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))){
