@@ -11,7 +11,7 @@
     <aura:attribute name="startPage" type="Integer" />
     <aura:attribute name="endPage" type="Integer" />
     <aura:attribute name="totalRecords" type="Integer" />
-    <aura:attribute name="pageSize" type="Integer" default="10" />
+    <aura:attribute name="pageSize" type="Integer" default="20" />
     <aura:attribute name="searchKeyword" type="String" default="" />
     <aura:attribute name="disableBtn" type="Boolean" default="false" />
     <aura:attribute name="checkedRecordIds" type="List" />
@@ -31,7 +31,7 @@
         }
     </aura:html>
 
-    <div class="slds-modal__content slds-p-around--large">
+    <div class="slds-modal__content slds-p-around--large" style="max-height: 60vh !important;">
         <div class="slds slds-scope">
             <lightning:layoutItem padding="around-small" size="12">
                 <lightning:input value="{!v.searchKeyword}" placeholder="Search By Inspection Name..."
