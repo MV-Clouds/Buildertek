@@ -26,7 +26,16 @@
     <aura:attribute name="searchTimeout" type="Object" />
     <aura:attribute name="selectedRecords" type="List" default="[]" />
 
-    
+    <!-- <aura:html tag="style">
+        #input-220 {
+            height: 36px; !important
+            border: 1px solid rgb(201, 201, 201); !important
+        }
+        #input-222{
+            height: 36px; !important
+            border: 1px solid rgb(201, 201, 201); !important
+        }
+    </aura:html> -->
 
 
     
@@ -82,15 +91,15 @@
                     <lightning:layoutItem padding="around-small" size="3">
                         <label class="slds-form-element__label slds-size_5-of-12" >Product Name</label>
                         <div>
-                            <!-- <lightning:input class="pricebook-class" type="search" label="Searh" variant="label-hidden" value="{!v.sProductName}" onchange="{!c.searchInDatatable}" placeholder="Search Product Name"/> -->
-                            <ui:inputText class="pricebook-class" value="{!v.sProductName}" placeholder="Search Product Name" click="" change="{!c.searchInDatatable}"/>
+                            <lightning:input type="search" label="Searh" variant="label-hidden" value="{!v.sProductName}" onchange="{!c.searchInDatatable}" placeholder="Search Product Name"/>
+                            <!-- <ui:inputText class="pricebook-class" value="{!v.sProductName}" placeholder="Search Product Name" click="{!c.searchInDatatable}"/> -->
                         </div>
                     </lightning:layoutItem>
                     <lightning:layoutItem padding="around-small" size="3">
                         <label class="slds-form-element__label slds-size_4-of-12" >Vendor</label>
                         <div>
-                            <!-- <lightning:input class="pricebook-class" type="search" label="Searh" variant="label-hidden" value="{!v.sVendorName}" onchange="{!c.searchVendorInDatatable}" placeholder="Search Vendor Name"/> -->
-                            <ui:inputText class="pricebook-class" value="{!v.sVendorName}" placeholder="Search Vendor Name" click="" change="{!c.searchVendorInDatatable}"/>
+                            <lightning:input type="search" label="Searh" variant="label-hidden" value="{!v.sVendorName}" onchange="{!c.searchVendorInDatatable}" placeholder="Search Vendor Name"/>
+                            <!-- <ui:inputText class="pricebook-class" value="{!v.sVendorName}" placeholder="Search Vendor Name" click="{!c.searchVendorInDatatable}"/> -->
                         </div>
                     </lightning:layoutItem>
                 </lightning:layout>
