@@ -193,11 +193,11 @@
                             <span></span>
                         </aura:set>
                     </aura:if>
-
                     <aura:if isTrue="{!v.enableMassUpdate}">
                         <button class="slds-button slds-button_neutral" onclick="{!c.cancelMassUpdate}"> Cancel</button>
                         <button class="slds-button slds-button--brand" onclick="{!c.saveMassUpdate}" disabled = "{!v.isSave}"> Save</button>
                         <aura:set attribute="else">
+                            <button class="slds-button slds-button_neutral" onclick="{!c.unSelect}">Cancel</button>
                             <button class="slds-button slds-button_neutral" onclick="{!c.massUpdate}" disabled="{!v.isdisabled}"> Mass Update</button>
                         </aura:set>
                     </aura:if>
