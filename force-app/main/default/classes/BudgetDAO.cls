@@ -829,7 +829,7 @@ budgetRec.buildertek__Budget_Line_Group__c = budGroup.Id;
             allFields.add('buildertek__CostCodeDivision__c');
             allFields.add('buildertek__Cost_Code__c');
             allFields.add('buildertek__Cost_Code__r.Name');
-            if(!allFields.contains('buildertek__Contractor__r.Name')){
+            if(allFields.contains('buildertek__Contractor__c')){
                 allFields.add('buildertek__Contractor__c');
                 allFields.add('buildertek__Contractor__r.Name');
                 fieldsType += '{"fieldName": "buildertek__Contractor__c","fieldType": "Reference","isEditable": false},';
