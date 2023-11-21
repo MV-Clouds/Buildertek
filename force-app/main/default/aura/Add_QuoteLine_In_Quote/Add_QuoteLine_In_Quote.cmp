@@ -26,22 +26,13 @@
     <aura:attribute name="searchTimeout" type="Object" />
     <aura:attribute name="selectedRecords" type="List" default="[]" />
 
-    <!-- <aura:html tag="style">
-        #input-220 {
-            height: 36px; !important
-            border: 1px solid rgb(201, 201, 201); !important
+    <aura:html tag="style">
+        .slds-input{
+            height: 36px !important;
+            border: 1px solid rgb(201, 201, 201) !important;
         }
-        #input-222{
-            height: 36px; !important
-            border: 1px solid rgb(201, 201, 201); !important
-        }
-    </aura:html> -->
+    </aura:html>
 
-
-    
-
-    
-    
 
 
     <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open">
