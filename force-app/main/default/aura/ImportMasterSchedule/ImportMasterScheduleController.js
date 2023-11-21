@@ -169,8 +169,6 @@
             if (state === "SUCCESS") {
                 var result = response.getReturnValue();
                 console.log('result ===>', { result });
-                console.log('result.Status ===>', result.Status);
-                debugger;
                 if (result.Status === 'Success') {
                     component.set("v.isSucess", true);
                     component.set("v.SucessMessage", result.Message);
@@ -185,7 +183,7 @@
                                 var focusedTabId = response.tabId;
                                 workspaceAPI.closeTab({ tabId: focusedTabId }).then(function () {
                                     workspaceAPI.openTab({
-                                        url: '/lightning/r/YourObjectAPIName/' + recordId + '/view',
+                                        url: '/lightning/r/buildertek__Schedule__c/' + recordId + '/view',
                                         focus: true
                                     }).then(function (tabId) {
                                         workspaceAPI.refreshTab({
@@ -198,7 +196,7 @@
                                 console.log(error);
                             });
                         } else {
-                            window.open('/lightning/r/YourObjectAPIName/' + recordId + '/view', '_top');
+                            window.open('/lightning/r/buildertek__Schedule__c/' + recordId + '/view', '_top');
                         }
                     } else {
                         window.open('/'+recordId, "_top");

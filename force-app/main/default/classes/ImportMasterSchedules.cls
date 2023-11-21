@@ -294,7 +294,8 @@ public with sharing class ImportMasterSchedules{
     @AuraEnabled
     public static MessageClass createScheduleLineFromMasterSchedule (String recordId, String masterId){
         MessageClass msg = new MessageClass();
-        Date initialStartDate = Date.today();
+        Date initialStartDate = [SELECT Id, buildertek__Initial_Start_Date__c FROM buildertek__Schedule__c WHERE Id =: recordId].buildertek__Initial_Start_Date__c;
+        System.debug('initialStartDate: ' + initialStartDate);
         buildertek__Schedule__c masterSchedule = [SELECT Id, Name, buildertek__Start_Date__c, buildertek__Initial_Start_Date__c FROM buildertek__Schedule__c WHERE Id =: masterId];
         String businessHourId = [SELECT Id, IsDefault, IsActive FROM BusinessHours WHERE IsDefault = true LIMIT 1].Id;
         System.debug('recordId: ' + recordId);
