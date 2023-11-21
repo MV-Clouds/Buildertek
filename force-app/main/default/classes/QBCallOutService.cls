@@ -27,34 +27,7 @@ public with sharing class QBCallOutService {
         }
     }
 
-    public static HttpResponse QBCallOutService_With_NameCred(String QBEndPoint, String JSONBody){
-        try {            
-                Http h = new Http();
-                
-                HttpRequest req = new HttpRequest();
-                req.setMethod('POST');
-                req.setHeader('Authorization','Bearer ');
-                req.setEndpoint(QBEndPoint);
-                req.setHeader('Content-Type', 'application/json');
-                req.setHeader('Accept','application/json');
-                // req.setHeader('Authorization',ReqHeader);
-                req.setBody(JSONBody);
-    
-    
-                HttpResponse res = new HttpResponse();
-                res = h.send(req);
-                String ResponseBody = res.getBody();
-                System.debug('Response Status Code >> ' + res.getStatusCode() + ' || Response status >> '+ res.getStatus());
-                System.debug('ResponseBody >> ' + ResponseBody);
-    
-                return res;
-        } catch (Exception e) {
-            System.debug('Error Drung APi QBCallOutServiceWithoutNameCred >> ' + e.getMessage());
-            return null;
-        }
-    }
-
-    public static HttpResponse QBCallOutServiceWithoutNameCred(String QBEndPoint, String JSONBody, Boolean Get_Access_Token) {
+    public static HttpResponse QBAPICallOut(String QBEndPoint, String JSONBody, Boolean Get_Access_Token) {
         try {
 
             String Access_Token;
@@ -98,7 +71,7 @@ public with sharing class QBCallOutService {
             return null;
 
         } catch (Exception e ) {
-            System.debug('Error Drung APi QBCallOutServiceWithoutNameCred >> ' + e.getMessage());
+            System.debug('Error Drung APi QBAPICallOut >> ' + e.getMessage());
             return null;
         }
     }

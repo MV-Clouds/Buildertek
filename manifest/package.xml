@@ -21,6 +21,8 @@
         <members>QBBatchReqJSON</members>
         <members>QBBatchResJSON</members>
         <members>QBIntegrationQueue</members>
+        <members>QBTaxCodeJSON</members>
+        <members>QBTaxCodeResponseJSON</members>
         <name>ApexClass</name>
     </types>
     <types>

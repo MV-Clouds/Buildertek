@@ -3,7 +3,7 @@ public without sharing class QBIntegrationQueue {
     @future(callout=true)
     public static void QBcallouts(Id Sales_invoice_Id, Id receiptID, Boolean Create_Payment){
         try {
-            buildertek__Billings__c SI = [SELECT Id, Name, buildertek__Customer_Account__c, buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c,buildertek__Project__r.buildertek__Customer__c,buildertek__Due_Date__c,buildertek__Amount__c,buildertek__Total_Amount_Tax__c FROM buildertek__Billings__c WHERE Id =: Sales_invoice_Id LIMIT 1];
+            buildertek__Billings__c SI = [SELECT Id, Name, buildertek__Customer_Account__c,buildertek__QBO_Tax_Rate__c,buildertek__QBO_Tax_Rate_ID__c, buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c,buildertek__Project__r.buildertek__Customer__c,buildertek__Due_Date__c,buildertek__Amount__c,buildertek__Total_Amount_Tax__c FROM buildertek__Billings__c WHERE Id =: Sales_invoice_Id LIMIT 1];
             Account acc = new Account();
             if(SI.buildertek__Customer_Account__c != null){
                 acc = [SELECT ID, Name,buildertek__Email_Address__c,Fax,buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c, Description,ShippingCity,ShippingStreet,ShippingState,ShippingPostalCode,ShippingLatitude,ShippingLongitude,ShippingCountry,Phone,BillingCity,BillingStreet,BillingState,BillingPostalCode,BillingLatitude,BillingLongitude,BillingCountry FROM Account WHERE Id =: SI.buildertek__Customer_Account__c limit 1];
@@ -63,7 +63,7 @@ public without sharing class QBIntegrationQueue {
             String Customer_EndPoint = '/v3/company/' + QBMetadata.buildertek__Company_Id__c + '/customer?minorversion=' + QBMetadata.buildertek__minorversion__c;            
             String Customer_RequestBody = QBMap.mapAccountData(acc, 1);
             system.debug('JSON Body >>' +  Customer_RequestBody);
-            HttpResponse Customer_Response = QBCallOutService.QBCallOutServiceWithoutNameCred(Customer_EndPoint , Customer_RequestBody, Get_Access_Token);
+            HttpResponse Customer_Response = QBCallOutService.QBAPICallOut(Customer_EndPoint , Customer_RequestBody, Get_Access_Token);
             system.debug('Customer API Status Code >> ' + Customer_Response.getStatusCode());
             if(Customer_Response.getStatusCode() == 200){
                 System.debug('Customer_Response.getBody() :: '+ Customer_Response.getBody());
@@ -115,7 +115,7 @@ public without sharing class QBIntegrationQueue {
                         String InvoiceItem_EndPoint = '/v3/company/' + QBMetadata.buildertek__Company_Id__c + '/batch?minorversion=' + QBMetadata.buildertek__minorversion__c;
                         String InvoiceItem_RequestBody = QBMap.MapInvoiceLineToBatch(itemsBatch); 
                         System.debug('InvoiceItem_RequestBody ' +InvoiceItem_RequestBody);
-                        HttpResponse InvoiceItem_Response = QBCallOutService.QBCallOutServiceWithoutNameCred(InvoiceItem_EndPoint , InvoiceItem_RequestBody, Get_Access_Token);
+                        HttpResponse InvoiceItem_Response = QBCallOutService.QBAPICallOut(InvoiceItem_EndPoint , InvoiceItem_RequestBody, Get_Access_Token);
     
                         system.debug('Invoice Line API Status Code >> ' + InvoiceItem_Response.getStatusCode());
                         system.debug('Invoice Line Resopnce >> ' + InvoiceItem_Response.getBody());
@@ -192,7 +192,7 @@ public without sharing class QBIntegrationQueue {
             String Invoice_EndPoint = '/v3/company/' + QBMetadata.buildertek__Company_Id__c + '/invoice?minorversion=' + QBMetadata.buildertek__minorversion__c;
             String Invoice_RequestBody = QBMap.mapInvoiceDataBatch(SI, CustomerQBId, lineIdsMap);
             System.debug('Invoice_RequestBody >> ' + Invoice_RequestBody);
-            HttpResponse Invoice_Response = QBCallOutService.QBCallOutServiceWithoutNameCred(Invoice_EndPoint , Invoice_RequestBody, Get_Access_Token);
+            HttpResponse Invoice_Response = QBCallOutService.QBAPICallOut(Invoice_EndPoint , Invoice_RequestBody, Get_Access_Token);
             
             system.debug('Invoice API Status Code >> ' + Invoice_Response.getStatusCode());
             system.debug('Invoice Resopnce >> ' + Invoice_Response.getBody());
@@ -223,7 +223,7 @@ public without sharing class QBIntegrationQueue {
             String Payment_EndPoint = '/v3/company/' + QBMetadata.buildertek__Company_Id__c + '/payment?minorversion=' + QBMetadata.buildertek__minorversion__c;            
             String Payment_RequestBody = QBMap.mapReceipt_PaymetData(receipt, CustomerQBId, InvoiceQBId);
             system.debug('Payment_RequestBody >>' +  Payment_RequestBody);
-            HttpResponse Payment_Response = QBCallOutService.QBCallOutServiceWithoutNameCred(Payment_EndPoint , Payment_RequestBody, Get_Access_Token);
+            HttpResponse Payment_Response = QBCallOutService.QBAPICallOut(Payment_EndPoint , Payment_RequestBody, Get_Access_Token);
             system.debug('Payment_RequestBody API Status Code >> ' + Payment_Response.getStatusCode());
             if(Payment_Response.getStatusCode() == 200){
                 QBReceiptResponseJSON Payment_Response_desr = QBReceiptResponseJSON.parse(Payment_Response.getBody());
@@ -266,7 +266,7 @@ public without sharing class QBIntegrationQueue {
                 // Assuming the list contains QB ID and QB Name in index 0 and 1 respectively
                 if (qbIdAndNameList != null && qbIdAndNameList.size() >= 2) {
                     record.buildertek__QBO_ID__c = qbIdAndNameList[0]; // Assign QuickBooks ID
-                    record.buildertek__Item_Name__c = qbIdAndNameList[1];
+                    record.buildertek__QBO_Name__c = qbIdAndNameList[1];
                     // Optionally, you can also use qbIdAndNameList[1] to access QuickBooks Name if needed
                 }
             }
