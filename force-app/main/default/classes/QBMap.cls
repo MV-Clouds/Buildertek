@@ -259,6 +259,7 @@ public without sharing class QBMap {
         Line.Amount = inv.buildertek__Total_Amount_Tax__c;
         Line.Id = '1';
         Line.LineNum = '1';
+        Line.Qty = inv.buildertek__Quantity__c;
         Line.SalesItemLineDetail = new QBInvoiceJSON.SalesItemLineDetail();
 
         QBInvoiceJSON.SalesItemLineDetail SILD = new QBInvoiceJSON.SalesItemLineDetail();

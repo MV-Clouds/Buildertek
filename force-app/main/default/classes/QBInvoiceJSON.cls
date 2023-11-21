@@ -100,6 +100,8 @@ public class QBInvoiceJSON {
         public String DetailType;
         public SalesItemLineDetail SalesItemLineDetail;
         public String SubTotalLineDetail;
+        public Double Qty;
+
     }
     public class CustomerRef{
         public String name;
