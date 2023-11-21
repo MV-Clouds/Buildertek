@@ -1,25 +1,25 @@
 public with sharing class ImportMasterSchedules{
    
-    // @AuraEnabled
-    // public static object getMasterSchedule(String recordId){
-    //     List<buildertek__Schedule__c> schedulesList;
-    //     /* if (Schema.sObjectType.buildertek__Schedule__c.fields.Id.isAccessible() &&
-    //      Schema.sObjectType.buildertek__Schedule__c.fields.Name.isAccessible() &&
-    //      Schema.sObjectType.buildertek__Schedule__c.fields.buildertek__Description__c.isAccessible() &&
-    //      Schema.sObjectType.buildertek__Schedule__c.fields.buildertek__Type__c.isAccessible() ){  */
-    //     schedulesList = [SELECT Id, Name, buildertek__Description__c, buildertek__Type__c, buildertek__Community__c
-    //                      FROM buildertek__Schedule__c
-    //                      WHERE buildertek__Type__c = 'Master' AND Id != :recordId];
-    //     //}
-    //     List<MasterScheduleClass> MasterScheduleClassList = new List<MasterScheduleClass>();
-    //     for (buildertek__Schedule__c sch : schedulesList){
-    //         MasterScheduleClass MasterScheduleClassRecord = new MasterScheduleClass();
-    //         MasterScheduleClassRecord.masterscheduleRecord = sch;
-    //         MasterScheduleClassRecord.scheduleCheck = false;
-    //         MasterScheduleClassList.add(MasterScheduleClassRecord);
-    //     }
-    //     return MasterScheduleClassList;
-    // }
+    @AuraEnabled
+    public static object getMasterSchedule(String recordId){
+        List<buildertek__Schedule__c> schedulesList;
+        /* if (Schema.sObjectType.buildertek__Schedule__c.fields.Id.isAccessible() &&
+         Schema.sObjectType.buildertek__Schedule__c.fields.Name.isAccessible() &&
+         Schema.sObjectType.buildertek__Schedule__c.fields.buildertek__Description__c.isAccessible() &&
+         Schema.sObjectType.buildertek__Schedule__c.fields.buildertek__Type__c.isAccessible() ){  */
+        schedulesList = [SELECT Id, Name, buildertek__Description__c, buildertek__Type__c, buildertek__Community__c
+                         FROM buildertek__Schedule__c
+                         WHERE buildertek__Type__c = 'Master' AND Id != :recordId];
+        //}
+        List<MasterScheduleClass> MasterScheduleClassList = new List<MasterScheduleClass>();
+        for (buildertek__Schedule__c sch : schedulesList){
+            MasterScheduleClass MasterScheduleClassRecord = new MasterScheduleClass();
+            MasterScheduleClassRecord.masterscheduleRecord = sch;
+            MasterScheduleClassRecord.scheduleCheck = false;
+            MasterScheduleClassList.add(MasterScheduleClassRecord);
+        }
+        return MasterScheduleClassList;
+    }
 
     @AuraEnabled
     public static MessageClass importMasterScheduleLines(List<String> scheduleRecIds, String recordId, Date initialDate, String projectManagerId){
@@ -280,24 +280,6 @@ public with sharing class ImportMasterSchedules{
         }
     }
 
-    public class MasterScheduleClass{
-        @AuraEnabled
-        public buildertek__Schedule__c masterscheduleRecord{ get; set; }
-
-        @AuraEnabled
-        public boolean scheduleCheck{ get; set; }
-
-    }
-
-    public class MessageClass{
-        @AuraEnabled
-        public String Status{ get; set; }
-
-        @AuraEnabled
-        public string Message{ get; set; }
-
-    }
-
     public static Date getStartDate(Date startDate){
         DateTime currDate = DateTime.newInstance(startDate.year(), startDate.month(), startDate.day());
         String todayDay = currDate.format('EEEE');
@@ -309,17 +291,14 @@ public with sharing class ImportMasterSchedules{
         return startDate;
     }
 
-     /* @Author        Karan Patel
-      * Date           10-7-23
-      * Description :  This method is used to create New ScheduleLine from Master Schedule.
-      */
- 
-     @AuraEnabled
-     public static void createScheduleLineFromMasterSchedule (String recordId, String masterId){
+    @AuraEnabled
+    public static MessageClass createScheduleLineFromMasterSchedule (String recordId, String masterId){
+        MessageClass msg = new MessageClass();
         Date initialStartDate = Date.today();
         buildertek__Schedule__c masterSchedule = [SELECT Id, Name, buildertek__Start_Date__c, buildertek__Initial_Start_Date__c FROM buildertek__Schedule__c WHERE Id =: masterId];
         String businessHourId = [SELECT Id, IsDefault, IsActive FROM BusinessHours WHERE IsDefault = true LIMIT 1].Id;
-
+        System.debug('recordId: ' + recordId);
+        System.debug('masterId: ' + masterId);
         date masterStartDate = masterSchedule.buildertek__Start_Date__c;
         if (masterStartDate == null) {
             masterStartDate = System.today();
@@ -385,9 +364,16 @@ public with sharing class ImportMasterSchedules{
 
             }
         }
-
+        System.debug('projectInsertTaskMap: ' + projectInsertTaskMap);
         ProjectTaskTriggerHandler.blnSkipTaskTrigger = true;
-        insert projectInsertTaskMap.values();
+        if(projectInsertTaskMap.size() > 0){
+            insert projectInsertTaskMap.values();
+            msg.Status = 'Success';
+            msg.Message = 'Schedule Lines Imported Successfully';
+        } else{
+            msg.Status = 'Failed';
+            msg.Message = 'There are no schedule lines for the selected schedule.';
+        }
         ProjectTaskTriggerHandler.blnSkipTaskTrigger = false;
 
         for (String key : predecessorMap.keySet()) {
@@ -400,6 +386,7 @@ public with sharing class ImportMasterSchedules{
 
         futureContoller.updateScheduleRec(recordId);
         futureContoller.updateProjectOnSchedule(recordId);
+        return msg;
     }
 
     public static Date getInitialStartDate(Date startDate){
@@ -412,4 +399,23 @@ public with sharing class ImportMasterSchedules{
         }
         return startDate;
     }
+
+    public class MasterScheduleClass{
+        @AuraEnabled
+        public buildertek__Schedule__c masterscheduleRecord{ get; set; }
+
+        @AuraEnabled
+        public boolean scheduleCheck{ get; set; }
+
+    }
+
+    public class MessageClass{
+        @AuraEnabled
+        public String Status{ get; set; }
+
+        @AuraEnabled
+        public string Message{ get; set; }
+
+    }
+
 }
