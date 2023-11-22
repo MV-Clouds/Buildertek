@@ -428,6 +428,27 @@
         }
     },
 
+    addProductFromVendor: function(component, event, helper) {
+        var HaveCreateAccess = component.get("v.HaveCreateAccess");
+            if(HaveCreateAccess){
+                // component.set('v.openProductBox', true);
+                console.log('Jaimin doing Changes');
+            }
+            else{
+                component.find('notifLib').showNotice({
+                    "variant": "error",
+                    "header": "Error!",
+                    "message": "You don\'t have the necessary privileges to Create record.",
+                    closeCallback: function () {
+                        $A.get("e.c:BT_SpinnerEvent").setParams({
+                            "action": "HIDE"
+                        }).fire();
+                    }
+                });
+            }
+        
+    },
+
     saveAndNew: function(component, event, helper) {
         if (!component.get('v.isAddProductFromGroup')) {
             var groups = component.get('v.TotalRecords').groups;

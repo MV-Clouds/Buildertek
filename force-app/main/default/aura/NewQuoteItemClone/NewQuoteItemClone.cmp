@@ -344,6 +344,11 @@
                                 </div>&nbsp;
 
                                 <div>
+                                    <lightning:button iconPosition="left" onclick="{!c.addProductFromVendor}"
+                                        label="Products by vendor" class="sldsButtonGroup" />
+                                </div>&nbsp;
+
+                                <div>
                                     <lightning:button aura:id='rejectBtn' disabled="true" iconPosition="left"
                                         label="Rejected Lines" class="sldsButtonGroup"
                                         onclick="{!c.clickRejectLinesBtn}" />
