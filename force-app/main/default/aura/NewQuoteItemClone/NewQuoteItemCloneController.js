@@ -431,7 +431,7 @@
     addProductFromVendor: function(component, event, helper) {
         var HaveCreateAccess = component.get("v.HaveCreateAccess");
             if(HaveCreateAccess){
-                // component.set('v.openProductBox', true);
+                component.set('v.openProductBoxwithVendor', true);
                 console.log('Jaimin doing Changes');
             }
             else{

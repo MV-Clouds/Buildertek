@@ -168,6 +168,7 @@
 
     <!-- Pagination End -->
     <aura:attribute name="openProductBox" type="Boolean" default="false" />
+    <aura:attribute name="openProductBoxwithVendor" type="Boolean" default="false" />
     <aura:attribute name="columns1" type="List" />
     <aura:attribute name="data1" type="Object" />
     <aura:attribute name="listOfSelectedIds" type="List" default="[]" />
@@ -2294,6 +2295,17 @@
                         </aura:html>
                             <c:Add_QuoteLine_In_Quote getPhase="{!v.phaseName}" quoteId="{!v.recordId}" openProductBox="{!v.openProductBox}" />
 
+                    </aura:if>
+
+                    <aura:if isTrue="{!v.openProductBoxwithVendor}">
+                        <aura:html tag="style">
+
+                            .slds-modal__container{
+                            width: 80% !important;
+                            }
+
+                        </aura:html>
+                            <c:Add_QuoteLine_from_Vendor quoteId="{!v.recordId}" openProductBoxwithVendor="{!v.openProductBoxwithVendor}" />
                     </aura:if>
 
                     <aura:if isTrue="{!v.openQuoteLineBox}">
