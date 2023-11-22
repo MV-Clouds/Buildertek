@@ -290,23 +290,29 @@ public with sharing class ImportMasterSchedules{
         }
         return startDate;
     }
-    
+
     @AuraEnabled
     public static MessageClass createScheduleLineFromMasterSchedule (String recordId, List<String> masterIdList){
         MessageClass msg = new MessageClass();
-        Date initialStartDate = [SELECT Id, buildertek__Initial_Start_Date__c FROM buildertek__Schedule__c WHERE Id =: recordId].buildertek__Initial_Start_Date__c;
+        Date initialStartDate;
+        
+        if (!masterIdList.contains(recordId)){
+            masterIdList.add(recordId);
+        }   
+
         String businessHourId = [SELECT Id, IsDefault, IsActive FROM BusinessHours WHERE IsDefault = true LIMIT 1].Id;
-        List<buildertek__Schedule__c> scheduleStartDateList = [Select Id, buildertek__Start_Date__c FROM buildertek__Schedule__c WHERE Id In: masterIdList];
+        List<buildertek__Schedule__c> scheduleDateList = [Select Id, buildertek__Initial_Start_Date__c, buildertek__Start_Date__c FROM buildertek__Schedule__c WHERE Id In: masterIdList];
         Date masterStartDate;
-        for (buildertek__Schedule__c scheduleStartDate : scheduleStartDateList){
-            if (masterStartDate == null || scheduleStartDate.buildertek__Start_Date__c < masterStartDate){
-                masterStartDate = scheduleStartDate.buildertek__Start_Date__c;
-            } 
+        
+        for (buildertek__Schedule__c scheduleRec : scheduleDateList){
+            masterStartDate = (masterStartDate == null || scheduleRec.buildertek__Start_Date__c < masterStartDate) ? scheduleRec.buildertek__Start_Date__c : masterStartDate;
+            initialStartDate = (scheduleRec.Id == recordId) ? scheduleRec.buildertek__Initial_Start_Date__c : initialStartDate;
         }
+
         System.debug('masterStartDate: ' + masterStartDate);
-        if (masterStartDate == null) {
-            masterStartDate = System.today();
-        }
+        masterStartDate = (masterStartDate == null) ? Date.today() : masterStartDate;
+        initialStartDate = (initialStartDate == null) ? Date.today() : initialStartDate;
+
         initialStartDate = bryntumGanttController.getInitialStartDate(initialStartDate);
         DateTime oldDate = DateTime.newInstance(masterStartDate.year(), masterStartDate.month(),masterStartDate.day());
         DateTime newDate = DateTime.newInstance(initialStartDate.year(), initialStartDate.month(),initialStartDate.day());

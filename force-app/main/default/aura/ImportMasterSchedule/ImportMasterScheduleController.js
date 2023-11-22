@@ -180,34 +180,43 @@
             var state = response.getState();
             if (state === "SUCCESS") {
                 var result = response.getReturnValue();
-                console.log('result ===>', result);
 
                 if (result.Status === 'Success') {
                     component.set("v.isSucess", true);
                     component.set("v.SucessMessage", result.Message);
                     component.set("v.Spinner", false);
                     component.set("v.showMessage", false);
-                    if(component.get('v.isNewGantt')){
+                    var recordId = component.get("v.RecordId");
+                    if (component.get('v.isNewGantt')) {
                         var workspaceAPI = component.find("workspace");
-                        workspaceAPI.getFocusedTabInfo()
-                        .then(function (response) {
-                            var focusedTabId = response.tabId;
-                            workspaceAPI.closeTab({
-                                tabId: focusedTabId
-                            });
-                        })
+                        if (workspaceAPI.getFocusedTabInfo()) {
+                            workspaceAPI.getFocusedTabInfo().then(function (response) {
+                                var focusedTabId = response.tabId;
+                                workspaceAPI.closeTab({ tabId: focusedTabId }).then(function (res) {
+                                    if (res) {
+                                        window.open('/' + recordId, '_top')
+                                    }
+                                }).catch(function (error) {
+                                    console.log(error);
+                                });
 
-                        .catch(function (error) {
-                            var navEvt = $A.get("e.force:navigateToSObject");
-                            navEvt.setParams({
-                                "recordId": component.get('v.recordId'),
-                                "slideDevName": "related"
-                            });
-                            navEvt.fire();
-                        });
-                        window.location.reload();
+                            }).catch(function (error) {
+                                console.log(error);
+                                var navEvt = $A.get("e.force:navigateToSObject");
+                                navEvt.setParams({
+                                    "recordId": recordId,
+                                    "slideDevName": "detail"
+                                });
 
-                    }else{
+                                $A.enqueueAction(component.get('c.doInit'))
+                                $A.enqueueAction(navEvt.fire());
+                                location.reload();
+                            });
+                        } else {
+                            window.open('/' + recordId, "_top");
+                        }
+
+                    } else {
                         window.open('/apex/BT_Task_Manager?recordId=' + escape(recordId), '_self')
                     }
                 } else {
@@ -218,7 +227,6 @@
                 }
             }
         });
-    
         $A.enqueueAction(action);
     },
 
@@ -265,29 +273,4 @@
         component.set('v.PaginationList', Paginationlist);
     },
 
-    closeNrefresh : function(component, event, helper) {
-        var workspaceAPI = component.find("workspace");
-        workspaceAPI.getFocusedTabInfo().then(function (response) {
-            var focusedTabId = response.tabId;
-            workspaceAPI.closeTab({
-                tabId: focusedTabId
-            });
-        })
-
-        .catch(function (error) {
-            var navEvt = $A.get("e.force:navigateToSObject");
-            navEvt.setParams({
-                "recordId": component.get('v.recordId'),
-                "slideDevName": "related"
-            });
-            navEvt.fire();
-        });
-        $A.get("e.force:closeQuickAction").fire();
-        window.setTimeout(
-            $A.getCallback(function () {
-                $A.get('e.force:refreshView').fire();
-                window.location.reload();
-            }), 1000
-        );
-    },
 })
