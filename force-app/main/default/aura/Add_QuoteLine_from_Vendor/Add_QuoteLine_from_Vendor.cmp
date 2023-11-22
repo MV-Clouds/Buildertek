@@ -2,8 +2,44 @@
 
 <aura:attribute name="quoteId" type="String" />
 <aura:attribute name="openProductBoxwithVendor" type="Boolean" />
+<aura:attribute name="Spinner" type="Boolean" default="false" />
+<aura:attribute name="vendorList" type="List" />
 
 <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+<section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open">
+
+    <aura:if isTrue="{!v.Spinner}">
+            <div class="slds-spinner_container">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                    <div class="custom-loading-text">
+                        <b>Processing, Please Wait</b>
+                    </div>
+                </div>
+            </div>
+    </aura:if>
+
+     <div class="slds-modal__container">
+            <header class="slds-modal__header">
+                    <h2 class="slds-text-heading_medium slds-hyphenate">Vendors</h2>
+            </header>
+            
+            <div class="slds-modal__content" id="modal-content-id-1" style="max-height: 70vh;">
+                
+            </div>
+    
+            <footer class="slds-modal__footer">
+                <button class="slds-button slds-button_neutral" aria-label="Cancel and close" onclick="{!c.closeCmp}">Cancel</button>
+                <button class="slds-button slds-button_brand" onclick="{!c.goToEditModal}">Next</button>
+            </footer>
+    
+        
+    </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
 
 
 

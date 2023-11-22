@@ -2716,4 +2716,10 @@ public with sharing class QuoteDAO{
     }
     // >>>>>>>>>>> Changes For CHB - 78 <<<<<<<<<<<<<<<<<<
 
+    @AuraEnabled
+    public static List<Account> getVendors(){
+        List<Account> vendorList = [SELECT Id, Name FROM Account WHERE Id IN (SELECT buildertek__Vendor__c FROM Product2 WHERE IsActive = True) ORDER BY Name ASC];
+        return vendorList;
+    }
+
 }
