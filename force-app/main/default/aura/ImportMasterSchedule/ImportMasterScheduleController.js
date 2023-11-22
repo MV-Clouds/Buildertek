@@ -49,18 +49,11 @@
         $A.enqueueAction(action);
     },
 
-    handleCheck: function (component, event, helper) {
+    handleRadioChange: function(component, event, helper) {
         component.set("v.isError", false);
-        var checkbox = event.getSource();
-        var Submittals = component.get("v.masterSchedulesList");
-        for (var i = 0; i < Submittals.length; i++) {
-            if (Submittals[i].masterscheduleRecord.Id == checkbox.get("v.text") && Submittals[i].scheduleCheck == false) {
-                Submittals[i].scheduleCheck = true;
-            } else if (Submittals[i].masterscheduleRecord.Id == checkbox.get("v.text") && Submittals[i].scheduleCheck == true) {
-                Submittals[i].scheduleCheck = false;
-            }
-        }
-        component.set("v.masterSchedulesList", Submittals);
+        var selectedRecordId = event.target.value;
+        component.set("v.selectedRecordId", selectedRecordId);
+        console.log('selectedRecordId ===>',selectedRecordId);
     },
 
     // selectAll: function (component, event, helper) {
@@ -152,14 +145,8 @@
     },
 
     importSchedule: function (component, event, helper) {
-        var SchedulesList = component.get("v.masterSchedulesList");
-        var ScheduleIdsList = SchedulesList
-            .filter(schedule => schedule.scheduleCheck)
-            .map(schedule => schedule.masterscheduleRecord.Id);
-
-        console.log('ScheduleIdsList ===>', ScheduleIdsList);
-
-        if (ScheduleIdsList.length === 0) {
+        var selectedRecordId = component.get("v.selectedRecordId");
+        if (!selectedRecordId) {
             component.set("v.Spinner", false);
             component.set("v.isError", true);
             component.set("v.ErrorMessage", 'Please select at least one schedule to import.');
@@ -173,7 +160,7 @@
         var action = component.get("c.createScheduleLineFromMasterSchedule");
         action.setParams({
             recordId: component.get("v.RecordId"),
-            masterIdList: ScheduleIdsList
+            masterId: selectedRecordId
         });
 
         action.setCallback(this, function (response) {

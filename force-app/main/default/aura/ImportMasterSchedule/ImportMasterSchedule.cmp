@@ -4,6 +4,7 @@
     <aura:attribute name="BaseURLs" type="string"/>
      <aura:attribute name="RecordId" type="string" />
     <aura:attribute name="isNewGantt" type="String" />
+    <aura:attribute name="selectedRecordId" type="String" />
     <!-- Attribute Declration For Pagination -->
     <aura:attribute name="showMessage" type="Boolean" default="false" />
     
@@ -73,8 +74,8 @@
     			        <tr class="slds-hint-parent">
     			            
                                 <td width="3%">
-                                    <!-- <input type="radio" name="selectRecord" value="{! rec.masterscheduleRecord.Id }" onchange="{! c.handleRadioChange }" /> -->
-                                    <ui:inputCheckbox aura:id="checkContractor" value="{rec.ScheduleCheck}" text="{!rec.masterscheduleRecord.Id}" change="{!c.handleCheck}" />
+                                    <input type="radio" name="selectRecord" value="{! rec.masterscheduleRecord.Id }" onchange="{! c.handleRadioChange }" />
+                                    <!-- <ui:inputCheckbox aura:id="checkContractor" value="{rec.ScheduleCheck}" text="{!rec.masterscheduleRecord.Id}" change="{!c.handleCheck}" /> -->
                                 </td>
                                                       
         			            <td width="37%" role="gridcell">
