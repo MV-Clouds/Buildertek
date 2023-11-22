@@ -7,7 +7,8 @@
             if (state === "SUCCESS") {
                 var vendors = response.getReturnValue();
                 console.log('vendors: ', vendors);
-                component.set("v.vendorList", vendors);
+                component.set("v.MainvendorList", vendors);
+                component.set("v.ItervendorList", vendors);
             }
         });
         $A.enqueueAction(action);

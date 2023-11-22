@@ -3,7 +3,8 @@
 <aura:attribute name="quoteId" type="String" />
 <aura:attribute name="openProductBoxwithVendor" type="Boolean" />
 <aura:attribute name="Spinner" type="Boolean" default="false" />
-<aura:attribute name="vendorList" type="List" />
+<aura:attribute name="MainvendorList" type="List" />
+<aura:attribute name="ItervendorList" type="List" />
 
 <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
 
@@ -28,7 +29,46 @@
             </header>
             
             <div class="slds-modal__content" id="modal-content-id-1" style="max-height: 70vh;">
-                
+                <div style="display: flex; padding-left: 10px; align-items: center">
+                    <span style="padding-top: 10px; padding-right: 10px;">Vendors :</span>
+                    <lightning:input type="search" aura:id="search" placeholder="Search" onchange="{!c.searchVendor}" />
+                </div>
+
+                <br/>
+                <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                    <thead>
+                        <tr class="slds-text-title_caps">
+                            <th style="width:5% !important"></th>
+                            <th scope="col" style="width:95% !important">
+                                <div class="slds-truncate" title="Vendor Name">Vendor Name</div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <aura:if isTrue="{!v.ItervendorList.length == 0}">
+                            <tr>
+                                <td colspan="2" class="slds-text-align_center">No Records Found</td>
+                            </tr>
+                            <aura:set attribute="else">
+                                <aura:iteration items="{!v.ItervendorList}" var="vendor">
+                                    <tr>
+                                        <td scope="row" style="width:5% !important">
+                                            <div class="slds-truncate" title="{!vendor.Name}">
+                                                <ui:inputRadio aura:id="vendorRadio" name="vendorRadio" value="{!vendor.Id}" />
+                                            </div>
+                                        </td>
+                                        <td scope="row" style="width:95% !important">
+                                            <div class="slds-truncate" title="{!vendor.Name}">
+                                                {!vendor.Name}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </aura:iteration>
+                            </aura:set>
+                        </aura:if>
+                    </tbody>
+                </table>
+
             </div>
     
             <footer class="slds-modal__footer">
@@ -43,4 +83,4 @@
 
 
 
-</aura:component>	
+</aura:component>
