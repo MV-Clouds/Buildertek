@@ -6,7 +6,7 @@ public class QBBatchReqJSON {
     }
 
     // public void addBatchItem(String bId, Boolean trackQtyOnHand, String name, Decimal qtyOnHand,Decimal UnitPrice, String incomeAccountName, String incomeAccountValue, String assetAccountName, String assetAccountValue, String invStartDate, String expenseAccountName, String expenseAccountValue) {
-    public void addBatchItem(String bId, Boolean trackQtyOnHand, String name, Decimal qtyOnHand,Decimal UnitPrice, String incomeAccountName, String incomeAccountValue,  String invStartDate) {
+    public void addBatchItem(String bId, Boolean trackQtyOnHand, String name, Decimal qtyOnHand,Decimal UnitPrice, String incomeAccountName, String incomeAccountValue,  String invStartDate, Boolean taxable) {
         BatchItemRequest.add(new BatchItemRequest(
             bId,
             new Item(
@@ -16,7 +16,9 @@ public class QBBatchReqJSON {
                 UnitPrice,
                 new IncomeAccountRef(incomeAccountName, incomeAccountValue),
                 invStartDate,
-                'Service'
+                'Service',
+                taxable
+
             ),
             'create'
         ));
@@ -44,8 +46,9 @@ public class QBBatchReqJSON {
         public String InvStartDate;
         public String Type;
         public ExpenseAccountRef ExpenseAccountRef;
+        public boolean Taxable;
 
-        public Item(Boolean TrackQtyOnHand, String Name, Decimal QtyOnHand,Decimal UnitPrice, IncomeAccountRef IncomeAccountRef, String InvStartDate, String Type) {
+        public Item(Boolean TrackQtyOnHand, String Name, Decimal QtyOnHand,Decimal UnitPrice, IncomeAccountRef IncomeAccountRef, String InvStartDate, String Type, Boolean taxable) {
             this.TrackQtyOnHand = TrackQtyOnHand;
             this.Name = Name;
             this.QtyOnHand = QtyOnHand;
@@ -53,6 +56,7 @@ public class QBBatchReqJSON {
             this.IncomeAccountRef = IncomeAccountRef;
             this.InvStartDate = InvStartDate;
             this.Type = Type;
+            this.Taxable = taxable;
         }
     }
 
