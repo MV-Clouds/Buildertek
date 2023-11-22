@@ -24,5 +24,33 @@
         }
         component.set("v.ItervendorList", ItervendorList);
     },
+
+    goToVenderPage : function(component, event, helper){
+        component.set("v.selectedProduct", false);
+        component.set("v.selectedVendor", true);
+        component.set("v.disableBtnVen" , true);
+    },
+
+    goToProductModal: function(component, event, helper) {
+        helper.goToProdModalHelper(component, event, helper);
+    },
+
+    goToEditModal: function(component, event, helper){
+        helper.goToEditModalHelper(component,event,helper);
+    },
+
+    radioButtonAction: function(component, event, helper) {
+        var selected = event.getSource().get("v.text");
+        console.log('selected--->',selected);
+        component.set('v.vendorId',selected);
         
+        component.set("v.disableBtnVen" , false);
+    },
+    
+    backToProductModal: function(component, event, helper){
+        component.set("v.selectedVendor", false);
+        component.set("v.selectedProduct", true);
+        component.set("v.selectedEdit", false);
+        helper.goToProdModalHelper(component, event, helper);
+    }
 })
