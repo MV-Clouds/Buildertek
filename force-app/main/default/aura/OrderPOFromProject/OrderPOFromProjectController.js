@@ -916,8 +916,4 @@
 		component.set("v.disableOrder", disableBtn);
 
 	},
-	
-	
-
-
 })
