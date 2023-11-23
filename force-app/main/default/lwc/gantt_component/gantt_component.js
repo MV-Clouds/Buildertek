@@ -967,6 +967,15 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
                   items: this.phaseNameList,
                   name: "NewPhase",
                 },
+                newCustomField: {
+                  type: "Checkbox",
+                  weight: 200,
+                  label: "Manually Scheduled",
+                  // items: this.phaseNameList,
+                  value:false,
+                  name: "ManuallyScheduled",
+                },
+                manuallyScheduled:false,
               },
             },
             // Remove all tabs except the "General" tab

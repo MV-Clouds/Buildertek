@@ -60,6 +60,7 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
 
             }
             rowChilObj['phase'] = taskListForPhase[i].buildertek__Phase__c;
+            rowChilObj['manuallyScheduled'] = taskListForPhase[i].buildertek__Manually_Scheduled__c;
 
             //*comparing task finish date with today date and setting color accordingly
             let taskFinishDate = new Date(taskListForPhase[i].buildertek__Finish__c);
@@ -238,6 +239,7 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
                 rowChilObj["iconCls"] = "b-fa b-fa-arrow-left indentTrue"
             }
             rowChilObj['phase'] = taskListForPhase[i].buildertek__Phase__c
+            rowChilObj['manuallyScheduled'] = taskListForPhase[i].buildertek__Manually_Scheduled__c
 
             //*comparing task finish date with today date and setting color accordingly
             let taskFinishDate = new Date(taskListForPhase[i].buildertek__Finish__c);
@@ -384,6 +386,7 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
                 rowChilObj["iconCls"] = "b-fa b-fa-arrow-left indentTrue"
             }
             rowChilObj['phase'] = taskListForPhase[i].buildertek__Phase__c;
+            rowChilObj['manuallyScheduled'] = taskListForPhase[i].buildertek__Manually_Scheduled__c;
 
             //*comparing task finish date with today date and setting color accordingly
             let taskFinishDate = new Date(taskListForPhase[i].buildertek__Finish__c);
@@ -545,6 +548,7 @@ function convertJSONtoApexData(data, taskData, dependenciesData, resourceData) {
     const phasedatamap = new Map();
     const contractordatamap = new Map();
     const markAsDonemap = new Map();
+    const ManuallyScheduledMap = new Map();
 
     if (data) {
         data.forEach(element => {
@@ -557,6 +561,9 @@ function convertJSONtoApexData(data, taskData, dependenciesData, resourceData) {
             }
             if(element._data.hasOwnProperty('markAsDone')){
                 markAsDonemap.set(element.id, element._data.markAsDone);
+            }
+            if(element._data.hasOwnProperty('ManuallyScheduled')){
+                ManuallyScheduledMap.set(element.id, element._data.ManuallyScheduled);
             }
         });
         if (data.length > 0) {
@@ -665,6 +672,10 @@ function convertJSONtoApexData(data, taskData, dependenciesData, resourceData) {
 
                 if(markAsDonemap.has(updateData.Id)){
                     updateData['buildertek__Completed__c'] = markAsDonemap.get(updateData.Id);
+                }
+
+                if(ManuallyScheduledMap.has(updateData.Id)){
+                    updateData['buildertek__Manually_Scheduled__c'] = ManuallyScheduledMap.get(updateData.Id);
                 }
 
                 updateDataClone = Object.assign({}, updateData);
