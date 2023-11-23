@@ -32,10 +32,14 @@
     },
 
     goToProductModal: function(component, event, helper) {
+        component.set("v.selectedVendor", false);
+        component.set("v.selectedProduct", true);
         helper.goToProdModalHelper(component, event, helper);
     },
 
     goToEditModal: function(component, event, helper){
+        component.set("v.selectedProduct", false);
+        component.set("v.selectedEdit", true);
         helper.goToEditModalHelper(component,event,helper);
     },
 

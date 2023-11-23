@@ -145,10 +145,10 @@
                                 <th class="" scope="col" style="width:15% !important">
                                     <div class="slds-truncate" title="Product Code">Product Code</div>
                                 </th>
-                                <th class="" scope="col" style="width:5% !important">
+                                <th class="" scope="col" style="width:10% !important">
                                     <div class="slds-truncate" title="Unit Cost">Unit Cost</div>
                                 </th>
-                                <th class="" scope="col" style="width:5% !important">
+                                <th class="" scope="col" style="width:10% !important">
                                     <div class="slds-truncate" title="List Price">List Price</div>
                                 </th>
                             </tr>
@@ -186,12 +186,12 @@
                                             {!product.ProductCode}
                                         </div>
                                     </td>
-                                    <td data-label="Unit Cost" style="width:5% !important">
+                                    <td data-label="Unit Cost" style="width:10% !important">
                                         <div class="slds-truncate" title='{!product.UnitCost}' >
                                             <lightning:formattedNumber value="{!product.UnitCost}" style="currency"/>
                                         </div>
                                     </td>
-                                    <td data-label="List Price" style="width:5% !important">
+                                    <td data-label="List Price" style="width:10% !important">
                                         <div class="slds-truncate" title='{!product.UnitPrice}' >
                                             <lightning:formattedNumber value="{!product.UnitPrice}" style="currency"/>
                                         </div>

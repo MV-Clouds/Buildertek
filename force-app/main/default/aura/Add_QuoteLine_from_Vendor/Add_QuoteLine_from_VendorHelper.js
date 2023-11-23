@@ -13,9 +13,9 @@
         });
         $A.enqueueAction(action);
     },
+    
     goToProdModalHelper: function(component, event, helper) {
-        component.set("v.selectedVendor", false);
-        component.set("v.selectedProduct", true);
+        
         var vendorId = component.get('v.vendorId');
         console.log('vendorId--->',vendorId);
         var action = component.get("c.getProductsthroughVendor");
@@ -53,9 +53,9 @@
             });
             $A.enqueueAction(action);
     },
+
     goToEditModalHelper: function(component, event, helper){
-        component.set("v.selectedProduct", false);
-        component.set("v.selectedEdit", true);
+        
         
     },
 })
