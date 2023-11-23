@@ -20,7 +20,13 @@ public without sharing class BTStripeCheckoutController {
         }
         system.debug('');
         String name = BillValues.name;
+        system.debug(' Jaimin : BillValues.buildertek__Total_Amount_Tax__c---------'+BillValues.buildertek__Total_Amount_Tax__c);
         Decimal TotalAmt = integer.valueOf(BillValues.buildertek__Total_Amount_Tax__c);
+        system.debug('TotalAmt---------'+TotalAmt);
+        Decimal AmountTest = BillValues.buildertek__Total_Amount_Tax__c * 100;
+        system.debug('AmountTest---------'+AmountTest);
+        Decimal FinalAmount = integer.valueOf(AmountTest);
+        system.debug('FinalAmount---------'+FinalAmount);
         decimal Qt = 0;
         for(buildertek__Billable_Lines__c br : BillValues.buildertek__Billable_Lines__r ){
             Qt = Qt+(integer.valueOf(br.buildertek__Quantity__c));
@@ -69,7 +75,7 @@ public without sharing class BTStripeCheckoutController {
         JsonStr += '&cancel_url='+MSASiteUrl.buildertek__Site_URL__c;    // 'https://junorocketinc-developer-edition.na150.force.com';
         JsonStr += '&payment_method_types[0]=card';
         JsonStr += '&line_items[0][name]='+Name;
-        JsonStr += '&line_items[0][amount]='+(TotalAmt*100);
+        JsonStr += '&line_items[0][amount]='+(FinalAmount);
         JsonStr += '&line_items[0][currency]=usd';
         JsonStr += '&line_items[0][quantity]='+qty;
 
