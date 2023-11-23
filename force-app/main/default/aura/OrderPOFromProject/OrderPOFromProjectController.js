@@ -87,6 +87,12 @@
 			}
 		}
 		component.set("v.masterBudgetsList", Submittals);
+		if(selectedHeaderCheck==false){
+			component.set("v.isSelected", true);
+		}
+		else{
+			component.set("v.isSelected", false);
+		}
 
 		var pathIndex = checkbox.get("v.id").split('_'),
 			grpIndex = Number(pathIndex[1]),
@@ -94,7 +100,6 @@
 
 		var Submittals = component.get("v.masterBudgetsList");
 		if (Submittals != undefined) {
-
 			if (Submittals.length > 0) {
 				if (selectedHeaderCheck == true) {
 					if (Submittals[grpIndex]['poRecInner'][rowIndex]['poLinesWrapper']) {
@@ -131,10 +136,15 @@
 				if (!Array.isArray(getAllId)) {
 					if (selectedHeaderCheck == true) {
 						component.find("checkContractor").set("v.value", true);
+						component.set("v.isSelected", false)
 						component.set("v.selectedCount", 1);
+
 					} else {
 						component.find("checkContractor").set("v.value", false);
+						component.set("v.isSelected", true)
 						component.set("v.selectedCount", 0);
+
+
 					}
 				}
 				else {
@@ -142,6 +152,7 @@
 						for (var i = 0; i < getAllId.length; i++) {
 							component.find("checkContractor")[i].set("v.value", true);
 							component.find("checkContractor")[i].set("v.checked", true);
+
 						}
 						for (var i = 0; i < Submittals.length; i++) {
 							if (Submittals[i].poRecInner != undefined) {
@@ -162,11 +173,13 @@
 						for (let i = 0; i < checkPOLineClass.length; i++) {
 							checkPOLineClass[i].checked = true;
 						}
+						component.set("v.isSelected", false)
 					}
 					else {
 						for (var i = 0; i < getAllId.length; i++) {
 							component.find("checkContractor")[i].set("v.value", false);
 							component.find("checkContractor")[i].set("v.checked", false);
+
 						}
 						for (var i = 0; i < Submittals.length; i++) {
 							if (Submittals[i].poRecInner != undefined) {
@@ -187,6 +200,7 @@
 						for (let i = 0; i < checkPOLineClass.length; i++) {
 							checkPOLineClass[i].checked = false;
 						}
+						component.set("v.isSelected", true)
 					}
 				}
 			} else {
@@ -194,10 +208,18 @@
 				if (selectedHeaderCheck == true) {
 					component.find("checkContractor").set("v.value", true);
 					component.set("v.selectedCount", 1);
+					component.set("v.isSelected", false)
+
+
+
 					Submittals[i].poCheck = true;
 				} else {
 					component.find("checkContractor").set("v.value", false);
 					component.set("v.selectedCount", 0);
+					component.set("v.isSelected", true)
+
+
+
 					Submittals[i].poCheck = false;
 				}
 			}
@@ -520,10 +542,29 @@
 
 	},
 
+	disable: function(component, event, helper){
+		try{
+			console.log('Disable check');
+			// var second = component.find("checkContractor").get("v.checked");
+			// var third = component.find("checkPOLine").get("v.checked");
+			if(component.get("v.masterBudgetsList")==undefined){
+				component.set("v.isSelected", true);
+			}
+			else{
+				component.set("v.isSelected", false);
+			}
+		}catch (error) {
+			console.log('error--->', error);
+		}
+
+	},
+
 	
 	unSelect: function (component, event, helper) {
 		try {
 			console.log('test-->');
+			component.set("v.isSelected", true);
+
 	
 			var records = component.get("v.PaginationList");
 	
@@ -549,16 +590,14 @@
 			});
 	
 			// Update the 'records' attribute with the modified array
-			component.set('v.PaginationList', records);
+			component.set("v.PaginationList", records);
 	
 			// Uncheck checkboxes
-			uncheckCheckboxes(component.find("checkContractor"));
 			component.find("checkContractors").set("v.value",false);
+			uncheckCheckboxes(component.find("checkContractor"));
 			uncheckCheckboxes(component.find("checkPOLine"));
-	
 			// Reset the selectedCount to 0
 			component.set("v.selectedCount", 0);
-	
 			console.log('records1-->', records);
 		} catch (error) {
 			console.log('error--->', error);
