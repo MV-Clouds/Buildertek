@@ -5,6 +5,9 @@
 <aura:attribute name="Spinner" type="Boolean" default="false" />
 <aura:attribute name="MainvendorList" type="List" />
 <aura:attribute name="ItervendorList" type="List" />
+<aura:attribute name="quoteLineGroupOptions" type="List" />
+<aura:attribute name="selectedQuoteLineGroupId" type="Id" />
+<aura:attribute name="getPhase" type="String" />
 
 <aura:attribute name="selectedVendor" type="Boolean" default="true" />
 <aura:attribute name="selectedProduct" type="Boolean" default="false" />
@@ -15,7 +18,22 @@
 <aura:attribute name="vendorId" type="String" />
 <aura:attribute name="disableBtnVen" type="String" default="true"/>
 <aura:attribute name="disableBtnProd" type="String" default="true"/>
+
+<aura:attribute name="myTime" type="Date" />
+<aura:attribute name="prevInput" type="String" />
+<aura:attribute name="pbName" type="String" />
+<aura:attribute name="searchTimeout" type="Object" />
+
+<aura:attribute name="pNameDis" type="Boolean" default="false" />
+
+<aura:attribute name="sProductName" type="String" />
+<aura:attribute name="sProductFamily" type="String" />
 <aura:attribute name="productFamilyOptions" type="List" />
+<aura:attribute name="sPricebookFamily" type="String" />
+<aura:attribute name="pricebookFamilyOptions" type="List" />
+
+<aura:attribute name="selectedRecords" type="List" default="[]" />
+<aura:attribute name="selectedProducts" type="List" />
 
 <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
 
@@ -102,7 +120,17 @@
             
             <div class="slds-modal__content" id="modal-content-id-1" style="max-height: 70vh;">
                 <lightning:layout>
-                    <lightning:layoutItem padding="around-small" size="6">
+                    <lightning:layoutItem padding="around-small" size="4">
+                        <label class="slds-form-element__label slds-size_5-of-12" >Pricebook</label>
+                        <div >
+                            <ui:inputSelect aura:id="selectedPricebook" value="{!v.sPricebookFamily}" change="{!c.changePricebookFamily}" class="pricebook-class">
+                                <aura:iteration items="{!v.pricebookFamilyOptions}" var="option" >
+                                    <option value="{!option.value}" selected="{!option.value == v.sPricebookFamily}">{!option.key}</option>
+                                </aura:iteration>
+                            </ui:inputSelect>
+                        </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem padding="around-small" size="4">
                         <label class="slds-form-element__label slds-size_5-of-12" >Product Family</label>
                         <div >
                             <ui:inputSelect aura:id="selectedProductFamily" value="{!v.sProductFamily}" change="{!c.changeProductFamily}" class="pricebook-class">
@@ -112,10 +140,10 @@
                             </ui:inputSelect>
                         </div>
                     </lightning:layoutItem>
-                    <lightning:layoutItem padding="around-small" size="6">
+                    <lightning:layoutItem padding="around-small" size="4">
                         <label class="slds-form-element__label slds-size_5-of-12" >Product Name</label>
                         <div>
-                            <lightning:input type="search" label="Searh" variant="label-hidden" value="{!v.sProductName}" onchange="{!c.searchInDatatable}" placeholder="Search Product Name"/>
+                            <lightning:input type="search" label="Searh" variant="label-hidden" value="{!v.sProductName}" onchange="{!c.searchInDatatable}" placeholder="Search Product Name" disabled="{!v.pNameDis}"/>
                         </div>
                     </lightning:layoutItem>
                 </lightning:layout>
@@ -130,6 +158,9 @@
                                 <th class="slds-text-align_right slds-cell_action-mode" scope="col" style="width:5% !important">
                                     <!-- <lightning:input aura:id="selectAll" type="checkbox" name="checkAll" onchange="{!c.checkAllProduct}" /> -->
                                 </th>
+                                <th class="" scope="col" style="width:15% !important">
+                                    <div class="slds-truncate" title="Product Name">Pricebook</div>
+                                </th>
                                 <th class="" scope="col" style="width:25% !important">
                                     <div class="trncatediv" title="Product Name">Product Name</div>
                                 </th>
@@ -142,13 +173,13 @@
                                 <th class="" scope="col" style="width:10% !important">
                                     <div class="slds-truncate" title="Cost Code">Cost Code</div>
                                 </th>
-                                <th class="" scope="col" style="width:15% !important">
+                                <th class="" scope="col" style="width:10% !important">
                                     <div class="slds-truncate" title="Product Code">Product Code</div>
                                 </th>
-                                <th class="" scope="col" style="width:10% !important">
+                                <th class="" scope="col" style="width:5% !important">
                                     <div class="slds-truncate" title="Unit Cost">Unit Cost</div>
                                 </th>
-                                <th class="" scope="col" style="width:10% !important">
+                                <th class="" scope="col" style="width:5% !important">
                                     <div class="slds-truncate" title="List Price">List Price</div>
                                 </th>
                             </tr>
@@ -158,7 +189,12 @@
                                 <tr class="slds-hint-parent">
                                     <td class="slds-text-align_right slds-cell_action-mode" role="gridcell" style="width:5% !important">
                                         <div class="slds-checkbox">
-                                          <lightning:input type="checkbox" name="input1" checked="{!product.Selected}" id="{!product.Id}" onchange="{!c.checkboxChange}" />
+                                          <lightning:input type="checkbox" name="input1" checked="{!product.Selected}" id="{!product.PriceBookEntryId}" onchange="{!c.checkboxChange}" />
+                                        </div>
+                                    </td>
+                                    <td data-label="Pricebook Name" class="" style="width:15% !important">
+                                        <div class="trncatediv" title='{!product.PriceBookName}'>
+                                            {!product.PriceBookName}
                                         </div>
                                     </td>
                                     <td data-label="Product Name" class="" style="width:25% !important">
@@ -181,17 +217,17 @@
                                             {!product.CostCode}
                                         </div>
                                     </td>
-                                    <td data-label="Product Code" style="width:15% !important">                                        
+                                    <td data-label="Product Code" style="width:10% !important">                                        
                                         <div class="slds-truncate" title='{!product.ProductCode}'>
                                             {!product.ProductCode}
                                         </div>
                                     </td>
-                                    <td data-label="Unit Cost" style="width:10% !important">
+                                    <td data-label="Unit Cost" style="width:5% !important">
                                         <div class="slds-truncate" title='{!product.UnitCost}' >
                                             <lightning:formattedNumber value="{!product.UnitCost}" style="currency"/>
                                         </div>
                                     </td>
-                                    <td data-label="List Price" style="width:10% !important">
+                                    <td data-label="List Price" style="width:5% !important">
                                         <div class="slds-truncate" title='{!product.UnitPrice}' >
                                             <lightning:formattedNumber value="{!product.UnitPrice}" style="currency"/>
                                         </div>
@@ -265,7 +301,7 @@
                             <aura:iteration items="{!v.selectedProducts}" var="item" indexVar="recIndex">
                                 <tr title="Product">
                                     <td>
-                                        <span data-id="{!item.Id}"  onclick="{!c.removeQuoteLine}">
+                                        <span data-id="{!item.PriceBookEntryId}"  onclick="{!c.removeQuoteLine}">
                                             <lightning:icon iconName="utility:delete" size="xx-small" />   
                                         </span>                     
                                     </td>
