@@ -49,7 +49,7 @@ export default class GanttCSVExportComponent extends LightningElement {
             console.log('exportScheduleData');
             let temp = this.scheduleDataToExport;
             console.log('exportScheduleData', JSON.parse(JSON.stringify(temp)));
-            
+
             let getColumns = [
                 "Name",
                 "buildertek__Dependency__r.Name",
@@ -71,9 +71,11 @@ export default class GanttCSVExportComponent extends LightningElement {
                 "% Complete",
                 "Phase",
                 "Notes",
-                "Lag"
+                "Lag",
             ];
 
+            console.log('exportScheduleData', JSON.parse(JSON.stringify(this.scheduleDataToExport)));
+            debugger;
             const convertedObject = this.scheduleDataToExport.map((item) => {
                 const obj = {};
                 getColumns.forEach((column, index) => {
