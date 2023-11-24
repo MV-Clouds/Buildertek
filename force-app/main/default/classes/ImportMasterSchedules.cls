@@ -1,5 +1,5 @@
 public with sharing class ImportMasterSchedules{
-    /**/
+   
     @AuraEnabled
     public static object getMasterSchedule(String recordId){
         List<buildertek__Schedule__c> schedulesList;
@@ -273,8 +273,8 @@ public with sharing class ImportMasterSchedules{
             }
             return msg;
         } catch (Exception e){
-            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_for_Force_Site__c FROM buildertek__Exception_Log_Store_Option__c];
-            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_for_Force_Site__c == true){
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
                 BT_ExceptionHandler.Store_Exception(e);
             }
             msg.Status = 'Failed';
@@ -282,6 +282,119 @@ public with sharing class ImportMasterSchedules{
             System.debug('Error::' + e.getMessage() + ':Line:' + e.getLineNumber());
             return msg;
         }
+    }
+
+    public static Date getStartDate(Date startDate){
+        DateTime currDate = DateTime.newInstance(startDate.year(), startDate.month(), startDate.day());
+        String todayDay = currDate.format('EEEE');
+        if (todayDay == 'Saturday'){
+            startDate = startDate.addDays(2);
+        } else if (todayDay == 'Sunday'){
+            startDate = startDate.addDays(1);
+        }
+        return startDate;
+    }
+
+    @AuraEnabled
+    public static MessageClass createScheduleLineFromMasterSchedule (String recordId, String masterId){
+        MessageClass msg = new MessageClass();
+        Date initialStartDate = [SELECT Id, buildertek__Initial_Start_Date__c FROM buildertek__Schedule__c WHERE Id =: recordId].buildertek__Initial_Start_Date__c;
+        System.debug('initialStartDate: ' + initialStartDate);
+        buildertek__Schedule__c masterSchedule = [SELECT Id, Name, buildertek__Start_Date__c, buildertek__Initial_Start_Date__c FROM buildertek__Schedule__c WHERE Id =: masterId];
+        String businessHourId = [SELECT Id, IsDefault, IsActive FROM BusinessHours WHERE IsDefault = true LIMIT 1].Id;
+        System.debug('recordId: ' + recordId);
+        System.debug('masterId: ' + masterId);
+        date masterStartDate = masterSchedule.buildertek__Start_Date__c;
+        if (masterStartDate == null) {
+            masterStartDate = System.today();
+        }
+        initialStartDate = bryntumGanttController.getInitialStartDate(initialStartDate);
+        DateTime oldDate = DateTime.newInstance(masterStartDate.year(), masterStartDate.month(),masterStartDate.day());
+        DateTime newDate = DateTime.newInstance(initialStartDate.year(), initialStartDate.month(),initialStartDate.day());
+
+        // Integer diffDays = Integer.valueOf(System.BusinessHours.diff(businessHourId, oldDate, newDate)/(24 * 60 * 60 * 1000L));
+        Long diffDays = System.BusinessHours.diff(businessHourId, oldDate, newDate);
+
+        Map<Id, buildertek__Project_Task__c> projectInsertTaskMap = new Map<Id, buildertek__Project_Task__c>();
+
+        List<buildertek__Project_Task__c> masterScheduleList = new List<buildertek__Project_Task__c>([Select Id, Name, buildertek__Start__c,buildertek__Contractor__c,buildertek__Phase__c, buildertek__Schedule__c,buildertek__Dependency__r.Name, buildertek__Dependency__r.buildertek__Schedule__c, buildertek__Completed__c, buildertek__Completion__c, buildertek__Contractor_Resource__c, buildertek__Type__c,buildertek__Cost_Code__c, buildertek__Duration__c, buildertek__Finish__c, buildertek__Resource__c, buildertek__Lag__c, buildertek__Last_Saved_End_Date__c, buildertek__Last_Saved_Start_Date__c, buildertek__Material_Ordered__c, buildertek__Material_Received__c, buildertek__Milestone__c, buildertek__Notes__c, buildertek__Order__c, buildertek__Original_End_Date__c, buildertek__Original_Start_Date__c, buildertek__Payable_Task__c, buildertek__Project__c, buildertek__Purchase_Order__c, buildertek__Reason_for_Date_Change__c, buildertek__Reason_for_Date_Change_PL__c, buildertek__Required_Completion_Date__c, buildertek__Trade_Type__c, buildertek__BT_Grouping__c from buildertek__Project_Task__c where buildertek__Schedule__c = :masterId  ORDER BY buildertek__Order__c ASC NULLS LAST]);
+
+        System.debug('masterScheduleList: ' + masterScheduleList);
+
+        Map<String, String> predecessorMap = new Map<String, String>();
+
+        for (buildertek__Project_Task__c Masterscheduleitem : masterScheduleList){
+            if (!Masterscheduleitem.buildertek__Milestone__c){
+
+                if (Masterscheduleitem.buildertek__Dependency__c != null) {
+                    predecessorMap.put(Masterscheduleitem.Id, Masterscheduleitem.buildertek__Dependency__c);
+                }
+
+                buildertek__Project_Task__c newSchItem = new buildertek__Project_Task__c();
+                newSchItem.buildertek__Completion__c = Masterscheduleitem.buildertek__Completion__c;
+                newSchItem.buildertek__Contractor__c = Masterscheduleitem.buildertek__Contractor__c;
+                newSchItem.buildertek__Contractor_Resource__c = Masterscheduleitem.buildertek__Contractor_Resource__c;
+
+                if (Masterscheduleitem.buildertek__Duration__c != 0 && Masterscheduleitem.buildertek__Duration__c != null){
+                    newSchItem.buildertek__Duration__c = Masterscheduleitem.buildertek__Duration__c;
+                } else{
+                    newSchItem.buildertek__Duration__c = 1;
+                }
+
+                DateTime sDate = DateTime.newInstance(Masterscheduleitem.buildertek__Start__c.year(), Masterscheduleitem.buildertek__Start__c.month(),Masterscheduleitem.buildertek__Start__c.day());
+                DateTime eDate = DateTime.newInstance(Masterscheduleitem.buildertek__Finish__c.year(), Masterscheduleitem.buildertek__Finish__c.month(),Masterscheduleitem.buildertek__Finish__c.day());
+
+                newSchItem.buildertek__Start__c = System.BusinessHours.add(businessHourId, sDate, diffDays).date();
+                newSchItem.buildertek__Finish__c = System.BusinessHours.add(businessHourId, eDate, diffDays).date();
+
+                newSchItem.buildertek__Resource__c = Masterscheduleitem.buildertek__Resource__c;
+                newSchItem.buildertek__Lag__c = Masterscheduleitem.buildertek__Lag__c;
+                newSchItem.buildertek__Milestone__c = Masterscheduleitem.buildertek__Milestone__c;
+                newSchItem.buildertek__Notes__c = Masterscheduleitem.buildertek__Notes__c;
+                newSchItem.buildertek__Order__c = Masterscheduleitem.buildertek__Order__c;
+                newSchItem.buildertek__Original_Start_Date__c = Date.today();
+                newSchItem.buildertek__Original_End_Date__c = Date.today().adddays(Integer.valueOf(Masterscheduleitem.buildertek__Duration__c));
+                newSchItem.buildertek__Phase__c = Masterscheduleitem.buildertek__Phase__c;
+                newSchItem.buildertek__Type__c = Masterscheduleitem.buildertek__Type__c;
+                newSchItem.buildertek__Purchase_Order__c = Masterscheduleitem.buildertek__Purchase_Order__c;
+                newSchItem.buildertek__Reason_for_Date_Change__c = Masterscheduleitem.buildertek__Reason_for_Date_Change__c;
+                newSchItem.buildertek__Reason_for_Date_Change_PL__c = Masterscheduleitem.buildertek__Reason_for_Date_Change_PL__c;
+                newSchItem.buildertek__Required_Completion_Date__c = Masterscheduleitem.buildertek__Required_Completion_Date__c;
+                newSchItem.buildertek__Schedule__c = recordId;
+                newSchItem.buildertek__Reference_for_Import__c = Masterscheduleitem.Id;
+                newSchItem.buildertek__Cost_Code__c = Masterscheduleitem.buildertek__Cost_Code__c;
+                newSchItem.buildertek__Trade_Type__c = Masterscheduleitem.buildertek__Trade_Type__c;
+                newSchItem.buildertek__BT_Grouping__c = Masterscheduleitem.buildertek__BT_Grouping__c;
+
+                newSchItem.Name = Masterscheduleitem.Name;
+                buildertek__Project_Task__c newSchItemClone = newSchItem.Clone(false, true);
+                projectInsertTaskMap.put(Masterscheduleitem.Id, newSchItemClone);
+
+            }
+        }
+        System.debug('projectInsertTaskMap: ' + projectInsertTaskMap);
+        ProjectTaskTriggerHandler.blnSkipTaskTrigger = true;
+        if(projectInsertTaskMap.size() > 0){
+            insert projectInsertTaskMap.values();
+            msg.Status = 'Success';
+            msg.Message = 'Schedule Lines Imported Successfully';
+        } else{
+            msg.Status = 'Failed';
+            msg.Message = 'There are no schedule lines for the selected schedule.';
+        }
+        ProjectTaskTriggerHandler.blnSkipTaskTrigger = false;
+
+        for (String key : predecessorMap.keySet()) {
+            projectInsertTaskMap.get(key).buildertek__Dependency__c = projectInsertTaskMap.get(predecessorMap.get(key)).Id;
+        }
+
+        ProjectTaskTriggerHandler.blnSkipTaskTrigger = true;
+        update projectInsertTaskMap.values();
+        ProjectTaskTriggerHandler.blnSkipTaskTrigger = false;
+
+        futureContoller.updateScheduleRec(recordId);
+        futureContoller.updateProjectOnSchedule(recordId);
+        return msg;
     }
 
     public class MasterScheduleClass{
@@ -300,17 +413,6 @@ public with sharing class ImportMasterSchedules{
         @AuraEnabled
         public string Message{ get; set; }
 
-    }
-
-    public static Date getStartDate(Date startDate){
-        DateTime currDate = DateTime.newInstance(startDate.year(), startDate.month(), startDate.day());
-        String todayDay = currDate.format('EEEE');
-        if (todayDay == 'Saturday'){
-            startDate = startDate.addDays(2);
-        } else if (todayDay == 'Sunday'){
-            startDate = startDate.addDays(1);
-        }
-        return startDate;
     }
 
 }

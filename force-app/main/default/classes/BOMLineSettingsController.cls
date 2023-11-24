@@ -254,7 +254,12 @@ public class BOMLineSettingsController {
             upsert settingsrec;
             msg = 'saved';
         }catch(Exception e){
-            system.debug('exception '+e.getMessage()); 
+            system.debug('exception '+e.getMessage());
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
+            return null;
         }
         
         return msg;
