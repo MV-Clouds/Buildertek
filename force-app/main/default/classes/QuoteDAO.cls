@@ -2781,13 +2781,13 @@ public with sharing class QuoteDAO{
             }
             String priceBName;
             String searchKey = String.join(searchKeyParts, ' AND ');
-            if(pbName == ''){
+            if(pbName == '' || pbName == null){
                 priceBName = '';
             } else{
-                priceBName = 'AND Pricebook2.Name =: '+ pbName;
+                priceBName = 'AND Pricebook2.Name =: pbName';
             }
 
-            String sQuery = 'SELECT Id, Product2Id, Product2.buildertek__Quote_Group__c, Product2.Name, Product2.ProductCode,Product2.buildertek__Vendor__r.Name,Product2.buildertek__Cost_Code__r.Name, Product2.Description, toLabel(Product2.Family), Product2.IsActive, buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Discount__c, Pricebook2.Name, UnitPrice, Product2.QuantityUnitOfMeasure FROM PricebookEntry WHERE Product2.buildertek__Vendor__r.Id=:venId ' + priceBName + 'AND IsActive = True AND (' + searchKeyParts + ') ORDER BY Product2.Family ASC NULLS LAST, Product2.Name ASC NULLS LAST LIMIT 1000';
+            String sQuery = 'SELECT Id, Product2Id, Product2.buildertek__Quote_Group__c, Product2.Name, Product2.ProductCode,Product2.buildertek__Vendor__r.Name,Product2.buildertek__Cost_Code__r.Name, Product2.Description, toLabel(Product2.Family), Product2.IsActive, buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Discount__c, Pricebook2.Name, UnitPrice, Product2.QuantityUnitOfMeasure FROM PricebookEntry WHERE Product2.buildertek__Vendor__r.Id=:venId ' + priceBName + ' AND IsActive = True AND (' + searchKeyParts + ') ORDER BY Product2.Family ASC NULLS LAST, Product2.Name ASC NULLS LAST LIMIT 1000';
             System.debug(sQuery);
             List<PriceBookEntry> pEntries = Database.query(sQuery);
             System.debug(pEntries);

@@ -22,6 +22,7 @@
 <aura:attribute name="myTime" type="Date" />
 <aura:attribute name="prevInput" type="String" />
 <aura:attribute name="pbName" type="String" />
+<aura:attribute name="pfName" type="String" />
 <aura:attribute name="searchTimeout" type="Object" />
 
 <aura:attribute name="pNameDis" type="Boolean" default="false" />
@@ -143,7 +144,7 @@
                     <lightning:layoutItem padding="around-small" size="4">
                         <label class="slds-form-element__label slds-size_5-of-12" >Product Name</label>
                         <div>
-                            <lightning:input type="search" label="Searh" variant="label-hidden" value="{!v.sProductName}" onchange="{!c.searchInDatatable}" placeholder="Search Product Name" disabled="{!v.pNameDis}"/>
+                            <lightning:input type="search" label="Searh" variant="label-hidden" value="{!v.sProductName}" onchange="{!c.filterProdctsRecords}" placeholder="Search Product Name" disabled="{!v.pNameDis}"/>
                         </div>
                     </lightning:layoutItem>
                 </lightning:layout>

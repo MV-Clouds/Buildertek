@@ -109,6 +109,7 @@
         component.set('v.Spinner', true);
         let vendorId = component.get("v.vendorId");
         let pbName = component.get("v.pbName");
+        console.log('pbNAme :: ' + pbName);
         let sProductName = component.get("v.sProductName");
         var action = component.get("c.getProductsFilterByName");
         action.setParams({
@@ -142,10 +143,10 @@
                 
                 // component.set("v.quoteLineList", rows);
                 component.set("v.tableDataList", rows);
+                component.set('v.Spinner', false);
             }
         });
         $A.enqueueAction(action);
-        component.set('v.Spinner', false);
     },
 
     goToEditModalHelper: function(component, event, helper) {

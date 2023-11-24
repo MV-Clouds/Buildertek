@@ -31,6 +31,9 @@
         component.set("v.disableBtnVen" , true);
         var tempArr = [];
         component.set("v.selectedRecords", tempArr);
+        component.set("v.sPricebookFamily" , '');
+        component.set("v.sProductFamily", '');
+        component.set("v.sProductName",'');
     },
 
     goToProductModal: function(component, event, helper) {
@@ -44,6 +47,8 @@
         var prevInput = component.get('v.prevInput');
         var searchTimeout = component.get('v.searchTimeout');
         
+        console.log('input :: ' + inputElement);
+        console.log('prev input :: ' + prevInput);
         clearTimeout(searchTimeout);
 
         // if (inputElement.trim() !== '') {
@@ -200,7 +205,7 @@
             for (i = 0; i < listOfAllRecords.length; i++) {
                 if (
                     listOfAllRecords[i].PriceBookName &&
-                    listOfAllRecords[i].PriceBookName.indexOf(searchPriceBookFilter) != -1
+                    listOfAllRecords[i].PriceBookName.toLowerCase().includes(searchPriceBookFilter.toLowerCase())
                 ) {
                     tempArray.push(listOfAllRecords[i]);
                 }
@@ -217,6 +222,7 @@
         console.log('searchProductFamilyFilter--->',searchProductFamilyFilter);
         var searchPriceBookFilter = component.find("selectedPricebook").get("v.value");
         console.log('searchPriceBookFilter--->',searchPriceBookFilter);
+        component.set("v.sProductName", '');
         var tempArray = [];
         var i;
     
@@ -225,7 +231,7 @@
             for (i = 0; i < listOfAllRecords.length; i++) {
                 if (
                     listOfAllRecords[i].Family &&
-                    listOfAllRecords[i].Family.indexOf(searchProductFamilyFilter) != -1
+                    listOfAllRecords[i].Family.toLowerCase().includes(searchProductFamilyFilter.toLowerCase())
                 ) {
                     tempArray.push(listOfAllRecords[i]);
                 }
@@ -236,7 +242,7 @@
             for (i = 0; i < listOfAllRecords.length; i++) {
                 if (
                     listOfAllRecords[i].PriceBookName &&
-                    listOfAllRecords[i].PriceBookName.indexOf(searchPriceBookFilter) != -1
+                    listOfAllRecords[i].PriceBookName.toLowerCase().includes(searchPriceBookFilter.toLowerCase())
                 ) {
                     tempArray.push(listOfAllRecords[i]);
                 }
@@ -247,9 +253,9 @@
             for (i = 0; i < listOfAllRecords.length; i++) {
                 if (
                     listOfAllRecords[i].PriceBookName &&
-                    listOfAllRecords[i].PriceBookName.indexOf(searchPriceBookFilter) != -1 &&
+                    listOfAllRecords[i].PriceBookName.toLowerCase().includes(searchPriceBookFilter.toLowerCase()) &&
                     listOfAllRecords[i].Family &&
-                    listOfAllRecords[i].Family.indexOf(searchProductFamilyFilter) != -1
+                    listOfAllRecords[i].Family.toLowerCase().includes(searchProductFamilyFilter.toLowerCase())
                 ) {
                     tempArray.push(listOfAllRecords[i]);
                 }
@@ -257,6 +263,74 @@
             component.set("v.tableDataList", tempArray);
         } else {
             console.log('in4');
+            component.set("v.tableDataList", listOfAllRecords);
+        }
+    },
+
+    filterProdctsRecords : function(component,event,helper){
+        var listOfAllRecords = component.get('v.quoteLineList');
+        var searchProductFamilyFilter = component.find("selectedProductFamily").get("v.value");
+        console.log('searchProductFamilyFilter--->',searchProductFamilyFilter);
+        var searchPriceBookFilter = component.find("selectedPricebook").get("v.value");
+        console.log('searchPriceBookFilter--->',searchPriceBookFilter);
+        var searchProdNameFilter = component.get("v.sProductName");
+        var tempArray = [];
+        var i;
+    
+        if ((searchProductFamilyFilter == '' || searchProductFamilyFilter == undefined) && (searchPriceBookFilter == '' || searchPriceBookFilter == undefined)){
+            console.log('in1');
+            for (i = 0; i < listOfAllRecords.length; i++) {
+                if (
+                    listOfAllRecords[i].Name &&
+                    listOfAllRecords[i].Name.toLowerCase().includes(searchProdNameFilter.toLowerCase())
+                ) {
+                    tempArray.push(listOfAllRecords[i]);
+                }
+            }
+            component.set("v.tableDataList", tempArray);
+        } else if (searchProductFamilyFilter != '' && (searchPriceBookFilter == undefined || searchPriceBookFilter == '')) {
+            console.log('in2');
+            for (i = 0; i < listOfAllRecords.length; i++) {
+                if (
+                    listOfAllRecords[i].Family &&
+                    listOfAllRecords[i].Family.indexOf(searchProductFamilyFilter) != -1 &&
+                    listOfAllRecords[i].Name &&
+                    listOfAllRecords[i].Name.toLowerCase().includes(searchProdNameFilter.toLowerCase())
+                ) {
+                    tempArray.push(listOfAllRecords[i]);
+                }
+            }
+            component.set("v.tableDataList", tempArray);
+        } else if (searchPriceBookFilter != '' && (searchProductFamilyFilter == undefined || searchProductFamilyFilter == '')) {
+            console.log('in3');
+            for (i = 0; i < listOfAllRecords.length; i++) {
+                if (
+                    listOfAllRecords[i].PriceBookName &&
+                    listOfAllRecords[i].PriceBookName.indexOf(searchPriceBookFilter) != -1 &&
+                    listOfAllRecords[i].Name &&
+                    listOfAllRecords[i].Name.toLowerCase().includes(searchProdNameFilter.toLowerCase())
+                ) {
+                    tempArray.push(listOfAllRecords[i]);
+                }
+            }
+            component.set("v.tableDataList", tempArray);
+        } else if (searchProductFamilyFilter != '' && searchPriceBookFilter != ''){
+            console.log('in4');
+            for (i = 0; i < listOfAllRecords.length; i++) {
+                if (
+                    listOfAllRecords[i].PriceBookName &&
+                    listOfAllRecords[i].PriceBookName.indexOf(searchPriceBookFilter) != -1 &&
+                    listOfAllRecords[i].Family &&
+                    listOfAllRecords[i].Family.indexOf(searchProductFamilyFilter) != -1 &&
+                    listOfAllRecords[i].Name &&
+                    listOfAllRecords[i].Name.toLowerCase().includes(searchProdNameFilter.toLowerCase())
+                ) {
+                    tempArray.push(listOfAllRecords[i]);
+                }
+            }
+            component.set("v.tableDataList", tempArray);
+        } else {
+            console.log('in5');
             component.set("v.tableDataList", listOfAllRecords);
         }
     },
