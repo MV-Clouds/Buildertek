@@ -49,7 +49,7 @@ export default class GanttCSVExportComponent extends LightningElement {
             console.log('exportScheduleData');
             let temp = this.scheduleDataToExport;
             console.log('exportScheduleData', JSON.parse(JSON.stringify(temp)));
-            
+
             let getColumns = [
                 "Name",
                 "buildertek__Dependency__r.Name",
@@ -60,6 +60,9 @@ export default class GanttCSVExportComponent extends LightningElement {
                 "buildertek__Phase__c",
                 "buildertek__Notes__c",
                 "buildertek__Lag__c",
+                "buildertek__BT_Grouping__r.Name",
+                "buildertek__Cost_Code__r.Name",
+                "buildertek__Trade_Type__r.Name"
             ];
 
             let object = [
@@ -71,9 +74,41 @@ export default class GanttCSVExportComponent extends LightningElement {
                 "% Complete",
                 "Phase",
                 "Notes",
-                "Lag"
+                "Lag",
+                "Grouping",
+                "Cost Code",
+                "Trade Type"
             ];
 
+            this.scheduleDataToExport = this.scheduleDataToExport
+                .filter((item) => item.buildertek__Type__c !== "Milestone")
+                .map((item) => {
+                    const newItem = { ...item };
+                    if (
+                        newItem.hasOwnProperty("buildertek__Start__c") &&
+                        newItem.hasOwnProperty("buildertek__Finish__c") &&
+                        Object.getOwnPropertyDescriptor(newItem, "buildertek__Start__c").writable &&
+                        Object.getOwnPropertyDescriptor(newItem, "buildertek__Finish__c").writable
+                    ) {
+                        const startDate = new Date(newItem.buildertek__Start__c);
+                        const finishDate = new Date(newItem.buildertek__Finish__c);
+
+                        if (!isNaN(startDate.getTime()) && !isNaN(finishDate.getTime())) {
+                            newItem.buildertek__Start__c = startDate.toLocaleDateString('en-US');
+                            newItem.buildertek__Finish__c = finishDate.toLocaleDateString('en-US');
+                        } else {
+                            console.error("Invalid date format after parsing");
+                        }
+                    } else {
+                        console.error("One or both properties are not writable or do not exist");
+                    }
+
+                    return newItem;
+                });
+
+
+            console.log('exportScheduleData', JSON.parse(JSON.stringify(this.scheduleDataToExport)));
+            debugger;
             const convertedObject = this.scheduleDataToExport.map((item) => {
                 const obj = {};
                 getColumns.forEach((column, index) => {
@@ -87,6 +122,21 @@ export default class GanttCSVExportComponent extends LightningElement {
                             item.buildertek__Dependency__r.Name;
                     } else {
                         obj["Dependency"] = null;
+                    }
+                    if (item.hasOwnProperty("buildertek__BT_Grouping__c")) {
+                        obj["Grouping"] = item.buildertek__BT_Grouping__r.Name;
+                    } else {
+                        obj["Grouping"] = null;
+                    }
+                    if (item.hasOwnProperty("buildertek__Cost_Code__c")) {
+                        obj["Cost Code"] = item.buildertek__Cost_Code__r.Name;
+                    } else {
+                        obj["Cost Code"] = null;
+                    }
+                    if (item.hasOwnProperty("buildertek__Trade_Type__c")) {
+                        obj["Trade Type"] = item.buildertek__Trade_Type__r.Name;
+                    } else {
+                        obj["Trade Type"] = null;
                     }
                 });
                 return obj;
