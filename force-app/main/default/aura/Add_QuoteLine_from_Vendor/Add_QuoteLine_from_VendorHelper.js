@@ -1,51 +1,49 @@
 ({
     getVendors : function(component, event, helper) {
-        component.set("v.Spinner", true);
-        console.log('getVendors');
-        var action = component.get("c.getVendors");
-        action.setCallback(this, function(response) {
-            var state = response.getState();
-            if (state === "SUCCESS") {
-                var vendors = response.getReturnValue();
-                console.log('vendors: ', vendors);
-                component.set("v.MainvendorList", vendors);
-                component.set("v.ItervendorList", vendors);
-                component.set("v.Spinner", false);
-            }
-        });
-        $A.enqueueAction(action);
+        try {
+            component.set("v.Spinner", true);
+            console.log('getVendors');
 
-        //create a action tgetQuoteLineGroups and set callback without parameters
-        var action1 = component.get("c.getQuoteLineGroups");
-        action1.setCallback(this, function(response){
-            var result = response.getReturnValue();
-            var quoteLineGroupOptions = [];
-            var selectedProducts = [];
+            var action = component.get("c.getVendors");
+            action.setCallback(this, function(response) {
+                var state = response.getState();
+                if (state === "SUCCESS") {
+                    var vendors = response.getReturnValue();
+                    console.log('vendors: ', vendors);
+                    component.set("v.MainvendorList", vendors);
+                    component.set("v.ItervendorList", vendors);
+                    component.set("v.Spinner", false);
+                }
+            });
+            $A.enqueueAction(action);
 
-
-            // var phaseValue= component.get('v.getPhase');
-            // if(phaseValue != undefined){
-
-            // }else{
+            //create a action tgetQuoteLineGroups and set callback without parameters
+            var action1 = component.get("c.getQuoteLineGroups");
+            action1.setCallback(this, function(response){
+                var result = response.getReturnValue();
+                var quoteLineGroupOptions = [];
                 result.forEach(element => {
                     quoteLineGroupOptions.push({ key: element.Name, value: element.Id });
                 });
-
-            // }
-            
-            component.set("v.quoteLineGroupOptions", quoteLineGroupOptions);
-            // console.log({quoteLineGroupOptions});
-            component.set("v.selectedQuoteLineGroupId", '');
-        });  
-        $A.enqueueAction(action1);
+                
+                component.set("v.quoteLineGroupOptions", quoteLineGroupOptions);
+                component.set("v.selectedQuoteLineGroupId", '');
+            });  
+            $A.enqueueAction(action1);
+        } catch (error) {
+            component.set("v.Spinner", false);
+            console.log('error in getVendors helper :: ' + error);
+        }
     },
 
     goToProdModalHelper: function(component, event, helper) {
-        component.set("v.Spinner", true);
-        var vendorId = component.get('v.vendorId');
-        console.log('vendorId--->',vendorId);
-        component.set("v.vendorId" , vendorId);
-        var action = component.get("c.getProductsthroughVendor");
+        try {
+            component.set("v.Spinner", true);
+            var vendorId = component.get('v.vendorId');
+            console.log('vendorId--->',vendorId);
+            component.set("v.vendorId" , vendorId);
+
+            var action = component.get("c.getProductsthroughVendor");
             action.setParams({
                 "vendorId": vendorId 
             });
@@ -102,56 +100,14 @@
                 }
             });
             $A.enqueueAction(action);
-    },
-
-    searchDatatableHelper : function(component, event, helper){
-        console.log('searchDatatableHelper method is called------');
-        component.set('v.Spinner', true);
-        let vendorId = component.get("v.vendorId");
-        let pbName = component.get("v.pbName");
-        console.log('pbNAme :: ' + pbName);
-        let sProductName = component.get("v.sProductName");
-        var action = component.get("c.getProductsFilterByName");
-        action.setParams({
-            "venId": vendorId ,
-            "pbName": pbName ,
-            "pName": sProductName
-        });
-        action.setCallback(this, function(response) {
-            var rows = response.getReturnValue();
-            if (response.getState() == "SUCCESS" && rows != null) {
-                console.log('quoteLineList ==> ',{rows});
-                var selectedRecords = component.get("v.selectedRecords");
-                rows.forEach(function(row) {
-                    var matchingRecord = selectedRecords.find(function(record) {
-                        return record.Id === row.Id;
-                    });
-                    if (matchingRecord) {
-                        row.Selected = true;
-                    }
-                });
-                
-                // Sort the records with selected ones on top
-                rows.sort(function(a, b) {
-                    if (a.Selected && !b.Selected) {
-                        return -1; // a comes before b
-                    } else if (!a.Selected && b.Selected) {
-                        return 1; // b comes before a
-                    }
-                    return 0; // no change in order
-                }); 
-                
-                // component.set("v.quoteLineList", rows);
-                component.set("v.tableDataList", rows);
-                component.set('v.Spinner', false);
-            }
-        });
-        $A.enqueueAction(action);
+        } catch (error) {
+            component.set("v.Spinner", false);
+            console.log('error in goToProdModalHelper ' + error);
+        }
     },
 
     goToEditModalHelper: function(component, event, helper) {
         try {
-            
             console.log("in goToEditModalHelper");
             
             var quoteLineList = component.get("v.selectedRecords");
@@ -169,28 +125,26 @@
             });
 
             quoteLineList.forEach(element => {
-                // if(element.Selected){
-                    console.log("ELEMENT----->" , {element});
-                    selectedProducts.push({
-                        'PriceBookEntryId':element.PriceBookEntryId,
-                        'Id':element.Id,
-                        'Name': element.Name,
-                        'buildertek__Unit_Price__c': element.UnitPrice,
-                        'buildertek__Cost_Code__c': element.CostCode,
-                        'buildertek__Grouping__c': element.Phase ? element.Phase : noGroupingId,
-                        'buildertek__Quantity__c': '1',
-                        'buildertek__Additional_Discount__c': element.Discount ? element.Discount : 0,
-                        'buildertek__Unit_Cost__c': element.UnitCost ? element.UnitCost : element.UnitPrice,
-                        'buildertek__Markup__c': element.MarkUp ? element.MarkUp : 0,
-                        'buildertek__Product__c': element.Id,
-                        'buildertek__Size__c': element.Size,
-                        'buildertek__Description__c': element.Description ? element.Description : element.Name,
-                        'buildertek__Product_Family__c': element.Family ? element.Family : 'No Grouping',
-                        'buildertek__UOM__c': element.QuantityUnitOfMeasure   
-                    })
-                    console.log('Quantity Unit Of Measure => ', element.QuantityUnitOfMeasure);
-                    console.log('Quantity Unit Of Measure New => ', element.CostCode);
-                // }            
+                console.log("ELEMENT----->" , {element});
+                selectedProducts.push({
+                    'PriceBookEntryId':element.PriceBookEntryId,
+                    'Id':element.Id,
+                    'Name': element.Name,
+                    'buildertek__Unit_Price__c': element.UnitPrice,
+                    'buildertek__Cost_Code__c': element.CostCode,
+                    'buildertek__Grouping__c': element.Phase ? element.Phase : noGroupingId,
+                    'buildertek__Quantity__c': '1',
+                    'buildertek__Additional_Discount__c': element.Discount ? element.Discount : 0,
+                    'buildertek__Unit_Cost__c': element.UnitCost ? element.UnitCost : element.UnitPrice,
+                    'buildertek__Markup__c': element.MarkUp ? element.MarkUp : 0,
+                    'buildertek__Product__c': element.Id,
+                    'buildertek__Size__c': element.Size,
+                    'buildertek__Description__c': element.Description ? element.Description : element.Name,
+                    'buildertek__Product_Family__c': element.Family ? element.Family : 'No Grouping',
+                    'buildertek__UOM__c': element.QuantityUnitOfMeasure   
+                })
+                console.log('Quantity Unit Of Measure => ', element.QuantityUnitOfMeasure);
+                console.log('Quantity Unit Of Measure New => ', element.CostCode);           
             });
             console.log('selectedProducts => ',{selectedProducts});
             component.set("v.selectedProducts", selectedProducts);
@@ -217,68 +171,73 @@
 
     // save button
     saveQuoteLine : function(component, event, helper){
-        component.set("v.Spinner", true);
-        console.log('saveQuoteLine');
-        var listQlines = component.get("v.selectedProducts");
-        var flag=false;
-        listQlines.forEach(function(elem){
-            console.log({elem});
-            console.log(elem.buildertek__Description__c);
-            if(elem.buildertek__Description__c == '' || elem.buildertek__Description__c== undefined){
-                flag=true;
-            }
-        });
- 
-        console.log({flag});
-        if(listQlines.length > 0 && flag== false){
-            var action10 = component.get("c.QuoteLinesInsert");
-            action10.setParams({
-                "Quotelines": listQlines,
-                "QuoteId": component.get("v.quoteId")
+        try {
+            component.set("v.Spinner", true);
+            console.log('saveQuoteLine');
+            var listQlines = component.get("v.selectedProducts");
+            var flag=false;
+            listQlines.forEach(function(elem){
+                console.log({elem});
+                console.log(elem.buildertek__Description__c);
+                if(elem.buildertek__Description__c == '' || elem.buildertek__Description__c== undefined){
+                    flag=true;
+                }
             });
+    
+            console.log({flag});
+            if(listQlines.length > 0 && flag== false){
+                var action10 = component.get("c.QuoteLinesInsert");
+                action10.setParams({
+                    "Quotelines": listQlines,
+                    "QuoteId": component.get("v.quoteId")
+                });
 
-            action10.setCallback(this, function(response) {
-                console.log(response.getReturnValue());
-                component.set("v.openQuoteLineBox", false);
-                $A.get("e.force:refreshView").fire();
+                action10.setCallback(this, function(response) {
+                    console.log(response.getReturnValue());
+                    component.set("v.openQuoteLineBox", false);
+                    $A.get("e.force:refreshView").fire();
+                    component.set("v.Spinner", false);
+                    component.set("v.openProductBoxwithVendor", false);        
+                    var toastEvent = $A.get("e.force:showToast");
+                    toastEvent.setParams({
+                        title: 'Success',
+                        message: 'Quote Lines are created successfully',
+                        duration: ' 5000',
+                        key: 'info_alt',
+                        type: 'success',
+                        mode: 'pester'
+                    });
+                    toastEvent.fire();
+                });
+                $A.enqueueAction(action10);
+            } else if(flag) {
                 component.set("v.Spinner", false);
-                component.set("v.openProductBoxwithVendor", false);        
+                var toastEvent = $A.get("e.force:showToast");
+                    toastEvent.setParams({
+                        title: 'Error',
+                        message: 'Please select Description.',
+                        duration: ' 5000',
+                        key: 'info_alt',
+                        type: 'error',
+                        mode: 'pester'
+                    });
+                    toastEvent.fire();
+            } else {
+                component.set("v.Spinner", false);
                 var toastEvent = $A.get("e.force:showToast");
                 toastEvent.setParams({
-                    title: 'Success',
-                    message: 'Quote Lines are created successfully',
-                    duration: ' 5000',
-                    key: 'info_alt',
-                    type: 'success',
-                    mode: 'pester'
-                });
-                toastEvent.fire();
-            });
-            $A.enqueueAction(action10);
-        } else if(flag) {
-            component.set("v.Spinner", false);
-            var toastEvent = $A.get("e.force:showToast");
-                toastEvent.setParams({
                     title: 'Error',
-                    message: 'Please select Description.',
+                    message: 'Please select at least one Product.',
                     duration: ' 5000',
                     key: 'info_alt',
                     type: 'error',
                     mode: 'pester'
                 });
                 toastEvent.fire();
-        } else {
+            }
+        } catch (error) {
             component.set("v.Spinner", false);
-            var toastEvent = $A.get("e.force:showToast");
-            toastEvent.setParams({
-                title: 'Error',
-                message: 'Please select at least one Product.',
-                duration: ' 5000',
-                key: 'info_alt',
-                type: 'error',
-                mode: 'pester'
-            });
-            toastEvent.fire();
+            console.log('error in saveQuoteLine :: ' + error);
         }
     }
 })
