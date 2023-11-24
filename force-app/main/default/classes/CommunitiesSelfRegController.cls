@@ -49,6 +49,10 @@ public class CommunitiesSelfRegController {
         try {
             userId = Site.createExternalUser(u, accountId, password);
         } catch(Site.ExternalUserCreateException ex) {
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_for_Force_Site__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_for_Force_Site__c == true){
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
             List<String> errors = ex.getDisplayMessages();
             for (String error : errors)  {
                 ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, error));

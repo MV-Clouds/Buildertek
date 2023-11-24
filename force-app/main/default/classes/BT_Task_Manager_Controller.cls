@@ -106,6 +106,10 @@ global with sharing class BT_Task_Manager_Controller{
                              from schedule__c
                              where Id = :scheduleId]);
             } catch (exception e){
+                List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_for_Force_Site__c FROM buildertek__Exception_Log_Store_Option__c];
+                if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_for_Force_Site__c == true){
+                    BT_ExceptionHandler.Store_Exception(e);
+                }
                 System.debug('Error' + e.getMessage()+'::' + e.getLineNumber());
             }
         }
@@ -139,6 +143,10 @@ global with sharing class BT_Task_Manager_Controller{
                              from schedule__c
                              where Id = :scheduleId].Project__c;
             } catch (exception e){
+                List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_for_Force_Site__c FROM buildertek__Exception_Log_Store_Option__c];
+                if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_for_Force_Site__c == true){
+                    BT_ExceptionHandler.Store_Exception(e);
+                }
                 System.debug('Error' + e.getMessage()+'::' + e.getLineNumber());
             }
         }
@@ -174,6 +182,10 @@ global with sharing class BT_Task_Manager_Controller{
                              from schedule__c
                              where Id = :scheduleId].Project__c;
             } catch (exception e){
+                List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_for_Force_Site__c FROM buildertek__Exception_Log_Store_Option__c];
+                if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_for_Force_Site__c == true){
+                    BT_ExceptionHandler.Store_Exception(e);
+                }
                 System.debug('Error' + e.getMessage()+'::' + e.getLineNumber());
             }
         }
@@ -199,6 +211,10 @@ global with sharing class BT_Task_Manager_Controller{
                              from schedule__c
                              where Id = :scheduleId].Project__c;
             } catch (exception e){
+                List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_for_Force_Site__c FROM buildertek__Exception_Log_Store_Option__c];
+                if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_for_Force_Site__c == true){
+                    BT_ExceptionHandler.Store_Exception(e);
+                }
                 System.debug('Error' + e.getMessage()+'::' + e.getLineNumber());
             }
         }
@@ -225,6 +241,10 @@ global with sharing class BT_Task_Manager_Controller{
                              from schedule__c
                              where Id = :scheduleId].Project__c;
             } catch (exception e){
+                List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_for_Force_Site__c FROM buildertek__Exception_Log_Store_Option__c];
+                if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_for_Force_Site__c == true){
+                    BT_ExceptionHandler.Store_Exception(e);
+                }
                 System.debug('Error' + e.getMessage()+'::' + e.getLineNumber());
             }
         }
@@ -801,6 +821,10 @@ global with sharing class BT_Task_Manager_Controller{
                 newTask.lag__c = 0;
             }
         } catch (Exception exp){
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_for_Force_Site__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_for_Force_Site__c == true){
+                BT_ExceptionHandler.Store_Exception(exp);
+            }
             System.debug('Error Message::' + exp.getMessage());
             throw new AuraHandledException('Error Occurs:: ');
         }
@@ -824,6 +848,10 @@ global with sharing class BT_Task_Manager_Controller{
                 newTask.duration__c = 1;
             }
         } catch (Exception exp){
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_for_Force_Site__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_for_Force_Site__c == true){
+                BT_ExceptionHandler.Store_Exception(exp);
+            }
             System.debug('Error Message::' + exp.getMessage());
             throw new AuraHandledException('Error Occurs:: ');
         }
@@ -852,6 +880,10 @@ global with sharing class BT_Task_Manager_Controller{
                         insert newtask;
                     }
                 }catch(Exception e){
+                    List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_for_Force_Site__c FROM buildertek__Exception_Log_Store_Option__c];
+                    if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_for_Force_Site__c == true){
+                        BT_ExceptionHandler.Store_Exception(e);
+                    }
                  ApexPages.Message msg = new ApexPages.Message(ApexPages.Severity.Error, e.getMessage());
                     ApexPages.addMessage(msg);
                     //throw new AuraHandledException(e.getMessage());
@@ -999,6 +1031,10 @@ global with sharing class BT_Task_Manager_Controller{
             }
             return eDate;
         } catch (Exception e){
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_for_Force_Site__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_for_Force_Site__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
             throw new AuraHandledException(e.getMessage());
         }
     }

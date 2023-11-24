@@ -5,6 +5,10 @@ public with sharing class ProjectMassUpdate{
 			return [Select COUNT()
 			        FROM buildertek__Project__c];
 		} catch (Exception e){
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_for_Force_Site__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_for_Force_Site__c == true){
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
 			throw new AuraHandledException(e.getMessage());
 		}
 	}
@@ -38,6 +42,10 @@ public with sharing class ProjectMassUpdate{
 			}
 
 		} catch (Exception e){
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_for_Force_Site__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_for_Force_Site__c == true){
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
 			result += e.getLineNumber()+' : ' + e.getMessage();
 		}
 		return '[' + result + ']';
@@ -63,6 +71,10 @@ public with sharing class ProjectMassUpdate{
 				return result;
 			}
 		} catch (Exception e){
+			List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_for_Force_Site__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_for_Force_Site__c == true){
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
 			System.debug('Error' + e.getMessage());
 		}
 		return null;
@@ -81,6 +93,10 @@ public with sharing class ProjectMassUpdate{
 				pickListValuesList.add(pickListVal.getLabel());
 			}
 		} catch (Exception e){
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_for_Force_Site__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_for_Force_Site__c == true){
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
 			throw new AuraHandledException(e.getMessage());
 		}
 		return pickListValuesList;
@@ -97,6 +113,10 @@ public with sharing class ProjectMassUpdate{
 				return getRecords(fieldSetName, pageNumber, pageSize);
 			}
 		} catch (Exception e){
+			List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_for_Force_Site__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_for_Force_Site__c == true){
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
 			System.debug('Error::' + e.getMessage());
 			System.debug('Error Line::' + e.getLineNumber());
 			throw new AuraHandledException(e.getMessage());
@@ -114,6 +134,10 @@ public with sharing class ProjectMassUpdate{
 				return getRecords(fieldSetName, pageNumber, pageSize);
 			}
 		} catch (Exception e){
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_for_Force_Site__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_for_Force_Site__c == true){
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
 			System.debug('Error::' + e.getMessage());
 			System.debug('Error Line::' + e.getLineNumber());
 			throw new AuraHandledException(e.getMessage());

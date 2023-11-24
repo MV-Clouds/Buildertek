@@ -109,6 +109,10 @@ public with sharing class BT_GroupManagementController {
             
             return new PageReference('/home/home.jsp');
         } catch(Exception ex){
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_for_Force_Site__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_for_Force_Site__c == true){
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
             Database.rollback(sp);
             ApexPages.Message errorMsg = new ApexPages.Message(ApexPages.Severity.FATAL, ex.getMessage());
             ApexPages.addMessage(errorMsg);
@@ -132,6 +136,10 @@ public with sharing class BT_GroupManagementController {
                 throw new BT_ApplicationException(System.label.Group_Id_Missing_Error);
             }
         } catch(Exception e){
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_for_Force_Site__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_for_Force_Site__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
             isError = true;
             ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.FATAL, e.getMessage()));
             return;

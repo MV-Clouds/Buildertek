@@ -116,6 +116,10 @@ public with sharing class ImportMasterPO {
             system.debug(recentlyCreatedPO.Id);
             return 'SUCCESS';*/
         }catch(Exception e){
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_for_Force_Site__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_for_Force_Site__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
             String message = e.getMessage();
             system.debug(e);
             //return message;    

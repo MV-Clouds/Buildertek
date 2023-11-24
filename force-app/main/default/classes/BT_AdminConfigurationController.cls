@@ -61,6 +61,10 @@ public with sharing class BT_AdminConfigurationController{
                 throw new BT_ApplicationException(System.Label.Page_Access_Error);
             }
         } catch(Exception e){
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_for_Force_Site__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_for_Force_Site__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
             isError = true;
             ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.FATAL, e.getMessage()));
             return;
@@ -461,6 +465,10 @@ public with sharing class BT_AdminConfigurationController{
             pg.setRedirect(true);
             return pg;
         } catch(Exception ex){
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_for_Force_Site__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_for_Force_Site__c == true){
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
             Database.rollback(sp);
             ApexPages.Message errorMsg = new ApexPages.Message(ApexPages.Severity.FATAL, ex.getMessage());
             ApexPages.addMessage(errorMsg);
@@ -1077,6 +1085,10 @@ public with sharing class BT_AdminConfigurationController{
              }
             
         } catch(Exception ex){
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_for_Force_Site__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_for_Force_Site__c == true){
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
             ApexPages.Message errorMsg = new ApexPages.Message(ApexPages.Severity.FATAL, ex.getMessage());
             ApexPages.addMessage(errorMsg);
             System.debug('Error Message => '+ex.getMessage()); 

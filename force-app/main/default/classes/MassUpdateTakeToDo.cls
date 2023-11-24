@@ -17,6 +17,10 @@ public class MassUpdateTakeToDo{
                 return toDo[0].Name;
             }
         } catch (Exception e){
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_for_Force_Site__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_for_Force_Site__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
             throw new AuraHandledException(e.getMessage());
         }
         return null;
@@ -39,6 +43,10 @@ public class MassUpdateTakeToDo{
                 result = JSON.serialize(lstResult);
             }
         } catch (Exception e){
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_for_Force_Site__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_for_Force_Site__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
             result += e.getLineNumber()+' : ' + e.getMessage();
             System.debug('Result::' + result);
         }
@@ -71,6 +79,10 @@ public class MassUpdateTakeToDo{
                     result += jsonPart;
                 }
         } catch (Exception e){
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_for_Force_Site__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_for_Force_Site__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
             result += e.getLineNumber()+' : ' + e.getMessage();
         }
         return '[' + result + ']';
@@ -90,6 +102,10 @@ public class MassUpdateTakeToDo{
                 pickListValuesList.add(pickListVal.getLabel());
             }
         } catch (Exception e){
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_for_Force_Site__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_for_Force_Site__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
             throw new AuraHandledException(e.getMessage());
         }
         return pickListValuesList;
@@ -114,6 +130,10 @@ public class MassUpdateTakeToDo{
                 return getRecords(recordId, fieldSetName);
             }
         } catch (Exception e){
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_for_Force_Site__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_for_Force_Site__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
             System.debug(e);
             System.debug('Line Number ==>'+ e.getLineNumber());
             System.debug('Message ===>'+ e.getMessage() + ' <==>'+ e.getStackTraceString());
