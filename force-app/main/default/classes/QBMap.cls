@@ -91,10 +91,12 @@ public without sharing class QBMap {
                     false, // Set TrackQtyOnHand as needed
                     item.buildertek__Item_Name__c +'-'+ item.Name,
                     item.buildertek__Quantity__c,
-                    item.Unit_Price__c,
+                    // item.Unit_Price__c,
+                    item.buildertek__Total__c,
                     'Sales of Product Income',
                     '79', // Assuming a fixed value for income account value
-                    'Services'
+                    'Services',
+                    true
                 );
             }
             
@@ -107,14 +109,14 @@ public without sharing class QBMap {
         }
     }
 
-    public static String mapInvoiceDataBatch(buildertek__Billings__c inv, String CustomerId, Map<Id, List<String>> lineIdsMap) {
+    public static String mapInvoiceDataBatch(buildertek__Billings__c inv, String CustomerId, Map<Id, List<String>> lineIdsMap, String taxCodeId) {
         try {
             System.debug(' in mapInvoiceData method');
             String invId = inv.Id;
             String invQBId = inv.QBO_ID__c;
             
             QBInvoiceJSON invoice = new QBInvoiceJSON();
-            invoice.TotalAmt = String.valueOf(inv.buildertek__Total_Amount_Tax__c);
+            invoice.TotalAmt = inv.buildertek__Total_Amount_Tax__c;
             invoice.Balance = inv.buildertek__Total_Amount_Tax__c;
             invoice.Line = new List<QBInvoiceJSON.line>();
     
@@ -136,7 +138,7 @@ public without sharing class QBMap {
                 Linee.DetailType = 'SalesItemLineDetail';
                 Linee.Amount = Double.valueOf(qbTotal);
                 Linee.Id = qbId;
-                Linee.LineNum = String.valueOf(lineNumber);
+                Linee.LineNum =lineNumber;
                 Linee.SalesItemLineDetail = new QBInvoiceJSON.SalesItemLineDetail();
                 
                 QBInvoiceJSON.SalesItemLineDetail SILD = new QBInvoiceJSON.SalesItemLineDetail();
@@ -145,6 +147,15 @@ public without sharing class QBMap {
                 QBInvoiceJSON.ItemRef ItemRef = new QBInvoiceJSON.ItemRef();
                 ItemRef.name = qbName;
                 ItemRef.value = qbId; // Retrieve the line ID from the map
+
+                if(taxCodeId != null){
+                    QBInvoiceJSON.TxnTaxDetail TaxDetail = new QBInvoiceJSON.TxnTaxDetail();
+                    QBInvoiceJSON.TxnTaxCodeRef taxCodeRef = new QBInvoiceJSON.TxnTaxCodeRef();
+                    taxCodeRef.value = taxCodeId;
+    
+                    TaxDetail.TxnTaxCodeRef = taxCodeRef;
+                    invoice.TxnTaxDetail = TaxDetail;
+                }
                 
                 SILD.ItemRef = ItemRef;
                 Linee.SalesItemLineDetail = SILD;

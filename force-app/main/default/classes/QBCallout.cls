@@ -214,34 +214,44 @@ public with sharing class QBCallout {
             String EndPoint = '/v3/company/' + QBData.Company_Id__c + '/taxservice/taxcode?minorversion=' + QBData.minorversion__c; 
             List<buildertek__Billings__c> allInvoice = [SELECT Id, Name, buildertek__Customer_Account__c, buildertek__QBO_ID__c,buildertek__Tax_Rate__c,buildertek__QBO_Tax_Rate__c,buildertek__QBO_Tax_Rate_ID__c,buildertek__QBO_SyncToken__c,buildertek__Project__r.buildertek__Customer__c,buildertek__Due_Date__c,buildertek__Amount__c,buildertek__Total_Amount_Tax__c FROM buildertek__Billings__c];
             buildertek__Billings__c SI = [SELECT Id, Name, buildertek__Customer_Account__c, buildertek__QBO_ID__c,buildertek__Tax_Rate__c,buildertek__QBO_Tax_Rate__c,buildertek__QBO_Tax_Rate_ID__c,buildertek__QBO_SyncToken__c,buildertek__Project__r.buildertek__Customer__c,buildertek__Due_Date__c,buildertek__Amount__c,buildertek__Total_Amount_Tax__c FROM buildertek__Billings__c WHERE Id =:SIId LIMIT 1];
-            if(SI.buildertek__Tax_Rate__c != null && (SI.buildertek__QBO_Tax_Rate__c == null && SI.buildertek__QBO_Tax_Rate_ID__c == null)){
+            Boolean IsTaxRateExistInQB = false; // to break loop if once invoice flow going forward...
+            String taxRateId;
+            if(SI.buildertek__Tax_Rate__c != null && SI.buildertek__QBO_Tax_Rate_ID__c == null){
                 for(buildertek__Billings__c inv : allInvoice){
-                    if(SI.buildertek__Tax_Rate__c == inv.buildertek__Tax_Rate__c && SI.buildertek__Tax_Rate__c == inv.buildertek__QBO_Tax_Rate__c){
-                        System.debug('No need to create tax in QB');
-                        // assign inv.buildertek__QBO_Tax_Rate_ID__c to SI....
-                        String txtRateId =  inv.buildertek__QBO_Tax_Rate_ID__c;
-
-                    }
-                    else{
-                        String TaxRate_RequestBody = QBMap.mapTaxRateData(SI);           
-                        HttpResponse TaxRate_ResponseBody = QBCallOutService.QBAPICallOut(EndPoint, TaxRate_RequestBody,false);
-                        if(TaxRate_ResponseBody.getStatusCode() == 200){
-                            System.debug('TaxRate_ResponseBody.getBody() :: '+ TaxRate_ResponseBody.getBody());
-                             QBTaxCodeResponseJSON TaxRate_ResponseBody_Deser =  QBTaxCodeResponseJSON.parse(TaxRate_ResponseBody.getBody());
-                             List<QBTaxCodeResponseJSON.TaxRateDetails> TaxRateDetai = new  List<QBTaxCodeResponseJSON.TaxRateDetails>();
-                             TaxRateDetai = TaxRate_ResponseBody_Deser.TaxRateDetails;
-                            String taxRateId = TaxRateDetai[0].TaxRateId;
-                            Double taxRateValue = TaxRateDetai[0].RateValue;
-                            UpdateInv(taxRateId, taxRateValue,SI.Id);
-                        }
-                        else{
-                            QBException.QB_response( TaxRate_ResponseBody.getStatusCode(),  TaxRate_ResponseBody.getBody(), 'QBIntegrationQueue', 'Create_Customer_invoice_item_payment_in_QB');
+                    if(IsTaxRateExistInQB == false){
+                        if(SI.buildertek__Tax_Rate__c == inv.buildertek__Tax_Rate__c && SI.buildertek__Tax_Rate__c == inv.buildertek__QBO_Tax_Rate__c){
+                            System.debug('No need to create tax in QB');
+                            // assign inv.buildertek__QBO_Tax_Rate_ID__c to SI....
+                            taxRateId =  inv.buildertek__QBO_Tax_Rate_ID__c;
+                            IsTaxRateExistInQB = true;
                         }
                     }
                 }
+                if(IsTaxRateExistInQB == true){
+                    System.debug('// Create Invoice with exsiting tax rate ID...');
+                }
+                else {
+                    System.debug('// Create New Tax Rate In QB...');
+                    String TaxRate_RequestBody = QBMap.mapTaxRateData(SI);           
+                    HttpResponse TaxRate_ResponseBody = QBCallOutService.QBAPICallOut(EndPoint, TaxRate_RequestBody,false);
+                    if(TaxRate_ResponseBody.getStatusCode() == 200){
+                        System.debug('TaxRate_ResponseBody.getBody() :: '+ TaxRate_ResponseBody.getBody());
+                        QBTaxCodeResponseJSON TaxRate_ResponseBody_Deser =  QBTaxCodeResponseJSON.parse(TaxRate_ResponseBody.getBody());
+                        List<QBTaxCodeResponseJSON.TaxRateDetails> TaxRateDetai = new  List<QBTaxCodeResponseJSON.TaxRateDetails>();
+                        TaxRateDetai = TaxRate_ResponseBody_Deser.TaxRateDetails;
+                        taxRateId = TaxRateDetai[0].TaxRateId;
+                        Double taxRateValue = TaxRateDetai[0].RateValue;
+                        // UpdateInv(taxRateId, taxRateValue,SI.Id);
+                    }
+                    else{
+                        QBException.QB_response( TaxRate_ResponseBody.getStatusCode(),  TaxRate_ResponseBody.getBody(), 'QBIntegrationQueue', 'Create_Customer_invoice_item_payment_in_QB');
+                    }
+                }
+
             }
             else{
-                //Create Invoice with Tax Rate ID and Value
+                //Create Invoice without Tax Rate ID and Value
+                taxRateId = null;
             }
         }
         catch(Exception e){
