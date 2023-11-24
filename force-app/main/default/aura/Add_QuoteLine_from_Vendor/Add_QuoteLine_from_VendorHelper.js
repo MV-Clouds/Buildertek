@@ -1,7 +1,10 @@
 ({
     getVendors : function(component, event, helper) {
         try {
-            component.set("v.Spinner", true);
+            // component.set("v.Spinner", true);
+            $A.get("e.c:BT_SpinnerEvent").setParams({
+                "action": "SHOW"
+            }).fire();
             console.log('getVendors');
 
             var action = component.get("c.getVendors");
@@ -12,7 +15,10 @@
                     console.log('vendors: ', vendors);
                     component.set("v.MainvendorList", vendors);
                     component.set("v.ItervendorList", vendors);
-                    component.set("v.Spinner", false);
+                    // component.set("v.Spinner", false);
+                    $A.get("e.c:BT_SpinnerEvent").setParams({
+                        "action": "HIDE"
+                    }).fire();
                 }
             });
             $A.enqueueAction(action);
@@ -31,14 +37,20 @@
             });  
             $A.enqueueAction(action1);
         } catch (error) {
-            component.set("v.Spinner", false);
+            // component.set("v.Spinner", false);
+            $A.get("e.c:BT_SpinnerEvent").setParams({
+                "action": "HIDE"
+            }).fire();
             console.log('error in getVendors helper :: ' + error);
         }
     },
 
     goToProdModalHelper: function(component, event, helper) {
         try {
-            component.set("v.Spinner", true);
+            // component.set("v.Spinner", true);
+            $A.get("e.c:BT_SpinnerEvent").setParams({
+                "action": "SHOW"
+            }).fire();
             var vendorId = component.get('v.vendorId');
             console.log('vendorId--->',vendorId);
             component.set("v.vendorId" , vendorId);
@@ -96,12 +108,18 @@
                     });
                     console.log('productFamilyList ==> ',{productFamilyList});
                     component.set("v.productFamilyOptions", productFamilyList);
-                    component.set("v.Spinner", false);
+                    // component.set("v.Spinner", false);
+                    $A.get("e.c:BT_SpinnerEvent").setParams({
+                        "action": "HIDE"
+                    }).fire();
                 }
             });
             $A.enqueueAction(action);
         } catch (error) {
-            component.set("v.Spinner", false);
+            // component.set("v.Spinner", false);
+            $A.get("e.c:BT_SpinnerEvent").setParams({
+                "action": "HIDE"
+            }).fire();
             console.log('error in goToProdModalHelper ' + error);
         }
     },
@@ -172,7 +190,10 @@
     // save button
     saveQuoteLine : function(component, event, helper){
         try {
-            component.set("v.Spinner", true);
+            // component.set("v.Spinner", true);
+            $A.get("e.c:BT_SpinnerEvent").setParams({
+                "action": "SHOW"
+            }).fire();
             console.log('saveQuoteLine');
             var listQlines = component.get("v.selectedProducts");
             var flag=false;
@@ -196,7 +217,10 @@
                     console.log(response.getReturnValue());
                     component.set("v.openQuoteLineBox", false);
                     $A.get("e.force:refreshView").fire();
-                    component.set("v.Spinner", false);
+                    // component.set("v.Spinner", false);
+                    $A.get("e.c:BT_SpinnerEvent").setParams({
+                        "action": "HIDE"
+                    }).fire();
                     component.set("v.openProductBoxwithVendor", false);        
                     var toastEvent = $A.get("e.force:showToast");
                     toastEvent.setParams({
@@ -211,7 +235,10 @@
                 });
                 $A.enqueueAction(action10);
             } else if(flag) {
-                component.set("v.Spinner", false);
+                // component.set("v.Spinner", false);
+                $A.get("e.c:BT_SpinnerEvent").setParams({
+                    "action": "HIDE"
+                }).fire();
                 var toastEvent = $A.get("e.force:showToast");
                     toastEvent.setParams({
                         title: 'Error',
@@ -223,7 +250,10 @@
                     });
                     toastEvent.fire();
             } else {
-                component.set("v.Spinner", false);
+                // component.set("v.Spinner", false);
+                $A.get("e.c:BT_SpinnerEvent").setParams({
+                    "action": "HIDE"
+                }).fire();
                 var toastEvent = $A.get("e.force:showToast");
                 toastEvent.setParams({
                     title: 'Error',
@@ -236,7 +266,10 @@
                 toastEvent.fire();
             }
         } catch (error) {
-            component.set("v.Spinner", false);
+            // component.set("v.Spinner", false);
+            $A.get("e.c:BT_SpinnerEvent").setParams({
+                "action": "HIDE"
+            }).fire();
             console.log('error in saveQuoteLine :: ' + error);
         }
     }

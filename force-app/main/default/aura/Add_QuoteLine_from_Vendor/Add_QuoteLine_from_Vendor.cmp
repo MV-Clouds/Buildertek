@@ -360,4 +360,5 @@
         </div>
     </section>
     <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+    <c:BT_Spinner />
 </aura:component>
