@@ -44,15 +44,24 @@ public without sharing class QBClone{
             
             for (buildertek__Billable_Lines__c item : SILine) {
                 String lineId = item.Id;
+                Boolean taxable = true;
+                DateTime yourDate = Datetime.now();
+                Date invStartDate = Date.valueOf(yourDate.format('yyyy-MM-dd'));
                 batchItemRequest.addBatchItem(
                     String.valueOf(item.Id),
-                    false, // Set TrackQtyOnHand as needed ==> if true then we need asset & expense account required
+                    true, // Set TrackQtyOnHand as needed ==> if true then we need asset & expense account required
                     item.buildertek__Item_Name__c +'-'+ lineId.right(4).substring(0,4),
                     item.buildertek__Quantity__c,
                     item.buildertek__Total__c,
                     'Sales of Product Income',
                     '79', // Assuming a fixed value for income account value
-                    'Services'
+                    invStartDate,
+                    'Inventory',
+                    taxable,
+                    'Test acc',
+                    '100',
+                    'Cost of Goods Sold',
+                    '80'
                 );
             }
             String batchPayload = JSON.serialize(batchItemRequest);
@@ -123,7 +132,7 @@ public without sharing class QBClone{
             String invQBId = inv.QBO_ID__c;
             
             QBInvoiceJSON invoice = new QBInvoiceJSON();
-            invoice.TotalAmt = String.valueOf(inv.buildertek__Total_Amount_Tax__c);
+            invoice.TotalAmt = inv.buildertek__Total_Amount_Tax__c;
             invoice.Balance = inv.buildertek__Total_Amount_Tax__c;
             invoice.Line = new List<QBInvoiceJSON.line>();
     
@@ -134,23 +143,27 @@ public without sharing class QBClone{
                 String qbId = '';
                 String qbName = '';
                 String qbTotal = '';
+                String qbQuantity = '';
 
                 if (qbIdAndNameList != null) {
                     qbId = qbIdAndNameList[0]; // Retrieve QuickBooks ID
                     qbName = qbIdAndNameList[1]; // Retrieve QuickBooks Name
                     qbTotal = qbIdAndNameList[2];
+                    qbQuantity = qbIdAndNameList[3];
+
                 }
 
                 QBInvoiceJSON.line Linee = new QBInvoiceJSON.line();
                 Linee.DetailType = 'SalesItemLineDetail';
                 Linee.Amount = Double.valueOf(qbTotal);
                 Linee.Id = qbId;
-                Linee.LineNum = String.valueOf(lineNumber);
+                Linee.LineNum = lineNumber;
                 Linee.SalesItemLineDetail = new QBInvoiceJSON.SalesItemLineDetail();
                 
                 QBInvoiceJSON.SalesItemLineDetail SILD = new QBInvoiceJSON.SalesItemLineDetail();
                 SILD.ItemRef = new QBInvoiceJSON.ItemRef();
-                
+                SILD.Qty = Double.valueOf(qbQuantity);
+
                 QBInvoiceJSON.ItemRef ItemRef = new QBInvoiceJSON.ItemRef();
                 ItemRef.name = qbName;
                 ItemRef.value = qbId;

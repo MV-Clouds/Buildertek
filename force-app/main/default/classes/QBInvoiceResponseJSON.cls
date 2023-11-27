@@ -66,7 +66,7 @@ public class QBInvoiceResponseJSON {
 		public list<CustomField> CustomField;
 		public String domain;
 		public String Id;
-		public String TxnDate;
+		public Date TxnDate;
 	}
 	public class CustomField{
 		public String DefinitionId;

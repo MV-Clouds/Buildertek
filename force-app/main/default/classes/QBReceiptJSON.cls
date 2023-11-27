@@ -7,6 +7,7 @@ public with sharing class QBReceiptJSON {
     public ProjectRef ProjectRef;
     public String Id;
     public PaymentMethodRef PaymentMethodRef;
+	public Date TxnDate;
     public MetaData MetaData;
     public String SyncToken;
     public Double TotalAmt;

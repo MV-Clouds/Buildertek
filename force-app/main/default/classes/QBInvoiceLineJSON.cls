@@ -49,7 +49,7 @@ public class QBInvoiceLineJSON {
         return (QBInvoiceLineJSON) System.JSON.deserialize(json, QBInvoiceLineJSON.class);
     }
 
-    public static QBInvoiceLineJSON parseCustomer(String json) {
-        return (QBInvoiceLineJSON) System.JSON.deserialize(json, QBInvoiceLineJSON.class);
-}
+//     public static QBInvoiceLineJSON parseCustomer(String json) {
+//         return (QBInvoiceLineJSON) System.JSON.deserialize(json, QBInvoiceLineJSON.class);
+// }
 }

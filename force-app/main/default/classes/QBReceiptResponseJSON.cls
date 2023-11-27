@@ -15,7 +15,7 @@ public without sharing class QBReceiptResponseJSON {
 		public list<Line> Line;
 		public Double TotalAmt;
 		public CustomerRef CustomerRef;
-		public String TxnDate;
+		public Date TxnDate;
 		public String Id;
 		public Double UnappliedAmt;
 		public PaymentMethodRef PaymentMethodRef;

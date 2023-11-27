@@ -33,8 +33,7 @@ public with sharing class QBCallOutService {
             String Access_Token;
             String SetQBEndPoint;
                         // req.setEndpoint('callout:Quickbooks_REST_API/v3/company/4620816365353049760/customer?minorversion=69');
-            buildertek__QuickBooks_Setting__mdt QBMetadata = [SELECT Id, DeveloperName,buildertek__Base_Url__c, buildertek__minorversion__c, MasterLabel, buildertek__Access_Token__c, buildertek__Client_Id__c, buildertek__Client_Secret__c, buildertek__Refresh_Token__c, buildertek__Scope__c, buildertek__Company_Id__c FROM buildertek__QuickBooks_Setting__mdt LIMIT 1];
-            
+            buildertek__QuickBooks_Setting__mdt QBMetadata = [SELECT Id, DeveloperName,buildertek__Base_Url__c, buildertek__Name_Credential_API_Name__c, buildertek__minorversion__c, MasterLabel, buildertek__Access_Token__c, buildertek__Client_Id__c, buildertek__Client_Secret__c, buildertek__Refresh_Token__c, buildertek__Scope__c, buildertek__Company_Id__c FROM buildertek__QuickBooks_Setting__mdt LIMIT 1];
             if(Access_Token != '' || Access_Token != null){
                 Http h = new Http();
                 
@@ -48,7 +47,7 @@ public with sharing class QBCallOutService {
                      req.setHeader('Authorization','Bearer '+ Access_Token );
                 }
                 else{
-                    SetQBEndPoint = 'callout:Quickbooks_REST_API'+ QBEndPoint;
+                    SetQBEndPoint = 'callout:'+ QBMetadata.buildertek__Name_Credential_API_Name__c + QBEndPoint;
                     System.debug('name cred End Point : ' + SetQBEndPoint);
                     req.setEndpoint(SetQBEndPoint);
                     req.setHeader('Authorization','Bearer ');
@@ -63,7 +62,7 @@ public with sharing class QBCallOutService {
                 res = h.send(req);
                 String ResponseBody = res.getBody();
                 System.debug('Response Status Code >> ' + res.getStatusCode() + ' || Response status >> '+ res.getStatus());
-                System.debug('ResponseBody >> ' + ResponseBody);
+                // System.debug('ResponseBody >> ' + ResponseBody);
     
                 return res;
             }
@@ -75,6 +74,45 @@ public with sharing class QBCallOutService {
             return null;
         }
     }
+    public static HttpResponse QBAPICallOut_GET(String QBEndPoint, String JSONBody, Boolean Get_Access_Token) {
+        try {
+            String Access_Token;
+            String endpointUrl;
+    
+            // Perform DML operations or other database transactions here
+    
+            // Query the metadata record
+            buildertek__QuickBooks_Setting__mdt QBMetadata = [SELECT Id, DeveloperName,buildertek__Base_Url__c, buildertek__Name_Credential_API_Name__c, buildertek__minorversion__c, MasterLabel, buildertek__Access_Token__c, buildertek__Client_Id__c, buildertek__Client_Secret__c, buildertek__Refresh_Token__c, buildertek__Scope__c, buildertek__Company_Id__c FROM buildertek__QuickBooks_Setting__mdt LIMIT 1];
+    
+            // Create HTTP objects
+            Http http = new Http();
+            HttpRequest request = new HttpRequest();
+            HttpResponse response = new HttpResponse();
+    
+            // Set the endpoint URL for the GET request
+             endpointUrl = 'callout:'+ QBMetadata.buildertek__Name_Credential_API_Name__c + QBEndPoint;
+            System.debug('endpointUrl---->' + endpointUrl);
+            // Set the HTTP method to GET
+            request.setMethod('GET');
+            request.setEndpoint(endpointUrl);
+            request.setHeader('Content-Type', 'application/json');
+            request.setHeader('Accept','application/json');
+    
+            // Send the HTTP request and get the response
+            response = http.send(request);
+    
+            // Process the response
+            String responseBody = response.getBody();
+            System.debug('Response Status Code: ' + response.getStatusCode() + ' || Response Status: ' + response.getStatus());
+            System.debug('ResponseBody:------> ' + responseBody);
+    
+            return response;
+        } catch (Exception e) {
+            System.debug('Error During API QBAPICallOut >> ' + e.getMessage());
+            return null;
+        }
+    }
+    
 
     public static String GenerateAccessToken(){
         try {

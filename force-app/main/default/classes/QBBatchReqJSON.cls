@@ -6,7 +6,7 @@ public class QBBatchReqJSON {
     }
 
     // public void addBatchItem(String bId, Boolean trackQtyOnHand, String name, Decimal qtyOnHand,Decimal UnitPrice, String incomeAccountName, String incomeAccountValue, String assetAccountName, String assetAccountValue, String invStartDate, String expenseAccountName, String expenseAccountValue) {
-    public void addBatchItem(String bId, Boolean trackQtyOnHand, String name, Decimal qtyOnHand,Decimal UnitPrice, String incomeAccountName, String incomeAccountValue,  String invStartDate, Boolean taxable) {
+    public void addBatchItem(String bId, Boolean trackQtyOnHand, String name, Decimal qtyOnHand, Decimal UnitPrice, String incomeAccountName, String incomeAccountValue,  Date invStartDate, String Type,  Boolean taxable, String inventoryAssetAccountName, String inventoryAssetAccountValue, String expenseAccountName, String expenseAccountValue) {
         BatchItemRequest.add(new BatchItemRequest(
             bId,
             new Item(
@@ -14,10 +14,13 @@ public class QBBatchReqJSON {
                 name,
                 qtyOnHand,
                 UnitPrice,
+                // Amount,
                 new IncomeAccountRef(incomeAccountName, incomeAccountValue),
                 invStartDate,
-                'Service',
-                taxable
+                'Inventory',
+                taxable,
+                new AssetAccountRef(inventoryAssetAccountName, inventoryAssetAccountValue),
+                new ExpenseAccountRef(expenseAccountName,expenseAccountValue)
 
             ),
             'create'
@@ -41,19 +44,23 @@ public class QBBatchReqJSON {
         public String Name;
         public Decimal QtyOnHand;
         public Decimal UnitPrice;
+        // public Decimal Amount;
         public IncomeAccountRef IncomeAccountRef;
         public AssetAccountRef AssetAccountRef;
-        public String InvStartDate;
+        public Date InvStartDate;
         public String Type;
         public ExpenseAccountRef ExpenseAccountRef;
         public boolean Taxable;
 
-        public Item(Boolean TrackQtyOnHand, String Name, Decimal QtyOnHand,Decimal UnitPrice, IncomeAccountRef IncomeAccountRef, String InvStartDate, String Type, Boolean taxable) {
+        public Item(Boolean TrackQtyOnHand, String Name, Decimal QtyOnHand, Decimal UnitPrice, IncomeAccountRef IncomeAccountRef, Date InvStartDate, String Type, Boolean taxable, AssetAccountRef AssetAccountRef, ExpenseAccountRef ExpenseAccountRef) {
             this.TrackQtyOnHand = TrackQtyOnHand;
             this.Name = Name;
             this.QtyOnHand = QtyOnHand;
             this.UnitPrice = UnitPrice;
+            // this.Amount = Amount;
             this.IncomeAccountRef = IncomeAccountRef;
+            this.AssetAccountRef = AssetAccountRef;
+            this.ExpenseAccountRef = ExpenseAccountRef;
             this.InvStartDate = InvStartDate;
             this.Type = Type;
             this.Taxable = taxable;

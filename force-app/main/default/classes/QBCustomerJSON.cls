@@ -95,7 +95,7 @@ public class QBCustomerJSON {
 	}
 
 	//Custom method to parse Customer data
-	public static QBCustomerJSON.Customer parseCustomer(String json) {
-		return (QBCustomerJSON.Customer) System.JSON.deserialize(json, QBCustomerJSON.Customer.class);
-	}
+	// public static QBCustomerJSON.Customer parseCustomer(String json) {
+	// 	return (QBCustomerJSON.Customer) System.JSON.deserialize(json, QBCustomerJSON.Customer.class);
+	// }
 }
