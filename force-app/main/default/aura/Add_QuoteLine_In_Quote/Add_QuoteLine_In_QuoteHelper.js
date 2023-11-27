@@ -449,7 +449,6 @@
 
     getProductsByVenHelper : function(component, event, helper){
         try {
-            component.set("v.Spinner" , true);
             console.log('getVendors');
             var inputEl = event.getSource().get('v.value');
             if(inputEl != '' || inputEl != undefined || inputEl != null){
@@ -486,13 +485,10 @@
                         console.log(productFamilyList);
                         component.set("v.productFamilyOptions", productFamilyList);
                     }
-                    component.set('v.Spinner', false);
                 });
                 $A.enqueueAction(action);
             }
-            component.set('v.Spinner', false);
         } catch (error) {
-            component.set("v.Spinner" , false);
             console.log('error in getProductsByVen :: ' + error); 
         }
     }

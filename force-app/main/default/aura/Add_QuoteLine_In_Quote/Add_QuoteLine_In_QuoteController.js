@@ -390,18 +390,29 @@ console.log('selectedRecordIds------>',component.get("v.selectedRecords"));
         var searchTimeout = component.get('v.searchTimeout');
         
         clearTimeout(searchTimeout);
-        if (inputElement === prevInput) {
-            searchTimeout = setTimeout($A.getCallback(function() {
-                helper.getProductsByVenHelper(component, event, helper);
-            }), 0.001);
-        } else {
-            searchTimeout = setTimeout($A.getCallback(function() {
-                if (inputElement === component.get('v.sVendorName')) {
+        searchTimeout = setTimeout($A.getCallback(function() {
+            $A.get("e.c:BT_SpinnerEvent").setParams({
+                "action": "SHOW"
+            }).fire();
+            if (inputElement === prevInput) {
+                searchTimeout = setTimeout($A.getCallback(function() {
                     helper.getProductsByVenHelper(component, event, helper);
-                }
-            }), 1);
-            component.set('v.searchTimeout', searchTimeout);
-        }
+                    $A.get("e.c:BT_SpinnerEvent").setParams({
+                        "action": "HIDE"
+                    }).fire();
+                }), 1500);
+            } else {
+                searchTimeout = setTimeout($A.getCallback(function() {
+                    if (inputElement === component.get('v.sVendorName')) {
+                        helper.getProductsByVenHelper(component, event, helper);
+                        $A.get("e.c:BT_SpinnerEvent").setParams({
+                            "action": "HIDE"
+                        }).fire();
+                    }
+                }), 1500);
+            }
+        }), 1000);
+        component.set('v.searchTimeout', searchTimeout);
         component.set('v.prevInput', inputElement);
     },
 
