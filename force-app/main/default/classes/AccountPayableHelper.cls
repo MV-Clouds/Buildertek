@@ -176,6 +176,7 @@ public with sharing class AccountPayableHelper {
                         budgetLine.buildertek__Quantity__c = 1;
                         budgetLine.buildertek__Group__c = BLGroupID;
                         budgetLine.buildertek__Budget__c = invoicePo.buildertek__Budget__c;
+                        budgetLine.buildertek__Cost_Code__c = invoicePo.buildertek__Cost_Code__c;
                         MapToUpte.put(invoicePo.Id, budgetLine);
                 }
             }
