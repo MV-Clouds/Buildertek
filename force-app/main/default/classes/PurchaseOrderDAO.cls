@@ -6,6 +6,16 @@
  Date: 19/09/2017
  */
 public without sharing class PurchaseOrderDAO{
+    @AuraEnabled
+    public static Boolean Checkifpaid(String recId){
+        buildertek__Purchase_Order__c po = [SELECT Id, buildertek__Status__c FROM buildertek__Purchase_Order__c WHERE Id =: recId];
+            if(po.buildertek__Status__c == 'Paid'){
+                return true;
+            }
+            else{
+                return false;
+            }
+}
     /**********************************************************************************************************************
      Purpose: This method is used to create a link between PO Item and Budget Item
      Parameters: List<Purchase_Order_Item__c> purchaseOrderItems
