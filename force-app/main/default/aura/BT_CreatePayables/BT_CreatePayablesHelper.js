@@ -32,7 +32,7 @@
         var toastEvent = $A.get("e.force:showToast");
         toastEvent.setParams({
             title : 'Error Message',
-            message:'Status is Paid so Invoice cannot be created',
+            message:'Status is paid so invoice cannot be created',
             messageTemplate: 'Mode is pester ,duration is 5sec and Message is overrriden',
             duration:' 5000',
             key: 'info_alt',
