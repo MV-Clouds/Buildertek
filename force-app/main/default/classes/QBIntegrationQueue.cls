@@ -403,7 +403,7 @@ public without sharing class QBIntegrationQueue {
     }
 
     @AuraEnabled
-    public static String Create_customer_item_invoice_in_QB_flow(String Sales_invoice_Id){
+    public static boolean Create_customer_item_invoice_in_QB_flow(String Sales_invoice_Id){
         // This method run from the Quick action button to create Customer, Invoice and invoice in QB...
         try {
             buildertek__Billings__c SI = [SELECT Id, Name, buildertek__Customer_Account__c,buildertek__Tax_Rate__c, buildertek__QBO_Tax_Rate__c,buildertek__QBO_Tax_Rate_ID__c,buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c,buildertek__Project__r.buildertek__Customer__c,buildertek__Due_Date__c,buildertek__Amount__c,buildertek__Total_Amount_Tax__c FROM buildertek__Billings__c WHERE Id =: Sales_invoice_Id LIMIT 1];
@@ -422,18 +422,18 @@ public without sharing class QBIntegrationQueue {
                 string receiptID;
                 boolean create_Payment = false;
                 QBcallouts(Sales_invoice_Id, receiptID, create_Payment);
-                return 'success';
+                return true;
             }
             else if(SILines.size() == 0){
-                return 'no_invoicelines';
+                return false;
             }
             else if(acc == null){
-                return 'no_customer_account';
+                return false;
             }
-            return null;
+            return false;
         } catch (Exception e) {
             System.debug('Error in Create_Customer_invoice_item_payment_in_QB_Using_Button : ' + e.getMessage() +'\n'+ e + 'Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
-            return null;
+            return false;
         }
     }
 
