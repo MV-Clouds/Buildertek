@@ -367,8 +367,10 @@ public without sharing class PurchaseOrderDAO{
 
         List<buildertek__Account_Payable_Item__c> apItems = new List<buildertek__Account_Payable_Item__c>();
         system.debug('poItems-----' + poItems);
+        List<Purchase_Order_Item__c> poItemNeedTobeUpdate = new List<Purchase_Order_Item__c>();
         for (Purchase_Order_Item__c poItem : poItems){
-
+            poItem.buildertek__Quantity_Received__c = poItem.Quantity__c;
+            poItemNeedTobeUpdate.add(poItem);
             Account_Payable_Item__c apItem = new Account_Payable_Item__c();
             apItem.Account_Payable__c = PoIdbyAp.get(poItem.Purchase_Order__c).Id;
             apItem.Name = poItem.Name;
@@ -401,6 +403,7 @@ public without sharing class PurchaseOrderDAO{
         /*}*/
         //system.debug('apItems--->' + apItems);
         insert apItems;
+        update poItemNeedTobeUpdate;
     }
 
     @AuraEnabled
