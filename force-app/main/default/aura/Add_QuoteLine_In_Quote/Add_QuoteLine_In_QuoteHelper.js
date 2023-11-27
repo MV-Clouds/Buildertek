@@ -13,9 +13,11 @@
             var pricebookOptions = [];
             if(Object.keys(projectHavePricebook).length !=0){
 
+                // pricebookOptions.push({ key: projectHavePricebook.Name, value: projectHavePricebook.Id });
                 pricebookOptions.push({ key: projectHavePricebook.Name, value: projectHavePricebook.Id });
                 result[0].priceWrapList.forEach(function(element){
                     if(projectHavePricebook.Id !== element.Id){
+                        // pricebookOptions.push({ key: element.Name, value: element.Id });
                         pricebookOptions.push({ key: element.Name, value: element.Id });
                     }else{
                         pricebookOptions.push({ key: "None", value: "" });
@@ -26,6 +28,7 @@
             }else{
                 pricebookOptions.push({ key: "None", value: "" });
                 result[0].priceWrapList.forEach(function(element){
+                    // pricebookOptions.push({ key: element.Name, value: element.Id });
                     pricebookOptions.push({ key: element.Name, value: element.Id });
                 });
             }
@@ -75,9 +78,10 @@
         console.log('selectedPricebook => '+priceBookId);
         if (priceBookId != '') {
             
-            var action = component.get("c.getProductsthroughPriceBook2");
+            // var action = component.get("c.getProductsthroughPriceBook2");
+            var action = component.get("c.getProductsthroughPriceBook2Name");
             action.setParams({
-                "pbookId": priceBookId 
+                "pbookName": priceBookId 
             });
             action.setCallback(this, function(response) {
                 var rows = response.getReturnValue();
@@ -167,13 +171,13 @@
         console.log('method is calllll');
         component.set('v.Spinner', true);
         component.set("v.sProductName", '');
-        component.set("v.sVendorName", '');
+        // component.set("v.sVendorName", '');
         console.log('selectedPricebook====>',priceBookId);
         console.log('selectedProductFamily=====>',productFamilyId);
         let sProductFamily = component.get("v.sProductFamily");
         let sVendorName = component.get("v.sVendorName");
         console.log('sProductFamily=====>',sProductFamily);
-        if (priceBookId != '' && productFamilyId != '') {
+        // if (priceBookId != '' && productFamilyId != '') {
             
             var action = component.get("c.getProductsthroughProductFamily");
             action.setParams({
@@ -215,14 +219,14 @@
                 component.set('v.Spinner', false);
             });
             $A.enqueueAction(action);
-        } else {
-            component.set("v.quoteLineList", []);
-            component.set("v.tableDataList", []);
-            if(component.get('v.selectedPricebookId')!= undefined){
-                var selectedPricebook = component.find("selectedPricebook").get("v.value");
-                helper.changePricebookHelper(component, event, helper , selectedPricebook);
-            }
-        }
+        // } else {
+        //     component.set("v.quoteLineList", []);
+        //     component.set("v.tableDataList", []);
+        //     if(component.get('v.selectedPricebookId')!= undefined){
+        //         var selectedPricebook = component.find("selectedPricebook").get("v.value");
+        //         helper.changePricebookHelper(component, event, helper , selectedPricebook);
+        //     }
+        // }
     },
 
 
@@ -442,4 +446,54 @@
             toastEvent.fire();
         }
     },
+
+    getProductsByVenHelper : function(component, event, helper){
+        try {
+            component.set("v.Spinner" , true);
+            console.log('getVendors');
+            var inputEl = event.getSource().get('v.value');
+            if(inputEl != '' || inputEl != undefined || inputEl != null){
+                var action = component.get("c.getProductsListbyVenName");
+                action.setParams({
+                    "venName": inputEl 
+                });
+                action.setCallback(this, function(response) {
+                    var state = response.getState();
+                    if (state === "SUCCESS") {
+                        var prodList = response.getReturnValue();
+                        console.log('prodList: ', prodList);
+                        component.set("v.tableDataList", prodList);
+                        component.set("v.quoteLineList", prodList);
+
+                        var productFamilySet = new Set();
+                        prodList.forEach(element => {
+                            console.log(element.Family);
+                            if (element.Family != undefined && element.Family != '') {
+                                productFamilySet.add(element.Family);
+                            }
+                        });
+                        var productFamilyList = [];
+                        productFamilyList.push({
+                            key: '-- All Product Family --',
+                            value: ''
+                        });
+                        productFamilySet.forEach(function(value) {
+                            productFamilyList.push({
+                                key: value,
+                                value: value
+                            });
+                        });
+                        console.log(productFamilyList);
+                        component.set("v.productFamilyOptions", productFamilyList);
+                    }
+                    component.set('v.Spinner', false);
+                });
+                $A.enqueueAction(action);
+            }
+            component.set('v.Spinner', false);
+        } catch (error) {
+            component.set("v.Spinner" , false);
+            console.log('error in getProductsByVen :: ' + error); 
+        }
+    }
 })

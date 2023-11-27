@@ -344,10 +344,10 @@
                                         label="Add Products" class="sldsButtonGroup" />
                                 </div>&nbsp;
 
-                                <div>
+                                <!-- <div>
                                     <lightning:button iconPosition="left" onclick="{!c.addProductFromVendor}"
                                         label="Products by vendor" class="sldsButtonGroup" />
-                                </div>&nbsp;
+                                </div>&nbsp; -->
 
                                 <div>
                                     <lightning:button aura:id='rejectBtn' disabled="true" iconPosition="left"

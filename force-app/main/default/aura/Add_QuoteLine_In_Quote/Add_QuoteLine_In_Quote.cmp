@@ -26,6 +26,8 @@
     <aura:attribute name="searchTimeout" type="Object" />
     <aura:attribute name="selectedRecords" type="List" default="[]" />
 
+    <aura:attribute name="relatedPriceBookOptions" type="List" />
+
     <aura:html tag="style">
         .slds-input{
             height: 36px !important;
@@ -62,35 +64,36 @@
                         <div>
                             <ui:inputSelect aura:id="selectedPricebook" value="{!v.selectedPricebookId}" change="{!c.changePricebook}" class="pricebook-class">
                                 <aura:iteration items="{!v.pricebookoptions}" var="option" >
-                                    <option value="{!option.value}" selected="{!option.value == v.selectedPricebookId}">{!option.key}</option>
+                                    <!-- <option value="{!option.value}" selected="{!option.value == v.selectedPricebookId}">{!option.key}</option> -->
+                                    <option value="{!option.key}" selected="{!option.value == v.selectedPricebookId}">{!option.key}</option>
                                 </aura:iteration>
                             </ui:inputSelect>
+                        </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem padding="around-small" size="3">
+                        <label class="slds-form-element__label slds-size_4-of-12" >Vendor</label>
+                        <div>
+                            <!-- <lightning:input type="search" label="Searh" variant="label-hidden" value="{!v.sVendorName}" onchange="{!c.searchVendorInDatatable}" placeholder="Search Vendor Name"/> -->
+                            <lightning:input type="search" label="Search" variant="label-hidden" value="{!v.sVendorName}" onchange="{!c.getProductsByVen}" placeholder="Search Vendor Name"/>
                         </div>
                     </lightning:layoutItem>
                     <lightning:layoutItem padding="around-small" size="3">
                         <label class="slds-form-element__label slds-size_5-of-12" >Product Family</label>
                         <div>
                             <ui:inputSelect aura:id="selectedProductFamily" value="{!v.sProductFamily}" change="{!c.changeProductFamily}" class="pricebook-class">
-                                <aura:if isTrue="{!v.selectedPricebookId}">
+                                <!-- <aura:if isTrue="{!v.selectedPricebookId}"> -->
                                     <aura:iteration items="{!v.productFamilyOptions}" var="option" >
                                         <option value="{!option.value}" selected="{!option.value == v.sProductFamily}">{!option.key}</option>
                                     </aura:iteration>
-                                </aura:if>
+                                <!-- </aura:if> -->
                             </ui:inputSelect>
                         </div>
                     </lightning:layoutItem>
                     <lightning:layoutItem padding="around-small" size="3">
                         <label class="slds-form-element__label slds-size_5-of-12" >Product Name</label>
                         <div>
-                            <lightning:input type="search" label="Searh" variant="label-hidden" value="{!v.sProductName}" onchange="{!c.searchInDatatable}" placeholder="Search Product Name"/>
-                            <!-- <ui:inputText class="pricebook-class" value="{!v.sProductName}" placeholder="Search Product Name" click="{!c.searchInDatatable}"/> -->
-                        </div>
-                    </lightning:layoutItem>
-                    <lightning:layoutItem padding="around-small" size="3">
-                        <label class="slds-form-element__label slds-size_4-of-12" >Vendor</label>
-                        <div>
-                            <lightning:input type="search" label="Searh" variant="label-hidden" value="{!v.sVendorName}" onchange="{!c.searchVendorInDatatable}" placeholder="Search Vendor Name"/>
-                            <!-- <ui:inputText class="pricebook-class" value="{!v.sVendorName}" placeholder="Search Vendor Name" click="{!c.searchVendorInDatatable}"/> -->
+                            <!-- <lightning:input type="search" label="Search" variant="label-hidden" value="{!v.sProductName}" onchange="{!c.searchInDatatable}" placeholder="Search Product Name"/> -->
+                            <lightning:input type="search" label="Search" variant="label-hidden" value="{!v.sProductName}" onchange="{!c.filterProdctsRecords}" placeholder="Search Product Name"/>
                         </div>
                     </lightning:layoutItem>
                 </lightning:layout>
@@ -183,8 +186,8 @@
                             </aura:iteration>
                         </tbody>
                     </table>
-                    <aura:if isTrue="{!v.selectedPricebookId == ''}">
-                        <center class="elseMsg">Please Select a PriceBook.</center>
+                    <aura:if isTrue="{!and(v.selectedPricebookId == '', v.sVendorName == '')}">
+                        <center class="elseMsg">Please Select a PriceBook / Vendor.</center>
                         <aura:set attribute="else" >
                             <aura:if isTrue="{!v.tableDataList.length == 0}">
                                 <center class="elseMsg">No Products Found!!!</center>

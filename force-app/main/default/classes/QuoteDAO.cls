@@ -2775,4 +2775,101 @@ public with sharing class QuoteDAO{
 
         return products;
     }
+
+    @AuraEnabled
+    public static List<productWrapper> getProductsListbyVenName(string venName) {
+        try {
+            if(venName == '' || venName == null){
+                return null;
+            }
+            String[] searchTerms = venName.split(' ');
+            List<String> searchKeyParts = new List<String>();
+            for (String term : searchTerms) {
+                searchKeyParts.add('Product2.buildertek__Vendor__r.Name LIKE \'%' + term + '%\'');
+            }
+            String searchKey = String.join(searchKeyParts, ' AND ');
+            // products with pricebooks only from vendor
+            String sQuery = 'SELECT Product2.buildertek__Vendor__c, Product2.buildertek__Vendor__r.Name FROM PricebookEntry WHERE IsActive = True AND Product2.buildertek__Vendor__c != NULL AND (' + searchKey + ') LIMIT 1000';
+            List<PriceBookEntry> venList = Database.query(sQuery);
+            System.debug(venList);
+
+            Set<Id> reqId = new Set<Id>();
+            for(PriceBookEntry ids : venList){
+                reqId.add(ids.Product2.buildertek__Vendor__c);
+            }
+            System.debug(reqId);
+            // searched vendors got in below
+            // List<Account> vendorList = [SELECT Id, Name FROM Account WHERE Id IN :reqId ORDER BY Name ASC];
+
+            List<PriceBookEntry> pEntries = [SELECT Id,Product2Id, Product2.buildertek__Quote_Group__c , Product2.Name, Product2.ProductCode,Product2.buildertek__Vendor__r.Name,Product2.buildertek__Cost_Code__r.Name, Pricebook2Id, Product2.Description, toLabel(Product2.Family), 
+                                            Product2.IsActive,buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Discount__c, Pricebook2.Name, UnitPrice, Product2.QuantityUnitOfMeasure  //----
+                                            FROM PricebookEntry WHERE Product2.buildertek__Vendor__c IN :reqId AND IsActive = True 
+                                            ORDER BY Product2.Family ASC NULLS LAST, Product2.Name ASC NULLS LAST LIMIT 1000];
+            System.debug(pEntries);
+            List<productWrapper> products = new List<productWrapper>();
+            for (PriceBookEntry pEntry : pEntries) {
+                productWrapper aProduct = new productWrapper();
+                aProduct.Id = pEntry.Product2Id;
+                aProduct.Name = pEntry.Product2.Name;
+                aProduct.Vendor = pEntry.Product2.buildertek__Vendor__r.Name;
+                aProduct.CostCode = pEntry.Product2.buildertek__Cost_Code__r.Name;
+                aProduct.ProductCode = pEntry.Product2.ProductCode;
+                aProduct.Description = pEntry.Product2.Description;
+                aProduct.Family = pEntry.Product2.Family;
+                aProduct.IsActive = pEntry.Product2.IsActive;
+                aProduct.UnitPrice = pEntry.UnitPrice;
+                aProduct.Size = pEntry.Pricebook2.Name;
+                aProduct.Selected = false;
+                aProduct.MarkUp = pEntry.buildertek__Markup__c;
+                aProduct.Discount = pEntry.buildertek__Discount__c;
+                aProduct.UnitCost = pEntry.buildertek__Unit_Cost__c;
+                aProduct.Phase = pEntry.Product2.buildertek__Quote_Group__c;
+                aProduct.QuantityUnitOfMeasure = pEntry.Product2.QuantityUnitOfMeasure;
+                aProduct.PriceBookId = pEntry.Pricebook2Id;
+                aProduct.PriceBookName = pEntry.Pricebook2.Name;
+                products.add(aProduct);
+            }    
+            System.debug(products);
+            return products;
+        } catch (Exception e) {
+            System.debug('exception in getProductsListbyVenName :: ' + e.getMessage());
+            return null;
+        }
+    }
+
+    @AuraEnabled
+    public static List<productWrapper> getProductsthroughPriceBook2Name(string pbookName) {
+
+
+        List<PriceBookEntry> pEntries = [SELECT Id,Product2Id, Product2.buildertek__Quote_Group__c , Product2.Name, Product2.ProductCode,Product2.buildertek__Vendor__r.Name,Product2.buildertek__Cost_Code__r.Name, Product2.Description, toLabel(Product2.Family), 
+                                            Product2.IsActive,buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Discount__c, Pricebook2.Name, UnitPrice, Product2.QuantityUnitOfMeasure  //----
+                                            FROM PricebookEntry WHERE Pricebook2.Name=:pbookName AND IsActive = True 
+                                            ORDER BY Product2.Family ASC NULLS LAST, Product2.Name ASC NULLS LAST LIMIT 1000];
+        System.debug(pEntries.size());
+        List<productWrapper> products = new List<productWrapper>();
+        for (PriceBookEntry pEntry: pEntries) {
+            productWrapper aProduct = new productWrapper();
+            aProduct.Id = pEntry.Product2Id;
+            aProduct.Vendor = pEntry.Product2.buildertek__Vendor__r.Name;
+            aProduct.CostCode = pEntry.Product2.buildertek__Cost_Code__r.Name;
+            aProduct.Name = pEntry.Product2.Name;
+            aProduct.ProductCode = pEntry.Product2.ProductCode;
+            aProduct.Description = pEntry.Product2.Description;
+            aProduct.Family = pEntry.Product2.Family;
+            aProduct.IsActive = pEntry.Product2.IsActive;
+            aProduct.UnitPrice = pEntry.UnitPrice;            
+            aProduct.Size = pEntry.Pricebook2.Name;
+            aProduct.Selected = false;
+            aProduct.MarkUp = pEntry.buildertek__Markup__c;
+            aProduct.Discount = pEntry.buildertek__Discount__c;
+            aProduct.UnitCost = pEntry.buildertek__Unit_Cost__c;
+            aProduct.Phase = pEntry.Product2.buildertek__Quote_Group__c;
+            aProduct.QuantityUnitOfMeasure = pEntry.Product2.QuantityUnitOfMeasure;
+            aProduct.PriceBookId = pEntry.Pricebook2Id;
+            aProduct.PriceBookName = pEntry.Pricebook2.Name;     
+            products.add(aProduct);
+        }
+        System.debug(products);
+        return products;
+    }
 }
