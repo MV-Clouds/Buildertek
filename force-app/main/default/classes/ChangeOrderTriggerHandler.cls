@@ -1126,7 +1126,7 @@ public without sharing class ChangeOrderTriggerHandler {
     }
 
     // methods for Ticket BUIL-3685 for total sales price field rollup
-    public void AfterUpsertRollup(buildertek__Change_Order__c[] newChangeOrder, Map<ID, buildertek__Change_Order__c> newChangeOrderMap){
+    public void AfterInsertRollup(buildertek__Change_Order__c[] newChangeOrder, Map<ID, buildertek__Change_Order__c> newChangeOrderMap){
         try {
             List<buildertek__Project__c> projectList = new List<buildertek__Project__c>();
             Set<Id> prId = new Set<Id>();
@@ -1148,6 +1148,82 @@ public without sharing class ChangeOrderTriggerHandler {
                 }
                 projectList.add(bpr);
             }
+
+            System.debug(projectList);
+            if(projectList.size() > 0){
+                upsert projectList;
+            }
+        } catch (Exception e) {
+            System.debug('Exception in AfterInsertRollup ==> ' + e.getMessage());
+        }
+    }
+
+    public void AfterUpdateRollup(buildertek__Change_Order__c[] oldChangeOrder, buildertek__Change_Order__c[] updatedChangeOrder, Map<ID, buildertek__Change_Order__c> ChangeOrderMap, Map<Id, buildertek__Change_Order__c> oldChangeOrderMap){
+        try {
+            List<buildertek__Project__c> projectList = new List<buildertek__Project__c>();
+            Set<Id> newprId = new Set<Id>();
+            Set<Id> oldprId = new Set<Id>();
+            Set<Id> changeprId = new Set<Id>();
+            Set<Id> changeCOId = new Set<Id>();
+            List<buildertek__Change_Order__c> newCOList = new List<buildertek__Change_Order__c>();
+            List<buildertek__Change_Order__c> oldCOList = new List<buildertek__Change_Order__c>();
+            List<buildertek__Change_Order__c> changeCOList = new List<buildertek__Change_Order__c>();
+            
+            // to update old 
+            for(buildertek__Change_Order__c co : oldChangeOrder){
+                buildertek__Change_Order__c neww = ChangeOrderMap.get(co.Id);
+                if(co.buildertek__Project__c != neww.buildertek__Project__c){
+                    if(co.buildertek__Status__c != 'Pending' && co.buildertek__Status__c != 'Company Rejected' && co.buildertek__Status__c != 'Customer Rejected' && co.buildertek__Project__c != null){
+                        oldprId.add(co.buildertek__Project__c);
+                    }
+                }
+            }
+            if(oldprId.size() > 0){
+                oldCOList = [SELECT Id,buildertek__Project__c,buildertek__Total_Amount_Tax__c FROM buildertek__Change_Order__c WHERE buildertek__Project__c IN :oldprId];
+            }
+            System.debug(oldCOList);
+            for(buildertek__Project__c bpr : [SELECT Id,buildertek__Total_Change_Orders__c FROM buildertek__Project__c WHERE Id IN :oldprId]){
+                bpr.buildertek__Total_Change_Orders__c = 0;
+                for(buildertek__Change_Order__c bco : oldCOList){
+                    bpr.buildertek__Total_Change_Orders__c += bco.buildertek__Total_Amount_Tax__c;
+                }
+                projectList.add(bpr);
+            }
+
+            // to update new
+            for(buildertek__Change_Order__c co : updatedChangeOrder){
+                if(co.buildertek__Status__c != 'Pending' && co.buildertek__Status__c != 'Company Rejected' && co.buildertek__Status__c != 'Customer Rejected' && co.buildertek__Project__c != null){
+                    newprId.add(co.buildertek__Project__c);
+                }
+            }
+            if(newprId.size() > 0){
+                newCOList = [SELECT Id,buildertek__Project__c,buildertek__Total_Amount_Tax__c FROM buildertek__Change_Order__c WHERE buildertek__Project__c IN :newprId];
+            }
+            System.debug(newCOList);
+            for(buildertek__Project__c bpr : [SELECT Id,buildertek__Total_Change_Orders__c FROM buildertek__Project__c WHERE Id IN :newprId]){
+                bpr.buildertek__Total_Change_Orders__c = 0;
+                for(buildertek__Change_Order__c bco : newCOList){
+                    bpr.buildertek__Total_Change_Orders__c += bco.buildertek__Total_Amount_Tax__c;
+                }
+                projectList.add(bpr);
+            }
+
+            // to update when status change
+            // for(buildertek__Change_Order__c co : updatedChangeOrder){
+            //     if(co.buildertek__Status__c == 'Pending' || co.buildertek__Status__c == 'Company Rejected' || co.buildertek__Status__c == 'Customer Rejected'){
+            //         changeprId.add(co.buildertek__Project__c);
+            //         changeCOId.add(co.Id);
+            //     }
+            // }
+            // changeCOList = [SELECT Id,buildertek__Project__c,buildertek__Total_Amount_Tax__c FROM buildertek__Change_Order__c WHERE Id IN :changeCOId];
+            // System.debug(changeCOList);
+            // for(buildertek__Project__c bpr : [SELECT Id,buildertek__Total_Change_Orders__c FROM buildertek__Project__c WHERE Id IN :changeprId]){
+            //     // bpr.buildertek__Total_Change_Orders__c = 0;
+            //     for(buildertek__Change_Order__c bco : changeCOList){
+            //         bpr.buildertek__Total_Change_Orders__c -= bco.buildertek__Total_Amount_Tax__c;
+            //     }
+            //     projectList.add(bpr);
+            // }
 
             System.debug(projectList);
             if(projectList.size() > 0){
