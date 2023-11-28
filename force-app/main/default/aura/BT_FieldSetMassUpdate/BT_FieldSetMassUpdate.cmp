@@ -71,7 +71,6 @@
                 onchange="{!c.onInputChange}" data-fieldapi="{!v.fieldName}"/>
         </aura:if>
         <aura:if isTrue="{!v.isDoubleField}">
-           
         <div fieldapi="{!v.fieldName}">
             <lightning:input type="number" value="{!v.cellValue}" name="{!v.index+'-'+v.fieldName}"
                 onchange="{!c.onInputChange}" data-fieldapi="{!v.fieldName}"/>
