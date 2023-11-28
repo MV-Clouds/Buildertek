@@ -181,7 +181,11 @@
    goToProductModal: function(component, event, helper) {
     var quoteLineList = component.get("v.quoteLineList");
     component.set("v.sProductName", '');
-    component.set("v.sVendorName", '');
+    // component.set("v.sVendorName", '');
+    component.set("v.sProductFamily", '');
+    // component.set("v.selectedPricebookId", component.get("v.currentPB"));
+    console.log(component.get("v.selectedPricebookId"));
+    console.log(component.get("v.currentPB"));
     var selectedRecords = [];
     var remainingRecords = [];
 
@@ -383,7 +387,6 @@ console.log('selectedRecordIds------>',component.get("v.selectedRecords"));
         component.set("v.sProductFamily", '');
         component.set("v.sProductName", '');
         component.set("v.productFamilyOptions", '');
-        // component.set("v.pricebookoptions", '');
 
         var inputElement = event.getSource().get('v.value');
         var prevInput = component.get('v.prevInput');
@@ -418,6 +421,12 @@ console.log('selectedRecordIds------>',component.get("v.selectedRecords"));
 
     filterProdctsRecords : function(component,event,helper){
         try {
+            // var quoteLineList = component.get('v.quoteLineList');
+            // quoteLineList.forEach(function(element) {
+            //         element.Selected = false;
+            // });
+            // component.set('v.selectedProducts' , []);
+
             var listOfAllRecords = component.get('v.quoteLineList');
             console.log(listOfAllRecords);
             var searchProductFamilyFilter = component.find("selectedProductFamily").get("v.value");

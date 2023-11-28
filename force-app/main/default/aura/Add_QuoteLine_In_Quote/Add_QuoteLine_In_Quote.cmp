@@ -25,6 +25,7 @@
     <aura:attribute name="prevInput" type="String" />
     <aura:attribute name="searchTimeout" type="Object" />
     <aura:attribute name="selectedRecords" type="List" default="[]" />
+    <aura:attribute name="currentPB" type="String" />
 
     <aura:attribute name="relatedPriceBookOptions" type="List" />
 
@@ -188,12 +189,15 @@
                     </table>
                     <aura:if isTrue="{!and(v.selectedPricebookId == '', v.sVendorName == '')}">
                         <center class="elseMsg">Please Select a PriceBook / Vendor.</center>
-                        <aura:set attribute="else" >
-                            <aura:if isTrue="{!v.tableDataList.length == 0}">
+                        <!-- <aura:set attribute="else" > -->
+                            <!-- <aura:if isTrue="{!v.tableDataList.length == 0}">
                                 <center class="elseMsg">No Products Found!!!</center>
-                            </aura:if>
-                        </aura:set>
+                            </aura:if> -->
+                        <!-- </aura:set> -->
                     </aura:if> 
+                    <aura:if isTrue="{!v.tableDataList.length == 0}">
+                        <center class="elseMsg">No Products Found!!!</center>
+                    </aura:if>
                 </div>
             </div>
     
@@ -205,7 +209,7 @@
         </aura:if>
 
         <aura:if isTrue="{!!v.selecteProducts}">
-
+ 
             <header class="slds-modal__header">
                 <h2 class="slds-text-heading_medium slds-hyphenate">Edit Selected Quote Line Items</h2>
             </header>

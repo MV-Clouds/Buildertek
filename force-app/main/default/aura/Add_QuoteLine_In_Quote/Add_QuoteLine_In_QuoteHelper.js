@@ -76,6 +76,7 @@
         component.set("v.sVendorName", '');
         // var selectedPricebook = component.find("selectedPricebook").get("v.value");
         console.log('selectedPricebook => '+priceBookId);
+        component.set("v.currentPB",priceBookId);
         if (priceBookId != '') {
             
             // var action = component.get("c.getProductsthroughPriceBook2");
@@ -451,6 +452,13 @@
         try {
             console.log('getVendors');
             var inputEl = event.getSource().get('v.value');
+
+            var quoteLineList = component.get('v.quoteLineList');
+            quoteLineList.forEach(function(element) {
+                    element.Selected = false;
+            });
+            component.set('v.selectedProducts' , []);
+
             if(inputEl != '' || inputEl != undefined || inputEl != null){
                 var action = component.get("c.getProductsListbyVenName");
                 action.setParams({
