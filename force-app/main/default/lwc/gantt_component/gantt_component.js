@@ -920,6 +920,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
       columnLines: false,
 
       features: {
+        scrollButtons : true,
         dependencyEdit : true,
         // dependencies : {radius:10},
         rowReorder: false,
@@ -967,21 +968,12 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
                   items: this.phaseNameList,
                   name: "NewPhase",
                 },
-                newCustomField: {
-                  type: "Checkbox",
-                  weight: 200,
-                  label: "Manually Scheduled",
-                  // items: this.phaseNameList,
-                  value:false,
-                  name: "ManuallyScheduled",
-                },
-                manuallyScheduled:false,
               },
             },
             // Remove all tabs except the "General" tab
             successorsTab: false,
             resourcesTab: false,
-            advancedTab: false,
+            advancedTab: true,
           },
         },
         taskMenu: {
