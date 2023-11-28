@@ -13,28 +13,30 @@
                 var result = response.getReturnValue();
                 console.log('return value ==> '+ result);
                 $A.get("e.force:closeQuickAction").fire();
-                if(result === true){
+                if(result == 'success'){
             		component.find('notifLib').showNotice({
     		            "variant": "success",
     		            "header": "Success",
     		            "message": "Completed",
-    		            // closeCallback: function() {
-    		            // 	$A.get('e.force:refreshView').fire();
-    		            // 	var event = $A.get('e.force:navigateToSObject' );
-    		            // 	event.setParams({
-    				    //         'recordId' : response.getReturnValue().newRecordId
-    				    //     }).fire();
-    		            // }
     		        });    
+                }else if(result == 'no_invoicelines') {
+                    component.find('notifLib').showNotice({
+    		            "variant": "error",
+    		            "header": "Error",
+    		            "message": 'There are no Invoice Line (AR) associated with the Sales Invoice.',
+    		        });    
+                }else if(result == 'no_customer_account'){
+                    component.find('notifLib').showNotice({
+    		            "variant": "error",
+    		            "header": "Error",
+    		            "message": 'There are no Customer account associated with the Invoice.',
+    		        });  
                 }else{
                     component.find('notifLib').showNotice({
     		            "variant": "error",
     		            "header": "Error",
     		            "message": 'Something Went Wrong !!!',
-    		            // closeCallback: function() {
-    		            	
-    		            // }
-    		        });    
+    		        });  
                 }
                 
             }

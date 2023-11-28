@@ -89,12 +89,14 @@ public without sharing class QBMap {
                 Boolean taxable = true;
                 DateTime yourDate = Datetime.now();
                 Date invStartDate = Date.valueOf(yourDate.format('yyyy-MM-dd'));
+                System.debug('item.Unit_Price__c >> ' + item.Unit_Price__c);
+                Decimal UnitePrice = item.Unit_Price__c != null ? item.Unit_Price__c : 0;
                 batchItemRequest.addBatchItem(
                     String.valueOf(item.Id),
                     true, // Set TrackQtyOnHand as needed
                     item.buildertek__Item_Name__c +'-'+ item.Name,
                     item.buildertek__Quantity__c,
-                    item.Unit_Price__c,
+                    UnitePrice,
                     // item.buildertek__Total__c,
                     'Sales of Product Income',
                     '79', // Assuming a fixed value for income account value
