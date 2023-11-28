@@ -8,7 +8,7 @@ public with sharing class AccountPayableHelper {
             if(String.isNotBlank(currPayable.buildertek__Status__c)) {
                 if(currPayable.buildertek__Status__c.equalsIgnoreCase('Approved') || currPayable.buildertek__Status__c.equalsIgnoreCase('Paid') 
                    || currPayable.buildertek__Status__c.equalsIgnoreCase('Partial Payment')) {
-                       currPayable.addError('You cannot delete this record.');
+                       currPayable.addError('Contractor Invoice status is marked as paid, therefore you cannot delete this contractor invoice.');
                    }
             }
         }
