@@ -71,10 +71,20 @@
                 onchange="{!c.onInputChange}" data-fieldapi="{!v.fieldName}"/>
         </aura:if>
         <aura:if isTrue="{!v.isDoubleField}">
+<aura:if isTrue="{!v.fieldName == 'buildertek__Quantity_Remaining__c'}">
+           <!-- buildertek__Quantity_Remaining__c is a formula field , Therefore we make this field Disabled-->
+                <div fieldapi="{!v.fieldName}">
+                    <lightning:input type="number" value="{!v.cellValue}" name="{!v.index+'-'+v.fieldName}"
+                        onchange="{!c.onInputChange}" data-fieldapi="{!v.fieldName}" disabled="true"/>
+                </div>
+>
+                <aura:set attribute="else">
         <div fieldapi="{!v.fieldName}">
             <lightning:input type="number" value="{!v.cellValue}" name="{!v.index+'-'+v.fieldName}"
                 onchange="{!c.onInputChange}" data-fieldapi="{!v.fieldName}"/>
         </div>
+</aura:set>
+           </aura:if>
         </aura:if>
         <aura:if isTrue="{!v.isPercentField}">
             
