@@ -189,15 +189,15 @@
                     </table>
                     <aura:if isTrue="{!and(v.selectedPricebookId == '', v.sVendorName == '')}">
                         <center class="elseMsg">Please Select a PriceBook / Vendor.</center>
-                        <!-- <aura:set attribute="else" > -->
-                            <!-- <aura:if isTrue="{!v.tableDataList.length == 0}">
+                        <aura:set attribute="else" >
+                            <aura:if isTrue="{!v.tableDataList.length == 0}">
                                 <center class="elseMsg">No Products Found!!!</center>
-                            </aura:if> -->
-                        <!-- </aura:set> -->
+                            </aura:if>
+                        </aura:set>
                     </aura:if> 
-                    <aura:if isTrue="{!v.tableDataList.length == 0}">
+                    <!-- <aura:if isTrue="{!v.tableDataList.length == 0}">
                         <center class="elseMsg">No Products Found!!!</center>
-                    </aura:if>
+                    </aura:if> -->
                 </div>
             </div>
     
