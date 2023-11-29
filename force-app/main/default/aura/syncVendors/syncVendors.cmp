@@ -4,8 +4,12 @@
 
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
 
-    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
+    <aura:attribute name="vendorList" type="buildertek__Project_Vendors__c[]" />
+    <aura:attribute name="scheduleItemList" type="buildertek__Project_task__c[]" />
 
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
+    <c:BT_Spinner/>
+    
     <div class="slds-modal__header" style="font-size:17px;font-weight:bold">
         Sync Vendors
     </div>
@@ -19,8 +23,8 @@
     </div>
 
     <div class="slds-modal__footer">
-        <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}">No</button>
-        <ui:button class="slds-button slds-button_brand" label="Yes" press="{!c.save}" />
+        <button class="slds-button slds-button--neutral" onclick="{!c.closeModelCon}">No</button>
+        <ui:button class="slds-button slds-button_brand" label="Yes" press="{!c.processOperation}" />
     </div>
 
 </aura:component>
