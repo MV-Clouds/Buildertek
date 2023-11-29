@@ -77,7 +77,6 @@
                     <lightning:input type="number" value="{!v.cellValue}" name="{!v.index+'-'+v.fieldName}"
                         onchange="{!c.onInputChange}" data-fieldapi="{!v.fieldName}" disabled="true"/>
                 </div>
->
                 <aura:set attribute="else">
         <div fieldapi="{!v.fieldName}">
             <lightning:input type="number" value="{!v.cellValue}" name="{!v.index+'-'+v.fieldName}"
