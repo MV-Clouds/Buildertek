@@ -1157,6 +1157,10 @@ public without sharing class ChangeOrderTriggerHandler {
         } catch (Exception e) {
             System.debug('Exception in AfterInsertRollup ==> ' + e.getMessage());
             System.debug('Line ==> ' + e.getLineNumber());
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
         }
     }
 
@@ -1216,6 +1220,10 @@ public without sharing class ChangeOrderTriggerHandler {
         } catch (Exception e) {
             System.debug('Exception in UpdateInsertRollup ==> ' + e.getMessage());
             System.debug('Line ==> ' + e.getLineNumber());
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
         }
     }
 
@@ -1251,6 +1259,10 @@ public without sharing class ChangeOrderTriggerHandler {
         } catch (Exception e) {
             System.debug('Exception in deleteInsertRollup ==> ' + e.getMessage());
             System.debug('Line ==> ' + e.getLineNumber());
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
         }
     }
 
