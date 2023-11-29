@@ -22,7 +22,6 @@ public with sharing class SyncVendorScheduleItem{
                 wrapper.Message = 'project-id-blank';
                 return wrapper;
             }
-
         } catch (Exception e) {
             List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
             if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
