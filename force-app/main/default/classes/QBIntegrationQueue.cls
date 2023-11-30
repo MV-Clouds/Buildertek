@@ -3,7 +3,7 @@ public without sharing class QBIntegrationQueue {
     @future(callout=true)
     public static void QBcallouts(Id Sales_invoice_Id, Id receiptID, Boolean Create_Payment){
         try {
-            buildertek__Billings__c SI = [SELECT Id, Name, buildertek__Customer_Account__c,buildertek__Tax_Rate__c, buildertek__QB_Invoice_URL__c, buildertek__QBO_Tax_Rate__c,buildertek__QBO_Tax_Rate_ID__c,buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c,buildertek__Project__r.buildertek__Customer__c,buildertek__Due_Date__c,buildertek__Amount__c,buildertek__Total_Amount_Tax__c FROM buildertek__Billings__c WHERE Id =: Sales_invoice_Id LIMIT 1];
+            buildertek__Billings__c SI = [SELECT Id, Name, buildertek__Customer_Account__c,buildertek__Tax_Rate__c, buildertek__QB_Invoice_URL__c, buildertek__QBO_Tax_Rate__c,buildertek__QBO_Tax_Rate_ID__c,buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c,buildertek__Project__r.buildertek__Customer__c,buildertek__Terms__c,buildertek__Due_Date__c,buildertek__Amount__c,buildertek__Total_Amount_Tax__c FROM buildertek__Billings__c WHERE Id =: Sales_invoice_Id LIMIT 1];
             Account acc = new Account();
             if(SI.buildertek__Customer_Account__c != null){
                 acc = [SELECT ID, Name,buildertek__Email_Address__c,Fax,buildertek__QBO_ID__c, buildertek__QB_Record_URL__c, buildertek__QBO_SyncToken__c, Description,ShippingCity,ShippingStreet,ShippingState,ShippingPostalCode,ShippingLatitude,ShippingLongitude,ShippingCountry,Phone,BillingCity,BillingStreet,BillingState,BillingPostalCode,BillingLatitude,BillingLongitude,BillingCountry FROM Account WHERE Id =: SI.buildertek__Customer_Account__c limit 1];
@@ -12,7 +12,7 @@ public without sharing class QBIntegrationQueue {
                 system.debug('Project Id ' + SI.buildertek__Project__r.buildertek__Customer__c);
                 acc = [SELECT ID, Name,buildertek__Email_Address__c,Fax,buildertek__QBO_ID__c, buildertek__QB_Record_URL__c, buildertek__QBO_SyncToken__c, Description,ShippingCity,ShippingStreet,ShippingState,ShippingPostalCode,ShippingLatitude,ShippingLongitude,ShippingCountry,Phone,BillingCity,BillingStreet,BillingState,BillingPostalCode,BillingLatitude,BillingLongitude,BillingCountry FROM Account WHERE Id =: SI.buildertek__Project__r.buildertek__Customer__c limit 1];
             }
-            List<buildertek__Billable_Lines__c> SILines = [SELECT Id, Name, buildertek__Billings__c,buildertek__Billings__r.Name,buildertek__Total__c,buildertek__Item_Name__c,buildertek__Quantity__c,buildertek__QBO_ID__c,buildertek__QBO_Name__c,QBO_SyncToken__c,Description__c,Unit_Price__c,Type__c FROM buildertek__Billable_Lines__c WHERE buildertek__Billings__c =: Sales_invoice_Id];
+            List<buildertek__Billable_Lines__c> SILines = [SELECT Id, Name, buildertek__Billings__c,buildertek__Billings__r.Name,buildertek__Total__c,buildertek__Item_Name__c,buildertek__Quantity__c,buildertek__QBO_ID__c,buildertek__QBO_Name__c,buildertek__QBO_SyncToken__c,buildertek__Description__c,buildertek__Unit_Price__c,buildertek__Type__c FROM buildertek__Billable_Lines__c WHERE buildertek__Billings__c =: Sales_invoice_Id];
 
             buildertek__QuickBooks_Setting__mdt QBMetadata = [SELECT Id, DeveloperName,buildertek__Base_Url__c, buildertek__minorversion__c, MasterLabel, buildertek__Access_Token__c, buildertek__Client_Id__c, buildertek__Client_Secret__c, buildertek__Refresh_Token__c, buildertek__Qb_URL__c, buildertek__Scope__c, buildertek__Company_Id__c FROM buildertek__QuickBooks_Setting__mdt LIMIT 1];
             
@@ -107,13 +107,13 @@ public without sharing class QBIntegrationQueue {
             String taxCodeId;
             Double taxRateValue;
             String taxCodeName;
-            buildertek__QuickBooks_Setting__mdt QBData = [SELECT Id, DeveloperName,buildertek__Base_Url__c, buildertek__Qb_URL__c,buildertek__Name_Credential_API_Name__c, buildertek__minorversion__c, MasterLabel, buildertek__Access_Token__c, buildertek__Client_Id__c, buildertek__Client_Secret__c, buildertek__Refresh_Token__c, buildertek__Scope__c, buildertek__Company_Id__c FROM buildertek__QuickBooks_Setting__mdt LIMIT 1];
+            // buildertek__QuickBooks_Setting__mdt QBMetadata = [SELECT Id, DeveloperName,buildertek__Base_Url__c, buildertek__Qb_URL__c,buildertek__Name_Credential_API_Name__c, buildertek__minorversion__c, MasterLabel, buildertek__Access_Token__c, buildertek__Client_Id__c, buildertek__Client_Secret__c, buildertek__Refresh_Token__c, buildertek__Scope__c, buildertek__Company_Id__c FROM buildertek__QuickBooks_Setting__mdt LIMIT 1];
             taxCodeName = 'Tax - ' + string.valueOf(SI.buildertek__Tax_Rate__c);
             // String  taxCodeName = taxName.substring(0, taxName.length() - 2);
              System.debug('taxName------>' + taxCodeName);
             String encodedQueryParam = EncodingUtil.urlEncode('Select * From TaxCode Where Name = \''+taxCodeName + '\'', 'UTF-8');
 
-            String EndPoint_for_get_TaxRate_fromQB = '/v3/company/' + QBData.buildertek__Company_Id__c + '/query?query=' + encodedQueryParam + '&minorversion='+ QBData.buildertek__minorversion__c; 
+            String EndPoint_for_get_TaxRate_fromQB = '/v3/company/' + QBMetadata.buildertek__Company_Id__c + '/query?query=' + encodedQueryParam + '&minorversion='+ QBMetadata.buildertek__minorversion__c; 
 
             HttpResponse get_TaxRate_from_QB_ResponseBody = QBCallOutService.QBAPICallOut_GET(EndPoint_for_get_TaxRate_fromQB, null,false);
                 if(get_TaxRate_from_QB_ResponseBody.getStatusCode() == 200){
@@ -138,7 +138,7 @@ public without sharing class QBIntegrationQueue {
                         System.debug('// Create New Tax Rate In QB...');
                         taxCodeId = null;
                         taxRateValue = null;
-                        String TaxRate_EndPoint = '/v3/company/' + QBData.buildertek__Company_Id__c + '/taxservice/taxcode?minorversion=' + QBData.buildertek__minorversion__c; 
+                        String TaxRate_EndPoint = '/v3/company/' + QBMetadata.buildertek__Company_Id__c + '/taxservice/taxcode?minorversion=' + QBMetadata.buildertek__minorversion__c; 
                         String TaxRate_RequestBody = QBMap.mapTaxRateData(SI);           
                         HttpResponse TaxRate_ResponseBody = QBCallOutService.QBAPICallOut(TaxRate_EndPoint, TaxRate_RequestBody,false);
                         if(TaxRate_ResponseBody.getStatusCode() == 200){
@@ -426,7 +426,7 @@ public without sharing class QBIntegrationQueue {
                 acc = null;
             }
 
-            List<buildertek__Billable_Lines__c> SILines = [SELECT Id, Name, buildertek__Billings__c,buildertek__Billings__r.Name,buildertek__Total__c,buildertek__Item_Name__c,buildertek__Quantity__c,buildertek__QBO_ID__c,buildertek__QBO_Name__c,QBO_SyncToken__c,Description__c,Unit_Price__c,Type__c FROM buildertek__Billable_Lines__c WHERE buildertek__Billings__c =: Sales_invoice_Id];
+            List<buildertek__Billable_Lines__c> SILines = [SELECT Id, Name, buildertek__Billings__c,buildertek__Billings__r.Name,buildertek__Total__c,buildertek__Item_Name__c,buildertek__Quantity__c,buildertek__QBO_ID__c,buildertek__QBO_Name__c,buildertek__QBO_SyncToken__c,buildertek__Description__c,buildertek__Unit_Price__c,buildertek__Type__c FROM buildertek__Billable_Lines__c WHERE buildertek__Billings__c =: Sales_invoice_Id];
             if(SILines.size() > 0 && acc != null){
                 string receiptID;
                 boolean create_Payment = false;
@@ -445,6 +445,77 @@ public without sharing class QBIntegrationQueue {
         } catch (Exception e) {
             System.debug('Error in Create_Customer_invoice_item_payment_in_QB_Using_Button : ' + e.getMessage() +'\n'+ e + 'Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
             return null;
+        }
+    }
+
+    @future(callout=true)
+    public static void createTerms(String Sales_invoice_Id){
+        try {
+            buildertek__Billings__c SI = [SELECT Id, Name, buildertek__Customer_Account__c,buildertek__Tax_Rate__c, buildertek__QB_Invoice_URL__c, buildertek__QBO_Tax_Rate__c,buildertek__QBO_Tax_Rate_ID__c,buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c,buildertek__Project__r.buildertek__Customer__c,buildertek__Terms__c,buildertek__Due_Date__c,buildertek__Amount__c,buildertek__Total_Amount_Tax__c FROM buildertek__Billings__c WHERE Id =: Sales_invoice_Id LIMIT 1];
+            Account acc = new Account();
+            if(SI.buildertek__Customer_Account__c != null){
+                acc = [SELECT ID, Name,buildertek__Email_Address__c,Fax,buildertek__QBO_ID__c, buildertek__QB_Record_URL__c, buildertek__QBO_SyncToken__c, Description,ShippingCity,ShippingStreet,ShippingState,ShippingPostalCode,ShippingLatitude,ShippingLongitude,ShippingCountry,Phone,BillingCity,BillingStreet,BillingState,BillingPostalCode,BillingLatitude,BillingLongitude,BillingCountry FROM Account WHERE Id =: SI.buildertek__Customer_Account__c limit 1];
+            }
+            else if(SI.buildertek__Customer_Account__c == null){
+                system.debug('Project Id ' + SI.buildertek__Project__r.buildertek__Customer__c);
+                acc = [SELECT ID, Name,buildertek__Email_Address__c,Fax,buildertek__QBO_ID__c, buildertek__QB_Record_URL__c, buildertek__QBO_SyncToken__c, Description,ShippingCity,ShippingStreet,ShippingState,ShippingPostalCode,ShippingLatitude,ShippingLongitude,ShippingCountry,Phone,BillingCity,BillingStreet,BillingState,BillingPostalCode,BillingLatitude,BillingLongitude,BillingCountry FROM Account WHERE Id =: SI.buildertek__Project__r.buildertek__Customer__c limit 1];
+            }
+            List<buildertek__Billable_Lines__c> SILines = [SELECT Id, Name, buildertek__Billings__c,buildertek__Billings__r.Name,buildertek__Total__c,buildertek__Item_Name__c,buildertek__Quantity__c,buildertek__QBO_ID__c,buildertek__QBO_Name__c,buildertek__QBO_SyncToken__c,buildertek__Description__c,buildertek__Unit_Price__c,buildertek__Type__c FROM buildertek__Billable_Lines__c WHERE buildertek__Billings__c =: Sales_invoice_Id];
+
+            buildertek__QuickBooks_Setting__mdt QBMetadata = [SELECT Id, DeveloperName,buildertek__Base_Url__c, buildertek__minorversion__c, MasterLabel, buildertek__Access_Token__c, buildertek__Client_Id__c, buildertek__Client_Secret__c, buildertek__Refresh_Token__c, buildertek__Qb_URL__c, buildertek__Scope__c, buildertek__Company_Id__c FROM buildertek__QuickBooks_Setting__mdt LIMIT 1];
+            
+            Boolean Get_Access_Token = false;
+
+            String termName = SI.buildertek__Terms__c;
+            String encodedQueryParam = EncodingUtil.urlEncode('Select * From Term Where Name = \''+termName + '\'', 'UTF-8');
+            String EndPoint_for_get_TaxRate_fromQB = '/v3/company/' + QBMetadata.buildertek__Company_Id__c + '/query?query=' + encodedQueryParam + '&minorversion='+ QBMetadata.buildertek__minorversion__c; 
+            String TermQBId = null;
+
+            // Check if term Availbe or not in QB....
+            HttpResponse term_QB_ResponseBody = QBCallOutService.QBAPICallOut_GET(EndPoint_for_get_TaxRate_fromQB, null,false);
+            System.debug('term_QB_ResponseBody >> ' + term_QB_ResponseBody);
+                if(term_QB_ResponseBody.getStatusCode() == 200){
+                    QBtermsResponseJSON term_QB_ResponseBody_Desr = QBtermsResponseJSON.parse(term_QB_ResponseBody.getBody());
+                    QBtermsResponseJSON.QueryResponse QueryResponse = new QBtermsResponseJSON.QueryResponse();
+                    QueryResponse = term_QB_ResponseBody_Desr.QueryResponse;
+                    System.debug('term_QB_ResponseBody_Desr.QueryResponse >> ' + term_QB_ResponseBody_Desr.QueryResponse);
+                    List<QBtermsResponseJSON.Term> Terms = new List<QBtermsResponseJSON.Term>();
+                    if(QueryResponse.Term != null){
+                        Terms = QueryResponse.Term;
+                        System.debug('Term.QueryResponse >> ' + Terms[0].Id);
+                        TermQBId = Terms[0].Id;
+                    }
+                    else{
+                        // Create New term in QB...
+                    //     String Term_EndPoint = '/v3/company/' + QBMetadata.buildertek__Company_Id__c + '/term?minorversion=' + QBMetadata.buildertek__minorversion__c;            
+                    //     String Term_RequestBody = QBMap.mapAccountData(acc, 1);
+                    //     system.debug('Term JSON Body >>' +  Term_RequestBody);
+                    //     HttpResponse Term_Creation_Response = QBCallOutService.QBAPICallOut(Term_EndPoint , Term_RequestBody, Get_Access_Token);
+                    //     system.debug('Term_Creation_Response >> ' + Term_Response);
+                    //     if(Term_Creation_Response.getStatusCode() == 200){
+                    //         QBtermsResponseJSON Term_Creation_Response_Desr = QBtermsResponseJSON.parse(Term_Creation_Response.getBody());
+                    //         QBtermsResponseJSON.QueryResponse QueryResponse = new QBtermsResponseJSON.QueryResponse();
+                    //         QueryResponse = Term_Creation_Response_Desr.QueryResponse;
+                    //         System.debug('Term_Creation_Response_Desr.QueryResponse >> ' + Term_Creation_Response_Desr.QueryResponse);
+                    //         List<QBtermsResponseJSON.Term> Terms = new List<QBtermsResponseJSON.Term>();
+                    //         if(QueryResponse.Term != null){
+                    //             Terms = QueryResponse.Term;
+                    //             System.debug('Term.QueryResponse >> ' + Terms[0].Id);
+                    //             TermQBId = Terms[0].Id;
+                    //         }
+                    //     }
+                    //    else{
+
+                    //    }
+                    }
+                }
+                else{
+                    QBException.QB_response( term_QB_ResponseBody.getStatusCode(),  term_QB_ResponseBody.getBody(), 'QBIntegrationQueue', 'createTerms');
+                }
+
+            
+        } catch (Exception e) {
+            System.debug('Error in Create_Customer_invoice_item_payment_in_QB_Using_Button : ' + e.getMessage() +'\n'+ e + 'Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
         }
     }
 

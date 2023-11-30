@@ -2,42 +2,31 @@
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
    
     <types>
+        <members>QBBatchReqJSON</members>
+        <members>QBBatchResJSON</members>
         <members>QBCallout</members>
+        <members>QBCallOutService</members>
         <members>QBCustomerJSON</members>
         <members>QBCustomerResponseJSON</members>
-        <members>QBMap</members>
-        <members>QBOErrorJSON</members>
-        <members>QBTriggerHandler</members>
         <members>QBException</members>
-        <members>QBRefreshJSON</members>
+        <members>QBIntegrationQueue</members>
+        <members>QBIntegrationQueueable</members>
+        <members>QBIntegrationQueue_TestClass</members>
         <members>QBInvoiceJSON</members>
         <members>QBInvoiceLineJSON</members>
         <members>QBInvoiceLineResponseJSON</members>
         <members>QBInvoiceResponseJSON</members>
+        <members>QBMap</members>
+        <members>QBMockTest</members>
+        <members>QBOErrorJSON</members>
         <members>QBReceiptJSON</members>
         <members>QBReceiptResponseJSON</members>
         <members>QBRefreshJSON</members>
-        <members>QBClone</members>
-        <members>QBBatchReqJSON</members>
-        <members>QBBatchResJSON</members>
-        <members>QBIntegrationQueue</members>
         <members>QBTaxCodeJSON</members>
         <members>QBTaxCodeResponseJSON</members>
         <members>QBTaxRateJSON</members>
-        <members>QBMapTest</members>
-        <members>QBIntegrationQueue_TestClass</members>
-        <members>QBOErrorJSON_Test</members>
-        <members>QBTaxCodeResponseJSON_Test</members>
-        <members>QBReceiptResponseJSON_Test</members>
-        <members>QBCustomerJSON_Test</members>
-        <members>QBCustomerResponseJSON_Test</members>
-        <members>QBInvoiceResponseJSON_Test</members>
-        <members>QBInvoiceLineResponseJSON_Test</members>
-        <members>QBTaxCodeJSON_Test</members>
-        <members>QBRefreshJSON_Test</members>
-        <members>QBInvoiceLineJSON_Test</members>
-        <members>QBRecieptJSON_Test</members>
-        <members>QBInvoiceJSON_Test</members>
+        <members>QBTermReqJSON</members>
+        <members>QBtermsResponseJSON</members>
         <name>ApexClass</name>
     </types>
     <types>
