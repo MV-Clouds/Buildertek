@@ -18,9 +18,6 @@
 		$A.enqueueAction(action);
 	},
 
-	handleChange : function(component, event, helper) {
-		
-	},
     handleClick:function(component, event, helper) {
         var itemsToclonned = component.get("v.value");
 		var projects = component.get("v.projects");

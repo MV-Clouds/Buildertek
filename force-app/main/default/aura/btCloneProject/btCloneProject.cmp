@@ -6,8 +6,8 @@
                                                         {'label': 'Punch List', 'value': 'PunchList'},
                                                         {'label': 'Purchase Order', 'value': 'Purchase Order'},
                                                         {'label': 'Selection', 'value': 'Selection'},
-                                                        {'label': 'Warranty', 'value': 'Warranty'} ]"/> 
-                                                        <!-- {'label': 'Schedule', 'value': 'Schedule'}, -->
+                                                        {'label': 'Warranty', 'value': 'Warranty'},
+                                                        {'label': 'Schedule', 'value': 'Schedule'} ]"/> 
     <aura:attribute name="value" type="List" default=""/>
     <aura:attribute name="recordId" type="Id" />
     <aura:attribute name="projects" type="List" default=""/>
@@ -46,7 +46,7 @@
                              label=""
                              options="{! v.options }"
                              value="{! v.value }"
-                             onchange="{! c.handleChange }"/>
+                            />
             </div>
             </div>
         </div>      
