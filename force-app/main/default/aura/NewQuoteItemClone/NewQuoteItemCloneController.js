@@ -232,18 +232,6 @@
 
     // },
 
-    chooseProductFrom: function(component, event, helper){
-        try {
-            // if(){
-                
-            // } else{
-                
-            // }
-        } catch (error) {
-            console.log('error in choose product from :: ' + error);
-        }
-    },
-
     addProductFromGroup: function(component, event, helper) {
         if (!component.get('v.isAddProductFromGroup')){
             console.log(event.getSource().get('v.value'));
