@@ -52,7 +52,7 @@
         var workspaceAPI = component.find("workspace");
         var record=event.target.id;
         workspaceAPI.openTab({
-            url: '#/sObject/'+record+'/view',
+            recordId : record,
             focus: true
         });
         // var workspaceAPI = component.find("workspaceAPI");
