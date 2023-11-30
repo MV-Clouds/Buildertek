@@ -167,6 +167,7 @@
     <aura:attribute name="total" type="integer" description="total records count store " />
 
     <!-- Pagination End -->
+    <aura:attribute name="chooseProductBox" type="Boolean" default="false" />
     <aura:attribute name="openProductBox" type="Boolean" default="false" />
     <aura:attribute name="openProductBoxwithVendor" type="Boolean" default="false" />
     <aura:attribute name="columns1" type="List" />
@@ -357,7 +358,7 @@
 
 
                                 <div>
-                                <lightning:button iconPosition="left" onclick="{!c.onClickAddlines}" label="Mass Add Line" class="sldsButtonGroup" />
+                                <lightning:button iconPosition="left" onclick="{!c.onClickAddlines}" label="New Quote Lines" class="sldsButtonGroup" />
                             </div>&nbsp;
 
                                 <div>
@@ -2284,6 +2285,17 @@
                             </div>
                         </section>
                         <div class="slds-backdrop slds-backdrop_open"></div>
+                    </aura:if>
+                    <aura:if isTrue="{!v.chooseProductBox}">
+                        <aura:html tag="style">
+
+                            .slds-modal__container{
+                            width: 80% !important;
+                            }
+
+                        </aura:html>
+                            <!-- <c:Add_QuoteLine_In_Quote getPhase="{!v.phaseName}" quoteId="{!v.recordId}" chooseProductBox="{!v.chooseProductBox}" /> -->
+
                     </aura:if>
                     <aura:if isTrue="{!v.openProductBox}">
                         <aura:html tag="style">

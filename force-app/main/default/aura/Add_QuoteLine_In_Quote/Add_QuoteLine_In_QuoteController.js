@@ -15,98 +15,40 @@
     var selectedPricebook = component.find("selectedPricebook").get("v.value");
     helper.changePricebookHelper(component, event, helper , selectedPricebook);
    },
+   changeProductFamily: function(component, event, helper) {
+    var selectedPricebook = component.find("selectedPricebook").get("v.value");
+    var selectedProductFamily = component.find("selectedProductFamily").get("v.value");
+      helper.changeProductFamilyHelper(component, event, helper , selectedPricebook, selectedProductFamily);
+  },
 
-
-
-
-//    changeProductFamily: function(component, event, helper) {
-//     var selectedPricebook = component.find("selectedPricebook").get("v.value");
-//     var selectedProductFamily = component.find("selectedProductFamily").get("v.value");
-//       helper.changeProductFamilyHelper(component, event, helper , selectedPricebook, selectedProductFamily);
-//   },
-    changeProductFamily: function(component, event, helper) {
-        try {
-            var listOfAllRecords = component.get('v.quoteLineList');
-            var searchProductFamilyFilter = component.find("selectedProductFamily").get("v.value");
-            console.log('searchProductFamilyFilter--->',searchProductFamilyFilter);
-            var searchPriceBookFilter = component.find("selectedPricebook").get("v.value");
-            console.log('searchPriceBookFilter--->',searchPriceBookFilter);
-            component.set("v.sProductName", '');
-            var tempArray = [];
-            var i;
-        
-            if (searchProductFamilyFilter != '' && (searchPriceBookFilter == undefined || searchPriceBookFilter == '')) {
-                console.log('in1');
-                for (i = 0; i < listOfAllRecords.length; i++) {
-                    if (
-                        listOfAllRecords[i].Family &&
-                        listOfAllRecords[i].Family.toLowerCase().includes(searchProductFamilyFilter.toLowerCase())
-                    ) {
-                        tempArray.push(listOfAllRecords[i]);
-                    }
-                }
-                component.set("v.tableDataList", tempArray);
-            } else if (searchPriceBookFilter != '' && (searchProductFamilyFilter == undefined || searchProductFamilyFilter == '')) {
-                console.log('in2');
-                for (i = 0; i < listOfAllRecords.length; i++) {
-                    if (
-                        listOfAllRecords[i].PriceBookName &&
-                        listOfAllRecords[i].PriceBookName.toLowerCase().includes(searchPriceBookFilter.toLowerCase())
-                    ) {
-                        tempArray.push(listOfAllRecords[i]);
-                    }
-                }
-                component.set("v.tableDataList", tempArray);
-            } else if (searchProductFamilyFilter != '' && searchPriceBookFilter != ''){
-                console.log('in3');
-                for (i = 0; i < listOfAllRecords.length; i++) {
-                    if (
-                        listOfAllRecords[i].PriceBookName &&
-                        listOfAllRecords[i].PriceBookName.toLowerCase().includes(searchPriceBookFilter.toLowerCase()) &&
-                        listOfAllRecords[i].Family &&
-                        listOfAllRecords[i].Family.toLowerCase().includes(searchProductFamilyFilter.toLowerCase())
-                    ) {
-                        tempArray.push(listOfAllRecords[i]);
-                    }
-                }
-                component.set("v.tableDataList", tempArray);
-            } else {
-                console.log('in4');
-                component.set("v.tableDataList", listOfAllRecords);
-            }
-        } catch (error) {
-            console.log('error in changeProductFamily controller :: ' + error);
-        }
-    },
-
-//    searchInDatatable: function(component, event, helper){
-//      console.log('in method');
-//         if (component.get("v.selectedPricebookId") != '') {
-//             var inputElement = event.getSource().get('v.value');
-//                 var prevInput = component.get('v.prevInput');
-//                 var searchTimeout = component.get('v.searchTimeout');
+   searchInDatatable: function(component, event, helper){
+     console.log('in method');
+        if (component.get("v.selectedPricebookId") != '') {
+            var inputElement = event.getSource().get('v.value');
+                var prevInput = component.get('v.prevInput');
+                var searchTimeout = component.get('v.searchTimeout');
                 
-//                 clearTimeout(searchTimeout);
+                clearTimeout(searchTimeout);
 
-//                 // if (inputElement.trim() !== '') {
-//                     // console.log('in if');
-//                     if (inputElement === prevInput) {
-//                         helper.searchDatatableHelper(component, event, helper);
-//                     } else {
-//                         searchTimeout = setTimeout($A.getCallback(function() {
-//                             if (inputElement === component.get('v.sProductName')) {
-//                                 helper.searchDatatableHelper(component, event, helper);
-//                             }
-//                         }), 2000);
-//                         component.set('v.searchTimeout', searchTimeout);
-//                     }
-//                     component.set('v.prevInput', inputElement);
-//             // } 
-//         }else{
-//             var inputElement = event.getSource().get('v.value');
-//         }
+                // if (inputElement.trim() !== '') {
+                    // console.log('in if');
+                    if (inputElement === prevInput) {
+                        helper.searchDatatableHelper(component, event, helper);
+                    } else {
+                        searchTimeout = setTimeout($A.getCallback(function() {
+                            if (inputElement === component.get('v.sProductName')) {
+                                helper.searchDatatableHelper(component, event, helper);
+                            }
+                        }), 2000);
+                        component.set('v.searchTimeout', searchTimeout);
+                    }
+                    component.set('v.prevInput', inputElement);
+            // } 
+        }else{
+            var inputElement = event.getSource().get('v.value');
+        }
     
-//     },  
+    },  
 
     searchVendorInDatatable: function(component, event, helper){
         var searchTimeout = component.get('v.searchTimeout');
@@ -181,11 +123,7 @@
    goToProductModal: function(component, event, helper) {
     var quoteLineList = component.get("v.quoteLineList");
     component.set("v.sProductName", '');
-    // component.set("v.sVendorName", '');
-    component.set("v.sProductFamily", '');
-    // component.set("v.selectedPricebookId", component.get("v.currentPB"));
-    console.log(component.get("v.selectedPricebookId"));
-    console.log(component.get("v.currentPB"));
+    component.set("v.sVendorName", '');
     var selectedRecords = [];
     var remainingRecords = [];
 
@@ -357,145 +295,29 @@ console.log('selectedRecordIds------>',component.get("v.selectedRecords"));
        
    },
    removeQuoteLine: function(component, event, helper) {
-        var currentId = event.currentTarget.dataset.id;
-        var productList = component.get('v.selectedProducts');
-        var updatedList = [];
-        productList.forEach(function(value) {
-            if (value.Id !== currentId) {
-                updatedList.push(value);
-            }
-        });
-        component.set('v.selectedProducts', updatedList);
-
-        // Remove the record from v.selectedRecords attribute
-        var selectedRecords = component.get('v.selectedRecords');
-        var updatedSelectedRecords = selectedRecords.filter(function(record) {
-            return record.Id !== currentId;
-        });
-        component.set('v.selectedRecords', updatedSelectedRecords);
-
-        var quoteLineList = component.get('v.quoteLineList');
-        quoteLineList.forEach(function(element) {
-            if (element.Id === currentId) {
-                element.Selected = false;
-            }
-        });
-    },
-
-    getProductsByVen : function(component, event, helper){
-        component.set("v.selectedPricebookId" , '');
-        component.set("v.sProductFamily", '');
-        component.set("v.sProductName", '');
-        component.set("v.productFamilyOptions", '');
-
-        var inputElement = event.getSource().get('v.value');
-        var prevInput = component.get('v.prevInput');
-        var searchTimeout = component.get('v.searchTimeout');
-        
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout($A.getCallback(function() {
-            $A.get("e.c:BT_SpinnerEvent").setParams({
-                "action": "SHOW"
-            }).fire();
-            if (inputElement === prevInput) {
-                searchTimeout = setTimeout($A.getCallback(function() {
-                    helper.getProductsByVenHelper(component, event, helper);
-                    $A.get("e.c:BT_SpinnerEvent").setParams({
-                        "action": "HIDE"
-                    }).fire();
-                }), 1500);
-            } else {
-                searchTimeout = setTimeout($A.getCallback(function() {
-                    if (inputElement === component.get('v.sVendorName')) {
-                        helper.getProductsByVenHelper(component, event, helper);
-                        $A.get("e.c:BT_SpinnerEvent").setParams({
-                            "action": "HIDE"
-                        }).fire();
-                    }
-                }), 1500);
-            }
-        }), 1000);
-        component.set('v.searchTimeout', searchTimeout);
-        component.set('v.prevInput', inputElement);
-    },
-
-    filterProdctsRecords : function(component,event,helper){
-        try {
-            // var quoteLineList = component.get('v.quoteLineList');
-            // quoteLineList.forEach(function(element) {
-            //         element.Selected = false;
-            // });
-            // component.set('v.selectedProducts' , []);
-
-            var listOfAllRecords = component.get('v.quoteLineList');
-            console.log(listOfAllRecords);
-            var searchProductFamilyFilter = component.find("selectedProductFamily").get("v.value");
-            console.log('searchProductFamilyFilter--->',searchProductFamilyFilter);
-            var searchPriceBookFilter = component.find("selectedPricebook").get("v.value");
-            console.log('searchPriceBookFilter--->',searchPriceBookFilter);
-            var searchProdNameFilter = component.get("v.sProductName");
-            var tempArray = [];
-            var i;
-        
-            if ((searchProductFamilyFilter == '' || searchProductFamilyFilter == undefined) && (searchPriceBookFilter == '' || searchPriceBookFilter == undefined)){
-                console.log('in1');
-                for (i = 0; i < listOfAllRecords.length; i++) {
-                    if (
-                        listOfAllRecords[i].Name &&
-                        listOfAllRecords[i].Name.toLowerCase().includes(searchProdNameFilter.toLowerCase())
-                    ) {
-                        tempArray.push(listOfAllRecords[i]);
-                    }
-                }
-                component.set("v.tableDataList", tempArray);
-            } else if (searchProductFamilyFilter != '' && (searchPriceBookFilter == undefined || searchPriceBookFilter == '')) {
-                console.log('in2');
-                for (i = 0; i < listOfAllRecords.length; i++) {
-                    if (
-                        listOfAllRecords[i].Family &&
-                        listOfAllRecords[i].Family.toLowerCase().includes(searchProductFamilyFilter.toLowerCase()) &&
-                        listOfAllRecords[i].Name &&
-                        listOfAllRecords[i].Name.toLowerCase().includes(searchProdNameFilter.toLowerCase())
-                    ) {
-                        tempArray.push(listOfAllRecords[i]);
-                    }
-                }
-                component.set("v.tableDataList", tempArray);
-            } else if (searchPriceBookFilter != '' && (searchProductFamilyFilter == undefined || searchProductFamilyFilter == '')) {
-                console.log('in3');
-                for (i = 0; i < listOfAllRecords.length; i++) {
-                    if (
-                        listOfAllRecords[i].PriceBookName &&
-                        listOfAllRecords[i].PriceBookName.toLowerCase().includes(searchPriceBookFilter.toLowerCase()) &&
-                        listOfAllRecords[i].Name &&
-                        listOfAllRecords[i].Name.toLowerCase().includes(searchProdNameFilter.toLowerCase())
-                    ) {
-                        tempArray.push(listOfAllRecords[i]);
-                    }
-                }
-                component.set("v.tableDataList", tempArray);
-            } else if (searchProductFamilyFilter != '' && searchPriceBookFilter != ''){
-                console.log('in4');
-                for (i = 0; i < listOfAllRecords.length; i++) {
-                    if (
-                        listOfAllRecords[i].PriceBookName &&
-                        listOfAllRecords[i].PriceBookName.toLowerCase().includes(searchPriceBookFilter.toLowerCase()) &&
-                        listOfAllRecords[i].Family &&
-                        listOfAllRecords[i].Family.toLowerCase().includes(searchProductFamilyFilter.toLowerCase()) &&
-                        listOfAllRecords[i].Name &&
-                        listOfAllRecords[i].Name.toLowerCase().includes(searchProdNameFilter.toLowerCase())
-                    ) {
-                        tempArray.push(listOfAllRecords[i]);
-                    }
-                }
-                component.set("v.tableDataList", tempArray);
-            } else {
-                console.log('in5');
-                component.set("v.tableDataList", listOfAllRecords);
-            }
-        } catch (error) {
-            console.log('error in filterProdctsRecords controller :: ' + error);
+    var currentId = event.currentTarget.dataset.id;
+    var productList = component.get('v.selectedProducts');
+    var updatedList = [];
+    productList.forEach(function(value) {
+        if (value.Id !== currentId) {
+            updatedList.push(value);
         }
-    },
+    });
+    component.set('v.selectedProducts', updatedList);
+
+    // Remove the record from v.selectedRecords attribute
+    var selectedRecords = component.get('v.selectedRecords');
+    var updatedSelectedRecords = selectedRecords.filter(function(record) {
+        return record.Id !== currentId;
+    });
+    component.set('v.selectedRecords', updatedSelectedRecords);
+
+    var quoteLineList = component.get('v.quoteLineList');
+    quoteLineList.forEach(function(element) {
+        if (element.Id === currentId) {
+            element.Selected = false;
+        }
+    });
+},
 
 })
