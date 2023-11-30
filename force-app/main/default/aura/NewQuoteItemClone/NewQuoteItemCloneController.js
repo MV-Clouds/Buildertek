@@ -232,6 +232,49 @@
 
     // },
 
+    askforFilter: function(component, event, helper) {
+        console.log('askforFilter');
+        var HaveCreateAccess = component.get("v.HaveCreateAccess");
+            if(HaveCreateAccess){
+                component.set('v.askforFilter', true);
+            }
+            else{
+                component.find('notifLib').showNotice({
+                    "variant": "error",
+                    "header": "Error!",
+                    "message": "You don\'t have the necessary privileges to Create record.",
+                    closeCallback: function () {
+                        $A.get("e.c:BT_SpinnerEvent").setParams({
+                            "action": "HIDE"
+                        }).fire();
+                    }
+                });
+            }
+    },
+
+    closeFilterModal : function(component, event, helper) {
+        console.log('closeFilterModal');
+        component.set('v.askforFilter', false);
+    },
+
+    onSelectChange: function(component, event, helper) {
+        console.log('onSelectChange');
+        var selectedOptionValue = component.find("select").get("v.value");
+        console.log('selectedOptionValue', selectedOptionValue);
+        if (selectedOptionValue == 'PriceBook') {
+            
+            console.log(event.getSource().get('v.value'));
+            let phaseValue=event.getSource().get('v.value');
+            component.set('v.phaseName', phaseValue);
+            console.log(component.get('v.phaseName'));
+            component.set('v.askforFilter', false);
+            component.set('v.openProductBox', true); 
+        } else if (selectedOptionValue == 'Vendor') {
+            component.set('v.askforFilter', false);
+            component.set('v.openProductBoxwithVendor', true);            
+        }
+    },
+
     addProductFromGroup: function(component, event, helper) {
         if (!component.get('v.isAddProductFromGroup')){
             console.log(event.getSource().get('v.value'));
@@ -265,162 +308,6 @@
                     }
                 });
             }
-
-
-            // console.log(component.get('v.runFirstTime'));
-            // // if(component.get('v.runFirstTime') != true)){}
-            // var groups = component.get('v.TotalRecords').groups;
-            // var quote = component.get('v.newQuote');
-            // console.log("New Quote1")
-            // console.log("New Quote : " + quote);
-            // console.log({groups});
-            // console.log(event.getSource().get("v.name"));
-            // console.log('*************');
-            // if (event.getSource().get("v.name") != undefined) {
-            //     var index = event.getSource().get("v.name");
-            //     var groupId = groups[index].Id != undefined ? groups[index].Id : '';
-            //     if (groupId != '') {
-            //         quote.buildertek__Grouping__c = groupId;
-            //         console.log("New Quote2")
-            //         console.log("New Quote : " + quote)
-            //         component.set('v.newQuote', quote);
-            //         component.set('v.quoteGroupId', groupId);
-            //     }
-            // }
-
-
-            // component.set('v.columns1', [
-            //     // { label: '', type: 'customCheckbox', fieldName: 'isSelected', typeAttributes: { isChecked: { fieldName: 'isSelected' }, label: '' } },
-            //     { label: 'Product Family', fieldName: 'Family', type: 'text' },
-            //     { label: 'Product Name', fieldName: 'Name', type: 'text' },
-            //     { label: 'Product Description', fieldName: 'Description', type: 'text' },
-            //     { label: 'Product Code', fieldName: 'ProductCode', type: 'text' },
-            //     { label: 'List Price', fieldName: 'UnitPrice', type: 'currency', typeAttributes: { currencyCode: { fieldName: 'CurrencyIsoCode' } }, cellAttributes: { alignment: 'left' } },
-
-            // ]);
-
-            // var action4 = component.get("c.getProducts");
-            // action4.setCallback(this, function(response) {
-            //     //  alert("ok")
-            //     component.set("v.Spinner2", true);
-            //     var rows = response.getReturnValue();
-            //     console.log({rows});
-
-            //     if (response.getState() == "SUCCESS" && rows!= null) {
-            //         console.log('Rows =>', { rows });
-            //         for (var i = 0; i < rows.length; i++) {
-            //             var row = rows[i];
-            //             if (row.PricebookEntries) {
-            //                 row.UnitPrice = row.PricebookEntries[0].UnitPrice;
-            //             }
-            //         }
-            //         if(component.get('v.runFirstTime') != true){
-            //             component.set("v.data1", rows);
-            //             component.set("v.filteredData", rows);
-            //             helper.sortData(component, component.get("v.sortedBy"), component.get("v.sortedDirection"));
-    
-            //         }
-
-            //         //console.log("data : ",response.getReturnValue());
-            //         var actions = component.get("c.getpricebooks");
-            //         var opts = [];
-            //         actions.setCallback(this, function(response) {
-            //             if (response.getState() == "SUCCESS") {
-            //                 var result = response.getReturnValue();
-            //                 var opts = [];
-            //                 opts.push({ key: "None", value: "" });
-            //                 for (var key in result) {
-            //                     opts.push({ key: key, value: result[key] });
-            //                 }
-            //                 component.set("v.pricebookoptions", opts);
-
-            //                 /*-----------------------------------------------------*/
-            //                 var action20 = component.get("c.priceBookInProject");
-            //                 action20.setParams({
-            //                     "recordId": component.get("v.recordId")
-            //                 });
-            //                 action20.setCallback(this, function(response) {
-            //                     var state = response.getState();
-            //                     if (state === 'SUCCESS') {
-            //                         var result = response.getReturnValue();
-            //                         console.log({result});
-            //                         if (result != 'ERROR') {
-            //                             // component.set("v.pricebookName1", result);
-            //                             component.set("v.data1", '');
-            //                             var x = component.find("getPriceBookId").get("v.value");
-            //                             console.log({x});
-
-            //                             // if (x) {
-            //                             //     x = 
-            //                             // } else {
-            //                             //     x = '';
-            //                             // }
-
-
-            //                             // if (x == '' || x == undefined) {
-            //                             //     console.log("Empty : ", x)
-            //                             //     x = 'None';
-
-            //                             // }
-            //                             console.log("Empty1 : ", x);
-            //                             if(x != ''  && x != undefined){
-            //                                 var selectedPricebookList = component.get("v.storePriceBookId");
-            //                                 for (var i = 0; i < selectedPricebookList.length; i++) {
-            //                                     selectedPricebookList.push(x);
-            //                                 }
-            //                                 component.set("v.storePriceBookId", selectedPricebookList)
-            //                                 var action21 = component.get("c.getProductsthroughPriceBook");
-            //                                 action21.setParams({
-            //                                     "pbookId": x
-            //                                 });
-            //                                 action21.setCallback(this, function(response) {
-            //                                     if (response.getState() == "SUCCESS") {
-            //                                         var rows = response.getReturnValue();
-            //                                         console.log("Rows : ", rows);
-            //                                         for (var i = 0; i < rows.length; i++) {
-            //                                             var row = rows[i];
-            //                                             row.UnitPrice = row.buildertek__Available_Quantity__c;
-            //                                         }
-            //                                         console.log("Get Products based on PriceBook : ", response.getReturnValue());
-            //                                         component.set("v.data1", rows);
-            //                                         component.set("v.filteredData", rows);
-            //                                         helper.sortData(component, component.get("v.sortedBy"), component.get("v.sortedDirection"));
-            //                                         component.set("v.checkFunctionCall", true);
-            //                                         var selectedRows = [];
-            //                                         var listIds = component.get("v.listOfSelectedIds");
-            //                                         for (var i = 0; i < listIds.length; i++) {
-            //                                             selectedRows.push(listIds[i])
-            //                                         }
-            //                                         component.set("v.selectedRows", selectedRows)
-            //                                     }
-            //                                     component.set("v.Spinner2", false);
-            //                                 });
-            //                                 $A.enqueueAction(action21);
-            //                             }else{
-            //                                 component.set("v.Spinner2", false);
-            //                                 console.log(component.get('v.data1'));
-
-            //                             }
-            //                         }
-
-
-            //                     } else {
-            //                         console.log(JSON.stringify(response.getError()))
-            //                     }
-            //                 });
-            //                 $A.enqueueAction(action20);
-            //             }
-            //         });
-            //         $A.enqueueAction(actions);
-            //     }
-            // });
-            // //   component.set("v.Spinner",false);
-            // $A.enqueueAction(action4);
-
-            // //--------------------------------------------
-            // component.set('v.openProductBox', true);
-            // component.set("v.Spinner", false);
-
         } else {
             console.log("Quote 3")
             console.log('Quote Items :0: ', JSON.stringify(component.get("v.newQuote")));
@@ -448,6 +335,8 @@
             }
         
     },
+
+    
 
     saveAndNew: function(component, event, helper) {
         if (!component.get('v.isAddProductFromGroup')) {
