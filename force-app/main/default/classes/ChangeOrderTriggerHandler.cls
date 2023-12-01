@@ -1124,4 +1124,142 @@ public without sharing class ChangeOrderTriggerHandler {
             System.debug('Exception occurred at line ' + e.getLineNumber() + ': ' + e.getMessage());
         }
     }
+
+    // 3 methods for Ticket BUIL-3685 for total sales price field insert,update,delete rollup
+    public void AfterInsertRollup(buildertek__Change_Order__c[] newChangeOrder, Map<ID, buildertek__Change_Order__c> newChangeOrderMap){
+        try {
+            List<buildertek__Project__c> projectList = new List<buildertek__Project__c>();
+            Set<Id> prId = new Set<Id>();
+            List<buildertek__Change_Order__c> COList = new List<buildertek__Change_Order__c>();
+
+            for(buildertek__Change_Order__c co : newChangeOrder){
+                if(co.buildertek__Status__c != 'Pending' && co.buildertek__Status__c != 'Company Rejected' && co.buildertek__Status__c != 'Customer Rejected' && co.buildertek__Project__c != null){
+                    prId.add(co.buildertek__Project__c);
+                }
+            }
+            System.debug('prid ==> ' + prId);
+
+            COList = [SELECT Id,buildertek__Project__c,buildertek__Total_Amount_Tax__c FROM buildertek__Change_Order__c WHERE buildertek__Project__c IN :prId];
+            System.debug('COList ==> ' + COList);
+
+            for(buildertek__Project__c bpr : [SELECT Id,buildertek__Total_Change_Orders__c FROM buildertek__Project__c WHERE Id IN :prId]){
+                bpr.buildertek__Total_Change_Orders__c = 0;
+                for(buildertek__Change_Order__c bco : COList){
+                    bpr.buildertek__Total_Change_Orders__c += bco.buildertek__Total_Amount_Tax__c;
+                }
+                projectList.add(bpr);
+            }
+
+            System.debug('projectList ==> '+projectList);
+            if(projectList.size() > 0){
+                upsert projectList;
+            }
+        } catch (Exception e) {
+            System.debug('Exception in AfterInsertRollup ==> ' + e.getMessage());
+            System.debug('Line ==> ' + e.getLineNumber());
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
+        }
+    }
+
+    public void AfterUpdateRollup(buildertek__Change_Order__c[] oldChangeOrder, buildertek__Change_Order__c[] updatedChangeOrder, Map<ID, buildertek__Change_Order__c> ChangeOrderMap, Map<Id, buildertek__Change_Order__c> oldChangeOrderMap){
+        try {
+            List<buildertek__Project__c> projectList = new List<buildertek__Project__c>();
+            Set<Id> newprId = new Set<Id>();
+            Set<Id> oldprId = new Set<Id>();
+            List<buildertek__Change_Order__c> newCOList = new List<buildertek__Change_Order__c>();
+            List<buildertek__Change_Order__c> oldCOList = new List<buildertek__Change_Order__c>();
+            
+            // to update old 
+            for(buildertek__Change_Order__c oldCO : oldChangeOrder){
+                buildertek__Change_Order__c newCO = ChangeOrderMap.get(oldCO.Id);
+                if(oldCO.buildertek__Project__c != newCO.buildertek__Project__c){
+                    oldprId.add(oldCO.buildertek__Project__c);
+                }
+            }
+            System.debug('update old newprId ==> ' + oldprId);
+            if(oldprId.size() > 0){
+                oldCOList = [SELECT Id,buildertek__Project__c,buildertek__Total_Amount_Tax__c FROM buildertek__Change_Order__c WHERE buildertek__Project__c IN :oldprId AND buildertek__Status__c NOT IN ('Pending','Company Rejected','Customer Rejected')];
+            }
+            System.debug('oldCOList ==> '+oldCOList);
+            for(buildertek__Project__c bpr : [SELECT Id,buildertek__Total_Change_Orders__c FROM buildertek__Project__c WHERE Id IN :oldprId]){
+                bpr.buildertek__Total_Change_Orders__c = 0;
+                for(buildertek__Change_Order__c bco : oldCOList){
+                    bpr.buildertek__Total_Change_Orders__c += bco.buildertek__Total_Amount_Tax__c;
+                }
+                projectList.add(bpr);
+            }
+
+            // to update new
+            for(buildertek__Change_Order__c co : updatedChangeOrder){
+                newprId.add(co.buildertek__Project__c);
+            }
+            System.debug('update new newprId ==> ' + newprId);
+            if(newprId.size() > 0){
+                newCOList = [SELECT Id,buildertek__Project__c,buildertek__Total_Amount_Tax__c FROM buildertek__Change_Order__c WHERE buildertek__Project__c IN :newprId AND buildertek__Status__c NOT IN ('Pending','Company Rejected','Customer Rejected')];
+            }
+            System.debug('newCOList ==> '+newCOList);
+            for(buildertek__Project__c bpr : [SELECT Id,buildertek__Total_Change_Orders__c FROM buildertek__Project__c WHERE Id IN :newprId]){
+                bpr.buildertek__Total_Change_Orders__c = 0;
+                for(buildertek__Change_Order__c bco : newCOList){
+                    bpr.buildertek__Total_Change_Orders__c += bco.buildertek__Total_Amount_Tax__c;
+                }
+                projectList.add(bpr);
+            }
+
+            System.debug('projectlist ==> '+projectList);
+            if(projectList.size() > 0){
+                upsert projectList;
+            }
+        } catch (Exception e) {
+            System.debug('Exception in UpdateInsertRollup ==> ' + e.getMessage());
+            System.debug('Line ==> ' + e.getLineNumber());
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
+        }
+    }
+
+    public void AfterDeleteRollup(buildertek__Change_Order__c[] oldChangeOrder){
+        try {
+            
+            List<buildertek__Project__c> projectList = new List<buildertek__Project__c>();
+            Set<Id> prId = new Set<Id>();
+            List<buildertek__Change_Order__c> COList = new List<buildertek__Change_Order__c>();
+
+            for(buildertek__Change_Order__c co : oldChangeOrder){
+                if(co.buildertek__Status__c != 'Pending' && co.buildertek__Status__c != 'Company Rejected' && co.buildertek__Status__c != 'Customer Rejected'){
+                    prId.add(co.buildertek__Project__c);
+                }
+            }
+            System.debug('prId ==> ' + prId);
+
+            COList = [SELECT Id,buildertek__Project__c,buildertek__Total_Amount_Tax__c FROM buildertek__Change_Order__c WHERE buildertek__Project__c IN :prId];
+            System.debug('CoList ==> '+COList);
+            
+            for(buildertek__Project__c bpr : [SELECT Id,buildertek__Total_Change_Orders__c FROM buildertek__Project__c WHERE Id IN :prId]){
+                bpr.buildertek__Total_Change_Orders__c = 0;
+                for(buildertek__Change_Order__c bco : COList){
+                    bpr.buildertek__Total_Change_Orders__c += bco.buildertek__Total_Amount_Tax__c;
+                }
+                projectList.add(bpr);
+            }
+            
+            System.debug('projectList ==> '+projectList);
+            if(projectList.size() > 0){
+                update projectList;
+            }
+        } catch (Exception e) {
+            System.debug('Exception in deleteInsertRollup ==> ' + e.getMessage());
+            System.debug('Line ==> ' + e.getLineNumber());
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
+        }
+    }
+
 }
