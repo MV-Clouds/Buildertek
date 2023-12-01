@@ -140,4 +140,5 @@
     <aura:if isTrue="{!v.isLoading}">
         <lightning:spinner alternativeText="Loading" variant="brand" size="large" />
     </aura:if>
+
 </aura:component>

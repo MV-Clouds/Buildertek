@@ -31,6 +31,7 @@
     <aura:attribute name="isCurrencyField" type="boolean" default="false" />
     <aura:attribute name="contractor" type="String" default=""/>
     <aura:attribute name="contractorChange" type="Boolean" default="false"/>
+    <aura:attribute name="PurchaseOrderId" type="String" />
  
     <aura:handler name="onSelectEvt" event="c:BT_LookupEvent" action="{!c.getLookUpValues}" />
      <aura:handler name="SelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.getLookUpValues}" />
@@ -165,9 +166,20 @@
 
                             </div>
                             <aura:set attribute="else">
+                                <aura:if isTrue="{!v.fieldName == 'buildertek__Purchase_Order__c'}">
+                                    <!-- <div style = "padding-top: 0px !important; padding-bottom: 0px !important;"> -->
+                                        <lightning:recordEditForm onload="{!c.setSelectedRecordId}" objectApiName="{!v.childObjectName}">
+                                            <lightning:inputField aura:id="lookupField" fieldName="{!v.fieldName}" value="{!v.PurchaseOrderId}" 
+                                            onchange="{!c.fireOnSelectEvt}" class="slds-size--1-of-1" disabled="true"/>  
+                                        </lightning:recordEditForm>
+
+                                    <!-- </div>  -->
+                                <aura:set attribute="else">
                                     <c:BT_LookupFields selectedRecordId="{!v.cellValue}" childObjectName="{!v.childObjectName}" phaseIndex="{!v.phaseIndex}" index="{!v.index}"
                                         fieldName="{!v.fieldName}" record="{!v.record}"
                                         callingCmpName="{!v.callingCmpName}"/>
+                                </aura:set>
+                                </aura:if>
                             </aura:set>
                         </aura:if>
                         <!---->

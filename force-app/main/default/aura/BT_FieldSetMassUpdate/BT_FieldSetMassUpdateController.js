@@ -3,7 +3,6 @@
         // console.log('bt_fieldSetMassUpdate Controller callled===');
         var record = component.get("v.record");
         // console.log('record=='+record);
-        // console.log({record});
         var field = component.get("v.field");
         if(field.name == 'buildertek__Contractor__c'){
             if (record != undefined) {
@@ -13,8 +12,20 @@
             }
             
         }
+        if(field.name == "buildertek__Purchase_Order__c"){
+            if(record != undefined){
+                console.log("PurchaseOrderId :: ",record.buildertek__Purchase_Order__c);
+                component.set("v.PurchaseOrderId", record.buildertek__Purchase_Order__c);
+            }
+        }
         var objectname = component.get("v.childObjectName");
         var mainobjectname = component.get("v.ObjectName");
+        if(record != undefined){
+            component.set("v.recordId", record.Id);
+            console.log("recordId :: ", component.get("v.recordId"));
+        }
+
+
         if (record != undefined) {
             component.set("v.cellValue", record[field.name]);
             component.set("v.fieldName", field.name);
@@ -217,10 +228,11 @@
         var fieldLabel = event.getSource().get("v.name").split('-');
         var selectedValue = event.getSource().get("v.checked");
         var record = component.get('v.record');
+        console.log("record >> ", JSON.parse(JSON.stringify(record)));
         record[fieldLabel] = selectedValue ? true : false;
-        
+
         var index = JSON.stringify(component.get("v.index"));
-        if(fieldLabel != 'buildertek__Tax__c'){
+        if(fieldLabel != 'buildertek__Tax__c' && fieldLabel != 'buildertek__Closed__c'){
            if(selectedValue){
             record['buildertek__Completion__c'] = 100;
             var ele = document.getElementById(index+'_completion');
@@ -244,5 +256,10 @@
         component.set("v.isReferenceField", true);
         $A.enqueueAction(component.get('c.doInit'));
         
-    }
+    },
+
+    setSelectedRecordId: function (component, event, helper) {
+        var selectedRecordId = component.get("v.selectedRecordId");
+        component.find("lookupField").set("v.value", selectedRecordId);
+    },
 })
