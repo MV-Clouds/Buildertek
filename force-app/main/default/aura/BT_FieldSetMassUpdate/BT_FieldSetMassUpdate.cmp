@@ -167,13 +167,13 @@
                             </div>
                             <aura:set attribute="else">
                                 <aura:if isTrue="{!v.fieldName == 'buildertek__Purchase_Order__c'}">
-                                    <!-- <div style = "padding-top: 0px !important; padding-bottom: 0px !important;"> -->
-                                        <lightning:recordEditForm onload="{!c.setSelectedRecordId}" objectApiName="{!v.childObjectName}">
+                                    <lightning:recordEditForm onload="{!c.setSelectedRecordId}" objectApiName="{!v.childObjectName}">
+                                        <div style = "padding-top: 7px !important; padding-bottom: 0px !important;">
                                             <lightning:inputField aura:id="lookupField" fieldName="{!v.fieldName}" value="{!v.PurchaseOrderId}" 
                                             onchange="{!c.fireOnSelectEvt}" class="slds-size--1-of-1" disabled="true"/>  
-                                        </lightning:recordEditForm>
+                                        </div> 
+                                    </lightning:recordEditForm>
 
-                                    <!-- </div>  -->
                                 <aura:set attribute="else">
                                     <c:BT_LookupFields selectedRecordId="{!v.cellValue}" childObjectName="{!v.childObjectName}" phaseIndex="{!v.phaseIndex}" index="{!v.index}"
                                         fieldName="{!v.fieldName}" record="{!v.record}"
