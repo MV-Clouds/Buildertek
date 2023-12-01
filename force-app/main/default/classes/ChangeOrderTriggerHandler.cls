@@ -1139,7 +1139,7 @@ public without sharing class ChangeOrderTriggerHandler {
             }
             System.debug('prid ==> ' + prId);
 
-            COList = [SELECT Id,buildertek__Project__c,buildertek__Total_Amount_Tax__c FROM buildertek__Change_Order__c WHERE buildertek__Project__c IN :prId AND buildertek__Status__c NOT IN ('Pending','Company Rejected','Customer Rejected')];
+            COList = [SELECT Id,buildertek__Project__c,buildertek__Total_Amount_Tax__c FROM buildertek__Change_Order__c WHERE buildertek__Project__c IN :prId];
             System.debug('COList ==> ' + COList);
 
             for(buildertek__Project__c bpr : [SELECT Id,buildertek__Total_Change_Orders__c FROM buildertek__Project__c WHERE Id IN :prId]){
@@ -1173,12 +1173,10 @@ public without sharing class ChangeOrderTriggerHandler {
             List<buildertek__Change_Order__c> oldCOList = new List<buildertek__Change_Order__c>();
             
             // to update old 
-            for(buildertek__Change_Order__c co : oldChangeOrder){
-                buildertek__Change_Order__c neww = ChangeOrderMap.get(co.Id);
-                if(co.buildertek__Project__c != neww.buildertek__Project__c){
-                    // if(co.buildertek__Status__c != 'Pending' && co.buildertek__Status__c != 'Company Rejected' && co.buildertek__Status__c != 'Customer Rejected' && co.buildertek__Project__c != null){
-                        oldprId.add(co.buildertek__Project__c);
-                    // }
+            for(buildertek__Change_Order__c oldCO : oldChangeOrder){
+                buildertek__Change_Order__c newCO = ChangeOrderMap.get(oldCO.Id);
+                if(oldCO.buildertek__Project__c != newCO.buildertek__Project__c){
+                    oldprId.add(oldCO.buildertek__Project__c);
                 }
             }
             System.debug('update old newprId ==> ' + oldprId);
@@ -1196,9 +1194,7 @@ public without sharing class ChangeOrderTriggerHandler {
 
             // to update new
             for(buildertek__Change_Order__c co : updatedChangeOrder){
-                // if(co.buildertek__Status__c != 'Pending' && co.buildertek__Status__c != 'Company Rejected' && co.buildertek__Status__c != 'Customer Rejected' && co.buildertek__Project__c != null){
-                    newprId.add(co.buildertek__Project__c);
-                // }
+                newprId.add(co.buildertek__Project__c);
             }
             System.debug('update new newprId ==> ' + newprId);
             if(newprId.size() > 0){
@@ -1236,12 +1232,12 @@ public without sharing class ChangeOrderTriggerHandler {
 
             for(buildertek__Change_Order__c co : oldChangeOrder){
                 if(co.buildertek__Status__c != 'Pending' && co.buildertek__Status__c != 'Company Rejected' && co.buildertek__Status__c != 'Customer Rejected'){
-                prId.add(co.buildertek__Project__c);
+                    prId.add(co.buildertek__Project__c);
                 }
             }
             System.debug('prId ==> ' + prId);
 
-            COList = [SELECT Id,buildertek__Project__c,buildertek__Total_Amount_Tax__c FROM buildertek__Change_Order__c WHERE buildertek__Project__c IN :prId AND buildertek__Status__c NOT IN ('Pending','Company Rejected','Customer Rejected')];
+            COList = [SELECT Id,buildertek__Project__c,buildertek__Total_Amount_Tax__c FROM buildertek__Change_Order__c WHERE buildertek__Project__c IN :prId];
             System.debug('CoList ==> '+COList);
             
             for(buildertek__Project__c bpr : [SELECT Id,buildertek__Total_Change_Orders__c FROM buildertek__Project__c WHERE Id IN :prId]){
