@@ -1,22 +1,6 @@
 ({
 	doInit: function (component, event, helper) {
 
-		// var workspaceAPI = component.find("workspace");
-		// workspaceAPI.getEnclosingTabId().then((response) => {
-		// 	let opendTab = response.tabId;
-		// 	console.log(opendTab);
-		// 	workspaceAPI.setTabLabel({
-		// 		tabId: opendTab,
-		// 		label: "Purchase Orders"
-		// 	});
-		// 	workspaceAPI.setTabIcon({
-		// 		tabId: opendTab,
-		// 		icon: 'custom:custom5',
-		// 		iconAlt: 'Purchase Orders'
-		// 	});
-		// });
-		// debugger;
-
 		var productCategoryValue = component.get("v.searchCategoryFilter");
 		var recId = component.get("v.recordId");
 
@@ -241,18 +225,11 @@
 		var allFileList = component.get("v.fileData2");
 		var AllPillsList = component.get("v.selectedfilesFill");
 
-		/*for(var i = 0; i < AllPillsList.length; i++){
-				if(AllPillsList[i].Name == selectedPillId){
-					AllPillsList.splice(i, 1);
-					component.set("v.selectedfilesFill", AllPillsList);
-				}  
-			}*/
 
 		if (allFileList.length != undefined) {
 			for (var i = 0; i < allFileList.length; i++) {
 				if (allFileList[i].POId == selectedPillPo && i == Number(selectedPillIndex)) {
 					allFileList.splice(i, 1);
-					//component.set("v.selectedfilesFill", AllPillsList);
 				}
 			}
 		}
@@ -539,23 +516,6 @@
 			}
 		}
 		component.set("v.fileName2", files);
-
-	},
-
-	disable: function(component, event, helper){
-		try{
-			console.log('Disable check');
-			// var second = component.find("checkContractor").get("v.checked");
-			// var third = component.find("checkPOLine").get("v.checked");
-			if(component.get("v.masterBudgetsList")==undefined){
-				component.set("v.isSelected", true);
-			}
-			else{
-				component.set("v.isSelected", false);
-			}
-		}catch (error) {
-			console.log('error--->', error);
-		}
 
 	},
 
