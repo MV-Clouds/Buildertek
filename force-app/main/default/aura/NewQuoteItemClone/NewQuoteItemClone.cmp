@@ -351,8 +351,8 @@
 
 
                                 <div>
-                                <lightning:button iconPosition="left" onclick="{!c.onClickAddlines}" label="Mass Add Line" class="sldsButtonGroup" />
-                            </div>&nbsp;
+                                    <lightning:button iconPosition="left" onclick="{!c.onClickAddlines}" label="New Quote Lines" class="sldsButtonGroup" />
+                                </div>&nbsp;
 
                                 <div>
                                     <aura:if isTrue="{!!v.displayGrouping}">
