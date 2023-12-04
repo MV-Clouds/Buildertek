@@ -6,6 +6,16 @@
  Date: 19/09/2017
  */
 public without sharing class PurchaseOrderDAO{
+    @AuraEnabled
+    public static Boolean Checkifpaid(String recId){
+        buildertek__Purchase_Order__c po = [SELECT Id, buildertek__Status__c FROM buildertek__Purchase_Order__c WHERE Id =: recId];
+            if(po.buildertek__Status__c == 'Paid'){
+                return true;
+            }
+            else{
+                return false;
+            }
+}
     /**********************************************************************************************************************
      Purpose: This method is used to create a link between PO Item and Budget Item
      Parameters: List<Purchase_Order_Item__c> purchaseOrderItems
@@ -364,18 +374,11 @@ public without sharing class PurchaseOrderDAO{
                                       where Purchase_Order__c IN :poIds]){
             PoIdbyAp.put(ap.Purchase_Order__c, ap);
         }
+        System.debug('PoIdbyAp---->' +  PoIdbyAp);
 
         List<buildertek__Account_Payable_Item__c> apItems = new List<buildertek__Account_Payable_Item__c>();
-        system.debug('poItems-----' + poItems);
-        List<Purchase_Order_Item__c> poItemNeedTobeUpdate = new List<Purchase_Order_Item__c>();
         for (Purchase_Order_Item__c poItem : poItems){        
-        if (poItem.buildertek__Quantity_Received__c == null) {
-            poItem.buildertek__Quantity_Received__c = poItem.buildertek__Quantity_Remaining__c + 0;
-        }else {
-            poItem.buildertek__Quantity_Received__c = poItem.buildertek__Quantity_Remaining__c + poItem.buildertek__Quantity_Received__c;
-        }
-            poItemNeedTobeUpdate.add(poItem);
-            
+            System.debug('poItem.purchaseorder--->' + PoIdbyAp.get(poItem.Purchase_Order__c));
             Account_Payable_Item__c apItem = new Account_Payable_Item__c();
             apItem.Account_Payable__c = PoIdbyAp.get(poItem.Purchase_Order__c).Id;
             apItem.Name = poItem.Name;
@@ -409,7 +412,6 @@ public without sharing class PurchaseOrderDAO{
         /*}*/
         //system.debug('apItems--->' + apItems);
         insert apItems;
-        update poItemNeedTobeUpdate;
     }
 
     @AuraEnabled
