@@ -31,7 +31,9 @@
     <aura:attribute name="isCurrencyField" type="boolean" default="false" />
     <aura:attribute name="contractor" type="String" default=""/>
     <aura:attribute name="contractorChange" type="Boolean" default="false"/>
+
     <aura:attribute name="PurchaseOrderId" type="String" />
+    <aura:attribute name="QuantityValue" type="Integer" />
  
     <aura:handler name="onSelectEvt" event="c:BT_LookupEvent" action="{!c.getLookUpValues}" />
      <aura:handler name="SelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.getLookUpValues}" />
@@ -71,20 +73,21 @@
             <lightning:input type="date" value="{!v.cellValue}" name="{!v.index+'-'+v.fieldName}"
                 onchange="{!c.onInputChange}" data-fieldapi="{!v.fieldName}"/>
         </aura:if>
+
         <aura:if isTrue="{!v.isDoubleField}">
-<aura:if isTrue="{!v.fieldName == 'buildertek__Quantity_Remaining__c'}">
-           <!-- buildertek__Quantity_Remaining__c is a formula field , Therefore we make this field Disabled-->
+        <aura:if isTrue="{!v.fieldName == 'buildertek__Quantity_Remaining__c'}">
+            <!-- buildertek__Quantity_Remaining__c is a formula field , Therefore we make this field Disabled-->
+            <div fieldapi="{!v.fieldName}">
+                <lightning:input type="number" value="{!v.cellValue}" name="{!v.index+'-'+v.fieldName}"
+                    onchange="{!c.onInputChange}" data-fieldapi="{!v.fieldName}" disabled="true"/>
+            </div>
+            <aura:set attribute="else">
                 <div fieldapi="{!v.fieldName}">
                     <lightning:input type="number" value="{!v.cellValue}" name="{!v.index+'-'+v.fieldName}"
-                        onchange="{!c.onInputChange}" data-fieldapi="{!v.fieldName}" disabled="true"/>
+                        onchange="{!c.onInputChange}" data-fieldapi="{!v.fieldName}"/>
                 </div>
-                <aura:set attribute="else">
-        <div fieldapi="{!v.fieldName}">
-            <lightning:input type="number" value="{!v.cellValue}" name="{!v.index+'-'+v.fieldName}"
-                onchange="{!c.onInputChange}" data-fieldapi="{!v.fieldName}"/>
-        </div>
-</aura:set>
-           </aura:if>
+            </aura:set>
+        </aura:if>
         </aura:if>
         <aura:if isTrue="{!v.isPercentField}">
             

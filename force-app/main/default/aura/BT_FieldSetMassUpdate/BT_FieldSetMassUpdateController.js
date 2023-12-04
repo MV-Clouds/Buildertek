@@ -4,25 +4,31 @@
         var record = component.get("v.record");
         // console.log('record=='+record);
         var field = component.get("v.field");
+        if(record != undefined){
+
         if(field.name == 'buildertek__Contractor__c'){
-            if (record != undefined) {
-                if(record.buildertek__Contractor__c){
-                    component.set("v.contractor",record.buildertek__Contractor__c);
-                }
-            }
-            
+            if(record.buildertek__Contractor__c){
+                component.set("v.contractor",record.buildertek__Contractor__c);
+            }            
         }
         if(field.name == "buildertek__Purchase_Order__c"){
-            if(record != undefined){
-                console.log("PurchaseOrderId :: ",record.buildertek__Purchase_Order__c);
+            if(record.buildertek__Purchase_Order__c){
                 component.set("v.PurchaseOrderId", record.buildertek__Purchase_Order__c);
             }
         }
+            
+        if(field.name == "buildertek__Quantity_Received__c"){
+            if(record.buildertek__Quantity__c){
+                component.set("v.QuantityValue", record.buildertek__Quantity__c);
+            }
+        }
+        }
+
         var objectname = component.get("v.childObjectName");
         var mainobjectname = component.get("v.ObjectName");
         if(record != undefined){
             component.set("v.recordId", record.Id);
-            console.log("recordId :: ", component.get("v.recordId"));
+            // console.log("recordId :: ", component.get("v.recordId"));
         }
 
 
@@ -193,8 +199,10 @@
     onInputChange: function (component, event, helper) {
         var fieldName = event.getSource().get("v.name").split('-');
         var fieldLabel = fieldName[1];
+        var inputField = event.getSource();
         // debugger;
         var selectedValue = event.getSource().get("v.value");
+        var QuantityValue = component.get("v.QuantityValue");
         //alert(selectedValue);
         var record = component.get('v.record');
         record[fieldLabel] = selectedValue != '' && selectedValue != 'None' ? selectedValue : '';
@@ -208,6 +216,15 @@
                 if (diffDays > 0) {
                     record.buildertek__Duration__c = diffDays;
                 }
+            }
+        }
+        else if(fieldLabel == 'buildertek__Quantity_Received__c'){
+            // console.log("QuantityValue :: ", component.get("v.QuantityValue"));
+            if(selectedValue > QuantityValue){
+                inputField.setCustomValidity("Received value should be less than the Remaining value.");
+            }
+            else{
+                inputField.setCustomValidity("");
             }
         }
         component.set('v.record', record);

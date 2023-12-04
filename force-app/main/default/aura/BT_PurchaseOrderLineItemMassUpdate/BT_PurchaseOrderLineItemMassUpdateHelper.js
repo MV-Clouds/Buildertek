@@ -103,7 +103,7 @@
                             function showToast() {
                                 sforce.one.showToast({
                                     "title": "Error!",
-                                    "message": "Recived Quantity should not be more than Available Quantity.",
+                                    "message": "Received value should be less than the Remaining value.",
                                     "type": "error"
                                 });
                             }                            
