@@ -1,9 +1,19 @@
-public without sharing class QBIntegrationQueue {
+// integration Betweek Quickbook and Salsforce
 
+public without sharing class QBIntegrationQueue {
+    
     @future(callout=true)
-    public static void QBcallouts(Id Sales_invoice_Id, Id receiptID, Boolean Create_Payment){
+    public static void QB_Payment_Invoice_Flow_Callout(Id Sales_invoice_Id, Id receiptID, Boolean Create_Payment){
+        //  *********  Integration flow --> Customer - TaxRate - Term - Items(Product and Service) - Invoice - Payment(Receipt)
+        
+        // 1. BT Sales Invoice Customer Account(Parent Customer) --> QB Customer [ ----- first Code Create Customer in QB From Invoice Customer account(or Project Customer Account), if Customer Already available in QB Then QB Customer id Must be store on Account Object) -----]
+        // 2. BT Sales Invoice Tax Rate (Field) --> QB Tax Rate                  
+        // 3. BT Sales Invoice Term (Picklist filed) --> QB Term
+        // 4. BT Sals invoice related invoice Lines (Related Objects) --> QB Product and Service
+        // 5. BT Sales Invoice (Object) --> QB Invoice
+        // 6. BT receipt (Object) --> QB Payment
         try {
-            buildertek__Billings__c SI = [SELECT Id, Name, buildertek__Customer_Account__c,buildertek__Tax_Rate__c, buildertek__QB_Invoice_URL__c, buildertek__QBO_Tax_Rate__c,buildertek__QBO_Tax_Rate_ID__c,buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c,buildertek__Project__r.buildertek__Customer__c,buildertek__Terms__c,buildertek__Due_Date__c,buildertek__Amount__c,buildertek__Total_Amount_Tax__c FROM buildertek__Billings__c WHERE Id =: Sales_invoice_Id LIMIT 1];
+            buildertek__Billings__c SI = [SELECT Id, Name, buildertek__Customer_Account__c,buildertek__Tax_Rate__c, buildertek__QB_Invoice_URL__c, buildertek__QB_Invoice_Number__c	,buildertek__QBO_Tax_Rate__c,buildertek__QBO_Tax_Rate_ID__c,buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c,buildertek__Project__r.buildertek__Customer__c,buildertek__Terms__c,buildertek__Due_Date__c,buildertek__Amount__c,buildertek__Total_Amount_Tax__c FROM buildertek__Billings__c WHERE Id =: Sales_invoice_Id LIMIT 1];
             Account acc = new Account();
             if(SI.buildertek__Customer_Account__c != null){
                 acc = [SELECT ID, Name,buildertek__Email_Address__c,Fax,buildertek__QBO_ID__c, buildertek__QB_Record_URL__c, buildertek__QBO_SyncToken__c, Description,ShippingCity,ShippingStreet,ShippingState,ShippingPostalCode,ShippingLatitude,ShippingLongitude,ShippingCountry,Phone,BillingCity,BillingStreet,BillingState,BillingPostalCode,BillingLatitude,BillingLongitude,BillingCountry FROM Account WHERE Id =: SI.buildertek__Customer_Account__c limit 1];
@@ -23,9 +33,9 @@ public without sharing class QBIntegrationQueue {
                 Create_Customer_TaxRate_item_invoice_payment_in_QB(SILines, SI, acc, QBMetadata, Get_Access_Token, receiptID, Create_Payment);
             }
             else{
+                String CustomerQBId = acc.buildertek__QBO_ID__c;
                 System.debug('Customer Available in QB');
                 if(SI.buildertek__Tax_Rate__c != null && (SI.buildertek__QBO_Tax_Rate_ID__c == null || SI.buildertek__Tax_Rate__c != SI.buildertek__QBO_Tax_Rate__c)){
-                    String CustomerQBId = acc.buildertek__QBO_ID__c;
                     Create_TaxRate_item_invoice_payment_in_QB(SILines, SI, CustomerQBId, QBMetadata, Get_Access_Token, receiptID, Create_Payment);
                 }
                 else{
@@ -40,37 +50,46 @@ public without sharing class QBIntegrationQueue {
                             taxCodeId = SI.buildertek__QBO_Tax_Rate_ID__c;
                             taxRateValue = SI.buildertek__QBO_Tax_Rate__c;
                     }
-                    if(SILines.size() > 0){
-                        // items - invoice - PAYMENT
-                        String CustomerQBId = acc.buildertek__QBO_ID__c;
-                        Create_item_invoice_Payment_in_QB(SILines, SI, CustomerQBId, QBMetadata, Get_Access_Token, receiptID, Create_Payment, taxCodeId, taxRateValue);
+
+                    if(SI.buildertek__Terms__c != null){
+                        // Create invoic With Term...
+                        Create_Term_item_invoice_payment_in_QB(SILines, SI, CustomerQBId, QBMetadata, Get_Access_Token, receiptID, Create_Payment, taxCodeId, taxRateValue);
                     }
-                    // else {
-                    //     if(SI.buildertek__QBO_ID__c == null){
-                    //         // invoice - PAYMENT
-                    //         Map<Id, List<String>> lineIdsMap = new Map<Id, List<String>>();
-                    //         for(buildertek__Billable_Lines__c SIl : SILines){
-                    //             lineIdsMap.put(
-                    //                         // Assuming SalesforceId__c is of type Id and QbId__c is of type String
-                    //                     Id.valueOf(SIl.Id), // Salesforce ID
-                    //                     new List<String> { SIl.buildertek__QBO_ID__c , SIl.buildertek__QBO_Name__c, string.valueOf(SIL.buildertek__Total__c), string.valueOf(SIL.buildertek__Quantity__c), string.valueOf(SIL.Unit_Price__c) } // QuickBooks ID
-                    //                 );
-                    //         }
-                    //         String CustomerQBId = acc.buildertek__QBO_ID__c;
-                    //         Create_invoice_Payment_in_QB(SI, CustomerQBId, lineIdsMap,QBMetadata, Get_Access_Token, receiptID, Create_Payment, taxCodeId, taxRateValue);
-                    //     }
-                    //     else{
-                    //         // PAYMENT
-                    //         String CustomerQBId = acc.buildertek__QBO_ID__c;
-                    //         String InvoiceQBId = SI.buildertek__QBO_ID__c;
-                    //         Create_Payment_In_QB(InvoiceQBId, CustomerQBId, QBMetadata, Get_Access_Token, receiptID);
-                    //     }
-                    // }
+                    else{
+                        // Create Invoice without Term...
+                        String  TermQBId = null;
+                        if(SILines.size() > 0){
+                            // items - invoice - PAYMENT
+                            Create_item_invoice_Payment_in_QB(SILines, SI, CustomerQBId, QBMetadata, Get_Access_Token, receiptID, Create_Payment, taxCodeId, taxRateValue, TermQBId);
+                        }
+                        // else {
+                        //     if(SI.buildertek__QBO_ID__c == null){
+                        //         // invoice - PAYMENT
+                        //         Map<Id, List<String>> lineIdsMap = new Map<Id, List<String>>();
+                        //         for(buildertek__Billable_Lines__c SIl : SILines){
+                        //             lineIdsMap.put(
+                        //                         // Assuming SalesforceId__c is of type Id and QbId__c is of type String
+                        //                     Id.valueOf(SIl.Id), // Salesforce ID
+                        //                     new List<String> { SIl.buildertek__QBO_ID__c , SIl.buildertek__QBO_Name__c, string.valueOf(SIL.buildertek__Total__c), string.valueOf(SIL.buildertek__Quantity__c), string.valueOf(SIL.Unit_Price__c) } // QuickBooks ID
+                        //                 );
+                        //         }
+                        //         String CustomerQBId = acc.buildertek__QBO_ID__c;
+                        //         Create_invoice_Payment_in_QB(SI, CustomerQBId, lineIdsMap,QBMetadata, Get_Access_Token, receiptID, Create_Payment, taxCodeId, taxRateValue);
+                        //     }
+                        //     else{
+                        //         // PAYMENT
+                        //         String CustomerQBId = acc.buildertek__QBO_ID__c;
+                        //         String InvoiceQBId = SI.buildertek__QBO_ID__c;
+                        //         Create_Payment_In_QB(InvoiceQBId, CustomerQBId, QBMetadata, Get_Access_Token, receiptID);
+                        //     }
+                        // }
+                    }
                 }
+
             }
 
         } catch (Exception e) {
-            System.debug('Error in QBcallouts ..' + e.getMessage() + '\n' + e +'\n Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
+            System.debug('Error in QB_Payment_Invoice_Flow_Callout ..' + e.getMessage() + '\n' + e +'\n Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
         }
 
     }
@@ -82,8 +101,8 @@ public without sharing class QBIntegrationQueue {
             system.debug('JSON Body >>' +  Customer_RequestBody);
             HttpResponse Customer_Response = QBCallOutService.QBAPICallOut(Customer_EndPoint , Customer_RequestBody, Get_Access_Token);
             system.debug('Customer API Status Code >> ' + Customer_Response.getStatusCode());
+            System.debug('Customer_Response.getBody() :: '+ Customer_Response.getBody());
             if(Customer_Response.getStatusCode() == 200){
-                System.debug('Customer_Response.getBody() :: '+ Customer_Response.getBody());
                 QBCustomerResponseJSON Customer_Response_Deser = QBCustomerResponseJSON.parse(Customer_Response.getBody());
                 QBCustomerResponseJSON.Customer customer = new QBCustomerResponseJSON.Customer();
                 customer = Customer_Response_Deser.Customer;
@@ -102,12 +121,11 @@ public without sharing class QBIntegrationQueue {
 
     public static void Create_TaxRate_item_invoice_payment_in_QB(List<buildertek__Billable_Lines__c> SILines, buildertek__Billings__c SI, String CustomerQBId, buildertek__QuickBooks_Setting__mdt QBMetadata, Boolean Get_Access_Token, String receiptID, Boolean Create_Payment){
         try {
-            List<buildertek__Billings__c> allInvoice = [SELECT Id, Name, buildertek__Customer_Account__c, buildertek__QB_Invoice_URL__c, buildertek__QBO_ID__c,buildertek__Tax_Rate__c,buildertek__QBO_Tax_Rate__c,buildertek__QBO_Tax_Rate_ID__c,buildertek__QBO_SyncToken__c,buildertek__Project__r.buildertek__Customer__c,buildertek__Due_Date__c,buildertek__Amount__c,buildertek__Total_Amount_Tax__c FROM buildertek__Billings__c];
+            List<buildertek__Billings__c> allInvoice = [SELECT Id, Name, buildertek__Customer_Account__c, buildertek__QB_Invoice_URL__c,buildertek__QB_Invoice_Number__c, buildertek__QBO_ID__c,buildertek__Tax_Rate__c,buildertek__QBO_Tax_Rate__c,buildertek__QBO_Tax_Rate_ID__c,buildertek__QBO_SyncToken__c,buildertek__Project__r.buildertek__Customer__c,buildertek__Due_Date__c,buildertek__Amount__c,buildertek__Total_Amount_Tax__c FROM buildertek__Billings__c];
             Boolean IsTaxRateExistInQB = false; // to break loop if once invoice flow going forward...
             String taxCodeId;
             Double taxRateValue;
             String taxCodeName;
-            // buildertek__QuickBooks_Setting__mdt QBMetadata = [SELECT Id, DeveloperName,buildertek__Base_Url__c, buildertek__Qb_URL__c,buildertek__Name_Credential_API_Name__c, buildertek__minorversion__c, MasterLabel, buildertek__Access_Token__c, buildertek__Client_Id__c, buildertek__Client_Secret__c, buildertek__Refresh_Token__c, buildertek__Scope__c, buildertek__Company_Id__c FROM buildertek__QuickBooks_Setting__mdt LIMIT 1];
             taxCodeName = 'Tax - ' + string.valueOf(SI.buildertek__Tax_Rate__c);
             // String  taxCodeName = taxName.substring(0, taxName.length() - 2);
              System.debug('taxName------>' + taxCodeName);
@@ -131,7 +149,8 @@ public without sharing class QBIntegrationQueue {
                         System.debug('taxCodeId -----> ' + taxCodeId);
                         System.debug('taxRateValue -----> ' + taxRateValue);
                         System.debug('// Create Invoice with exsiting tax rate ID...');
-                        Create_item_invoice_Payment_in_QB(SILines, SI, CustomerQBId, QBMetadata, Get_Access_Token, receiptID, Create_Payment, taxCodeId, taxRateValue);
+                        Create_Term_item_invoice_payment_in_QB(SILines, SI, CustomerQBId, QBMetadata, Get_Access_Token, receiptID, Create_Payment, taxCodeId, taxRateValue);
+                        // Create_item_invoice_Payment_in_QB(SILines, SI, CustomerQBId, QBMetadata, Get_Access_Token, receiptID, Create_Payment, taxCodeId, taxRateValue);
                     }
                     else{
                         // TaxRate is not exist in QB
@@ -148,7 +167,8 @@ public without sharing class QBIntegrationQueue {
                             TaxRateDetai = TaxRate_ResponseBody_Deser.TaxRateDetails;
                             taxCodeId = TaxRate_ResponseBody_Deser.TaxCodeId;
                             taxRateValue = TaxRateDetai[0].RateValue;
-                            Create_item_invoice_Payment_in_QB(SILines, SI, CustomerQBId, QBMetadata, Get_Access_Token, receiptID, Create_Payment, taxCodeId, taxRateValue);
+                            Create_Term_item_invoice_payment_in_QB(SILines, SI, CustomerQBId, QBMetadata, Get_Access_Token, receiptID, Create_Payment, taxCodeId, taxRateValue);
+                            // Create_item_invoice_Payment_in_QB(SILines, SI, CustomerQBId, QBMetadata, Get_Access_Token, receiptID, Create_Payment, taxCodeId, taxRateValue);
                             // UpdateInv(taxCodeId, taxRateValue,SI.Id);
                         }
                         else{
@@ -184,7 +204,66 @@ public without sharing class QBIntegrationQueue {
         }
     }
 
-    public static void Create_item_invoice_Payment_in_QB(List<buildertek__Billable_Lines__c> SILines, buildertek__Billings__c SI, String CustomerQBId, buildertek__QuickBooks_Setting__mdt QBMetadata, Boolean Get_Access_Token, String receiptID, Boolean Create_Payment, String taxCodeId, Double taxRateValue){
+    public static void Create_Term_item_invoice_payment_in_QB(List<buildertek__Billable_Lines__c> SILines, buildertek__Billings__c SI, String CustomerQBId, buildertek__QuickBooks_Setting__mdt QBMetadata, Boolean Get_Access_Token, String receiptID, Boolean Create_Payment, String taxCodeId, Double taxRateValue){
+        try {
+            String termName = SI.buildertek__Terms__c;
+            String encodedQueryParam = EncodingUtil.urlEncode('Select * From Term Where Name = \''+termName + '\'', 'UTF-8');
+            String EndPoint_for_get_TaxRate_fromQB = '/v3/company/' + QBMetadata.buildertek__Company_Id__c + '/query?query=' + encodedQueryParam + '&minorversion='+ QBMetadata.buildertek__minorversion__c; 
+            String TermQBId = null;
+
+            // Check if term Availbe or not in QB....
+            HttpResponse term_QB_ResponseBody = QBCallOutService.QBAPICallOut_GET(EndPoint_for_get_TaxRate_fromQB, null,false);
+            System.debug('term_QB_ResponseBody >> ' + term_QB_ResponseBody);
+                if(term_QB_ResponseBody.getStatusCode() == 200){
+                    QBtermsResponseJSON term_QB_ResponseBody_Desr = QBtermsResponseJSON.parse(term_QB_ResponseBody.getBody());
+                    QBtermsResponseJSON.QueryResponse QueryResponse = new QBtermsResponseJSON.QueryResponse();
+                    QueryResponse = term_QB_ResponseBody_Desr.QueryResponse;
+                    System.debug('term_QB_ResponseBody_Desr.QueryResponse >> ' + term_QB_ResponseBody_Desr.QueryResponse);
+                    List<QBtermsResponseJSON.Term> Terms = new List<QBtermsResponseJSON.Term>();
+                    if(QueryResponse.Term != null){
+                        // If Tearm Available in QB.. Create Invoice with That Term....
+                        Terms = QueryResponse.Term;
+                        System.debug('Term.QueryResponse >> ' + Terms[0].Id);
+                        TermQBId = Terms[0].Id;
+
+                        Create_item_invoice_Payment_in_QB(SILines, SI, CustomerQBId, QBMetadata, Get_Access_Token, receiptID, Create_Payment, taxCodeId, taxRateValue, TermQBId);
+                    }
+                    else{
+                        // Create Invoice Without Term...
+                        Create_item_invoice_Payment_in_QB(SILines, SI, CustomerQBId, QBMetadata, Get_Access_Token, receiptID, Create_Payment, taxCodeId, taxRateValue, TermQBId);
+                        // Create New term in QB...
+                    //     String Term_EndPoint = '/v3/company/' + QBMetadata.buildertek__Company_Id__c + '/term?minorversion=' + QBMetadata.buildertek__minorversion__c;            
+                    //     String Term_RequestBody = QBMap.mapQBTerm(SI);
+                    //     system.debug('Term JSON Body >>' +  Term_RequestBody);
+                    //     HttpResponse Term_Creation_Response = QBCallOutService.QBAPICallOut(Term_EndPoint , Term_RequestBody, Get_Access_Token);
+                    //     system.debug('Term_Creation_Response >> ' + Term_Response);
+                    //     if(Term_Creation_Response.getStatusCode() == 200){
+                    //         QBtermsResponseJSON Term_Creation_Response_Desr = QBtermsResponseJSON.parse(Term_Creation_Response.getBody());
+                    //         QBtermsResponseJSON.QueryResponse QueryResponse = new QBtermsResponseJSON.QueryResponse();
+                    //         QueryResponse = Term_Creation_Response_Desr.QueryResponse;
+                    //         System.debug('Term_Creation_Response_Desr.QueryResponse >> ' + Term_Creation_Response_Desr.QueryResponse);
+                    //         List<QBtermsResponseJSON.Term> Terms = new List<QBtermsResponseJSON.Term>();
+                    //         if(QueryResponse.Term != null){
+                    //             Terms = QueryResponse.Term;
+                    //             System.debug('Term.QueryResponse >> ' + Terms[0].Id);
+                    //             TermQBId = Terms[0].Id;
+                    //         }
+                    //     }
+                    //    else{
+
+                    //    }
+                    }
+                }
+                else{
+                    QBException.QB_response( term_QB_ResponseBody.getStatusCode(),  term_QB_ResponseBody.getBody(), 'QBIntegrationQueue', 'createTerms');
+                }
+            
+        } catch (Exception e) {
+            System.debug('Error in Create_Term_item_invoice_payment_in_QB ..' + e.getMessage() + '\n' + e +'\n Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
+        }
+    }
+
+    public static void Create_item_invoice_Payment_in_QB(List<buildertek__Billable_Lines__c> SILines, buildertek__Billings__c SI, String CustomerQBId, buildertek__QuickBooks_Setting__mdt QBMetadata, Boolean Get_Access_Token, String receiptID, Boolean Create_Payment, String taxCodeId, Double taxRateValue, String TermQBId){
         try {
 
             List<buildertek__Billable_Lines__c> ItemstoCreate = new List<buildertek__Billable_Lines__c>();
@@ -224,11 +303,22 @@ public without sharing class QBIntegrationQueue {
                         if(InvoiceItem_Response.getStatusCode() == 200){
                             QBBatchResJSON response = QBBatchResJSON.parse(InvoiceItem_Response.getBody());
     
+                            // First Add Existing Invoice Lines(if available)....And Then Added Newly created invoice Lines to the Qb Invoice....
+                            for(buildertek__Billable_Lines__c SIL : SILines){
+                                if(SIL.buildertek__QBO_ID__c != null){
+                                    lineIdsMap.put(
+                                        Id.valueOf(SIL.Id), 
+                                        new List<String>{SIL.buildertek__QBO_ID__c, SIL.buildertek__QBO_Name__c, string.valueOf(SIL.buildertek__Total__c), string.valueOf(SIL.buildertek__Quantity__c), string.valueOf(SIL.Unit_Price__c)}
+                                    );
+                                }
+                            }
+
                             for (QBBatchResJSON.BatchItemResponse batchItem : response.BatchItemResponse) {
                                 if (batchItem != null && batchItem.Item != null && batchItem.bId != null) {
                                     lineIdsMap.put(
                                         // Assuming SalesforceId__c is of type Id and QbId__c is of type String
                                         Id.valueOf(batchItem.bId), // Salesforce ID
+                                        // List Of QB Line Id, QB Line Name , Total Price, Quantity, Unite Price...
                                         new List<String> { batchItem.Item.Id , batchItem.Item.Name, String.valueOf((batchItem.Item.QtyOnHand)*(batchItem.Item.UnitPrice)), String.valueOf(batchItem.Item.QtyOnHand), String.valueOf(batchItem.Item.UnitPrice) } // QuickBooks ID
                                     );
                                 }
@@ -237,16 +327,16 @@ public without sharing class QBIntegrationQueue {
                             if( i == (totalBatches-1)){
                                 System.debug('when last batch finish.. crerate sales invoice');
                                 System.debug('lineIdsMap >> ' + lineIdsMap);
-                                if(SI.buildertek__QBO_ID__c == null){
-                                    Create_invoice_Payment_in_QB(SI, CustomerQBId, lineIdsMap,QBMetadata, Get_Access_Token, receiptID, Create_Payment, taxCodeId, taxRateValue);
-                                }
-                                else{
-                                    System.debug('Invoice available in QB...');
-                                    if(Create_Payment == true){
-                                        String InvoiceQBId = SI.buildertek__QBO_ID__c;
-                                        Create_Payment_In_QB(InvoiceQBId, CustomerQBId, QBMetadata, Get_Access_Token, receiptID);
-                                    }
-                                }
+                                // if(SI.buildertek__QBO_ID__c == null){
+                                    Create_invoice_Payment_in_QB(SI, CustomerQBId, lineIdsMap,QBMetadata, Get_Access_Token, receiptID, Create_Payment, taxCodeId, taxRateValue, TermQBId);
+                                // }
+                                // else{
+                                //     System.debug('Invoice available in QB...');
+                                //     if(Create_Payment == true){
+                                //         String InvoiceQBId = SI.buildertek__QBO_ID__c;
+                                //         Create_Payment_In_QB(InvoiceQBId, CustomerQBId, QBMetadata, Get_Access_Token, receiptID);
+                                //     }
+                                // }
                                 // update sales invoice lines....
                                 UpdateSIline(ItemstoCreate, lineIdsMap);
                             }
@@ -267,18 +357,18 @@ public without sharing class QBIntegrationQueue {
                                 // Assuming SalesforceId__c is of type Id and QbId__c is of type String
                                 Id.valueOf(SIl.Id), // Salesforce ID
                                 new List<String> { SIl.buildertek__QBO_ID__c , SIl.buildertek__QBO_Name__c, string.valueOf(SIL.buildertek__Total__c), string.valueOf(SIL.buildertek__Quantity__c), string.valueOf(SIL.Unit_Price__c) } // QuickBooks ID
-                                );
+                        );
                     }
-                    if(SI.buildertek__QBO_ID__c == null){
-                        Create_invoice_Payment_in_QB(SI, CustomerQBId, lineIdsMap1,QBMetadata, Get_Access_Token, receiptID, Create_Payment, taxCodeId, taxRateValue);
-                    }
-                    else{
-                        System.debug('Invoice available in QB...');
-                        if(Create_Payment == true){
-                            String InvoiceQBId = SI.buildertek__QBO_ID__c;
-                            Create_Payment_In_QB(InvoiceQBId, CustomerQBId, QBMetadata, Get_Access_Token, receiptID);
-                        }
-                    }
+                    // if(SI.buildertek__QBO_ID__c == null){
+                        Create_invoice_Payment_in_QB(SI, CustomerQBId, lineIdsMap1,QBMetadata, Get_Access_Token, receiptID, Create_Payment, taxCodeId, taxRateValue, TermQBId);
+                    // }
+                    // else{
+                    //     System.debug('Invoice available in QB...');
+                    //     if(Create_Payment == true){
+                    //         String InvoiceQBId = SI.buildertek__QBO_ID__c;
+                    //         Create_Payment_In_QB(InvoiceQBId, CustomerQBId, QBMetadata, Get_Access_Token, receiptID);
+                    //     }
+                    // }
                 // }
             }
         } catch (Exception e) {
@@ -286,12 +376,12 @@ public without sharing class QBIntegrationQueue {
         }
     }
 
-    public static void Create_invoice_Payment_in_QB(buildertek__Billings__c SI, String CustomerQBId,Map<Id, List<String>> lineIdsMap, buildertek__QuickBooks_Setting__mdt QBMetadata, Boolean Get_Access_Token, String receiptID, Boolean Create_Payment, String taxCodeId, Double taxRateValue){
+    public static void Create_invoice_Payment_in_QB(buildertek__Billings__c SI, String CustomerQBId,Map<Id, List<String>> lineIdsMap, buildertek__QuickBooks_Setting__mdt QBMetadata, Boolean Get_Access_Token, String receiptID, Boolean Create_Payment, String taxCodeId, Double taxRateValue, String TermQBId){
         try {
             // String CustomerQBId = acc.buildertek__QBO_ID__c;
             // Map<Id, List<String>> lineIdsMap = new Map<Id, List<String>>();
             String Invoice_EndPoint = '/v3/company/' + QBMetadata.buildertek__Company_Id__c + '/invoice?minorversion=' + QBMetadata.buildertek__minorversion__c;
-            String Invoice_RequestBody = QBMap.mapInvoiceDataBatch(SI, CustomerQBId, lineIdsMap, taxCodeId);
+            String Invoice_RequestBody = QBMap.mapInvoiceDataBatch(SI, CustomerQBId, lineIdsMap, taxCodeId, TermQBId);
             System.debug('Invoice_RequestBody >> ' + Invoice_RequestBody);
             HttpResponse Invoice_Response = QBCallOutService.QBAPICallOut(Invoice_EndPoint , Invoice_RequestBody, Get_Access_Token);
             
@@ -303,10 +393,12 @@ public without sharing class QBIntegrationQueue {
                 QBInvoiceResponseJSON.Invoice invoice = new QBInvoiceResponseJSON.Invoice();
                 invoice = Invoice_Response_desr.Invoice;
                 String InvoiceQBId = invoice.Id;
+                String QbInvNumber = invoice.DocNumber;
+                String QBInvSyncTocken = invoice.SyncToken;
                 if(Create_Payment == true){
                     Create_Payment_In_QB(InvoiceQBId, CustomerQBId, QBMetadata, Get_Access_Token, receiptID);
                 }
-                UpdateSalesInvoice(SI.Id, InvoiceQBId, taxCodeId, taxRateValue,QBMetadata);
+                UpdateSalesInvoice(SI.Id, InvoiceQBId, taxCodeId, taxRateValue,QBMetadata, TermQBId, QbInvNumber, QBInvSyncTocken);
             }
             else{
                 QBException.QB_response( Invoice_Response.getStatusCode(),  Invoice_Response.getBody(), 'QBIntegrationQueue', 'Create_invoice_Payment_in_QB');
@@ -380,15 +472,18 @@ public without sharing class QBIntegrationQueue {
         }
     }
 
-    public static void UpdateSalesInvoice(String invoice_Id, String QB_invoice_Id, String taxCodeId, Double taxRateValue , buildertek__QuickBooks_Setting__mdt  QBMetadata){
+    public static void UpdateSalesInvoice(String invoice_Id, String QB_invoice_Id, String taxCodeId, Double taxRateValue , buildertek__QuickBooks_Setting__mdt  QBMetadata, String TermQBId, String QbInvNumber, String QBInvSyncTocken){
         try {
             system.debug('sales Invoice going to Update');
             String qbInvoiceURL = QBMetadata.buildertek__Qb_URL__c + 'invoice?txnId=' + QB_invoice_Id;
-            buildertek__Billings__c Invoice = [SELECT Id, Name , buildertek__QBO_ID__c, buildertek__QBO_Tax_Rate__c,buildertek__QBO_Tax_Rate_ID__c, buildertek__QB_Invoice_URL__c FROM buildertek__Billings__c WHERE ID =:invoice_Id LIMIT 1];
+            buildertek__Billings__c Invoice = [SELECT Id, Name , buildertek__QBO_ID__c,buildertek__QB_Invoice_Number__c	, buildertek__QBO_Tax_Rate__c,buildertek__QBO_Tax_Rate_ID__c, buildertek__QB_Invoice_URL__c FROM buildertek__Billings__c WHERE ID =:invoice_Id LIMIT 1];
             Invoice.buildertek__QBO_ID__c = QB_invoice_Id;
             Invoice.buildertek__QBO_Tax_Rate_ID__c = taxCodeId;
             Invoice.buildertek__QBO_Tax_Rate__c = taxRateValue;
             Invoice.buildertek__QB_Invoice_URL__c = qbInvoiceURL;
+            Invoice.buildertek__QBO_Term_Id__c = TermQBId;
+            Invoice.buildertek__QB_Invoice_Number__c = QbInvNumber;
+            Invoice.buildertek__QBO_SyncToken__c = QBInvSyncTocken;
             update Invoice;
         } catch (Exception e) {
             System.debug('Error in UpdateSalesInvoice : ' + e.getMessage() +'\n'+ e + 'Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
@@ -430,7 +525,7 @@ public without sharing class QBIntegrationQueue {
             if(SILines.size() > 0 && acc != null){
                 string receiptID;
                 boolean create_Payment = false;
-                QBcallouts(Sales_invoice_Id, receiptID, create_Payment);
+                QB_Payment_Invoice_Flow_Callout(Sales_invoice_Id, receiptID, create_Payment);
                 return 'success';
             }
             else if(SILines.size() == 0){
@@ -445,77 +540,6 @@ public without sharing class QBIntegrationQueue {
         } catch (Exception e) {
             System.debug('Error in Create_Customer_invoice_item_payment_in_QB_Using_Button : ' + e.getMessage() +'\n'+ e + 'Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
             return null;
-        }
-    }
-
-    @future(callout=true)
-    public static void createTerms(String Sales_invoice_Id){
-        try {
-            buildertek__Billings__c SI = [SELECT Id, Name, buildertek__Customer_Account__c,buildertek__Tax_Rate__c, buildertek__QB_Invoice_URL__c, buildertek__QBO_Tax_Rate__c,buildertek__QBO_Tax_Rate_ID__c,buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c,buildertek__Project__r.buildertek__Customer__c,buildertek__Terms__c,buildertek__Due_Date__c,buildertek__Amount__c,buildertek__Total_Amount_Tax__c FROM buildertek__Billings__c WHERE Id =: Sales_invoice_Id LIMIT 1];
-            Account acc = new Account();
-            if(SI.buildertek__Customer_Account__c != null){
-                acc = [SELECT ID, Name,buildertek__Email_Address__c,Fax,buildertek__QBO_ID__c, buildertek__QB_Record_URL__c, buildertek__QBO_SyncToken__c, Description,ShippingCity,ShippingStreet,ShippingState,ShippingPostalCode,ShippingLatitude,ShippingLongitude,ShippingCountry,Phone,BillingCity,BillingStreet,BillingState,BillingPostalCode,BillingLatitude,BillingLongitude,BillingCountry FROM Account WHERE Id =: SI.buildertek__Customer_Account__c limit 1];
-            }
-            else if(SI.buildertek__Customer_Account__c == null){
-                system.debug('Project Id ' + SI.buildertek__Project__r.buildertek__Customer__c);
-                acc = [SELECT ID, Name,buildertek__Email_Address__c,Fax,buildertek__QBO_ID__c, buildertek__QB_Record_URL__c, buildertek__QBO_SyncToken__c, Description,ShippingCity,ShippingStreet,ShippingState,ShippingPostalCode,ShippingLatitude,ShippingLongitude,ShippingCountry,Phone,BillingCity,BillingStreet,BillingState,BillingPostalCode,BillingLatitude,BillingLongitude,BillingCountry FROM Account WHERE Id =: SI.buildertek__Project__r.buildertek__Customer__c limit 1];
-            }
-            List<buildertek__Billable_Lines__c> SILines = [SELECT Id, Name, buildertek__Billings__c,buildertek__Billings__r.Name,buildertek__Total__c,buildertek__Item_Name__c,buildertek__Quantity__c,buildertek__QBO_ID__c,buildertek__QBO_Name__c,buildertek__QBO_SyncToken__c,buildertek__Description__c,buildertek__Unit_Price__c,buildertek__Type__c FROM buildertek__Billable_Lines__c WHERE buildertek__Billings__c =: Sales_invoice_Id];
-
-            buildertek__QuickBooks_Setting__mdt QBMetadata = [SELECT Id, DeveloperName,buildertek__Base_Url__c, buildertek__minorversion__c, MasterLabel, buildertek__Access_Token__c, buildertek__Client_Id__c, buildertek__Client_Secret__c, buildertek__Refresh_Token__c, buildertek__Qb_URL__c, buildertek__Scope__c, buildertek__Company_Id__c FROM buildertek__QuickBooks_Setting__mdt LIMIT 1];
-            
-            Boolean Get_Access_Token = false;
-
-            String termName = SI.buildertek__Terms__c;
-            String encodedQueryParam = EncodingUtil.urlEncode('Select * From Term Where Name = \''+termName + '\'', 'UTF-8');
-            String EndPoint_for_get_TaxRate_fromQB = '/v3/company/' + QBMetadata.buildertek__Company_Id__c + '/query?query=' + encodedQueryParam + '&minorversion='+ QBMetadata.buildertek__minorversion__c; 
-            String TermQBId = null;
-
-            // Check if term Availbe or not in QB....
-            HttpResponse term_QB_ResponseBody = QBCallOutService.QBAPICallOut_GET(EndPoint_for_get_TaxRate_fromQB, null,false);
-            System.debug('term_QB_ResponseBody >> ' + term_QB_ResponseBody);
-                if(term_QB_ResponseBody.getStatusCode() == 200){
-                    QBtermsResponseJSON term_QB_ResponseBody_Desr = QBtermsResponseJSON.parse(term_QB_ResponseBody.getBody());
-                    QBtermsResponseJSON.QueryResponse QueryResponse = new QBtermsResponseJSON.QueryResponse();
-                    QueryResponse = term_QB_ResponseBody_Desr.QueryResponse;
-                    System.debug('term_QB_ResponseBody_Desr.QueryResponse >> ' + term_QB_ResponseBody_Desr.QueryResponse);
-                    List<QBtermsResponseJSON.Term> Terms = new List<QBtermsResponseJSON.Term>();
-                    if(QueryResponse.Term != null){
-                        Terms = QueryResponse.Term;
-                        System.debug('Term.QueryResponse >> ' + Terms[0].Id);
-                        TermQBId = Terms[0].Id;
-                    }
-                    else{
-                        // Create New term in QB...
-                    //     String Term_EndPoint = '/v3/company/' + QBMetadata.buildertek__Company_Id__c + '/term?minorversion=' + QBMetadata.buildertek__minorversion__c;            
-                    //     String Term_RequestBody = QBMap.mapAccountData(acc, 1);
-                    //     system.debug('Term JSON Body >>' +  Term_RequestBody);
-                    //     HttpResponse Term_Creation_Response = QBCallOutService.QBAPICallOut(Term_EndPoint , Term_RequestBody, Get_Access_Token);
-                    //     system.debug('Term_Creation_Response >> ' + Term_Response);
-                    //     if(Term_Creation_Response.getStatusCode() == 200){
-                    //         QBtermsResponseJSON Term_Creation_Response_Desr = QBtermsResponseJSON.parse(Term_Creation_Response.getBody());
-                    //         QBtermsResponseJSON.QueryResponse QueryResponse = new QBtermsResponseJSON.QueryResponse();
-                    //         QueryResponse = Term_Creation_Response_Desr.QueryResponse;
-                    //         System.debug('Term_Creation_Response_Desr.QueryResponse >> ' + Term_Creation_Response_Desr.QueryResponse);
-                    //         List<QBtermsResponseJSON.Term> Terms = new List<QBtermsResponseJSON.Term>();
-                    //         if(QueryResponse.Term != null){
-                    //             Terms = QueryResponse.Term;
-                    //             System.debug('Term.QueryResponse >> ' + Terms[0].Id);
-                    //             TermQBId = Terms[0].Id;
-                    //         }
-                    //     }
-                    //    else{
-
-                    //    }
-                    }
-                }
-                else{
-                    QBException.QB_response( term_QB_ResponseBody.getStatusCode(),  term_QB_ResponseBody.getBody(), 'QBIntegrationQueue', 'createTerms');
-                }
-
-            
-        } catch (Exception e) {
-            System.debug('Error in Create_Customer_invoice_item_payment_in_QB_Using_Button : ' + e.getMessage() +'\n'+ e + 'Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
         }
     }
 

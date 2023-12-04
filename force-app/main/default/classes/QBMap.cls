@@ -77,6 +77,18 @@ public without sharing class QBMap {
         return JSON.serialize(tax);
     }
 
+    // public static string mapQBTerm(buildertek__Billings__c SI){
+    //     try {
+    //         QBTermReqJSON term = new QBTermReqJSON();
+    //         term.Name = SI.buildertek__Terms__c;
+    //         term.DueDays = 
+            
+    //     } catch (Exception e) {
+    //         System.debug('Exception in createProduct :: '  + e.getMessage());
+    //         return null;
+    //     }
+    // }
+
 
 
     public static String MapInvoiceLineToBatch(List<buildertek__Billable_Lines__c> SILine) {
@@ -119,7 +131,7 @@ public without sharing class QBMap {
         }
     }
 
-    public static String mapInvoiceDataBatch(buildertek__Billings__c inv, String CustomerId, Map<Id, List<String>> lineIdsMap, String taxCodeId) {
+    public static String mapInvoiceDataBatch(buildertek__Billings__c inv, String CustomerId, Map<Id, List<String>> lineIdsMap, String taxCodeId, String TermQBId) {
         try {
             System.debug(' in mapInvoiceData method');
             String invId = inv.Id;
@@ -127,6 +139,11 @@ public without sharing class QBMap {
             DateTime yourDate = Datetime.now();
             Date txnDate = Date.valueOf(yourDate.format('yyyy-MM-dd'));
             QBInvoiceJSON invoice = new QBInvoiceJSON();
+            if(invId != null && invId != ''){
+                invoice.Id = inv.buildertek__QBO_ID__c;
+                invoice.sparse = true;
+                invoice.SyncToken = inv.buildertek__QBO_SyncToken__c;
+            }
             invoice.TotalAmt = inv.buildertek__Total_Amount_Tax__c;
             invoice.Balance = inv.buildertek__Total_Amount_Tax__c;
             invoice.TxnDate = txnDate;
@@ -186,6 +203,10 @@ public without sharing class QBMap {
             QBInvoiceJSON.CustomerRef customer = new QBInvoiceJSON.CustomerRef();
             customer.value = CustomerId;
             invoice.CustomerRef = customer;
+
+            QBInvoiceJSON.SalesTermRef term = new QBInvoiceJSON.SalesTermRef();
+            term.value = TermQBId;
+            invoice.SalesTermRef = term;
             
             // System.debug('Invoice request Body :: ' + JSON.serialize(invoice, True).replace('"Long_x":', '"Long":'));
             

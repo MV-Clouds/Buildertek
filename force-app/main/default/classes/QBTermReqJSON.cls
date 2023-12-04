@@ -1,10 +1,10 @@
 public with sharing class QBTermReqJSON {
     public Boolean sparse;
     public String Type;
-    public Integer DiscountDays;
+    public Double DiscountDays;
     public Boolean Active;
-    public Integer DiscountPercent;
-    public Integer DueDays;
+    public Double DiscountPercent;
+    public Double DueDays;
     public String Name;
     public String Id;
     public String domain;

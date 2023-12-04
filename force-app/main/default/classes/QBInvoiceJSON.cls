@@ -139,7 +139,7 @@ public class QBInvoiceJSON {
     //     public Boolean AllowOnlineCreditCardPayment;
     //     public Boolean AllowOnlineACHPayment;
 
-    public Invoice Invoice;
+    // public Invoice Invoice;
 		// public String time;
 	public class TxnTaxDetail{
 		public Double TotalTax;
