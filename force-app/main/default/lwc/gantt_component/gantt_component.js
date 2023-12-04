@@ -123,6 +123,8 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
   @api showFileForRecord = "";
   @api showFilePopup = false;
 
+  @track PhaseName = "";
+
   connectedCallback() {
     console.log("Connected Callback new gantt chart");
     console.log("ReocrdID:- ", this.recordId);
@@ -920,7 +922,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
       columnLines: false,
 
       features: {
-        scrollButtons : true,
         dependencyEdit : true,
         // dependencies : {radius:10},
         rowReorder: false,
@@ -964,16 +965,17 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
                 newCustomField: {
                   type: "Combo",
                   weight: 200,
-                  label: "Phase",
+                  label: "NewPhase",
                   items: this.phaseNameList,
                   name: "NewPhase",
+                  // value: ,
                 },
               },
             },
             // Remove all tabs except the "General" tab
             successorsTab: false,
             resourcesTab: false,
-            advancedTab: true,
+            advancedTab: false,
           },
         },
         taskMenu: {

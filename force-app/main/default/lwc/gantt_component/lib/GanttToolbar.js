@@ -338,7 +338,7 @@ export default base => class GanttToolbar extends base {
                         //     toggleable : true,
                         //     onAction   : 'up.onCriticalPathsClick'
                         // },
-
+                        
                     ]
                 },
                 // {
@@ -550,7 +550,6 @@ export default base => class GanttToolbar extends base {
             console.log('assignmentStore JSON ',JSON.parse(taskEdit.assignmentStore.json));
             let assignedResources = setResourceDataForApexData(JSON.parse(taskEdit.assignmentStore.json));
             console.log('assignedResources ',assignedResources);
-            debugger
             if (assignedResources == 'error') {
                 this.gantt.callGanttComponent.showToastMessage('Can not Select more then 3 Internal or External Resources!');
                 this.gantt.callGanttComponent.template.querySelector('.container').innerHTML = '';
