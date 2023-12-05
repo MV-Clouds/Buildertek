@@ -48,6 +48,22 @@ public without sharing class ReceiptTriggerHandler {
 
     }
 
+    public static void QBIntegrationOnInsert(buildertek__Receipt__c[] newReceiptList, buildertek__Receipt__c[] oldReceiptList){
+        try {
+
+            for(buildertek__Receipt__c rec : newReceiptList){
+                // QBIntegrationQueueable.QBIntegrationMethod(rec.buildertek__Billing__c, rec.Id);
+                boolean Create_Payment = true;
+                QBIntegrationQueue.QBcallouts(rec.buildertek__Billing__c, rec.Id, Create_Payment);
+                // QBPaymentCreation.CreateQBPayment(rec.Id);
+            }
+            
+        } catch (Exception e) {
+            System.debug('Error in QBIntegrationOnInsert Trigger handler >> ' + e.getMessage() + '\n' + e);
+        }
+    }
+
+
     // public static void OnAfterDelete(buildertek__Receipt__c[] oldReceiptList){
     //     SET<Id> receiptIdSet = new SET<Id>();
     //     SET<Id> projectIdSet = new SET<Id>();

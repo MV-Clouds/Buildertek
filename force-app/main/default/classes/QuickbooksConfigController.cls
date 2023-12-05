@@ -22,7 +22,7 @@ public class QuickbooksConfigController implements Metadata.DeployCallback{
                                                                   buildertek__Client_Secret__c, 
                                                                   buildertek__Refresh_Token__c, 
                                                                   buildertek__Scope__c, 
-                                                                  buildertek__Company_Id__c FROM buildertek__QuickBooks_Setting__mdt WHERE MasterLabel =: username];
+                                                                  buildertek__Company_Id__c FROM buildertek__QuickBooks_Setting__mdt LIMIT 1];
         if(qbconfigList.size() > 0){
             qbConfigs = qbconfigList[0];   
         }else{

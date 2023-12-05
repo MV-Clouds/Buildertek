@@ -4807,7 +4807,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                             var toastEvent = $A.get("e.force:showToast");
                             toastEvent.setParams({
                                 type: 'ERROR',
-                                message: 'You are trying to add Invoice which has contentDisburshment associated with it.',
+                                message: 'You are trying to add Invoice which has Cash Disburshment associated with it.',
                                 duration: '5000',
                             });
                             toastEvent.fire();
