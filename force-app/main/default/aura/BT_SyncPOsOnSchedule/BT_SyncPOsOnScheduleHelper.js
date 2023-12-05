@@ -67,13 +67,15 @@
             if (state === "SUCCESS") {
                 let result = response.getReturnValue();
                 console.log('result: ' + JSON.stringify(result));
-                showToast('success', 'Success', 'POs are successfully synced', '3000');
+                helper.showToast('success', 'Success', 'POs are successfully synced', '3000');
                 $A.get("e.force:closeQuickAction").fire();
             } else {
                 let error = response.getError();
                 console.log('Error =>', { error });
-                showToast('Error', 'Error', 'Something Went Wrong', '3000');
-                $A.get("e.force:closeQuickAction").fire();
+                helper.showToast('Error', 'Error', 'Something Went Wrong', '3000');
+            }
+            if (callback && typeof callback === "function") {
+                callback();
             }
         });
         $A.enqueueAction(action);

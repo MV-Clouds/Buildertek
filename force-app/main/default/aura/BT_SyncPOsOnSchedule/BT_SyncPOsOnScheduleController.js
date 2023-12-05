@@ -5,19 +5,23 @@
         helper.getAllPOs(component, event, helper);
         component.set("v.spinner", false);
     },
-
+    
     Save: function (component, event, helper) {
         console.log('Save');
         let selectedScheduleItems = component.get("v.selectedScheduleItems");
         console.log('Selected Schedule Items: ', selectedScheduleItems);
+        
         if (selectedScheduleItems.length > 0) {
             component.set("v.spinner", true);
-            helper.saveSchedulePO(component, event, helper);
-            component.set("v.spinner", false);
+            
+            helper.saveSchedulePO(component, event, helper, function () {
+                component.set("v.spinner", false);
+            });
         } else {
             helper.showToast('error', 'Error', 'Please select at least one Schedule Item');
         }
     },
+    
 
     closeModel: function (component, event, helper) {
         $A.get("e.force:closeQuickAction").fire();
