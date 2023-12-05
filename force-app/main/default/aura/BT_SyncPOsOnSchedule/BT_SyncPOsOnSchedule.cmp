@@ -1,0 +1,84 @@
+<aura:component
+    implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader"
+    access="global" controller="BT_SyncPOsOnScheduleController">
+
+    <aura:attribute name="scheduleItemList" type="List" default="[]" />
+    <aura:attribute name="poList" type="List" default="[]" />
+    <aura:attribute name="selectedScheduleItem" type="String" />
+    <aura:attribute name="spinner" type="Boolean" default="false" />
+    <aura:attribute name="selectedScheduleItems" type="Object[]" default="[]" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
+
+    <div class="slds-modal__header mainHeading">
+        Sync PO's on Schedule
+    </div>
+
+    <div class="slds-modal__content slds-p-around--large">
+        <div class="slds slds-scope">
+            <table class="slds-table slds-table--bordered slds-table--cell-buffer">
+                <thead>
+                    <tr>
+                        <th scope="col" class="slds-text-title--caps slds-text-align_center">Select Schedule Item for
+                            Purchase Order</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="slds-card po-container">
+                                <div class="slds-card__body">
+                                    <div class="slds-card__body_inner">
+                                        <aura:iteration items="{!v.poList}" var="item">
+                                            <div class="slds-media po-item">
+                                                <div class="icon">
+                                                    <lightning:icon iconName='custom:custom18'
+                                                        alternativeText='Purchase Order' size='small' />
+                                                </div>
+                                                <div class="slds-media__body po-name-column">
+                                                    <p>{!item.buildertek__Description__c}</p>
+                                                </div>
+                                                <div class="slds-form-element dropdown-column">
+                                                    <div class="slds-form-element__control" data-id="{!item.Id}">
+                                                        <lightning:select name="scheduleIem-dropdown"
+                                                            value="{!item.selectedScheduleItem}" onchange="{!c.onSelectChange}">
+                                                            <option text="--None--" value="" />
+                                                            <aura:iteration items="{!v.scheduleItemList}" var="scheduleItem">
+                                                                <option value="{!scheduleItem.Id}">{!scheduleItem.Name}</option>
+                                                            </aura:iteration>
+                                                        </lightning:select>
+
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </aura:iteration>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="slds-modal__footer">
+        <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}">Cancel</button>
+        <button class="slds-button slds-button--brand" onclick="{!c.Save}">Save</button>
+    </div>
+
+    <aura:if isTrue="{!v.spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </aura:if>
+
+    <lightning:notificationsLibrary aura:id="notifLib" />
+</aura:component>

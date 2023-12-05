@@ -1,0 +1,58 @@
+.THIS .mainHeading {
+    font-weight: bold;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.THIS .custom-heading {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    color: #3A84D8;
+}
+
+.THIS .po-container {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.THIS .po-item {
+    padding: 1rem;
+    border-bottom: 1px solid #d8d8d8;
+    display: flex;
+    align-items: center !important;
+    justify-content: space-between;
+}
+
+.THIS .icon {
+    margin-right: 10px;
+}
+
+.THIS .slds-table {
+    width: 100%;
+    border-collapse: collapse;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.THIS .slds-th, .THIS .slds-td {
+    border: 1px solid #d8d8d8;
+    padding: 0.5rem;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.THIS .slds-th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.THIS .po-name-column {
+    width: 50%; 
+}
+
+.THIS .dropdown-column {
+    width: 40%;
+}

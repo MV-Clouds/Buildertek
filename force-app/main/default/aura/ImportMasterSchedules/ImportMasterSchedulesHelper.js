@@ -1,4 +1,4 @@
-({
+e({
     helperMethod : function() {
 
     }

@@ -1,0 +1,91 @@
+public without sharing class BT_SyncPOsOnScheduleController {
+    
+    @AuraEnabled
+    public static List<buildertek__Project_Task__c> fetchScheduleItem(String scheduleId){
+        try {
+            List<buildertek__Project_Task__c> scheduleItemList = [Select Id, Name, buildertek__Type__c from buildertek__Project_Task__c where buildertek__Schedule__c = :scheduleId and buildertek__Type__c = 'Task'];
+            return scheduleItemList;
+        } catch (Exception e) {
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_for_Force_Site__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(StoreExcCustomSetting[0].buildertek__Store_Exception_for_Force_Site__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
+            return null;
+        }
+    }
+    
+    @AuraEnabled(Cacheable=true)
+    public static List<buildertek__Purchase_Order__c> fetchAllPOs(){
+        try {
+            List<buildertek__Purchase_Order__c> poList = [Select Id, Name, buildertek__Description__c from buildertek__Purchase_Order__c where buildertek__Schedule_Item__c = ''];
+            return poList;
+        } catch (Exception e) {
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_for_Force_Site__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(StoreExcCustomSetting[0].buildertek__Store_Exception_for_Force_Site__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
+            return null;
+        }
+    }
+    
+    @AuraEnabled
+    public static String setPOForScheduleItem(String schedulePO, String scheduleId) {
+        try {
+            List<SchedulePOWrapper> schedulePOList = (List<SchedulePOWrapper>)JSON.deserialize(schedulePO, List<SchedulePOWrapper>.class);
+            
+            Set<Id> poIds = new Set<Id>();
+            Set<Id> scheduleItemIds = new Set<Id>();
+    
+            for (SchedulePOWrapper schedulePOItem : schedulePOList) {
+                poIds.add(schedulePOItem.poId);
+                scheduleItemIds.add(schedulePOItem.scheduleItemId);
+            }
+            
+            List<buildertek__Purchase_Order__c> poList = [SELECT Id, Name, buildertek__Description__c, buildertek__Schedule__c, buildertek__Completion__c, buildertek__Schedule_Item__c FROM buildertek__Purchase_Order__c WHERE Id IN :poIds];
+            List<buildertek__Project_Task__c> scheduleItemList = [SELECT Id, Name, buildertek__Purchase_Order__c FROM buildertek__Project_Task__c WHERE Id IN :scheduleItemIds];
+    
+            for (SchedulePOWrapper schedulePOItem : schedulePOList) {
+                for (buildertek__Purchase_Order__c po : poList) {
+                    if (schedulePOItem.poId == po.Id) {
+                        po.buildertek__Schedule__c = scheduleId;
+                        po.buildertek__Schedule_Item__c = schedulePOItem.scheduleItemId;
+                        System.debug('po: ' + po);
+                    }
+                }
+                
+                for (buildertek__Project_Task__c scheduleItem : scheduleItemList) {
+                    if (schedulePOItem.scheduleItemId == scheduleItem.Id) {
+                        scheduleItem.buildertek__Purchase_Order__c = schedulePOItem.poId;
+                        System.debug('scheduleItem: ' + scheduleItem);
+                    }
+                }
+            }
+
+            if (!poList.isEmpty()) {
+                update poList;
+            }
+    
+            if (!scheduleItemList.isEmpty()) {
+                update scheduleItemList;
+            }
+    
+            return 'Success';
+        } catch (Exception e) {
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_for_Force_Site__c FROM buildertek__Exception_Log_Store_Option__c];
+            if (StoreExcCustomSetting[0].buildertek__Store_Exception_for_Force_Site__c == true) {
+                BT_ExceptionHandler.Store_Exception(e);
+            }
+            return 'Error: ' + e.getMessage();
+        }
+    }
+    
+    public class SchedulePOWrapper {
+        @AuraEnabled
+        public String scheduleItemId;
+    
+        @AuraEnabled
+        public String poId;
+    }
+    
+
+}
