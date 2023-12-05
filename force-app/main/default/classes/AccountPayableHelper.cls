@@ -6,9 +6,21 @@ public with sharing class AccountPayableHelper {
     public static void beforeDelete(List<buildertek__Account_Payable__c> listAccountPayable) {
         for(buildertek__Account_Payable__c currPayable : listAccountPayable) {
             if(String.isNotBlank(currPayable.buildertek__Status__c)) {
+                // Changes as per brian Rquirement discussed on call - 29 nov 2023
                 if(currPayable.buildertek__Status__c.equalsIgnoreCase('Approved') || currPayable.buildertek__Status__c.equalsIgnoreCase('Paid') 
-                   || currPayable.buildertek__Status__c.equalsIgnoreCase('Partial Payment')) {
-                       currPayable.addError('Contractor Invoice status is marked as paid, therefore you cannot delete this contractor invoice.');
+                   || currPayable.buildertek__Status__c.equalsIgnoreCase('Partially Paid') || currPayable.buildertek__Status__c.equalsIgnoreCase('Partially Payment')) {
+                    if(currPayable.buildertek__Status__c.equalsIgnoreCase('Approved')){
+                        currPayable.addError('Contractor Invoice status is marked as Approved, therefore you cannot delete this contractor invoice.');
+                    }
+                    else if(currPayable.buildertek__Status__c.equalsIgnoreCase('Paid')){
+                        currPayable.addError('Contractor Invoice status is marked as Paid, therefore you cannot delete this contractor invoice.');
+                    }
+                    else if(currPayable.buildertek__Status__c.equalsIgnoreCase('Partially Paid')){
+                        currPayable.addError('Contractor Invoice status is marked as Partially Paid, therefore you cannot delete this contractor invoice.');
+                    }
+                    else if(currPayable.buildertek__Status__c.equalsIgnoreCase('Partial Payment')){
+                        currPayable.addError('Contractor Invoice status is marked as Partial Payment, therefore you cannot delete this contractor invoice.');
+                    }
                    }
             }
         }
