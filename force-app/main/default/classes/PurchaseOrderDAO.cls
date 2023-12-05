@@ -6,6 +6,7 @@
  Date: 19/09/2017
  */
 public without sharing class PurchaseOrderDAO{
+
     @AuraEnabled
     public static Boolean Checkifpaid(String recId){
         buildertek__Purchase_Order__c po = [SELECT Id, buildertek__Status__c FROM buildertek__Purchase_Order__c WHERE Id =: recId];
@@ -15,7 +16,8 @@ public without sharing class PurchaseOrderDAO{
             else{
                 return false;
             }
-}
+     }
+  
     /**********************************************************************************************************************
      Purpose: This method is used to create a link between PO Item and Budget Item
      Parameters: List<Purchase_Order_Item__c> purchaseOrderItems
@@ -317,7 +319,7 @@ public without sharing class PurchaseOrderDAO{
         string accountPaybleId = createAP([Select Id, Name, Project__c, Vendor__c, Period__c, Tax__c, buildertek__Status__c, buildertek__Description__c
                                            from purchase_order__c
                                            where Id = :poid]);
-        createAPItems([Select Id, Name, Tax__c, purchase_order__c, Item_Name__c, Description__c, Cost_Code__c, Product__c, Quantity__c, Unit_Price__c
+        createAPItems([Select Id, Name, Tax__c, purchase_order__c, Item_Name__c, Description__c, Cost_Code__c, Product__c, Quantity__c, Unit_Price__c, buildertek__Quantity_Remaining__c, buildertek__Quantity_Received__c
                        from Purchase_Order_Item__c
                        where purchase_order__c = :poid]);
 
@@ -374,11 +376,11 @@ public without sharing class PurchaseOrderDAO{
                                       where Purchase_Order__c IN :poIds]){
             PoIdbyAp.put(ap.Purchase_Order__c, ap);
         }
+        System.debug('PoIdbyAp---->' +  PoIdbyAp);
 
         List<buildertek__Account_Payable_Item__c> apItems = new List<buildertek__Account_Payable_Item__c>();
-        system.debug('poItems-----' + poItems);
-        for (Purchase_Order_Item__c poItem : poItems){
-
+        for (Purchase_Order_Item__c poItem : poItems){        
+            System.debug('poItem.purchaseorder--->' + PoIdbyAp.get(poItem.Purchase_Order__c));
             Account_Payable_Item__c apItem = new Account_Payable_Item__c();
             apItem.Account_Payable__c = PoIdbyAp.get(poItem.Purchase_Order__c).Id;
             apItem.Name = poItem.Name;
@@ -387,7 +389,8 @@ public without sharing class PurchaseOrderDAO{
             apItem.Cost_Code__c = poItem.Cost_Code__c;
             apItem.Product__c = poItem.Product__c;
             apItem.Purchase_Order_Item__c = poItem.Id;
-            apItem.Quantity__c = poItem.Quantity__c;
+            apItem.Quantity__c = poItem.Quantity_Remaining__c;
+            
             if(poItem.Unit_Price__c != null){
                 apItem.Unit_Price__c = poItem.Unit_Price__c;
             }
