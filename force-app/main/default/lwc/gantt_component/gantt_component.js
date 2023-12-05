@@ -6,7 +6,6 @@ import { loadScript, loadStyle } from "lightning/platformResourceLoader";
 import GanttStyle from "@salesforce/resourceUrl/BT_Bryntum_NewGanttCss";
 import GANTTModule from "@salesforce/resourceUrl/BT_Bryntum_NewGantt_ModuleJS";
 import { NavigationMixin } from "lightning/navigation";
-import { refreshApex } from "@salesforce/apex";
 
 // import GanttStyle from "@salesforce/resourceUrl/BT_Bryntum_NewGanttCss";
 import GanttToolbarMixin from "./lib/GanttToolbar";
@@ -60,8 +59,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
   @api contratctorLookup = {};
   @api contractorResourceFilterVal = "";
   @api internalResourceFilterVal = "";
-  //@api saveSelectedContact;
-  //@api saveSelectedContactApiName;
   @track setorignaldates = false;
 
   //Added for contractor
@@ -123,13 +120,9 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
   @api showFileForRecord = "";
   @api showFilePopup = false;
 
-  @track PhaseName = "";
-
   connectedCallback() {
     console.log("Connected Callback new gantt chart");
     console.log("ReocrdID:- ", this.recordId);
-
-    // this.handleShowSpinner();
 
     if (this.SchedulerId == null || this.SchedulerId == undefined) {
       if (this.recordId == null || this.recordId == undefined) {
@@ -962,13 +955,19 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
                   weight: 100,
                 },
                 divider: false,
+                manuallyScheduledField : {
+                  type     : 'checkbox',
+                  weight   : 1100,
+                  name     : 'manuallyScheduled',
+                  label    : 'Manually scheduled',
+                  cls      : 'b-last-row',
+                },
                 newCustomField: {
                   type: "Combo",
                   weight: 200,
-                  label: "NewPhase",
+                  label: "Phase",
                   items: this.phaseNameList,
                   name: "NewPhase",
-                  // value: ,
                 },
               },
             },
@@ -1026,6 +1025,12 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
             return false;
           }
         },
+          beforeTaskEditShow({ editor, taskRecord }) {
+              editor.widgetMap.newCustomField.value = taskRecord._data.NewPhase;
+              console.log(taskRecord._data);
+              editor.widgetMap.manuallyScheduledField.value = taskRecord._data.manuallyScheduled;
+              return true;
+          }
       },
 
       taskRenderer({ taskRecord, renderData }) {

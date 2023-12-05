@@ -64,6 +64,7 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
             // rowChilObj['Phase'] = "Test Phase";
             // rowChilObj['NewPhase'] = taskListForPhase[i].buildertek__Phase__c;
             rowChilObj['NewPhase'] = taskListForPhase[i].buildertek__Phase__c;
+            rowChilObj['manuallyScheduled'] = taskListForPhase[i].buildertek__Manually_Scheduled__c;
 
             //*comparing task finish date with today date and setting color accordingly
             let taskFinishDate = new Date(taskListForPhase[i].buildertek__Finish__c);
@@ -244,6 +245,7 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
             console.log('NewPhase 1:- ', taskListForPhase[i].buildertek__Phase__c);
             rowChilObj['Phase'] = taskListForPhase[i].buildertek__Phase__c
             rowChilObj['NewPhase'] = taskListForPhase[i].buildertek__Phase__c
+            rowChilObj['manuallyScheduled'] = taskListForPhase[i].buildertek__Manually_Scheduled__c;
 
             //*comparing task finish date with today date and setting color accordingly
             let taskFinishDate = new Date(taskListForPhase[i].buildertek__Finish__c);
@@ -392,6 +394,7 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
             console.log('NewPhase 1 :- ', taskListForPhase[i].buildertek__Phase__c);
             rowChilObj['Phase'] = taskListForPhase[i].buildertek__Phase__c;
             rowChilObj['NewPhase'] = taskListForPhase[i].buildertek__Phase__c;
+            rowChilObj['manuallyScheduled'] = taskListForPhase[i].buildertek__Manually_Scheduled__c;
 
             //*comparing task finish date with today date and setting color accordingly
             let taskFinishDate = new Date(taskListForPhase[i].buildertek__Finish__c);
@@ -612,6 +615,7 @@ function convertJSONtoApexData(data, taskData, dependenciesData, resourceData) {
                 updateData['buildertek__Duration__c'] = rowData[i]['duration']
                 updateData['buildertek__Completion__c'] = rowData[i]['percentDone']
                 updateData['buildertek__task_color__c'] = rowData[i]['eventColor']
+                updateData['buildertek__Manually_Scheduled__c'] = rowData[i]['manuallyScheduled']
                 // if (rowData[i]['constraintDate'] != null && rowData[i]['constraintType'] != null) {
                 //     updateData['buildertek__ConstraintDate__c'] = rowData[i]['constraintDate'].split('T')[0];
                 //     updateData['buildertek__ConstraintType__c'] = rowData[i]['constraintType']
