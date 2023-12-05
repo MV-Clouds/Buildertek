@@ -333,7 +333,10 @@
 }
 .THIS .textAreaDiv{
     width: 200px;
-
+}
+.THIS .textAreaDiv1{
+    max-width: 22rem;
+    width: max-content;
 }
 
 .THIS .tableRow {

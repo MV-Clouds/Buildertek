@@ -829,7 +829,7 @@ budgetRec.buildertek__Budget_Line_Group__c = budGroup.Id;
             allFields.add('buildertek__CostCodeDivision__c');
             allFields.add('buildertek__Cost_Code__c');
             allFields.add('buildertek__Cost_Code__r.Name');
-            if(!allFields.contains('buildertek__Contractor__r.Name')){
+            if(allFields.contains('buildertek__Contractor__c')){
                 allFields.add('buildertek__Contractor__c');
                 allFields.add('buildertek__Contractor__r.Name');
                 fieldsType += '{"fieldName": "buildertek__Contractor__c","fieldType": "Reference","isEditable": false},';
@@ -3171,7 +3171,7 @@ buildertek__Budget__c budgetCopy = Database.query(query);*/
         list<buildertek__Account_Payable__c> invoicePoToUpdate = new list<buildertek__Account_Payable__c>();
         list<buildertek__Payment__c> cashDisburshment = [SELECT Id, buildertek__Payable__c FROM buildertek__Payment__c WHERE buildertek__Payable__c IN: invoicePoList];  // Changes for BUIL-3498 START
         System.debug('cashDisburshment -- SIZE---->' + cashDisburshment.size()); 
-        if(invoicePoList.size() > 0 && cashDisburshment.size() == 0){  
+        // if(invoicePoList.size() > 0 && cashDisburshment.size() == 0){   // Changes for BUIL-3675 --> commnent by Brian to disable RestrictToUpdateCashDisbursement Functionality...
             list<buildertek__Account_Payable__c> invPoList = [SELECT Id, Name FROM buildertek__Account_Payable__c WHERE Id IN : invoicePoList];
             for(buildertek__Account_Payable__c invoicePo : invPoList){
                 invoicePo.buildertek__Budget__c = BudgetId;
@@ -3179,10 +3179,10 @@ buildertek__Budget__c budgetCopy = Database.query(query);*/
             }
                 update invoicePoToUpdate;
             return 'Successs';
-        }else if (cashDisburshment.size() > 0) {
-            return 'HasDisburshment';
-        } // Changes for BUIL-3498 END
-        return null;
+        // }else if (cashDisburshment.size() > 0) {
+        //     return 'HasDisburshment';
+        // } // Changes for BUIL-3498 END
+        // return null;
     }
 
     @AuraEnabled

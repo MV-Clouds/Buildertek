@@ -30,9 +30,13 @@
             if (fields[i].type == "BOOLEAN") {
                 obj[fields[i].name] = false;
             }
+            if(fields[i].name == "buildertek__Purchase_Order__c"){
+                obj[fields[i].name] = component.get("v.recordId");
+            }
         }
         list.unshift(obj);
         component.set("v.listOfRecords", list);
+        console.log("Po Id  >> ", component.get("v.recordId"));
     },
 
     onMassUpdate: function (component, event, helper) {
@@ -42,7 +46,6 @@
             component.set("v.isLoading", false);
         } else if (component.get("v.massUpdateEnable")) {
             component.set("v.isLoading", true);
-            component.set("v.massUpdateEnable", false);
             helper.updateMassRecords(component, event, helper);
         }
     },

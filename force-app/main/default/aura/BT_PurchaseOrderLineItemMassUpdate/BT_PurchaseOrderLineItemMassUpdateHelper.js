@@ -6,7 +6,7 @@
         });
         action.setCallback(this, function (response) {
             if (response.getState() == 'SUCCESS' && response.getReturnValue()) {
-                debugger;
+                // debugger;
                 component.set("v.TotalRecords", response.getReturnValue());
             }
         })
@@ -87,37 +87,77 @@
     },
 
     updateMassRecords: function (component, event, helper) {
-        component.set('v.isLoading', true);
-        var listOfRecords = component.get('v.listOfRecords');
-        var action = component.get("c.updateRecords");
-        var pageNumber = component.get("v.PageNumber");
-        var pageSize = component.get("v.pageSize");
-        action.setParams({
-            recordId: component.get('v.recordId'),
-            updatedRecords: JSON.stringify(JSON.parse(JSON.stringify(listOfRecords))),
-            fieldSetName: JSON.stringify(component.get('v.arrfieldNames')),
-            pageNumber: pageNumber,
-            pageSize: pageSize
-        });
-
-        action.setCallback(this, function (response) {
-            var state = response.getState();
-            if (state === "SUCCESS") {
-                var list = JSON.parse(response.getReturnValue());
-                component.set('v.listOfRecords', list);
-                component.set('v.numberOfItems', list.length);
-                component.set('v.cloneListOfRecords', list);
-                component.set('v.isLoading', false);
-                component.set("v.PageNumber", pageNumber);
-                component.set("v.RecordStart", (pageNumber - 1) * pageSize + 1);
-                component.set("v.RecordEnd", (list.length + 1) * pageNumber);
-                component.set("v.TotalPages", Math.ceil(list.length / component.get('v.TotalRecords')));
-            } else if (state === "ERROR") {
-                component.set('v.isLoading', false);
-                console.log('A Problem Occurred: ' + JSON.stringify(response.error));
+        try {
+            component.set('v.isLoading', true);
+            var restrictUpdate = false;
+            var listOfRecords = component.get('v.listOfRecords');
+            listOfRecords.forEach(ele => {
+                if(!restrictUpdate){
+                    // Only show Error msg when Remaining Quantity exced Available Quantity First time....
+                    if(ele.buildertek__Quantity__c && ele.buildertek__Quantity_Received__c){
+                        // If Recived Quantities are more than Available Quantities then show error msg and restrict update
+                        if(parseInt(ele.buildertek__Quantity_Received__c) > ele.buildertek__Quantity__c){
+                            restrictUpdate = true;
+                            
+                            window.onload = showToast();        // Show  toast message on VF page --> Aura
+                            function showToast() {
+                                sforce.one.showToast({
+                                    "title": "Error!",
+                                    "message": "Received value should be less than the Remaining value.",
+                                    "type": "error"
+                                });
+                            }                            
+                            component.set('v.isLoading', false);
+                        }
+                    }
+                }
+            });
+            console.log("updatedRecords >> " , JSON.parse(JSON.stringify(listOfRecords)));
+            if(!restrictUpdate){
+                var pageNumber = component.get("v.PageNumber");
+                var pageSize = component.get("v.pageSize");
+                var action = component.get("c.updateRecords");
+                action.setParams({
+                    recordId: component.get('v.recordId'),
+                    updatedRecords: JSON.stringify(JSON.parse(JSON.stringify(listOfRecords))),
+                    fieldSetName: JSON.stringify(component.get('v.arrfieldNames')),
+                    pageNumber: pageNumber,
+                    pageSize: pageSize
+                });
+        
+                action.setCallback(this, function (response) {
+                    var state = response.getState();
+                    if (state === "SUCCESS") {
+                        var list = JSON.parse(response.getReturnValue());
+                        console.log('Return List >> ', list);
+                        component.set('v.listOfRecords', list);
+                        component.set('v.numberOfItems', list.length);
+                        component.set('v.cloneListOfRecords', list);
+                        component.set('v.isLoading', false);
+                        component.set("v.PageNumber", pageNumber);
+                        component.set("v.RecordStart", (pageNumber - 1) * pageSize + 1);
+                        component.set("v.RecordEnd", (list.length + 1) * pageNumber);
+                        component.set("v.TotalPages", Math.ceil(list.length / component.get('v.TotalRecords')));
+                        component.set("v.massUpdateEnable", false);
+                    } else if (state === "ERROR") {
+                        component.set('v.isLoading', false);
+                        console.log('A Problem Occurred: ' + JSON.stringify(response.error));
+                        window.onload = showToast();        // Show  toast message on VF page --> Aura
+                            function showToast() {
+                                sforce.one.showToast({
+                                    "title": "Error!",
+                                    "message": "Something Went Wrong!",
+                                    "type": "error"
+                                });
+                            }     
+                    }
+                });
+                $A.enqueueAction(action);
             }
-        });
-        $A.enqueueAction(action);
+            
+        } catch (error) {
+            console.log(" error on update  >> ", error.message);
+        }
     },
 
     deleteRecord: function (component, event, helper, deleteRecordId) {

@@ -40,7 +40,7 @@
         <body>
             <apex:outputPanel rendered="{!authCheck}">
                 <div class="slds-scope" rendered="{!authCheck}">
-                    <apex:form id="form" style="height: 200px;">
+                    <apex:form id="form">
                         <div id="spinner" class="slds-spinner_container" >
                             <div role="status" class="slds-spinner slds-spinner--large slds-spinner--brand">
                                 <div class="slds-spinner__dot-a"></div>
@@ -51,7 +51,7 @@
                 </div> 
             </apex:outputPanel>
             
-            <apex:outputPanel rendered="{!!authCheck}">
+            <apex:outputPanel rendered="{!authCheck}">
                 <div class="card">
                     <div style="border-radius:200px; height:200px; width:200px; background: #F8FAF5; margin:0 auto;">
                         <i class="checkmark">✓</i>
