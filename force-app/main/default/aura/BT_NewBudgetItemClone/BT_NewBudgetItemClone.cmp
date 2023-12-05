@@ -3070,11 +3070,10 @@
                                                     {!item.buildertek__Terms__c}
                                                 </td>
                                                 <td>
-                                                    {!item.buildertek__Amount__c}
-                                                    <!-- <lightning:formattedNumber value="{!item.buildertek__PO_Total__c}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code" /> -->
+                                                    <lightning:formattedNumber value="{!item.buildertek__Amount__c}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code" />
                                                 </td>
                                                 <td>
-                                                    {!item.buildertek__Total_Amount_Tax__c}
+                                                    <lightning:formattedNumber value="{!item.buildertek__Total_Amount_Tax__c}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code" />
                                                 </td>
                                             </tr>
                                         </aura:iteration>

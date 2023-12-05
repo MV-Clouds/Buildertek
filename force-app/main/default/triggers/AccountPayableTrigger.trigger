@@ -26,7 +26,7 @@ trigger AccountPayableTrigger on buildertek__Account_Payable__c (before insert,b
             AccountPayableHelper.onbeforeUpdate(trigger.new);
            
             if(Trigger.isUpdate){
-                AccountPayableHelper.RestrictToUpdateCashDisbursement(Trigger.new, Trigger.newMap ,Trigger.oldMap);
+                // AccountPayableHelper.RestrictToUpdateCashDisbursement(Trigger.new, Trigger.newMap ,Trigger.oldMap);       // -->>>>> Changes for BUIL-3675 --> commnent by Brian to disable RestrictToUpdateCashDisbursement Functionality...
                 AccountPayableHelper.updateBudgetAndBudgetLine(Trigger.new, Trigger.newMap ,Trigger.oldMap);
             }
 
