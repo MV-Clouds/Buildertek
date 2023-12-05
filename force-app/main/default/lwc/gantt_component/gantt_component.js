@@ -1028,7 +1028,14 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           beforeTaskEditShow({ editor, taskRecord }) {
               editor.widgetMap.newCustomField.value = taskRecord._data.NewPhase;
               console.log(taskRecord._data);
-              editor.widgetMap.manuallyScheduledField.value = taskRecord._data.manuallyScheduled;
+              console.log('log test:- ',taskRecord._data.predecessorName)
+              console.log('log test2:- ',typeof(taskRecord._data.predecessorName))
+              if((taskRecord._data.predecessorName === null || taskRecord._data.predecessorName === undefined || taskRecord._data.predecessorName === "")){
+                editor.widgetMap.manuallyScheduledField.disabled = false;
+                editor.widgetMap.manuallyScheduledField.value = taskRecord._data.manuallyScheduled;
+              } else{ 
+                editor.widgetMap.manuallyScheduledField.disabled = true;
+              }
               return true;
           }
       },
