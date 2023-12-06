@@ -43,14 +43,15 @@
                                                 <div class="slds-form-element dropdown-column">
                                                     <div class="slds-form-element__control" data-id="{!item.Id}">
                                                         <lightning:select name="scheduleIem-dropdown"
-                                                            value="{!item.selectedScheduleItem}" onchange="{!c.onSelectChange}">
+                                                            value="{!item.selectedScheduleItem}"
+                                                            onchange="{!c.onSelectChange}">
                                                             <option text="--None--" value="" />
-                                                            <aura:iteration items="{!v.scheduleItemList}" var="scheduleItem">
-                                                                <option value="{!scheduleItem.Id}">{!scheduleItem.Name}</option>
+                                                            <aura:iteration items="{!v.scheduleItemList}"
+                                                                var="scheduleItem">
+                                                                <option value="{!scheduleItem.Id}">{!scheduleItem.Name}
+                                                                </option>
                                                             </aura:iteration>
                                                         </lightning:select>
-
-
                                                     </div>
                                                 </div>
                                             </div>

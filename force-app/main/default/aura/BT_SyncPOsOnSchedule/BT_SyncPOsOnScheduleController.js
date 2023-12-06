@@ -33,24 +33,31 @@
         let selectedScheduleItemId = selectedItem.get("v.value");
         let poId = event.target.dataset.id;
 
-        let schedulePO = {
-            scheduleItemId: selectedScheduleItemId,
-            poId: poId
-        };
+        if (selectedScheduleItemId === "") {
+            let selectedScheduleItems = component.get("v.selectedScheduleItems");
+            let indexToRemove = selectedScheduleItems.findIndex(item => item.poId === poId);
+            if (indexToRemove !== -1) {
+                selectedScheduleItems.splice(indexToRemove, 1);
+                component.set("v.selectedScheduleItems", selectedScheduleItems);
+            }
+        } else {
+            let schedulePO = {
+                scheduleItemId: selectedScheduleItemId,
+                poId: poId
+            };
+
+            let selectedScheduleItems = component.get("v.selectedScheduleItems");
+            let index = selectedScheduleItems.findIndex(item => item.scheduleItemId === selectedScheduleItemId);
+            if (index !== -1) {
+                selectedScheduleItems[index] = schedulePO;
+            } else {
+                selectedScheduleItems.push(schedulePO);
+            }
+            component.set("v.selectedScheduleItems", selectedScheduleItems);
+        }
 
         console.log('PO Id: ' + poId);
         console.log('Selected Schedule Item Id: ' + selectedScheduleItemId);
-
-        let selectedScheduleItems = component.get("v.selectedScheduleItems");
-        let index = selectedScheduleItems.findIndex(item => item.scheduleItemId === selectedScheduleItemId);
-        if (index !== -1) {
-            selectedScheduleItems[index] = schedulePO;
-        } else {
-            selectedScheduleItems.push(schedulePO);
-        }
-        console.log('schedulePO', schedulePO);
-        component.set("v.selectedScheduleItems", selectedScheduleItems);
     },
 
 })
-
