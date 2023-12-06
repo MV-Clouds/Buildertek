@@ -46,6 +46,24 @@
     //     $A.enqueueAction(action);	
     // },
 
+    PostAccountToQuickbook: function(component, event, helper){
+        var accountType = component.get("v.AccountType");
+        if(accountType == 'Customer'){
+            component.set("v.ShowAccountTypeOpt", false);
+            helper.Post_Customer_ToQBHelper(component, event, helper);
+        }
+        else if(accountType == 'Vendor'){
+            component.set("v.ShowAccountTypeOpt", false);
+            helper.Post_Vendor_ToQBHelper(component, event, helper);
+        }
+        else{
+            component.find('notifLib').showNotice({
+                "variant": "error",
+                "header": "Error",
+                "message": 'Please Select at least on Account Type!',
+            });    
+        }
+    },
 
     Post_Customer_ToQBHelper: function(component, event, helper){
         console.log("Inside Customer Integration helper");

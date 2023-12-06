@@ -31,45 +31,45 @@ public without sharing class QBIntegrationQueue {
             
             Boolean Get_Access_Token = false;
 
-            if(acc.buildertek__QBO_ID__c == null){
+            // if(acc.buildertek__QBO_ID__c == null){
                 // Customer - items - invoice - PAYMENT
                 boolean CountinueFlow = true;       // this variable define wheather You want to countine the integration or not...
                 Create_Customer_in_QB(SILines, SI, acc, QBMetadata, Get_Access_Token, receiptID, Create_Payment, CountinueFlow);
-            }
-            else{
-                String CustomerQBId = acc.buildertek__QBO_ID__c;
-                System.debug('Customer Available in QB');
-                if(SI.buildertek__Tax_Rate__c != null && (SI.buildertek__QBO_Tax_Rate_ID__c == null || SI.buildertek__Tax_Rate__c != SI.buildertek__QBO_Tax_Rate__c)){
-                    Create_TaxRate_in_QB(SILines, SI, CustomerQBId, QBMetadata, Get_Access_Token, receiptID, Create_Payment);
-                }
-                else{
-                    System.debug('Tax rate not available for Invoice');
-                    String taxCodeId;
-                    double taxRateValue;
-                    if(SI.buildertek__Tax_Rate__c == null){
-                        taxCodeId = null;
-                        taxRateValue = null;
-                    }
-                    else if(SI.buildertek__QBO_Tax_Rate_ID__c != null && SI.buildertek__Tax_Rate__c == SI.buildertek__QBO_Tax_Rate__c){
-                            taxCodeId = SI.buildertek__QBO_Tax_Rate_ID__c;
-                            taxRateValue = SI.buildertek__QBO_Tax_Rate__c;
-                    }
+            // }
+            // else{
+            //     String CustomerQBId = acc.buildertek__QBO_ID__c;
+            //     System.debug('Customer Available in QB');
+            //     if(SI.buildertek__Tax_Rate__c != null && (SI.buildertek__QBO_Tax_Rate_ID__c == null || SI.buildertek__Tax_Rate__c != SI.buildertek__QBO_Tax_Rate__c)){
+            //         Create_TaxRate_in_QB(SILines, SI, CustomerQBId, QBMetadata, Get_Access_Token, receiptID, Create_Payment);
+            //     }
+            //     else{
+            //         System.debug('Tax rate not available for Invoice');
+            //         String taxCodeId;
+            //         double taxRateValue;
+            //         if(SI.buildertek__Tax_Rate__c == null){
+            //             taxCodeId = null;
+            //             taxRateValue = null;
+            //         }
+            //         else if(SI.buildertek__QBO_Tax_Rate_ID__c != null && SI.buildertek__Tax_Rate__c == SI.buildertek__QBO_Tax_Rate__c){
+            //                 taxCodeId = SI.buildertek__QBO_Tax_Rate_ID__c;
+            //                 taxRateValue = SI.buildertek__QBO_Tax_Rate__c;
+            //         }
 
-                    if(SI.buildertek__Terms__c != null){
-                        // Create invoic With Term...
-                        Create_Term_in_QB(SILines, SI, CustomerQBId, QBMetadata, Get_Access_Token, receiptID, Create_Payment, taxCodeId, taxRateValue);
-                    }
-                    else{
-                        // Create Invoice without Term...
-                        String  TermQBId = null;
-                        if(SILines.size() > 0){
-                            // items - invoice - PAYMENT
-                            Create_item_in_QB(SILines, SI, CustomerQBId, QBMetadata, Get_Access_Token, receiptID, Create_Payment, taxCodeId, taxRateValue, TermQBId);
-                        }
-                    }
-                }
+            //         if(SI.buildertek__Terms__c != null){
+            //             // Create invoic With Term...
+            //             Create_Term_in_QB(SILines, SI, CustomerQBId, QBMetadata, Get_Access_Token, receiptID, Create_Payment, taxCodeId, taxRateValue);
+            //         }
+            //         else{
+            //             // Create Invoice without Term...
+            //             String  TermQBId = null;
+            //             if(SILines.size() > 0){
+            //                 // items - invoice - PAYMENT
+            //                 Create_item_in_QB(SILines, SI, CustomerQBId, QBMetadata, Get_Access_Token, receiptID, Create_Payment, taxCodeId, taxRateValue, TermQBId);
+            //             }
+            //         }
+            //     }
 
-            }
+            // }
 
         } catch (Exception e) {
             System.debug('Error in QB_Payment_Invoice_Flow_Callout ..' + e.getMessage() + '\n' + e +'\n Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
@@ -98,11 +98,15 @@ public without sharing class QBIntegrationQueue {
             }
             else{
                 QBException.QB_response( Customer_Response.getStatusCode(),  Customer_Response.getBody(), 'QBIntegrationQueue', 'Create_Customer_in_QB');
-                QBOErrorJSON Customer_Response_Error = QBOErrorJSON.parse(Customer_Response.getBody());
+                QBOErrorJSON Response_Error = QBOErrorJSON.parse(Customer_Response.getBody());
                 QBOErrorJSON.Fault falut = new QBOErrorJSON.Fault();
-                falut = Customer_Response_Error.Fault;
+                falut = Response_Error.Fault;
                 String ErrorMessage = 'Message : ' + falut.Error[0].Message +', Detail : '+ falut.Error[0].Detail;
                 UpdateAccount_OnError(acc.Id, ErrorMessage);
+                if(CountinueFlow == true){
+                    String ErrorMessage1 = 'Error During Customer Callout :- ' + ErrorMessage;
+                    UpdateSalesInvoice_OnError(SI.Id, ErrorMessage1);
+                }
             }
             
         } catch (Exception e) {
@@ -164,6 +168,11 @@ public without sharing class QBIntegrationQueue {
                         }
                         else{
                             QBException.QB_response( TaxRate_ResponseBody.getStatusCode(),  TaxRate_ResponseBody.getBody(), 'QBIntegrationQueue', 'Create_Customer_invoice_item_payment_in_QB');
+                            QBOErrorJSON Response_Error = QBOErrorJSON.parse(TaxRate_ResponseBody.getBody());
+                            QBOErrorJSON.Fault falut = new QBOErrorJSON.Fault();
+                            falut = Response_Error.Fault;
+                            String ErrorMessage = 'Error During Tax Rate Callout :- '+'Message : ' + falut.Error[0].Message +', Detail : '+ falut.Error[0].Detail;
+                            UpdateSalesInvoice_OnError(SI.Id, ErrorMessage);
                         }
                     }
 
@@ -247,6 +256,11 @@ public without sharing class QBIntegrationQueue {
                 }
                 else{
                     QBException.QB_response( term_QB_ResponseBody.getStatusCode(),  term_QB_ResponseBody.getBody(), 'QBIntegrationQueue', 'createTerms');
+                    QBOErrorJSON Response_Error = QBOErrorJSON.parse(term_QB_ResponseBody.getBody());
+                    QBOErrorJSON.Fault falut = new QBOErrorJSON.Fault();
+                    falut = Response_Error.Fault;
+                    String ErrorMessage = 'Error During Term Callout :- '+ ' Message : ' + falut.Error[0].Message +', Detail : '+ falut.Error[0].Detail;
+                    UpdateSalesInvoice_OnError(SI.Id, ErrorMessage);
                 }
             
         } catch (Exception e) {
@@ -327,6 +341,11 @@ public without sharing class QBIntegrationQueue {
                         }
                         else{
                             QBException.QB_response( InvoiceItem_Response.getStatusCode(),  InvoiceItem_Response.getBody(), 'QBIntegrationQueue', 'Create_item_in_QB');
+                            QBOErrorJSON Response_Error = QBOErrorJSON.parse(InvoiceItem_Response.getBody());
+                            QBOErrorJSON.Fault falut = new QBOErrorJSON.Fault();
+                            falut = Response_Error.Fault;
+                            String ErrorMessage = 'Error During Invoice Callout :- '+ ' Message : ' + falut.Error[0].Message +', Detail : '+ falut.Error[0].Detail;
+                            UpdateSalesInvoice_OnError(SI.Id, ErrorMessage);
                         }
                     // }
                 }
@@ -374,6 +393,11 @@ public without sharing class QBIntegrationQueue {
             }
             else{
                 QBException.QB_response( Invoice_Response.getStatusCode(),  Invoice_Response.getBody(), 'QBIntegrationQueue', 'Create_invoice_in_QB');
+                QBOErrorJSON Response_Error = QBOErrorJSON.parse(Invoice_Response.getBody());
+                QBOErrorJSON.Fault falut = new QBOErrorJSON.Fault();
+                falut = Response_Error.Fault;
+                String ErrorMessage = 'Error During Item Callout :- '+ ' Message : ' + falut.Error[0].Message +', Detail : '+ falut.Error[0].Detail;
+                UpdateSalesInvoice_OnError(SI.Id, ErrorMessage);
             }
 
             
@@ -400,6 +424,11 @@ public without sharing class QBIntegrationQueue {
             }
             else{
                 QBException.QB_response( Payment_Response.getStatusCode(),  Payment_Response.getBody(), 'QBIntegrationQueueable', 'QBIntegrationMethod');
+                QBOErrorJSON Response_Error = QBOErrorJSON.parse(Payment_Response.getBody());
+                QBOErrorJSON.Fault falut = new QBOErrorJSON.Fault();
+                falut = Response_Error.Fault;
+                String ErrorMessage = 'Error During Payment Callout :- '+ ' Message : ' + falut.Error[0].Message +', Detail : '+ falut.Error[0].Detail;
+                UpdateReceipt_OnError(receiptID, ErrorMessage);
             }
         } catch (Exception e) {
             System.debug('Error in Create_Payment_In_QB ..' + e.getMessage() + '\n' + e +'\n Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
@@ -747,7 +776,7 @@ public without sharing class QBIntegrationQueue {
             try {
                 system.debug('sales Invoice going to Update');
                 String qbInvoiceURL = QBMetadata.buildertek__Qb_URL__c + 'invoice?txnId=' + QB_invoice_Id;
-                buildertek__Billings__c Invoice = [SELECT Id, Name , buildertek__QBO_ID__c,buildertek__QB_Invoice_Number__c	, buildertek__QBO_Tax_Rate__c,buildertek__QBO_Tax_Rate_ID__c, buildertek__QB_Invoice_URL__c FROM buildertek__Billings__c WHERE ID =:invoice_Id LIMIT 1];
+                buildertek__Billings__c Invoice = [SELECT Id, Name , buildertek__QBO_ID__c,buildertek__QB_Invoice_Number__c	, buildertek__QBO_Tax_Rate__c,buildertek__QBO_Tax_Rate_ID__c, buildertek__QB_Invoice_URL__c,buildertek__QB_Integration_Response_Message__c FROM buildertek__Billings__c WHERE ID =:invoice_Id LIMIT 1];
                 Invoice.buildertek__QBO_ID__c = QB_invoice_Id;
                 Invoice.buildertek__QBO_Tax_Rate_ID__c = taxCodeId;
                 Invoice.buildertek__QBO_Tax_Rate__c = taxRateValue;
@@ -755,9 +784,21 @@ public without sharing class QBIntegrationQueue {
                 Invoice.buildertek__QBO_Term_Id__c = TermQBId;
                 Invoice.buildertek__QB_Invoice_Number__c = QbInvNumber;
                 Invoice.buildertek__QBO_SyncToken__c = QBInvSyncTocken;
+                Invoice.buildertek__QB_Integration_Response_Message__c = 'Integrated Successfully';
+
                 update Invoice;
             } catch (Exception e) {
                 System.debug('Error in UpdateSalesInvoice : ' + e.getMessage() +'\n'+ e + 'Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
+            }
+        }
+        public static void UpdateSalesInvoice_OnError(String invoice_Id, String ErrorMessage){
+            try {
+                system.debug('sales Invoice going to Update on Error');
+                buildertek__Billings__c Invoice = [SELECT Id, Name , buildertek__QBO_ID__c,buildertek__QB_Invoice_Number__c	, buildertek__QBO_Tax_Rate__c,buildertek__QBO_Tax_Rate_ID__c, buildertek__QB_Invoice_URL__c,buildertek__QB_Integration_Response_Message__c FROM buildertek__Billings__c WHERE ID =:invoice_Id LIMIT 1];
+                Invoice.buildertek__QB_Integration_Response_Message__c = ErrorMessage;
+                update Invoice;
+            } catch (Exception e) {
+                System.debug('Error in UpdateSalesInvoice_OnError : ' + e.getMessage() +'\n'+ e + 'Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
             }
         }
     
@@ -765,10 +806,21 @@ public without sharing class QBIntegrationQueue {
             try {
                 system.debug('Receipt going to Update');
                 String qbPaymentURL = QBMetadata.buildertek__Qb_URL__c + 'recvpayment?txnId=' + QB_Payment_Id;
-                buildertek__Receipt__c receipt = [SELECT Id, Name , buildertek__QBO_ID__c, buildertek__QB_Receipt_URL__c FROM buildertek__Receipt__c WHERE ID =:receipt_Id LIMIT 1];
+                buildertek__Receipt__c receipt = [SELECT Id, Name , buildertek__QBO_ID__c, buildertek__QB_Receipt_URL__c,buildertek__QB_Integration_Response_Message__c FROM buildertek__Receipt__c WHERE ID =:receipt_Id LIMIT 1];
                 receipt.buildertek__QBO_ID__c = QB_Payment_Id;
                 receipt.buildertek__QB_Receipt_URL__c = qbPaymentURL;
+                receipt.buildertek__QB_Integration_Response_Message__c = 'Integrated Successfully';
                 update receipt;
+            } catch (Exception e) {
+                System.debug('Error in UpdateReceipt : ' + e.getMessage() +'\n'+ e + 'Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
+            }
+        }
+        public static void UpdateReceipt_OnError(String receipt_Id, String ErrorMessage){
+            try {
+                system.debug('Receipt going to Update');
+                buildertek__Receipt__c receipt = [SELECT Id, Name , buildertek__QBO_ID__c, buildertek__QB_Receipt_URL__c,buildertek__QB_Integration_Response_Message__c FROM buildertek__Receipt__c WHERE ID =:receipt_Id LIMIT 1];
+                receipt.buildertek__QB_Integration_Response_Message__c = ErrorMessage;
+                update receipt; 
             } catch (Exception e) {
                 System.debug('Error in UpdateReceipt : ' + e.getMessage() +'\n'+ e + 'Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
             }

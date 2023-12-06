@@ -25,17 +25,17 @@
             component.set("v.AccountType", BTAccountType)
         }
         if(QBID == null){
-            this.PostAccountToQuickbook(component, event, helper);
+            helper.PostAccountToQuickbook(component, event, helper);
         }
         else if(QBID != null){
             if(BTAccountType == QBType){
-                this.PostAccountToQuickbook(component, event, helper);
+                helper.PostAccountToQuickbook(component, event, helper);
             }
             else{
                 component.find('notifLib').showNotice({
                     "variant": "error",
                     "header": "Error",
-                    "message": 'Account type is '+ BTAccountType +'Whereas This Account is posted as ' + QBType + ' in Quickbook, So You can not Post this Account as ' + BTAccountType +  'again',
+                    "message":  'This Account is posted as ' + QBType + ' in Quickbook, So You can not Post this Account as ' + BTAccountType +  ' again',
                 }); 
                 $A.get("e.force:closeQuickAction").fire();
             }
@@ -49,25 +49,6 @@
         console.log('Selected account type : ',component.find(auraIdField).get("v.value"));
 
         component.set("v.AccountType",component.find(auraIdField).get("v.value"));
-    },
-
-    PostAccountToQuickbook: function(component, event, helper){
-        var accountType = component.get("v.AccountType");
-        if(accountType == 'Customer'){
-            component.set("v.ShowAccountTypeOpt", false);
-            helper.Post_Customer_ToQBHelper(component, event, helper);
-        }
-        else if(accountType == 'Vendor'){
-            component.set("v.ShowAccountTypeOpt", false);
-            helper.Post_Vendor_ToQBHelper(component, event, helper);
-        }
-        else{
-            component.find('notifLib').showNotice({
-                "variant": "error",
-                "header": "Error",
-                "message": 'Please Select at least on Account Type!',
-            });    
-        }
     },
 
     CloseQuickAction: function(component, event, helper){
