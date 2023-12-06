@@ -27,10 +27,15 @@
         <members>QBTaxRateJSON</members>
         <members>QBTermReqJSON</members>
         <members>QBtermsResponseJSON</members>
+        <members>QBBillResponseJSON</members>
+        <members>QBBillReqJSON</members>
+        <members>QBVendorResponseJSON</members>
+        <members>QBVendorJSON</members>
         <name>ApexClass</name>
     </types>
     <types>
         <members>CreateQBInvoice</members>
+        <members>Post_to_QuickBook</members>
         <name>AuraDefinitionBundle</name>
     </types>
 
