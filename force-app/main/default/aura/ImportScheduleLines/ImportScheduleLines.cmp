@@ -14,7 +14,7 @@
     <aura:attribute name="BaseURLs" type="string" />
     <aura:attribute name="CircularDependencyName" type="String" />
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
-    
+
     <lightning:workspaceAPI aura:id="workspace"/>
     <lightning:navigation aura:id="navService"/>
     <lightning:navigation aura:id="navigation"/>
@@ -22,7 +22,7 @@
  <!--   <ltng:require scripts="{!$Resource.SchedulesFile}"/>-->
     <div class="slds-m-around_xx-large">
         <aura:if isTrue="{!v.isOpen}">
-            
+
             <!--###### MODAL BOX Start######-->
             <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
                      aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
@@ -34,12 +34,12 @@
                                     <div class="slds-spinner__dot-b"></div>
                                     <div class="custom-loading-text">
                                         <aura:if isTrue="{!v.showMessage}">
-                                            
+
                                             <b>Processing, Please Wait</b>
-                                            
+
                                             <!-- <b>Importing Schedule Lines... </b>-->
                                         </aura:if>
-                                        
+
                                     </div>
                                 </div>
                             </div>
@@ -53,17 +53,17 @@
                     </header>
                     <!--###### MODAL BOX BODY Part Start######-->
                     <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
-                        
+
                         <div class="slds-grid">
                            <!-- <div class="slds-size_1-of-12">
-                                
+
                             </div>-->
-                            
+
                             <div class="slds-size_12-of-12">
                                 <div class="slds-box slds-theme_default slds-box_small">
                                     <p>
-                                        <strong>Note: </strong> This import functionality will import Name, Dependency,
-                                        StartDate, Duration, % Complete, Phase, Notes and Lag fields in Schedule Lines .
+                                        <strong>Note: </strong> This functionality will import Name, Dependency,
+                                        StartDate <strong>(Accepted date format is MM/DD/YYYY)</strong>, Duration, % Complete, Phase, Notes and Lag fields in Schedule Lines.
                                     </p>
                                 </div>
                             </div>
@@ -75,10 +75,10 @@
                            <!-- <div class="slds-size_1-of-12">
                             </div>-->
                             <div class="slds-size_8-of-12">
-                                <!-- <input type="file" 
-                                      
-                               id="file-upload-input-01" 
-                               aria-labelledby="file-selector-primary-label file-selector-secondary-label" 
+                                <!-- <input type="file"
+
+                               id="file-upload-input-01"
+                               aria-labelledby="file-selector-primary-label file-selector-secondary-label"
                                aura:id="file"
                                accept=".csv"
                                onchange="{!c.handleFilesChange}"/> -->
@@ -88,26 +88,26 @@
                             </div>
                              <div class="slds-size_1-of-12">
                             </div>
-                            
+
                             <div class="slds-size_3-of-12" style="padding-top:1.7rem; padding-left: 10rem;" >
                  <button class="slds-button slds-button--brand"  onclick="{!c.downloadCsv}" style ="">Download CSV</button> <br/><br/>
                             </div>
                            <!-- <div class="slds-size_1-of-12">
                             </div>-->
                         </div>
-                        
+
                         <div class="slds-grid">
                             <!--<div class="slds-size_1-of-12">
                             </div>-->
-                            
+
                             <div class="slds-size_10-of-12">
                                 <aura:if isTrue="{!v.showError}">
                                     <h1 style = "color : red;"> Please upload a file to Import </h1>
-                                    
+
                                 </aura:if>
                             </div>
                         </div>
-                        
+
                         <aura:if isTrue="{!v.isErrorOccured}">
                             <div class="slds-grid">
                                 <div class="slds-size_1-of-12">
@@ -121,9 +121,9 @@
                                 </div>
                             </div>
                         </aura:if>
-                        
+
                     </div>
-                    
+
                     <!--###### MODAL BOX FOOTER Part Start ######-->
                     <footer class="slds-modal__footer">
                         <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}">Cancel</button>
@@ -133,10 +133,10 @@
             </section>
             <div class="slds-backdrop slds-backdrop_open"></div>
             <!--###### MODAL BOX Part END Here ######-->
-            
+
         </aura:if>
         <aura:if isTrue="{!v.Spinner}">
-         
+
         </aura:if>
     </div>
 </aura:component>

@@ -2,11 +2,11 @@
     CSV2JSON: function (component, event, helper, csv) {
         var arr = [];
         arr = csv.split('\n');
-        
+
         if (arr[arr.length - 1] == '' || arr[arr.length - 1] == undefined || arr[arr.length - 1] == null) {
             arr.pop();
         }
-        
+
         var jsonObj = [];
         var headers = arr[0].split(',');
         console.log('headers::', headers);
@@ -51,8 +51,11 @@
                     newStr = newStr.replace(/:quotes:/g, '');
                     data[j] = newStr;
                     if (headers[j].trim() == 'StartDate' && data[j].trim() != '') {
+                        console.log('date data ', data[j]);
                         var date = data[j].trim();
+                        console.log('date ', date);
                         var splitDate = date.split("/");
+                        console.log('splitDate ', splitDate);
                         //   alert(JSON.stringify(parseInt(splitDate[0])))
                         // debugger;
                         if (parseInt(splitDate[0]) < 10 && parseInt(splitDate[0]).length < 2) {
@@ -66,7 +69,14 @@
                             day = splitDate[1]
                         }
 
-                        obj[headers[j].trim()] = month.split('-').reverse().join('-');
+                        let year = splitDate[2];
+
+                        // Adding the time part in HH:mm:ss format
+                        let time = '00:00:00';
+                        let myStartDate = new Date(year, month-1, day);
+                        let isoDate = myStartDate.toISOString();
+                        obj[headers[j].trim()] = isoDate;
+                        console.log('isoDate ', isoDate);
                     } else {
                         if (headers[j].trim() == '% Complete') {
                             obj['percentComplete'] = data[j].trim();
@@ -126,6 +136,7 @@
         }
 
         console.log('jsonObj ', jsonObj);
+        debugger
         const taskMap = new Map();
         for (let i = 0; i < jsonObj.length; i++) {
             let element = jsonObj[i];
@@ -370,6 +381,16 @@
             } else {
                 // sakina 5th sept
                 component.set("v.Spinner", false);
+                var toastEvent = $A.get("e.force:showToast");
+                    toastEvent.setParams({
+                        title: 'Error',
+                        message: 'Something went wrong. Please check your data once again.',
+                        duration: ' 10000',
+                        key: 'info_alt',
+                        type: 'error',
+                        mode: 'dismissible'
+                    });
+                    toastEvent.fire();
                 console.error(response.getError());
             }
         });

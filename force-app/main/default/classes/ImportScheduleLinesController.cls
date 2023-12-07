@@ -48,10 +48,14 @@ public with sharing class ImportScheduleLinesController{
             system.debug(existedScheduleitems[lastIndex]);
         }
 
+        Integer checkFirstRecord = 0;
+
         for (fieldWrapper wrapper : datalist){
             if (wrapper.Name != null && String.isNotBlank(wrapper.Name)){
                 System.debug('wrapper::'+wrapper);
+                checkFirstRecord++;
                 Date startDate = Date.valueOf(wrapper.StartDate);
+                Date startDateForTaskWithOutDependency = Date.valueOf(wrapper.StartDate);
                 buildertek__Project_Task__c schItem = new buildertek__Project_Task__c();
                 //schItem.Name = wrapper.Name;
                 String sizeString = wrapper.Name;
@@ -60,7 +64,6 @@ public with sharing class ImportScheduleLinesController{
                 if(sizeString.length() > maxSize ){
                     //des = sizeString;
                     sizeString = sizeString.substring(0, maxSize);
-
                 }
                 schItem.Name = sizeString;
                 schItem.buildertek__Long_Description__c = wrapper.Name;
@@ -73,17 +76,27 @@ public with sharing class ImportScheduleLinesController{
                 //assigin date in schedule record to alls task that are importing
                 if(mainScheduleRec.buildertek__Initial_Start_Date__c !=null){
                     schItem.buildertek__Start__c = mainScheduleRec.buildertek__Initial_Start_Date__c;
-                    wrapper.StartDate = Date.valueOf(mainScheduleRec.buildertek__Initial_Start_Date__c);
                     FirstTaskDate = Date.valueOf(mainScheduleRec.buildertek__Initial_Start_Date__c);
+                    wrapper.StartDate = Date.valueOf(mainScheduleRec.buildertek__Initial_Start_Date__c);
                     startDate = Date.valueOf(wrapper.StartDate);
                 }else{
                     Date today = system.today();
                     schItem.buildertek__Start__c = today;
-                    wrapper.StartDate = Date.valueOf(schItem.buildertek__Start__c);
                     FirstTaskDate = Date.valueOf(schItem.buildertek__Start__c);
+                    wrapper.StartDate = Date.valueOf(schItem.buildertek__Start__c);
                     startDate = Date.valueOf(wrapper.StartDate);
                 }
 
+                if (String.isBlank(wrapper.Dependency) && checkFirstRecord != 1){
+                    System.debug('in dependency condition');
+                    System.debug('startDate-->'+startDate);
+                    System.debug('startDateForTaskWithOutDependency-->'+startDateForTaskWithOutDependency);
+                    System.debug('schItem.buildertek__Start__c -->'+schItem.buildertek__Start__c);
+                    if (startDateForTaskWithOutDependency > schItem.buildertek__Start__c) {
+                        System.debug('in nested dependency condition');
+                        schItem.buildertek__Start__c = startDateForTaskWithOutDependency;
+                    }
+                }
                 // assigin date in schedule record to 1st task that is importing
                 /*if(count == 0 && mainScheduleRec.buildertek__Initial_Start_Date__c !=null){
                     schItem.buildertek__Start__c = mainScheduleRec.buildertek__Initial_Start_Date__c;
@@ -113,7 +126,7 @@ public with sharing class ImportScheduleLinesController{
                 schItem.buildertek__Original_Start_Date__c = Date.valueOf(wrapper.StartDate);
                 schItem.buildertek__Original_End_Date__c = startDate.addDays(wrapper.Duration);
                 schItem.buildertek__Phase__c = wrapper.Phase;
-                 schItem.buildertek__Notes__c = wrapper.Notes;
+                schItem.buildertek__Notes__c = wrapper.Notes;
                 schItem.buildertek__Lag__c = Double.valueOf(wrapper.Lag != null && String.isNotBlank(wrapper.Lag) ? wrapper.Lag : '0');
                 schItem.buildertek__Order__c = count;
                 //schItem.buildertek__Required_Completion_Date__c = Date.valueOf(wrapper.StartDate).addDays(Integer.valueOf(wrapper.Duration));
@@ -187,7 +200,7 @@ public with sharing class ImportScheduleLinesController{
                     }
 
 
-                    if(FirstTaskDate != null){
+                    if(FirstTaskDate != null && String.isNotBlank(wrapper.Dependency)){
                         schItem.buildertek__Start__c = FirstTaskDate;
                     }
 
@@ -228,7 +241,7 @@ public with sharing class ImportScheduleLinesController{
         public String Name;
         public String Dependency;
         //public Date CompletionDate;
-        public Date StartDate;
+        public DateTime StartDate;
         public Integer Duration;
         public Decimal percentComplete;
         public String Phase;
