@@ -80,6 +80,7 @@ public without sharing class QBMap {
         return JSON.serialize(tax);
     }
 
+    // Contractor Inovice line associated with "Product and Service" in Quickbook....
     public static String MapInvoiceLineToBatch(List<buildertek__Billable_Lines__c> SILine) {
         try {
             System.debug('\n in createProducts \n');
@@ -153,9 +154,9 @@ public without sharing class QBMap {
                 if (qbIdAndNameList != null) {
                     qbId = qbIdAndNameList[0]; // Retrieve QuickBooks ID
                     qbName = qbIdAndNameList[1]; // Retrieve QuickBooks Name
-                    qbTotal = qbIdAndNameList[2];
-                    qbQuantity = qbIdAndNameList[3];
-                    qbUnitPrice = qbIdAndNameList[4];
+                    qbTotal = qbIdAndNameList[2]; // Retrive Item Total Value(SubTotal)
+                    qbQuantity = qbIdAndNameList[3]; // Retrive Item Quantity
+                    qbUnitPrice = qbIdAndNameList[4]; // Retrive Unite Prices
                 }
 
                 QBInvoiceJSON.line Linee = new QBInvoiceJSON.line();
@@ -291,7 +292,7 @@ public without sharing class QBMap {
         return JSON.serialize(Vendor, True).replace('"Long_x":', '"Long":');
     }
 
-    // Contractor Inovice line also associated with "Product and Service" in Quickbook....
+    // Contractor Inovice line associated with "Product and Service" in Quickbook....
     public static String MapContractorInvoiceLineToBatch(List<buildertek__Account_Payable_Item__c> COInvLine) {
         try {
             System.debug('\n in MapContractorInvoiceLineToBatch \n');
@@ -332,7 +333,7 @@ public without sharing class QBMap {
         }
     }
 
-    public static String mapContractorInvoiceData(sObject CoInv, Map<Id, List<String>> lineIdsMap, String VendorQBId){
+    public static String mapContractorInvoiceData(sObject CoInv, Map<Id, List<String>> lineIdsMap, String VendorQBId, String TermQBId){
         try {
             buildertek__Account_Payable__c CoInvoice = [SELECT Id, Name , buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c, buildertek__QB_Record_URL__c, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.buildertek__Vendor__c, buildertek__QBO_Bill_Number__c FROM buildertek__Account_Payable__c WHERE Id =: CoInv.Id LIMIT 1];
 
@@ -342,31 +343,63 @@ public without sharing class QBMap {
                 QbBill.sparse = true;
                 QbBill.SyncToken = CoInvoice.buildertek__QBO_SyncToken__c;
             }
-            QbBill.Line = new list<QBBillReqJSON.Line>();
-            
-            for(String LineId : lineIdsMap.keySet()){
-                
-                QBBillReqJSON.Line lines = new QBBillReqJSON.Line();
-                
-                
-                
-                QbBill.Line.add(lines);
-            }
-            
-            
-                        QBBillReqJSON.VendorRef vendor = new QBBillReqJSON.VendorRef();
-                        vendor.value = VendorQBId;
-                        QbBill.VendorRef = vendor;
 
+            QBBillReqJSON.VendorRef vendor = new QBBillReqJSON.VendorRef();
+            vendor.value = VendorQBId;
+            QbBill.VendorRef = vendor;
+
+            QBBillReqJSON.SalesTermRef term = new QBBillReqJSON.SalesTermRef();
+            term.value = TermQBId;
+            QbBill.SalesTermRef = term;
             
-            return null;
+            QbBill.Line = new list<QBBillReqJSON.Line>();
+            Integer lineNumber = 1;
+            for(String LineId : lineIdsMap.keySet()){
+                List<String> qbIdAndNameList = lineIdsMap.get(lineId);
+                String qbId = '';
+                String qbName = '';
+                String qbTotal = '';
+                String qbQuantity = '';
+                String qbUnitPrice = '';
+                
+                if (qbIdAndNameList != null) {
+                    qbId = qbIdAndNameList[0]; // Retrieve QuickBooks ID
+                    qbName = qbIdAndNameList[1]; // Retrieve QuickBooks Name
+                    qbTotal = qbIdAndNameList[2]; // Retrive Item Total Value(SubTotal)
+                    qbQuantity = qbIdAndNameList[3]; // Retrive Item Quantity
+                    qbUnitPrice = qbIdAndNameList[4]; // Retrive Unite Prices
+                }
+                
+                QBBillReqJSON.Line Linee = new QBBillReqJSON.Line();
+                Linee.DetailType = 'ItemBasedExpenseLineDetail';
+                Linee.Amount = Double.valueOf(qbTotal);
+                Linee.Id = qbId;
+                // Linee.ItemBasedExpenseLineDetail = new QBPOJSON.ItemBasedExpenseLineDetail();
+                
+                QBBillReqJSON.ItemBasedExpenseLineDetail POLD = new QBBillReqJSON.ItemBasedExpenseLineDetail();
+                POLD.ItemRef = new QBBillReqJSON.ItemRef();
+                POLD.Qty = Integer.valueOf(qbQuantity);
+                POLD.UnitPrice = Integer.valueOf(qbUnitPrice);
+                
+                QBBillReqJSON.ItemRef ItemRef = new QBBillReqJSON.ItemRef();
+                ItemRef.name = qbName;
+                ItemRef.value = qbId; // Retrieve the line ID from the map
+                
+                POLD.ItemRef = ItemRef;
+                Linee.ItemBasedExpenseLineDetail = POLD;
+                QbBill.Line.add(Linee);
+                
+                lineNumber++;
+            }
+    
+            return JSON.serialize(QbBill);
         } catch (Exception e) {
             System.debug('Exception in mapContractorInvoiceData :: '  + e.getMessage());
             return null;
         }
     }
 
-    // Purchase Order line also associated with "Product and Service" in Quickbook....
+    // Purchase Order line associated with "Product and Service" in Quickbook....
     public static String mapPOLineToBatch(List<buildertek__Purchase_Order_Item__c> COInvLine) {
         try {
             System.debug('\n in MapPOLineToBatch \n');
@@ -439,9 +472,9 @@ public without sharing class QBMap {
                 if (qbIdAndNameList != null) {
                     qbId = qbIdAndNameList[0]; // Retrieve QuickBooks ID
                     qbName = qbIdAndNameList[1]; // Retrieve QuickBooks Name
-                    qbTotal = qbIdAndNameList[2];
-                    qbQuantity = qbIdAndNameList[3];
-                    qbUnitPrice = qbIdAndNameList[4];
+                    qbTotal = qbIdAndNameList[2]; // Retrive Item Total Value(SubTotal)
+                    qbQuantity = qbIdAndNameList[3]; // Retrive Item Quantity
+                    qbUnitPrice = qbIdAndNameList[4]; // Retrive Unite Prices
                 }
 
                 QBPOJSON.line Linee = new QBPOJSON.line();

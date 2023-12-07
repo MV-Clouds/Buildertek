@@ -1,6 +1,6 @@
 ({
-    createPO : function(component, event, helper) {
-        var action = component.get("c.Create_Vendor_POItem_PO_in_QB_AuraCallout");
+    SyncPO : function(component, event, helper) {
+        var action = component.get("c.Create_Purchase_Order_in_QB_AuraCallout");
         action.setParams({
             recordId : component.get("v.recordId"),
             SyncObjName : component.get("v.sobjecttype")
@@ -46,7 +46,62 @@
         $A.enqueueAction(action);	
     },
 
-    PostAccountToQuickbook: function(component, event, helper){
+    SyncCOInvoice: function(component, event, helper){
+        console.log('inside SyncCOInvoice');
+        var action = component.get("c.Create_Contractor_Invoice_to_Bill_in_QB_AuraCallout");
+        action.setParams({
+            COInvId : component.get("v.recordId"),
+            SyncObjName : component.get("v.sobjecttype")
+        });
+
+        action.setCallback(this, function(response) {
+            var state = response.getState();
+            console.log('state ==> ' + state);
+            var result = response.getReturnValue();
+            console.log('return value ==> '+ result);
+
+            if(state === "SUCCESS") {
+                $A.get("e.force:closeQuickAction").fire();
+                if(result == 'success'){
+            		component.find('notifLib').showNotice({
+    		            "variant": "success",
+    		            "header": "Success",
+    		            "message": "Completed",
+    		        });    
+                }else if(result == 'no_colines') {
+                    component.find('notifLib').showNotice({
+    		            "variant": "error",
+    		            "header": "Error",
+    		            "message": 'There are no Line(s) associated with the Invoice.',
+    		        });    
+                }
+                else if(result == 'no_po'){
+                    component.find('notifLib').showNotice({
+    		            "variant": "error",
+    		            "header": "Error",
+    		            "message": 'There are no PPO associated with the Invoice.',
+    		        });  
+                }else if(result == 'no_vendor_account'){
+                    component.find('notifLib').showNotice({
+    		            "variant": "error",
+    		            "header": "Error",
+    		            "message": 'There are no Vendor account associated with the PO Of this Invoice.',
+    		        });  
+                }else{
+                    component.find('notifLib').showNotice({
+    		            "variant": "error",
+    		            "header": "Error",
+    		            "message": 'Something Went Wrong !!!',
+    		        });  
+                }
+                
+            }
+            
+        });
+        $A.enqueueAction(action);	
+    },
+
+    SyncAccountToQuickbook: function(component, event, helper){
         var accountType = component.get("v.AccountType");
         if(accountType == 'Customer'){
             component.set("v.ShowAccountTypeOpt", false);

@@ -11,10 +11,15 @@
         }
 
         if (Objectname == 'buildertek__Purchase_Order__c') {
-            helper.createPO(component, event, helper);
+            helper.SyncPO(component, event, helper);
+        }
+
+        if(Objectname == 'buildertek__Account_Payable__c'){
+            helper.SyncCOInvoice(component, event, helper)
         }
     },
 
+    // this method only run when Object Is Account
     handleRecordLoaded: function(component, event, helper) {
 
         console.log(component.get("v.BTAccountType.buildertek__BT_Account_Type__c"));
@@ -25,11 +30,11 @@
             component.set("v.AccountType", BTAccountType)
         }
         if(QBID == null){
-            helper.PostAccountToQuickbook(component, event, helper);
+            helper.SyncAccountToQuickbook(component, event, helper);
         }
         else if(QBID != null){
             if(BTAccountType == QBType){
-                helper.PostAccountToQuickbook(component, event, helper);
+                helper.SyncAccountToQuickbook(component, event, helper);
             }
             else{
                 component.find('notifLib').showNotice({

@@ -43,6 +43,7 @@ public without sharing class QBBillReqJSON {
 		public String Id;
 		public ProjectRef ProjectRef;
 		public AccountBasedExpenseLineDetail AccountBasedExpenseLineDetail;
+		public ItemBasedExpenseLineDetail ItemBasedExpenseLineDetail;
 		public String Description;
 	}
 	public class DepartmentRef{
@@ -71,6 +72,17 @@ public without sharing class QBBillReqJSON {
 		public AccountRef AccountRef;
 		public MarkupInfo MarkupInfo;
 		public TaxCodeRef TaxCodeRef;
+	}
+	public class ItemBasedExpenseLineDetail{
+		public String BillableStatus;
+		public Integer UnitPrice;
+		public ItemRef ItemRef;
+		public Integer Qty;
+		public TaxCodeRef TaxCodeRef;
+	}
+	public class ItemRef{
+		public String value;
+		public String name;
 	}
 
 }
