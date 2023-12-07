@@ -64,7 +64,7 @@ public with sharing class NewQuoteComponentController {
     public static masterQuoteWrapper getAllMasterQuote(Integer recordLimit, Integer recordOffset){
         masterQuoteWrapper  masterQuoteWrapperRecords= new masterQuoteWrapper();
         masterQuoteWrapperRecords.quoteList= new List<buildertek__Quote__c>();
-        masterQuoteWrapperRecords.quoteList=[SELECT Id, Name , buildertek__Status__c, buildertek__Description__c , buildertek__Type__c  From buildertek__Quote__c WHERE buildertek__Type__c = 'Master' ORDER BY Name ASC LIMIT :recordLimit Offset :recordOffset ];
+        masterQuoteWrapperRecords.quoteList=[SELECT Id, Name , buildertek__Status__c, buildertek__Description__c , buildertek__Type__c, buildertek__Grand_Total__c  From buildertek__Quote__c WHERE buildertek__Type__c = 'Master' ORDER BY Name ASC LIMIT :recordLimit Offset :recordOffset ];
        
        
         AggregateResult results = [SELECT Count(Id) TotalQuotes  From buildertek__Quote__c WHERE buildertek__Type__c = 'Master' ];
