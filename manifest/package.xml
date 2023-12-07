@@ -31,6 +31,8 @@
         <members>QBBillReqJSON</members>
         <members>QBVendorResponseJSON</members>
         <members>QBVendorJSON</members>
+        <members>QBPOResponseJSON</members>
+        <members>QBPOJSON</members>
         <name>ApexClass</name>
     </types>
     <types>

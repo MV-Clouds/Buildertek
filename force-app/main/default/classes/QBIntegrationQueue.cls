@@ -455,11 +455,14 @@ public without sharing class QBIntegrationQueue {
                 if(SyncObjName == 'buildertek__Purchase_Order__c'){
                     // Create Purchase Order In QB
                     // Run Purchase Order Integartion Logic
+                    buildertek__Purchase_Order__c PO = [SELECT Id, Name, buildertek__Vendor__c,buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c,buildertek__Project__r.buildertek__Customer__c,buildertek__PO_Total__c,buildertek__Tax_Amount__c FROM buildertek__Purchase_Order__c WHERE Id =: SObjRecord.Id LIMIT 1];
+                    List<buildertek__Purchase_Order_Item__c> POLines = [SELECT Id, Name, buildertek__Purchase_Order__c,buildertek__Purchase_Order__r.Name,buildertek__Total_Price__c,buildertek__Item_Name__c,buildertek__Quantity__c,buildertek__QBO_ID__c,buildertek__QBO_Name__c,buildertek__QBO_SyncToken__c,buildertek__Description__c,buildertek__Unit_Price__c FROM buildertek__Purchase_Order_Item__c WHERE buildertek__Purchase_Order__c =: SObjRecord.Id];
+                    Create_POitem_in_QB(POLines, PO, VendorQBId, QBMetadata, Get_Access_Token);
                 }
                 else if(SyncObjName == 'buildertek__Account_Payable__c'){
                     // Create Contractor Invoice (Bill) In QB
                     // Run Contractor Invoice Integartion Logic
-                    QBIntegrationQueue.Create_CoInvLines_in_QB(SObjRecord, VendorQBId, QBMetadata, Get_Access_Token);
+                    Create_CoInvLines_in_QB(SObjRecord, VendorQBId, QBMetadata, Get_Access_Token);
                 }
                 else if(SyncObjName == 'buildertek__Account_Payable_Clone__c'){
                     // Create Payable Invoice(Bill) In QB
@@ -474,11 +477,21 @@ public without sharing class QBIntegrationQueue {
             }
             else{
                 QBException.QB_response( Vendor_Response.getStatusCode(),  Vendor_Response.getBody(), 'QBIntegrationQueue', 'Create_Vendor_in_QB');
-                QBOErrorJSON Vendor_Response_Error = QBOErrorJSON.parse(Vendor_Response.getBody());
+                QBOErrorJSON Response_Error = QBOErrorJSON.parse(Vendor_Response.getBody());
                 QBOErrorJSON.Fault falut = new QBOErrorJSON.Fault();
-                falut = Vendor_Response_Error.Fault;
+                falut = Response_Error.Fault;
                 String ErrorMessage = 'Message : ' + falut.Error[0].Message +', Detail : '+ falut.Error[0].Detail;
+                String ErrorMessage1 = 'Error During Vendor Callout :- ' + 'Message : ' + falut.Error[0].Message +', Detail : '+ falut.Error[0].Detail;
                 UpdateAccount_OnError(acc.Id, ErrorMessage);
+                if(SyncObjName == 'buildertek__Purchase_Order__c'){
+                    UpdatePO_OnError(SObjRecord.Id, ErrorMessage1);
+                }
+                else if(SyncObjName == 'buildertek__Account_Payable__c'){
+
+                }
+                else if(SyncObjName == 'buildertek__Account_Payable_Clone__c'){
+
+                }
             }
             
         } catch (Exception e) {
@@ -489,7 +502,7 @@ public without sharing class QBIntegrationQueue {
 
     // ---------------------- ****************************** Contactor Invoice QB Integration Flow - START *********************** --------------------------------------- 
     @future(callout=true)
-    public static void QB_ContactorInvoice_Flow_Callout(String COInvId){
+    public static void QB_ContactorInvoice_Flow_Callout(String COInvId, String SyncObjName){
         try {
             buildertek__Account_Payable__c CoInv = [SELECT Id, Name , buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c, buildertek__QB_Record_URL__c, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.buildertek__Vendor__c, buildertek__QBO_Bill_Number__c FROM buildertek__Account_Payable__c WHERE Id =: COInvId LIMIT 1];
 
@@ -500,7 +513,7 @@ public without sharing class QBIntegrationQueue {
             buildertek__QuickBooks_Setting__mdt QBMetadata = [SELECT Id, DeveloperName,buildertek__Base_Url__c, buildertek__minorversion__c, MasterLabel, buildertek__Access_Token__c, buildertek__Client_Id__c, buildertek__Client_Secret__c, buildertek__Refresh_Token__c, buildertek__Qb_URL__c, buildertek__Scope__c, buildertek__Company_Id__c FROM buildertek__QuickBooks_Setting__mdt LIMIT 1];
             Boolean Get_Access_Token = false;
 
-            Create_Vendor_in_QB(vendor, QBMetadata, Get_Access_Token, CoInv,'buildertek__Account_Payable__c');
+            Create_Vendor_in_QB(vendor, QBMetadata, Get_Access_Token, CoInv, SyncObjName);
 
         } catch (Exception e) {
             System.debug('Error in QB_ContactorInvoice_Flow_Callout : ' + e.getMessage() +'\n'+ e + 'Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
@@ -636,6 +649,163 @@ public without sharing class QBIntegrationQueue {
     }
     // ---------------------- ************** *********** Contactor Invoice QB Integration Flow - END ********** ************* --------------------------------------- 
 
+    // ===================================== Purchase Order QB Integration Flow - STARTS =====================================================
+
+    @future(callout=true)
+    public static void QB_PO_Flow_Callout(Id PORecordId, String SyncObjName){
+        try {
+            buildertek__Purchase_Order__c PO = [SELECT Id, Name, buildertek__Vendor__c,buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c,buildertek__Project__r.buildertek__Customer__c,buildertek__PO_Total__c,buildertek__Tax_Amount__c FROM buildertek__Purchase_Order__c WHERE Id =: PORecordId LIMIT 1];
+            Account acc = new Account();
+            if(PO.buildertek__Vendor__c != null){
+                acc = [SELECT ID, Name,buildertek__Email_Address__c,Fax,buildertek__QBO_ID__c, buildertek__QB_Record_URL__c, buildertek__QBO_SyncToken__c, Description,ShippingCity,ShippingStreet,ShippingState,ShippingPostalCode,ShippingLatitude,ShippingLongitude,ShippingCountry,Phone,BillingCity,BillingStreet,BillingState,BillingPostalCode,BillingLatitude,BillingLongitude,BillingCountry FROM Account WHERE Id =: PO.buildertek__Vendor__c limit 1];
+            }
+            else if(PO.buildertek__Vendor__c == null){
+                system.debug('Project Id ' + PO.buildertek__Project__r.buildertek__Customer__c);
+                acc = [SELECT ID, Name,buildertek__Email_Address__c,Fax,buildertek__QBO_ID__c, buildertek__QB_Record_URL__c, buildertek__QBO_SyncToken__c, Description,ShippingCity,ShippingStreet,ShippingState,ShippingPostalCode,ShippingLatitude,ShippingLongitude,ShippingCountry,Phone,BillingCity,BillingStreet,BillingState,BillingPostalCode,BillingLatitude,BillingLongitude,BillingCountry FROM Account WHERE Id =: PO.buildertek__Project__r.buildertek__Customer__c limit 1];
+            }
+            List<buildertek__Purchase_Order_Item__c> POLines = [SELECT Id, Name, buildertek__Purchase_Order__c,buildertek__Purchase_Order__r.Name,buildertek__Total_Price__c,buildertek__Item_Name__c,buildertek__Quantity__c,buildertek__QBO_ID__c,buildertek__QBO_Name__c,buildertek__QBO_SyncToken__c,buildertek__Description__c,buildertek__Unit_Price__c FROM buildertek__Purchase_Order_Item__c WHERE buildertek__Purchase_Order__c =: PORecordId];
+
+            buildertek__QuickBooks_Setting__mdt QBMetadata = [SELECT Id, DeveloperName,buildertek__Base_Url__c, buildertek__minorversion__c, MasterLabel, buildertek__Access_Token__c, buildertek__Client_Id__c, buildertek__Client_Secret__c, buildertek__Refresh_Token__c, buildertek__Qb_URL__c, buildertek__Scope__c, buildertek__Company_Id__c FROM buildertek__QuickBooks_Setting__mdt LIMIT 1];
+            
+            Boolean Get_Access_Token = false;
+
+            Create_Vendor_in_QB(acc, QBMetadata, Get_Access_Token, PO, SyncObjName);
+
+        } catch (Exception e) {
+            System.debug('Error in QB_PO_Flow_Callout ..' + e.getMessage() + '\n' + e +'\n Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
+        }
+    }
+
+    public static void Create_POitem_in_QB(List<buildertek__Purchase_Order_Item__c> POLines, buildertek__Purchase_Order__c PO, String VendorQBId, buildertek__QuickBooks_Setting__mdt QBMetadata, Boolean Get_Access_Token){
+        try {
+
+            List<buildertek__Purchase_Order_Item__c> ItemstoCreate = new List<buildertek__Purchase_Order_Item__c>();
+            for(buildertek__Purchase_Order_Item__c Items : POLines){
+                if(Items.buildertek__QBO_ID__c == null){
+                    ItemstoCreate.add(Items);
+                }
+            }
+
+            if(ItemstoCreate.size() > 0){
+                Integer totalItems = ItemstoCreate.size();
+                Integer batchSize = 30;
+                Integer totalBatches = (totalItems + batchSize - 1) / batchSize; // Calculate total batches needed
+                Map<Id, List<String>> lineIdsMap = new Map<Id, List<String>>();
+
+                for (Integer i = 0; i < totalBatches; i++) {
+                    Integer startIdx = i * batchSize;
+                    Integer endIdx = Math.min((i + 1) * batchSize, totalItems);
+    
+                    List<buildertek__Purchase_Order_Item__c> itemsBatch = new List<buildertek__Purchase_Order_Item__c>();
+    
+                    // Create the sublist for the current batch
+                    for (Integer j = startIdx; j < endIdx; j++) {
+                            itemsBatch.add(ItemstoCreate[j]);
+                    }
+                    System.debug((i+1) +' ***** No. Batch length ******** '+ itemsBatch.size());
+                    String POItem_EndPoint = '/v3/company/' + QBMetadata.buildertek__Company_Id__c + '/batch?minorversion=' + QBMetadata.buildertek__minorversion__c;
+                    String POItem_RequestBody = QBMap.mapPOLineToBatch(itemsBatch); 
+                    System.debug('POItem_RequestBody ' +POItem_RequestBody);
+                    HttpResponse POItem_Response = QBCallOutService.QBAPICallOut(POItem_EndPoint , POItem_RequestBody, Get_Access_Token);
+
+                    system.debug('PO Line API Status Code >> ' + POItem_Response.getStatusCode());
+                    system.debug('PO Line Resopnce >> ' + POItem_Response.getBody());
+
+                    if(POItem_Response.getStatusCode() == 200){
+                        QBBatchResJSON response = QBBatchResJSON.parse(POItem_Response.getBody());
+
+                        // First Add Existing PO Lines(if available)....And Then Added Newly created po Lines to the Qb PO....
+                        for(buildertek__Purchase_Order_Item__c POL : POLines){
+                            if(POL.buildertek__QBO_ID__c != null){
+                                lineIdsMap.put(
+                                    Id.valueOf(POL.Id), 
+                                    new List<String>{POL.buildertek__QBO_ID__c, POL.buildertek__QBO_Name__c, string.valueOf(POL.buildertek__Total_Price__c), string.valueOf(POL.buildertek__Quantity__c), string.valueOf(POL.buildertek__Unit_Price__c)}
+                                );
+                            }
+                        }
+
+                        for (QBBatchResJSON.BatchItemResponse batchItem : response.BatchItemResponse) {
+                            if (batchItem != null && batchItem.Item != null && batchItem.bId != null) {
+                                lineIdsMap.put(
+                                    // Assuming SalesforceId__c is of type Id and QbId__c is of type String
+                                    Id.valueOf(batchItem.bId), // Salesforce ID
+                                    // List Of QB Line Id, QB Line Name , Total Price, Quantity, Unite Price...
+                                    new List<String> { batchItem.Item.Id , batchItem.Item.Name, String.valueOf((batchItem.Item.QtyOnHand)*(batchItem.Item.UnitPrice)), String.valueOf(batchItem.Item.QtyOnHand), String.valueOf(batchItem.Item.UnitPrice) } // QuickBooks ID
+                                );
+                            }
+                        }
+                        
+                        if( i == (totalBatches-1)){
+                            System.debug('when last batch finish.. create PO');
+                            System.debug('lineIdsMap >> ' + lineIdsMap);
+                            Create_PO_in_QB(PO, VendorQBId, lineIdsMap,QBMetadata, Get_Access_Token);
+                            UpdatePOline(ItemstoCreate, lineIdsMap);
+                        }
+                    }
+                    else{
+                        QBException.QB_response( POItem_Response.getStatusCode(),  POItem_Response.getBody(), 'QBPOIntegrationQueue', 'Create_POitem_in_QB');
+                        QBOErrorJSON Response_Error = QBOErrorJSON.parse(POItem_Response.getBody());
+                        QBOErrorJSON.Fault falut = new QBOErrorJSON.Fault();
+                        falut = Response_Error.Fault;
+                        String ErrorMessage = 'Message : ' + falut.Error[0].Message +', Detail : '+ falut.Error[0].Detail;
+                        String ErrorMessage1 = 'Error During PO Item Callout :- ' + 'Message : ' + falut.Error[0].Message +', Detail : '+ falut.Error[0].Detail;
+                        UpdatePO_OnError(PO.Id, ErrorMessage1);
+                    }
+                }
+            }
+            else{
+                System.debug('All Items of the po is available in QB');
+                Map<Id, List<String>> lineIdsMap1 = new Map<Id, List<String>>();
+                for(buildertek__Purchase_Order_Item__c POL : POLines){
+                    lineIdsMap1.put(
+                            // Assuming SalesforceId__c is of type Id and QbId__c is of type String
+                            Id.valueOf(POL.Id), // Salesforce ID
+                            new List<String> { POL.buildertek__QBO_ID__c , POL.buildertek__QBO_Name__c, string.valueOf(POL.buildertek__Total_Price__c), string.valueOf(POL.buildertek__Quantity__c), string.valueOf(POL.buildertek__Unit_Price__c) } // QuickBooks ID
+                    );
+                }
+                Create_PO_in_QB(PO, VendorQBId, lineIdsMap1,QBMetadata, Get_Access_Token);
+            }
+        } catch (Exception e) {
+            System.debug('Error in Create_POitem_in_QB ..' + e.getMessage() + '\n' + e +'\n Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
+        }
+    }
+        
+    public static void Create_PO_in_QB(buildertek__Purchase_Order__c PO, String VendorQBId,Map<Id, List<String>> lineIdsMap, buildertek__QuickBooks_Setting__mdt QBMetadata, Boolean Get_Access_Token){
+        try {
+            String PO_EndPoint = '/v3/company/' + QBMetadata.buildertek__Company_Id__c + '/purchaseorder?minorversion=' + QBMetadata.buildertek__minorversion__c;
+            String PO_RequestBody = QBMap.mapPODataBatch(PO, VendorQBId, lineIdsMap);
+            System.debug('PO_RequestBody >> ' + PO_RequestBody);
+            HttpResponse PO_Response = QBCallOutService.QBAPICallOut(PO_EndPoint , PO_RequestBody, Get_Access_Token);
+            
+            system.debug('PO API Status Code >> ' + PO_Response.getStatusCode());
+            system.debug('PO Resopnce >> ' + PO_Response.getBody());
+            
+            if(PO_Response.getStatusCode() == 200){
+                QBPOResponseJSON PO_Response_desr = QBPOResponseJSON.parse(PO_Response.getBody());
+                QBPOResponseJSON.PurchaseOrder pos = new QBPOResponseJSON.PurchaseOrder();
+                pos = PO_Response_desr.PurchaseOrder;
+                String POQBId = pos.Id;
+                String QbInvNumber = pos.DocNumber;
+                String QBInvSyncTocken = pos.SyncToken;
+                UpdatePO(PO.Id, POQBId,QBMetadata, QbInvNumber, QBInvSyncTocken);
+            }
+            else{
+                QBException.QB_response( PO_Response.getStatusCode(),  PO_Response.getBody(), 'QBPOIntegrationQueue', 'Create_PO_in_QB');
+                QBOErrorJSON Response_Error = QBOErrorJSON.parse(PO_Response.getBody());
+                QBOErrorJSON.Fault falut = new QBOErrorJSON.Fault();
+                falut = Response_Error.Fault;
+                String ErrorMessage = 'Message : ' + falut.Error[0].Message +', Detail : '+ falut.Error[0].Detail;
+                String ErrorMessage1 = 'Error During PO Callout :- ' + 'Message : ' + falut.Error[0].Message +', Detail : '+ falut.Error[0].Detail;
+                UpdatePO_OnError(PO.Id, ErrorMessage1);
+            }
+
+            
+        } catch (Exception e) {
+            System.debug('Error in Create_inoice_Payment_in_QB ..' + e.getMessage() + '\n' + e +'\n Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
+        }
+    }
+    // ===================================== Purchase Order QB Integration Flow - Ends =====================================================
+
     // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Aura Enable Method - START <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     @AuraEnabled
     public static String Create_customer_item_invoice_in_QB_flow(String Sales_invoice_Id){
@@ -699,13 +869,12 @@ public without sharing class QBIntegrationQueue {
     }
 
     @AuraEnabled
-    public static string Create_Vendor_In_QB_AuraCallout(String AccoountId){
+    public static string Create_Vendor_In_QB_AuraCallout(String AccoountId, String SyncObjName){
         try {
             Account acc = [SELECT ID, Name,buildertek__Email_Address__c,Fax,buildertek__QBO_ID__c, buildertek__QB_Record_URL__c, buildertek__QBO_SyncToken__c, Description,ShippingCity,ShippingStreet,ShippingState,ShippingPostalCode,ShippingLatitude,ShippingLongitude,ShippingCountry,Phone,BillingCity,BillingStreet,BillingState,BillingPostalCode,BillingLatitude,BillingLongitude,BillingCountry FROM Account WHERE Id =: AccoountId limit 1];
             buildertek__QuickBooks_Setting__mdt QBMetadata = [SELECT Id, DeveloperName,buildertek__Base_Url__c, buildertek__minorversion__c, MasterLabel, buildertek__Access_Token__c, buildertek__Client_Id__c, buildertek__Client_Secret__c, buildertek__Refresh_Token__c, buildertek__Qb_URL__c, buildertek__Scope__c, buildertek__Company_Id__c FROM buildertek__QuickBooks_Setting__mdt LIMIT 1];
             Boolean Get_Access_Token = false;
             sObject SObjRecord = acc;
-            String SyncObjName = 'Account';
             Create_Vendor_in_QB(acc, QBMetadata, Get_Access_Token, SObjRecord, SyncObjName);
             return 'Completed';
 
@@ -715,8 +884,45 @@ public without sharing class QBIntegrationQueue {
         }
     }
 
+    @AuraEnabled
+    public static string Create_Vendor_POItem_PO_in_QB_AuraCallout(String recordId, String SyncObjName){
+        try {
+            buildertek__Purchase_Order__c PO = [SELECT Id, Name, buildertek__Vendor__c,buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c,buildertek__Project__r.buildertek__Customer__c,buildertek__PO_Total__c,buildertek__Tax_Amount__c FROM buildertek__Purchase_Order__c WHERE Id =: recordId LIMIT 1];
 
+            Account acc = new Account();
+            if(PO.buildertek__Vendor__c != null){
+                acc = [SELECT ID, Name,buildertek__Email_Address__c,Fax,buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c, Description,ShippingCity,ShippingStreet,ShippingState,ShippingPostalCode,ShippingLatitude,ShippingLongitude,ShippingCountry,Phone,BillingCity,BillingStreet,BillingState,BillingPostalCode,BillingLatitude,BillingLongitude,BillingCountry FROM Account WHERE Id =: PO.buildertek__Vendor__c limit 1];
+            }
+            else if(PO.buildertek__Vendor__c == null && PO.buildertek__Project__c != null){
+                system.debug('Project Id ' + PO.buildertek__Project__r.buildertek__Customer__c);
+                acc = [SELECT ID, Name,buildertek__Email_Address__c,Fax,buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c, Description,ShippingCity,ShippingStreet,ShippingState,ShippingPostalCode,ShippingLatitude,ShippingLongitude,ShippingCountry,Phone,BillingCity,BillingStreet,BillingState,BillingPostalCode,BillingLatitude,BillingLongitude,BillingCountry FROM Account WHERE Id =: PO.buildertek__Project__r.buildertek__Customer__c limit 1];
+            }
+            else{
+                acc = null;
+            }
+
+            List<buildertek__Purchase_Order_Item__c> POLines = [SELECT Id, Name, buildertek__Purchase_Order__c,buildertek__Purchase_Order__r.Name,buildertek__Total_Price__c,buildertek__Item_Name__c,buildertek__Quantity__c,buildertek__QBO_ID__c,buildertek__QBO_Name__c,buildertek__QBO_SyncToken__c,buildertek__Description__c,buildertek__Unit_Price__c FROM buildertek__Purchase_Order_Item__c WHERE buildertek__Purchase_Order__c =: recordId];
+            if(POLines.size() > 0 && acc != null){
+                string receiptID;
+                QB_PO_Flow_Callout(recordId, SyncObjName);
+                return 'success';
+            }
+            else if(POLines.size() == 0){
+                return 'no_polines';
+            }
+            else if(acc == null){
+                return 'no_vendor_account';
+            }
+            else{
+                return null;
+            }
+        } catch (Exception e) {
+            System.debug('Error in Create_Vendor_In_QB_AuraCallout : ' + e.getMessage() +'\n'+ e + 'Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
+            return null;
+        }
+    }
     // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Aura Enable Method - END <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 
         // ..... ....... ........... .......... ............. Update Records Utility Methods - STARTS ...... ........ ......... ......... .............
         public static void UpdateAccount(String acc_Id, String QB_Id , buildertek__QuickBooks_Setting__mdt  QBMetadata, String SyncToken, String AccountType){
@@ -857,6 +1063,54 @@ public without sharing class QBIntegrationQueue {
                 update Coinvoice;
             } catch (Exception e) {
             System.debug('Error in UpdateContractorInvoice : ' + e.getMessage() +'\n'+ e + 'Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
+            }
+        }
+
+        public static void UpdatePOline(list<buildertek__Purchase_Order_Item__c> SILines, Map<Id, List<String>> lineIdsMap){
+            try {
+                system.debug('PO line going to Update');
+    
+                for (buildertek__Purchase_Order_Item__c record : SILines) {
+                    // Check if the Salesforce ID exists in the mapping and update the QuickBooks ID
+                    List<String> qbIdAndNameList = lineIdsMap.get(record.Id);
+    
+                    // Assuming the list contains QB ID and QB Name in index 0 and 1 respectively
+                    if (qbIdAndNameList != null && qbIdAndNameList.size() >= 2) {
+                        record.buildertek__QBO_ID__c = qbIdAndNameList[0]; // Assign QuickBooks ID
+                        record.buildertek__QBO_Name__c = qbIdAndNameList[1];
+                        // Optionally, you can also use qbIdAndNameList[1] to access QuickBooks Name if needed
+                    }
+                }
+    
+                update SILines;
+            } catch (Exception e) {
+                System.debug('Error in UpdatePOline : ' + e.getMessage() +'\n'+ e + 'Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
+            }
+        }
+
+        public static void UpdatePO(String recordId, String QB_PO_Id, buildertek__QuickBooks_Setting__mdt  QBMetadata, String QbInvNumber, String QBInvSyncTocken){
+            try {
+                system.debug('PO going to Update');
+                String qbPOURL = QBMetadata.buildertek__Qb_URL__c + 'purchaseorder?txnId=' + QB_PO_Id;
+                buildertek__Purchase_Order__c PO = [SELECT Id, Name, buildertek__QB_PO_URL__c, buildertek__QB_PO_Number__c, buildertek__QBO_ID__c, buildertek__QBO_SyncToken__c FROM buildertek__Purchase_Order__c WHERE Id =: recordId LIMIT 1];
+                PO.buildertek__QBO_ID__c = QB_PO_Id;
+                PO.buildertek__QB_PO_URL__c = qbPOURL;
+                PO.buildertek__QB_PO_Number__c = QbInvNumber;
+                PO.buildertek__QBO_SyncToken__c = QBInvSyncTocken;
+                PO.buildertek__QB_Integration_Response_Message__c = 'Integrated Successfully';
+                update PO;
+            } catch (Exception e) {
+                System.debug('Error in UpdatePO : ' + e.getMessage() +'\n'+ e + 'Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
+            }
+        }
+        public static void UpdatePO_OnError(String recordId, String ErrorMessage){
+            try {
+                system.debug('PO going to Update on Error');
+                buildertek__Purchase_Order__c PO = [SELECT Id, Name, buildertek__QB_PO_URL__c, buildertek__QB_PO_Number__c, buildertek__QBO_ID__c, buildertek__QBO_SyncToken__c FROM buildertek__Purchase_Order__c WHERE Id =: recordId LIMIT 1];
+                PO.buildertek__QB_Integration_Response_Message__c = ErrorMessage;
+                update PO;
+            } catch (Exception e) {
+                System.debug('Error in UpdatePO : ' + e.getMessage() +'\n'+ e + 'Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
             }
         }
         // ..... ....... ........... .......... ............. Update Records Utility Methods - END ...... ........ ......... ......... .............

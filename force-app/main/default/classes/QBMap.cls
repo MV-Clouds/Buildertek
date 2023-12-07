@@ -406,13 +406,14 @@ public without sharing class QBMap {
         }
     }
 
-    public static String mapPODataBatch(buildertek__Purchase_Order__c inv, String CustomerId, Map<Id, List<String>> lineIdsMap) {
+    public static String mapPODataBatch(buildertek__Purchase_Order__c inv, String VendorQBId, Map<Id, List<String>> lineIdsMap) {
         try {
             System.debug(' in mapPODataBatch method');
             String invId = inv.Id;
             String invQBId = inv.QBO_ID__c;
             DateTime yourDate = Datetime.now();
             Date txnDate = Date.valueOf(yourDate.format('yyyy-MM-dd'));
+
             QBPOJSON purchaseorder = new QBPOJSON();
 
             if(inv.buildertek__QBO_ID__c != null && inv.buildertek__QBO_ID__c != ''){
@@ -466,8 +467,9 @@ public without sharing class QBMap {
                 lineNumber++;
             }
             
-            QBPOJSON.CustomerRef customer = new QBPOJSON.CustomerRef();
-            customer.value = CustomerId;
+            QBPOJSON.VendorRef vendor = new QBPOJSON.VendorRef();
+            vendor.value = VendorQBId;
+            purchaseorder.VendorRef = vendor;
             
             return JSON.serialize(purchaseorder, True).replace('"Long_x":', '"Long":');
         } catch (Exception e) {

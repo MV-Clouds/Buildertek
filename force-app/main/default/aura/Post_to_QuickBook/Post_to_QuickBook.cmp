@@ -90,9 +90,13 @@
             </aura:if>
 
             <aura:if isTrue="{!v.sObjectName == 'buildertek__Purchase_Order__c'}">
-                Creating PO and PO Lines in Quickbooks... 
-                <br/> Please don't leave this page until Invoice is created.
+                <img alt="Creating new record in QuickBook." src="{!$Resource.gearsloading}" style="height:150px !important;"/>
                 <br/>
+                <div style="margin-block: 10px;">
+                    Creating PO and PO Lines in Quickbooks... 
+                    <br/> Please don't leave this page until PO is posted to Quickbook.
+                    <br/>
+                </div>
             </aura:if>
     	</center>
     </div>

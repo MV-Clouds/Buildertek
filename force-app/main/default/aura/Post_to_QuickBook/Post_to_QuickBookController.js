@@ -11,7 +11,7 @@
         }
 
         if (Objectname == 'buildertek__Purchase_Order__c') {
-            // helper.createPO(component, event, helper);
+            helper.createPO(component, event, helper);
         }
     },
 
