@@ -504,7 +504,7 @@ public without sharing class QBIntegrationQueue {
     @future(callout=true)
     public static void QB_ContactorInvoice_Flow_Callout(String COInvId, String SyncObjName){
         try {
-            buildertek__Account_Payable__c CoInv = [SELECT Id, Name , buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c, buildertek__QB_Record_URL__c, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.buildertek__Vendor__c, buildertek__QBO_Bill_Number__c, buildertek__Terms__c FROM buildertek__Account_Payable__c WHERE Id =: COInvId LIMIT 1];
+            buildertek__Account_Payable__c CoInv = [SELECT Id, Name , buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c, buildertek__QB_Record_URL__c, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.buildertek__Vendor__c,  buildertek__Terms__c FROM buildertek__Account_Payable__c WHERE Id =: COInvId LIMIT 1];
 
             List<buildertek__Account_Payable_Item__c> COInvLines = [SELECT Id, Name , buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c, buildertek__QB_Record_URL__c FROM buildertek__Account_Payable_Item__c WHERE buildertek__Account_Payable__c =: CoInv.Id];
 
@@ -522,7 +522,7 @@ public without sharing class QBIntegrationQueue {
 
     public static void Create_Term_for_COinv_in_QB(sObject SObejctRecord, String VendorQBId, buildertek__QuickBooks_Setting__mdt QBMetadata , boolean Get_Access_Token){
         try {
-            buildertek__Account_Payable__c CoInv = [SELECT Id, Name , buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c, buildertek__QB_Record_URL__c, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.buildertek__Vendor__c, buildertek__QBO_Bill_Number__c, buildertek__Terms__c FROM buildertek__Account_Payable__c WHERE Id =: SObejctRecord.Id LIMIT 1];
+            buildertek__Account_Payable__c CoInv = [SELECT Id, Name , buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c, buildertek__QB_Record_URL__c, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.buildertek__Vendor__c,  buildertek__Terms__c FROM buildertek__Account_Payable__c WHERE Id =: SObejctRecord.Id LIMIT 1];
             String termName = CoInv.buildertek__Terms__c;
             String encodedQueryParam = EncodingUtil.urlEncode('Select * From Term Where Name = \''+termName + '\'', 'UTF-8');
             String EndPoint_for_get_TaxRate_fromQB = '/v3/company/' + QBMetadata.buildertek__Company_Id__c + '/query?query=' + encodedQueryParam + '&minorversion='+ QBMetadata.buildertek__minorversion__c; 
@@ -684,8 +684,7 @@ public without sharing class QBIntegrationQueue {
                 bill = ContractorInvoice_Deser.Bill;
                 String QB_BillId = bill.Id;
                 String QB_BillSyncToken = bill.SyncToken;
-                String QB_BillQbNumber = bill.DocNumber;
-                UpdateContractorInvoice(CoInv, QB_BillId, QB_BillSyncToken, QB_BillQbNumber, QBMetadata);
+                UpdateContractorInvoice(CoInv, QB_BillId, QB_BillSyncToken, QBMetadata);
             }
             else{
                 QBException.QB_response( ContractorInvoice_Response.getStatusCode(),  ContractorInvoice_Response.getBody(), 'QBIntegrationQueue', 'Create_CoInv_to_Bill_in_QB');
@@ -977,7 +976,7 @@ public without sharing class QBIntegrationQueue {
     @AuraEnabled
     public static string Create_Contractor_Invoice_to_Bill_in_QB_AuraCallout(String COInvId, String SyncObjName){
         try {
-            buildertek__Account_Payable__c CoInv = [SELECT Id, Name , buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c, buildertek__QB_Record_URL__c, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.buildertek__Vendor__c, buildertek__QBO_Bill_Number__c, buildertek__Terms__c FROM buildertek__Account_Payable__c WHERE Id =: COInvId LIMIT 1];
+            buildertek__Account_Payable__c CoInv = [SELECT Id, Name , buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c, buildertek__QB_Record_URL__c, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.buildertek__Vendor__c,  buildertek__Terms__c FROM buildertek__Account_Payable__c WHERE Id =: COInvId LIMIT 1];
 
             List<buildertek__Account_Payable_Item__c> COInvLines = [SELECT Id, Name , buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c, buildertek__QB_Record_URL__c FROM buildertek__Account_Payable_Item__c WHERE buildertek__Account_Payable__c =: CoInv.Id];
 
@@ -1130,13 +1129,12 @@ public without sharing class QBIntegrationQueue {
             }
         }
 
-        public static void UpdateContractorInvoice(sObject CoInv, String QB_BillId, String QB_BillSyncToken, String QB_BillQbNumber, buildertek__QuickBooks_Setting__mdt  QBMetadata){
+        public static void UpdateContractorInvoice(sObject CoInv, String QB_BillId, String QB_BillSyncToken, buildertek__QuickBooks_Setting__mdt  QBMetadata){
             try {
-                buildertek__Account_Payable__c Coinvoice = [SELECT Id, Name , buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c, buildertek__QB_Record_URL__c, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.buildertek__Vendor__c, buildertek__QBO_Bill_Number__c FROM buildertek__Account_Payable__c WHERE Id =:CoInv.Id LIMIT 1];
+                buildertek__Account_Payable__c Coinvoice = [SELECT Id, Name , buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c, buildertek__QB_Record_URL__c, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.buildertek__Vendor__c FROM buildertek__Account_Payable__c WHERE Id =:CoInv.Id LIMIT 1];
                 String QBUrl =  QBMetadata.buildertek__Qb_URL__c + 'bill?&txnId=' + QB_BillId;
                 Coinvoice.buildertek__QBO_ID__c = QB_BillId;
                 Coinvoice.buildertek__QBO_SyncToken__c = QB_BillSyncToken;
-                Coinvoice.buildertek__QBO_Bill_Number__c = QB_BillQbNumber;
                 Coinvoice.buildertek__QB_Record_URL__c = QBUrl;
                 Coinvoice.buildertek__QB_Integration_Response_Message__c = 'Integrated Successfully';
                 update Coinvoice;
@@ -1146,7 +1144,7 @@ public without sharing class QBIntegrationQueue {
         }
         public static void UpdateContractorInvoice_OnError(String CoInvId, String ErrorMessage){
             try {
-                buildertek__Account_Payable__c Coinvoice = [SELECT Id, Name , buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c, buildertek__QB_Record_URL__c, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.buildertek__Vendor__c, buildertek__QBO_Bill_Number__c FROM buildertek__Account_Payable__c WHERE Id =:CoInvId LIMIT 1];
+                buildertek__Account_Payable__c Coinvoice = [SELECT Id, Name , buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c, buildertek__QB_Record_URL__c, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.buildertek__Vendor__c FROM buildertek__Account_Payable__c WHERE Id =:CoInvId LIMIT 1];
                 Coinvoice.buildertek__QB_Integration_Response_Message__c = ErrorMessage;
                 update Coinvoice;
             } catch (Exception e) {

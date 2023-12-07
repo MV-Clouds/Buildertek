@@ -335,7 +335,7 @@ public without sharing class QBMap {
 
     public static String mapContractorInvoiceData(sObject CoInv, Map<Id, List<String>> lineIdsMap, String VendorQBId, String TermQBId){
         try {
-            buildertek__Account_Payable__c CoInvoice = [SELECT Id, Name , buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c, buildertek__QB_Record_URL__c, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.buildertek__Vendor__c, buildertek__QBO_Bill_Number__c FROM buildertek__Account_Payable__c WHERE Id =: CoInv.Id LIMIT 1];
+            buildertek__Account_Payable__c CoInvoice = [SELECT Id, Name , buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c, buildertek__QB_Record_URL__c, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.buildertek__Vendor__c FROM buildertek__Account_Payable__c WHERE Id =: CoInv.Id LIMIT 1];
 
             QBBillReqJSON QbBill = new QBBillReqJSON();
             if(CoInvoice.buildertek__QBO_ID__c != null && CoInvoice.buildertek__QBO_ID__c != ''){
