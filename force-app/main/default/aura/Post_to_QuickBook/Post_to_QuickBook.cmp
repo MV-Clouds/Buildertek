@@ -108,6 +108,17 @@
                     <br/>
                 </div>
             </aura:if>
+
+            <aura:if isTrue="{!v.sObjectName == 'buildertek__Account_Payable__c'}">
+                <img alt="Creating new record in QuickBook." src="{!$Resource.gearsloading}" style="height:150px !important;"/>
+                <br/>
+                <div style="margin-block: 10px;">
+                    Sync Sales Invoice with Quickbooks... 
+                    <br/> Please don't leave this page until Sales Invoice is Sync to Quickbook.
+                    <br/>
+                </div>
+            </aura:if>
+
     	</center>
     </div>
 

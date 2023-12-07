@@ -32,7 +32,15 @@
     		            "header": "Error",
     		            "message": 'There are no Vendor account associated with the PO.',
     		        });  
-                }else{
+                } 
+                else if(result == 'account_sync_as_customer'){
+                    component.find('notifLib').showNotice({
+    		            "variant": "error",
+    		            "header": "Error",
+    		            "message": 'Vendor Account Alredy Sync as Customer in Quickbooks.',
+    		        });  
+                }
+                else{
                     component.find('notifLib').showNotice({
     		            "variant": "error",
     		            "header": "Error",
@@ -87,7 +95,15 @@
     		            "header": "Error",
     		            "message": 'There are no Vendor account associated with the PO Of this Invoice.',
     		        });  
-                }else{
+                }
+                else if(result == 'account_sync_as_customer'){
+                    component.find('notifLib').showNotice({
+    		            "variant": "error",
+    		            "header": "Error",
+    		            "message": 'PO Vendor Account Alredy Sync as Customer in Quickbooks.',
+    		        });  
+                }
+                else{
                     component.find('notifLib').showNotice({
     		            "variant": "error",
     		            "header": "Error",
@@ -125,6 +141,7 @@
         var action = component.get("c.Create_Customer_In_QB_AuraCallout");
         action.setParams({
             AccoountId : component.get("v.recordId"),
+            SyncObjName : component.get("v.sObjectName")
         });
         
         action.setCallback(this, function(response) {

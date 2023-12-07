@@ -40,7 +40,7 @@
                 component.find('notifLib').showNotice({
                     "variant": "error",
                     "header": "Error",
-                    "message":  'This Account is posted as ' + QBType + ' in Quickbook, So You can not Post this Account as ' + BTAccountType +  ' again',
+                    "message":  'This Account is sync as ' + QBType + ' in Quickbook, So You can not sync this Account as ' + BTAccountType +  ' again.',
                 }); 
                 $A.get("e.force:closeQuickAction").fire();
             }

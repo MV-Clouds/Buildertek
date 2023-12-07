@@ -399,13 +399,54 @@ public without sharing class QBMap {
         }
     }
 
+    // Contractor Inovice line associated with "Product and Service" in Quickbook....
+    public static string MapPayableInvoiceLineToBatch(List<buildertek__Account_Payable_Item_Clone__c> PayLines){
+        try {
+            System.debug('\n in MapPayableInvoiceLineToBatch \n');
+            QBBatchReqJSON batchItemRequest = new QBBatchReqJSON();
+            
+            for (buildertek__Account_Payable_Item_Clone__c item : PayLines) {
+                String lineId = item.Id;
+                Boolean taxable = true;
+                DateTime yourDate = Datetime.now();
+                Date invStartDate = Date.valueOf(yourDate.format('yyyy-MM-dd'));
+                Decimal UnitePrice = item.buildertek__Unit_Price__c	 != null ? item.buildertek__Unit_Price__c	 : 0;
+                batchItemRequest.addBatchItem(
+                    String.valueOf(item.Id),
+                    true, // Set TrackQtyOnHand as needed
+                    item.Name,
+                    item.buildertek__Quantity__c,
+                    UnitePrice,
+                    // item.buildertek__Total__c,
+                    'Sales of Product Income',
+                    '79', // Assuming a fixed value for income account value
+                    invStartDate,
+                    'Inventory',
+                    taxable,
+                    'Test acc',
+                    '100',
+                    'Cost of Goods Sold',
+                    '80'
+                );
+            }
+            
+            // Now perform the API callout using QBBatchReqJSON class
+            // createInvoiceLines(batchItemRequest);
+            return JSON.serialize(batchItemRequest);
+        } catch (Exception e) {
+            System.debug('Exception in MapPayableInvoiceLineToBatch :: '  + e.getMessage());
+            return null;
+        }
+
+    }
+
     // Purchase Order line associated with "Product and Service" in Quickbook....
-    public static String mapPOLineToBatch(List<buildertek__Purchase_Order_Item__c> COInvLine) {
+    public static String mapPOLineToBatch(List<buildertek__Purchase_Order_Item__c> POLines) {
         try {
             System.debug('\n in MapPOLineToBatch \n');
             QBBatchReqJSON batchItemRequest = new QBBatchReqJSON();
             
-            for (buildertek__Purchase_Order_Item__c item : COInvLine) {
+            for (buildertek__Purchase_Order_Item__c item : POLines) {
                 String lineId = item.Id;
                 Boolean taxable = true;
                 DateTime yourDate = Datetime.now();
