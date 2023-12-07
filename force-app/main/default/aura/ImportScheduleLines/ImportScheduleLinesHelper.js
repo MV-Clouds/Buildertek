@@ -1,198 +1,219 @@
 ({
     CSV2JSON: function (component, event, helper, csv) {
-        var arr = [];
-        arr = csv.split('\n');
+        try {
+            var arr = [];
+            arr = csv.split('\n');
 
-        if (arr[arr.length - 1] == '' || arr[arr.length - 1] == undefined || arr[arr.length - 1] == null) {
-            arr.pop();
-        }
-
-        var jsonObj = [];
-        var headers = arr[0].split(',');
-        console.log('headers::', headers);
-        if (headers[0] !== "Name" || headers[1] !== "Dependency" || headers[2] !== "StartDate" || headers[3] !== "Duration" || headers[4] !== "% Complete" || headers[5] !== "Phase" || headers[6] !== "Notes" || headers[7] !== "Lag\r") {
-            component.set("v.Spinner", false);
-            component.set("v.isErrorOccured", true);
-            component.set("v.errorMessage", 'File Header Format is Invalid!');
-            return '';
-        }
-        var startIndex;
-        var endIndex;
-
-        for (var i = 1; i < arr.length; i++) {
-            if (arr[i] != undefined) {
-                while (arr[i].indexOf('"') > -1) {
-                    if (startIndex == null) {
-                        startIndex = arr[i].indexOf('"');
-                        arr[i] = arr[i].substring(0, startIndex) + ':quotes:' + arr[i].substring(startIndex + 1, arr[i].length);
-                    } else {
-                        if (endIndex == null) {
-                            endIndex = arr[i].indexOf('"');
-                            arr[i] = arr[i].substring(0, endIndex) + ':quotes:' + arr[i].substring(endIndex + 1, arr[i].length);
-                        }
-                    }
-
-                    if (startIndex != null && endIndex != null) {
-                        var sub = arr[i].substring(startIndex, endIndex);
-                        sub = sub.replaceAll(',', ':comma:');
-                        arr[i] = arr[i].substring(0, startIndex) + sub + arr[i].substring(endIndex, arr[i].length);
-                        startIndex = null;
-                        endIndex = null;
-                    }
-                }
-
-                var data = arr[i].split(',');
-                var obj = {};
-                var month = '';
-                var day = '';
-                for (var j = 0; j < data.length; j++) {
-                    var myStr = data[j];
-                    var newStr = myStr.replace(/:comma:/g, ',');
-                    newStr = newStr.replace(/:quotes:/g, '');
-                    data[j] = newStr;
-                    if (headers[j].trim() == 'StartDate' && data[j].trim() != '') {
-                        console.log('date data ', data[j]);
-                        var date = data[j].trim();
-                        console.log('date ', date);
-                        var splitDate = date.split("/");
-                        console.log('splitDate ', splitDate);
-                        //   alert(JSON.stringify(parseInt(splitDate[0])))
-                        // debugger;
-                        if (parseInt(splitDate[0]) < 10 && parseInt(splitDate[0]).length < 2) {
-                            month = '0' + splitDate[0]
-                        } else {
-                            month = splitDate[0]
-                        }
-                        if (parseInt(splitDate[1]) < 10 && parseInt(splitDate[1]).length < 2) {
-                            day = '0' + splitDate[1]
-                        } else {
-                            day = splitDate[1]
-                        }
-
-                        let year = splitDate[2];
-
-                        // Adding the time part in HH:mm:ss format
-                        let time = '00:00:00';
-                        let myStartDate = new Date(year, month-1, day);
-                        let isoDate = myStartDate.toISOString();
-                        obj[headers[j].trim()] = isoDate;
-                        console.log('isoDate ', isoDate);
-                    } else {
-                        if (headers[j].trim() == '% Complete') {
-                            obj['percentComplete'] = data[j].trim();
-                        } else {
-                            obj[headers[j].trim()] = data[j].trim();
-                        }
-
-                    }
-                    // }
-                }
-
-                if (obj.StartDate != undefined && obj.StartDate != '') {
-                    jsonObj.push(obj);
-                } else {
-                    var today = new Date();
-                    var dd = String(today.getDate()).padStart(2, '0');
-                    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-                    var yyyy = today.getFullYear();
-
-                    today = yyyy + '-' + mm + '-' + dd;
-                    obj.StartDate = today;
-                    console.log('today ',today);
-                    console.log('obj.StartDate ',obj.StartDate);
-                    jsonObj.push(obj);
-
-                    var toastEvent = $A.get("e.force:showToast");
-                    toastEvent.setParams({
-                        title: 'Error',
-                        message: 'StartDate should not be null',
-                        duration: ' 10000',
-                        key: 'info_alt',
-                        type: 'error',
-                        mode: 'dismissible'
-                    });
-                    toastEvent.fire();
-                    component.set("v.startdateError", true);
-                    component.set("v.Spinner", false);
-                }
-                if (obj.percentComplete != "" && obj.percentComplete != undefined) {
-
-                } else {
-                    var toastEvent = $A.get("e.force:showToast");
-                    toastEvent.setParams({
-                        title: 'Error',
-                        message: 'Percent Complete should not be null',
-                        duration: ' 10000',
-                        key: 'info_alt',
-                        type: 'error',
-                        mode: 'dismissible'
-                    });
-                    toastEvent.fire();
-                    component.set("v.startdateError", true);
-                    component.set("v.Spinner", false);
-                }
-
+            if (arr[arr.length - 1] == '' || arr[arr.length - 1] == undefined || arr[arr.length - 1] == null) {
+                arr.pop();
             }
-        }
 
-        console.log('jsonObj ', jsonObj);
-        debugger
-        const taskMap = new Map();
-        for (let i = 0; i < jsonObj.length; i++) {
-            let element = jsonObj[i];
-            taskMap.set('PT - ' + i, element.Name);
-        }
+            var jsonObj = [];
+            var headers = arr[0].split(',');
+            console.log('headers::', headers);
+            if (headers[0] !== "Name" || headers[1] !== "Dependency" || headers[2] !== "StartDate" || headers[3] !== "Duration" || headers[4] !== "% Complete" || headers[5] !== "Phase" || headers[6] !== "Notes" || headers[7] !== "Lag\r") {
+                component.set("v.Spinner", false);
+                component.set("v.isErrorOccured", true);
+                component.set("v.errorMessage", 'File Header Format is Invalid!');
+                return '';
+            }
+            var startIndex;
+            var endIndex;
 
-        for (let i = 0; i < jsonObj.length; i++) {
-            let e = jsonObj[i];
-            e.ID = 'PT - ' + i;
-        }
+            for (var i = 1; i < arr.length; i++) {
+                if (arr[i] != undefined) {
+                    while (arr[i].indexOf('"') > -1) {
+                        if (startIndex == null) {
+                            startIndex = arr[i].indexOf('"');
+                            arr[i] = arr[i].substring(0, startIndex) + ':quotes:' + arr[i].substring(startIndex + 1, arr[i].length);
+                        } else {
+                            if (endIndex == null) {
+                                endIndex = arr[i].indexOf('"');
+                                arr[i] = arr[i].substring(0, endIndex) + ':quotes:' + arr[i].substring(endIndex + 1, arr[i].length);
+                            }
+                        }
 
-        jsonObj.forEach(ele => {
-            for (let [key, value] of taskMap.entries()) {
-                if (ele.Dependency === value) {
-                    ele.parentID = key;
+                        if (startIndex != null && endIndex != null) {
+                            var sub = arr[i].substring(startIndex, endIndex);
+                            sub = sub.replaceAll(',', ':comma:');
+                            arr[i] = arr[i].substring(0, startIndex) + sub + arr[i].substring(endIndex, arr[i].length);
+                            startIndex = null;
+                            endIndex = null;
+                        }
+                    }
+
+                    var data = arr[i].split(',');
+                    var obj = {};
+                    var month = '';
+                    var day = '';
+                    for (var j = 0; j < data.length; j++) {
+                        var myStr = data[j];
+                        var newStr = myStr.replace(/:comma:/g, ',');
+                        newStr = newStr.replace(/:quotes:/g, '');
+                        data[j] = newStr;
+                        if (headers[j].trim() == 'StartDate' && data[j].trim() != '') {
+                            console.log('date data ', data[j]);
+                            var date = data[j].trim();
+                            console.log('date ', date);
+                            var splitDate = date.split("/");
+                            console.log('splitDate ', splitDate);
+                            //   alert(JSON.stringify(parseInt(splitDate[0])))
+                            // debugger;
+                            if (parseInt(splitDate[0]) < 10 && parseInt(splitDate[0]).length < 2) {
+                                month = '0' + splitDate[0]
+                            } else {
+                                month = splitDate[0]
+                            }
+                            if (parseInt(splitDate[1]) < 10 && parseInt(splitDate[1]).length < 2) {
+                                day = '0' + splitDate[1]
+                            } else {
+                                day = splitDate[1]
+                            }
+
+                            let year = splitDate[2];
+
+                            // Adding the time part in HH:mm:ss format
+                            year = parseInt(year, 10);
+                            month = parseInt(month, 10);
+                            day = parseInt(day, 10);
+
+                            // Subtract 1 from the month
+                            month = month - 1;
+
+                            // Ensure month is between 0 and 11
+                            if (month < 0) {
+                                month = 11; // set to December if the result is less than 0
+                                year = year - 1; // subtract 1 from the year
+                            } else if (month > 11) {
+                                month = 0; // set to January if the result is greater than 11
+                                year = year + 1; // add 1 to the year
+                            }
+
+                            // Create ISO formatted string with '00:00:00Z'
+                            let time = year + '-' + (month + 1).toString().padStart(2, '0') + '-' + day.toString().padStart(2, '0') + 'T00:00:00Z';
+                            let myStartDate = new Date(time);
+
+                            console.log(myStartDate);
+                            obj[headers[j].trim()] = myStartDate;
+                        } else {
+                            if (headers[j].trim() == '% Complete') {
+                                obj['percentComplete'] = data[j].trim();
+                            } else {
+                                obj[headers[j].trim()] = data[j].trim();
+                            }
+
+                        }
+                        // }
+                    }
+
+                    if (obj.StartDate != undefined && obj.StartDate != '') {
+                        jsonObj.push(obj);
+                    } else {
+                        var today = new Date();
+                        var dd = String(today.getDate()).padStart(2, '0');
+                        var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                        var yyyy = today.getFullYear();
+
+                        today = yyyy + '-' + mm + '-' + dd;
+                        obj.StartDate = today;
+                        console.log('today ', today);
+                        console.log('obj.StartDate ', obj.StartDate);
+                        jsonObj.push(obj);
+
+                        var toastEvent = $A.get("e.force:showToast");
+                        toastEvent.setParams({
+                            title: 'Error',
+                            message: 'StartDate should not be null',
+                            duration: ' 10000',
+                            key: 'info_alt',
+                            type: 'error',
+                            mode: 'dismissible'
+                        });
+                        toastEvent.fire();
+                        component.set("v.startdateError", true);
+                        component.set("v.Spinner", false);
+                    }
+                    if (obj.percentComplete != "" && obj.percentComplete != undefined) {
+
+                    } else {
+                        var toastEvent = $A.get("e.force:showToast");
+                        toastEvent.setParams({
+                            title: 'Error',
+                            message: 'Percent Complete should not be null',
+                            duration: ' 10000',
+                            key: 'info_alt',
+                            type: 'error',
+                            mode: 'dismissible'
+                        });
+                        toastEvent.fire();
+                        component.set("v.startdateError", true);
+                        component.set("v.Spinner", false);
+                    }
+
                 }
             }
-        });
 
-        let parentMap = new Map();
-        jsonObj.forEach(element => {
-            parentMap.set(element.ID, element.parentID);
-        });
-        console.log('parentMap ==> ',parentMap);
+            console.log('jsonObj ', jsonObj);
+            debugger
+            const taskMap = new Map();
+            for (let i = 0; i < jsonObj.length; i++) {
+                let element = jsonObj[i];
+                taskMap.set('PT - ' + i, element.Name);
+            }
 
-        var circularDependency = false;
-        let totalLoop = 0;
-        var dependentRecord;
-        jsonObj.every(ele => {
-            var currentId = ele.ID;
-            for (let index = 0; index <= jsonObj.length+1; index++) {
-                totalLoop++
-                if (parentMap.has(currentId)) {
-                    currentId = parentMap.get(currentId);
-                    if(index > jsonObj.length){
-                        circularDependency = true;
-                        console.log('ele.Name ==> '+ele.Name);
-                        component.set("v.CircularDependencyName", ele.Name);
-                        dependentRecord = ele;
+            for (let i = 0; i < jsonObj.length; i++) {
+                let e = jsonObj[i];
+                e.ID = 'PT - ' + i;
+            }
+
+            jsonObj.forEach(ele => {
+                for (let [key, value] of taskMap.entries()) {
+                    if (ele.Dependency === value) {
+                        ele.parentID = key;
+                    }
+                }
+            });
+
+            let parentMap = new Map();
+            jsonObj.forEach(element => {
+                parentMap.set(element.ID, element.parentID);
+            });
+            console.log('parentMap ==> ', parentMap);
+
+            var circularDependency = false;
+            let totalLoop = 0;
+            var dependentRecord;
+            jsonObj.every(ele => {
+                var currentId = ele.ID;
+                for (let index = 0; index <= jsonObj.length + 1; index++) {
+                    totalLoop++
+                    if (parentMap.has(currentId)) {
+                        currentId = parentMap.get(currentId);
+                        if (index > jsonObj.length) {
+                            circularDependency = true;
+                            console.log('ele.Name ==> ' + ele.Name);
+                            component.set("v.CircularDependencyName", ele.Name);
+                            dependentRecord = ele;
+                            break;
+                        }
+                    } else {
                         break;
                     }
-                } else{
-                    break;
                 }
-            }
-            return !circularDependency;
-        });
+                return !circularDependency;
+            });
 
-        console.log("Total Loop => "+totalLoop);
-        if (circularDependency) {
-            console.log('dependentRecord ==> ',dependentRecord);
-            console.log('Circular Dependency');
-            return '';
-        } else{
-            var json = JSON.stringify(jsonObj);
-            return json;
+            console.log("Total Loop => " + totalLoop);
+            if (circularDependency) {
+                console.log('dependentRecord ==> ', dependentRecord);
+                console.log('Circular Dependency');
+                return '';
+            } else {
+                var json = JSON.stringify(jsonObj);
+                return json;
+            }
+        } catch (error) {
+            console.log('error ', error);
         }
     },
 
@@ -382,15 +403,15 @@
                 // sakina 5th sept
                 component.set("v.Spinner", false);
                 var toastEvent = $A.get("e.force:showToast");
-                    toastEvent.setParams({
-                        title: 'Error',
-                        message: 'Something went wrong. Please check your data once again.',
-                        duration: ' 10000',
-                        key: 'info_alt',
-                        type: 'error',
-                        mode: 'dismissible'
-                    });
-                    toastEvent.fire();
+                toastEvent.setParams({
+                    title: 'Error',
+                    message: 'Something went wrong. Please check your data once again.',
+                    duration: ' 10000',
+                    key: 'info_alt',
+                    type: 'error',
+                    mode: 'dismissible'
+                });
+                toastEvent.fire();
                 console.error(response.getError());
             }
         });

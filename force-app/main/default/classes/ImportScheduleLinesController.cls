@@ -87,15 +87,8 @@ public with sharing class ImportScheduleLinesController{
                     startDate = Date.valueOf(wrapper.StartDate);
                 }
 
-                if (String.isBlank(wrapper.Dependency) && checkFirstRecord != 1){
-                    System.debug('in dependency condition');
-                    System.debug('startDate-->'+startDate);
-                    System.debug('startDateForTaskWithOutDependency-->'+startDateForTaskWithOutDependency);
-                    System.debug('schItem.buildertek__Start__c -->'+schItem.buildertek__Start__c);
-                    if (startDateForTaskWithOutDependency > schItem.buildertek__Start__c) {
-                        System.debug('in nested dependency condition');
-                        schItem.buildertek__Start__c = startDateForTaskWithOutDependency;
-                    }
+                if (String.isBlank(wrapper.Dependency)){
+                    schItem.buildertek__Start__c = startDateForTaskWithOutDependency;
                 }
                 // assigin date in schedule record to 1st task that is importing
                 /*if(count == 0 && mainScheduleRec.buildertek__Initial_Start_Date__c !=null){
