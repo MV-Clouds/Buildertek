@@ -11,6 +11,7 @@
     <aura:attribute name="totalRecords" type="Integer" />
     <aura:attribute name="pageSize" type="Integer" default="10" />
     <aura:attribute name="currencycode" type="String" />
+    <aura:attribute name="checkedRecordIds" type="List" />
 
     <!-- Attribute Declration For Pagination End-->
 
@@ -50,24 +51,21 @@
                 <tbody>
                     <aura:iteration items="{!v.PaginationList}" var="rec">
                         <tr class="slds-hint-parent">
-                            <aura:if isTrue="{!rec.masterPORecord != null}">
-                                <td width="3%">
-                                    <ui:inputCheckbox aura:id="checkContractor" value="{rec.poCheck}"
-                                        text="{!rec.masterPORecord.Id}" change="{!c.handleCheck}" />
-                                </td>
-                                <td width="50%" role="gridcell">
-                                    <ui:outputText value="{!rec.masterPORecord.Name}"/>
-                                </td>
-                                <td width="50%" role="gridcell">
-                                    <ui:outputText value="{!rec.masterPORecord.buildertek__Description__c}" />
-                                </td>
-                                <td width="30%" role="gridcell">
-                                    <ui:outputText value="{!rec.masterPORecord.buildertek__Type__c}" />
-                                </td>
-                                <td width="27%" role="gridcell">
-                                    <lightning:formattedNumber value="{!rec.masterPORecord.buildertek__PO_Total__c}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code" />
-                                </td>
-                            </aura:if>
+                            <td width="3%">
+                                <ui:inputCheckbox aura:id="checkContractor" text="{!rec.Id}" change="{!c.handleCheckbox}" />
+                            </td>
+                            <td width="50%" role="gridcell">
+                                <ui:outputText value="{!rec.Name}"/>
+                            </td>
+                            <td width="50%" role="gridcell">
+                                <ui:outputText value="{!rec.buildertek__Description__c}" />
+                            </td>
+                            <td width="30%" role="gridcell">
+                                <ui:outputText value="{!rec.buildertek__Type__c}" />
+                            </td>
+                            <td width="27%" role="gridcell">
+                                <lightning:formattedNumber value="{!rec.buildertek__PO_Total__c}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code" />
+                            </td>
                         </tr>
                     </aura:iteration>
                 </tbody>
