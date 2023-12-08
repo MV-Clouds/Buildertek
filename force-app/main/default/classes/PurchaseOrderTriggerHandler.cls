@@ -134,8 +134,8 @@ public with sharing class PurchaseOrderTriggerHandler{
         for (Purchase_Order__c newPO : updatedPurchaseOrders){
             String status = oldPurchaseOrdersMap.get(newPO.Id).buildertek__Status__c;
             // system.debug('&&&&&&'+status);
-            List<buildertek__Account_Payable__c> contractInvoiveList= [Select Id , Name  , buildertek__Purchase_Order__c From buildertek__Account_Payable__c WHERE buildertek__Purchase_Order__c=:newPO.Id];
-            system.debug('contractInvoiveList ==> ' + contractInvoiveList.size());
+            // List<buildertek__Account_Payable__c> contractInvoiveList= [Select Id , Name  , buildertek__Purchase_Order__c From buildertek__Account_Payable__c WHERE buildertek__Purchase_Order__c=:newPO.Id];
+            // system.debug('contractInvoiveList ==> ' + contractInvoiveList.size());
 
             if (newPO.buildertek__Status__c == 'Approved' && newPO.buildertek__Status__c != status){
                 if (adminInterfaceNodeConfigurations.size() > 0){
@@ -433,4 +433,96 @@ PurchaseOrderDAO.isUpdatePurchaseOrder = true;
         }
 
     }
+
+    public void updateAmountonProject(Purchase_Order__c[] newPurchaseOrders, Map<ID, Purchase_Order__c> oldPurchaseOrderMap) {
+        try {
+            // Collect unique project IDs from the updated purchase orders
+            Set<Id> projectIdsToUpdate = new Set<Id>();
+
+            for (buildertek__Purchase_Order__c newPO : newPurchaseOrders) {
+                buildertek__Purchase_Order__c oldPO = oldPurchaseOrderMap.get(newPO.Id);
+
+                // Check if relevant fields have changed
+                if (hasFieldsChanged(newPO, oldPO)) {
+                    projectIdsToUpdate.add(newPO.buildertek__Project__c);
+                    if (newPO.buildertek__Project__c != oldPO.buildertek__Project__c) {
+                        projectIdsToUpdate.add(oldPO.buildertek__Project__c);
+                    }
+                }
+            }
+
+            // Calculate and update aggregated values for each project
+            updateProjectAggregatedValues(projectIdsToUpdate);
+        } catch (Exception ex) {
+            System.debug('Error--> '+ex.getMessage());
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
+        }
+    }
+
+    public void updateprojectonpoinsert(Purchase_Order__c[] newPurchaseOrders) {
+        try {
+            // Collect unique project IDs from the updated purchase orders
+            Set<Id> projectIds = new Set<Id>();
+            for (buildertek__Purchase_Order__c po : newPurchaseOrders) {
+                if (po.buildertek__Project__c != null) {
+                    projectIds.add(po.buildertek__Project__c);
+                }
+            }
+
+            // Calculate and update aggregated values for each project
+            updateProjectAggregatedValues(projectIds);
+        } catch (Exception ex) {
+            System.debug('Error--> '+ex.getMessage());
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
+        }
+    }
+
+    public boolean hasFieldsChanged(buildertek__Purchase_Order__c newPO, buildertek__Purchase_Order__c oldPO) {
+        return newPO.buildertek__Status__c != oldPO.buildertek__Status__c ||
+               newPO.buildertek__Paid_Amount__c != oldPO.buildertek__Paid_Amount__c ||
+               newPO.buildertek__PO_Total__c != oldPO.buildertek__PO_Total__c ||
+               newPO.buildertek__Project__c != oldPO.buildertek__Project__c;
+    }
+
+    public void updateProjectAggregatedValues(Set<Id> projectIds) {
+        try {
+            List<buildertek__Project__c> projectsToUpdate = new List<buildertek__Project__c>();
+
+            for (Id projectId : projectIds) {
+                // Query purchase orders related to the project
+                List<AggregateResult> aggregatedResults = [SELECT SUM(buildertek__Paid_Amount__c) totalPaidAmount, SUM(buildertek__PO_Total__c) totalPOTotal FROM buildertek__Purchase_Order__c WHERE buildertek__Project__c = :projectId AND buildertek__Status__c != 'Canceled'];
+
+                for (AggregateResult aggregatedResult : aggregatedResults) {
+                    Decimal totalPaidAmount = (Decimal)aggregatedResult.get('totalPaidAmount');
+                    Decimal totalPOTotal = (Decimal)aggregatedResult.get('totalPOTotal');
+        
+                    // Retrieve the project and update aggregated values
+                    buildertek__Project__c projectToUpdate = new buildertek__Project__c(Id = projectId);
+                    projectToUpdate.buildertek__Total_Paid_PO_Amount__c = totalPaidAmount;
+                    projectToUpdate.buildertek__Total_PO_Amount__c = totalPOTotal;
+        
+                    projectsToUpdate.add(projectToUpdate);
+                }
+            }
+
+            // Update the projects with aggregated values
+            if (!projectsToUpdate.isEmpty()) {
+                update projectsToUpdate;
+            }
+        } catch (Exception ex) {
+            System.debug('Error--> '+ex.getMessage());
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
+        }
+    }
+    
+    
 }
