@@ -13,6 +13,7 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
     firstRowDup["id"] = scheduleData.Id;
     firstRowDup["name"] = scheduleData.buildertek__Description__c;
     firstRowDup["startDate"] = scheduleData.buildertek__Initial_Start_Date__c;
+    firstRowDup["duration"] = 1;
     var projstartdate = scheduleData.buildertek__Initial_Start_Date__c;
     firstRowDup["expanded"] = true
     firstRowDup["type"] = 'Project'
@@ -886,6 +887,145 @@ function mergeArrays(taskData, assignedResources) {
     }
 
     return mergedList;
+}
+
+//* ayther : Mitrajsinh Gohil
+//* Date : 8th Dec 2023
+//* This method is used to create task row data based on the conditions
+function createTaskRecord(taskListForPhase){
+    var rowChilObj = {};
+    rowChilObj["type"] = 'Task'
+    rowChilObj["customtype"] = taskListForPhase.buildertek__Type__c
+    if(taskListForPhase.buildertek__Type__c == 'Milestone'){
+        rowChilObj["cls"] = 'milestoneTypeColor'
+    }
+    rowChilObj["iconCls"] = "b-fa b-fa-arrow-right"
+    rowChilObj["indentVal"] = taskListForPhase.buildertek__Indent_Task__c;
+    if(taskListForPhase.buildertek__Indent_Task__c){
+        rowChilObj["iconCls"] = "b-fa b-fa-arrow-left indentTrue"
+        
+    }
+    rowChilObj['phase'] = taskListForPhase.buildertek__Phase__c;
+    
+    //*comparing task finish date with today date and setting color accordingly
+    let taskFinishDate = new Date(taskListForPhase.buildertek__Finish__c);
+    taskFinishDate.setHours(0, 0, 0, 0);
+    let todayDate = new Date();
+    todayDate.setHours(0, 0, 0, 0);
+    
+    if ((taskFinishDate < todayDate) && taskListForPhase.buildertek__Completion__c != 100) {
+        rowChilObj['eventColor'] = 'red';
+    } else {
+        rowChilObj['eventColor'] = taskListForPhase.buildertek__task_color__c;
+    }
+    
+    
+    if(taskListForPhase.buildertek__Dependency__c){
+    }else{
+    }
+    
+    if(scheduleItemIdsList.indexOf(taskListForPhase.Id) < 0){
+        scheduleItemIdsList.push(taskListForPhase.Id)
+    }
+    rowChilObj["id"] = taskListForPhase.Id
+    rowChilObj["name"] = taskListForPhase.Name
+    rowChilObj["percentDone"] = taskListForPhase.buildertek__Completion__c
+    rowChilObj["startDate"] = taskListForPhase.buildertek__Start__c
+    // rowChilObj["constraintDate"] = taskListForPhase.buildertek__Start__c
+    // rowChilObj["constraintType"] = 'startnoearlierthan'
+    rowChilObj['predecessor'] = taskListForPhase.buildertek__Dependency__c;
+    
+    if (taskListForPhase.hasOwnProperty('buildertek__Dependency__c') == true) {
+        rowChilObj['predecessorName'] = taskListForPhase.buildertek__Dependency__r.Name;
+    } else {
+        rowChilObj['predecessorName'] = '';
+    }
+    
+    rowChilObj['contractorId'] = taskListForPhase.buildertek__Contractor__c;
+    
+    if(taskListForPhase.buildertek__Contractor__c){
+        rowChilObj["contractorname"] = taskListForPhase.buildertek__Contractor__r.Name;  //Added for contractor
+    }else{
+        rowChilObj["contractorname"] = '';
+    }
+    
+    rowChilObj['notes'] = taskListForPhase.buildertek__Notes__c;
+    // if(taskListForPhase.buildertek__Lag__c != undefined && taskListForPhase.buildertek__Lag__c != null && taskListForPhase.buildertek__Lag__c != 0){
+    //     var startDate = new Date(taskListForPhase.buildertek__Start__c);
+    //     rowChilObj["startDate"] = new Date(startDate.getFullYear(),startDate.getMonth(),startDate.getDate(),0,0,0)
+    //     rowChilObj["constraintDate"] = new Date(startDate.getFullYear(),startDate.getMonth(),startDate.getDate(),0,0,0)
+    //     rowChilObj["constraintType"] = 'startnoearlierthan'
+    // }
+    rowChilObj["duration"] = taskListForPhase.buildertek__Duration__c
+    
+    if(taskListForPhase.buildertek__Milestone__c){
+        rowChilObj["duration"] = 0
+        rowChilObj["durationMile"] = taskListForPhase.buildertek__Duration__c;
+        rowChilObj["cls"] = 'milestoneCompleteColor'
+        rowChilObj['orgmilestone'] = taskListForPhase.buildertek__Milestone__c;
+        rowChilObj['eventColor'] = '';
+    }
+    rowChilObj["expanded"] = true
+    rowChilObj["order"] = taskListForPhase.buildertek__Order__c
+    rowChilObj["markAsDone"] = taskListForPhase.buildertek__Completed__c;
+    
+    
+    if(rowChilObj["customtype"] == "Milestone"){
+        rowChilObj["constraintDate"] =  taskListForPhase.buildertek__End_date__c;
+        rowChilObj["constraintType"] =  "muststarton";
+    }
+
+    return rowChilObj;
+}
+
+//* ayther : Mitrajsinh Gohil
+//* Date : 8th Dec 2023
+//* This method is used to create task Assignment Data for each task
+function createAssignmentData(taskListForPhase){
+    var assignmentRow = {}
+    assignmentRowDatachild = [];
+    if(!taskListForPhase.buildertek__Milestone__c && taskListForPhase.buildertek__Contractor_Resource_1__c){
+        assignmentRow['id'] = taskListForPhase.Id+'_'+taskListForPhase.buildertek__Contractor_Resource_1__c+'__index'+i+'ContractorResource_Name'+taskListForPhase.buildertek__Contractor_Resource_1__r.Name;
+        assignmentRow['event'] = taskListForPhase.Id
+        assignmentRow['resource'] = taskListForPhase.buildertek__Contractor_Resource_1__c;
+        assignmentRowData.push(assignmentRow)
+    }
+    if(!taskListForPhase.buildertek__Milestone__c && taskListForPhase.buildertek__Contractor_Resource_2__c){
+        assignmentRow['id'] = taskListForPhase.Id+'_'+taskListForPhase.buildertek__Contractor_Resource_2__c+'__index'+i+'ContractorResource_Name'+taskListForPhase.buildertek__Contractor_Resource_2__r.Name;
+        assignmentRow['event'] = taskListForPhase.Id
+        assignmentRow['resource'] = taskListForPhase.buildertek__Contractor_Resource_2__c;
+        assignmentRowData.push(assignmentRow)
+    }
+
+    if(!taskListForPhase.buildertek__Milestone__c && taskListForPhase.buildertek__Contractor_Resource_3__c){
+        assignmentRow['id'] = taskListForPhase.Id+'_'+taskListForPhase.buildertek__Contractor_Resource_3__c+'__index'+i+'ContractorResource_Name'+taskListForPhase.buildertek__Contractor_Resource_3__r.Name;
+        assignmentRow['event'] = taskListForPhase.Id
+        assignmentRow['resource'] = taskListForPhase.buildertek__Contractor_Resource_3__c;
+        assignmentRowData.push(assignmentRow)
+    }
+
+    if(!taskListForPhase.buildertek__Milestone__c && taskListForPhase.buildertek__Internal_Resource_1__c){
+        assignmentRow['id'] = taskListForPhase.Id+'_'+taskListForPhase.buildertek__Internal_Resource_1__c+'__index'+i+'ContractorResource_Name'+taskListForPhase.buildertek__Internal_Resource_1__r.Name;
+        assignmentRow['event'] = taskListForPhase.Id
+        assignmentRow['resource'] = taskListForPhase.buildertek__Internal_Resource_1__c;
+        assignmentRowData.push(assignmentRow)
+    }
+
+    if(!taskListForPhase.buildertek__Milestone__c && taskListForPhase.buildertek__Internal_Resource_3__c){
+        assignmentRow['id'] = taskListForPhase.Id+'_'+taskListForPhase.buildertek__Internal_Resource_3__c+'__index'+i+'ContractorResource_Name'+taskListForPhase.buildertek__Internal_Resource_3__r.Name;
+        assignmentRow['event'] = taskListForPhase.Id
+        assignmentRow['resource'] = taskListForPhase.buildertek__Internal_Resource_3__c;
+        assignmentRowData.push(assignmentRow)
+    }
+
+    if(!taskListForPhase.buildertek__Milestone__c && taskListForPhase.buildertek__Internal_Resource_4__c){
+        assignmentRow['id'] = taskListForPhase.Id+'_'+taskListForPhase.buildertek__Internal_Resource_4__c+'__index'+i+'ContractorResource_Name'+taskListForPhase.buildertek__Internal_Resource_4__r.Name;
+        assignmentRow['event'] = taskListForPhase.Id
+        assignmentRow['resource'] = taskListForPhase.buildertek__Internal_Resource_4__c;
+        assignmentRowData.push(assignmentRow)
+    }
+
+    return assignmentRowDatachild;
 }
 
 export{ formatApexDatatoJSData, convertJSONtoApexData, recordsTobeDeleted, makeComboBoxDataForContractor, calcBusinessDays, makeComboBoxDataForResourceData, setResourceDataForApexData, mergeArrays };
