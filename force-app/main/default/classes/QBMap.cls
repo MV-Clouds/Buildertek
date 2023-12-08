@@ -84,7 +84,7 @@ public without sharing class QBMap {
     public static String MapInvoiceLineToBatch(List<buildertek__Billable_Lines__c> SILine) {
         try {
             System.debug('\n in createProducts \n');
-            QBBatchReqJSON batchItemRequest = new QBBatchReqJSON();
+            QBBatchReqJSON BatchItemRequest = new QBBatchReqJSON();
             
             for (buildertek__Billable_Lines__c item : SILine) {
                 String lineId = item.Id;
@@ -93,7 +93,7 @@ public without sharing class QBMap {
                 Date invStartDate = Date.valueOf(yourDate.format('yyyy-MM-dd'));
                 System.debug('item.Unit_Price__c >> ' + item.Unit_Price__c);
                 Decimal UnitePrice = item.Unit_Price__c != null ? item.Unit_Price__c : 0;
-                batchItemRequest.addBatchItem(
+                BatchItemRequest.addBatchItem(
                     String.valueOf(item.Id),
                     true, // Set TrackQtyOnHand as needed
                     item.buildertek__Item_Name__c +'-'+ item.Name,
@@ -113,8 +113,8 @@ public without sharing class QBMap {
             }
             
             // Now perform the API callout using QBBatchReqJSON class
-            // createInvoiceLines(batchItemRequest);
-            return JSON.serialize(batchItemRequest);
+            // createInvoiceLines(BatchItemRequest);
+            return JSON.serialize(BatchItemRequest);
         } catch (Exception e) {
             System.debug('Exception in createProduct :: '  + e.getMessage());
             return null;
@@ -296,7 +296,7 @@ public without sharing class QBMap {
     public static String MapContractorInvoiceLineToBatch(List<buildertek__Account_Payable_Item__c> COInvLine) {
         try {
             System.debug('\n in MapContractorInvoiceLineToBatch \n');
-            QBBatchReqJSON batchItemRequest = new QBBatchReqJSON();
+            QBBatchReqJSON BatchItemRequest = new QBBatchReqJSON();
             
             for (buildertek__Account_Payable_Item__c item : COInvLine) {
                 String lineId = item.Id;
@@ -305,7 +305,7 @@ public without sharing class QBMap {
                 Date invStartDate = Date.valueOf(yourDate.format('yyyy-MM-dd'));
                 // System.debug('item.Unit_Price__c >> ' + item.buildertek__Unit_Price__c	);
                 Decimal UnitePrice = item.buildertek__Unit_Price__c	 != null ? item.buildertek__Unit_Price__c	 : 0;
-                batchItemRequest.addBatchItem(
+                BatchItemRequest.addBatchItem(
                     String.valueOf(item.Id),
                     true, // Set TrackQtyOnHand as needed
                     item.Name,
@@ -325,8 +325,8 @@ public without sharing class QBMap {
             }
             
             // Now perform the API callout using QBBatchReqJSON class
-            // createInvoiceLines(batchItemRequest);
-            return JSON.serialize(batchItemRequest);
+            // createInvoiceLines(BatchItemRequest);
+            return JSON.serialize(BatchItemRequest);
         } catch (Exception e) {
             System.debug('Exception in MapContractorInvoiceLineToBatch :: '  + e.getMessage());
             return null;
@@ -403,7 +403,7 @@ public without sharing class QBMap {
     public static string MapPayableInvoiceLineToBatch(List<buildertek__Account_Payable_Item_Clone__c> PayLines){
         try {
             System.debug('\n in MapPayableInvoiceLineToBatch \n');
-            QBBatchReqJSON batchItemRequest = new QBBatchReqJSON();
+            QBBatchReqJSON BatchItemRequest = new QBBatchReqJSON();
             
             for (buildertek__Account_Payable_Item_Clone__c item : PayLines) {
                 String lineId = item.Id;
@@ -411,7 +411,7 @@ public without sharing class QBMap {
                 DateTime yourDate = Datetime.now();
                 Date invStartDate = Date.valueOf(yourDate.format('yyyy-MM-dd'));
                 Decimal UnitePrice = item.buildertek__Unit_Price__c	 != null ? item.buildertek__Unit_Price__c	 : 0;
-                batchItemRequest.addBatchItem(
+                BatchItemRequest.addBatchItem(
                     String.valueOf(item.Id),
                     true, // Set TrackQtyOnHand as needed
                     item.Name,
@@ -431,8 +431,8 @@ public without sharing class QBMap {
             }
             
             // Now perform the API callout using QBBatchReqJSON class
-            // createInvoiceLines(batchItemRequest);
-            return JSON.serialize(batchItemRequest);
+            // createInvoiceLines(BatchItemRequest);
+            return JSON.serialize(BatchItemRequest);
         } catch (Exception e) {
             System.debug('Exception in MapPayableInvoiceLineToBatch :: '  + e.getMessage());
             return null;
@@ -444,7 +444,7 @@ public without sharing class QBMap {
     public static String mapPOLineToBatch(List<buildertek__Purchase_Order_Item__c> POLines) {
         try {
             System.debug('\n in MapPOLineToBatch \n');
-            QBBatchReqJSON batchItemRequest = new QBBatchReqJSON();
+            QBBatchReqJSON BatchItemRequest = new QBBatchReqJSON();
             
             for (buildertek__Purchase_Order_Item__c item : POLines) {
                 String lineId = item.Id;
@@ -452,7 +452,7 @@ public without sharing class QBMap {
                 DateTime yourDate = Datetime.now();
                 Date invStartDate = Date.valueOf(yourDate.format('yyyy-MM-dd'));
                 Decimal UnitePrice = item.buildertek__Unit_Price__c	 != null ? item.buildertek__Unit_Price__c	 : 0;
-                batchItemRequest.addBatchItem(
+                BatchItemRequest.addBatchItem(
                     String.valueOf(item.Id),
                     true, // Set TrackQtyOnHand as needed
                     item.Name,
@@ -472,8 +472,8 @@ public without sharing class QBMap {
             }
             
             // Now perform the API callout using QBBatchReqJSON class
-            // createInvoiceLines(batchItemRequest);
-            return JSON.serialize(batchItemRequest);
+            // createInvoiceLines(BatchItemRequest);
+            return JSON.serialize(BatchItemRequest);
         } catch (Exception e) {
             System.debug('Exception in MapContractorInvoiceLineToBatch :: '  + e.getMessage());
             return null;
@@ -548,6 +548,76 @@ public without sharing class QBMap {
             return JSON.serialize(purchaseorder, True).replace('"Long_x":', '"Long":');
         } catch (Exception e) {
             System.debug('exception in mappurchaseorderData :: ' + e.getMessage());
+            return null;
+        }
+    }
+
+
+    public static String MapItemDataToBatch(List<sObject> sObjectItemList, String SyncObjName) {
+        try {
+            System.debug('\n in MapItemDataToBatch \n');
+            QBBatchReqJSON BatchItemRequest = new QBBatchReqJSON();
+            List<sObject> ItemList = new List<sObject>();
+
+            Map<Id, String> NameMap = new Map<Id, String>();
+            Map<Id, Decimal> UnitPriceMap = new Map<Id, Decimal>();
+            Map<Id, Decimal> QuantityMap = new Map<Id, Decimal>();
+
+
+            for(sObject Item : sObjectItemList){
+                // Type conversation from sObject to Generic Object....
+                // Store Field Data Into Respective Map....
+            if(SyncObjName == 'buildertek__Purchase_Order__c'){
+                    buildertek__Purchase_Order_Item__c record = (buildertek__Purchase_Order_Item__c)Item;
+                    NameMap.put(record.Id, record.Name);
+                    UnitPriceMap.put(record.Id, record.buildertek__Unit_Price__c);
+                    QuantityMap.put(record.Id, record.buildertek__Quantity__c);
+                }
+                else if(SyncObjName == 'buildertek__Purchase_Order__c'){
+                        buildertek__Account_Payable_Item__c record = (buildertek__Account_Payable_Item__c)Item;
+                        NameMap.put(record.Id, record.Name);
+                        UnitPriceMap.put(record.Id, record.buildertek__Unit_Price__c);
+                        QuantityMap.put(record.Id, record.buildertek__Quantity__c);
+                }
+                else if(SyncObjName == 'buildertek__Purchase_Order__c'){
+                        buildertek__Account_Payable_Item_Clone__c record = (buildertek__Account_Payable_Item_Clone__c)Item;
+                        NameMap.put(record.Id, record.Name);
+                        UnitPriceMap.put(record.Id, record.buildertek__Unit_Price__c);
+                        QuantityMap.put(record.Id, record.buildertek__Quantity__c);
+                }
+            }
+            
+            // Creating a Batch
+            for (sObject item : sObjectItemList) {
+                Boolean taxable = true;
+                Boolean TrackQtyOnHand = true;
+                DateTime yourDate = Datetime.now();
+                Date invStartDate = Date.valueOf(yourDate.format('yyyy-MM-dd'));
+                // System.debug('item.Unit_Price__c >> ' + item.buildertek__Unit_Price__c	);
+                String Name = NameMap.get(item.Id);
+                Decimal UnitePrice = UnitPriceMap.get(item.Id) != null ? UnitPriceMap.get(item.Id) : 0;
+                Decimal Quantity = QuantityMap.get(item.Id);
+                BatchItemRequest.addBatchItem(
+                    String.valueOf(item.Id),
+                    TrackQtyOnHand, // Set TrackQtyOnHand as needed
+                    Name,
+                    Quantity,
+                    UnitePrice,
+                    // item.buildertek__Total__c,
+                    'Sales of Product Income',
+                    '79', // Assuming a fixed value for income account value
+                    invStartDate,
+                    'Inventory',
+                    taxable,
+                    'Test acc',
+                    '100',  // Assuming a fixed value for Asset account value
+                    'Cost of Goods Sold',
+                    '80'    // Assuming a fixed value for Expense account value
+                );
+            }
+            return JSON.serialize(BatchItemRequest);
+        } catch (Exception e) {
+            System.debug('Exception in MapItemDataToBatch :: '  + e.getMessage());
             return null;
         }
     }

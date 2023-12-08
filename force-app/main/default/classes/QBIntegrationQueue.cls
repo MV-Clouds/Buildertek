@@ -437,7 +437,7 @@ public without sharing class QBIntegrationQueue {
             System.debug('Error in Create_Payment_In_QB ..' + e.getMessage() + '\n' + e +'\n Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
         }
     }
-    // --------------- ------------- ----------------- Sales Invoice and Payment(Receipt) QB Integration Flow - END ---------------------------------------- ----------------------- --------------------
+// --------------- ------------- ----------------- Sales Invoice and Payment(Receipt) QB Integration Flow - END ---------------------------------------- ----------------------- --------------------
 
     public static void Create_Vendor_in_QB(Account acc, buildertek__QuickBooks_Setting__mdt QBMetadata, Boolean Get_Access_Token, sObject SObjRecord, String SyncObjName){
         try {
@@ -455,26 +455,27 @@ public without sharing class QBIntegrationQueue {
                 String SyncToken = vendor.SyncToken;
                 System.debug(SyncObjName + ' :: ' + SObjRecord);
 
-                if(SyncObjName == 'buildertek__Purchase_Order__c'){
-                    // Create Purchase Order In QB
-                    // Run Purchase Order Integartion Logic
-                    buildertek__Purchase_Order__c PO = [SELECT Id, Name, buildertek__Vendor__c,buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c,buildertek__Project__r.buildertek__Customer__c,buildertek__PO_Total__c,buildertek__Tax_Amount__c FROM buildertek__Purchase_Order__c WHERE Id =: SObjRecord.Id LIMIT 1];
-                    List<buildertek__Purchase_Order_Item__c> POLines = [SELECT Id, Name, buildertek__Purchase_Order__c,buildertek__Purchase_Order__r.Name,buildertek__Total_Price__c,buildertek__Item_Name__c,buildertek__Quantity__c,buildertek__QBO_ID__c,buildertek__QBO_Name__c,buildertek__QBO_SyncToken__c,buildertek__Description__c,buildertek__Unit_Price__c FROM buildertek__Purchase_Order_Item__c WHERE buildertek__Purchase_Order__c =: SObjRecord.Id];
-                    Create_POitem_in_QB(POLines, PO, VendorQBId, QBMetadata, Get_Access_Token, SyncObjName);
-                }
-                else if(SyncObjName == 'buildertek__Account_Payable__c'){
-                    // Create Contractor Invoice (Bill) In QB
-                    // Run Contractor Invoice Integartion Logic
-                    Create_Term_for_Bill_in_QB(SObjRecord, VendorQBId, QBMetadata, Get_Access_Token, SyncObjName);
-                }
-                else if(SyncObjName == 'buildertek__Account_Payable_Clone__c'){
-                    // Create Payable Invoice(Bill) In QB
-                    // Run Payable Invoice Integartion Logic
-                    Create_PayInvLines_in_QB(SObjRecord, VendorQBId, QBMetadata, Get_Access_Token, SyncObjName);
-                }
-                else if(SyncObjName == 'Account'){
-                    // Do Nothing....
-                }
+                // if(SyncObjName == 'buildertek__Purchase_Order__c'){
+                //     // Create Purchase Order In QB
+                //     // Run Purchase Order Integartion Logic
+                //     buildertek__Purchase_Order__c PO = [SELECT Id, Name, buildertek__Vendor__c,buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c,buildertek__Project__r.buildertek__Customer__c,buildertek__PO_Total__c,buildertek__Tax_Amount__c FROM buildertek__Purchase_Order__c WHERE Id =: SObjRecord.Id LIMIT 1];
+                //     List<buildertek__Purchase_Order_Item__c> POLines = [SELECT Id, Name, buildertek__Purchase_Order__c,buildertek__Purchase_Order__r.Name,buildertek__Total_Price__c,buildertek__Item_Name__c,buildertek__Quantity__c,buildertek__QBO_ID__c,buildertek__QBO_Name__c,buildertek__QBO_SyncToken__c,buildertek__Description__c,buildertek__Unit_Price__c FROM buildertek__Purchase_Order_Item__c WHERE buildertek__Purchase_Order__c =: SObjRecord.Id];
+                //     Create_POitem_in_QB(POLines, PO, VendorQBId, QBMetadata, Get_Access_Token, SyncObjName);
+                // }
+                // else if(SyncObjName == 'buildertek__Account_Payable__c'){
+                //     // Create Contractor Invoice (Bill) In QB
+                //     // Run Contractor Invoice Integartion Logic
+                //     Create_Term_for_Bill_in_QB(SObjRecord, VendorQBId, QBMetadata, Get_Access_Token, SyncObjName);
+                // }
+                // else if(SyncObjName == 'buildertek__Account_Payable_Clone__c'){
+                //     // Create Payable Invoice(Bill) In QB
+                //     // Run Payable Invoice Integartion Logic
+                //     Create_PayInvLines_in_QB(SObjRecord, VendorQBId, QBMetadata, Get_Access_Token, SyncObjName);
+                // }
+                // else if(SyncObjName == 'Account'){
+                //     // Do Nothing....
+                // }
+                Create_Lines_to_Items_in_QB(SObjRecord, VendorQBId, QBMetadata, Get_Access_Token, SyncObjName);
                 UpdateAccount(acc.Id, VendorQBId, QBMetadata, SyncToken, 'Vendor');
 
             }
@@ -496,7 +497,220 @@ public without sharing class QBIntegrationQueue {
         }
     }
 
-    public static void Create_Term_for_Bill_in_QB(sObject SObejctRecord, String VendorQBId, buildertek__QuickBooks_Setting__mdt QBMetadata , boolean Get_Access_Token, String SyncObjName){
+    public static void Create_Lines_to_Items_in_QB(sObject SObejctRecord, String VendorQBId, buildertek__QuickBooks_Setting__mdt QBMetadata , boolean Get_Access_Token, String SyncObjName){
+        try {
+
+            List<sObject> ItemstoCreate = new List<sObject>();
+            List<sObject> ItemList = new List<sObject>();
+            
+            // Sync Purchase Order Lines
+            if(SyncObjName == 'buildertek__Purchase_Order__c'){
+                ItemList = [SELECT Id, Name , buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c,buildertek__QBO_Name__c, buildertek__Unit_Price__c,buildertek__Total_Price__c,buildertek__Quantity__c FROM buildertek__Purchase_Order_Item__c WHERE buildertek__Purchase_Order__c =: SObejctRecord.Id];
+                for(sObject Item : ItemList){
+                    // Type casting --> sObject to Purchase invoice Lines....
+                    buildertek__Purchase_Order_Item__c Items = (buildertek__Purchase_Order_Item__c)Item;
+                    if(Items.buildertek__QBO_ID__c == null){
+                        ItemstoCreate.add(Items);
+                    }
+                }
+            }
+            // Sync Contractor Invoice Lines
+            else if(SyncObjName == 'buildertek__Account_Payable__c'){
+                ItemList = [SELECT Id, Name , buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c,buildertek__QBO_Name__c, buildertek__Unit_Price__c,buildertek__Total_Price__c,buildertek__Quantity__c FROM buildertek__Account_Payable_Item__c WHERE buildertek__Account_Payable__c =: SObejctRecord.Id];
+                for(sObject Item : ItemList){
+                    // Type casting --> sObject to Contractor invoice Lines....
+                    buildertek__Account_Payable_Item__c Items = (buildertek__Account_Payable_Item__c)Item;
+                    if(Items.buildertek__QBO_ID__c == null){
+                        ItemstoCreate.add(Items);
+                    }
+                }
+            }
+            // Sync Payable Invoice Lines
+            else if(SyncObjName == 'buildertek__Account_Payable_Clone__c'){
+                ItemList = [SELECT Id, Name , buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c,buildertek__QBO_Name__c, buildertek__Unit_Price__c,buildertek__Total_Price__c,buildertek__Quantity__c FROM buildertek__Account_Payable_Item_Clone__c WHERE buildertek__Account_Payable_Clone__c =: SObejctRecord.Id];
+                for(sObject Item : ItemList){
+                    // Type casting --> sObject to Payable invoice Lines....
+                    buildertek__Account_Payable_Item_Clone__c Items = (buildertek__Account_Payable_Item_Clone__c)Item;
+                    if(Items.buildertek__QBO_ID__c == null){
+                            ItemstoCreate.add(Items);
+                    }
+                }
+            }
+
+
+             // If any Line Item Pending to Sync in QB....
+             if(ItemstoCreate.size() > 0){
+                Integer totalItems = ItemstoCreate.size();
+                Integer batchSize = 30;
+                Integer totalBatches = (totalItems + batchSize - 1) / batchSize; // Calculate total batches needed
+                // Boolean No_Line_To_Create_IN_QB = true;
+                Map<Id, List<String>> lineIdsMap = new Map<Id, List<String>>();
+
+                for (Integer i = 0; i < totalBatches; i++) {
+                    Integer startIdx = i * batchSize;
+                    Integer endIdx = Math.min((i + 1) * batchSize, totalItems);
+    
+                    List<sObject> itemsBatch = new List<sObject>();
+    
+                    // Create the sublist for the current batch
+                    for (Integer j = startIdx; j < endIdx; j++) {
+                            itemsBatch.add(ItemstoCreate[j]);
+                    }
+                    System.debug((i+1) +' ***** No. Batch length ******** '+ itemsBatch.size());
+                    // if(itemsBatch.size() > 0){
+                        String Items_EndPoint = '/v3/company/' + QBMetadata.buildertek__Company_Id__c + '/batch?minorversion=' + QBMetadata.buildertek__minorversion__c;
+                        String Items_RequestBody = QBMap.MapItemDataToBatch(itemsBatch, SyncObjName); 
+                        System.debug('Items_RequestBody ' +Items_RequestBody);
+                        HttpResponse Items_Response = QBCallOutService.QBAPICallOut(Items_EndPoint , Items_RequestBody, Get_Access_Token);
+    
+                        system.debug('Item Batch API Status Code >> ' + Items_Response.getStatusCode());
+                        system.debug('Item Batch Resopnce >> ' + Items_Response.getBody());
+    
+                        if(Items_Response.getStatusCode() == 200){
+                            QBBatchResJSON response = QBBatchResJSON.parse(Items_Response.getBody());
+    
+                        for(sObject Item : ItemList){
+                            if(SyncObjName == 'buildertek__Purchase_Order__c'){
+                                buildertek__Purchase_Order_Item__c Items = (buildertek__Purchase_Order_Item__c)Item;
+                                if(Items.buildertek__QBO_ID__c != null){
+                                    lineIdsMap.put(
+                                        Id.valueOf(Items.Id), 
+                                        new List<String>{Items.buildertek__QBO_ID__c, Items.buildertek__QBO_Name__c, string.valueOf(Items.buildertek__Total_Price__c), string.valueOf(Items.buildertek__Quantity__c), string.valueOf(Items.buildertek__Unit_Price__c)}
+                                    );
+                                }
+
+                            }
+                            else if(SyncObjName == 'buildertek__Account_Payable__c'){
+                                buildertek__Account_Payable_Item__c Items = (buildertek__Account_Payable_Item__c)Item;
+                                if(Items.buildertek__QBO_ID__c != null){
+                                    lineIdsMap.put(
+                                        Id.valueOf(Items.Id), 
+                                        new List<String>{Items.buildertek__QBO_ID__c, Items.buildertek__QBO_Name__c, string.valueOf(Items.buildertek__Total_Price__c), string.valueOf(Items.buildertek__Quantity__c), string.valueOf(Items.buildertek__Unit_Price__c)}
+                                    );
+                                }
+                            }
+                            else if(SyncObjName == 'buildertek__Account_Payable_Clone__c'){
+                                buildertek__Account_Payable_Item_Clone__c Items = (buildertek__Account_Payable_Item_Clone__c)Item;
+                                if(Items.buildertek__QBO_ID__c != null){
+                                    lineIdsMap.put(
+                                        Id.valueOf(Items.Id), 
+                                        new List<String>{Items.buildertek__QBO_ID__c, Items.buildertek__QBO_Name__c, string.valueOf(Items.buildertek__Total_Price__c), string.valueOf(Items.buildertek__Quantity__c), string.valueOf(Items.buildertek__Unit_Price__c)}
+                                    );
+                                }
+                            }
+                            
+                        }
+                            // Added Newly created invoice Lines to the Qb Invoice....
+                            for (QBBatchResJSON.BatchItemResponse batchItem : response.BatchItemResponse) {
+                                if (batchItem != null && batchItem.Item != null && batchItem.bId != null) {
+                                    lineIdsMap.put(
+                                        // Assuming SalesforceId__c is of type Id and QbId__c is of type String
+                                        Id.valueOf(batchItem.bId), // Salesforce ID
+                                        // List Of QB Line Id, QB Line Name , Total Price, Quantity, Unite Price...
+                                        new List<String> { batchItem.Item.Id , batchItem.Item.Name, String.valueOf((batchItem.Item.QtyOnHand)*(batchItem.Item.UnitPrice)), String.valueOf(batchItem.Item.QtyOnHand), String.valueOf(batchItem.Item.UnitPrice) } // QuickBooks ID
+                                    );
+                                }
+                            }
+                            
+                            if( i == (totalBatches-1)){
+                                System.debug('when last batch finish.. crerate sales invoice');
+                                System.debug('lineIdsMap >> ' + lineIdsMap);
+
+                                if(SyncObjName == 'buildertek__Purchase_Order__c'){
+                                    buildertek__Purchase_Order__c PO = (buildertek__Purchase_Order__c)SObejctRecord;
+                                    Create_PO_in_QB(PO, VendorQBId, lineIdsMap, QBMetadata,Get_Access_Token, SyncObjName);
+                                    UpdatePOline(ItemstoCreate, lineIdsMap);
+                                    
+                                }
+                                else if(SyncObjName == 'buildertek__Account_Payable__c'){
+                                    Create_Term_for_Bill_in_QB(SObejctRecord, VendorQBId, QBMetadata, Get_Access_Token, SyncObjName, lineIdsMap);
+                                    UpdateCOinvLines(ItemstoCreate, lineIdsMap);
+                                }
+                                else if(SyncObjName == 'buildertek__Account_Payable_Clone__c'){
+
+                                }
+                        }
+                    }
+                            // No_Line_To_Create_IN_QB = false;
+                        else{
+                            QBException.QB_response( Items_Response.getStatusCode(),  Items_Response.getBody(), 'QBIntegrationQueue', 'Create_item_in_QB');
+                            QBOErrorJSON Response_Error = QBOErrorJSON.parse(Items_Response.getBody());
+                            QBOErrorJSON.Fault falut = new QBOErrorJSON.Fault();
+                            falut = Response_Error.Fault;
+                            String ErrorMessage1 = 'Error During Co Line Callout :- '+ ' Message : ' + falut.Error[0].Message +', Detail : '+ falut.Error[0].Detail;
+                            // UpdateContractorInvoice_OnError(CoInv.Id, ErrorMessage1);
+                            UpdateRecord_OnError(SObejctRecord.Id, ErrorMessage1, SyncObjName);
+
+                        }
+                    // }
+                }
+            }
+            else{
+                System.debug('All Items are available in QB');
+                Map<Id, List<String>> lineIdsMap1 = new Map<Id, List<String>>();
+                Map<Id, String> QBItemIdMap = new Map<Id, String>();
+                Map<Id, String> QBItemNameMap = new Map<Id, String>();
+                Map<Id, Decimal> UnitPriceMap = new Map<Id, Decimal>();
+                Map<Id, Decimal> QuantityMap = new Map<Id, Decimal>();
+                Map<Id, Decimal> TotalPriceMap = new Map<Id, Decimal>();
+                for(sObject Item : ItemList){
+                    if(SyncObjName == 'buildertek__Purchase_Order__c'){
+                        buildertek__Purchase_Order_Item__c record = (buildertek__Purchase_Order_Item__c)Item;
+                        QBItemIdMap.put(record.Id, record.buildertek__QBO_ID__c);
+                        QBItemNameMap.put(record.Id, record.buildertek__QBO_Name__c);
+                        UnitPriceMap.put(record.Id, record.buildertek__Unit_Price__c);
+                        QuantityMap.put(record.Id, record.buildertek__Quantity__c);
+                        TotalPriceMap.put(record.Id, record.buildertek__Total_Price__c);
+                    }
+                    else if(SyncObjName == 'buildertek__Account_Payable__c'){
+                        buildertek__Account_Payable_Item__c record = (buildertek__Account_Payable_Item__c)Item;
+                        QBItemIdMap.put(record.Id, record.buildertek__QBO_ID__c);
+                        QBItemNameMap.put(record.Id, record.buildertek__QBO_Name__c);
+                        UnitPriceMap.put(record.Id, record.buildertek__Unit_Price__c);
+                        QuantityMap.put(record.Id, record.buildertek__Quantity__c);
+                        TotalPriceMap.put(record.Id, record.buildertek__Total_Price__c);
+                    }
+                    else if(SyncObjName == 'buildertek__Account_Payable_Clone__c'){
+                        buildertek__Account_Payable_Item_Clone__c record = (buildertek__Account_Payable_Item_Clone__c)Item;
+                        QBItemIdMap.put(record.Id, record.buildertek__QBO_ID__c);
+                        QBItemNameMap.put(record.Id, record.buildertek__QBO_Name__c);
+                        UnitPriceMap.put(record.Id, record.buildertek__Unit_Price__c);
+                        QuantityMap.put(record.Id, record.buildertek__Quantity__c);
+                        TotalPriceMap.put(record.Id, record.buildertek__Total_Price__c);
+                    }
+                }
+                for(sObject Item : ItemList){
+                    lineIdsMap1.put(
+                            // Assuming SalesforceId__c is of type Id and QbId__c is of type String
+                            Id.valueOf(Item.Id), // Salesforce ID
+                            new List<String> { 
+                                QBItemIdMap.get(Item.Id) , 
+                                QBItemNameMap.get(Item.Id), 
+                                string.valueOf(TotalPriceMap.get(Item.Id)), 
+                                string.valueOf(QuantityMap.get(Item.Id)), 
+                                string.valueOf(UnitPriceMap.get(Item.Id))
+                            }
+                    );
+                }
+
+                if(SyncObjName == 'buildertek__Purchase_Order__c'){
+                    buildertek__Purchase_Order__c PO = (buildertek__Purchase_Order__c)SObejctRecord;
+                    Create_PO_in_QB(PO, VendorQBId, lineIdsMap1,QBMetadata, Get_Access_Token, SyncObjName);
+                }
+                else if(SyncObjName == 'buildertek__Account_Payable__c'){
+                    Create_Term_for_Bill_in_QB(SObejctRecord, VendorQBId, QBMetadata, Get_Access_Token, SyncObjName, lineIdsMap1);
+                }
+                else if(SyncObjName == 'buildertek__Account_Payable_Clone__c'){
+
+                }
+            }
+            
+        } catch (Exception e) {
+            System.debug('Error in QB_ContactorInvoice_Flow_Callout : ' + e.getMessage() +'\n'+ e + 'Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
+        }
+    }
+
+    public static void Create_Term_for_Bill_in_QB(sObject SObejctRecord, String VendorQBId, buildertek__QuickBooks_Setting__mdt QBMetadata , boolean Get_Access_Token, String SyncObjName, Map<Id, List<String>> lineIdsMap){
         try {
             buildertek__Account_Payable__c CoInv = [SELECT Id, Name , buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c, buildertek__QB_Record_URL__c, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.buildertek__Vendor__c,  buildertek__Terms__c FROM buildertek__Account_Payable__c WHERE Id =: SObejctRecord.Id LIMIT 1];
             String termName = CoInv.buildertek__Terms__c;
@@ -520,7 +734,8 @@ public without sharing class QBIntegrationQueue {
                         TermQBId = Terms[0].Id;
 
                         if(SyncObjName == 'buildertek__Account_Payable__c'){
-                            Create_CoInvLines_in_QB(CoInv, VendorQBId, QBMetadata, Get_Access_Token, TermQBId, SyncObjName);
+                            // Create_CoInvLines_in_QB(CoInv, VendorQBId, QBMetadata, Get_Access_Token, TermQBId, SyncObjName);
+                            Create_CoInv_to_Bill_in_QB(CoInv, VendorQBId, QBMetadata, Get_Access_Token, lineIdsMap, TermQBId, SyncObjName);
                         }
                         else if(SyncObjName == 'buildertek__Account_Payable_Clone__c'){
                             // If Brian Ask for Term then use this condition to create Term
@@ -528,7 +743,8 @@ public without sharing class QBIntegrationQueue {
                     }
                     else{
                         if(SyncObjName == 'buildertek__Account_Payable__c'){
-                            Create_CoInvLines_in_QB(CoInv, VendorQBId, QBMetadata, Get_Access_Token, TermQBId, SyncObjName);
+                            // Create_CoInvLines_in_QB(CoInv, VendorQBId, QBMetadata, Get_Access_Token, TermQBId, SyncObjName);
+                            Create_CoInv_to_Bill_in_QB(CoInv, VendorQBId, QBMetadata, Get_Access_Token, lineIdsMap, TermQBId, SyncObjName);
                         }
                         else if(SyncObjName == 'buildertek__Account_Payable_Clone__c'){
                             // If Brian Ask for Term then use this condition to create Term
@@ -572,113 +788,113 @@ public without sharing class QBIntegrationQueue {
             System.debug('Error in QB_ContactorInvoice_Flow_Callout : ' + e.getMessage() +'\n'+ e + 'Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
         }
     }
-    public static void Create_CoInvLines_in_QB(sObject CoInv, String VendorQBId, buildertek__QuickBooks_Setting__mdt QBMetadata , boolean Get_Access_Token, String TermQBId, String SyncObjName){
-        try {
-            List<buildertek__Account_Payable_Item__c> COInvLines = [SELECT Id, Name , buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c, buildertek__QB_Record_URL__c,buildertek__QBO_Name__c, buildertek__Unit_Price__c,buildertek__Total_Price__c,buildertek__Quantity__c FROM buildertek__Account_Payable_Item__c WHERE buildertek__Account_Payable__c =: CoInv.Id];
+    // public static void Create_CoInvLines_in_QB(sObject CoInv, String VendorQBId, buildertek__QuickBooks_Setting__mdt QBMetadata , boolean Get_Access_Token, String TermQBId, String SyncObjName){
+    //     try {
+    //         List<buildertek__Account_Payable_Item__c> COInvLines = [SELECT Id, Name , buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c, buildertek__QB_Record_URL__c,buildertek__QBO_Name__c, buildertek__Unit_Price__c,buildertek__Total_Price__c,buildertek__Quantity__c FROM buildertek__Account_Payable_Item__c WHERE buildertek__Account_Payable__c =: CoInv.Id];
 
-            List<buildertek__Account_Payable_Item__c> ItemstoCreate = new List<buildertek__Account_Payable_Item__c>();
-            for(buildertek__Account_Payable_Item__c Items : COInvLines){
-                if(Items.buildertek__QBO_ID__c == null){
-                    ItemstoCreate.add(Items);
-                }
-            }
+    //         List<buildertek__Account_Payable_Item__c> ItemstoCreate = new List<buildertek__Account_Payable_Item__c>();
+    //         for(buildertek__Account_Payable_Item__c Items : COInvLines){
+    //             if(Items.buildertek__QBO_ID__c == null){
+    //                 ItemstoCreate.add(Items);
+    //             }
+    //         }
 
-            // If any Line Item Pending to Sync in QB....
-            if(ItemstoCreate.size() > 0){
-                Integer totalItems = ItemstoCreate.size();
-                Integer batchSize = 30;
-                Integer totalBatches = (totalItems + batchSize - 1) / batchSize; // Calculate total batches needed
-                // Boolean No_Line_To_Create_IN_QB = true;
-                Map<Id, List<String>> lineIdsMap = new Map<Id, List<String>>();
+    //         // If any Line Item Pending to Sync in QB....
+    //         if(ItemstoCreate.size() > 0){
+    //             Integer totalItems = ItemstoCreate.size();
+    //             Integer batchSize = 30;
+    //             Integer totalBatches = (totalItems + batchSize - 1) / batchSize; // Calculate total batches needed
+    //             // Boolean No_Line_To_Create_IN_QB = true;
+    //             Map<Id, List<String>> lineIdsMap = new Map<Id, List<String>>();
 
-                for (Integer i = 0; i < totalBatches; i++) {
-                    Integer startIdx = i * batchSize;
-                    Integer endIdx = Math.min((i + 1) * batchSize, totalItems);
+    //             for (Integer i = 0; i < totalBatches; i++) {
+    //                 Integer startIdx = i * batchSize;
+    //                 Integer endIdx = Math.min((i + 1) * batchSize, totalItems);
     
-                    List<buildertek__Account_Payable_Item__c> itemsBatch = new List<buildertek__Account_Payable_Item__c>();
+    //                 List<buildertek__Account_Payable_Item__c> itemsBatch = new List<buildertek__Account_Payable_Item__c>();
     
-                    // Create the sublist for the current batch
-                    for (Integer j = startIdx; j < endIdx; j++) {
-                            itemsBatch.add(ItemstoCreate[j]);
-                    }
-                    System.debug((i+1) +' ***** No. Batch length ******** '+ itemsBatch.size());
-                    // if(itemsBatch.size() > 0){
-                        String COLines_EndPoint = '/v3/company/' + QBMetadata.buildertek__Company_Id__c + '/batch?minorversion=' + QBMetadata.buildertek__minorversion__c;
-                        String COLines_RequestBody = QBMap.MapContractorInvoiceLineToBatch(itemsBatch); 
-                        System.debug('COLines_RequestBody ' +COLines_RequestBody);
-                        HttpResponse COLines_Response = QBCallOutService.QBAPICallOut(COLines_EndPoint , COLines_RequestBody, Get_Access_Token);
+    //                 // Create the sublist for the current batch
+    //                 for (Integer j = startIdx; j < endIdx; j++) {
+    //                         itemsBatch.add(ItemstoCreate[j]);
+    //                 }
+    //                 System.debug((i+1) +' ***** No. Batch length ******** '+ itemsBatch.size());
+    //                 // if(itemsBatch.size() > 0){
+    //                     String COLines_EndPoint = '/v3/company/' + QBMetadata.buildertek__Company_Id__c + '/batch?minorversion=' + QBMetadata.buildertek__minorversion__c;
+    //                     String COLines_RequestBody = QBMap.MapContractorInvoiceLineToBatch(itemsBatch); 
+    //                     System.debug('COLines_RequestBody ' +COLines_RequestBody);
+    //                     HttpResponse COLines_Response = QBCallOutService.QBAPICallOut(COLines_EndPoint , COLines_RequestBody, Get_Access_Token);
     
-                        system.debug('CO Invoice Line API Status Code >> ' + COLines_Response.getStatusCode());
-                        system.debug('CO Invoice Line Resopnce >> ' + COLines_Response.getBody());
+    //                     system.debug('CO Invoice Line API Status Code >> ' + COLines_Response.getStatusCode());
+    //                     system.debug('CO Invoice Line Resopnce >> ' + COLines_Response.getBody());
     
-                        if(COLines_Response.getStatusCode() == 200){
-                            QBBatchResJSON response = QBBatchResJSON.parse(COLines_Response.getBody());
+    //                     if(COLines_Response.getStatusCode() == 200){
+    //                         QBBatchResJSON response = QBBatchResJSON.parse(COLines_Response.getBody());
     
-                            // First Add Existing Invoice Lines(if available)....And Then Added Newly created invoice Lines to the Qb Invoice....
-                            for(buildertek__Account_Payable_Item__c COL : COInvLines){
-                                if(COL.buildertek__QBO_ID__c != null){
-                                    lineIdsMap.put(
-                                        Id.valueOf(COL.Id), 
-                                        new List<String>{COL.buildertek__QBO_ID__c, COL.buildertek__QBO_Name__c, string.valueOf(COL.buildertek__Total_Price__c), string.valueOf(COL.buildertek__Quantity__c), string.valueOf(COL.buildertek__Unit_Price__c)}
-                                    );
-                                }
-                            }
+    //                         // First Add Existing Invoice Lines(if available)....And Then Added Newly created invoice Lines to the Qb Invoice....
+    //                         for(buildertek__Account_Payable_Item__c COL : COInvLines){
+    //                             if(COL.buildertek__QBO_ID__c != null){
+    //                                 lineIdsMap.put(
+    //                                     Id.valueOf(COL.Id), 
+    //                                     new List<String>{COL.buildertek__QBO_ID__c, COL.buildertek__QBO_Name__c, string.valueOf(COL.buildertek__Total_Price__c), string.valueOf(COL.buildertek__Quantity__c), string.valueOf(COL.buildertek__Unit_Price__c)}
+    //                                 );
+    //                             }
+    //                         }
 
-                            for (QBBatchResJSON.BatchItemResponse batchItem : response.BatchItemResponse) {
-                                if (batchItem != null && batchItem.Item != null && batchItem.bId != null) {
-                                    lineIdsMap.put(
-                                        // Assuming SalesforceId__c is of type Id and QbId__c is of type String
-                                        Id.valueOf(batchItem.bId), // Salesforce ID
-                                        // List Of QB Line Id, QB Line Name , Total Price, Quantity, Unite Price...
-                                        new List<String> { batchItem.Item.Id , batchItem.Item.Name, String.valueOf((batchItem.Item.QtyOnHand)*(batchItem.Item.UnitPrice)), String.valueOf(batchItem.Item.QtyOnHand), String.valueOf(batchItem.Item.UnitPrice) } // QuickBooks ID
-                                    );
-                                }
-                            }
+    //                         for (QBBatchResJSON.BatchItemResponse batchItem : response.BatchItemResponse) {
+    //                             if (batchItem != null && batchItem.Item != null && batchItem.bId != null) {
+    //                                 lineIdsMap.put(
+    //                                     // Assuming SalesforceId__c is of type Id and QbId__c is of type String
+    //                                     Id.valueOf(batchItem.bId), // Salesforce ID
+    //                                     // List Of QB Line Id, QB Line Name , Total Price, Quantity, Unite Price...
+    //                                     new List<String> { batchItem.Item.Id , batchItem.Item.Name, String.valueOf((batchItem.Item.QtyOnHand)*(batchItem.Item.UnitPrice)), String.valueOf(batchItem.Item.QtyOnHand), String.valueOf(batchItem.Item.UnitPrice) } // QuickBooks ID
+    //                                 );
+    //                             }
+    //                         }
                             
-                            if( i == (totalBatches-1)){
-                                System.debug('when last batch finish.. crerate sales invoice');
-                                System.debug('lineIdsMap >> ' + lineIdsMap);
-                                Create_CoInv_to_Bill_in_QB(CoInv, VendorQBId, QBMetadata, Get_Access_Token, lineIdsMap, TermQBId, SyncObjName);
+    //                         if( i == (totalBatches-1)){
+    //                             System.debug('when last batch finish.. crerate sales invoice');
+    //                             System.debug('lineIdsMap >> ' + lineIdsMap);
+    //                             Create_CoInv_to_Bill_in_QB(CoInv, VendorQBId, QBMetadata, Get_Access_Token, lineIdsMap, TermQBId, SyncObjName);
 
-                                // update Co invoice lines....
-                                UpdateCOinvLines(ItemstoCreate, lineIdsMap);
+    //                             // update Co invoice lines....
+    //                             UpdateCOinvLines(ItemstoCreate, lineIdsMap);
 
-                            }
-                            // No_Line_To_Create_IN_QB = false;
-                        }
-                        else{
-                            QBException.QB_response( COLines_Response.getStatusCode(),  COLines_Response.getBody(), 'QBIntegrationQueue', 'Create_item_in_QB');
-                            QBOErrorJSON Response_Error = QBOErrorJSON.parse(COLines_Response.getBody());
-                            QBOErrorJSON.Fault falut = new QBOErrorJSON.Fault();
-                            falut = Response_Error.Fault;
-                            String ErrorMessage1 = 'Error During Co Line Callout :- '+ ' Message : ' + falut.Error[0].Message +', Detail : '+ falut.Error[0].Detail;
-                            // UpdateContractorInvoice_OnError(CoInv.Id, ErrorMessage1);
-                            UpdateRecord_OnError(CoInv.Id, ErrorMessage1, SyncObjName);
+    //                         }
+    //                         // No_Line_To_Create_IN_QB = false;
+    //                     }
+    //                     else{
+    //                         QBException.QB_response( COLines_Response.getStatusCode(),  COLines_Response.getBody(), 'QBIntegrationQueue', 'Create_item_in_QB');
+    //                         QBOErrorJSON Response_Error = QBOErrorJSON.parse(COLines_Response.getBody());
+    //                         QBOErrorJSON.Fault falut = new QBOErrorJSON.Fault();
+    //                         falut = Response_Error.Fault;
+    //                         String ErrorMessage1 = 'Error During Co Line Callout :- '+ ' Message : ' + falut.Error[0].Message +', Detail : '+ falut.Error[0].Detail;
+    //                         // UpdateContractorInvoice_OnError(CoInv.Id, ErrorMessage1);
+    //                         UpdateRecord_OnError(CoInv.Id, ErrorMessage1, SyncObjName);
 
-                        }
-                    // }
-                }
-            }
-            else{
-                // if(No_Line_To_Create_IN_QB == true){
-                    System.debug('All Items of the invoice is available in QB');
-                    Map<Id, List<String>> lineIdsMap1 = new Map<Id, List<String>>();
-                    for(buildertek__Account_Payable_Item__c COL : COInvLines){
-                        lineIdsMap1.put(
-                                // Assuming SalesforceId__c is of type Id and QbId__c is of type String
-                                Id.valueOf(COL.Id), // Salesforce ID
-                                new List<String> { COL.buildertek__QBO_ID__c , COL.buildertek__QBO_Name__c, string.valueOf(COL.buildertek__Total_Price__c), string.valueOf(COL.buildertek__Quantity__c), string.valueOf(COL.buildertek__Unit_Price__c) } // QuickBooks ID
-                        );
-                    }
-                    system.debug('lineIdsMap1 :: ' + lineIdsMap1);
-                    Create_CoInv_to_Bill_in_QB(CoInv, VendorQBId, QBMetadata, Get_Access_Token, lineIdsMap1, TermQBId, SyncObjName);
+    //                     }
+    //                 // }
+    //             }
+    //         }
+    //         else{
+    //             // if(No_Line_To_Create_IN_QB == true){
+    //                 System.debug('All Items of the invoice is available in QB');
+    //                 Map<Id, List<String>> lineIdsMap1 = new Map<Id, List<String>>();
+    //                 for(buildertek__Account_Payable_Item__c COL : COInvLines){
+    //                     lineIdsMap1.put(
+    //                             // Assuming SalesforceId__c is of type Id and QbId__c is of type String
+    //                             Id.valueOf(COL.Id), // Salesforce ID
+    //                             new List<String> { COL.buildertek__QBO_ID__c , COL.buildertek__QBO_Name__c, string.valueOf(COL.buildertek__Total_Price__c), string.valueOf(COL.buildertek__Quantity__c), string.valueOf(COL.buildertek__Unit_Price__c) } // QuickBooks ID
+    //                     );
+    //                 }
+    //                 system.debug('lineIdsMap1 :: ' + lineIdsMap1);
+    //                 Create_CoInv_to_Bill_in_QB(CoInv, VendorQBId, QBMetadata, Get_Access_Token, lineIdsMap1, TermQBId, SyncObjName);
 
-            }
+    //         }
             
-        } catch (Exception e) {
-            System.debug('Error in Create_COInoiceLine_COInv_Flow : ' + e.getMessage() +'\n'+ e + 'Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
-        }
-    }
+    //     } catch (Exception e) {
+    //         System.debug('Error in Create_COInoiceLine_COInv_Flow : ' + e.getMessage() +'\n'+ e + 'Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
+    //     }
+    // }
     public static void Create_CoInv_to_Bill_in_QB(sObject CoInv, String VendorQBId, buildertek__QuickBooks_Setting__mdt QBMetadata , boolean Get_Access_Token, Map<Id, List<String>> lineIdsMap, String TermQBId, String SyncObjName){
         try {
             String ContractorInvoice_EndPoint = '/v3/company/' + QBMetadata.buildertek__Company_Id__c + '/bill?minorversion=' + QBMetadata.buildertek__minorversion__c;   
@@ -1193,16 +1409,6 @@ public without sharing class QBIntegrationQueue {
                 System.debug('Error in UpdateAccount : ' + e.getMessage() +'\n'+ e + 'Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
             }
         }
-        // public static void UpdateAccount_OnError(String acc_Id, String ErrorMessage){
-        //     try {
-        //         system.debug('Account going to Update on error');
-        //         Account Acc = [SELECT Id,Name, buildertek__QBO_ID__c, buildertek__QB_Record_URL__c, buildertek__QBO_SyncToken__c,buildertek__QB_Integration_Response_Message__c FROM Account WHERE Id =: acc_Id LIMIT 1];
-        //         Acc.buildertek__QB_Integration_Response_Message__c = ErrorMessage;
-        //         update Acc;
-        //     } catch (Exception e) {
-        //         System.debug('Error in UpdateAccount_OnError : ' + e.getMessage() +'\n'+ e + 'Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
-        //     }
-        // }
     
         public static void UpdateSIline(list<buildertek__Billable_Lines__c> SILines, Map<Id, List<String>> lineIdsMap){
             try {
@@ -1245,16 +1451,6 @@ public without sharing class QBIntegrationQueue {
                 System.debug('Error in UpdateSalesInvoice : ' + e.getMessage() +'\n'+ e + 'Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
             }
         }
-        // public static void UpdateSalesInvoice_OnError(String invoice_Id, String ErrorMessage){
-        //     try {
-        //         system.debug('sales Invoice going to Update on Error');
-        //         buildertek__Billings__c Invoice = [SELECT Id, Name , buildertek__QBO_ID__c,buildertek__QB_Invoice_Number__c	, buildertek__QBO_Tax_Rate__c,buildertek__QBO_Tax_Rate_ID__c, buildertek__QB_Invoice_URL__c,buildertek__QB_Integration_Response_Message__c FROM buildertek__Billings__c WHERE ID =:invoice_Id LIMIT 1];
-        //         Invoice.buildertek__QB_Integration_Response_Message__c = ErrorMessage;
-        //         update Invoice;
-        //     } catch (Exception e) {
-        //         System.debug('Error in UpdateSalesInvoice_OnError : ' + e.getMessage() +'\n'+ e + 'Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
-        //     }
-        // }
     
         public static void UpdateReceipt(String receipt_Id, String QB_Payment_Id , buildertek__QuickBooks_Setting__mdt  QBMetadata){
             try {
@@ -1269,17 +1465,7 @@ public without sharing class QBIntegrationQueue {
                 System.debug('Error in UpdateReceipt : ' + e.getMessage() +'\n'+ e + 'Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
             }
         }
-        // public static void UpdateReceipt_OnError(String receipt_Id, String ErrorMessage){
-        //     try {
-        //         system.debug('Receipt going to Update');
-        //         buildertek__Receipt__c receipt = [SELECT Id, Name , buildertek__QBO_ID__c, buildertek__QB_Receipt_URL__c,buildertek__QB_Integration_Response_Message__c FROM buildertek__Receipt__c WHERE ID =:receipt_Id LIMIT 1];
-        //         receipt.buildertek__QB_Integration_Response_Message__c = ErrorMessage;
-        //         update receipt; 
-        //     } catch (Exception e) {
-        //         System.debug('Error in UpdateReceipt : ' + e.getMessage() +'\n'+ e + 'Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
-        //     }
-        // }
-
+        
         public static void UpdateCOinvLines(list<buildertek__Account_Payable_Item__c> CoLinestoUpdate, Map<Id, List<String>> lineIdsMap){
             try {
                 System.debug('Going to Update Contractor invoice Lines');
@@ -1313,15 +1499,6 @@ public without sharing class QBIntegrationQueue {
             System.debug('Error in UpdateContractorInvoice : ' + e.getMessage() +'\n'+ e + 'Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
             }
         }
-        // public static void UpdateContractorInvoice_OnError(String CoInvId, String ErrorMessage){
-        //     try {
-        //         buildertek__Account_Payable__c Coinvoice = [SELECT Id, Name , buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c, buildertek__QB_Record_URL__c, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.buildertek__Vendor__c FROM buildertek__Account_Payable__c WHERE Id =:CoInvId LIMIT 1];
-        //         Coinvoice.buildertek__QB_Integration_Response_Message__c = ErrorMessage;
-        //         update Coinvoice;
-        //     } catch (Exception e) {
-        //     System.debug('Error in UpdateContractorInvoice : ' + e.getMessage() +'\n'+ e + 'Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
-        //     }
-        // }
 
         public static void UpdatePOline(list<buildertek__Purchase_Order_Item__c> SILines, Map<Id, List<String>> lineIdsMap){
             try {
@@ -1360,25 +1537,11 @@ public without sharing class QBIntegrationQueue {
                 System.debug('Error in UpdatePO : ' + e.getMessage() +'\n'+ e + 'Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
             }
         }
-        // public static void UpdatePO_OnError(String recordId, String ErrorMessage){
-        //     try {
-        //         system.debug('PO going to Update on Error');
-        //         buildertek__Purchase_Order__c PO = [SELECT Id, Name, buildertek__QB_Record_URL__c, buildertek__QB_PO_Number__c, buildertek__QBO_ID__c, buildertek__QBO_SyncToken__c FROM buildertek__Purchase_Order__c WHERE Id =: recordId LIMIT 1];
-        //         PO.buildertek__QB_Integration_Response_Message__c = ErrorMessage;
-        //         update PO;
-        //     } catch (Exception e) {
-        //         System.debug('Error in UpdatePO : ' + e.getMessage() +'\n'+ e + 'Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
-        //     }
-        // }
 
         public static void UpdateRecord_OnError(String recordId, String ErrorMessage, String SyncObjName){
             try {
-                system.debug('SyncObjName :: '+ SyncObjName);
-                system.debug('ErrorMessage :: '+ ErrorMessage);
                 String DynamicQuery = 'SELECT Id, Name, buildertek__QB_Integration_Response_Message__c FROM ' + SyncObjName + ' WHERE Id = \'' + recordId + '\' LIMIT 1';
-                system.debug('DynamicQuery :: '+ DynamicQuery);
                 sObject recordToUpdate = Database.query(DynamicQuery);
-                system.debug('recordToUpdate :: '+ recordToUpdate);
                 recordToUpdate.put('buildertek__QB_Integration_Response_Message__c', ErrorMessage);
                 Database.update(recordToUpdate, false);
             } catch (Exception e) {
