@@ -20,14 +20,16 @@
     },
 
     getAllPOs: function (component, event, helper) {
+        component.set("v.spinner", true);
         let action = component.get("c.fetchAllPOs");
-        action.setParams({
-            "searchKeyword": '',
-        });
         action.setCallback(this, function (response) {
             let state = response.getState();
             if (state === "SUCCESS") {
                 let result = response.getReturnValue();
+                result.forEach(po => {
+                    po.isDisabled = false;
+                });
+
                 component.set("v.poList", result);
                 console.log('PO List: ' + JSON.stringify(result));
             } else {
@@ -36,6 +38,9 @@
                 showToast('Error', 'Error', 'Something Went Wrong', '3000');
             }
         });
+        setTimeout(function () {
+            component.set("v.spinner", false);
+        }, 3000);
         $A.enqueueAction(action);
     },
 
@@ -55,8 +60,8 @@
     },
 
     saveSchedulePO: function (component, event, helper) {
-        let selectedScheduleItems = component.get("v.selectedScheduleItems");
-        let jsonSchedulePO = JSON.stringify(selectedScheduleItems);
+        let selectedPOItems = component.get("v.selectedPOItems");
+        let jsonSchedulePO = JSON.stringify(selectedPOItems);
         let action = component.get("c.setPOForScheduleItem");
         action.setParams({
             "schedulePO": jsonSchedulePO,
