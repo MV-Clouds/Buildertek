@@ -125,21 +125,19 @@ public with sharing class ImportMasterPurchaseOrderController {
         try {
             List<buildertek__Purchase_Order_Item__c> newinslst = new List<buildertek__Purchase_Order_Item__c>();
 
-            for (String poId : poIds) {
-                List<buildertek__Purchase_Order_Item__c> insplinelst = [SELECT Id, Name, buildertek__Purchase_Order__c, buildertek__Quantity__c, buildertek__Description__c, buildertek__Tax__c, buildertek__Cost_Code__c, buildertek__Unit_Price__c FROM buildertek__Purchase_Order_Item__c WHERE buildertek__Purchase_Order__c = :poId];
+            List<buildertek__Purchase_Order_Item__c> insplinelst = [SELECT Id, Name, buildertek__Purchase_Order__c, buildertek__Quantity__c, buildertek__Description__c, buildertek__Tax__c, buildertek__Cost_Code__c, buildertek__Unit_Price__c FROM buildertek__Purchase_Order_Item__c WHERE buildertek__Purchase_Order__c = :poIds];
 
-                for (buildertek__Purchase_Order_Item__c ins : insplinelst) {
-                    buildertek__Purchase_Order_Item__c newinsp = new buildertek__Purchase_Order_Item__c();
-                    newinsp.buildertek__Purchase_Order__c = recordId;
-                    newinsp.Name = ins.Name;
-                    newinsp.buildertek__Quantity__c = ins.buildertek__Quantity__c;
-                    newinsp.buildertek__Description__c = ins.buildertek__Description__c;
-                    newinsp.buildertek__Tax__c = ins.buildertek__Tax__c;
-                    newinsp.buildertek__Cost_Code__c = ins.buildertek__Cost_Code__c;
-                    newinsp.buildertek__Unit_Price__c = ins.buildertek__Unit_Price__c;
+            for (buildertek__Purchase_Order_Item__c ins : insplinelst) {
+                buildertek__Purchase_Order_Item__c newinsp = new buildertek__Purchase_Order_Item__c();
+                newinsp.buildertek__Purchase_Order__c = recordId;
+                newinsp.Name = ins.Name;
+                newinsp.buildertek__Quantity__c = ins.buildertek__Quantity__c;
+                newinsp.buildertek__Description__c = ins.buildertek__Description__c;
+                newinsp.buildertek__Tax__c = ins.buildertek__Tax__c;
+                newinsp.buildertek__Cost_Code__c = ins.buildertek__Cost_Code__c;
+                newinsp.buildertek__Unit_Price__c = ins.buildertek__Unit_Price__c;
 
-                    newinslst.add(newinsp);
-                }
+                newinslst.add(newinsp);
             }
             System.debug('POLineList---> ' + newinslst);
             if (newinslst.size() > 0) {
