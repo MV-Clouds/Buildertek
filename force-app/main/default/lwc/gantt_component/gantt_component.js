@@ -353,6 +353,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           "error message to get while getting data from apex:- ",
           error.message
         );
+        console.log("error:-", {error} )
         this.dispatchEvent(
           new ShowToastEvent({
             title: "Error",

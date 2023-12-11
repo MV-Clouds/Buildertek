@@ -1,145 +1,90 @@
-function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDataList) {
-    var taskData = scheduleItemsData;
-    var taskDependencyData = [];
-    var resourceRowData = [];
-    var resourceRowIdList = [];
-    var assignmentRowData= [];
-    var scheduleItemIdsList = [];
-    var rows = [];
-    var formattedData = {}
+let firstRowDup = {};
+let taskPhaseRow = {}
+let taskPhaseRow2 = {}
+let Phase1
+let Phase2
 
-    var taskListForPhase = scheduleItemsDataList;
-    var firstRowDup = {};
+function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDataList) {
+    let taskData = scheduleItemsData;
+    let taskDependencyData = [];
+    let resourceRowData = [];
+    let resourceRowIdList = [];
+    let assignmentRowData= [];
+    let scheduleItemIdsList = [];
+    let rows = [];
+    let formattedData = {};
+
+    let taskListForPhase = scheduleItemsDataList;
+    console.log("taskListForPhase1:-",taskListForPhase);
+    
     firstRowDup["id"] = scheduleData.Id;
     firstRowDup["name"] = scheduleData.buildertek__Description__c;
     firstRowDup["startDate"] = scheduleData.buildertek__Initial_Start_Date__c;
     firstRowDup["duration"] = 1;
-    var projstartdate = scheduleData.buildertek__Initial_Start_Date__c;
+    // var projstartdate = scheduleData.buildertek__Initial_Start_Date__c;
     firstRowDup["expanded"] = true
     firstRowDup["type"] = 'Project'
     firstRowDup['customtype'] = 'Project'
     firstRowDup["endDate"] = ""
     firstRowDup["children"] = []
+
+    //*changes for BUIL-3699 start
+    
+    taskPhaseRow["type"] = 'Phase'            
+    taskPhaseRow["id"] = taskListForPhase[0].buildertek__Schedule__c+"_"+taskListForPhase[0].buildertek__Phase__c
+    taskPhaseRow["name"] = taskListForPhase[0].buildertek__Phase__c
+    taskPhaseRow["startDate"] = ""
+    taskPhaseRow["expanded"] = true
+    taskPhaseRow["Contractor"] = 'test'
+    taskPhaseRow["endDate"] = ""
+    taskPhaseRow["children"] = []
+    taskPhaseRow["customtype"] = 'Phase'
+    Phase1 = taskListForPhase[0].buildertek__Phase__c
+
+    
+    taskPhaseRow2["type"] = 'Phase'            
+    taskPhaseRow2["id"] = taskListForPhase[0].buildertek__Schedule__c+"_"+taskListForPhase[0].buildertek__BT_Grouping__c.Name
+    taskPhaseRow2["name"] = taskListForPhase[0].buildertek__BT_Grouping__c.Name
+    taskPhaseRow2["phaseId"] = taskListForPhase[0].buildertek__BT_Grouping__c
+    taskPhaseRow2["startDate"] = ""
+    taskPhaseRow2["expanded"] = true
+    taskPhaseRow2["Contractor"] = 'test'
+    taskPhaseRow2["endDate"] = ""
+    taskPhaseRow2["children"] = []
+    taskPhaseRow2["customtype"] = 'Phase'
+    Phase2 = taskListForPhase[0].buildertek__BT_Grouping__c
+
+    // taskPhaseRow["children"].push(taskPhaseRow2);
+    // firstRowDup["children"].push(taskPhaseRow);
+    //*changes for BUIL-3699 end
+
+
     // firstRowDup["constraintType"] = 'startnoearlierthan'
     // firstRowDup["constraintDate"] = ""
     var newPhaseFlag = true;
     var taskWithphaseList = [];
-    var taskPhaseRow;
+    // var taskPhaseRow;
     var phIndex = -1;
-    for(var i=0;i<taskListForPhase.length;i++){
-        if(taskListForPhase[i].buildertek__Phase__c && taskPhaseRow){
-            
-            
-            if(taskPhaseRow['name'] != taskListForPhase[i].buildertek__Phase__c){
-                phIndex = phIndex+1;
-                taskPhaseRow = {}
-                taskPhaseRow["type"] = 'Phase'
-                
-                taskPhaseRow["id"] = taskListForPhase[i].buildertek__Schedule__c+"_"+taskListForPhase[i].buildertek__Phase__c
-                taskPhaseRow["name"] = taskListForPhase[i].buildertek__Phase__c
-                
-                taskPhaseRow["startDate"] = ""
-                taskPhaseRow["expanded"] = true
-                taskPhaseRow["Contractor"] = 'test'
-                taskPhaseRow["endDate"] = ""
-                taskPhaseRow["children"] = []
-                taskPhaseRow["customtype"] = 'Phase'
-                // taskPhaseRow["constraintDate"] = ""
-                
-                // taskPhaseRow["constraintType"] = 'startnoearlierthan'
-                newPhaseFlag = false;
-            }
-            
-            if(scheduleItemIdsList.indexOf(taskListForPhase[i].Id) < 0){
-                scheduleItemIdsList.push(taskListForPhase[i].Id)
-            }
-            
-            taskPhaseRow["children"].push(createTaskRecord(taskListForPhase[i]));
-            // taskPhaseRow["children"].push(rowChilObj);
-            
-            var dependencyRow = {};
-            if(taskListForPhase[i].buildertek__Dependency__c){
-                dependencyRow["id" ]  = taskListForPhase[i].Id+'_'+taskListForPhase[i].buildertek__Dependency__c
-                dependencyRow["fromTask"] = taskListForPhase[i].buildertek__Dependency__c
-                dependencyRow["toTask"]  = taskListForPhase[i].Id
-                dependencyRow["lag"]  = taskListForPhase[i].buildertek__Lag__c
-                taskDependencyData.push(dependencyRow)
-            }
-            
-            assignmentRowData.push.apply(assignmentRowData, createAssignmentData(taskListForPhase[i])); //adds all the assignment data to the main list.
 
-            var found = false;
-            if(firstRowDup['children'].length){
-                for(var k=0;k<firstRowDup['children'].length;k++){
-                    if(firstRowDup['children'][k].id == taskPhaseRow['id']){
-                        firstRowDup['children'][k] = taskPhaseRow
-                        found = true
-                    }
-                }
-            }else{
-                firstRowDup['children'].push(taskPhaseRow);
-                found = true
-            }
-            if(!found){
-                firstRowDup['children'].push(taskPhaseRow);
-            }
-        }else if(taskListForPhase[i].buildertek__Phase__c && !taskPhaseRow){
-
-            taskPhaseRow = {};
-            phIndex = phIndex+1;
-            taskPhaseRow["type"] = 'Phase'
-            taskPhaseRow["id"] = taskListForPhase[i].buildertek__Schedule__c+"_"+taskListForPhase[i].buildertek__Phase__c
-            taskPhaseRow["name"] = taskListForPhase[i].buildertek__Phase__c
-            taskPhaseRow["startDate"] = ""
-            taskPhaseRow["constraintDate"] = ""
-            taskPhaseRow["expanded"] = true
-            taskPhaseRow["endDate"] = ""
-            taskPhaseRow["children"] = []
-
-            if(scheduleItemIdsList.indexOf(taskListForPhase[i].Id) < 0){
-                scheduleItemIdsList.push(taskListForPhase[i].Id)
-            }
-
-            taskPhaseRow["children"].push(createTaskRecord(taskListForPhase[i]));
-            // taskPhaseRow["children"].push(rowChilObj);
-            firstRowDup['children'].push(taskPhaseRow);
-
-            var dependencyRow = {};
-            if(taskListForPhase[i].buildertek__Dependency__c){
-                dependencyRow["id" ]  = taskListForPhase[i].Id+'_'+taskListForPhase[i].buildertek__Dependency__c
-                dependencyRow["fromTask"] = taskListForPhase[i].buildertek__Dependency__c
-                dependencyRow["toTask"]  = taskListForPhase[i].Id
-                dependencyRow["lag"]  = taskListForPhase[i].buildertek__Lag__c
-                taskDependencyData.push(dependencyRow)
-            }
-
-            assignmentRowData.push.apply(assignmentRowData, createAssignmentData(taskListForPhase[i])); //
-
-            newPhaseFlag = false;
-
-        }else if(!taskListForPhase[i].buildertek__Phase__c){
-            phIndex = phIndex+1;
-
-            if(scheduleItemIdsList.indexOf(taskListForPhase[i].Id) < 0){
-                scheduleItemIdsList.push(taskListForPhase[i].Id)
-            }
-            // taskPhaseRow["children"].push(createTaskRecord(taskListForPhase[i]));
-            firstRowDup['children'].push(createTaskRecord(taskListForPhase[i]));
-
-            var dependencyRow = {};
-            if(taskListForPhase[i].buildertek__Dependency__c){
-                dependencyRow["id" ]  = taskListForPhase[i].Id+'_'+taskListForPhase[i].buildertek__Dependency__c
-                dependencyRow["fromTask"] = taskListForPhase[i].buildertek__Dependency__c
-                dependencyRow["toTask"]  = taskListForPhase[i].Id
-                dependencyRow["lag"]  = taskListForPhase[i].buildertek__Lag__c
-                taskDependencyData.push(dependencyRow)
-            }
-
-            assignmentRowData.push.apply(assignmentRowData, createAssignmentData(taskListForPhase[i])); //
-
-        }
+    console.log("tasklistforphase: " + taskListForPhase );
+    for(var i = 0; i < taskListForPhase.length; i++){
+        // var task = taskListForPhase[i];
+        console.log("taskListForPhase:- ",taskListForPhase[i]);
+        method1(taskListForPhase[i])
+        var dependencyRow = {};
+        // if(taskListForPhase[i].buildertek__Dependency__c){
+        //     dependencyRow["id" ]  = taskListForPhase[i].Id+'_'+taskListForPhase[i].buildertek__Dependency__c
+        //     dependencyRow["fromTask"] = taskListForPhase[i].buildertek__Dependency__c
+        //     dependencyRow["toTask"]  = taskListForPhase[i].Id
+        //     dependencyRow["lag"]  = taskListForPhase[i].buildertek__Lag__c
+        //     taskDependencyData.push(dependencyRow)
+        // }
+        
+        assignmentRowData.push.apply(assignmentRowData, createAssignmentData(taskListForPhase[i])); //adds all the assignment data to the main list.
 
     }
+
+    console.log("firstRowDup:- ", firstRowDup);
     rows.push(firstRowDup);
     formattedData['rows'] = rows;
     formattedData['resourceRowData'] = resourceRowData;
@@ -642,6 +587,51 @@ function createAssignmentData(taskListForPhase){
     }
 
     return assignmentRowDataChild;
+}
+
+function method1(taskdata){
+    if (taskdata.buildertek__Phase__c){
+        if(taskdata.buildertek__Phase__c != Phase1) {
+            console.log('firstrowdup method1 ',firstRowDup)
+            console.log('taskphaserow before update:- ',taskPhaseRow);
+            firstRowDup["children"].push(taskPhaseRow);
+            console.log("firstRowDup method1:- ",firstRowDup);
+            taskPhaseRow["id"] = taskPhaseRow["id"].split("_")[0]+"_"+taskdata.buildertek__Phase__c
+            taskPhaseRow["name"] = taskdata.buildertek__Phase__c
+            taskPhaseRow["phaseId"] = taskdata.buildertek__Phase__c
+            taskPhaseRow["children"] = []
+            console.log("Phase1 old:- ",Phase1)
+        }
+        method2(taskdata)
+        Phase1 = taskdata.buildertek__Phase__c
+        console.log("Phase1 new:- ",Phase1)
+    } else {
+        var c = createTaskRecord(taskdata);
+        firstRowDup['children'].push(c);
+    }
+}
+
+function method2(taskdata){
+    console.log("method2 taskdata:- ", taskdata)
+    if(taskdata.buildertek__BT_Grouping__c) {
+        console.log("Phase2:- ",Phase2, " taskdata.buildertek__BT_Grouping__c:- ",taskdata.buildertek__BT_Grouping__c)
+        if(taskdata.buildertek__BT_Grouping__c != Phase2) {
+            taskPhaseRow["children"].push(taskPhaseRow2);
+            
+            taskPhaseRow2["id"] = taskPhaseRow["id"].split("_")[0]+"_"+taskdata.buildertek__BT_Grouping__c.Name
+            taskPhaseRow2["name"] = taskdata.buildertek__BT_Grouping__c.Name
+            taskPhaseRow2["phaseId"] = taskdata.buildertek__BT_Grouping__c
+            taskPhaseRow2["children"] = []
+            console.log("Phase2 old:- ",Phase2)
+        }
+        var c = createTaskRecord(taskdata);
+        taskPhaseRow2['children'].push(c);
+        Phase2 = taskdata.buildertek__BT_Grouping__c
+        console.log("Phase2 new:- ",Phase2)
+    } else {
+        var c = createTaskRecord(taskdata);
+        taskPhaseRow['children'].push(c);
+    }
 }
 
 export{ formatApexDatatoJSData, convertJSONtoApexData, recordsTobeDeleted, makeComboBoxDataForContractor, calcBusinessDays, makeComboBoxDataForResourceData, setResourceDataForApexData, mergeArrays, createTaskRecord, createAssignmentData};
