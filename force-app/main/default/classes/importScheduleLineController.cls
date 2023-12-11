@@ -39,6 +39,14 @@ public without sharing class importScheduleLineController {
             existingCostCodeMap.put(costCodeRec.Name, costCodeRec);
         }
         System.debug('existingCostCodeMap: ' + existingCostCodeMap);
+        
+        Map<String, buildertek__Trade_Type__c> existingTradeTypeMap = new Map<String, buildertek__Trade_Type__c>();
+        List<buildertek__Trade_Type__c> tradeTypeList =  [SELECT Id, Name FROM buildertek__Trade_Type__c];
+        for (buildertek__Trade_Type__c tradeTypeRec : tradeTypeList) {
+            existingTradeTypeMap.put(tradeTypeRec.Name, tradeTypeRec);
+        }
+        System.debug('existingTradeTypeMap: ' + existingTradeTypeMap);
+
         for (fieldWrapper wrapper : datalist){
             if (wrapper.Name != null && String.isNotBlank(wrapper.Name)){
                 buildertek__Project_Task__c schItem = new buildertek__Project_Task__c();
@@ -57,6 +65,11 @@ public without sharing class importScheduleLineController {
                 if (wrapper.costCode != null && String.isNotBlank(wrapper.costCode) && existingCostCodeMap.containsKey(wrapper.costCode)) {
                     schItem.buildertek__Cost_Code__c = existingCostCodeMap.get(wrapper.costCode).Id;
                     System.debug('CostCode: Mapped Value' + existingCostCodeMap.get(wrapper.costCode).Id);
+                }
+
+                if (wrapper.tradeType != null && String.isNotBlank(wrapper.tradeType) && existingTradeTypeMap.containsKey(wrapper.tradeType)) {
+                    schItem.buildertek__Trade_Type__c = existingTradeTypeMap.get(wrapper.tradeType).Id;
+                    System.debug('TradeType: Mapped Value' + existingTradeTypeMap.get(wrapper.tradeType).Id);
                 }
 
                 Date startDate = system.today();
@@ -210,6 +223,7 @@ public without sharing class importScheduleLineController {
         public String Notes;
         public String Lag;
         public String costCode;
+        public String tradeType;
     }
 
 }
