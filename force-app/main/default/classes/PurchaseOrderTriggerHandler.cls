@@ -159,33 +159,38 @@ public with sharing class PurchaseOrderTriggerHandler{
             PurchaseOrderDAO.RollUpPurchaseOrder(POIds);
         }
         List<Messaging.SingleEmailMessage> msgListToBeSend = new List<Messaging.SingleEmailMessage>();
-        if (POIdsToSendEmail.size() > 0 && adminInterfaceNodeConfigurations.size() > 0 && adminInterfaceNodeConfigurations[0].buildertek__Send_PO_On_Approval__c){
-            if (Schema.sObjectType.EmailTemplate.fields.Id.isAccessible() && Schema.sObjectType.EmailTemplate.fields.Name.isAccessible()){
-                templateId = [Select Id, Name
-                              FROM EmailTemplate
-                              WHERE DeveloperName = :'Purchase_Order_Approved_Template'];
-            }
-            List<buildertek__Purchase_Order__c> purchaseOrderList = [Select Id, buildertek__Project__r.buildertek__Project_Manager__r.Email
+        List<buildertek__Purchase_Order__c> purchaseOrderList = new List<buildertek__Purchase_Order__c>();
+        if (POIdsToSendEmail.size() > 0 && adminInterfaceNodeConfigurations.size() > 0){
+            
+            purchaseOrderList = [Select Id, buildertek__Project__r.buildertek__Project_Manager__r.Email, buildertek__Vendor__r.buildertek__Email_Address__c, buildertek__Vendor__c
                                                                      FROM buildertek__Purchase_Order__c
                                                                      WHERE Id In :POIdsToSendEmail];
-
-            mails = new List<Messaging.SingleEmailMessage>();
-            for (buildertek__Purchase_Order__c newPO : purchaseOrderList){
-                if (newPO.buildertek__Project__r != null && newPO.buildertek__Project__r.buildertek__Project_Manager__r != null && newPO.buildertek__Project__r.buildertek__Project_Manager__r.Email != null){
-                    String fromAddress = eServices.LocalPart + '@' + eServices.EmailDomainName;
-                    Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
-                    List<String> sendTo = new List<String>();
-                    sendTo.add(newPO.buildertek__Project__r.buildertek__Project_Manager__r.Email);
-                    mail.setTargetObjectId(newPO.buildertek__Project__r.buildertek__Project_Manager__c);
-                    mail.setTemplateId(templateId[0].Id);
-                    mail.setWhatId(newPO.Id);
-                    mail.setToAddresses(sendTo);
-                    mail.setSaveAsActivity(false);
-                    mails.add(mail);
+            if (adminInterfaceNodeConfigurations[0].buildertek__Send_PO_On_Approval__c) {
+                
+                if (Schema.sObjectType.EmailTemplate.fields.Id.isAccessible() && Schema.sObjectType.EmailTemplate.fields.Name.isAccessible()){
+                    templateId = [Select Id, Name
+                    FROM EmailTemplate
+                    WHERE DeveloperName = :'Purchase_Order_Approved_Template'];
                 }
-            }
-            if (mails.size() > 0 && templateId.size() > 0){
-                Messaging.sendEmail(mails);
+                
+                mails = new List<Messaging.SingleEmailMessage>();
+                for (buildertek__Purchase_Order__c newPO : purchaseOrderList){
+                    if (newPO.buildertek__Project__r != null && newPO.buildertek__Project__r.buildertek__Project_Manager__r != null && newPO.buildertek__Project__r.buildertek__Project_Manager__r.Email != null){
+                        String fromAddress = eServices.LocalPart + '@' + eServices.EmailDomainName;
+                        Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
+                        List<String> sendTo = new List<String>();
+                        sendTo.add(newPO.buildertek__Project__r.buildertek__Project_Manager__r.Email);
+                        mail.setTargetObjectId(newPO.buildertek__Project__r.buildertek__Project_Manager__c);
+                        mail.setTemplateId(templateId[0].Id);
+                        mail.setWhatId(newPO.Id);
+                        mail.setToAddresses(sendTo);
+                        mail.setSaveAsActivity(false);
+                        mails.add(mail);
+                    }
+                }
+                if (mails.size() > 0 && templateId.size() > 0){
+                    Messaging.sendEmail(mails);
+                }
             }
         }
 
@@ -196,17 +201,13 @@ public with sharing class PurchaseOrderTriggerHandler{
                               FROM EmailTemplate
                               WHERE DeveloperName = :'Purchase_Order_Line_Template'];
             }
-            List<buildertek__Purchase_Order__c> purchaseOrderList = [Select Id, buildertek__Vendor__r.buildertek__Email_Address__c , buildertek__Vendor__c
-                                                                     FROM buildertek__Purchase_Order__c
-                                                                     WHERE Id In :POIdsToSendEmail];
+            // List<buildertek__Purchase_Order__c> purchaseOrderList = [Select Id, buildertek__Vendor__r.buildertek__Email_Address__c , buildertek__Vendor__c
+            //                                                          FROM buildertek__Purchase_Order__c
+            //                                                          WHERE Id In :POIdsToSendEmail];
 
             List<buildertek__BT_ConfirmatioPageURL__c> confirmationPageSiteURL = [Select Id, buildertek__Public_Site_Url__c
-                                                                                  FROM buildertek__BT_ConfirmatioPageURL__c];
+                                                                                  FROM buildertek__BT_ConfirmatioPageURL__c LIMIT 1];
 
-            Contact cnt = [select Id, Email
-                           FROM Contact
-                           WHERE Email != null
-                           LIMIT 1];
             String body = '';
             String subject = 'PurchaseLienRelease';
             String SiteUrl = '';
@@ -492,37 +493,53 @@ PurchaseOrderDAO.isUpdatePurchaseOrder = true;
 
     public void updateProjectAggregatedValues(Set<Id> projectIds) {
         try {
+            // Map to store aggregated results by project ID
+            Map<Id, AggregateResult> aggregatedResultsMap = new Map<Id, AggregateResult>();
+            
+            // Retrieve aggregated results for each project
+            for (AggregateResult aggregatedResult : [SELECT buildertek__Project__c, SUM(buildertek__Paid_Amount__c) totalPaidAmount, SUM(buildertek__PO_Total__c) totalPOTotal FROM buildertek__Purchase_Order__c WHERE buildertek__Project__c IN :projectIds AND buildertek__Status__c != 'Canceled' GROUP BY buildertek__Project__c]) {
+                Id projectId = (Id)aggregatedResult.get('buildertek__Project__c');
+                aggregatedResultsMap.put(projectId, aggregatedResult);
+            }
+    
             List<buildertek__Project__c> projectsToUpdate = new List<buildertek__Project__c>();
-
+    
+            // Iterate over the projectsToUpdate list
             for (Id projectId : projectIds) {
-                // Query purchase orders related to the project
-                List<AggregateResult> aggregatedResults = [SELECT SUM(buildertek__Paid_Amount__c) totalPaidAmount, SUM(buildertek__PO_Total__c) totalPOTotal FROM buildertek__Purchase_Order__c WHERE buildertek__Project__c = :projectId AND buildertek__Status__c != 'Canceled'];
-
-                for (AggregateResult aggregatedResult : aggregatedResults) {
+                // Check if aggregated result exists for the project
+                if (aggregatedResultsMap.containsKey(projectId)) {
+                    AggregateResult aggregatedResult = aggregatedResultsMap.get(projectId);
                     Decimal totalPaidAmount = (Decimal)aggregatedResult.get('totalPaidAmount');
                     Decimal totalPOTotal = (Decimal)aggregatedResult.get('totalPOTotal');
-        
+    
                     // Retrieve the project and update aggregated values
                     buildertek__Project__c projectToUpdate = new buildertek__Project__c(Id = projectId);
                     projectToUpdate.buildertek__Total_Paid_PO_Amount__c = totalPaidAmount;
                     projectToUpdate.buildertek__Total_PO_Amount__c = totalPOTotal;
-        
+    
+                    projectsToUpdate.add(projectToUpdate);
+                } else {
+                    buildertek__Project__c projectToUpdate = new buildertek__Project__c(Id = projectId);
+                    projectToUpdate.buildertek__Total_Paid_PO_Amount__c = 0;
+                    projectToUpdate.buildertek__Total_PO_Amount__c = 0;
+    
                     projectsToUpdate.add(projectToUpdate);
                 }
             }
-
-            // Update the projects with aggregated values
+    
+            System.debug('projectsToUpdate---> '+projectsToUpdate);
             if (!projectsToUpdate.isEmpty()) {
                 update projectsToUpdate;
             }
         } catch (Exception ex) {
-            System.debug('Error--> '+ex.getMessage());
+            System.debug('Error--> ' + ex.getMessage());
             List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
-            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+            if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
                 BT_ExceptionHandler.Store_Exception(ex);
             }
         }
     }
+    
     
     
 }
