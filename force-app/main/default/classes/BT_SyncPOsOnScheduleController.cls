@@ -17,7 +17,7 @@ public without sharing class BT_SyncPOsOnScheduleController {
     @AuraEnabled
     public static List<buildertek__Purchase_Order__c> fetchAllPOs(){
         try {
-            List<buildertek__Purchase_Order__c> poList = [SELECT Id, Name, buildertek__Description__c FROM buildertek__Purchase_Order__c WHERE buildertek__Schedule_Item__c = '' ORDER BY buildertek__Description__c NULLS LAST, Name ASC];
+            List<buildertek__Purchase_Order__c> poList = [SELECT Id, Name, buildertek__Description__c FROM buildertek__Purchase_Order__c WHERE buildertek__Schedule_Item__c = '' ORDER BY Name ASC];
             return poList;
         } catch (Exception e) {
             List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_for_Force_Site__c FROM buildertek__Exception_Log_Store_Option__c];

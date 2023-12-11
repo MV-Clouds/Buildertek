@@ -70,7 +70,7 @@
                                                         <aura:if isTrue="{!empty(item.buildertek__Description__c)}">
                                                             {!item.Name}
                                                             <aura:set attribute="else">
-                                                                {!item.buildertek__Description__c}
+                                                                {!item.Name} - {!item.buildertek__Description__c}
                                                             </aura:set>
                                                         </aura:if>
                                                     </div>
