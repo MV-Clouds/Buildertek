@@ -8,8 +8,12 @@
         action.setCallback(this, function (response) {
             let state = response.getState();
             if (state === "SUCCESS") {
-                component.set("v.scheduleItemList", response.getReturnValue());
-                console.log('scheduleItemList: ' + JSON.stringify(response.getReturnValue()));
+                let result = response.getReturnValue();
+                result.forEach(item => {
+                    item.isDisabled = false;
+                });
+                component.set("v.scheduleItemList", result);
+                console.log('scheduleItemList: ' + JSON.stringify(result));
             } else {
                 let error = response.getError();
                 console.log('Error =>', { error });
@@ -26,10 +30,6 @@
             let state = response.getState();
             if (state === "SUCCESS") {
                 let result = response.getReturnValue();
-                result.forEach(po => {
-                    po.isDisabled = false;
-                });
-
                 component.set("v.poList", result);
                 console.log('PO List: ' + JSON.stringify(result));
             } else {

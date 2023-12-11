@@ -26,16 +26,16 @@
     },
 
     onSelectChange: function (component, event, helper) {
-        let poItem = event.getSource();
-        let poId = poItem.get("v.value");
-        let scheduleItemId = event.target.dataset.id;
+        let scheduleItem = event.getSource();
+        let scheduleItemId = scheduleItem.get("v.value");
+        let poId = event.target.dataset.id;
         console.log('PO Id: ' + poId);
         console.log('Selected Schedule Item Id: ' + scheduleItemId);
 
         let selectedPOItems = component.get("v.selectedPOItems");
 
-        if (poId === "") {
-            let indexToRemove = selectedPOItems.findIndex(item => item.scheduleItemId === scheduleItemId);
+        if (scheduleItemId === "") {
+            let indexToRemove = selectedPOItems.findIndex(item => item.poId === poId);
             if (indexToRemove !== -1) {
                 selectedPOItems.splice(indexToRemove, 1);
             }
@@ -45,7 +45,7 @@
                 poId: poId
             };
 
-            let index = selectedPOItems.findIndex(item => item.scheduleItemId === scheduleItemId);
+            let index = selectedPOItems.findIndex(item => item.poId === poId);
             if (index !== -1) {
                 selectedPOItems[index] = schedulePO;
             } else {
@@ -53,12 +53,12 @@
             }
         }
 
-        let poList = component.get("v.poList");
-        poList.forEach(po => {
-            po.isDisabled = selectedPOItems.some(item => item.poId === po.Id);
+        let scheduleItemList = component.get("v.scheduleItemList");
+        scheduleItemList.forEach(po => {
+            po.isDisabled = selectedPOItems.some(item => item.scheduleItemId === po.Id);
         });
 
-        component.set("v.poList", poList);
+        component.set("v.scheduleItemList", scheduleItemList);
         component.set("v.selectedPOItems", selectedPOItems);
     },
 

@@ -59,34 +59,32 @@
                             <div class="slds-card po-container">
                                 <div class="slds-card__body">
                                     <div class="slds-card__body_inner">
-                                        <aura:if isTrue="{!not(empty(v.scheduleItemList))}">
-                                            <aura:iteration items="{!v.scheduleItemList}" var="scheduleItem">
+                                        <aura:if isTrue="{!not(empty(v.poList))}">
+                                            <aura:iteration items="{!v.poList}" var="item">
                                                 <div class="slds-media po-item">
                                                     <div class="icon">
-                                                        <lightning:icon iconName='custom:custom83'
-                                                            alternativeText='Schedule Item' size='small'
-                                                            style="background-color: #8ee997;" />
+                                                        <lightning:icon iconName='custom:custom18'
+                                                            alternativeText='PO Item' size='small' />
                                                     </div>
                                                     <div class="slds-media__body po-name-column">
-                                                        <p>{!scheduleItem.Name}</p>
+                                                        <aura:if isTrue="{!empty(item.buildertek__Description__c)}">
+                                                            {!item.Name}
+                                                            <aura:set attribute="else">
+                                                                {!item.buildertek__Description__c}
+                                                            </aura:set>
+                                                        </aura:if>
                                                     </div>
                                                     <div class="slds-form-element dropdown-column">
-                                                        <div class="slds-form-element__control"
-                                                            data-id="{!scheduleItem.Id}">
+                                                        <div class="slds-form-element__control" data-id="{!item.Id}">
                                                             <lightning:select name="scheduleItem-dropdown"
-                                                                value="{!scheduleItem.selectedScheduleItem}"
+                                                                value="{!item.selectedScheduleItemId}"
                                                                 onchange="{!c.onSelectChange}">
                                                                 <option text="--None--" value="" />
-                                                                <aura:iteration items="{!v.poList}" var="item">
-                                                                    <option value="{!item.Id}"
-                                                                        disabled="{!item.isDisabled}">
-                                                                        <aura:if
-                                                                            isTrue="{!empty(item.buildertek__Description__c)}">
-                                                                            {!item.Name}
-                                                                            <aura:set attribute="else">
-                                                                                {!item.buildertek__Description__c}
-                                                                            </aura:set>
-                                                                        </aura:if>
+                                                                <aura:iteration items="{!v.scheduleItemList}"
+                                                                    var="scheduleItem">
+                                                                    <option value="{!scheduleItem.Id}"
+                                                                        disabled="{!scheduleItem.isDisabled}">
+                                                                        {!scheduleItem.Name}
                                                                     </option>
                                                                 </aura:iteration>
                                                             </lightning:select>
@@ -96,10 +94,11 @@
                                             </aura:iteration>
                                             <aura:set attribute="else">
                                                 <div class="slds-text-align_center" style="font-size: large;">
-                                                    <p>No Schedule Items found.</p>
+                                                    <p>No PO found to sync.</p>
                                                 </div>
                                             </aura:set>
                                         </aura:if>
+
                                     </div>
                                 </div>
                             </div>

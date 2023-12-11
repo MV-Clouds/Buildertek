@@ -3,7 +3,7 @@ public without sharing class BT_SyncPOsOnScheduleController {
     @AuraEnabled
     public static List<buildertek__Project_Task__c> fetchScheduleItem(String scheduleId){
         try {
-            List<buildertek__Project_Task__c> scheduleItemList = [Select Id, Name, buildertek__Type__c from buildertek__Project_Task__c where buildertek__Schedule__c = :scheduleId and buildertek__Type__c = 'Task'];
+            List<buildertek__Project_Task__c> scheduleItemList = [Select Id, Name, buildertek__Type__c from buildertek__Project_Task__c where buildertek__Schedule__c = :scheduleId and buildertek__Type__c = 'Task' order by Name asc];
             return scheduleItemList;
         } catch (Exception e) {
             List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_for_Force_Site__c FROM buildertek__Exception_Log_Store_Option__c];
@@ -14,10 +14,10 @@ public without sharing class BT_SyncPOsOnScheduleController {
         }
     }
     
-    @AuraEnabled(Cacheable=true)
+    @AuraEnabled
     public static List<buildertek__Purchase_Order__c> fetchAllPOs(){
         try {
-            List<buildertek__Purchase_Order__c> poList = [Select Id, Name, buildertek__Description__c from buildertek__Purchase_Order__c where buildertek__Schedule_Item__c = '' ];
+            List<buildertek__Purchase_Order__c> poList = [SELECT Id, Name, buildertek__Description__c FROM buildertek__Purchase_Order__c WHERE buildertek__Schedule_Item__c = '' ORDER BY buildertek__Description__c NULLS LAST, Name ASC];
             return poList;
         } catch (Exception e) {
             List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_for_Force_Site__c FROM buildertek__Exception_Log_Store_Option__c];
