@@ -2254,7 +2254,15 @@
                 $A.get("e.c:BT_SpinnerEvent").setParams({
                     "action": "HIDE"
                 }).fire();
-                component.set('v.salesInvoices', response.getReturnValue());
+                let salesInvoiceList = response.getReturnValue();
+                
+                salesInvoiceList.forEach(element => {
+                    if(element.Name.length > 30){
+                        element.Name = element.Name.slice(0, 40) + '...';
+                    }
+                });
+
+                component.set('v.salesInvoices', salesInvoiceList);
                 component.set("v.addSalesInvoiceSection", true);
                 console.log('SalesInvoice List => ',response.getReturnValue());
             }

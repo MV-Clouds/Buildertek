@@ -48,10 +48,10 @@
                         </td>
                         <td role="gridcell" class="slds-truncate">
                           
-                            <!-- <ui:outputURL value="{!'/one/one.app?#/sObject/'+ record.Id + '/view'}" target="_self" label="{!record.Name}" /> -->
-                            <a href="#" onclick="{!c.openRecordInSubTab}" id="{!record.Id}">
+                            <ui:outputURL value="{!'/one/one.app?#/sObject/'+ record.Id + '/view'}" target="_self" label="{!record.Name}" />
+                            <!-- <a href="#" onclick="{!c.openRecordInSubTab}" id="{!record.Id}">
                                 <ui:outputText value="{!record.Name}" />
-                            </a>
+                            </a> -->
 
                         </td>
                         <td role="gridcell" class="slds-truncate">

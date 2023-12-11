@@ -23,6 +23,7 @@
     <aura:handler name="change" value="{!v.searchStatusFilter}" action="{!c.doSearch}" />
     
     <aura:attribute name="isSave" type="Boolean" default = "false"/>
+    <aura:attribute name="isSelected" type="Boolean" default = "true"/>
     
      <aura:attribute name="isNextDisable" type="Boolean" default = "false"/>
     
@@ -193,11 +194,11 @@
                             <span></span>
                         </aura:set>
                     </aura:if>
-
                     <aura:if isTrue="{!v.enableMassUpdate}">
                         <button class="slds-button slds-button_neutral" onclick="{!c.cancelMassUpdate}"> Cancel</button>
                         <button class="slds-button slds-button--brand" onclick="{!c.saveMassUpdate}" disabled = "{!v.isSave}"> Save</button>
                         <aura:set attribute="else">
+                            <button class="slds-button slds-button_neutral" onclick="{!c.unSelect}" disabled = "{!v.isSelected}">Cancel</button>
                             <button class="slds-button slds-button_neutral" onclick="{!c.massUpdate}" disabled="{!v.isdisabled}"> Mass Update</button>
                         </aura:set>
                     </aura:if>
@@ -213,7 +214,7 @@
     
     <div class="slds-modal__content slds-p-around_xx-small">
         <div class="slds slds-scope">
-            <table class="slds-table slds-table_bordered slds-table_fixed-layout " role="grid">
+            <table class="slds-table slds-table_bordered " role="grid">
                 <thead>
                     <tr class="slds-text-title_caps">
                         
@@ -224,10 +225,10 @@
                         <th class="tHeader"> Vendor </th>
                         <th class="tHeader"> PO # </th>
                         <th class="tHeader"> Status </th>
-                        <th class="tHeader"> Projects </th>
-                        <th class="tHeader"> Required Delivery Date</th>
-                        <th class="tHeader"> Lead Time</th>     
-                        <th class="tHeader"> Total</th>
+                        <th class="tHeader"> PO Total </th>
+                        <th class="tHeader"> Paid Amount </th>
+                        <th class="tHeader"> PO Balance </th>
+                        <th class="tHeader"></th>
                     </tr>
                 </thead>
                 <tbody class = "slds-scrollable">
@@ -295,24 +296,23 @@
                                                     <ui:outputText value="{!record.poRecord.buildertek__Status__c}" />  
                                                 </td> 
                                                 
-                                                <td role="gridcell" class="slds-truncate" title = "{!record.poRecord.buildertek__Project__c}" >
-                                                    <ui:outputURL value="{!'/one/one.app?#/sObject/'+ record.poRecord.buildertek__Project__c + '/view'}" target="_blank" label="{!record.poRecord.buildertek__Project__r.Name}" />
-                                                </td> 
-
                                                 <!-- <td role="gridcell" class="slds-truncate" title = "{!record.poRecord.buildertek__Permit__r.Name}" >
                                                     <ui:outputURL value="{!'/one/one.app?#/sObject/'+ record.poRecord.buildertek__Permit__c + '/view'}" target="_blank" label="{!record.poRecord.buildertek__Permit__r.Name}" />
                                                 </td> -->
 
-                                                <td role="gridcell" class="slds-truncate" title = "{!record.poRecord.buildertek__Required_Delivery_Date__c}"> 
-                                                    <ui:outputText value="{!record.poRecord.buildertek__Required_Delivery_Date__c}" />  
-                                                </td>
-                                                
-                                                <td role="gridcell" class="slds-truncate" title = "{!record.poRecord.buildertek__Lead_Time__c}">
-                                                    <ui:outputText value="{!record.poRecord.buildertek__Lead_Time__c}" />  
-                                                </td>
                                                 <td role="gridcell" class="slds-truncate" title = "{!record.poRecord.buildertek__PO_Total__c}">
                                                     <!-- <ui:outputText value="{!record.poRecord.buildertek__PO_Total__c}" /> -->
                                                     <lightning:formattedNumber value="{!record.poRecord.buildertek__PO_Total__c}" style="currency" />
+                                                </td>
+
+                                                <td role="gridcell" class="slds-truncate" title = "{!record.poRecord.buildertek__Paid_Amount__c}">
+                                                    <lightning:formattedNumber value="{!record.poRecord.buildertek__Paid_Amount__c}" style="currency" />
+                                                </td>
+
+                                                <td role="gridcell" class="slds-truncate" title = "{!record.poRecord.buildertek__PO_Balance__c}">
+                                                    <lightning:formattedNumber value="{!record.poRecord.buildertek__PO_Balance__c}" style="currency" />
+                                                </td>
+                                                <td role="gridcell" class="slds-truncate">
                                                 </td>
                                             </tr>
                                             <aura:set attribute="else">
@@ -334,21 +334,17 @@
                                                     <td role="gridcell" class="slds-truncate" title = "{!record.poRecord.buildertek__Status__c}">
                                                         <ui:outputText value="{!record.poRecord.buildertek__Status__c}" />  
                                                     </td> 
-                                                    
-                                                    <td role="gridcell" class="slds-truncate" title = "{!record.poRecord.buildertek__Project__c}" >
-                                                        <ui:outputURL value="{!'/one/one.app?#/sObject/'+ record.poRecord.buildertek__Project__c + '/view'}" target="_blank" label="{!record.poRecord.buildertek__Project__r.Name}" />
-                                                    </td> 
-                                                    
-                                                    <td role="gridcell" class="slds-truncate" title = "{!record.poRecord.buildertek__Required_Delivery_Date__c}">
-                                                        <ui:outputText value="{!record.poRecord.buildertek__Required_Delivery_Date__c}" />  
-                                                    </td>
-                                                    
-                                                    <td role="gridcell" class="slds-truncate" title = "{!record.poRecord.buildertek__Lead_Time__c}">
-                                                        <ui:outputText value="{!record.poRecord.buildertek__Lead_Time__c}" />  
-                                                    </td>
                                                     <td role="gridcell" class="slds-truncate" title = "{!record.poRecord.buildertek__PO_Total__c}">
                                                         <!-- <ui:outputText value="{!record.poRecord.buildertek__PO_Total__c}" /> -->
                                                         <lightning:formattedNumber value="{!record.poRecord.buildertek__PO_Total__c}" style="currency" />
+                                                    </td>
+                                                    <td role="gridcell" class="slds-truncate" title = "{!record.poRecord.buildertek__Paid_Amount__c}">
+                                                        <lightning:formattedNumber value="{!record.poRecord.buildertek__Paid_Amount__c}" style="currency" />
+                                                    </td>
+                                                    <td role="gridcell" class="slds-truncate" title = "{!record.poRecord.buildertek__PO_Balance__c}">
+                                                        <lightning:formattedNumber value="{!record.poRecord.buildertek__PO_Balance__c}" style="currency" />
+                                                    </td>
+                                                    <td role="gridcell" class="slds-truncate">
                                                     </td>
                                                 </tr>
                                             </aura:set>

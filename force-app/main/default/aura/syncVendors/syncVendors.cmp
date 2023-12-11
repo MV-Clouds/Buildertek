@@ -1,0 +1,30 @@
+<aura:component controller="SyncVendorScheduleItem"
+    implements="force:hasRecordId,force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable,lightning:actionOverride,force:hasSObjectName"
+    access="global">
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <aura:attribute name="vendorList" type="buildertek__Project_Vendors__c[]" />
+    <aura:attribute name="scheduleItemList" type="buildertek__Project_task__c[]" />
+
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
+    <c:BT_Spinner/>
+    
+    <div class="slds-modal__header" style="font-size:17px;font-weight:bold">
+        Sync Vendors
+    </div>
+
+    <div class="container fontStyle">
+        <p>
+            Are you sure you want to sync the Schedule Items to these Contractors? By doing so it will overwrite any
+            Contractor/Resources you have already assigned that match your criteria. If there is no matching criteria
+            the Contractor will not be change.
+        </p>
+    </div>
+
+    <div class="slds-modal__footer">
+        <button class="slds-button slds-button--neutral" onclick="{!c.closeModelCon}">No</button>
+        <ui:button class="slds-button slds-button_brand" label="Yes" press="{!c.processOperation}" />
+    </div>
+
+</aura:component>

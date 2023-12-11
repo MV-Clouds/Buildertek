@@ -4,6 +4,7 @@
     <aura:attribute name="BaseURLs" type="string"/>
      <aura:attribute name="RecordId" type="string" />
     <aura:attribute name="isNewGantt" type="String" />
+    <aura:attribute name="selectedRecordId" type="String" />
     <!-- Attribute Declration For Pagination -->
     <aura:attribute name="showMessage" type="Boolean" default="false" />
     
@@ -19,7 +20,7 @@
     <lightning:workspaceAPI aura:id="workspace"/>
     <lightning:navigation aura:id="navigation"/>
     <!-- Attribute Declration For Pagination End-->
-    
+
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> 
     <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/> 
     <div class="slds-modal__header" style="font-size:17px;">
@@ -52,7 +53,7 @@
     		    <thead>
     				<tr class="slds-text-title_caps">
     					<th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-left-radius:5px;vertical-align: top;line-height: 2;width: 30px !important;">
-    				        <ui:inputCheckbox aura:id="checkContractors" change="{!c.selectAll}" />		
+    				        <!-- <ui:inputCheckbox aura:id="checkContractors" change="{!c.selectAll}" />		 -->
     					</th>
     					<th  style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
     						Title
@@ -72,10 +73,11 @@
     			    <aura:iteration items="{!v.PaginationList}" var="rec">
     			        <tr class="slds-hint-parent">
     			            
-    			                <td width="3%">
-        			                <ui:inputCheckbox aura:id="checkContractor" value="{rec.ScheduleCheck}" text="{!rec.masterscheduleRecord.Id}" change="{!c.handleCheck}" />
-        			            <!--    <lightning:input aura:id="quoteselection" type="checkbox" value="{!rec.quoteCheck}" text="{!rec.quoteRecord.Id}" onclick="{!c.uncheckAll}" style="cursor: pointer !important;"/>-->
-        			            </td> 
+                                <td width="3%">
+                                    <input type="radio" name="selectRecord" value="{! rec.masterscheduleRecord.Id }" onchange="{! c.handleRadioChange }" />
+                                    <!-- <ui:inputCheckbox aura:id="checkContractor" value="{rec.ScheduleCheck}" text="{!rec.masterscheduleRecord.Id}" change="{!c.handleCheck}" /> -->
+                                </td>
+                                                      
         			            <td width="37%" role="gridcell">
                                     <a href="{!'/'+rec.masterscheduleRecord.Id}" target="_blank">
                                         <ui:outputText value="{!rec.masterscheduleRecord.Name}" />  
