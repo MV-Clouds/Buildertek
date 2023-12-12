@@ -67,12 +67,12 @@
                                                             alternativeText='PO Item' size='small' />
                                                     </div>
                                                     <div class="slds-media__body po-name-column">
-                                                        <aura:if isTrue="{!empty(item.buildertek__Description__c)}">
+                                                        <!-- <aura:if isTrue="{!empty(item.buildertek__Description__c)}">
                                                             {!item.Name}
-                                                            <aura:set attribute="else">
-                                                                {!item.Name} - {!item.buildertek__Description__c}
-                                                            </aura:set>
-                                                        </aura:if>
+                                                            <aura:set attribute="else"> -->
+                                                                {!item.Name} - {!item.buildertek__Description__c} - {!item.buildertek__Vendor__r.Name} - ${!item.buildertek__PO_Total__c}
+                                                            <!-- </aura:set>
+                                                        </aura:if> -->
                                                     </div>
                                                     <div class="slds-form-element dropdown-column">
                                                         <div class="slds-form-element__control" data-id="{!item.Id}">

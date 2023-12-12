@@ -9,6 +9,10 @@
             let state = response.getState();
             if (state === "SUCCESS") {
                 let result = response.getReturnValue();
+                if (result.length === 0) {
+                    helper.showToast('warning', 'Warning', 'There are no schedule items to sync', '3000');
+                    $A.get("e.force:closeQuickAction").fire();
+                }
                 result.forEach(item => {
                     item.isDisabled = false;
                 });
