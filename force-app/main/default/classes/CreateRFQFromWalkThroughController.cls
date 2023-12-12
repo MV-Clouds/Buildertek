@@ -6,23 +6,27 @@ public class CreateRFQFromWalkThroughController {
             
             List<buildertek__RFQ_Item__c> newRFQLines = new List<buildertek__RFQ_Item__c>();
 
-            buildertek__Walk_Through_List__c walkthroughrec = [SELECT Id, buildertek__Description__c, buildertek__Project__c FROM buildertek__Walk_Through_List__c WHERE Id = :walkThroughId LIMIT 1];
+            List<buildertek__Walk_Through_List__c> walkthroughrec = [SELECT Id, buildertek__Description__c, buildertek__Project__c FROM buildertek__Walk_Through_List__c WHERE Id = :walkThroughId];
 
-            List<buildertek__Walk_Through_Line_Items__c> walkthroughlines = [SELECT Id, Name, buildertek__Description__c, buildertek__Walk_Through_List__c  FROM buildertek__Walk_Through_Line_Items__c WHERE buildertek__Walk_Through_List__c = :walkThroughId];
+            List<buildertek__Walk_Through_Line_Items__c> walkthroughlines = [SELECT Id, Name, buildertek__Details__c, buildertek__Description__c, buildertek__Walk_Through_List__c  FROM buildertek__Walk_Through_Line_Items__c WHERE buildertek__Walk_Through_List__c = :walkThroughId];
 
             buildertek__RFQ__c newRFQrecord = new buildertek__RFQ__c();
-            newRFQrecord.Name = walkthroughrec.buildertek__Description__c;
-            newRFQrecord.buildertek__Project__c = walkthroughrec.buildertek__Project__c;
             
-            insert newRFQrecord;
+            if (!walkthroughrec.isEmpty()) {
+
+                newRFQrecord.Name = walkthroughrec[0].buildertek__Description__c;
+                newRFQrecord.buildertek__Project__c = walkthroughrec[0].buildertek__Project__c;
+                
+                insert newRFQrecord;
+            }
             
             if (walkthroughlines.size() > 0) {
                 for (buildertek__Walk_Through_Line_Items__c walkthroughline : walkthroughlines) {
                     buildertek__RFQ_Item__c newRFQLine = new buildertek__RFQ_Item__c();
                     newRFQLine.buildertek__RFQ_Package__c = newRFQrecord.Id;
-                    newRFQLine.Name = walkthroughline.Name;
+                    newRFQLine.Name = walkthroughline.buildertek__Description__c;
                     newRFQLine.buildertek__Quantity__c = 1;
-                    newRFQLine.buildertek__Description__c = walkthroughline.buildertek__Description__c;
+                    newRFQLine.buildertek__Description__c = walkthroughline.buildertek__Details__c;
     
                     newRFQLines.add(newRFQLine);
                 }
