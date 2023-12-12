@@ -62,7 +62,7 @@ public without sharing class QBIntegrationQueue_TestClass {
         
         Account acc = new Account(
             Name = 'QB Test Acc',
-            QBO_ID__c = '1',
+            buildertek__QB_Id__c = '1',
             Description = 'QB Test Description',
             ShippingCity = 'TestCity',
             ShippingStreet = 'TestStreet',
@@ -125,7 +125,7 @@ public without sharing class QBIntegrationQueue_TestClass {
 
         Account acc = new Account(
             Name = 'QB Test Acc',
-              QBO_ID__c = null,
+              buildertek__QB_Id__c = null,
             Description = 'QB Test Description',
             ShippingCity = 'TestCity',
             ShippingStreet = 'TestStreet',
@@ -191,10 +191,10 @@ public without sharing class QBIntegrationQueue_TestClass {
         String encodedQueryParam = EncodingUtil.urlEncode('Select * From TaxCode Where Name = \''+'Tax - 15.0000' + '\'', 'UTF-8');
         String QBEndPoint = '/v3/company/' + QBMetadata.buildertek__Company_Id__c + '/query?query=' + encodedQueryParam + '&minorversion='+ QBMetadata.buildertek__minorversion__c; 
 
-        // account rec for buildertek__QBO_ID__c != null
+        // account rec for buildertek__QB_Id__c != null
         Account acc = new Account(
             Name = 'QB Test Acc',
-            QBO_ID__c = '1',
+            buildertek__QB_Id__c = '1',
             Description = 'QB Test Description',
             ShippingCity = 'TestCity',
             ShippingStreet = 'TestStreet',
@@ -257,10 +257,10 @@ public without sharing class QBIntegrationQueue_TestClass {
         String encodedQueryParam = EncodingUtil.urlEncode('Select * From TaxCode Where Name = \''+'Tax - 15.0000' + '\'', 'UTF-8');
         String QBEndPoint = '/v3/company/' + QBMetadata.buildertek__Company_Id__c + '/query?query=' + encodedQueryParam + '&minorversion='+ QBMetadata.buildertek__minorversion__c; 
 
-        // account rec for buildertek__QBO_ID__c != null
+        // account rec for buildertek__QB_Id__c != null
         Account acc = new Account(
             Name = 'QB Test Acc',
-            QBO_ID__c = '1',
+            buildertek__QB_Id__c = '1',
             Description = 'QB Test Description',
             ShippingCity = 'TestCity',
             ShippingStreet = 'TestStreet',
@@ -322,10 +322,10 @@ public without sharing class QBIntegrationQueue_TestClass {
         String JSONBody = 'body:{ }';
         String encodedQueryParam = EncodingUtil.urlEncode('Select * From TaxCode Where Name = \''+'Tax - 15.0000' + '\'', 'UTF-8');
         String QBEndPoint = '/v3/company/' + QBMetadata.buildertek__Company_Id__c + '/query?query=' + encodedQueryParam + '&minorversion='+ QBMetadata.buildertek__minorversion__c; 
-        // account rec for buildertek__QBO_ID__c != null
+        // account rec for buildertek__QB_Id__c != null
         Account acc = new Account(
             Name = 'QB Test Acc',
-            QBO_ID__c = '1',
+            buildertek__QB_Id__c = '1',
             Description = 'QB Test Description',
             ShippingCity = 'TestCity',
             ShippingStreet = 'TestStreet',
@@ -384,10 +384,10 @@ public without sharing class QBIntegrationQueue_TestClass {
     @isTest
     public static void QBcallouts_Test4(){
 
-        // account rec for buildertek__QBO_ID__c != null
+        // account rec for buildertek__QB_Id__c != null
         Account acc = new Account(
             Name = 'QB Test Acc',
-            QBO_ID__c = '1',
+            buildertek__QB_Id__c = '1',
             Description = 'QB Test Description',
             ShippingCity = 'TestCity',
             ShippingStreet = 'TestStreet',
@@ -449,10 +449,10 @@ public without sharing class QBIntegrationQueue_TestClass {
     @isTest
     public static void QBcallouts_Test5(){
 
-        // account rec for buildertek__QBO_ID__c != null
+        // account rec for buildertek__QB_Id__c != null
         Account acc = new Account(
             Name = 'QB Test Acc',
-            QBO_ID__c = '1',
+            buildertek__QB_Id__c = '1',
             Description = 'QB Test Description',
             ShippingCity = 'TestCity',
             ShippingStreet = 'TestStreet',
@@ -513,10 +513,10 @@ public without sharing class QBIntegrationQueue_TestClass {
         String QBEndPoint = '/v3/company/' + QBMetadata.buildertek__Company_Id__c + '/customer?minorversion=' + QBMetadata.buildertek__minorversion__c;            
         String JSONBody = 'body:{ }';
 
-        // account rec for buildertek__QBO_ID__c != null
+        // account rec for buildertek__QB_Id__c != null
         Account acc = new Account(
             Name = 'QB Test Acc',
-            QBO_ID__c = null,
+            buildertek__QB_Id__c = null,
             Description = 'QB Test Description',
             ShippingCity = 'TestCity',
             ShippingStreet = 'TestStreet',
@@ -545,7 +545,7 @@ public without sharing class QBIntegrationQueue_TestClass {
         inv.buildertek__Tax_Rate__c = 15;
         inv.buildertek__QBO_Tax_Rate_ID__c = '1';
         inv.buildertek__QBO_Tax_Rate__c = 15;
-        inv.buildertek__QBO_ID__c = null;
+        inv.buildertek__QB_Id__c = null;
 
         insert inv;
 
@@ -569,10 +569,10 @@ public without sharing class QBIntegrationQueue_TestClass {
         buildertek__QuickBooks_Setting__mdt QBMetadata = [SELECT Id, DeveloperName,buildertek__Base_Url__c, buildertek__Qb_URL__c, buildertek__minorversion__c, MasterLabel, buildertek__Access_Token__c, buildertek__Client_Id__c, buildertek__Client_Secret__c, buildertek__Refresh_Token__c, buildertek__Scope__c, buildertek__Company_Id__c FROM buildertek__QuickBooks_Setting__mdt LIMIT 1];
         String QBEndPoint = '/v3/company/' + QBMetadata.buildertek__Company_Id__c + '/customer?minorversion=' + QBMetadata.buildertek__minorversion__c;            
         String JSONBody = 'body:{ }';            
-        // account rec for buildertek__QBO_ID__c != null
+        // account rec for buildertek__QB_Id__c != null
         Account acc = new Account(
             Name = 'QB Test Acc',
-            QBO_ID__c = null,
+            buildertek__QB_Id__c = null,
             Description = 'QB Test Description',
             ShippingCity = 'TestCity',
             ShippingStreet = 'TestStreet',
@@ -601,7 +601,7 @@ public without sharing class QBIntegrationQueue_TestClass {
         inv.buildertek__Tax_Rate__c = 15;
         inv.buildertek__QBO_Tax_Rate_ID__c = '1';
         inv.buildertek__QBO_Tax_Rate__c = 15;
-        inv.buildertek__QBO_ID__c = null;
+        inv.buildertek__QB_Id__c = null;
 
         insert inv;
 
@@ -625,10 +625,10 @@ public without sharing class QBIntegrationQueue_TestClass {
         buildertek__QuickBooks_Setting__mdt QBMetadata = [SELECT Id, DeveloperName,buildertek__Base_Url__c, buildertek__Qb_URL__c, buildertek__minorversion__c, MasterLabel, buildertek__Access_Token__c, buildertek__Client_Id__c, buildertek__Client_Secret__c, buildertek__Refresh_Token__c, buildertek__Scope__c, buildertek__Company_Id__c FROM buildertek__QuickBooks_Setting__mdt LIMIT 1];
         String QBEndPoint = '/v3/company/' + QBMetadata.buildertek__Company_Id__c + '/batch?minorversion=' + QBMetadata.buildertek__minorversion__c;
         String JSONBody = 'body:{ }';            
-        // account rec for buildertek__QBO_ID__c != null
+        // account rec for buildertek__QB_Id__c != null
         Account acc = new Account(
             Name = 'QB Test Acc',
-            QBO_ID__c = '1',
+            buildertek__QB_Id__c = '1',
             Description = 'QB Test Description',
             ShippingCity = 'TestCity',
             ShippingStreet = 'TestStreet',
@@ -655,7 +655,7 @@ public without sharing class QBIntegrationQueue_TestClass {
         inv.Name = 'QB Test Invoice';
         inv.buildertek__Customer_Account__c = acc.Id;
         inv.buildertek__Tax_Rate__c = null;
-        inv.buildertek__QBO_ID__c = null;
+        inv.buildertek__QB_Id__c = null;
 
         insert inv;
 
@@ -689,10 +689,10 @@ public without sharing class QBIntegrationQueue_TestClass {
         buildertek__QuickBooks_Setting__mdt QBMetadata = [SELECT Id, DeveloperName,buildertek__Base_Url__c, buildertek__Qb_URL__c, buildertek__minorversion__c, MasterLabel, buildertek__Access_Token__c, buildertek__Client_Id__c, buildertek__Client_Secret__c, buildertek__Refresh_Token__c, buildertek__Scope__c, buildertek__Company_Id__c FROM buildertek__QuickBooks_Setting__mdt LIMIT 1];
         String QBEndPoint = '/v3/company/' + QBMetadata.buildertek__Company_Id__c + '/batch?minorversion=' + QBMetadata.buildertek__minorversion__c;
         String JSONBody = 'body:{ }';            
-        // account rec for buildertek__QBO_ID__c != null
+        // account rec for buildertek__QB_Id__c != null
         Account acc = new Account(
             Name = 'QB Test Acc',
-            QBO_ID__c = '1',
+            buildertek__QB_Id__c = '1',
             Description = 'QB Test Description',
             ShippingCity = 'TestCity',
             ShippingStreet = 'TestStreet',
@@ -719,7 +719,7 @@ public without sharing class QBIntegrationQueue_TestClass {
         inv.Name = 'QB Test Invoice';
         inv.buildertek__Customer_Account__c = acc.Id;
         inv.buildertek__Tax_Rate__c = null;
-        inv.buildertek__QBO_ID__c = null;
+        inv.buildertek__QB_Id__c = null;
 
         insert inv;
 
@@ -729,7 +729,7 @@ public without sharing class QBIntegrationQueue_TestClass {
         item1.buildertek__Billings__c = inv.Id;
         item1.buildertek__Unit_Price__c = 100;
         item1.buildertek__Quantity__c = 1;
-        item1.buildertek__QBO_ID__c = '1';
+        item1.buildertek__QB_Id__c = '1';
         SILines.add(item1);
 
         insert SILines;

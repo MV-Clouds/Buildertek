@@ -49,7 +49,7 @@
                 
                 <force:recordData aura:id="recordLoader"
                 recordId="{!v.recordId}"
-                fields="buildertek__BT_Account_Type__c, buildertek__QBO_ID__c, buildertek__QB_Type__c"
+                fields="buildertek__BT_Account_Type__c, buildertek__QB_Id__c, buildertek__QB_Type__c"
                 targetRecord="{!v.record}"
                 targetFields="{!v.BTAccountType}"
                 targetError="{!v.recordError}"
@@ -93,8 +93,8 @@
                 <img alt="Creating new record in QuickBook." src="{!$Resource.gearsloading}" style="height:150px !important;"/>
                 <br/>
                 <div style="margin-block: 10px;">
-                    Sync PO and PO Lines with Quickbooks... 
-                    <br/> Please don't leave this page until PO is Sync to Quickbook.
+                    Syncing PO and PO Lines with Quickbooks... 
+                    <br/> Please don't leave this page until PO is Synced to Quickbook.
                     <br/>
                 </div>
             </aura:if>
@@ -103,18 +103,38 @@
                 <img alt="Creating new record in QuickBook." src="{!$Resource.gearsloading}" style="height:150px !important;"/>
                 <br/>
                 <div style="margin-block: 10px;">
-                    Sync Contractor Invoice with Quickbooks... 
-                    <br/> Please don't leave this page until Contractor Invoice is Sync to Quickbook.
+                    Syncing Contractor Invoice with Quickbooks... 
+                    <br/> Please don't leave this page until Contractor Invoice is Synced to Quickbook.
                     <br/>
                 </div>
             </aura:if>
 
-            <aura:if isTrue="{!v.sObjectName == 'buildertek__Account_Payable__c'}">
+            <aura:if isTrue="{!v.sObjectName == 'buildertek__Account_Payable_Clone__c'}">
                 <img alt="Creating new record in QuickBook." src="{!$Resource.gearsloading}" style="height:150px !important;"/>
                 <br/>
                 <div style="margin-block: 10px;">
-                    Sync Sales Invoice with Quickbooks... 
-                    <br/> Please don't leave this page until Sales Invoice is Sync to Quickbook.
+                    Syncing Payable Invoice with Quickbooks... 
+                    <br/> Please don't leave this page until Payable Invoice is Synced to Quickbook.
+                    <br/>
+                </div>
+            </aura:if>
+
+            <aura:if isTrue="{!v.sObjectName == 'buildertek__Billings__c'}">
+                <img alt="Creating new record in QuickBook." src="{!$Resource.gearsloading}" style="height:150px !important;"/>
+                <br/>
+                <div style="margin-block: 10px;">
+                    Syncing Sales Invoice with Quickbooks... 
+                    <br/> Please don't leave this page until Sales Invoice is Synced to Quickbook.
+                    <br/>
+                </div>
+            </aura:if>
+
+            <aura:if isTrue="{!v.sObjectName == 'buildertek__Expense__c'}">
+                <img alt="Creating new record in QuickBook." src="{!$Resource.gearsloading}" style="height:150px !important;"/>
+                <br/>
+                <div style="margin-block: 10px;">
+                    Syncing Expense with Quickbooks... 
+                    <br/> Please don't leave this page until Expense is Synced to Quickbook.
                     <br/>
                 </div>
             </aura:if>

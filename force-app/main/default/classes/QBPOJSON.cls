@@ -61,8 +61,8 @@ public with sharing class QBPOJSON {
 	}
 	public class ItemBasedExpenseLineDetail{
 		public CustomerRef CustomerRef;
-		public Integer Qty;
-		public Integer UnitPrice;
+		public Double Qty;
+		public Double UnitPrice;
 		public TaxCodeRef TaxCodeRef;
 		public String BillableStatus;
 		public ItemRef ItemRef;

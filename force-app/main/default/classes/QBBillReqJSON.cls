@@ -35,7 +35,7 @@ public without sharing class QBBillReqJSON {
 		public String LastUpdatedTime;
 	}
 	public class MarkupInfo{
-		public Integer Percent;
+		public Double Percent;
 	}
 	public class Line{
 		public String DetailType;
@@ -75,9 +75,9 @@ public without sharing class QBBillReqJSON {
 	}
 	public class ItemBasedExpenseLineDetail{
 		public String BillableStatus;
-		public Integer UnitPrice;
+		public Double UnitPrice;
 		public ItemRef ItemRef;
-		public Integer Qty;
+		public Double Qty;
 		public TaxCodeRef TaxCodeRef;
 	}
 	public class ItemRef{

@@ -1,7 +1,7 @@
 ({
     doInit : function(component, event, helper) {
         var id = component.get("v.recordId");
-        console.log(id);
+        console.log('RecordId---> ',id);
 
         var Objectname = component.get("v.sobjecttype");
         console.log('Objectname---> ',Objectname);
@@ -9,13 +9,20 @@
         if(Objectname == "Account"){
             component.set("v.ShowAccountTypeOpt", true);
         }
-
-        if (Objectname == 'buildertek__Purchase_Order__c') {
+        else if (Objectname == 'buildertek__Purchase_Order__c') {
             helper.SyncPO(component, event, helper);
         }
-
-        if(Objectname == 'buildertek__Account_Payable__c'){
+        else if(Objectname == 'buildertek__Account_Payable__c'){
             helper.SyncCOInvoice(component, event, helper)
+        }
+        else if(Objectname == 'buildertek__Account_Payable_Clone__c'){
+            helper.SyncPayableInvoice(component, event, helper)
+        }
+        else if(Objectname == 'buildertek__Billings__c'){
+            helper.SyncSIInvoice(component, event, helper)
+        }
+        else if(Objectname == 'buildertek__Expense__c'){
+            helper.SyncExpense(component, event, helper)
         }
     },
 

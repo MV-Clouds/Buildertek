@@ -2,7 +2,7 @@ public without sharing class QBMap {
 
     public static String mapAccountData(Account acc, Integer a){
         String accId = acc.Id;
-        String QBId = acc.buildertek__QBO_ID__c;
+        String QBId = acc.buildertek__QB_Id__c;
         QBCustomerJSON.Customer customer = new QBCustomerJSON.Customer();
 
         String AccountId = acc.Id;
@@ -10,8 +10,8 @@ public without sharing class QBMap {
         customer.CompanyName = acc.Name +' - '+AccountId.right(4).substring(0,4);
         customer.Taxable = True; 
         customer.Notes = acc.Description;
-        if(acc.buildertek__QBO_ID__c != null && acc.buildertek__QBO_ID__c != ''){
-            customer.Id = acc.buildertek__QBO_ID__c;
+        if(acc.buildertek__QB_Id__c != null && acc.buildertek__QB_Id__c != ''){
+            customer.Id = acc.buildertek__QB_Id__c;
             customer.SyncToken = acc.buildertek__QBO_SyncToken__c;
             customer.sparse = true;
         }
@@ -80,7 +80,7 @@ public without sharing class QBMap {
         return JSON.serialize(tax);
     }
 
-    // Contractor Inovice line associated with "Product and Service" in Quickbook....
+    // Sales Inovice line associated with "Product and Service" in Quickbook....
     public static String MapInvoiceLineToBatch(List<buildertek__Billable_Lines__c> SILine) {
         try {
             System.debug('\n in createProducts \n');
@@ -125,13 +125,13 @@ public without sharing class QBMap {
         try {
             System.debug(' in mapInvoiceData method');
             String invId = inv.Id;
-            String invQBId = inv.QBO_ID__c;
+            String invQBId = inv.buildertek__QB_Id__c;
             DateTime yourDate = Datetime.now();
             Date txnDate = Date.valueOf(yourDate.format('yyyy-MM-dd'));
             QBInvoiceJSON invoice = new QBInvoiceJSON();
 
-            if(inv.buildertek__QBO_ID__c != null && inv.buildertek__QBO_ID__c != ''){
-                invoice.Id = inv.buildertek__QBO_ID__c;
+            if(inv.buildertek__QB_Id__c != null && inv.buildertek__QB_Id__c != ''){
+                invoice.Id = inv.buildertek__QB_Id__c;
                 invoice.sparse = true;
                 invoice.SyncToken = inv.buildertek__QBO_SyncToken__c;
             }
@@ -209,7 +209,7 @@ public without sharing class QBMap {
         }
     }
     
-    public static string mapReceipt_PaymetData(buildertek__Receipt__c receipt, String CustomerId, String invoiceQBID){
+    public static string mapReceipt_PaymetData(buildertek__Receipt__c receipt, String CustomerId, String invoiceQBOID){
         try {
 
             DateTime yourDate = Datetime.now();
@@ -237,7 +237,7 @@ public without sharing class QBMap {
 
             QBReceiptJSON.LinkedTxn linkedLine = new QBReceiptJSON.LinkedTxn();
             linkedLine.TxnType = 'Invoice';
-            linkedLine.TxnId = invoiceQBID;
+            linkedLine.TxnId = invoiceQBOID;
 
             line.LinkedTxn.add(linkedLine);
             QBPayment.Line.add(line);
@@ -249,6 +249,8 @@ public without sharing class QBMap {
         }
     }
 
+    // ---------------------------------------------------------------------------------------------------------
+
     public static String mapVendorAccountData(Account acc){
         String accId = acc.Id;
         QBVendorJSON Vendor = new QBVendorJSON();
@@ -259,21 +261,21 @@ public without sharing class QBMap {
         Vendor.Active = true;  
 
         // If QB Id is Not Null, Update Vendor in QB Else Create New Vendor In QB.....
-        if(acc.buildertek__QBO_ID__c != null && acc.buildertek__QBO_ID__c != ''){
-            Vendor.Id = acc.buildertek__QBO_ID__c;
+        if(acc.buildertek__QB_Id__c != null && acc.buildertek__QB_Id__c != ''){
+            Vendor.Id = acc.buildertek__QB_Id__c;
             Vendor.SyncToken = acc.buildertek__QBO_SyncToken__c;
             Vendor.sparse = true;
         }
      
         //Create Shipping address
         QBVendorJSON.BillAddr BillAddr = new QBVendorJSON.BillAddr();
-        BillAddr.City = acc.ShippingCity;
-        BillAddr.Line1 = acc.ShippingStreet;
-        BillAddr.CountrySubDivisionCode = acc.ShippingState;
-        BillAddr.PostalCode = acc.ShippingPostalCode;
-        BillAddr.Lat = String.valueOf(acc.ShippingLatitude);
-        BillAddr.Long_x = String.valueOf(acc.ShippingLongitude);
-        BillAddr.CountrySubDivisionCode = acc.ShippingCountry;
+        BillAddr.City = acc.BillingCity;
+        BillAddr.Line1 = acc.BillingStreet;
+        BillAddr.CountrySubDivisionCode = acc.BillingState;
+        BillAddr.PostalCode = acc.BillingPostalCode;
+        BillAddr.Lat = String.valueOf(acc.BillingLatitude);
+        BillAddr.Long_x = String.valueOf(acc.BillingLongitude);
+        BillAddr.CountrySubDivisionCode = acc.BillingCountry;
         Vendor.BillAddr = BillAddr;
 
         Vendor.PrintOnCheckName = acc.Name;
@@ -292,24 +294,55 @@ public without sharing class QBMap {
         return JSON.serialize(Vendor, True).replace('"Long_x":', '"Long":');
     }
 
-    // Contractor Inovice line associated with "Product and Service" in Quickbook....
-    public static String MapContractorInvoiceLineToBatch(List<buildertek__Account_Payable_Item__c> COInvLine) {
+    // Line associated with "Product and Service" in Quickbook....
+    public static String MapItemDataToBatch(List<sObject> sObjectItemList, String SyncObjName) {
         try {
-            System.debug('\n in MapContractorInvoiceLineToBatch \n');
+            System.debug('\n in MapItemDataToBatch \n');
             QBBatchReqJSON BatchItemRequest = new QBBatchReqJSON();
+            List<sObject> ItemList = new List<sObject>();
+
+            Map<Id, String> NameMap = new Map<Id, String>();
+            Map<Id, Decimal> UnitPriceMap = new Map<Id, Decimal>();
+            Map<Id, Decimal> QuantityMap = new Map<Id, Decimal>();
+
+            for(sObject Item : sObjectItemList){
+                // Type conversation from sObject to Generic Object....
+                // Store Field Data Into Respective Map....
+            if(SyncObjName == 'buildertek__Purchase_Order__c'){
+                    buildertek__Purchase_Order_Item__c record = (buildertek__Purchase_Order_Item__c)Item;
+                    NameMap.put(record.Id, record.Name);
+                    UnitPriceMap.put(record.Id, record.buildertek__Unit_Price__c);
+                    QuantityMap.put(record.Id, record.buildertek__Quantity__c);
+                }
+                else if(SyncObjName == 'buildertek__Account_Payable__c'){
+                        buildertek__Account_Payable_Item__c record = (buildertek__Account_Payable_Item__c)Item;
+                        NameMap.put(record.Id, record.Name);
+                        UnitPriceMap.put(record.Id, record.buildertek__Unit_Price__c);
+                        QuantityMap.put(record.Id, record.buildertek__Quantity__c);
+                }
+                else if(SyncObjName == 'buildertek__Account_Payable_Clone__c'){
+                        buildertek__Account_Payable_Item_Clone__c record = (buildertek__Account_Payable_Item_Clone__c)Item;
+                        NameMap.put(record.Id, record.Name);
+                        UnitPriceMap.put(record.Id, record.buildertek__Unit_Price__c);
+                        QuantityMap.put(record.Id, record.buildertek__Quantity__c);
+                }
+            }
             
-            for (buildertek__Account_Payable_Item__c item : COInvLine) {
-                String lineId = item.Id;
+            // Creating a Batch
+            for (sObject item : sObjectItemList) {
                 Boolean taxable = true;
+                Boolean TrackQtyOnHand = true;
                 DateTime yourDate = Datetime.now();
                 Date invStartDate = Date.valueOf(yourDate.format('yyyy-MM-dd'));
                 // System.debug('item.Unit_Price__c >> ' + item.buildertek__Unit_Price__c	);
-                Decimal UnitePrice = item.buildertek__Unit_Price__c	 != null ? item.buildertek__Unit_Price__c	 : 0;
+                String Name = NameMap.get(item.Id);
+                Decimal UnitePrice = UnitPriceMap.get(item.Id) != null ? UnitPriceMap.get(item.Id) : 0;
+                Decimal Quantity = QuantityMap.get(item.Id);
                 BatchItemRequest.addBatchItem(
                     String.valueOf(item.Id),
-                    true, // Set TrackQtyOnHand as needed
-                    item.Name,
-                    item.buildertek__Quantity__c,
+                    TrackQtyOnHand, // Set TrackQtyOnHand as needed
+                    Name,
+                    Quantity,
                     UnitePrice,
                     // item.buildertek__Total__c,
                     'Sales of Product Income',
@@ -318,30 +351,39 @@ public without sharing class QBMap {
                     'Inventory',
                     taxable,
                     'Test acc',
-                    '100',
+                    '100',  // Assuming a fixed value for Asset account value
                     'Cost of Goods Sold',
-                    '80'
+                    '80'    // Assuming a fixed value for Expense account value
                 );
             }
-            
-            // Now perform the API callout using QBBatchReqJSON class
-            // createInvoiceLines(BatchItemRequest);
             return JSON.serialize(BatchItemRequest);
         } catch (Exception e) {
-            System.debug('Exception in MapContractorInvoiceLineToBatch :: '  + e.getMessage());
+            System.debug('Exception in MapItemDataToBatch :: '  + e.getMessage());
             return null;
         }
     }
 
-    public static String mapContractorInvoiceData(sObject CoInv, Map<Id, List<String>> lineIdsMap, String VendorQBId, String TermQBId){
+    // Map Contractor Invoice Data or Payable Invoice Data......
+    public static String mapQBBillData(sObject SOBJ, Map<Id, List<String>> lineIdsMap, String VendorQBId, String TermQBId, String SyncObjName){
         try {
-            buildertek__Account_Payable__c CoInvoice = [SELECT Id, Name , buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c, buildertek__QB_Record_URL__c, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.buildertek__Vendor__c FROM buildertek__Account_Payable__c WHERE Id =: CoInv.Id LIMIT 1];
+            String QBOID = null;
+            String QBSyncToken = null;
+            if(SyncObjName == 'buildertek__Account_Payable__c'){
+                buildertek__Account_Payable__c record = (buildertek__Account_Payable__c)SOBJ;
+                QBOID = record.buildertek__QB_Id__c;
+                QBSyncToken = record.buildertek__QBO_SyncToken__c;
+            }
+            else if(SyncObjName == 'buildertek__Account_Payable_Clone__c'){
+                buildertek__Account_Payable_Clone__c record = (buildertek__Account_Payable_Clone__c)SOBJ;
+                QBOID = record.buildertek__QB_Id__c;
+                QBSyncToken = record.buildertek__QBO_SyncToken__c;
+            }
 
             QBBillReqJSON QbBill = new QBBillReqJSON();
-            if(CoInvoice.buildertek__QBO_ID__c != null && CoInvoice.buildertek__QBO_ID__c != ''){
-                QbBill.Id = CoInvoice.buildertek__QBO_ID__c;
+            if(QBOID != null && QBOID != ''){
+                QbBill.Id = QBOID;
                 QbBill.sparse = true;
-                QbBill.SyncToken = CoInvoice.buildertek__QBO_SyncToken__c;
+                QbBill.SyncToken = QBSyncToken;
             }
 
             QBBillReqJSON.VendorRef vendor = new QBBillReqJSON.VendorRef();
@@ -394,88 +436,7 @@ public without sharing class QBMap {
     
             return JSON.serialize(QbBill);
         } catch (Exception e) {
-            System.debug('Exception in mapContractorInvoiceData :: '  + e.getMessage());
-            return null;
-        }
-    }
-
-    // Contractor Inovice line associated with "Product and Service" in Quickbook....
-    public static string MapPayableInvoiceLineToBatch(List<buildertek__Account_Payable_Item_Clone__c> PayLines){
-        try {
-            System.debug('\n in MapPayableInvoiceLineToBatch \n');
-            QBBatchReqJSON BatchItemRequest = new QBBatchReqJSON();
-            
-            for (buildertek__Account_Payable_Item_Clone__c item : PayLines) {
-                String lineId = item.Id;
-                Boolean taxable = true;
-                DateTime yourDate = Datetime.now();
-                Date invStartDate = Date.valueOf(yourDate.format('yyyy-MM-dd'));
-                Decimal UnitePrice = item.buildertek__Unit_Price__c	 != null ? item.buildertek__Unit_Price__c	 : 0;
-                BatchItemRequest.addBatchItem(
-                    String.valueOf(item.Id),
-                    true, // Set TrackQtyOnHand as needed
-                    item.Name,
-                    item.buildertek__Quantity__c,
-                    UnitePrice,
-                    // item.buildertek__Total__c,
-                    'Sales of Product Income',
-                    '79', // Assuming a fixed value for income account value
-                    invStartDate,
-                    'Inventory',
-                    taxable,
-                    'Test acc',
-                    '100',
-                    'Cost of Goods Sold',
-                    '80'
-                );
-            }
-            
-            // Now perform the API callout using QBBatchReqJSON class
-            // createInvoiceLines(BatchItemRequest);
-            return JSON.serialize(BatchItemRequest);
-        } catch (Exception e) {
-            System.debug('Exception in MapPayableInvoiceLineToBatch :: '  + e.getMessage());
-            return null;
-        }
-
-    }
-
-    // Purchase Order line associated with "Product and Service" in Quickbook....
-    public static String mapPOLineToBatch(List<buildertek__Purchase_Order_Item__c> POLines) {
-        try {
-            System.debug('\n in MapPOLineToBatch \n');
-            QBBatchReqJSON BatchItemRequest = new QBBatchReqJSON();
-            
-            for (buildertek__Purchase_Order_Item__c item : POLines) {
-                String lineId = item.Id;
-                Boolean taxable = true;
-                DateTime yourDate = Datetime.now();
-                Date invStartDate = Date.valueOf(yourDate.format('yyyy-MM-dd'));
-                Decimal UnitePrice = item.buildertek__Unit_Price__c	 != null ? item.buildertek__Unit_Price__c	 : 0;
-                BatchItemRequest.addBatchItem(
-                    String.valueOf(item.Id),
-                    true, // Set TrackQtyOnHand as needed
-                    item.Name,
-                    item.buildertek__Quantity__c,
-                    UnitePrice,
-                    // item.buildertek__Total__c,
-                    'Sales of Product Income',
-                    '79', // Assuming a fixed value for income account value
-                    invStartDate,
-                    'Inventory',
-                    taxable,
-                    'Test acc',
-                    '100',
-                    'Cost of Goods Sold',
-                    '80'
-                );
-            }
-            
-            // Now perform the API callout using QBBatchReqJSON class
-            // createInvoiceLines(BatchItemRequest);
-            return JSON.serialize(BatchItemRequest);
-        } catch (Exception e) {
-            System.debug('Exception in MapContractorInvoiceLineToBatch :: '  + e.getMessage());
+            System.debug('Exception in mapQBBillData :: '  + e.getMessage());
             return null;
         }
     }
@@ -484,14 +445,14 @@ public without sharing class QBMap {
         try {
             System.debug(' in mapPODataBatch method');
             String invId = inv.Id;
-            String invQBId = inv.QBO_ID__c;
+            String invQBId = inv.buildertek__QB_Id__c;
             DateTime yourDate = Datetime.now();
             Date txnDate = Date.valueOf(yourDate.format('yyyy-MM-dd'));
 
             QBPOJSON purchaseorder = new QBPOJSON();
 
-            if(inv.buildertek__QBO_ID__c != null && inv.buildertek__QBO_ID__c != ''){
-                purchaseorder.Id = inv.buildertek__QBO_ID__c;
+            if(inv.buildertek__QB_Id__c != null && inv.buildertek__QB_Id__c != ''){
+                purchaseorder.Id = inv.buildertek__QB_Id__c;
                 purchaseorder.sparse = true;
                 purchaseorder.SyncToken = inv.buildertek__QBO_SyncToken__c;
             }
@@ -548,76 +509,6 @@ public without sharing class QBMap {
             return JSON.serialize(purchaseorder, True).replace('"Long_x":', '"Long":');
         } catch (Exception e) {
             System.debug('exception in mappurchaseorderData :: ' + e.getMessage());
-            return null;
-        }
-    }
-
-
-    public static String MapItemDataToBatch(List<sObject> sObjectItemList, String SyncObjName) {
-        try {
-            System.debug('\n in MapItemDataToBatch \n');
-            QBBatchReqJSON BatchItemRequest = new QBBatchReqJSON();
-            List<sObject> ItemList = new List<sObject>();
-
-            Map<Id, String> NameMap = new Map<Id, String>();
-            Map<Id, Decimal> UnitPriceMap = new Map<Id, Decimal>();
-            Map<Id, Decimal> QuantityMap = new Map<Id, Decimal>();
-
-
-            for(sObject Item : sObjectItemList){
-                // Type conversation from sObject to Generic Object....
-                // Store Field Data Into Respective Map....
-            if(SyncObjName == 'buildertek__Purchase_Order__c'){
-                    buildertek__Purchase_Order_Item__c record = (buildertek__Purchase_Order_Item__c)Item;
-                    NameMap.put(record.Id, record.Name);
-                    UnitPriceMap.put(record.Id, record.buildertek__Unit_Price__c);
-                    QuantityMap.put(record.Id, record.buildertek__Quantity__c);
-                }
-                else if(SyncObjName == 'buildertek__Purchase_Order__c'){
-                        buildertek__Account_Payable_Item__c record = (buildertek__Account_Payable_Item__c)Item;
-                        NameMap.put(record.Id, record.Name);
-                        UnitPriceMap.put(record.Id, record.buildertek__Unit_Price__c);
-                        QuantityMap.put(record.Id, record.buildertek__Quantity__c);
-                }
-                else if(SyncObjName == 'buildertek__Purchase_Order__c'){
-                        buildertek__Account_Payable_Item_Clone__c record = (buildertek__Account_Payable_Item_Clone__c)Item;
-                        NameMap.put(record.Id, record.Name);
-                        UnitPriceMap.put(record.Id, record.buildertek__Unit_Price__c);
-                        QuantityMap.put(record.Id, record.buildertek__Quantity__c);
-                }
-            }
-            
-            // Creating a Batch
-            for (sObject item : sObjectItemList) {
-                Boolean taxable = true;
-                Boolean TrackQtyOnHand = true;
-                DateTime yourDate = Datetime.now();
-                Date invStartDate = Date.valueOf(yourDate.format('yyyy-MM-dd'));
-                // System.debug('item.Unit_Price__c >> ' + item.buildertek__Unit_Price__c	);
-                String Name = NameMap.get(item.Id);
-                Decimal UnitePrice = UnitPriceMap.get(item.Id) != null ? UnitPriceMap.get(item.Id) : 0;
-                Decimal Quantity = QuantityMap.get(item.Id);
-                BatchItemRequest.addBatchItem(
-                    String.valueOf(item.Id),
-                    TrackQtyOnHand, // Set TrackQtyOnHand as needed
-                    Name,
-                    Quantity,
-                    UnitePrice,
-                    // item.buildertek__Total__c,
-                    'Sales of Product Income',
-                    '79', // Assuming a fixed value for income account value
-                    invStartDate,
-                    'Inventory',
-                    taxable,
-                    'Test acc',
-                    '100',  // Assuming a fixed value for Asset account value
-                    'Cost of Goods Sold',
-                    '80'    // Assuming a fixed value for Expense account value
-                );
-            }
-            return JSON.serialize(BatchItemRequest);
-        } catch (Exception e) {
-            System.debug('Exception in MapItemDataToBatch :: '  + e.getMessage());
             return null;
         }
     }

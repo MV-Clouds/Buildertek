@@ -102,7 +102,7 @@ public with sharing class QBCallout {
     //      QBCallout.updateAccounts(accId, customerId, QBTokn);
     //     //  Account a = new Account();
     //     //  a.Id = accId;
-    //     //  a.QBO_ID__c = customerId;
+    //     //  a.buildertek__QB_Id__c = customerId;
     //     //  a.QBO_SyncToken__c = QBTokn;
     //     //  update a;
 
@@ -113,7 +113,7 @@ public with sharing class QBCallout {
     //     System.debug('URL QB--------------->'+ url);
     //     Account a = new Account();
     //      a.Id = accId;
-    //      a.QBO_ID__c = customerId;
+    //      a.buildertek__QB_Id__c = customerId;
     //      a.QBO_SyncToken__c = QBTokn;
     //      update a;
     // }
@@ -212,8 +212,8 @@ public with sharing class QBCallout {
             
             QBO_Metadata__mdt QBData = [SELECT ID, base_url__c, Company_Id__c, minorversion__c FROM QBO_Metadata__mdt];
             String EndPoint = '/v3/company/' + QBData.Company_Id__c + '/taxservice/taxcode?minorversion=' + QBData.minorversion__c; 
-            List<buildertek__Billings__c> allInvoice = [SELECT Id, Name, buildertek__Customer_Account__c, buildertek__QBO_ID__c,buildertek__Tax_Rate__c,buildertek__QBO_Tax_Rate__c,buildertek__QBO_Tax_Rate_ID__c,buildertek__QBO_SyncToken__c,buildertek__Project__r.buildertek__Customer__c,buildertek__Due_Date__c,buildertek__Amount__c,buildertek__Total_Amount_Tax__c FROM buildertek__Billings__c];
-            buildertek__Billings__c SI = [SELECT Id, Name, buildertek__Customer_Account__c, buildertek__QBO_ID__c,buildertek__Tax_Rate__c,buildertek__QBO_Tax_Rate__c,buildertek__QBO_Tax_Rate_ID__c,buildertek__QBO_SyncToken__c,buildertek__Project__r.buildertek__Customer__c,buildertek__Due_Date__c,buildertek__Amount__c,buildertek__Total_Amount_Tax__c FROM buildertek__Billings__c WHERE Id =:SIId LIMIT 1];
+            List<buildertek__Billings__c> allInvoice = [SELECT Id, Name, buildertek__Customer_Account__c, buildertek__QB_Id__c,buildertek__Tax_Rate__c,buildertek__QBO_Tax_Rate__c,buildertek__QBO_Tax_Rate_ID__c,buildertek__QBO_SyncToken__c,buildertek__Project__r.buildertek__Customer__c,buildertek__Due_Date__c,buildertek__Amount__c,buildertek__Total_Amount_Tax__c FROM buildertek__Billings__c];
+            buildertek__Billings__c SI = [SELECT Id, Name, buildertek__Customer_Account__c, buildertek__QB_Id__c,buildertek__Tax_Rate__c,buildertek__QBO_Tax_Rate__c,buildertek__QBO_Tax_Rate_ID__c,buildertek__QBO_SyncToken__c,buildertek__Project__r.buildertek__Customer__c,buildertek__Due_Date__c,buildertek__Amount__c,buildertek__Total_Amount_Tax__c FROM buildertek__Billings__c WHERE Id =:SIId LIMIT 1];
             Boolean IsTaxRateExistInQB = false; // to break loop if once invoice flow going forward...
             String taxRateId;
             if(SI.buildertek__Tax_Rate__c != null && SI.buildertek__QBO_Tax_Rate_ID__c == null){

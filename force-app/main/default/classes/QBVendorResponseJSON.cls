@@ -17,7 +17,7 @@ public without sharing class QBVendorResponseJSON {
 		public String DisplayName;
 		public Boolean Active;
 		public String GivenName;
-		public Integer Balance;
+		public Double Balance;
 		public String domain;
 		public String Id;
 		public Boolean Vendor1099;

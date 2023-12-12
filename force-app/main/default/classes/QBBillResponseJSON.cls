@@ -19,7 +19,7 @@ public with sharing class QBBillResponseJSON {
 		public String LastUpdatedTime;
 	}
 	public class MarkupInfo{
-		public Integer Percent;
+		public Double Percent;
 	}
 	public class Line{
 		public ProjectRef ProjectRef;
