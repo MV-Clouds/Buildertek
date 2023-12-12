@@ -30,6 +30,20 @@ public with sharing class ImportMasterPurchaseOrderController {
         MessageClass msg = new MessageClass();
         try {
             List<buildertek__Purchase_Order__c> updatePricingValue = [SELECT Id, buildertek__Update_Pricing__c FROM buildertek__Purchase_Order__c WHERE Id =: recordId];
+            List<buildertek__Purchase_Order__c> getMasterPO = [SELECT Id, Name, buildertek__Tax__c, buildertek__Cost_Code__c, buildertek__Trade_Type__c, buildertek__PO_Type__c, buildertek__Update_Pricing__c FROM buildertek__Purchase_Order__c WHERE Id IN :poIds ORDER BY Name ASC];
+            System.debug('getMasterPO---> '+getMasterPO);
+
+            if (!getMasterPO.isEmpty()) {
+                buildertek__Purchase_Order__c updatepofields = new buildertek__Purchase_Order__c();
+                updatepofields.Id = recordId;
+                updatepofields.buildertek__PO_Type__c = getMasterPO[0].buildertek__PO_Type__c;
+                updatepofields.buildertek__Tax__c = getMasterPO[0].buildertek__Tax__c;
+                updatepofields.buildertek__Cost_Code__c = getMasterPO[0].buildertek__Cost_Code__c;
+                updatepofields.buildertek__Trade_Type__c = getMasterPO[0].buildertek__Trade_Type__c;
+                
+                update updatepofields;
+                System.debug('updatepofields---> '+updatepofields);
+            }
 
             if(updatePricingValue[0].buildertek__Update_Pricing__c == true){
                 System.debug('Check is True');
@@ -124,7 +138,9 @@ public with sharing class ImportMasterPurchaseOrderController {
         MessageClass msg = new MessageClass();
         try {
             List<buildertek__Purchase_Order_Item__c> newinslst = new List<buildertek__Purchase_Order_Item__c>();
+            System.debug('poIds---> '+ poIds);
             List<buildertek__Purchase_Order_Item__c> insplinelst = [SELECT Id, Name, buildertek__Purchase_Order__c, buildertek__Quantity__c, buildertek__Description__c, buildertek__Tax__c, buildertek__Cost_Code__c, buildertek__Unit_Price__c FROM buildertek__Purchase_Order_Item__c WHERE buildertek__Purchase_Order__c = :poIds];
+            System.debug('insplinelst---> '+ insplinelst);
 
             for (buildertek__Purchase_Order_Item__c ins : insplinelst) {
                 buildertek__Purchase_Order_Item__c newinsp = new buildertek__Purchase_Order_Item__c();
