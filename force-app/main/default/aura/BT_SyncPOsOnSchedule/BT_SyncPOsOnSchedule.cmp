@@ -67,12 +67,7 @@
                                                             alternativeText='PO Item' size='small' />
                                                     </div>
                                                     <div class="slds-media__body po-name-column">
-                                                        <!-- <aura:if isTrue="{!empty(item.buildertek__Description__c)}">
-                                                            {!item.Name}
-                                                            <aura:set attribute="else"> -->
-                                                                {!item.Name} - {!item.buildertek__Description__c} - {!item.buildertek__Vendor__r.Name} - ${!item.buildertek__PO_Total__c}
-                                                            <!-- </aura:set>
-                                                        </aura:if> -->
+                                                        {!item.Name} - {!item.buildertek__Description__c} - {!item.buildertek__Vendor__r.Name} - <lightning:formattedNumber value="{!item.buildertek__PO_Total__c}" style="currency" />
                                                     </div>
                                                     <div class="slds-form-element dropdown-column">
                                                         <div class="slds-form-element__control" data-id="{!item.Id}">
