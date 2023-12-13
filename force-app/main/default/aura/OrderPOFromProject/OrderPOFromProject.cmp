@@ -500,11 +500,14 @@
                             <tbody>
                                 <tr>
                                     <!-- <th class="firstCol" style="font-weight: 700;padding-left:15px"> Phase </th> -->
+                                    <th style="font-weight: 700;">Vendor</th>
                                     <th style="font-weight: 700;">PO #</th>
+                                    <th style="font-weight: 700;">Status</th>
+                                    <th style="font-weight: 700;">PO Total</th>
+                                    <th style="font-weight: 700;">Paid Amount</th>
+                                    <th style="font-weight: 700;">PO Balance</th>
                                     <th style="font-weight: 700;">Required Delivery Date</th>
                                     <th style="font-weight: 700;">Email</th>
-                                    <th style="font-weight: 700;">PO Total</th>
-                                    <th style="font-weight: 700;">Vendor</th>
                                     <th></th>
                                 </tr>
                                 <aura:iteration items="{!v.SelectedPurchaseOrders}" var="row" indexVar="recIndex">
@@ -513,7 +516,37 @@
                                             {!row.buildertek__Phase__c}
                                         </td> -->
                                         <td>
+                                            <aura:if isTrue="{!row.buildertek__Vendor__c}">
+                                                <ui:outputURL value="{!'/one/one.app?#/sObject/'+ row.buildertek__Vendor__c + '/view'}" target="_blank" label="{!row.buildertek__Vendor__r.Name}" />  
+                                                <aura:set attribute="else">
+                                                    <h1 style = "color:red;">
+                                                        There is no Vendor assigned to this PO
+                                                    </h1>
+                                                </aura:set>
+                                            </aura:if> 
+                                        </td>
+                                        <td>
                                             <ui:outputURL value="{!'/one/one.app?#/sObject/'+ row.Id + '/view'}" target="_blank" label="{!row.Name}" />
+                                        </td>
+                                        <td>
+                                            <aura:if isTrue="{!row.buildertek__Status__c}">
+                                                <ui:outputText value="{!row.buildertek__Status__c}" />  
+                                                <aura:set attribute="else">
+                                                    <span></span>
+                                                </aura:set>
+                                            </aura:if>
+                                        </td>
+
+                                        <td>
+                                            <lightning:formattedNumber style="currency" currencyCode="{!v.orgCurr}" value="{!row.buildertek__PO_Total__c}" currencyDisplayAs="code"/>
+                                        </td>
+
+                                        <td>
+                                            <lightning:formattedNumber style="currency" currencyCode="{!v.orgCurr}" value="{!row.buildertek__Paid_Amount__c}" currencyDisplayAs="code"/>
+                                        </td>
+
+                                        <td>
+                                            <lightning:formattedNumber style="currency" currencyCode="{!v.orgCurr}" value="{!row.buildertek__PO_Balance__c}" currencyDisplayAs="code"/>
                                         </td>
 
                                         <td>
@@ -540,19 +573,6 @@
                                                     <span></span>
                                                 </aura:set>
                                             </aura:if>
-                                        </td>
-                                        <td>
-                                            <lightning:formattedNumber style="currency" currencyCode="{!v.orgCurr}" value="{!row.buildertek__PO_Total__c}" currencyDisplayAs="code"/>
-                                        </td>
-                                        <td>
-                                            <aura:if isTrue="{!row.buildertek__Vendor__c}">
-                                                <ui:outputURL value="{!'/one/one.app?#/sObject/'+ row.buildertek__Vendor__c + '/view'}" target="_blank" label="{!row.buildertek__Vendor__r.Name}" />  
-                                                <aura:set attribute="else">
-                                                    <h1 style = "color:red;">
-                                                        There is no Vendor assigned to this PO
-                                                    </h1>
-                                                </aura:set>
-                                            </aura:if> 
                                         </td>
 
                                         
