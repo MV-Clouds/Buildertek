@@ -40,7 +40,7 @@
 
     syncVendorsHelper: function (component) {
 
-        $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "SHOW" }).fire();
+        $A.get("e.c:BT_SpinnerEvent").setParams({ "action": "SHOW" }).fire();
 
         let vendorList = component.get("v.vendorList");
         let scheduleItemList = component.get("v.scheduleItemList");
@@ -48,28 +48,44 @@
         console.log('scheduleItemList ', scheduleItemList);
 
         this.processOperation(component, vendorList, scheduleItemList);
-        console.log('scheduleItemList ', {scheduleItemList});
+        console.log('scheduleItemList ', { scheduleItemList });
 
         this.updateScheduleItemListHelper(component, scheduleItemList);
 
-        $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
+        $A.get("e.c:BT_SpinnerEvent").setParams({ "action": "HIDE" }).fire();
     },
 
     processOperation: function (component, listOfVendors, listOfScheduleItems) {
 
         for (let j = 0; j < listOfScheduleItems.length; j++) {
+            let schItemField1 = listOfScheduleItems[j].buildertek__Cost_Code__c;
+            let schItemField2 = listOfScheduleItems[j].buildertek__Trade_Type__c;
+            let schItemField3 = listOfScheduleItems[j].buildertek__Vendor_Grouping__c;
+
+            console.log('----------------------------------------------------------');
+
             for (let i = 0; i < listOfVendors.length; i++) {
-                if ((listOfVendors[i].buildertek__BT_Cost_Code__c == listOfScheduleItems[j].buildertek__Cost_Code__c) && (listOfVendors[i].buildertek__Trade_Type__c == listOfScheduleItems[j].buildertek__Trade_Type__c) && (listOfVendors[i].buildertek__BT_Grouping__c == listOfScheduleItems[j].buildertek__BT_Grouping__c)) {
+                let vendorField1 = listOfVendors[i].buildertek__BT_Cost_Code__c;
+                let vendorField2 = listOfVendors[i].buildertek__Trade_Type__c;
+                let vendorField3 = listOfVendors[i].buildertek__BT_Grouping__c;
+
+                console.log('-----');
+
+                if (vendorField1 == schItemField1 && vendorField2 == schItemField2 && vendorField3 == schItemField3 && vendorField1 != undefined && vendorField2 != undefined && vendorField3 != undefined) {
+                    console.log('Condition 1');
+                    console.log('Name ==> ' + listOfVendors[i].buildertek__Account__r.Name);
                     listOfScheduleItems[j].buildertek__Contractor__c = listOfVendors[i].buildertek__Account__c;
                     break;
-                } else if (((listOfVendors[i].buildertek__BT_Cost_Code__c == listOfScheduleItems[j].buildertek__Cost_Code__c) && (listOfVendors[i].buildertek__Trade_Type__c == listOfScheduleItems[j].buildertek__Trade_Type__c)) ||
-                    ((listOfVendors[i].buildertek__BT_Cost_Code__c == listOfScheduleItems[j].buildertek__Cost_Code__c) && (listOfVendors[i].buildertek__BT_Grouping__c == listOfScheduleItems[j].buildertek__BT_Grouping__c)) ||
-                    ((listOfVendors[i].buildertek__Trade_Type__c == listOfScheduleItems[j].buildertek__Trade_Type__c) && (listOfVendors[i].buildertek__BT_Grouping__c == listOfScheduleItems[j].buildertek__BT_Grouping__c))) {
+                } else if ((vendorField1 == schItemField1 && vendorField2 == schItemField2 && schItemField1 != undefined && schItemField2 != undefined) ||
+                    (vendorField1 == schItemField1 && vendorField3 == schItemField3 && schItemField1 != undefined && schItemField3 != undefined) ||
+                    (vendorField2 == schItemField2 && vendorField3 == schItemField3 && schItemField2 != undefined && schItemField3 != undefined)) {
+                    console.log('Condition 2');
+                    console.log('Name ==> ' + listOfVendors[i].buildertek__Account__r.Name);
                     listOfScheduleItems[j].buildertek__Contractor__c = listOfVendors[i].buildertek__Account__c;
                     break;
-                } else if ((listOfVendors[i].buildertek__BT_Cost_Code__c == listOfScheduleItems[j].buildertek__Cost_Code__c) ||
-                    (listOfVendors[i].buildertek__BT_Grouping__c == listOfScheduleItems[j].buildertek__BT_Grouping__c) ||
-                    (listOfVendors[i].buildertek__Trade_Type__c == listOfScheduleItems[j].buildertek__Trade_Type__c)) {
+                } else if ((vendorField1 == schItemField1 && schItemField1 != undefined) || (vendorField2 == schItemField2 && schItemField2 != undefined) || (vendorField3 == schItemField3 && schItemField3 != undefined)) {
+                    console.log('Condition 3');
+                    console.log('Name ==> ' + listOfVendors[i].buildertek__Account__r.Name);
                     listOfScheduleItems[j].buildertek__Contractor__c = listOfVendors[i].buildertek__Account__c;
                     break;
                 }
@@ -97,7 +113,7 @@
         $A.enqueueAction(action);
     },
 
-    showToast: function(component, title, message, type) {
+    showToast: function (component, title, message, type) {
         var toastEvent = $A.get("e.force:showToast");
         toastEvent.setParams({
             "title": title,
