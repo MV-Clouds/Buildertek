@@ -265,7 +265,9 @@ public without sharing class QBIntegrationQueue {
             list<sObject> ItemsNotHaveQBId = ItemToSyncMap.values(); // List of SF Line Without QB Id.....
 
             List<sObject> ItemstoCreate = new List<sObject>();  // List of SF Lines Without QB Id And Without Dupliacte Name (So These Are need to Create In QB)....
-            Map<String, QBBatchResJSON.Item> QBItemsToAssign_Map = new Map<String, QBBatchResJSON.Item>(); // Map Of QB Dupliate Item Name and Duplicate Item QB Object...
+            map<String, sObject> ItemstoCreate_Map = new map<String, sObject>();
+            Map<Id, QBBatchResJSON.Item> QBItemsToAssign_Map = new Map<Id, QBBatchResJSON.Item>(); // Map Of QB Dupliate Item Name and Duplicate Item QB Object...
+            List<Id> QBItemsToAssign = new List<Id>();
             
 
             // If Any SF Lines does not availbale in QB... Else All SF Line Have QB Id (Already Synced With QB)...
@@ -303,12 +305,12 @@ public without sharing class QBIntegrationQueue {
                     }
                 }
                 // -------- 
+                map<String, QBBatchResJSON.Item> queryItems_Map = new map<String, QBBatchResJSON.Item>();   // For Furter Query and Filteration
 
                 // IF SF Lines Are Not Synced With QB But Item With Duplicate Name Already Availabel In QB.... Then Use QB ID of That QB Items for SF Lines
                 if(queryItemsList.size() > 0){
                     system.debug('Quplicate Name Items In QB' + queryItemsList);
 
-                    map<String, QBBatchResJSON.Item> queryItems_Map = new map<String, QBBatchResJSON.Item>();   // For Furter Query and Filteration
                     for(QBBatchResJSON.Item queryItem : queryItemsList){
                         queryItems_Map.put(queryItem.Name, queryItem);
                     }
@@ -319,21 +321,44 @@ public without sharing class QBIntegrationQueue {
                         String ItemName = string.valueOf(item.get('Name'));
                         String DupliacteItemName = queryItems_Map.get(ItemName).Name;
 
-                        if( ItemName == DupliacteItemName){
-                            QBItemsToAssign_Map.put(item.Id, queryItems_Map.get(ItemName));
-                        }
-                        else{
-                            ItemstoCreate.add(item);
+                        // if( ItemName == DupliacteItemName){
+                        //     QBItemsToAssign_Map.put(item.Id, queryItems_Map.get(ItemName));
+                        // }
+                        // else{
+                        //     ItemstoCreate.add(item);
+                        // }
+
+                        if(ItemName != DupliacteItemName){
+                            ItemstoCreate_Map.put(ItemName, item);
                         }
                     }
+
+                    ItemstoCreate = ItemstoCreate_Map.values();
                 }
                 else{
                     // If None of the Line have Duplicate Name In QB....
                     System.debug('.... None of the Line have Duplicate Name In QB .....');
-                    ItemstoCreate = ItemToSync;
+                    // ItemstoCreate = ItemToSync;
+                    for(sObject item : ItemToSync){
+                        String ItemName = string.valueOf(item.get('Name'));
+                        ItemstoCreate_Map.put(ItemName, item);
+                    }
+                    ItemstoCreate = ItemstoCreate_Map.values();
                 }
+
+                for(sObject item : ItemToSync){
+                    String ItemName = string.valueOf(item.get('Name'));
+                    Id CreteItemId = ItemstoCreate_Map.get(ItemName).Id;
+                    if(item.Id != CreteItemId){
+                        // QBItemsToAssign_Map.put(item.Id, queryItems_Map.get(ItemName));
+                        QBItemsToAssign.add(item.Id);
+                    }
+                }
+
                 System.debug('No of Items to create  : ' + ItemstoCreate.size());
-                System.debug('no of QBItemsToAssign_Map : ' + QBItemsToAssign_Map.keySet().size());
+                System.debug('Items to create  : ' + ItemstoCreate);
+                System.debug('no of QBItemsToAssign_Map : ' + QBItemsToAssign.size());
+                System.debug('QBItemsToAssign_Map : ' + QBItemsToAssign);
 
                 // When SF Line Does Not Have QB In and Also Item With Duplicate Name Not Found In QB....
                 if(ItemstoCreate.size() > 0){
@@ -364,7 +389,7 @@ public without sharing class QBIntegrationQueue {
 
                         if(Items_Response.getStatusCode() == 200){
                             QBBatchResJSON response = QBBatchResJSON.parse(Items_Response.getBody());
-
+                            
                             for(sObject Item : ItemList){
                                 if(SyncObjName == 'buildertek__Purchase_Order__c'){
                                     buildertek__Purchase_Order_Item__c Items = (buildertek__Purchase_Order_Item__c)Item;
