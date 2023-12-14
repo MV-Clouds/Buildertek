@@ -98,3 +98,8 @@
     cursor: pointer;
     display: none;
 }
+
+.anchorClass {
+    color: black;
+    text-decoration: none;
+  }

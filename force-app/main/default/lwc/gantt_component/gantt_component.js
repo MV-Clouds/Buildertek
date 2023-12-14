@@ -663,39 +663,63 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           type: "name",
           draggable: false,
           width: 250,
-          renderer: (record) => {
+          editor: false,
+          // renderer: (record) => {
 
-            populateIcons(record);
-            if (record.record._data.type == "Phase") {
-              record.record.readOnly = true;
-              record.cellElement.style.margin = "";
-            }
-            if (
-              record.record._data.iconCls == "b-fa b-fa-arrow-right indentTrue"
-            ) {
-              record.cellElement.style.margin = "0 0 0 1.5rem";
-            }
-            if (record.record._data.name == "Milestone Complete") {
-              record.record.readOnly = true;
-              return "Milestone";
-            }
-            if (record.record._data.type == "Project") {
-              record.record.readOnly = true;
-              // return record.value;
-              return record.record._data.name;
-            } else {
-              return record.value;
-            }
+          //   populateIcons(record);
+          //   if (record.record._data.type == "Phase") {
+          //     record.record.readOnly = true;
+          //     record.cellElement.style.margin = "";
+          //   }
+          //   if (
+          //     record.record._data.iconCls == "b-fa b-fa-arrow-right indentTrue"
+          //   ) {
+          //     record.cellElement.style.margin = "0 0 0 1.5rem";
+          //   }
+          //   if (record.record._data.name == "Milestone Complete") {
+          //     record.record.readOnly = true;
+          //     return "Milestone";
+          //   }
+          //   if (record.record._data.type == "Project") {
+          //     record.record.readOnly = true;
+          //     // return record.value;
+          //     return record.record._data.name;
+          //   } else {
+          //     return record.value;
+          //   }
+          // },
+          renderer: ({ record }) => {
+            const taskId = record.id; // Get the task ID
+            const taskName = record.name; // Get the task name
+
+            // Build the anchor element with the desired URL and text
+            const anchorElement = document.createElement('a');
+            anchorElement.href = `https:/login.salesforce.com/${taskId}`; // Replace with your actual redirect URL
+            anchorElement.innerText = taskName;
+            anchorElement.class = 'anchorClass'; // Optional styling class
+
+            // Add click event listener to redirect on click
+            anchorElement.addEventListener('click', () => {
+              setTimeout(() => {
+                event.preventDefault();
+                window.location.href = anchorElement.href;
+              }, 100);
+            });
+
+            // Combine existing elements with the anchor tag
+            return {
+              class: 'anchorClass',
+              children: [
+                {
+                  tag: 'i',
+                  class: 'fa fa-pen',
+                },
+                // Replace the existing name child with the anchor element
+                anchorElement,
+              ],
+            };
           },
         },
-        {
-          text     : 'Link',
-          field    : 'name',
-          type     : 'template',
-          width    : 120,
-          editor   : false,
-          template : ({ record }) => `<a style="color: #858687; text-decoration: none;" href="https://login.salesforce.com/${record.id}" target="_blank" >${record.name}</a>`,
-      },
         {
           type: "predecessor",
           draggable: false,
@@ -1058,6 +1082,10 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
 
     gantt.on("cellClick", ({ record }) => {
       gantt.scrollTaskIntoView(record);
+      console.log("cellClick", editorContext);
+      if (record) {
+
+      }
     });
 
     gantt.on('startCellEdit', (editorContext) => {
