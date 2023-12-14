@@ -43,8 +43,20 @@ export default class ScheduleTab extends LightningElement {
     }
 
     handleScheduleChange(event) {
-        this.selectedScheduleId = event.detail.value;
-        console.log('selectedScheduleId: ' + this.selectedScheduleId);
-        this.template.querySelector('c-gantt_component').updaterecordId(this.selectedScheduleId);
+        try {
+            this.selectedScheduleId = event.detail.value;
+            console.log('selectedScheduleId: ' + this.selectedScheduleId);
+            this.template.querySelector('c-gantt_component').updaterecordId(this.selectedScheduleId);
+        } catch (error) {
+            console.log('Error in handling schedule change', error);
+            this.dispatchEvent(
+                new ShowToastEvent({
+                    title: "Error",
+                    message: 'Unknown error occur while handling schedule change',
+                    variant: "error"
+                })
+            );
+        }
     }
+
 }

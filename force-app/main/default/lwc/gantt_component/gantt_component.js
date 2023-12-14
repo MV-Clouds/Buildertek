@@ -151,7 +151,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     this.SchedulerId = newid;
     this.getScheduleWrapperDataFromApex();
   }
-
+  
   renderedCallback() {
     let intervalID = setInterval(() => {
       if (this.bryntumInitialized) {
@@ -694,6 +694,37 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           },
         },
         {
+          type: "action",
+          draggable: false,
+          //text    : 'Go to Item',
+          width: 30,
+          actions: [
+            {
+              cls: "b-fa b-fa-external-link-alt",
+              onClick: ({ record }) => {
+                if (
+                  record._data.id.indexOf("_generate") == -1 &&
+                  record._data.name != "Milestone Complete"
+                ) {
+                  console.log("Action link", record._data.id);
+                  this.navigateToRecordViewPage(record._data.id);
+                }
+              },
+              renderer: ({ action, record }) => {
+                if (
+                  record._data.type == "Task" &&
+                  record._data.id.indexOf("_generate") == -1 &&
+                  record._data.name != "Milestone Complete"
+                ) {
+                  return `<i class="b-action-item ${action.cls}" data-btip="Go To Item"></i>`;
+                } else {
+                  return `<i class="b-action-item ${action.cls}" data-btip="Go To Item" style="display:none;"></i>`;
+                }
+              },
+            },
+          ],
+        },
+        {
           type: "predecessor",
           draggable: false,
           width: 180,
@@ -870,37 +901,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
                   // return `<i class="b-action-item ${action.cls}" data-btip="File"></i>`;
                 } else {
                   return `<i class="b-action-item ${action.cls}" data-btip="File" style="display:none;"></i>`;
-                }
-              },
-            },
-          ],
-        },
-        {
-          type: "action",
-          draggable: false,
-          //text    : 'Go to Item',
-          width: 30,
-          actions: [
-            {
-              cls: "b-fa b-fa-external-link-alt",
-              onClick: ({ record }) => {
-                if (
-                  record._data.id.indexOf("_generate") == -1 &&
-                  record._data.name != "Milestone Complete"
-                ) {
-                  console.log("Action link", record._data.id);
-                  this.navigateToRecordViewPage(record._data.id);
-                }
-              },
-              renderer: ({ action, record }) => {
-                if (
-                  record._data.type == "Task" &&
-                  record._data.id.indexOf("_generate") == -1 &&
-                  record._data.name != "Milestone Complete"
-                ) {
-                  return `<i class="b-action-item ${action.cls}" data-btip="Go To Item"></i>`;
-                } else {
-                  return `<i class="b-action-item ${action.cls}" data-btip="Go To Item" style="display:none;"></i>`;
                 }
               },
             },
