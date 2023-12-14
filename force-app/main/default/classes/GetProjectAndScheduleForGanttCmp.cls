@@ -53,6 +53,13 @@ public with sharing class GetProjectAndScheduleForGanttCmp {
         } 
         return null;
     }
+
+    @AuraEnabled
+    public static List<buildertek__schedule__c> getScheduleDataByProjectId(String projectId) {
+        List<buildertek__schedule__c> scheduleList = new List<buildertek__schedule__c>([SELECT Id, Name, buildertek__Description__c, buildertek__project__c, buildertek__project__r.Name FROM buildertek__schedule__c WHERE buildertek__project__c = :projectId ORDER BY buildertek__project__r.Name ASC]);
+        
+        return scheduleList;
+    }
     
     public class scheduleWrapperClass {
         @AuraEnabled

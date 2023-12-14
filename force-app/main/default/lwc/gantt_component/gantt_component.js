@@ -147,6 +147,11 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     }, 1500);
   }
 
+  @api updaterecordId(newid){
+    this.SchedulerId = newid;
+    this.getScheduleWrapperDataFromApex();
+  }
+
   renderedCallback() {
     let intervalID = setInterval(() => {
       if (this.bryntumInitialized) {

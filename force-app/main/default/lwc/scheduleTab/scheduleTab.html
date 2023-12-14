@@ -1,0 +1,20 @@
+<template>
+    <template if:true={isScheduleAvailable}>
+        <lightning-card title="Select Schedule" icon-name="custom:custom14">
+            <div class="slds-p-around_x-small picklistcombo">
+                <div class="picklist">
+                    <lightning-combobox name="schedule" value={selectedScheduleId} options={SchedulesOptions}
+                        onchange={handleScheduleChange} placeholder="Select Schedule"></lightning-combobox>
+                </div>
+            </div>
+
+            <div class="scheduleContainer" if:true={callscheduleComponent}>
+                <c-gantt_component record-id={selectedScheduleId}></c-gantt_component>
+            </div>
+        </lightning-card>
+    </template>
+    
+    <template if:false={isScheduleAvailable}>
+        <p>No schedules available.</p>
+    </template>
+</template>
