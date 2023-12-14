@@ -33,7 +33,7 @@ public without sharing class QBIntegrationQueueable{
     //                     }
     //                     else{
     //                         System.debug('Invoice Already Available in QB ');
-    //                         Create_Payment_In_QB(SILine, SI, acc, QBMetadata, Get_Access_Token, receiptID);
+    //                         sync_Payment_In_QB(SILine, SI, acc, QBMetadata, Get_Access_Token, receiptID);
     //                     }
     //                 }
     //             }
@@ -209,7 +209,7 @@ public without sharing class QBIntegrationQueueable{
     //                     }
     //                     else {
     //                         System.debug('Invoice Already Available in QB ');
-    //                         Create_Payment_In_QB(SILine, SI, acc, QBMetadata, Get_Access_Token, receiptID);
+    //                         sync_Payment_In_QB(SILine, SI, acc, QBMetadata, Get_Access_Token, receiptID);
     //                     }
 
     //                     UpdateSIline(SILine[0].ID, InvoiceLineQBId);
@@ -271,7 +271,7 @@ public without sharing class QBIntegrationQueueable{
     //     }
     // }
 
-    // public static void Create_Payment_In_QB(List<buildertek__Billable_Lines__c> SILine, buildertek__Billings__c SI, Account acc, buildertek__QuickBooks_Setting__mdt QBMetadata, Boolean Get_Access_Token, String receiptID){
+    // public static void sync_Payment_In_QB(List<buildertek__Billable_Lines__c> SILine, buildertek__Billings__c SI, Account acc, buildertek__QuickBooks_Setting__mdt QBMetadata, Boolean Get_Access_Token, String receiptID){
     //     try {
     //         buildertek__Receipt__c receipt = [SELECT Id, Name, buildertek__Amount__c FROM buildertek__Receipt__c WHERE Id =: receiptID LIMIT 1];
     //         String Payment_EndPoint = QBMetadata.buildertek__Base_Url__c + '/v3/company/' + QBMetadata.buildertek__Company_Id__c + '/payment?minorversion=' + QBMetadata.buildertek__minorversion__c;            
@@ -293,7 +293,7 @@ public without sharing class QBIntegrationQueueable{
     //         }
             
     //     } catch (Exception e) {
-    //         System.debug('Error in Create_Payment_In_QB : ' + e.getMessage() +'\n'+ e);
+    //         System.debug('Error in sync_Payment_In_QB : ' + e.getMessage() +'\n'+ e);
     //     }
     // }
 

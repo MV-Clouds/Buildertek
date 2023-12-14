@@ -33,6 +33,9 @@
         <members>QBVendorJSON</members>
         <members>QBPOResponseJSON</members>
         <members>QBPOJSON</members>
+        <members>QBExpenseResponseJSON</members>
+        <members>QBExpenseJSON</members>
+        <members>QBIntegrationQueue_SIFlow</members>
         <name>ApexClass</name>
     </types>
     <types>

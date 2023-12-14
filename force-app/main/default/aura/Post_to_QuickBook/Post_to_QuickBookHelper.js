@@ -1,6 +1,6 @@
 ({
     SyncPO : function(component, event, helper) {
-        var action = component.get("c.Create_Purchase_Order_in_QB_AuraCallout");
+        var action = component.get("c.sync_Purchase_Order_in_QB_AuraCallout");
         action.setParams({
             recordId : component.get("v.recordId"),
             SyncObjName : component.get("v.sobjecttype")
@@ -56,7 +56,7 @@
 
     SyncCOInvoice: function(component, event, helper){
         console.log('inside SyncCOInvoice');
-        var action = component.get("c.Create_Contractor_Invoice_to_Bill_in_QB_AuraCallout");
+        var action = component.get("c.sync_Contractor_Invoice_to_Bill_in_QB_AuraCallout");
         action.setParams({
             recordId : component.get("v.recordId"),
             SyncObjName : component.get("v.sobjecttype")
@@ -119,7 +119,7 @@
 
     SyncPayableInvoice: function(component, event, helper){
         console.log('inside SyncCOInvoice');
-        var action = component.get("c.Create_Payable_Invoice_to_Bill_in_QB_AuraCallout");
+        var action = component.get("c.sync_Payable_Invoice_to_Bill_in_QB_AuraCallout");
         action.setParams({
             recordId : component.get("v.recordId"),
             SyncObjName : component.get("v.sobjecttype")
@@ -176,7 +176,7 @@
 
     SyncSIInvoice : function(component, event, helper){
         console.log('inside SyncCOInvoice');
-        var action = component.get("c.Create_Invoice_in_QB_AuraCallout");
+        var action = component.get("c.sync_Invoice_in_QB_AuraCallout");
         action.setParams({
             recordId : component.get("v.recordId"),
             SyncObjName : component.get("v.sobjecttype")
@@ -252,9 +252,9 @@
 
     Post_Customer_ToQBHelper: function(component, event, helper){
         console.log("Inside Customer Integration helper");
-        var action = component.get("c.Create_Customer_In_QB_AuraCallout");
+        var action = component.get("c.sync_Customer_In_QB_AuraCallout");
         action.setParams({
-            AccoountId : component.get("v.recordId"),
+            recordId : component.get("v.recordId"),
             SyncObjName : component.get("v.sObjectName")
         });
         
@@ -286,9 +286,9 @@
 
     Post_Vendor_ToQBHelper: function(component, event, helper){
         console.log("Inside Vendor Integration helper");
-        var action = component.get("c.Create_Vendor_In_QB_AuraCallout");
+        var action = component.get("c.sync_Vendor_In_QB_AuraCallout");
         action.setParams({
-            AccoountId : component.get("v.recordId"),
+            recordId : component.get("v.recordId"),
             SyncObjName : component.get("v.sObjectName")
         });
         
@@ -321,7 +321,7 @@
 
     SyncExpense: function(component, event, helper){
         console.log('******In expense qb sync******');
-        var action = component.get("c.Create_Expense_in_QB_AuraCallout");
+        var action = component.get("c.sync_Expense_in_QB_AuraCallout");
         action.setParams({
             recordId : component.get("v.recordId"),
             SyncObjName : component.get("v.sobjecttype")
