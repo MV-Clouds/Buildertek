@@ -689,6 +689,14 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           },
         },
         {
+          text     : 'Link',
+          field    : 'name',
+          type     : 'template',
+          width    : 120,
+          editor   : false,
+          template : ({ record }) => `<a style="color: #858687; text-decoration: none;" href="https://login.salesforce.com/${record.id}" target="_blank" >${record.name}</a>`,
+      },
+        {
           type: "predecessor",
           draggable: false,
           width: 180,
