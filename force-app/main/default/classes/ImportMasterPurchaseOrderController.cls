@@ -29,7 +29,7 @@ public with sharing class ImportMasterPurchaseOrderController {
     public static MessageClass checkUpdatePricingField(List<String> poIds, String recordId) {
         MessageClass msg = new MessageClass();
         try {
-            List<buildertek__Purchase_Order__c> updatePricingValue = [SELECT Id, buildertek__Update_Pricing__c FROM buildertek__Purchase_Order__c WHERE Id =: recordId];
+
             List<buildertek__Purchase_Order__c> getMasterPO = [SELECT Id, Name, buildertek__Tax__c, buildertek__Cost_Code__c, buildertek__Trade_Type__c, buildertek__PO_Type__c, buildertek__Update_Pricing__c FROM buildertek__Purchase_Order__c WHERE Id IN :poIds ORDER BY Name ASC];
             System.debug('getMasterPO---> '+getMasterPO);
 
@@ -45,16 +45,9 @@ public with sharing class ImportMasterPurchaseOrderController {
                 System.debug('updatepofields---> '+updatepofields);
             }
 
-            if(updatePricingValue[0].buildertek__Update_Pricing__c == true){
-                System.debug('Check is True');
-                msg = importMasterPOLinesWithVendorPricing(poIds, recordId);
-                return msg;
-            }
-            else {
-                System.debug('Check is False');
-                msg = importMasterPOLinesWithoutVendorPricing(poIds, recordId);
-                return msg;
-            } 
+            msg = importMasterPOLinesWithVendorPricing(poIds, recordId);
+            return msg;
+
         } catch (Exception exp) {
             msg.Status = 'Failed';
             msg.Message = exp.getMessage();
@@ -70,78 +63,26 @@ public with sharing class ImportMasterPurchaseOrderController {
         MessageClass msg = new MessageClass();
         try {
             List<buildertek__Purchase_Order_Item__c> newinslst = new List<buildertek__Purchase_Order_Item__c>();
-
-            for (String poId : poIds) {
-                // Get the vendor for the current PO
-                List<buildertek__Purchase_Order__c> po = [SELECT Id, buildertek__Vendor__c FROM buildertek__Purchase_Order__c WHERE Id =: poId AND buildertek__Vendor__c != null];
+            Set<Id> vendorIds = new Set<Id>();
+            Map<Id, Decimal> productCostMap = new Map<Id, Decimal>();
+            List<PricebookEntry> pbeList;
+            List<buildertek__Purchase_Order__c> masterPOList = [SELECT Id, buildertek__Update_Pricing__c, buildertek__Vendor__c FROM buildertek__Purchase_Order__c WHERE Id IN :poIds AND buildertek__Vendor__c != null AND buildertek__Update_Pricing__c = true];
+            if (!masterPOList.isEmpty()) {
+                for (buildertek__Purchase_Order__c po : masterPOList) {
+                    vendorIds.add(po.buildertek__Vendor__c);
+                }
                 
-                // Get the UnitCost from PriceBookEntry for the Product of the Vendor
-                List<Product2> productRec;
-                List<PricebookEntry> pbeList;
-                if (!po.isEmpty()) {
-                    productRec = [SELECT Id, buildertek__Vendor__c FROM Product2 WHERE buildertek__Vendor__c =: po[0].buildertek__Vendor__c AND IsActive = true ORDER BY CreatedDate Desc];  
-                }
-                if (!productRec.isEmpty()) {
-                    pbeList = [SELECT Id, buildertek__Unit_Cost__c FROM PricebookEntry WHERE Product2Id =: productRec[0].Id AND IsActive = true ORDER BY CreatedDate Desc];
-                }
-                List<buildertek__Purchase_Order_Item__c> insplinelst = [SELECT Id, Name, buildertek__Purchase_Order__c, buildertek__Quantity__c, buildertek__Description__c, buildertek__Tax__c, buildertek__Cost_Code__c, buildertek__Unit_Price__c FROM buildertek__Purchase_Order_Item__c WHERE buildertek__Purchase_Order__c = :poId];
-
-                System.debug('POList--> '+ po);
-                System.debug('ProductList--> '+ productRec);
+                pbeList = [SELECT Id, Product2.buildertek__Vendor__c, Product2Id, buildertek__Unit_Cost__c FROM PricebookEntry WHERE Product2.buildertek__Vendor__c IN :vendorIds AND IsActive = true];
                 System.debug('PBEList--> '+ pbeList);
-
-                for (buildertek__Purchase_Order_Item__c ins : insplinelst) {
-                    buildertek__Purchase_Order_Item__c newinsp = new buildertek__Purchase_Order_Item__c();
-                    newinsp.buildertek__Purchase_Order__c = recordId;
-                    newinsp.Name = ins.Name;
-                    newinsp.buildertek__Quantity__c = ins.buildertek__Quantity__c;
-                    newinsp.buildertek__Description__c = ins.buildertek__Description__c;
-                    newinsp.buildertek__Tax__c = ins.buildertek__Tax__c;
-                    newinsp.buildertek__Cost_Code__c = ins.buildertek__Cost_Code__c;
-
-                    // Check if there is a product for the vendor
-                    if (pbeList != null && !pbeList.isEmpty() && pbeList[0].buildertek__Unit_Cost__c != null) {
-                        // If there is a product, use its unit cost
-                        newinsp.buildertek__Unit_Price__c = pbeList[0].buildertek__Unit_Cost__c;
-                    } else {
-                        // If there is no product, use the unit cost from the Master PO Line
-                        newinsp.buildertek__Unit_Price__c = ins.buildertek__Unit_Price__c;
+                if (!pbeList.isEmpty()) {
+                    for (PricebookEntry pbe : pbeList) {
+                        productCostMap.put(pbe.Product2Id, pbe.buildertek__Unit_Cost__c);
                     }
-
-                    newinslst.add(newinsp);
                 }
             }
-            System.debug('POLineList---> ' + newinslst);
-            if (newinslst.size() > 0) {
-                insert newinslst;
-                msg.Status = 'Success';
-                msg.Message = 'PO Lines Imported Successfully';
-            } else {
-                msg.Status = 'Failed';
-                msg.Message = 'There were no PO Lines for the selected PO(s)';
-            }
-            return msg;
-        } catch (Exception exp) {
-            msg.Status = 'Failed';
-            msg.Message = exp.getMessage();
-            System.debug('error--> ' + exp.getMessage());
-            System.debug('error line--> ' + exp.getLineNumber());
-            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
-            if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
-                BT_ExceptionHandler.Store_Exception(exp);
-            }
-            return msg;
-        }
-    }
-
-    public static MessageClass importMasterPOLinesWithoutVendorPricing(List<String> poIds, String recordId) {
-        MessageClass msg = new MessageClass();
-        try {
-            List<buildertek__Purchase_Order_Item__c> newinslst = new List<buildertek__Purchase_Order_Item__c>();
-            System.debug('poIds---> '+ poIds);
-            List<buildertek__Purchase_Order_Item__c> insplinelst = [SELECT Id, Name, buildertek__Purchase_Order__c, buildertek__Quantity__c, buildertek__Description__c, buildertek__Tax__c, buildertek__Cost_Code__c, buildertek__Unit_Price__c FROM buildertek__Purchase_Order_Item__c WHERE buildertek__Purchase_Order__c = :poIds];
-            System.debug('insplinelst---> '+ insplinelst);
-
+           
+            List<buildertek__Purchase_Order_Item__c> insplinelst = [SELECT Id, Name, buildertek__Product__c, buildertek__Department__c, buildertek__Purchase_Order__c, buildertek__Quantity__c, buildertek__Description__c, buildertek__Tax__c, buildertek__Cost_Code__c, buildertek__Unit_Price__c FROM buildertek__Purchase_Order_Item__c WHERE buildertek__Purchase_Order__c IN :poIds];
+            System.debug('insplinelst--> '+ insplinelst);
             for (buildertek__Purchase_Order_Item__c ins : insplinelst) {
                 buildertek__Purchase_Order_Item__c newinsp = new buildertek__Purchase_Order_Item__c();
                 newinsp.buildertek__Purchase_Order__c = recordId;
@@ -150,7 +91,14 @@ public with sharing class ImportMasterPurchaseOrderController {
                 newinsp.buildertek__Description__c = ins.buildertek__Description__c;
                 newinsp.buildertek__Tax__c = ins.buildertek__Tax__c;
                 newinsp.buildertek__Cost_Code__c = ins.buildertek__Cost_Code__c;
-                newinsp.buildertek__Unit_Price__c = ins.buildertek__Unit_Price__c;
+                newinsp.buildertek__Department__c = ins.buildertek__Department__c;
+                newinsp.buildertek__Product__c = ins.buildertek__Product__c;                    
+
+                if (productCostMap.containsKey(ins.buildertek__Product__c)) {
+                    newinsp.buildertek__Unit_Price__c = productCostMap.get(ins.buildertek__Product__c);
+                } else {
+                    newinsp.buildertek__Unit_Price__c = ins.buildertek__Unit_Price__c;
+                }
 
                 newinslst.add(newinsp);
             }
@@ -176,6 +124,51 @@ public with sharing class ImportMasterPurchaseOrderController {
             return msg;
         }
     }
+
+    // public static MessageClass importMasterPOLinesWithoutVendorPricing(List<String> poIds, String recordId) {
+    //     MessageClass msg = new MessageClass();
+    //     try {
+    //         List<buildertek__Purchase_Order_Item__c> newinslst = new List<buildertek__Purchase_Order_Item__c>();
+    //         System.debug('poIds---> '+ poIds);
+    //         List<buildertek__Purchase_Order_Item__c> insplinelst = [SELECT Id, Name, buildertek__Product__c, buildertek__Department__c, buildertek__Purchase_Order__c, buildertek__Quantity__c, buildertek__Description__c, buildertek__Tax__c, buildertek__Cost_Code__c, buildertek__Unit_Price__c FROM buildertek__Purchase_Order_Item__c WHERE buildertek__Purchase_Order__c = :poIds];
+    //         System.debug('insplinelst---> '+ insplinelst);
+
+    //         for (buildertek__Purchase_Order_Item__c ins : insplinelst) {
+    //             buildertek__Purchase_Order_Item__c newinsp = new buildertek__Purchase_Order_Item__c();
+    //             newinsp.buildertek__Purchase_Order__c = recordId;
+    //             newinsp.Name = ins.Name;
+    //             newinsp.buildertek__Quantity__c = ins.buildertek__Quantity__c;
+    //             newinsp.buildertek__Description__c = ins.buildertek__Description__c;
+    //             newinsp.buildertek__Tax__c = ins.buildertek__Tax__c;
+    //             newinsp.buildertek__Cost_Code__c = ins.buildertek__Cost_Code__c;
+    //             newinsp.buildertek__Unit_Price__c = ins.buildertek__Unit_Price__c;
+    //             newinsp.buildertek__Department__c = ins.buildertek__Department__c;
+    //             newinsp.buildertek__Product__c = ins.buildertek__Product__c;                       
+
+    //             newinslst.add(newinsp);
+    //         }
+    //         System.debug('POLineList---> ' + newinslst);
+    //         if (newinslst.size() > 0) {
+    //             insert newinslst;
+    //             msg.Status = 'Success';
+    //             msg.Message = 'PO Lines Imported Successfully';
+    //         } else {
+    //             msg.Status = 'Failed';
+    //             msg.Message = 'There were no PO Lines for the selected PO(s)';
+    //         }
+    //         return msg;
+    //     } catch (Exception exp) {
+    //         msg.Status = 'Failed';
+    //         msg.Message = exp.getMessage();
+    //         System.debug('error--> ' + exp.getMessage());
+    //         System.debug('error line--> ' + exp.getLineNumber());
+    //         List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+    //         if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+    //             BT_ExceptionHandler.Store_Exception(exp);
+    //         }
+    //         return msg;
+    //     }
+    // }
     
     public class MessageClass{
         @AuraEnabled
