@@ -98,12 +98,16 @@
 
             action.setCallback(this, function (response) {
                 var state = response.getState();
+                var result = response.getReturnValue();
+                component.set("v.Spinner", false);
+                console.log("Result: ", result);
                 if (state === "SUCCESS") {
-                    var result = response.getReturnValue();
-                    console.log("Result: ", result);
-                    component.set("v.Spinner", false);
-                    helper.showToast('success', 'Success', 'QuoteLine Imported Successfully !!!', '3');
-                    location.reload();
+                    if (result.Status === 'Success') {
+                        helper.showToast('success', 'Success', result.Message, '3');
+                        location.reload();
+                    } else {
+                        helper.showToast('error', 'Error', result.Message, '3');
+                    }
                 }
                 else if (state === "ERROR") {
                     var errors = response.getError();
@@ -111,7 +115,6 @@
                         console.error("Error: " + errors[0].message);
                         helper.showToast('error', 'Error', 'Error while importing QuoteLine !!!', '3');
                     }
-                    component.set("v.Spinner", false);
                 }
             });
 
