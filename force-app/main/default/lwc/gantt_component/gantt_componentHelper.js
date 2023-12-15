@@ -1,10 +1,7 @@
 function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDataList) {
-    var taskData = scheduleItemsData;
     var taskDependencyData = [];
     var resourceRowData = [];
-    var resourceRowIdList = [];
     var assignmentRowData = [];
-    var scheduleItemIdsList = [];
     var rows = [];
     var formattedData = {};
     var firstRowDup = {};
@@ -16,7 +13,6 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
     firstRowDup["name"] = scheduleData.buildertek__Description__c;
     firstRowDup["startDate"] = scheduleData.buildertek__Initial_Start_Date__c;
     firstRowDup["duration"] = 1;
-    // var projstartdate = scheduleData.buildertek__Initial_Start_Date__c;
     firstRowDup["expanded"] = true
     firstRowDup["type"] = 'Project'
     firstRowDup['customtype'] = 'Project'
@@ -24,8 +20,7 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
     firstRowDup["children"] = []
 
     //*BUIL-3699 new logic start
-    
-    firstRowDup['children'] = grpTaskOnPhase(taskListForPhase);
+    firstRowDup["children"] = grpTaskOnPhase(taskListForPhase);
     
     for (var i = 0; i < taskListForPhase.length; i++) {
         console.log("taskListForPhase:- ", taskListForPhase[i]);
@@ -39,7 +34,6 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
         }
         assignmentRowData.push.apply(assignmentRowData, createAssignmentData(taskListForPhase[i])); //adds all the assignment data to the main list.
     }
-
     //* BUIL-3699 new logic end
 
     rows.push(firstRowDup);
@@ -118,8 +112,6 @@ function convertJSONtoApexData(data, taskData, dependenciesData, resourceData) {
                 //var enddate = new Date(rowData[i]['endDate']).toJSON();
                 var enddate = new Date(rowData[i]['endDate'])
                 updateData['buildertek__Start__c'] = rowData[i]['startDate'].split('T')[0]
-                //updateData['buildertek__Finish__c'] = enddate[2] + '-'+ enddate[1] + '-'+enddate[0]
-                //updateData['buildertek__Finish__c'] = enddate.split('T')[0]
                 updateData['buildertek__Finish__c'] = enddate.getFullYear() + '-' + Number(enddate.getMonth() + 1) + '-' + enddate.getDate();
                 updateData['buildertek__Duration__c'] = rowData[i]['duration']
                 updateData['buildertek__Completion__c'] = rowData[i]['percentDone']
@@ -338,7 +330,6 @@ function makeComboBoxDataForResourceData(listOfContractors, listOfUsers) {
         listOfResourceToReturn.push(resourceObj);
     });
 
-
     return listOfResourceToReturn;
 }
 
@@ -355,7 +346,6 @@ function calcBusinessDays(dDate1, dDate2) { // input given as Date objects
     if ((iWeekday1 > 5) && (iWeekday2 > 5)) iAdjust = 1; // adjustment if both days on weekend
     iWeekday1 = (iWeekday1 > 5) ? 5 : iWeekday1; // only count weekdays
     iWeekday2 = (iWeekday2 > 5) ? 5 : iWeekday2;
-
     // calculate differnece in weeks (1000mS * 60sec * 60min * 24hrs * 7 days = 604800000)
     iWeeks = Math.floor((dDate2.getTime() - dDate1.getTime()) / 604800000)
 
@@ -364,7 +354,6 @@ function calcBusinessDays(dDate1, dDate2) { // input given as Date objects
     } else {
         iDateDiff = ((iWeeks + 1) * 5) - (iWeekday1 - iWeekday2)
     }
-
     iDateDiff -= iAdjust // take into account both days on weekend
 
     return (iDateDiff + 1); // add 1 because dates are inclusive
@@ -459,6 +448,7 @@ function createAssignmentData(taskListForPhase) {
 //* This method is used to create task row data based on the conditions
 function grpTaskOnPhase(records) {
     const hierarchy = {};
+    const projectTaskList = [];
     
     records.forEach((record) => {
         const phase1 = record.buildertek__Phase__c || 'UnknownPhase1';
@@ -467,51 +457,71 @@ function grpTaskOnPhase(records) {
         const phase3 = record.buildertek__BT_Phase3__c || 'UnknownPhase3';
         const phase3name = record.buildertek__BT_Phase3__r ? record.buildertek__BT_Phase3__r.Name : 'UnknownPhase3';
         
-      if (!hierarchy[phase1]) {
-        hierarchy[phase1] = { id: phase1, name: record.buildertek__Phase__c, expanded: true, type: "Phase", children: {} };
-      }
-  
-      if (!hierarchy[phase1].children[phase2]) {
-        hierarchy[phase1].children[phase2] = { id: phase1+phase2, name: phase2name, expanded: true, type: "Phase", children: {} };
-      }
-  
-      if (!hierarchy[phase1].children[phase2].children[phase3]) {
-        hierarchy[phase1].children[phase2].children[phase3] = { id: phase1+phase2+phase3, name: phase3name, expanded: true, type: "Phase", children: [] };
-      }
-  
-      hierarchy[phase1].children[phase2].children[phase3].children.push({
-        id: record.Id,
-        name: record.Name,
-        percentDone: record.buildertek__Completion__c || 0,
-        startDate: record.buildertek__Start__c,
-        duration: record.buildertek__Duration__c,
-        expanded: true,
-        type: "Task",
-        // Add other fields as needed
-      });
+        if (!hierarchy[phase1] && phase1 != "UnknownPhase1") {
+            hierarchy[phase1] = { id: phase1, name: record.buildertek__Phase__c, expanded: true, type: "Phase", startDate: "", percentDone: 0, children: {} };
+        }
+    
+        if (!hierarchy[phase1].children[phase2] && phase2 != "UnknownPhase2") {
+            hierarchy[phase1].children[phase2] = { id: phase1+phase2, name: phase2name, expanded: true, type: "Phase", startDate: "", percentDone: 0, children: {} };
+        }
+    
+        if (!hierarchy[phase1].children[phase2].children[phase3] && phase3 != "UnknownPhase3") {
+            hierarchy[phase1].children[phase2].children[phase3] = { id: phase1+phase2+phase3, name: phase3name, expanded: true, type: "Phase", startDate: "", percentDone: 0, children: [] };
+        }
+
+        const recordDup = {
+            id: record.Id,
+            name: record.Name,
+            percentDone: record.buildertek__Completion__c || 0,
+            startDate: record.buildertek__Start__c,
+            duration: record.buildertek__Duration__c,
+            expanded: true,
+            type: "Task",
+            // Add other fields as needed
+        }
+    
+        if(phase3 != 'UnknownPhase3' && phase2 != 'UnknownPhase2' && phase1 != 'UnknownPhase1'){
+            hierarchy[phase1].children[phase2].children[phase3].children.push(recordDup);
+        } else if (phase1 != 'UnknownPhase1' && phase2 != 'UnknownPhase2'){
+            hierarchy[phase1].children[phase2].children.push(recordDup);
+        } else if (phase1 != 'UnknownPhase1'){
+            hierarchy[phase1].children.push(recordDup);
+        } else{
+            projectTaskList.push(recordDup);
+        }
     });
   
-    const result = Object.keys(hierarchy).map(phase1 => ({
-      id: hierarchy[phase1].id,
-      name: hierarchy[phase1].name,
-      expanded: true,
-      type: hierarchy[phase1].type,
-      children: Object.keys(hierarchy[phase1].children).map(phase2 => ({
-        id: hierarchy[phase1].children[phase2].id,
-        name: hierarchy[phase1].children[phase2].name,
-        expanded: true,
-        type: hierarchy[phase1].children[phase2].type,
-        children: Object.keys(hierarchy[phase1].children[phase2].children).map(phase3 => ({
-          id: hierarchy[phase1].children[phase2].children[phase3].id,
-          name: hierarchy[phase1].children[phase2].children[phase3].name,
-          expanded: true,
-          type: hierarchy[phase1].children[phase2].children[phase3].type,
-          children: hierarchy[phase1].children[phase2].children[phase3].children,
-        })),
-      })),
-    }));
+    // const result = Object.keys(hierarchy).map(phase1 => ({
+    //     id: hierarchy[phase1].id,
+    //     name: hierarchy[phase1].name,
+    //     startDate: "",
+    //     expanded: true,
+    //     percentDone: 0,
+    //     type: hierarchy[phase1].type,
+    //     children: Object.keys(hierarchy[phase1].children).map(phase2 => ({
+    //         id: hierarchy[phase1].children[phase2].id,
+    //         name: hierarchy[phase1].children[phase2].name,
+    //         startDate: "",
+    //         expanded: true,
+    //         percentDone: 0,
+    //         type: hierarchy[phase1].children[phase2].type,
+    //         children: Object.keys(hierarchy[phase1].children[phase2].children).map(phase3 => ({
+    //             id: hierarchy[phase1].children[phase2].children[phase3].id,
+    //             name: hierarchy[phase1].children[phase2].children[phase3].name,
+    //             startDate: "",
+    //             expanded: true,
+    //             percentDone: 0,
+    //             type: hierarchy[phase1].children[phase2].children[phase3].type,
+    //             children: hierarchy[phase1].children[phase2].children[phase3].children,
+    //         })),
+    //     })),
+    // }));
+
+    console.log('hierarchy:- ' + JSON.stringify(hierarchy))
+    // const returnObj = {result: result, tasks: projectTaskList}
+    projectTaskList.push(hierarchy)
   
-    return result;
+    return hierarchy;
   }
 
 export { formatApexDatatoJSData, convertJSONtoApexData, recordsTobeDeleted, makeComboBoxDataForContractor, calcBusinessDays, makeComboBoxDataForResourceData, setResourceDataForApexData, mergeArrays, createAssignmentData };
