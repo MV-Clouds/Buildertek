@@ -5,11 +5,13 @@ import getScheduleDataByProjectId from "@salesforce/apex/GetProjectAndScheduleFo
 export default class ScheduleTab extends LightningElement {
 
     @api projectId;
+    @api recordId;
     @track SchedulesOptions = [];
     @track selectedScheduleId;
     @track scheduleNameSet = [];
     @track isScheduleAvailable = false;
     @track callscheduleComponent = false;
+    
     connectedCallback() {
         console.log('Project Id: ' + this.projectId);
         this.getScheduleData();
@@ -58,5 +60,6 @@ export default class ScheduleTab extends LightningElement {
             );
         }
     }
+
 
 }
