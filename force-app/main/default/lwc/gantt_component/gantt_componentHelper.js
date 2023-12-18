@@ -1,7 +1,10 @@
 function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDataList) {
+    var taskData = scheduleItemsData;
     var taskDependencyData = [];
     var resourceRowData = [];
+    var resourceRowIdList = [];
     var assignmentRowData = [];
+    var scheduleItemIdsList = [];
     var rows = [];
     var formattedData = {};
     var firstRowDup = {};
@@ -13,6 +16,7 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
     firstRowDup["name"] = scheduleData.buildertek__Description__c;
     firstRowDup["startDate"] = scheduleData.buildertek__Initial_Start_Date__c;
     firstRowDup["duration"] = 1;
+    // var projstartdate = scheduleData.buildertek__Initial_Start_Date__c;
     firstRowDup["expanded"] = true
     firstRowDup["type"] = 'Project'
     firstRowDup['customtype'] = 'Project'
@@ -20,20 +24,23 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
     firstRowDup["children"] = []
 
     //*BUIL-3699 new logic start
-    firstRowDup["children"] = grpTaskOnPhase(taskListForPhase);
-    
+
+    // console.log('test:- ', grpTaskOnPhase(taskListForPhase))
+    firstRowDup['children'] = grpTaskOnPhase(taskListForPhase).children;
+
     for (var i = 0; i < taskListForPhase.length; i++) {
         console.log("taskListForPhase:- ", taskListForPhase[i]);
         var dependencyRow = {};
-        if(taskListForPhase[i].buildertek__Dependency__c){
-            dependencyRow["id" ]  = taskListForPhase[i].Id+'_'+taskListForPhase[i].buildertek__Dependency__c
+        if (taskListForPhase[i].buildertek__Dependency__c) {
+            dependencyRow["id"] = taskListForPhase[i].Id + '_' + taskListForPhase[i].buildertek__Dependency__c
             dependencyRow["fromTask"] = taskListForPhase[i].buildertek__Dependency__c
-            dependencyRow["toTask"]  = taskListForPhase[i].Id
-            dependencyRow["lag"]  = taskListForPhase[i].buildertek__Lag__c
+            dependencyRow["toTask"] = taskListForPhase[i].Id
+            dependencyRow["lag"] = taskListForPhase[i].buildertek__Lag__c
             taskDependencyData.push(dependencyRow)
         }
         assignmentRowData.push.apply(assignmentRowData, createAssignmentData(taskListForPhase[i])); //adds all the assignment data to the main list.
     }
+
     //* BUIL-3699 new logic end
 
     rows.push(firstRowDup);
@@ -112,6 +119,8 @@ function convertJSONtoApexData(data, taskData, dependenciesData, resourceData) {
                 //var enddate = new Date(rowData[i]['endDate']).toJSON();
                 var enddate = new Date(rowData[i]['endDate'])
                 updateData['buildertek__Start__c'] = rowData[i]['startDate'].split('T')[0]
+                //updateData['buildertek__Finish__c'] = enddate[2] + '-'+ enddate[1] + '-'+enddate[0]
+                //updateData['buildertek__Finish__c'] = enddate.split('T')[0]
                 updateData['buildertek__Finish__c'] = enddate.getFullYear() + '-' + Number(enddate.getMonth() + 1) + '-' + enddate.getDate();
                 updateData['buildertek__Duration__c'] = rowData[i]['duration']
                 updateData['buildertek__Completion__c'] = rowData[i]['percentDone']
@@ -330,6 +339,7 @@ function makeComboBoxDataForResourceData(listOfContractors, listOfUsers) {
         listOfResourceToReturn.push(resourceObj);
     });
 
+
     return listOfResourceToReturn;
 }
 
@@ -346,6 +356,7 @@ function calcBusinessDays(dDate1, dDate2) { // input given as Date objects
     if ((iWeekday1 > 5) && (iWeekday2 > 5)) iAdjust = 1; // adjustment if both days on weekend
     iWeekday1 = (iWeekday1 > 5) ? 5 : iWeekday1; // only count weekdays
     iWeekday2 = (iWeekday2 > 5) ? 5 : iWeekday2;
+
     // calculate differnece in weeks (1000mS * 60sec * 60min * 24hrs * 7 days = 604800000)
     iWeeks = Math.floor((dDate2.getTime() - dDate1.getTime()) / 604800000)
 
@@ -354,6 +365,7 @@ function calcBusinessDays(dDate1, dDate2) { // input given as Date objects
     } else {
         iDateDiff = ((iWeeks + 1) * 5) - (iWeekday1 - iWeekday2)
     }
+
     iDateDiff -= iAdjust // take into account both days on weekend
 
     return (iDateDiff + 1); // add 1 because dates are inclusive
@@ -411,35 +423,35 @@ function createAssignmentData(taskListForPhase) {
         assignmentRow['resource'] = taskListForPhase.buildertek__Contractor_Resource_2__c;
         assignmentRowDataChild.push(assignmentRow)
     }
-    
+
     if (!taskListForPhase.buildertek__Milestone__c && taskListForPhase.buildertek__Contractor_Resource_3__c) {
         assignmentRow['id'] = taskListForPhase.Id + '_' + taskListForPhase.buildertek__Contractor_Resource_3__c + '__index' + i + 'ContractorResource_Name' + taskListForPhase.buildertek__Contractor_Resource_3__r.Name;
         assignmentRow['event'] = taskListForPhase.Id
         assignmentRow['resource'] = taskListForPhase.buildertek__Contractor_Resource_3__c;
         assignmentRowDataChild.push(assignmentRow)
     }
-    
+
     if (!taskListForPhase.buildertek__Milestone__c && taskListForPhase.buildertek__Internal_Resource_1__c) {
         assignmentRow['id'] = taskListForPhase.Id + '_' + taskListForPhase.buildertek__Internal_Resource_1__c + '__index' + i + 'ContractorResource_Name' + taskListForPhase.buildertek__Internal_Resource_1__r.Name;
         assignmentRow['event'] = taskListForPhase.Id
         assignmentRow['resource'] = taskListForPhase.buildertek__Internal_Resource_1__c;
         assignmentRowDataChild.push(assignmentRow)
     }
-    
+
     if (!taskListForPhase.buildertek__Milestone__c && taskListForPhase.buildertek__Internal_Resource_3__c) {
         assignmentRow['id'] = taskListForPhase.Id + '_' + taskListForPhase.buildertek__Internal_Resource_3__c + '__index' + i + 'ContractorResource_Name' + taskListForPhase.buildertek__Internal_Resource_3__r.Name;
         assignmentRow['event'] = taskListForPhase.Id
         assignmentRow['resource'] = taskListForPhase.buildertek__Internal_Resource_3__c;
         assignmentRowDataChild.push(assignmentRow)
     }
-    
+
     if (!taskListForPhase.buildertek__Milestone__c && taskListForPhase.buildertek__Internal_Resource_4__c) {
         assignmentRow['id'] = taskListForPhase.Id + '_' + taskListForPhase.buildertek__Internal_Resource_4__c + '__index' + i + 'ContractorResource_Name' + taskListForPhase.buildertek__Internal_Resource_4__r.Name;
         assignmentRow['event'] = taskListForPhase.Id
         assignmentRow['resource'] = taskListForPhase.buildertek__Internal_Resource_4__c;
         assignmentRowDataChild.push(assignmentRow)
     }
-    
+
     return assignmentRowDataChild;
 }
 
@@ -447,81 +459,80 @@ function createAssignmentData(taskListForPhase) {
 //* Date : 8th Dec 2023
 //* This method is used to create task row data based on the conditions
 function grpTaskOnPhase(records) {
-    const hierarchy = {};
-    const projectTaskList = [];
-    
-    records.forEach((record) => {
+    const hierarchy = { children: [] };
+
+    records.forEach(record => {
         const phase1 = record.buildertek__Phase__c || 'UnknownPhase1';
         const phase2 = record.buildertek__BT_Grouping__c || 'UnknownPhase2';
-        const phase2name = record.buildertek__BT_Grouping__r ? record.buildertek__BT_Grouping__r.Name : 'UnknownPhase2';
         const phase3 = record.buildertek__BT_Phase3__c || 'UnknownPhase3';
-        const phase3name = record.buildertek__BT_Phase3__r ? record.buildertek__BT_Phase3__r.Name : 'UnknownPhase3';
-        
-        if (!hierarchy[phase1] && phase1 != "UnknownPhase1") {
-            hierarchy[phase1] = { id: phase1, name: record.buildertek__Phase__c, expanded: true, type: "Phase", startDate: "", percentDone: 0, children: {} };
-        }
-    
-        if (!hierarchy[phase1].children[phase2] && phase2 != "UnknownPhase2") {
-            hierarchy[phase1].children[phase2] = { id: phase1+phase2, name: phase2name, expanded: true, type: "Phase", startDate: "", percentDone: 0, children: {} };
-        }
-    
-        if (!hierarchy[phase1].children[phase2].children[phase3] && phase3 != "UnknownPhase3") {
-            hierarchy[phase1].children[phase2].children[phase3] = { id: phase1+phase2+phase3, name: phase3name, expanded: true, type: "Phase", startDate: "", percentDone: 0, children: [] };
+
+        if (!hierarchy.children.find(child => child.id == phase1) && phase1 !== 'UnknownPhase1') {
+            hierarchy.children.push({ id: phase1, name: phase1, expanded: true, type: "Phase", children: [] });
         }
 
-        const recordDup = {
+        let targetNode;
+
+        if (phase2 !== 'UnknownPhase2' && phase3 !== 'UnknownPhase3' && phase1 !== 'UnknownPhase1') {
+            let phase2Node1 = hierarchy.children.find(child => child.id === phase1)
+            let phase2Node = phase2Node1.children.find(child => child.id === phase1 + phase2);
+
+            if (!phase2Node) {
+                phase2Node = { id: phase1 + phase2, name: record.buildertek__BT_Grouping__r.Name, expanded: true, type: "Phase", children: [] };
+                hierarchy.children.find(child => child.id === phase1).children.push(phase2Node);
+            }
+
+            let phase3Node = phase2Node.children.find(child => child.id === phase1 + phase2 + phase3);
+
+            if (!phase3Node) {
+                phase3Node = { id: phase1 + phase2 + phase3, name: record.buildertek__BT_Phase3__r.Name, expanded: true, type: "Phase", children: [] };
+                phase2Node.children.push(phase3Node);
+            }
+
+
+            targetNode = phase3Node;
+        } else if (phase2 !== 'UnknownPhase2' && phase1 !== 'UnknownPhase1') {
+            let phase2Node = hierarchy.children.find(child => child.id=== phase1).children.find(child => child.id === phase1 + phase2);
+
+            if (!phase2Node) {
+                phase2Node = { id: phase1 + phase2, name: record.buildertek__BT_Grouping__r.Name, expanded: true, type: "Phase", children: [] };
+                hierarchy.children.find(child => child.id === phase1).children.push(phase2Node);
+            }
+
+            targetNode = phase2Node;
+        }
+        else if (phase1 !== 'UnknownPhase1') {
+            targetNode = hierarchy.children.find(child => child.id === phase1);
+        } else {
+            targetNode = hierarchy;
+        }
+
+        let customtype;
+        let duration;
+
+        if (record.Name == "Milestone Complete") {
+            customtype  = 'Milestone';
+            duration = 0;
+        } else {
+            customtype = 'Task';
+            duration  = record.buildertek__Duration__c || 1;
+        }
+        targetNode.children.push({
             id: record.Id,
             name: record.Name,
             percentDone: record.buildertek__Completion__c || 0,
             startDate: record.buildertek__Start__c,
-            duration: record.buildertek__Duration__c,
+            duration: duration,
+            constraintType : "startnoearlierthan",
+            constriantDate : record.buildertek__Start__c,
             expanded: true,
-            type: "Task",
+            type: customtype,
+            customtype: customtype
             // Add other fields as needed
-        }
-    
-        if(phase3 != 'UnknownPhase3' && phase2 != 'UnknownPhase2' && phase1 != 'UnknownPhase1'){
-            hierarchy[phase1].children[phase2].children[phase3].children.push(recordDup);
-        } else if (phase1 != 'UnknownPhase1' && phase2 != 'UnknownPhase2'){
-            hierarchy[phase1].children[phase2].children.push(recordDup);
-        } else if (phase1 != 'UnknownPhase1'){
-            hierarchy[phase1].children.push(recordDup);
-        } else{
-            projectTaskList.push(recordDup);
-        }
+        });
     });
-  
-    // const result = Object.keys(hierarchy).map(phase1 => ({
-    //     id: hierarchy[phase1].id,
-    //     name: hierarchy[phase1].name,
-    //     startDate: "",
-    //     expanded: true,
-    //     percentDone: 0,
-    //     type: hierarchy[phase1].type,
-    //     children: Object.keys(hierarchy[phase1].children).map(phase2 => ({
-    //         id: hierarchy[phase1].children[phase2].id,
-    //         name: hierarchy[phase1].children[phase2].name,
-    //         startDate: "",
-    //         expanded: true,
-    //         percentDone: 0,
-    //         type: hierarchy[phase1].children[phase2].type,
-    //         children: Object.keys(hierarchy[phase1].children[phase2].children).map(phase3 => ({
-    //             id: hierarchy[phase1].children[phase2].children[phase3].id,
-    //             name: hierarchy[phase1].children[phase2].children[phase3].name,
-    //             startDate: "",
-    //             expanded: true,
-    //             percentDone: 0,
-    //             type: hierarchy[phase1].children[phase2].children[phase3].type,
-    //             children: hierarchy[phase1].children[phase2].children[phase3].children,
-    //         })),
-    //     })),
-    // }));
 
-    console.log('hierarchy:- ' + JSON.stringify(hierarchy))
-    // const returnObj = {result: result, tasks: projectTaskList}
-    projectTaskList.push(hierarchy)
-  
+
     return hierarchy;
-  }
+}
 
 export { formatApexDatatoJSData, convertJSONtoApexData, recordsTobeDeleted, makeComboBoxDataForContractor, calcBusinessDays, makeComboBoxDataForResourceData, setResourceDataForApexData, mergeArrays, createAssignmentData };
