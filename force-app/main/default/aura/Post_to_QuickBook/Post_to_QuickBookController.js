@@ -46,8 +46,8 @@
             else{
                 component.find('notifLib').showNotice({
                     "variant": "error",
-                    "header": "Error",
-                    "message":  'This Account is sync as ' + QBType + ' in Quickbook, So You can not sync this Account as ' + BTAccountType +  ' again.',
+                    "header": "Validation Warning",
+                    "message":  'This account is sync as ' + QBType + ' in QB, so you can not resync this account as ' + BTAccountType +  '.',
                 }); 
                 $A.get("e.force:closeQuickAction").fire();
             }

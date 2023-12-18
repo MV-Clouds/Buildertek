@@ -52,7 +52,7 @@ public with sharing class QBIntegrationQueue_SIFlow {
         }
     
         // public static void sync_Customer_in_QB(List<buildertek__Billable_Lines__c> SILines, buildertek__Billings__c SI, Account acc, buildertek__QuickBooks_Setting__mdt QBMetadata, Boolean Get_Access_Token, String receiptID, String SyncObjName){
-            public static void sync_Customer_in_QB(QBIntegrationQueue_SIFlow.salesInvoiceFlow_Wrapper SI_Wrapper){
+        public static void sync_Customer_in_QB(QBIntegrationQueue_SIFlow.salesInvoiceFlow_Wrapper SI_Wrapper){
             try {
                 String Customer_EndPoint = '/v3/company/' + SI_Wrapper.QBMetadata.buildertek__Company_Id__c + '/customer?minorversion=' + SI_Wrapper.QBMetadata.buildertek__minorversion__c;            
                 String Customer_RequestBody = QBMap.mapAccountData(SI_Wrapper.acc, 1);
@@ -488,4 +488,5 @@ public with sharing class QBIntegrationQueue_SIFlow {
             //     this.acc = acc;
             // }
         }
+
 }

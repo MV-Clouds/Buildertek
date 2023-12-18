@@ -1,4 +1,7 @@
 @isTest
+global class QBMockTest{
+
+}
 // global class QBMockTest implements HttpCalloutMock {
 //     global HTTPResponse respond(HTTPRequest req) {
 //         HttpResponse res = new HttpResponse();
@@ -8,21 +11,21 @@
 //         return res;
 //     }
 //     @isTest
-global class QBMockTest implements HttpCalloutMock {
-		public Integer code;
-		public String status;
-		public String Body;
+// global class QBMockTest implements HttpCalloutMock {
+// 		public Integer code;
+// 		public String status;
+// 		public String Body;
 
-		global QBMockTest(Integer code, String body) {
-			this.code = code;
-			this.Body = body;
-		}
+// 		global QBMockTest(Integer code, String body) {
+// 			this.code = code;
+// 			this.Body = body;
+// 		}
 
-	    global HTTPResponse respond(HTTPRequest req) {
-	        HttpResponse resp = new HttpResponse();
-            resp.setHeader('Content-Type','application/json');
-			resp.setStatusCode(code);
-			resp.setBody(Body);
-			return resp;
-	    }
-}
+// 	    global HTTPResponse respond(HTTPRequest req) {
+// 	        HttpResponse resp = new HttpResponse();
+//             resp.setHeader('Content-Type','application/json');
+// 			resp.setStatusCode(code);
+// 			resp.setBody(Body);
+// 			return resp;
+// 	    }
+// }
