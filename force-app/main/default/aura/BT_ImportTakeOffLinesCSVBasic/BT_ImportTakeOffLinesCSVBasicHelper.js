@@ -1,23 +1,35 @@
 ({
   save: function (component, helper) {
+    try {
+      
       var MAX_FILE_SIZE = 750000;
       var fileInput = component.find("file").getElement();
       var file = fileInput.files[0];
+      console.log('file',file);
+      console.log('fileContents',file);
       if (file != undefined) {
-          if (file.size > MAX_FILE_SIZE) {
+        if (file.size > MAX_FILE_SIZE) {
           alert(
-              "File size cannot exceed " +
-              MAX_FILE_SIZE +
-              " bytes.\n" +
-              "Selected file size: " +
-              file.size
-          );
-          return;
+            "File size cannot exceed " +
+            MAX_FILE_SIZE +
+            " bytes.\n" +
+            "Selected file size: " +
+            file.size
+            );
+            return;
           }
           var fr = new FileReader();
+          fr.readAsText(file);
 
+          
           var self = this;
-          fr.onload = function () {
+          fr.onload = function (event) {
+            console.log('event ',event);
+            // console.log('data check ',base64.decode(event.target.result));
+            var data = Papa.parse(event.target.result);
+            console.log(data);
+            debugger;
+            
           var fileContents = fr.result;
           var base64Mark = "base64,";
           var dataStart = fileContents.indexOf(base64Mark) + base64Mark.length;
@@ -31,6 +43,9 @@
       } else {
           helper.showToast(component, "error", "Please select file to import");
       }
+    } catch (error) {
+      console.log('error ',error); 
+    }
   },
  
   convertArrayOfObjectsToCSV : function(component,event,helper){

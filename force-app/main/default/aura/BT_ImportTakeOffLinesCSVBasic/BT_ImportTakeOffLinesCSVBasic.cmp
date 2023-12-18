@@ -3,6 +3,7 @@
     <aura:attribute name="recordId" type="Id" />
 	<lightning:workspaceAPI aura:id="workspace"/>
     <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
+    <ltng:require scripts="{!join(',',$Resource.PapaParse + '/PapaParse/papaparse.js')}"  />
     <aura:attribute name="Spinner" type="Boolean" default="false"/>
     
        <div class="slds-modal__header" style="font-size:17px;">
