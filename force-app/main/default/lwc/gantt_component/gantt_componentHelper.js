@@ -16,7 +16,6 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
     firstRowDup["name"] = scheduleData.buildertek__Description__c;
     firstRowDup["startDate"] = scheduleData.buildertek__Initial_Start_Date__c;
     firstRowDup["duration"] = 1;
-    // var projstartdate = scheduleData.buildertek__Initial_Start_Date__c;
     firstRowDup["expanded"] = true
     firstRowDup["type"] = 'Project'
     firstRowDup['customtype'] = 'Project'
@@ -25,7 +24,6 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
 
     //*BUIL-3699 new logic start
 
-    // console.log('test:- ', grpTaskOnPhase(taskListForPhase))
     firstRowDup['children'] = grpTaskOnPhase(taskListForPhase).children;
 
     for (var i = 0; i < taskListForPhase.length; i++) {
@@ -114,13 +112,9 @@ function convertJSONtoApexData(data, taskData, dependenciesData, resourceData) {
                 updateData['Name'] = rowData[i]['name'];
 
                 updateData['buildertek__Order__c'] = i + 1;
-                //var startdate = new Date(rowData[i]['startDate'])
                 var enddate = new Date(rowData[i]['endDate']).toLocaleDateString().split('/')
-                //var enddate = new Date(rowData[i]['endDate']).toJSON();
                 var enddate = new Date(rowData[i]['endDate'])
                 updateData['buildertek__Start__c'] = rowData[i]['startDate'].split('T')[0]
-                //updateData['buildertek__Finish__c'] = enddate[2] + '-'+ enddate[1] + '-'+enddate[0]
-                //updateData['buildertek__Finish__c'] = enddate.split('T')[0]
                 updateData['buildertek__Finish__c'] = enddate.getFullYear() + '-' + Number(enddate.getMonth() + 1) + '-' + enddate.getDate();
                 updateData['buildertek__Duration__c'] = rowData[i]['duration']
                 updateData['buildertek__Completion__c'] = rowData[i]['percentDone']
@@ -508,25 +502,34 @@ function grpTaskOnPhase(records) {
 
         let customtype;
         let duration;
-
+        let classtype;
         if (record.Name == "Milestone Complete") {
             customtype  = 'Milestone';
             duration = 0;
+            classtype = "milestoneTypeColor";
         } else {
             customtype = 'Task';
             duration  = record.buildertek__Duration__c || 1;
+            classtype = "task"
         }
+
+        console.log('customtype:- ', customtype);
+
         targetNode.children.push({
             id: record.Id,
             name: record.Name,
+            Phase: record.buildertek__Phase__c,
+            NewPhase: record.buildertek__Phase__c,
             percentDone: record.buildertek__Completion__c || 0,
             startDate: record.buildertek__Start__c,
             duration: duration,
             constraintType : "startnoearlierthan",
             constriantDate : record.buildertek__Start__c,
             expanded: true,
-            type: customtype,
-            customtype: customtype
+            type: "Task",
+            customtype: customtype,
+            cls: classtype,
+            iconCls: "b-fa b-fa-arrow-right",
             // Add other fields as needed
         });
     });

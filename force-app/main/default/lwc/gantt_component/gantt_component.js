@@ -60,7 +60,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
   @api contractorResourceFilterVal = "";
   @api internalResourceFilterVal = "";
   @track setorignaldates = false;
-
+@api hideToolBar = false;
   //Added for contractor
   @api showContractor = false;
   @api selectedResourceAccount;
@@ -342,7 +342,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
 
         if (this.template.querySelector(".container").children.length) {
           this.template.querySelector(".container").innerHTML = "";
-          this.template.querySelector(".container1").innerHTML = "";
+          // this.template.querySelector(".container1").innerHTML = "";
           // this.handleHideSpinner();
           this.createGanttChartInitially();
           // this.createGantt();
@@ -569,7 +569,10 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     var resourceRowData = [];
     var assignmentRowData = [];
     var rows = [];
-
+var toolbar;
+    if(!this.hideToolBar){
+      toolbar = new GanttToolbar()
+    }
     var scheduleDataList = this.scheduleItemsDataList;
     this.scheduleItemsDataList = scheduleDataList;
     var formatedSchData = formatApexDatatoJSData(
@@ -616,8 +619,8 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
       appendTo: this.template.querySelector(".container"),
       // startDate: "2019-07-01",
       // endDate: "2019-10-01",
-
-      tbar: new GanttToolbar(),
+      
+      tbar: toolbar,
       rowHeight         : 30,
       barMargin         : 5,
 
