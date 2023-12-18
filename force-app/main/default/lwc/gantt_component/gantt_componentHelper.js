@@ -13,6 +13,7 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
     firstRowDup["id"] = scheduleData.Id;
     firstRowDup["name"] = scheduleData.buildertek__Description__c;
     firstRowDup["startDate"] = scheduleData.buildertek__Initial_Start_Date__c;
+    firstRowDup["duration"] = 1;
     var projstartdate = scheduleData.buildertek__Initial_Start_Date__c;
     firstRowDup["expanded"] = true
     firstRowDup["type"] = 'Project'
