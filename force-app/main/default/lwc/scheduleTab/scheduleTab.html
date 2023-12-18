@@ -9,11 +9,11 @@
             </div>
 
             <div class="scheduleContainer" if:true={callscheduleComponent}>
-                <c-gantt_component record-id={selectedScheduleId}></c-gantt_component>
+                <c-gantt_component record-id={selectedScheduleId} hide-tool-bar={hideToolbar}></c-gantt_component>
             </div>
         </lightning-card>
     </template>
-    
+
     <template if:false={isScheduleAvailable}>
         <div class="slds-m-around_medium">
             <p class="slds-text-heading_medium slds-text-align_center">No schedules available.</p>

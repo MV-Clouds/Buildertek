@@ -11,7 +11,7 @@ export default class ScheduleTab extends LightningElement {
     @track scheduleNameSet = [];
     @track isScheduleAvailable = false;
     @track callscheduleComponent = false;
-    
+    @track hideToolbar = true;
     connectedCallback() {
         console.log('Project Id: ' + this.projectId);
         this.getScheduleData();
