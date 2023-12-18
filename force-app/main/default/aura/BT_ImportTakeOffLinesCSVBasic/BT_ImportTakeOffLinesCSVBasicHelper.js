@@ -46,6 +46,7 @@
  },
 
 upload: function (component, helper, file, fileContents) {
+  component.set("v.Spinner",true);
   var action = component.get("c.importRecords");
   action.setParams({
       takeOffId: component.get("v.recordId"),
@@ -95,9 +96,7 @@ upload: function (component, helper, file, fileContents) {
 },
 
 showToast: function (component, type, message) {
-  $A.get("e.c:BT_SpinnerEvent").setParams({
-      "action": "HIDE"
-  }).fire();
+  component.set("v.Spinner",false);
  var toastEvent = $A.get("e.force:showToast");
 
  toastEvent.setParams({
