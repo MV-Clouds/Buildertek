@@ -12,10 +12,10 @@ public with sharing class SetupTestData {
             LastName = 'LastName1',
             email='sagar@buildertek.com'
         );
-        
+
             insert contact1;
-			
-        
+
+
        Opportunity opportunity1 = new Opportunity(
             Name = 'Sample Opportunity 1',
             AccountId = account1.Id,
@@ -29,14 +29,14 @@ public with sharing class SetupTestData {
 			Schema.sObjectType.Opportunity.fields.CloseDate.isCreateable() ){
             insert opportunity1;
 			}
-        
+
         Product2 product = new Product2(Name = 'Laptop X200', Family = 'Hardware');
          if(Schema.sObjectType.Product2.isCreateable()&&
             Schema.sObjectType.Product2.fields.Name.isCreateable()&&
             Schema.sObjectType.Product2.fields.Family.isCreateable() ){
             Insert product;
             }
-        
+
        buildertek__Inventory_Management__c inventoryMgmt = new buildertek__Inventory_Management__c(
             buildertek__Product_Id__c = 'Test123',
             buildertek__Product_Name__c = product.Id
@@ -63,7 +63,7 @@ public with sharing class SetupTestData {
 			Schema.sObjectType.buildertek__Service_Request__c.fields.buildertek__Subject__c.isCreateable()){
             insert serviceRequest;
 			}
-        
+
         buildertek__Product__c bTekProduct = new buildertek__Product__c(
             buildertek__Product__c = inventoryMgmt.Id,
             buildertek__Service_Request__c = serviceRequest.Id,
@@ -90,7 +90,7 @@ public with sharing class SetupTestData {
 			Schema.sObjectType.buildertek__Project__c.fields.Project_Tax_Rate__c.isCreateable()){
             insert project;
 			}
-        
+
         buildertek__Quote__c quote = new buildertek__Quote__c(
             Name = 'Sample Quote',
             buildertek__Opportunity__c = opportunity1.Id,
@@ -106,7 +106,7 @@ public with sharing class SetupTestData {
 			Schema.sObjectType.buildertek__Quote__c.fields.buildertek__Project__c.isCreateable()){
             insert quote;
 			}
-        
+
         buildertek__Quote_Item__c quoteItem = new buildertek__Quote_Item__c(
         	Name = 'Sample Quote Item',
             buildertek__Quote__c = quote.Id,
@@ -120,7 +120,7 @@ public with sharing class SetupTestData {
 			Schema.sObjectType.buildertek__Quote_Item__c.fields.Product__c.isCreateable() ){
             insert quoteItem;
 			}
-        
+
            List<buildertek__Purchase_Order__c> poList = new List<buildertek__Purchase_Order__c>();
            buildertek__Purchase_Order__c purchaseOrder = new buildertek__Purchase_Order__c(
             buildertek__Contractor_Resource__c = contact1.Id,
@@ -148,7 +148,7 @@ public with sharing class SetupTestData {
 			Schema.sObjectType.buildertek__Purchase_Order_Item__c.fields.buildertek__Product__c.isCreateable() ){
             insert purchaseOrderItem;
 			}
-        
+
         buildertek__Budget__c budget = new buildertek__Budget__c(
             Name = 'Sample Budget',
             buildertek__Type__c = 'Standard',
@@ -161,7 +161,7 @@ public with sharing class SetupTestData {
             insert budget;
 			}
     }
-    
+
     public static Account createAccount(){
         Account account1 = new Account(
             Name = 'Sample Account 1'
@@ -169,10 +169,10 @@ public with sharing class SetupTestData {
         if(Schema.sObjectType.Account.isCreateable()&&
             Schema.sObjectType.Account.fields.Name.isCreateable() ){
         insert account1;
-        } 
+        }
         return account1;
     }
-    
+
     public static Contact createContact(Account accId){
         Contact contact1 = new Contact(
             AccountId = accId.Id,
@@ -184,10 +184,10 @@ public with sharing class SetupTestData {
             Schema.sObjectType.Contact.fields.LastName.isCreateable() &&
 			Schema.sObjectType.Contact.fields.email.isCreateable()  ){
             insert contact1;
-		}  
+		}
 		return contact1;
     }
-    
+
     public static buildertek__Project__c createProj(Account accId){
         buildertek__Project__c project = new buildertek__Project__c(
             Name = 'Sample Project',
@@ -205,7 +205,7 @@ public with sharing class SetupTestData {
 		}
 		return project;
     }
-    
+
     public static buildertek__Purchase_Order__c createPO(Account accId, Contact contactId, buildertek__Project__c projId){
         List<buildertek__Purchase_Order__c> poList = new List<buildertek__Purchase_Order__c>();
            buildertek__Purchase_Order__c purchaseOrder = new buildertek__Purchase_Order__c(
@@ -222,8 +222,8 @@ public with sharing class SetupTestData {
 			Schema.sObjectType.buildertek__Purchase_Order__c.fields.buildertek__Ship_To_Address__c.isCreateable() ){
             insert poList;
 		}
-		system.debug('poList --------> '+poList[0]); 
+		system.debug('poList --------> '+poList[0]);
 		return poList[0];
-           
+
     }
 }

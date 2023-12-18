@@ -231,11 +231,12 @@ public without sharing class PurchaseOrderDAO{
     }
 
     @AuraEnabled
-    public static ResponseBase createLinesForExistedPO (String poRecordID, String poItemsJson, String budgetlineid, list<string>addbudgetlineids){
+    public static ResponseBase createLinesForExistedPO (String poRecordID, String poItemsJson, String budgetlineid, list<string> addbudgetlineids){
         ResponseBase res = new ResponseBase();
         //try{
         List<buildertek__Purchase_Order_Item__c> purchaseOrderItemList = new List<buildertek__Purchase_Order_Item__c>();
             List<buildertek__Purchase_Order_Item__c> poItems = new List<buildertek__Purchase_Order_Item__c>();
+            System.debug('poItemsJson :: ' + poItemsJson);
             List<POLineItemsClass> POItemsList = (List<POLineItemsClass>)System.JSON.deserialize(poItemsJson, List<POLineItemsClass>.class);
             system.debug('POItemsList ------------> ' + POItemsList);
             SET<ID> productIdSet = new SET<ID>();
@@ -530,13 +531,6 @@ public without sharing class PurchaseOrderDAO{
             throw new AuraHandledException(e.getMessage());
         }
         return pickListValuesList;
-    }
-
-    @AuraEnabled
-    public static string testfromLax(String productId){
-        System.debug('########pricebook' + productId);
-
-        return 'ok';
     }
 
     @AuraEnabled

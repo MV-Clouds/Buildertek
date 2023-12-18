@@ -8,7 +8,7 @@ Date:  19-Nov-2018
 @isTest
 public class CreateInvoiceFromContractTest {
     @testSetup static void setupBaseData() {
-        SetupTestData.setupBaseData();
+        //SetupTestData.setupBaseData();
     }
     
     public static testMethod void test1() {

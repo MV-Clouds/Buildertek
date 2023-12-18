@@ -16,6 +16,11 @@ private class SyncVendorScheduleItemTest {
         acc.Name = 'Test Account';
         insert acc;
 
+        Contact con = new Contact();
+        con.LastName = 'Test Contact';
+        con.Email = 'test@mvclouds.com';
+        insert con;
+
         buildertek__Project__c proj = new buildertek__Project__c();
         proj.Name = 'Test Project';
         insert proj;
