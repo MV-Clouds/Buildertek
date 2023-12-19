@@ -6,7 +6,8 @@
                                                         {'label': 'Punch List', 'value': 'PunchList'},
                                                         {'label': 'Purchase Order', 'value': 'Purchase Order'},
                                                         {'label': 'Selection', 'value': 'Selection'},
-                                                        {'label': 'Warranty', 'value': 'Warranty'} ]"/> 
+                                                        {'label': 'Warranty', 'value': 'Warranty'},
+                                                        {'label': 'Project Vendors', 'value': 'Project Vendors'}, ]"/>
                                                         <!-- {'label': 'Schedule', 'value': 'Schedule'}, -->
     <aura:attribute name="value" type="List" default=""/>
     <aura:attribute name="recordId" type="Id" />
@@ -17,8 +18,8 @@
     <ltng:require styles="{!$Resource.ModalPreviewCSS}" />
     <aura:html tag="style">
         .slds-modal__container {
-            width:50% !important;      
-            max-width: 50% !important;          
+            width:50% !important;
+            max-width: 50% !important;
         }
         .cuf-content {
             padding: 0 0rem !important;
@@ -33,7 +34,7 @@
             border-radius: 5px;
         }
     </aura:html>
-    
+
     <div class="slds-modal__content ">
         <div class="slds slds-scope">
             <header class="slds-modal__header">
@@ -49,7 +50,7 @@
                              onchange="{! c.handleChange }"/>
             </div>
             </div>
-        </div>      
+        </div>
     </div>
     <div class="modal-footer slds-modal__footer slds-size_1-of-1">
         <lightning:button variant="brand" label="Clone Project" title="Clone Project" onclick="{! c.handleClick }" />

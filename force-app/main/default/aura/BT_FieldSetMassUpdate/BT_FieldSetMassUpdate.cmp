@@ -31,6 +31,9 @@
     <aura:attribute name="isCurrencyField" type="boolean" default="false" />
     <aura:attribute name="contractor" type="String" default=""/>
     <aura:attribute name="contractorChange" type="Boolean" default="false"/>
+
+    <aura:attribute name="PurchaseOrderId" type="String" />
+    <aura:attribute name="QuantityValue" type="Integer" />
  
     <aura:handler name="onSelectEvt" event="c:BT_LookupEvent" action="{!c.getLookUpValues}" />
      <aura:handler name="SelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.getLookUpValues}" />
@@ -70,12 +73,21 @@
             <lightning:input type="date" value="{!v.cellValue}" name="{!v.index+'-'+v.fieldName}"
                 onchange="{!c.onInputChange}" data-fieldapi="{!v.fieldName}"/>
         </aura:if>
+
         <aura:if isTrue="{!v.isDoubleField}">
-           
-        <div fieldapi="{!v.fieldName}">
-            <lightning:input type="number" value="{!v.cellValue}" name="{!v.index+'-'+v.fieldName}"
-                onchange="{!c.onInputChange}" data-fieldapi="{!v.fieldName}"/>
-        </div>
+        <aura:if isTrue="{!v.fieldName == 'buildertek__Quantity_Remaining__c'}">
+            <!-- buildertek__Quantity_Remaining__c is a formula field , Therefore we make this field Disabled-->
+            <div fieldapi="{!v.fieldName}">
+                <lightning:input type="number" value="{!v.cellValue}" name="{!v.index+'-'+v.fieldName}"
+                    onchange="{!c.onInputChange}" data-fieldapi="{!v.fieldName}" disabled="true"/>
+            </div>
+            <aura:set attribute="else">
+                <div fieldapi="{!v.fieldName}">
+                    <lightning:input type="number" value="{!v.cellValue}" name="{!v.index+'-'+v.fieldName}"
+                        onchange="{!c.onInputChange}" data-fieldapi="{!v.fieldName}"/>
+                </div>
+            </aura:set>
+        </aura:if>
         </aura:if>
         <aura:if isTrue="{!v.isPercentField}">
             
@@ -157,9 +169,20 @@
 
                             </div>
                             <aura:set attribute="else">
+                                <aura:if isTrue="{!v.fieldName == 'buildertek__Purchase_Order__c'}">
+                                    <lightning:recordEditForm onload="{!c.setSelectedRecordId}" objectApiName="{!v.childObjectName}">
+                                        <div style = "padding-top: 7px !important; padding-bottom: 0px !important;">
+                                            <lightning:inputField aura:id="lookupField" fieldName="{!v.fieldName}" value="{!v.PurchaseOrderId}" 
+                                            onchange="{!c.fireOnSelectEvt}" class="slds-size--1-of-1" disabled="true"/>  
+                                        </div> 
+                                    </lightning:recordEditForm>
+
+                                <aura:set attribute="else">
                                     <c:BT_LookupFields selectedRecordId="{!v.cellValue}" childObjectName="{!v.childObjectName}" phaseIndex="{!v.phaseIndex}" index="{!v.index}"
                                         fieldName="{!v.fieldName}" record="{!v.record}"
                                         callingCmpName="{!v.callingCmpName}"/>
+                                </aura:set>
+                                </aura:if>
                             </aura:set>
                         </aura:if>
                         <!---->
