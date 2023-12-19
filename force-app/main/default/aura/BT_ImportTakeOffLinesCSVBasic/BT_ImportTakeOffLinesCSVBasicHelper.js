@@ -21,30 +21,141 @@
           var fr = new FileReader();
           fr.readAsText(file);
 
-          
           var self = this;
           fr.onload = function (event) {
             console.log('event ',event);
             // console.log('data check ',base64.decode(event.target.result));
             var data = Papa.parse(event.target.result);
             console.log(data);
+            helper.validateProductColumn(data.data);
+            
+            var a = data.data;
+            
+            var headerlst = a[0].join(',');
+            var header = headerlst.split(',');
+            if (
+                header[0] !== 'Product' ||
+                header[1] !== 'Price Book' ||
+                header[2] !== 'Vendor' ||
+                header[3] !== 'Product SKU' ||
+                header[4] !== 'Product Code' ||
+                header[5] !== 'Build Phase' ||
+                header[6] !== 'CategoryPL' ||
+                header[7] !== 'Trade Type' ||
+                header[8] !== 'Location' ||
+                header[9] !== 'Quantity' ||
+                header[10] !== 'UOM' ||
+                header[11] !== 'Cost Code' 
+            ) {
+                helper.showToast(component, 'Error', 'File Header Format is Invalid!');
+                return '';
+            }
+
+            for (var i = 0; i < header.length; i++) {
+              header[i] = header[i].trim().replace(/\s+/g, '');
+            }
+
+            var fileContents;
+            console.log('fileContents-->' , a);
+            let headers = header;
+            // Convert data to JSON
+            let jsonData = a.slice(1).map(row => {
+              let obj = {};
+              headers.forEach((header, index) => {
+                obj[header] = row[index];
+              });
+              return obj;
+            });
+            fileContents = JSON.stringify(jsonData,null,2); 
+            console.log('result -->>>>',fileContents);
             debugger;
             
-          var fileContents = fr.result;
-          var base64Mark = "base64,";
-          var dataStart = fileContents.indexOf(base64Mark) + base64Mark.length;
-
-          fileContents = fileContents.substring(dataStart);
-
-          helper.upload(component, helper, file, fileContents);
+            helper.upload(component, helper, fileContents);
           };
-
-          fr.readAsDataURL(file);
-      } else {
+          
+          // fr.readAsDataURL(file);
+        } else {
           helper.showToast(component, "error", "Please select file to import");
+        }
+      } catch (error) {
+        console.log('error ',error); 
       }
-    } catch (error) {
-      console.log('error ',error); 
+    },
+    
+    upload: function (component, helper, fileContents) {
+      component.set("v.Spinner",true);
+      var action = component.get("c.importRecords");
+      action.setParams({
+          takeOffId: component.get("v.recordId"),
+          fileData: fileContents,
+      });
+    
+      action.setCallback(this, function (response) {
+        var state = response.getState();
+        if (state === "SUCCESS") {
+    
+          var result = response.getReturnValue();
+          console.log("result ", result);
+          if (result.isSuccess) {
+            helper.showToast(component, "success", result.strMessage);
+            window.setTimeout(
+              $A.getCallback(function() {
+                window.location.reload();
+              }), 2000
+            );
+          } else {
+            helper.showToast(component, "error", result.strMessage);
+          }
+          
+        } else {
+          var errors = response.getError();
+          var error = "";
+    
+          if (errors) {
+            if (errors[0] && errors[0].message) {
+              error = error + errors[0].message;
+            }
+    
+            helper.showToast(component, "error", error);
+          } else {
+            helper.showToast(
+              component,
+              "error",
+              "Unknown error, please try again."
+            );
+          }
+        }
+    
+        $A.get("e.force:closeQuickAction").fire();
+      });
+    
+      $A.enqueueAction(action);
+    },
+
+  validateProductColumn: function (data) {
+    var productEmptyLines = [];
+
+    // Assuming the first row contains headers and data starts from the second row
+    for (var i = 1; i < data.length; i++) {
+      var productValue = data[i][0]; // Assuming Product column is at index 0
+      if (!productValue.trim()) {
+        // Product column is empty, perform validation logic here
+        productEmptyLines.push(i);
+      }
+    }
+    if (productEmptyLines.length > 0) {
+      
+      var productEmptyNo = productEmptyLines.join(', ');
+      console.log(productEmptyNo);
+     
+      var toastEvent = $A.get("e.force:showToast");
+        toastEvent.setParams({
+            "title": "Error!",
+            "type": "error",
+            "message": "Product value is required and can not be empty.Please review the row No. " + productEmptyNo + ".", 
+            "duration": 7000
+        });
+        toastEvent.fire();
     }
   },
  
@@ -60,55 +171,6 @@
      return csvStringResult;        
  },
 
-upload: function (component, helper, file, fileContents) {
-  component.set("v.Spinner",true);
-  var action = component.get("c.importRecords");
-  action.setParams({
-      takeOffId: component.get("v.recordId"),
-      fileData: fileContents,
-  });
-
-  action.setCallback(this, function (response) {
-    var state = response.getState();
-    if (state === "SUCCESS") {
-
-      var result = response.getReturnValue();
-      console.log("result ", result);
-      if (result.isSuccess) {
-        helper.showToast(component, "success", result.strMessage);
-        window.setTimeout(
-          $A.getCallback(function() {
-            window.location.reload();
-          }), 2000
-        );
-      } else {
-        helper.showToast(component, "error", result.strMessage);
-      }
-      
-    } else {
-      var errors = response.getError();
-      var error = "";
-
-      if (errors) {
-        if (errors[0] && errors[0].message) {
-          error = error + errors[0].message;
-        }
-
-        helper.showToast(component, "error", error);
-      } else {
-        helper.showToast(
-          component,
-          "error",
-          "Unknown error, please try again."
-        );
-      }
-    }
-
-    $A.get("e.force:closeQuickAction").fire();
-  });
-
-  $A.enqueueAction(action);
-},
 
 showToast: function (component, type, message) {
   component.set("v.Spinner",false);
