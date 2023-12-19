@@ -6,7 +6,7 @@ public without sharing class BT_CreateBOMfromTakeoffController {
         try {
             buildertek__Project_Takeoff__c Takeoff = [SELECT Id, Name, buildertek__Name__c,buildertek__Project__c FROM buildertek__Project_Takeoff__c WHERE Id =: TakeoffId LIMIT 1];
 
-            list<buildertek__Project_Takeoff_Lines__c> takoffLineList = [SELECT ID, Name,buildertek__Project_Takeoff__c, buildertek__Product__c, buildertek__Product__r.buildertek__Vendor__c, buildertek__Quantity__c, buildertek__Cost_Code__c, buildertek__Build_Phase__c, buildertek__Product__r.Name FROM buildertek__Project_Takeoff_Lines__c WHERE buildertek__Project_Takeoff__c =: TakeoffId];
+            list<buildertek__Project_Takeoff_Lines__c> takoffLineList = [SELECT ID, Name,buildertek__Project_Takeoff__c, buildertek__Product__c, buildertek__Price_Book__c,buildertek__Product__r.buildertek__Vendor__c, buildertek__Quantity__c, buildertek__Cost_Code__c, buildertek__Build_Phase__c,buildertek__Description__c, buildertek__Product__r.Name,buildertek__UOM_PL__c,buildertek__Vendor__c FROM buildertek__Project_Takeoff_Lines__c WHERE buildertek__Project_Takeoff__c =: TakeoffId];
             if(takoffLineList.size() > 0){
 
                 buildertek__Project_Selection_Sheet_Takeoff__c BOMtoCreate = new buildertek__Project_Selection_Sheet_Takeoff__c();
@@ -16,58 +16,134 @@ public without sharing class BT_CreateBOMfromTakeoffController {
                 insert BOMtoCreate;
                 system.debug('Create BOM Id --> ' + BOMtoCreate.Id);
     
-                map<Id, Id> ProductId_VendorId = new map<Id, Id>();
+                // map<Id, Id> ProductId_VendorId = new map<Id, Id>();
                 set<Id> ProdutIds = new set<Id>();
+                set<Id> PriceBookId = new set<Id>();
                 for(buildertek__Project_Takeoff_Lines__c tkoffline : takoffLineList){
-                    ProductId_VendorId.put(tkoffline.buildertek__Product__c, tkoffline.buildertek__Product__r.buildertek__Vendor__c);
+                    // ProductId_VendorId.put(tkoffline.buildertek__Product__c, tkoffline.buildertek__Product__r.buildertek__Vendor__c);
                     ProdutIds.add(tkoffline.buildertek__Product__c);
+                    PriceBookId.add(tkoffline.buildertek__Price_Book__c);
                 }
                 
-                System.debug('TakeoffId_ProductId : '+ ProductId_VendorId);
     
                 map<Id, PricebookEntry> ProductId_PriceBookEntry = new map<Id, PricebookEntry>();
-                List<PricebookEntry> PriceBookEntries = [SELECT Id, Name , Product2Id,  buildertek__Unit_Cost__c, buildertek__Markup__c, Pricebook2Id, IsActive FROM PricebookEntry WHERE Product2Id IN : ProdutIds AND IsActive = true ORDER BY CreatedDate ASC];
+                map<Id, PricebookEntry> ProceBookId_PriceBookEntry = new map<Id, PricebookEntry>();
+                map<Id, PricebookEntry> PricebookEntry_Map = new map<Id, PricebookEntry>();
+                // List<PricebookEntry> PriceBookEntries = [SELECT Id, Name , Product2Id,  buildertek__Unit_Cost__c, buildertek__Markup__c, Pricebook2Id, IsActive FROM PricebookEntry WHERE Product2Id IN : ProdutIds AND IsActive = true ORDER BY CreatedDate ASC];
+                List<PricebookEntry> PriceBookEntries = [SELECT Id, Name , Product2Id,  buildertek__Unit_Cost__c, buildertek__Markup__c, Pricebook2Id,Pricebook2.Name, IsActive FROM PricebookEntry WHERE (Product2Id IN: ProdutIds OR Pricebook2Id IN: PriceBookId ) AND IsActive = true ORDER BY CreatedDate ASC];
                 if(PriceBookEntries.size() > 0){
                     for(PricebookEntry PE : PriceBookEntries ){
                         ProductId_PriceBookEntry.put(PE.Product2Id, PE);
+                        ProceBookId_PriceBookEntry.put(PE.Pricebook2Id, PE);
+                        PricebookEntry_Map.put(PE.Id, PE);
                     }
                 }
                 System.debug('ProductId_PriceBookEntry : '+ ProductId_PriceBookEntry);
-    
-    
-                // map<Id, PricebookEntry> takeOfflineId_PricebookEntry = new map<Id, PricebookEntry>();
-                // if(takoffLineList.size() > 0){
-                //     for(buildertek__Project_Takeoff_Lines__c tkoffline : takoffLineList){
-                //         takeOfflineId_PricebookEntry.put(tkoffline.Id, ProductId_PriceBookEntry.get(tkoffline.buildertek__Product__c));
-                //     }
+                System.debug('ProceBookId_PriceBookEntry : '+ ProceBookId_PriceBookEntry);
+
+                // map<Id, Id> TklID_ProId = new map<Id, Id>();
+                // map<Id, Id> TklID_PriID = new map<Id, Id>();
+                // map<Id, Id> PEId_ProId = new map<Id, Id>();
+                // map<Id, Id> PEId_PridId = new map<Id, Id>();
+                // for(buildertek__Project_Takeoff_Lines__c tkoffline : takoffLineList){
+                //     TklID_ProId.put(tkoffline.Id, tkoffline.buildertek__Product__c);
+                //     TklID_PriID.put(tkoffline.Id, tkoffline.buildertek__Price_Book__c);
                 // }
-                // System.debug('takeOfflineId_PricebookEntry : ', takeOfflineId_PricebookEntry);
+                // for(PricebookEntry PE : PriceBookEntries){
+                //     PEId_ProId.put(PE.Id, PE.Product2Id);
+                //     PEId_PridId.put(PE.Id, PE.Pricebook2Id);
+                // }
+
+                map<Id, PricebookEntry> takeOfflineId_PricebookEntry = new map<Id, PricebookEntry>();
+                map<Id, String> takeOfflineId_BOmlineNametoBe = new map<Id, String>();
+                
+                for(buildertek__Project_Takeoff_Lines__c tkoffline : takoffLineList){
+                    for(PricebookEntry PE : PriceBookEntries ){
+                        if(tkoffline.buildertek__Product__c != null && tkoffline.buildertek__Price_Book__c != null){
+                            // System.debug('Pricebook and product are not null');
+                            if(tkoffline.buildertek__Product__c == PE.Product2Id && tkoffline.buildertek__Price_Book__c == PE.Pricebook2Id){
+                                takeOfflineId_PricebookEntry.put(tkoffline.Id, PE);
+                                system.debug(' Product and pricebook match : ' + PE.Name +' pricebook : '+ PE.Pricebook2.Name);
+                                takeOfflineId_BOMlineNametoBe.put(tkoffline.Id, tkoffline.buildertek__Description__c);
+                            }
+                            else{
+                                takeOfflineId_BOMlineNametoBe.put(tkoffline.Id, tkoffline.buildertek__Product__r.Name);
+                            }
+                        }
+                        else if(tkoffline.buildertek__Product__c == null && tkoffline.buildertek__Price_Book__c != null){
+                            // System.debug('Product is null');
+                            if(tkoffline.buildertek__Price_Book__c == PE.Pricebook2Id){
+                                takeOfflineId_PricebookEntry.put(tkoffline.Id, PE);
+                                // system.debug(' Latest PE from Pricebook : Name ' + PE.Name +' pricebook : '+ PE.Pricebook2.Name);
+                            }
+                            takeOfflineId_BOMlineNametoBe.put(tkoffline.Id, tkoffline.buildertek__Product__r.Name);
+                        }
+                        else if(tkoffline.buildertek__Product__c != null && tkoffline.buildertek__Price_Book__c == null){
+                            // Do Nothing with unit cost and markup....
+                            takeOfflineId_BOMlineNametoBe.put(tkoffline.Id, tkoffline.buildertek__Description__c);
+                            // System.debug('Pricebook is null');
+                            // if(tkoffline.buildertek__Product__c == PE.Product2Id){
+                            //     takeOfflineId_PricebookEntry.put(tkoffline.Id, PE);
+                            // }
+                        }
+                    }
+                }
+                
+    
+
+                    // for(buildertek__Project_Takeoff_Lines__c tkoffline : takoffLineList){
+                    //     if(tkoffline.buildertek__Price_Book__c != null && tkoffline.buildertek__Product__c != null){
+                    //         System.debug('Pricebook and product are not null');
+                    //         // SELECT latest Pricebook entry which is lined with Pricebook and Product both...
+                    //         if(ProductId_PriceBookEntry.get(tkoffline.buildertek__Product__c) == ProceBookId_PriceBookEntry.get(tkoffline.buildertek__Price_Book__c)){
+                    //             takeOfflineId_PricebookEntry.put(tkoffline.Id, ProceBookId_PriceBookEntry.get(tkoffline.buildertek__Price_Book__c));
+                    //             system.debug(' Product and pricebook match : ' + ProceBookId_PriceBookEntry.get(tkoffline.buildertek__Price_Book__c).Name);
+                    //         }
+                    //     }
+                    //     else if(tkoffline.buildertek__Price_Book__c == null && tkoffline.buildertek__Product__c != null){
+                    //         System.debug('Pricebook is null');
+                    //         // SELECT latest Pricebook entry from linked Product...
+                    //         takeOfflineId_PricebookEntry.put(tkoffline.Id, ProductId_PriceBookEntry.get(tkoffline.buildertek__Product__c));
+                    //         system.debug(' Pricebook entry from Product : ' + ProductId_PriceBookEntry.get(tkoffline.buildertek__Product__c).Name);
+                    //     }
+                    //     else if(tkoffline.buildertek__Price_Book__c != null && tkoffline.buildertek__Product__c == null){
+                    //         System.debug('Product is null');
+                    //         // SELECT latest Pricebook entry from linked Pricebook...
+                    //         takeOfflineId_PricebookEntry.put(tkoffline.Id, ProceBookId_PriceBookEntry.get(tkoffline.buildertek__Price_Book__c));
+                    //         system.debug('  Pricebook entry from Pricebook : ' + ProceBookId_PriceBookEntry.get(tkoffline.buildertek__Price_Book__c).Name);
+                    //     }
+
+                    // }
+                System.debug('takeOfflineId_PricebookEntry : ' + takeOfflineId_PricebookEntry);
     
     
                 list<buildertek__Select_Sheet__c> BOMlinesToCreateList = new list<buildertek__Select_Sheet__c>();
                 for(buildertek__Project_Takeoff_Lines__c tkoffline : takoffLineList){
 
-                    PricebookEntry relatedPricebookEntry = ProductId_PriceBookEntry.get(tkoffline.buildertek__Product__c);
-                    Id vendorId = ProductId_VendorId.get(tkoffline.buildertek__Product__c);
+                    // PricebookEntry relatedPricebookEntry = ProductId_PriceBookEntry.get(tkoffline.buildertek__Product__c);
+                    PricebookEntry relatedPricebookEntry = takeOfflineId_PricebookEntry.get(tkoffline.Id);
 
                     buildertek__Select_Sheet__c BOMlineToCreate = new buildertek__Select_Sheet__c();
 
-                    BOMlineToCreate.Name = tkoffline.buildertek__Product__r.Name;
-                    BOMlineToCreate.buildertek__Product__c = tkoffline.buildertek__Product__c;
+                    BOMlineToCreate.Name = takeOfflineId_BOMlineNametoBe.get(tkoffline.Id);
                     BOMlineToCreate.buildertek__Quantity__c = tkoffline.buildertek__Quantity__c;
-                    BOMlineToCreate.buildertek__BL_UNIT_COST__c	= relatedPricebookEntry != null ? relatedPricebookEntry.buildertek__Unit_Cost__c : null;
+                    BOMlineToCreate.buildertek__Product__c = relatedPricebookEntry != null ? relatedPricebookEntry.Product2Id : null;
                     BOMlineToCreate.buildertek__BT_Price_Book__c = relatedPricebookEntry != null ? relatedPricebookEntry.Pricebook2Id : null;
+                    BOMlineToCreate.buildertek__BL_UNIT_COST__c	= relatedPricebookEntry != null ? relatedPricebookEntry.buildertek__Unit_Cost__c : null;
                     BOMlineToCreate.buildertek__BL_MARKUP__c = relatedPricebookEntry != null ? relatedPricebookEntry.buildertek__Markup__c : null;
-                    BOMlineToCreate.buildertek__Vendor__c = vendorId;
+                    BOMlineToCreate.buildertek__Vendor__c = tkoffline.buildertek__Vendor__c;
                     BOMlineToCreate.buildertek__Cost_Code__c = tkoffline.buildertek__Cost_Code__c;
                     BOMlineToCreate.buildertek__Build_Phase__c = tkoffline.buildertek__Build_Phase__c;
                     BOMlineToCreate.buildertek__Selection_Sheet_Takeoff__c = BOMtoCreate.Id;
                     BOMlineToCreate.buildertek__Takeoff_Line__c = tkoffline.Id;
+                    BOMlineToCreate.buildertek__UOM_Picklist__c = tkoffline.buildertek__UOM_PL__c;
 
                     BOMlinesToCreateList.add(BOMlineToCreate);
                 }
     
+                system.debug('BOMlinesToCreateList.size() ' + BOMlinesToCreateList.size());
                 if(BOMlinesToCreateList.size() > 0){
+                    system.debug('Going to create BOM Lines >>>> ');
                     insert BOMlinesToCreateList;
                 }
     
@@ -75,7 +151,7 @@ public without sharing class BT_CreateBOMfromTakeoffController {
                 returValues.CreatedrecordId = BOMtoCreate.Id;            
             }
             else {
-                returValues.returnState = 'No Lines Associated. Please create at least one line.';            
+                returValues.returnState = 'No lines. Please create at least one line.';            
                 returValues.CreatedrecordId = null;
             }
             return returValues;
