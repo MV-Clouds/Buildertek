@@ -25,7 +25,8 @@ public with sharing class ExpenseLineTriggerHandler {
     
                 if (expenseLine.buildertek__BT_Expense__c != oldExpenseLine.buildertek__BT_Expense__c ||
                     expenseLine.buildertek__Total__c != oldExpenseLine.buildertek__Total__c) {
-                    expenseIdsToUpdate.add(expenseLine.buildertek__BT_Expense__c);
+                        expenseIdsToUpdate.add(oldExpenseLine.buildertek__BT_Expense__c);
+                        expenseIdsToUpdate.add(expenseLine.buildertek__BT_Expense__c);
                 }
             }
     
@@ -62,8 +63,7 @@ public with sharing class ExpenseLineTriggerHandler {
     public void updateAmountOnExpense(Set<Id> ExpenseIds) {
         try {
             Map<Id, AggregateResult> totalAmountMap = new Map<Id, AggregateResult>();
-            for (AggregateResult aggregatedResult : [SELECT Id, buildertek__BT_Expense__c, SUM(buildertek__Total__c) totalAmount FROM buildertek__Expense_Line__c WHERE buildertek__BT_Expense__c IN :ExpenseIds 
-            GROUP BY Id, buildertek__BT_Expense__c]){
+            for (AggregateResult aggregatedResult : [SELECT buildertek__BT_Expense__c, SUM(buildertek__Total__c) totalAmount FROM buildertek__Expense_Line__c WHERE buildertek__BT_Expense__c IN :ExpenseIds GROUP BY buildertek__BT_Expense__c]){
                 Id ExpenseId = (Id)aggregatedResult.get('buildertek__BT_Expense__c');
                 totalAmountMap.put(ExpenseId, aggregatedResult);
             }
