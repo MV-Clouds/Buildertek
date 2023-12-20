@@ -4,17 +4,14 @@ public with sharing class CreateQuoteFromBOMController {
     public static string createQuote(String recordId) {
         
         try {            
-            List<buildertek__Select_Sheet__c> BOMLineList = [SELECT Id, Name, buildertek__Product__c, buildertek__Product_Name__c, buildertek__Quantity__c, buildertek__BL_MARKUP__c, buildertek__BL_UNIT_COST__c, buildertek__Vendor__c, buildertek__Build_Phase__c, buildertek__Selection_Sheet_Takeoff__r.buildertek__Name__c FROM buildertek__Select_Sheet__c WHERE buildertek__Selection_Sheet_Takeoff__c = :RecordId];
-            List<buildertek__Quote_Line_Group__c> groupingList = [Select Id, Name from buildertek__Quote_Line_Group__c where Name = 'No Grouping' limit 1];
-            String groupingId;
+            List<buildertek__Select_Sheet__c> BOMLineList = [SELECT Id, Name, buildertek__Product__c, buildertek__Product_Name__c, buildertek__Quantity__c, buildertek__BL_MARKUP__c, buildertek__BL_UNIT_COST__c, buildertek__Vendor__c, buildertek__Build_Phase__c, buildertek__Build_Phase__r.Name, buildertek__Selection_Sheet_Takeoff__r.buildertek__Name__c FROM buildertek__Select_Sheet__c WHERE buildertek__Selection_Sheet_Takeoff__c = :RecordId];
             
-            if (groupingList.size() > 0) {
-                groupingId = groupingList[0].Id;
-            } else {
-                buildertek__Quote_Line_Group__c grouping = new buildertek__Quote_Line_Group__c();
-                grouping.Name = 'No Grouping';
-                insert grouping;
-                groupingId = grouping.Id;
+            List<buildertek__Quote_Line_Group__c> groupList = [SELECT Id, Name FROM buildertek__Quote_Line_Group__c];
+            
+            Map<String, buildertek__Quote_Line_Group__c> groupMap = new Map<String, buildertek__Quote_Line_Group__c>();
+
+            for (buildertek__Quote_Line_Group__c phaseGroup : groupList) {
+                groupMap.put(phaseGroup.Name, phaseGroup);
             }
 
             if (BOMLineList.size() > 0) {
@@ -37,7 +34,12 @@ public with sharing class CreateQuoteFromBOMController {
                     quoteLine.buildertek__Unit_Cost__c = BOMLine.buildertek__BL_UNIT_COST__c;
                     quoteLine.buildertek__Vendor__c = BOMLine.buildertek__Vendor__c;
                     quoteLine.buildertek__Build_Phase__c = BOMLine.buildertek__Build_Phase__c;
-                    quoteLine.buildertek__Grouping__c = groupingId;
+                    if (groupMap.get(BOMLine.buildertek__Build_Phase__r.Name) != null){
+                        quoteLine.buildertek__Grouping__c = groupMap.get(BOMLine.buildertek__Build_Phase__r.Name).Id;
+                    } else{
+                        quoteLine.buildertek__Grouping__c = groupMap.get('No Grouping').Id;
+                    }
+
                     quoteLineList.add(quoteLine);
                 }
                 if (quoteLineList.size() > 0){
