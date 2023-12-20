@@ -1,7 +1,7 @@
 <aura:component controller="CreateQuoteFromBOMController"
     implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader"
     access="global">
-
+    <aura:attribute name="Spinner" type="Boolean" default="false"/>
     <aura:html tag="style">
         .slds-modal__content {
             overflow: hidden !important;
