@@ -25,55 +25,54 @@
           fr.onload = function (event) {
             console.log('event ',event);
             // console.log('data check ',base64.decode(event.target.result));
-            var data = Papa.parse(event.target.result);
+            var cleanData = event.target.result;
+            let data1 = Papa.parse(cleanData, {skipEmptyLines:'greedy'});
+            let data = data1.data.map(row => row.map(value => value.trim()));
             console.log(data);
-            helper.validateProductColumn(data.data);
-            
-            var a = data.data;
-            
-            var headerlst = a[0].join(',');
-            var header = headerlst.split(',');
-            if (
-                header[0] !== 'Product' ||
-                header[1] !== 'Price Book' ||
-                header[2] !== 'Vendor' ||
-                header[3] !== 'Product SKU' ||
-                header[4] !== 'Product Code' ||
-                header[5] !== 'Build Phase' ||
-                header[6] !== 'CategoryPL' ||
-                header[7] !== 'Trade Type' ||
-                header[8] !== 'Location' ||
-                header[9] !== 'Quantity' ||
-                header[10] !== 'UOM' ||
-                header[11] !== 'Cost Code' 
-            ) {
-                helper.showToast(component, 'Error', 'File Header Format is Invalid!');
-                return '';
-            }
-
-            for (var i = 0; i < header.length; i++) {
-              header[i] = header[i].trim().replace(/\s+/g, '');
-            }
-
-            var fileContents;
-            console.log('fileContents-->' , a);
-            let headers = header;
-            // Convert data to JSON
-            let jsonData = a.slice(1).map(row => {
-              let obj = {};
-              headers.forEach((header, index) => {
-                obj[header] = row[index];
-              });
-              return obj;
-            });
-            fileContents = JSON.stringify(jsonData,null,2); 
-            console.log('result -->>>>',fileContents);
             debugger;
-            
-            helper.upload(component, helper, fileContents);
-          };
-          
-          // fr.readAsDataURL(file);
+            var isValid = helper.validateProductColumn(data);
+            if (isValid) {
+                            
+              var headerlst = data[0].join(',');
+              var header = headerlst.split(',');
+              if (
+                  header[0] !== 'Product' ||
+                  header[1] !== 'Price Book' ||
+                  header[2] !== 'Vendor' ||
+                  header[3] !== 'Product SKU' ||
+                  header[4] !== 'Product Code' ||
+                  header[5] !== 'Build Phase' ||
+                  header[6] !== 'CategoryPL' ||
+                  header[7] !== 'Trade Type' ||
+                  header[8] !== 'Location' ||
+                  header[9] !== 'Quantity' ||
+                  header[10] !== 'UOM' ||
+                  header[11] !== 'Cost Code' 
+              ) {
+                  helper.showToast(component, 'Error', 'File Header Format is Invalid!');
+                  return '';
+              }
+
+              for (var i = 0; i < header.length; i++) {
+                header[i] = header[i].trim().replace(/\s+/g, '');
+              }
+
+              var fileContents;
+              let headers = header;
+              // Convert data to JSON
+              let jsonData = data.slice(1).map(row => {
+                let obj = {};
+                headers.forEach((header, index) => {
+                  obj[header] = row[index];
+                });
+                return obj;
+              });
+              fileContents = JSON.stringify(jsonData,null,2); 
+              console.log('result -->>>>',typeof(fileContents));
+              
+              helper.upload(component, helper, fileContents);
+            };
+          }
         } else {
           helper.showToast(component, "error", "Please select file to import");
         }
@@ -125,7 +124,6 @@
             );
           }
         }
-    
         $A.get("e.force:closeQuickAction").fire();
       });
     
@@ -140,7 +138,7 @@
       var productValue = data[i][0]; // Assuming Product column is at index 0
       if (!productValue.trim()) {
         // Product column is empty, perform validation logic here
-        productEmptyLines.push(i);
+        productEmptyLines.push(i + 1);
       }
     }
     if (productEmptyLines.length > 0) {
@@ -156,7 +154,9 @@
             "duration": 7000
         });
         toastEvent.fire();
+        return false;
     }
+    return true;
   },
  
   convertArrayOfObjectsToCSV : function(component,event,helper){

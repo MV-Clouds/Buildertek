@@ -53,6 +53,4 @@
             </div>
         </div>
     </aura:if>
-    <!-- <c:BT_Spinner /> -->
-
 </aura:component>
