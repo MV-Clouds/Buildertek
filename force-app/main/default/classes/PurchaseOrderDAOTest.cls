@@ -137,6 +137,9 @@ public class PurchaseOrderDAOTest {
         PurchaseOrderDAO.createAPFromPO(poList[0].Id);
         PurchaseOrderDAO.getProduct(PurchaseItemJSON);
         PurchaseOrderDAO.addProductsToList(PurchaseItemJSON, porListRec[0], 2);
+        PurchaseOrderDAO.getselectOptions();
+        PurchaseOrderDAO.getProductPricevalue(string.valueOf(prod1.Id));
+        PurchaseOrderDAO.getProductfamilyRecords('Product2',string.valueOf(testPricebook.Id));
 
         System.assertEquals('Test','Test');
 
