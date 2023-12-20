@@ -46,13 +46,14 @@
                     component.find('notifLib').showNotice({
     		            "variant": "error",
     		            "header": "Validation Warning",
-    		            "message": 'Customer Account\'s account type is not a Customer. Please make it customer or change Customer account',
+    		            // "message": 'Customer Account\'s account type is not a Customer. Please make it customer or change Customer account',
+    		            "message": 'You cannot assign Vendor account to the Customer field. Please Change the account type to customer or change account to sync with QB.',
     		        });  
                 }
                 else{
                     component.find('notifLib').showNotice({
     		            "variant": "error",
-    		            "header": "Validation Warning",
+    		            "header": "Warning!",
     		            "message": 'Something Went Wrong !!!',
     		        });  
                 }
@@ -116,13 +117,14 @@
                     component.find('notifLib').showNotice({
     		            "variant": "error",
     		            "header": "Validation Warning",
-    		            "message": 'Purchase order\'s Vendor\'s account type is not a Vendor. Please make it Vendor type or change the vendor to sync with QB.',
+    		            // "message": 'Purchase order\'s Vendor\'s account type is not a Vendor. Please make it Vendor type or change the vendor to sync with QB.',
+    		            "message": 'You cannot assign Customer account to the Vendor field. Please Change the account type to vendor or change account to sync with QB.',
     		        });  
                 }
                 else{
                     component.find('notifLib').showNotice({
     		            "variant": "error",
-    		            "header": "Validation Warning",
+    		            "header": "Warning!",
     		            "message": 'Something Went Wrong !!!',
     		        });  
                 }
@@ -180,13 +182,14 @@
                     component.find('notifLib').showNotice({
     		            "variant": "error",
     		            "header": "Validation Warning",
-    		            "message": 'Vendor\'s account type is not a Vendor. Please make it Vendor type or change the vendor to sync with QB.',
+    		            // "message": 'Vendor\'s account type is not a Vendor. Please make it Vendor type or change the vendor to sync with QB.',
+    		            "message": 'You cannot assign Customer account to the Vendor field on Purchase Order. Please Change the account type to vendor or change account to sync with QB.',
     		        });  
                 }
                 else{
                     component.find('notifLib').showNotice({
     		            "variant": "error",
-    		            "header": "Validation Warning",
+    		            "header": "Warning!",
     		            "message": 'Something Went Wrong !!!',
     		        });  
                 }
@@ -235,20 +238,21 @@
                     component.find('notifLib').showNotice({
     		            "variant": "error",
     		            "header": "Validation Warning",
-    		            "message": 'Vendor Account Already Sync as Customer in QB.',
+    		            "message": 'Vendor Already Sync as Customer in QB. Please change Vendor account.',
     		        });  
                 }
                 else if(result == 'account_type_not_vendor'){
                     component.find('notifLib').showNotice({
     		            "variant": "error",
     		            "header": "Validation Warning",
-    		            "message": 'Vendor Account type is not a Vendor.',
+    		            // "message": 'Vendor\'s account type is not a Vendor. Please make it Vendor type or change the vendor to sync with QB.',
+    		            "message": 'You cannot assign Customer account to the Vendor field. Please Change the account type to vendor or change account to sync with QB.',
     		        });  
                 }
                 else{
                     component.find('notifLib').showNotice({
     		            "variant": "error",
-    		            "header": "Validation Warning",
+    		            "header": "Warning!",
     		            "message": 'Something Went Wrong !!!',
     		        });  
                 }
@@ -304,7 +308,7 @@
             else{
                 component.find('notifLib').showNotice({
                     "variant": "error",
-                    "header": "Validation Warning",
+                    "header": "Warning!",
                     "message": 'Something Went Wrong!',
                 }); 
                 $A.get("e.force:closeQuickAction").fire();
@@ -338,8 +342,8 @@
             else{
                 component.find('notifLib').showNotice({
                     "variant": "error",
-                    "header": "Validation Warning",
-                    "message": 'Something Went Wrong!',
+                    "header": "Warning!",
+                    "message": 'Something Went Wrong',
                 }); 
                 $A.get("e.force:closeQuickAction").fire();
             }
@@ -400,7 +404,7 @@
                 else{
                     component.find('notifLib').showNotice({
     		            "variant": "error",
-    		            "header": "Validation Warning",
+    		            "header": "Warning!",
     		            "message": 'Something Went Wrong !!!',
     		        });  
                 }

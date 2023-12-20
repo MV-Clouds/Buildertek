@@ -47,7 +47,7 @@
                 component.find('notifLib').showNotice({
                     "variant": "error",
                     "header": "Validation Warning",
-                    "message":  'This account is sync as ' + QBType + ' in QB, so you can not resync this account as ' + BTAccountType +  '.',
+                    "message":  'This account is synced as ' + QBType + ' in QB, you can not resync this account as ' + BTAccountType +  '.',
                 }); 
                 $A.get("e.force:closeQuickAction").fire();
             }

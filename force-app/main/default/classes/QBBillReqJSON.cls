@@ -6,7 +6,7 @@ public without sharing class QBBillReqJSON {
 		public SalesTermRef SalesTermRef;
 		public Decimal TotalAmt;
 		public DepartmentRef DepartmentRef;
-		public String TxnDate;
+		public Date TxnDate;
 		public String DueDate;
 		public VendorRef VendorRef;
 		public list<Line> Line;

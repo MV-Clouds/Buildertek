@@ -60,6 +60,15 @@ public with sharing class QBExpenseResponseJSON {
 		public String BillableStatus;
 		public AccountRef AccountRef;
 	}
+
+	public QueryResponse QueryResponse;
+	public class QueryResponse{
+		public Integer startPosition;
+		public Integer maxResults;
+		public list<Purchase> Purchase;
+		public Integer totalCount;
+	}
+
     public static QBExpenseResponseJSON parse(String json) {
 		return (QBExpenseResponseJSON) System.JSON.deserialize(json, QBExpenseResponseJSON.class);
 	}

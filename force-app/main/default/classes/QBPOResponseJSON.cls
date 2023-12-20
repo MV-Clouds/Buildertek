@@ -85,6 +85,14 @@ public without sharing class QBPOResponseJSON {
 		public String name;
 	}
 
+	public QueryResponse QueryResponse;
+	public class QueryResponse{
+		public Integer startPosition;
+		public Integer maxResults;
+		public list<PurchaseOrder> PurchaseOrder;
+		public Integer totalCount;
+	}
+
     public static QBPOResponseJSON parse(String json) {
 		System.debug('in parse ');
 		return (QBPOResponseJSON) System.JSON.deserialize(json, QBPOResponseJSON.class);

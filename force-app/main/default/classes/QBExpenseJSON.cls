@@ -2,7 +2,7 @@ public with sharing class QBExpenseJSON {
     public Boolean sparse;
     public String PaymentType;
     public String PrivateNote;
-    public String TxnDate;
+    public Date TxnDate;
     public Decimal TotalAmt;
     public PurchaseEx PurchaseEx;
     public AccountRef AccountRef;

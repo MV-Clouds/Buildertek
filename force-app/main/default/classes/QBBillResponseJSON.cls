@@ -76,6 +76,14 @@ public with sharing class QBBillResponseJSON {
 		public AccountRef AccountRef;
 	}
 
+	public QueryResponse QueryResponse;
+	public class QueryResponse{
+		public Integer startPosition;
+		public Integer maxResults;
+		public list<Bill> Bill;
+		public Integer totalCount;
+	}
+
     public static QBBillResponseJSON parse(String json) {
 		return (QBBillResponseJSON) System.JSON.deserialize(json, QBBillResponseJSON.class);
 	}

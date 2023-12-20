@@ -44,6 +44,14 @@ public without sharing class QBVendorResponseJSON {
 		public String City;
 	}
 
+	public QueryResponse QueryResponse;
+	public class QueryResponse{
+		public Integer startPosition;
+		public Integer maxResults;
+		public list<Vendor> Vendor;
+		public Integer totalCount;
+	}
+
     public static QBVendorResponseJSON parse(String json) {
 		return (QBVendorResponseJSON) System.JSON.deserialize(json, QBVendorResponseJSON.class);
 	}
