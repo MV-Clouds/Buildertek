@@ -594,7 +594,7 @@ var toolbar;
     assignmentRowData = formatedSchData["assignmentRowData"];
 
     let resourceData = makeComboBoxDataForResourceData(this.contractorAndResources, this.internalResources);
-
+    
     const project = new bryntum.gantt.ProjectModel({
       calendar: data.project.calendar,
       // startDate: data.project.startDate,

@@ -1,16 +1,12 @@
 function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDataList) {
-    var taskData = scheduleItemsData;
     var taskDependencyData = [];
     var resourceRowData = [];
-    var resourceRowIdList = [];
-    var assignmentRowData = [];
-    var scheduleItemIdsList = [];
+    let assignmentRowData = [];
     var rows = [];
     var formattedData = {};
     var firstRowDup = {};
 
     var taskListForPhase = scheduleItemsDataList;
-    console.log("taskListForPhase1:-", taskListForPhase);
 
     firstRowDup["id"] = scheduleData.Id;
     firstRowDup["name"] = scheduleData.buildertek__Description__c;
@@ -36,7 +32,7 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
             dependencyRow["lag"] = taskListForPhase[i].buildertek__Lag__c
             taskDependencyData.push(dependencyRow)
         }
-        assignmentRowData.push.apply(assignmentRowData, createAssignmentData(taskListForPhase[i])); //adds all the assignment data to the main list.
+        assignmentRowData.push.apply(assignmentRowData, createAssignmentData(taskListForPhase[i], i)); //adds all the assignment data to the main list.
     }
 
     //* BUIL-3699 new logic end
@@ -402,7 +398,7 @@ function mergeArrays(taskData, assignedResources) {
 //* ayther : Mitrajsinh Gohil
 //* Date : 8th Dec 2023
 //* This method is used to create task Assignment Data for each task
-function createAssignmentData(taskListForPhase) {
+function createAssignmentData(taskListForPhase, i) {
     var assignmentRow = {}
     var assignmentRowDataChild = [];
     if (!taskListForPhase.buildertek__Milestone__c && taskListForPhase.buildertek__Contractor_Resource_1__c) {
@@ -482,7 +478,6 @@ function grpTaskOnPhase(records) {
                 phase2Node.children.push(phase3Node);
             }
 
-
             targetNode = phase3Node;
         } else if (phase2 !== 'UnknownPhase2' && phase1 !== 'UnknownPhase1') {
             let phase2Node = hierarchy.children.find(child => child.id=== phase1).children.find(child => child.id === phase1 + phase2);
@@ -503,35 +498,36 @@ function grpTaskOnPhase(records) {
         let customtype;
         let duration;
         let classtype;
-        if (record.Name == "Milestone Complete") {
-            customtype  = 'Milestone';
-            duration = 0;
-            classtype = "milestoneTypeColor";
-        } else {
-            customtype = 'Task';
-            duration  = record.buildertek__Duration__c || 1;
-            classtype = "task"
-        }
-
+        
         console.log('customtype:- ', customtype);
-
-        targetNode.children.push({
+        let duprecordobj = {
             id: record.Id,
             name: record.Name,
             Phase: record.buildertek__Phase__c,
             NewPhase: record.buildertek__Phase__c,
             percentDone: record.buildertek__Completion__c || 0,
             startDate: record.buildertek__Start__c,
-            duration: duration,
             constraintType : "startnoearlierthan",
             constriantDate : record.buildertek__Start__c,
             expanded: true,
             type: "Task",
-            customtype: customtype,
-            cls: classtype,
+            contractorId: record.buildertek__Contractor__c || "",
             iconCls: "b-fa b-fa-arrow-right",
             // Add other fields as needed
-        });
+        }
+        if (record.Name == "Milestone Complete") {
+            duprecordobj['customtype'] = 'Milestone';
+            duprecordobj['duration'] = 0;
+            duprecordobj['cls'] = "milestoneTypeColor";
+        } else {
+            duprecordobj['customtype'] = 'Task';
+            duprecordobj['duration'] = record.buildertek__Duration__c || 1;
+            duprecordobj['cls'] = "task";
+            if(record.buildertek__Dependency__r){
+                duprecordobj['predecessorName'] = record.buildertek__Dependency__r.Name
+            }
+        }
+        targetNode.children.push(duprecordobj);
     });
 
 
