@@ -126,7 +126,7 @@
         if (JSON.parse(JSON.stringify(response.getReturnValue())).length) {
         }
       } else {
-        // console.log(response);
+        // // console.log(response);
       }
     });
     $A.enqueueAction(action);
@@ -170,7 +170,7 @@
             var dateVal = bomLineOptionlist[i].Value; // new Date(optionlist[i].Value);
             filter2 += " AND " + fieldApiName + " >=" + dateVal;
           }
-          // console.log(filter2);
+          // // console.log(filter2);
         }
       }
     }
@@ -197,11 +197,8 @@
         var result = response.getReturnValue();
         //component.set("v.masterBudgetsList", result);
         // alert('** result.sObjectRecordsList  ---------->:');
-        console.log(
-          "** result.sObjectRecordsList --------------->:" +
-          JSON.parse(JSON.stringify(result.sObjectRecordsList))
-        );
-        console.log({ result });
+        // console.log("** result.sObjectRecordsList --------------->:" +JSON.parse(JSON.stringify(result.sObjectRecordsList)));
+        // console.log({ result });
 
         component.set("v.recordsList", result.recordList);
         component.set("v.listOfRecords", JSON.parse(result.sObjectRecordsList));
@@ -210,9 +207,9 @@
           JSON.parse(result.sObjectRecordsList)
         );
         // component.set("v.fieldValues", blankFields);
-        // console.log('@@@@@@@-',JSON.parse(result.fieldValues));
+        // // console.log('@@@@@@@-',JSON.parse(result.fieldValues));
         component.set("v.fieldValues", JSON.parse(result.fieldValues));
-        // console.log(component.get("v.fieldValues"));
+        // // console.log(component.get("v.fieldValues"));
         component.set("v.PageNumber", result.pageNumber);
         component.set("v.TotalRecords", result.totalRecords);
         component.set("v.RecordStart", result.recordStart);
@@ -221,7 +218,7 @@
           "v.TotalPages",
           Math.ceil(result.totalRecords / pageSize)
         );
-        // console.log('&**&*&*&*&*&*& ',result.recordList);
+        // // console.log('&**&*&*&*&*&*& ',result.recordList);
         var resultData = [];
         result.recordList.forEach(function (item, index) {
           resultData.push(item);
@@ -257,13 +254,13 @@
             }
           }
         }
-        console.log("rows");
-        console.log({ rows });
+        // console.log("rows");
+        // console.log({ rows });
         component.set("v.orgData", rows);
         component.set("v.data", rows);
         var groupByData = component.get("v.orgData");
         component.set("v.fieldmaptype", result.fieldtypemap);
-        console.log("result.sObjectRecordsList==" + result.sObjectRecordsList);
+        // console.log("result.sObjectRecordsList==" + result.sObjectRecordsList);
         component.set(
           "v.sObjectRecords",
           JSON.parse(result.sObjectRecordsList)
@@ -288,7 +285,7 @@
         component.set("v.Spinner", false);
       } else {
         component.set("v.Spinner", false);
-        // console.log(response.getError())
+        // // console.log(response.getError())
       }
     });
     $A.enqueueAction(action);
@@ -338,7 +335,7 @@
     sortedData[classIndex]["groupedRecordsTmp"] = data;
     var ele = event.currentTarget;
     var sortEle = ele.getElementsByClassName("slds-icon-utility-arrowdown")[0];
-    // console.log(sortedData,data)
+    // // console.log(sortedData,data)
     component.set("v.dataByGroup", sortedData);
     /* if(sortDirection =="asc"){
             sortEle.style.transform = "rotate(180deg)";
@@ -369,13 +366,13 @@
                     }
                     recordsMap.get(mapData[i].buildertek__Build_Phase__r.Id + '(#&%*)' + mapData[i].buildertek__Build_Phase__r.Name).push(JSON.parse(JSON.stringify(mapData[i])));
                 }else{
-                    //// console.log(recordsMap.has('No vendor'),recordsMap.get("No vendor"))
+                    //// // console.log(recordsMap.has('No vendor'),recordsMap.get("No vendor"))
                     if (!recordsMap.has('No Build Phase')) {
                         recordsMap.set('No Build Phase', []);
                     }
-                    //// console.log(recordsMap.has('No vendor'),recordsMap.get("No vendor"))
+                    //// // console.log(recordsMap.has('No vendor'),recordsMap.get("No vendor"))
                     recordsMap.get('No Build Phase').push(JSON.parse(JSON.stringify(mapData[i])));
-                    //// console.log(recordsMap.get("No vendor"))
+                    //// // console.log(recordsMap.get("No vendor"))
                 }
             }else if(toggleVal){
                 if(mapData[i].buildertek__Vendor__c){
@@ -384,13 +381,13 @@
                     }
                     recordsMap.get(mapData[i].buildertek__Vendor__r.Id + '(#&%*)' + mapData[i].buildertek__Vendor__r.Name).push(JSON.parse(JSON.stringify(mapData[i])));
                 }else{
-                    //// console.log(recordsMap.has('No vendor'),recordsMap.get("No vendor"))
+                    //// // console.log(recordsMap.has('No vendor'),recordsMap.get("No vendor"))
                     if (!recordsMap.has('No Vendor')) {
                         recordsMap.set('No Vendor', []);
                     }
-                    //// console.log(recordsMap.has('No vendor'),recordsMap.get("No vendor"))
+                    //// // console.log(recordsMap.has('No vendor'),recordsMap.get("No vendor"))
                     recordsMap.get('No Vendor').push(JSON.parse(JSON.stringify(mapData[i])));
-                    //// console.log(recordsMap.get("No vendor"))
+                    //// // console.log(recordsMap.get("No vendor"))
                 }
             }
             
@@ -408,7 +405,7 @@
             newObj['groupData'] = result[i][1];
             groupData.push(newObj);
         }
-        // console.log(groupData);
+        // // console.log(groupData);
         component.set("v.dataByGroup",groupData);
         component.set("v.Spinner", false);
     }*/
@@ -432,13 +429,13 @@
     //alert(sObjectRecordsMap);
 
     for (var i in mapData) {
-      console.log("mapData-->");
-      console.log({ mapData });
+      // console.log("mapData-->");
+      // console.log({ mapData });
       var toggleVal = component.get("v.groupBytoggle");
 
       if (component.get("v.groupByPhasetoggle")) {
         //group by phase
-        console.log(mapData[i].sheetrecord.buildertek__Build_Phase__c);
+        // console.log(mapData[i].sheetrecord.buildertek__Build_Phase__c);
         if (mapData[i].sheetrecord.buildertek__Build_Phase__c) {
           if (
             !recordsMap.has(
@@ -463,16 +460,16 @@
             )
             .push(JSON.parse(JSON.stringify(mapData[i].sheetrecord)));
         } else {
-          //// console.log(recordsMap.has('No vendor'),recordsMap.get("No vendor"))
+          //// // console.log(recordsMap.has('No vendor'),recordsMap.get("No vendor"))
           if (!recordsMap.has("No Build Phase")) {
             recordsMap.set("No Build Phase", []);
           }
-          //// console.log(recordsMap.has('No vendor'),recordsMap.get("No vendor"))
+          //// // console.log(recordsMap.has('No vendor'),recordsMap.get("No vendor"))
           mapData[i]["sheetrecord"]["showIcon"] = mapData[i]["isShowIcon"];
           recordsMap
             .get("No Build Phase")
             .push(JSON.parse(JSON.stringify(mapData[i].sheetrecord)));
-          //// console.log(recordsMap.get("No vendor"))
+          //// // console.log(recordsMap.get("No vendor"))
         }
       } else if (component.get("v.groupByVendortoggle")) {
         if (mapData[i].sheetrecord.buildertek__Vendor__c) {
@@ -499,16 +496,16 @@
             )
             .push(JSON.parse(JSON.stringify(mapData[i].sheetrecord)));
         } else {
-          //// console.log(recordsMap.has('No vendor'),recordsMap.get("No vendor"))
+          //// // console.log(recordsMap.has('No vendor'),recordsMap.get("No vendor"))
           if (!recordsMap.has("No Vendor")) {
             recordsMap.set("No Vendor", []);
           }
-          //// console.log(recordsMap.has('No vendor'),recordsMap.get("No vendor"))
+          //// // console.log(recordsMap.has('No vendor'),recordsMap.get("No vendor"))
           mapData[i]["sheetrecord"]["showIcon"] = mapData[i]["isShowIcon"];
           recordsMap
             .get("No Vendor")
             .push(JSON.parse(JSON.stringify(mapData[i].sheetrecord)));
-          //// console.log(recordsMap.get("No vendor"))
+          //// // console.log(recordsMap.get("No vendor"))
         }
       } else if (component.get("v.groupByCategorytoggle")) {
         if (mapData[i].sheetrecord.buildertek__Category__c) {
@@ -535,16 +532,16 @@
             )
             .push(JSON.parse(JSON.stringify(mapData[i].sheetrecord)));
         } else {
-          //// console.log(recordsMap.has('No vendor'),recordsMap.get("No vendor"))
+          //// // console.log(recordsMap.has('No vendor'),recordsMap.get("No vendor"))
           if (!recordsMap.has("No Category")) {
             recordsMap.set("No Category", []);
           }
-          //// console.log(recordsMap.has('No vendor'),recordsMap.get("No vendor"))
+          //// // console.log(recordsMap.has('No vendor'),recordsMap.get("No vendor"))
           mapData[i]["sheetrecord"]["showIcon"] = mapData[i]["isShowIcon"];
           recordsMap
             .get("No Category")
             .push(JSON.parse(JSON.stringify(mapData[i].sheetrecord)));
-          //// console.log(recordsMap.get("No vendor"))
+          //// // console.log(recordsMap.get("No vendor"))
         }
       } else if (component.get("v.groupByServiceCategorytoggle")) {
         if (mapData[i].sheetrecord.buildertek__Takeoff_Line__c) {
@@ -588,8 +585,8 @@
       }
     }
     var result = Array.from(recordsMap.entries());
-    console.log("result");
-    console.log({ result });
+    // console.log("result");
+    // console.log({ result });
     var groupData = [];
     for (var i in result) {
       var newObj = {};
@@ -612,10 +609,10 @@
         if (selectedFields.indexOf("Id") < 0) {
           selectedFields.unshift("Id");
         }
-        // console.log(newObj['groupData'][j])
+        // // console.log(newObj['groupData'][j])
         for (var k = 0; k < selectedFields.length; k++) {
           var AllRowListMap = new Map(Object.entries(newObj["groupData"][j]));
-          // console.log('*****************',AllRowListMap);
+          // // console.log('*****************',AllRowListMap);
           var keyId = Array.from(AllRowListMap.keys())[0];
           var mapKey = selectedFields[k];
           var strrecord = JSON.stringify(
@@ -631,12 +628,12 @@
             }
 
             if (mapKey.indexOf("__r") > 0) {
-              // console.log('^^^^^^^'+(mapKey));
-              // console.log('^^^^^^^'+JSON.stringify(AllRowListMap.get(mapKey)));
-              // console.log('^^^^^^^'+JSON.stringify(AllRowListMap));
-              // console.log('^^^^^^^ out'+JSON.stringify(AllRowListMap.get(mapKey)));
+              // // console.log('^^^^^^^'+(mapKey));
+              // // console.log('^^^^^^^'+JSON.stringify(AllRowListMap.get(mapKey)));
+              // // console.log('^^^^^^^'+JSON.stringify(AllRowListMap));
+              // // console.log('^^^^^^^ out'+JSON.stringify(AllRowListMap.get(mapKey)));
               if (AllRowListMap.get(mapKey) != undefined) {
-                // console.log('^^^^^^^ inn'+AllRowListMap.get(mapKey));
+                // // console.log('^^^^^^^ inn'+AllRowListMap.get(mapKey));
                 var AllRowListMap2 = new Map(
                   Object.entries(AllRowListMap.get(mapKey))
                 );
@@ -683,8 +680,9 @@
     }
 
     component.set("v.dataByGroup", groupData);
-    console.log("groupData===");
-    console.log({ groupData });
+    // console.log('From formatDataByGroups >> ', component.get("v.dataByGroup"));
+    // console.log("groupData===");
+    // console.log({ groupData });
     component.set("v.cloneDataByGroup", groupData);
     helper.calculateCostAdjustment(component, event, helper);
     // $A.get('e.force:refreshView').fire();
@@ -704,10 +702,10 @@
       var state = response.getState();
       if (state === "SUCCESS") {
         var result = response.getReturnValue();
-        console.log("fetchTakeOffLinesData");
-        console.log({ result });
+        // console.log("fetchTakeOffLinesData");
+        // console.log({ result });
         if (result != null) {
-          // console.log(result);
+          // // console.log(result);
           //alert(JSON.stringify(result.TakeOffFieldSettings));
 
           // bom line data
@@ -721,7 +719,7 @@
             bomSelectedFieldsLength
           );
           component.set("v.bomLineselectedFields",result.bomLineselectedFields);
-          console.log('>>>>>>>>>>>>>>>>>>>>>>>>>' , component.get("v.bomLineselectedFields"));
+          // console.log('>>>>>>>>>>>>>>>>>>>>>>>>>' , component.get("v.bomLineselectedFields"));
           // }
         }
         var getBOMLineFieldMapAction = component.get(
@@ -737,7 +735,7 @@
             component.set("v.fieldBOMLineNameApiMap", result);
             var neList = [];
             neList = Object.values(result);
-            // console.log(neList)
+            // // console.log(neList)
             component.set("v.fieldBOMLineNameApiList", neList);
             component.set("v.isSpinner", false);
           }
@@ -754,7 +752,7 @@
           "Something went wrong!",
           "error"
         );
-        // console.log('Error');
+        // // console.log('Error');
       }
     });
     $A.enqueueAction(action);
@@ -764,8 +762,8 @@
     // debugger;
     component.set("v.isLoading", true);
     var x = component.get("v.dataByGroup");
-    console.log("<-- @@ dataByGroup @@ -->");
-    console.log({ x });
+    // console.log("<-- @@ dataByGroup @@ -->");
+    // console.log({ x });
     var data = JSON.parse(JSON.stringify(component.get("v.dataByGroup")));
     var newList = [];
     for (var i in data) {
@@ -777,7 +775,7 @@
       }
     }
     var action = component.get("c.updateRecords");
-    console.log("@@ JSON.stringifyt--", { newList });
+    // console.log("@@ JSON.stringifyt--", { newList });
 
     action.setParams({
       recordId: component.get("v.recordId"),
@@ -793,7 +791,7 @@
         helper.getPoLinesList(component, event, helper, pageNumber, pageSize);
       } else if (state === "ERROR") {
         component.set("v.isLoading", false);
-        // console.log('A Problem Occurred: ' + JSON.stringify(response.error));
+        // // console.log('A Problem Occurred: ' + JSON.stringify(response.error));
       }
     });
     $A.enqueueAction(action);
@@ -815,7 +813,7 @@
         helper.getPoLinesList(component, event, helper, pageNumber, pageSize);
       } else if (state === "ERROR") {
         component.set("v.isLoading", false);
-        // console.log('A Problem Occurred: ' + JSON.stringify(response.error));
+        // // console.log('A Problem Occurred: ' + JSON.stringify(response.error));
       }
     });
     $A.enqueueAction(action);
@@ -848,7 +846,7 @@
           "Something went wrong!",
           "error"
         );
-        // console.log('Not success');
+        // // console.log('Not success');
       }
     });
 
@@ -870,14 +868,14 @@
     // var showFabTaxes = component.get('v.showFabricationDetails');
     // if(showFabTaxes == true)
     // {
-    console.log("loop calling in calculateCostAdjustment");
+    // console.log("loop calling in calculateCostAdjustment");
 
     component.set("v.isLoading", true);
     // $A.get('e.force:refreshView').fire();
     //var bomLineFields = component.get("v.bomLineFieldsSettings");
     var bomLineFields = component.get("v.fieldValues");
-    console.log({ bomLineFields });
-    console.log("initially Fields value are*************************");
+    // console.log({ bomLineFields });
+    // console.log("initially Fields value are*************************");
     //component.set('v.bomLineFieldsSettingsClone',bomLineFields);
     var slabDiscount = 0;
     var taxRate1 = 0;
@@ -893,8 +891,8 @@
     var taxOnFabRequired;
 
     var adjustmentTableData = component.get("v.bomList");
-    console.log("<-- adjustmentTableData -->");
-    console.log({ adjustmentTableData });
+    // console.log("<-- adjustmentTableData -->");
+    // console.log({ adjustmentTableData });
     if (
       adjustmentTableData != null &&
       adjustmentTableData != undefined &&
@@ -913,7 +911,7 @@
           adjustmentTableData[i].buildertek__Tax_Rate_1__c != undefined
         ) {
           taxRate1 = adjustmentTableData[i].buildertek__Tax_Rate_1__c;
-          console.log("<--taxRate1-->" + taxRate1);
+          // console.log("<--taxRate1-->" + taxRate1);
         }
 
         if (
@@ -921,7 +919,7 @@
           adjustmentTableData[i].buildertek__Tax_Rate_2__c != undefined
         ) {
           taxRate2 = adjustmentTableData[i].buildertek__Tax_Rate_2__c;
-          console.log("<--taxRate2-->" + taxRate2);
+          // console.log("<--taxRate2-->" + taxRate2);
         }
 
         if (
@@ -978,7 +976,7 @@
     var groupByServiceCat = component.get("v.groupByServiceCategorytoggle");
 
     var costAdjustmentColumnsPresent = false;
-    console.log({bomLineFields} , ':::::::::::;bomLineFields::::::::::::::::');
+    // console.log({bomLineFields} , ':::::::::::;bomLineFields::::::::::::::::');
     if ( bomLineFields != null && bomLineFields != undefined && bomLineFields.length > 0) {
       for (var i = 0; i < bomLineFields.length; i++) {
         if (bomLineFields[i].value == "buildertek__Markup") {
@@ -986,7 +984,7 @@
         }
       }
 
-      // console.log('@@costAdjustmentColumnsPresent-', costAdjustmentColumnsPresent);
+      // // console.log('@@costAdjustmentColumnsPresent-', costAdjustmentColumnsPresent);
       if (costAdjustmentColumnsPresent == false) {
         var discountCol =
           '{"label": "Discount", "value": "buildertek__Discount"}';
@@ -1019,9 +1017,9 @@
         //  bomLineFields[bomLineFields.length] = JSON.parse(uom);
 
         component.set("v.fieldValues", bomLineFields);
-        console.log(totalCostCol + "TOTAL COST____");
-        console.log(bomLineFields);
-        console.log({bomLineFields} , '********************bomLineFields****************');
+        // console.log(totalCostCol + "TOTAL COST____");
+        // console.log(bomLineFields);
+        // console.log({bomLineFields} , '********************bomLineFields****************');
 
       }
 
@@ -1044,19 +1042,19 @@
         component.set("v.groupByBuildChecked", false);
       }
 
-      // console.log('@@costAdjustmentColumnsPresent2-', costAdjustmentColumnsPresent);
+      // // console.log('@@costAdjustmentColumnsPresent2-', costAdjustmentColumnsPresent);
       var groupByData = component.get("v.orgData");
-      // console.log('@@groupByData-', groupByData);
+      // // console.log('@@groupByData-', groupByData);
       var allData = component.get("v.dataByGroup");
       this.storeAllData = allData;
       var v = this.storeAllData;
-      console.log("storeAllData in var", { v });
-      // console.log('@@dataByGroup FIRST-', allData);
+      // console.log("storeAllData in var", { v });
+      // // console.log('@@dataByGroup FIRST-', allData);
       var map1 = new Map();
       var map2 = new Map();
       if (allData != null && allData != undefined) {
-        console.log("all data :)-> ", { allData });
-        console.log("all data length :)-> ", allData.length);
+        // console.log("all data :)-> ", { allData });
+        // console.log("all data length :)-> ", allData.length);
         for (var i = 0; i < allData.length; i++) {
           var groupedRecords = allData[i].groupedRecordsTmp;
           var grpData = allData[i].groupData;
@@ -1072,13 +1070,13 @@
               grpData[j].buildertek__BL_LIST_PRICE__c
             );
           }
-          // console.log('@@bomIdVsUpgradedCost FIRST-', bomIdVsUpgradedCost);
-          // console.log('@@bomIdVslistPrice FIRST-', bomIdVslistPrice);
-          console.log("groupedRecords :) --> ", { groupedRecords });
-          console.log("groupedRecords.length :) --> ", groupedRecords.length);
+          // // console.log('@@bomIdVsUpgradedCost FIRST-', bomIdVsUpgradedCost);
+          // // console.log('@@bomIdVslistPrice FIRST-', bomIdVslistPrice);
+          // console.log("groupedRecords :) --> ", { groupedRecords });
+          // console.log("groupedRecords.length :) --> ", groupedRecords.length);
           for (var j = 0; j < groupedRecords.length; j++) {
             var record = groupedRecords[j];
-            console.log("record :) --> ", { record });
+            // console.log("record :) --> ", { record });
             var lastindex = record.length - 1;
 
             var productCode = "";
@@ -1140,7 +1138,7 @@
             // {
             //     // uomString = grpData[j].buildertek__Takeoff_Line__r.buildertek__UOM_PL__c;
             // }
-            // console.log('@@sqft-',sqft);
+            // // console.log('@@sqft-',sqft);
 
             //Discount Amount
             var extendedcost = 0;
@@ -1155,11 +1153,9 @@
             let salestax = 0;
 
             var testo = grpData[j];
-            console.log(
-              "service category--" + testo.buildertek__BL_SERVICE_CATEGORY__c
-            );
-            console.log("testo===");
-            console.log({ testo });
+            // console.log("service category--" + testo.buildertek__BL_SERVICE_CATEGORY__c);
+            // console.log("testo===");
+            // console.log({ testo });
 
             var testoId = testo.Id;
 
@@ -1169,9 +1165,9 @@
                 testo.buildertek__Selection_Sheet_Takeoff__r
                   .buildertek__Options_Rate__c;
               var arr = [];
-              console.log("jsonstring==" + jsonstring);
+              // console.log("jsonstring==" + jsonstring);
               if (jsonstring != undefined) {
-                console.log("testing");
+                // console.log("testing");
                 arr = JSON.parse(jsonstring);
 
                 if (arr.length > 0) {
@@ -1190,9 +1186,9 @@
                 testo.buildertek__Selection_Sheet_Takeoff__r
                   .buildertek__Slab_Discount_Rate_LongText__c;
               var arr = [];
-              console.log("jsonstringslab==" + jsonstringslab);
+              // console.log("jsonstringslab==" + jsonstringslab);
               if (jsonstringslab != undefined) {
-                console.log("testing");
+                // console.log("testing");
                 arr = JSON.parse(jsonstringslab);
 
                 if (arr.length > 0) {
@@ -1211,7 +1207,7 @@
               var testo1 = record[k];
               if (record[k].Key == "Id") {
                 bomLineId = record[k].Value;
-                console.log("bomLineId :) -> ", bomLineId);
+                // console.log("bomLineId :) -> ", bomLineId);
               }
 
               if (
@@ -1237,10 +1233,10 @@
                 }
               }
 
-              // console.log('#@#@ bomLineId---',bomLineId);
-              // console.log('#@#@ serviceCategory---',serviceCategory);
-              // console.log('#@#@ quantity---',quantity);
-              // console.log('#@#@ properCost---'+properCost+'-----Name---'+record[2].Value);
+              // // console.log('#@#@ bomLineId---',bomLineId);
+              // // console.log('#@#@ serviceCategory---',serviceCategory);
+              // // console.log('#@#@ quantity---',quantity);
+              // // console.log('#@#@ properCost---'+properCost+'-----Name---'+record[2].Value);
               /* Comment added by Harika, regarding CAES-63 ticket, Date: 09-08-2022*/
               //if(serviceCategory == 'Complete')
               //{
@@ -1482,11 +1478,11 @@
                              }*/
 
               if (!bomIdVsExtendCost.has(bomLineId)) {
-                // console.log('@@NOT FOUND--',bomLineId,'---Cost---',extendedcost);
+                // // console.log('@@NOT FOUND--',bomLineId,'---Cost---',extendedcost);
                 bomIdVsExtendCost.set(bomLineId, extendedcost);
               }
-              // // console.log('@@extendedcost FINAL--',extendedcost);
-              // console.log('@@markupPercentage--',markupPercentage);
+              // // // console.log('@@extendedcost FINAL--',extendedcost);
+              // // console.log('@@markupPercentage--',markupPercentage);
               grossCost = parseFloat(properCost * parseFloat(quantity)).toFixed(
                 2
               );
@@ -1496,12 +1492,9 @@
               // grossLessCost = grossCost - Math.abs(discountAmount); // commneted for CAES-79 for correct calculation
               grossLessCost = grossCost - discountAmount;
               var markupAmount = 0;
-              console.log(
-                "service category====++" +
-                testo.buildertek__Location_Detail_Reference_1__c
-              );
+              // console.log("service category====++" +testo.buildertek__Location_Detail_Reference_1__c);
 
-              console.log("markupPercentage 2===" + markupPercentage);
+              // console.log("markupPercentage 2===" + markupPercentage);
               markupAmount =
                 grossLessCost * (parseFloat(markupPercentage) / 100);
               if (markupPercentage == "") markupAmount = 0;
@@ -1511,15 +1504,12 @@
                 grossLessCost + markupAmount
               ).toFixed(2);
 
-              // console.log('testo service=='+testo.buildertek__BL_SERVICE_CATEGORY__c);
+              // // console.log('testo service=='+testo.buildertek__BL_SERVICE_CATEGORY__c);
               //Extended Cost For Workers Comp and General Liability
               /* Comment added by Harika, regarding CAES-54 ticket, Date: 26-07-2022*/
               // if (serviceCategory == 'Ins' )
               if (serviceCategory == "Insurance") {
-                console.log(
-                  "v.generalLiabilityCost 1=====" +
-                  component.get("v.generalLiabilityCost")
-                );
+                // console.log( "v.generalLiabilityCost 1=====" +component.get("v.generalLiabilityCost"));
                 var extendedCOstObj = component.get("v.generalLiabilityCost");
                 if (extendedCOstObj != null && extendedCOstObj != undefined) {
                   extendedCOstObj = Number(extendedCOstObj);
@@ -1573,7 +1563,7 @@
                   taxedit = record[k].Value;
                   if (taxedit == true) {
                     salestax = finalExtendedCost * (taxRate1 / 100);
-                    console.log("<<--salestax-->>" + salestax);
+                    // console.log("<<--salestax-->>" + salestax);
                   }
                 }
 
@@ -1588,7 +1578,7 @@
                   serviceCategory == "Edge")
               ) {
                 salestax = finalExtendedCost * (taxRate2 / 100);
-                console.log('salestax :- ', salestax);
+                // console.log('salestax :- ', salestax);
               }
               //These 3 service cats won't have SalesTax
               /* Comment added by Harika, regarding CAES-54 ticket, Date: 26-07-2022*/
@@ -1619,7 +1609,7 @@
               }
 
               // totalCost = Number(finalExtendedCost) + Number(salestax) ;
-              // console.log('#@#@ totalCost---'+totalCost+'-----Name---'+record[2].Value);
+              // // console.log('#@#@ totalCost---'+totalCost+'-----Name---'+record[2].Value);
               if (record[k].Key == "buildertek__Discount") {
                 //alert('slabDiscount'+slabDiscount);
                 record[k].Value = slabDiscount;
@@ -1655,12 +1645,12 @@
               totalCost = Number(finalExtendedCost) + Number(salestax);
 
               if (record[k].Key == "buildertek__SalesTax") {
-                console.log("salestax -> ", salestax);
+                // console.log("salestax -> ", salestax);
                 record[k].Value = parseFloat(salestax).toFixed(2);
               }
 
               if (record[k].Key == "buildertek__Markup") {
-                console.log("markupPercentage -> ", markupPercentage);
+                // console.log("markupPercentage -> ", markupPercentage);
                 record[k].Value = markupPercentage;
               }
 
@@ -1674,10 +1664,7 @@
               //     record[k].Value = uomString;
               // }
             }
-            console.log(
-              "<--!costAdjustmentColumnsPresent!-->",
-              costAdjustmentColumnsPresent
-            );
+            // console.log( "<--!costAdjustmentColumnsPresent!-->",costAdjustmentColumnsPresent);
             if (costAdjustmentColumnsPresent == false) {
               if (bomIdVsExtendCost.has(grpData[j].Id)) {
                 extendedcost = parseFloat(
@@ -1716,11 +1703,8 @@
               // * here we got the markup for all the BOM lines
 
               //MarkUp Amount
-              console.log(
-                "service category====3 ++" +
-                testo.buildertek__Location_Detail_Reference_1__c
-              );
-              console.log("markupPercentage 3===" + markupPercentage);
+              // console.log("service category====3 ++" +testo.buildertek__Location_Detail_Reference_1__c);
+              // console.log("markupPercentage 3===" + markupPercentage);
               var markupAmount =
                 grossLessCost * (parseFloat(markupPercentage) / 100);
               if (markupPercentage == "") markupAmount = 0;
@@ -1733,10 +1717,7 @@
               // if (serviceCategory == 'Ins')
 
               if (serviceCategory == "Insurance") {
-                console.log(
-                  "v.generalLiabilityCost===" +
-                  component.get("v.generalLiabilityCost")
-                );
+                // console.log("v.generalLiabilityCost===" + component.get("v.generalLiabilityCost"));
                 var extendedCOstObj = component.get("v.generalLiabilityCost");
                 if (extendedCOstObj != null && extendedCOstObj != undefined) {
                   extendedCOstObj = Number(extendedCOstObj);
@@ -1772,7 +1753,7 @@
               }
 
               // var minustotal = parseFloat(finalExtendedCost) - (parseFloat(grossCost) - parseFloat(discountAmount));
-              // console.log('minustotal=='+minustotal);
+              // // console.log('minustotal=='+minustotal);
               // if (parseFloat(grossCost) < 0) {
               //     var totals = parseFloat(grossCost) + parseFloat(discountAmount);
               //     record[k].Value = totals + minustotal;
@@ -1871,12 +1852,12 @@
 
               salestax = parseFloat(salestax).toFixed(2);
               finalExtendedCost = parseFloat(finalExtendedCost).toFixed(2);
-              console.log("--salestax--" + salestax);
-              console.log("--finalExtendedCost--" + finalExtendedCost);
+              // console.log("--salestax--" + salestax);
+              // console.log("--finalExtendedCost--" + finalExtendedCost);
               totalCost = Number(finalExtendedCost) + Number(salestax);
               if (serviceCategory == "Insurance") {
-                console.log("finalExtendedCost==" + finalExtendedCost);
-                console.log("totalCost===" + totalCost);
+                // console.log("finalExtendedCost==" + finalExtendedCost);
+                // console.log("totalCost===" + totalCost);
               }
               record[lastindex + 8] = JSON.parse(
                 '{"fieldType": "CURRENCY", "Key": "buildertek__Total_Cost", "Value": "' +
@@ -1907,7 +1888,7 @@
               // salestax = parseFloat(salestax).toFixed(2);
 
               //alert('totalCost'+totalCost);
-              // console.log('#@#@ totalCost---'+totalCost+'-----Name---'+record[2].Value);
+              // // console.log('#@#@ totalCost---'+totalCost+'-----Name---'+record[2].Value);
               //       record[lastindex + 7] = JSON.parse('{"fieldType": "CURRENCY", "Key": "buildertek__Total_Cost", "Value": "' + parseFloat(totalCost).toFixed(2) + '"}');
 
               // record[lastindex + 8] = JSON.parse('{"fieldType": "STRING", "Key": "buildertek__UOM_PL", "Value": "' + uomString + '"}');
@@ -1922,7 +1903,7 @@
     }
     component.set("v.bomLineFieldsSettings", bomLineFields);
     component.set("v.dataByGroup", allData);
-    // console.log('dataByGroup Last--', component.get("v.dataByGroup"));
+    console.log('dataByGroup Last--', component.get("v.dataByGroup"));
     component.set("v.orgData", groupByData);
 
     //helper.formatDataByGroups(component,event,helper,groupByDataNew,fieldMapTyp,allData[0].sObjectRecordsList);
@@ -2041,7 +2022,7 @@
             "Something went wrong!",
             "error"
           );
-          // console.log('Not success');
+          // // console.log('Not success');
           component.set("v.isLoading", false);
         }
       });
@@ -2254,10 +2235,10 @@
                           parseFloat(record[k].Value.toString())) *
                         100
                       ) / 100;
-                    console.log("markup value===" + record[k].Value);
+                    // console.log("markup value===" + record[k].Value);
 
                     let theMarkUp = parseFloat(record[k].Value.toString());
-                    // console.log('theMarkUp--',theMarkUp);
+                    // // console.log('theMarkUp--',theMarkUp);
                     if (
                       theMarkUp != null &&
                       theMarkUp != undefined &&
@@ -2297,7 +2278,7 @@
                           parseFloat(record[k].Value.toString())) *
                         100
                       ) / 100;
-                    console.log("salestax :) -> ", record[k].Value);
+                    // console.log("salestax :) -> ", record[k].Value);
                   }
 
                   if (
@@ -2334,9 +2315,9 @@
                     ) {
                       proposalAmount =
                         Number(proposalAmount) + Number(record[k].Value);
-                      console.log("<--proposalAmount-->" + proposalAmount);
+                      // console.log("<--proposalAmount-->" + proposalAmount);
                       proposalAmount = parseFloat(proposalAmount).toFixed(2);
-                      console.log("<--proposalAmount-->" + proposalAmount);
+                      // console.log("<--proposalAmount-->" + proposalAmount);
                     }
 
                     if (
@@ -2398,7 +2379,7 @@
                       thisBuildPhaseName == "Base"
                     ) {
                       extendedcost = extendedcost + parseFloat(record[k].Value);
-                      console.log("extendedcost===" + extendedcost);
+                      // console.log("extendedcost===" + extendedcost);
                     }
                     if (
                       thisBuildPhaseName != null &&
@@ -2418,16 +2399,16 @@
                       thisBuildPhaseName == "Base" &&
                       serviceCatVsExtendedCost.has(serviceCategory)
                     ) {
-                      // console.log(thisBuildPhaseName + '_______________' + serviceCatVsExtendedCost.has(serviceCategory));
-                      // console.log(serviceCategory);
-                      // console.log('++++++++++++++++++++++++++++++++++++');
+                      // // console.log(thisBuildPhaseName + '_______________' + serviceCatVsExtendedCost.has(serviceCategory));
+                      // // console.log(serviceCategory);
+                      // // console.log('++++++++++++++++++++++++++++++++++++');
                       let existingExtendedCost = Number(
                         serviceCatVsExtendedCost.get(serviceCategory)
                       );
                       let currentVal = Number(record[k].Value);
                       let updatedVal = existingExtendedCost + currentVal;
                       updatedVal = parseFloat(updatedVal).toFixed(2);
-                      console.log(updatedVal);
+                      // console.log(updatedVal);
                       serviceCatVsExtendedCost.set(
                         serviceCategory,
                         String(updatedVal)
@@ -2462,8 +2443,8 @@
 
     //Calculate Average
     //totalDiscount = totalDiscount / totalBomLinesCount;
-    // console.log('theMarkUp2--',markup);
-    // console.log('theBomLines--',totalBomLinesCount);
+    // // console.log('theMarkUp2--',markup);
+    // // console.log('theBomLines--',totalBomLinesCount);
     if (
       markup != null &&
       markup != undefined &&
@@ -2474,7 +2455,7 @@
     ) {
       markup = markup / totalBomLinesCount;
     }
-    // console.log('theMarkUp3--',markup);
+    // // console.log('theMarkUp3--',markup);
     markup = parseFloat(markup).toFixed(2);
     // salestax = salestax / totalBomLinesCount;
     salestax = parseFloat(salestax).toFixed(2);
@@ -2491,7 +2472,7 @@
     var custs = [];
     var servCatVsTotalCost = [];
     serviceCatVsExtendedCost.forEach(function (value, key) {
-      // console.log(key + '_________' + value);
+      // // console.log(key + '_________' + value);
       custs.push({ value: value, key: key });
       // alert('key' +key == 'Install');
       // alert('value'+value);
@@ -2505,9 +2486,7 @@
       }
     });
 
-    console.log(
-      "**    optionValue          -------------------->: " + optionValue
-    );
+    // console.log( "**    optionValue          -------------------->: " + optionValue);
     if (optionValue) {
       serviceCatVsTotalCostMap.set("Option", String(optionValue));
     }
@@ -2518,21 +2497,21 @@
     }
 
     serviceCatVsTotalCostMap.forEach(function (value, key) {
-      console.log("key-->" + key);
-      console.log("value-->" + value);
+      // console.log("key-->" + key);
+      // console.log("value-->" + value);
       servCatVsTotalCost.push({ value: value, key: key });
     });
     installCost = parseFloat(installCost).toFixed(2);
-    // console.log('@@serviceCatVsExtendedCost--',serviceCatVsExtendedCost);
-    // console.log('@@serviceCatVsTotalCostMap--',serviceCatVsTotalCostMap);
-    // console.log('@@Expected Proposal Cost--',Number(serviceCatVsTotalCostMap.get("Misc")) + totalCost );
-    // console.log('@@installCost--',installCost);
-    // console.log('@@proposalAmount--',proposalAmount);
+    // // console.log('@@serviceCatVsExtendedCost--',serviceCatVsExtendedCost);
+    // // console.log('@@serviceCatVsTotalCostMap--',serviceCatVsTotalCostMap);
+    // // console.log('@@Expected Proposal Cost--',Number(serviceCatVsTotalCostMap.get("Misc")) + totalCost );
+    // // console.log('@@installCost--',installCost);
+    // // console.log('@@proposalAmount--',proposalAmount);
     // debugger;
     component.set("v.servCatVsExtendedCostMap", servCatVsTotalCost);
     component.set("v.totalInstallCost", installCost);
     component.set("v.totalProposalAmount", proposalAmount);
-    console.log("<--proposalAmount-->" + proposalAmount);
+    // console.log("<--proposalAmount-->" + proposalAmount);
     helper.reCalculateTable(
       component,
       event,
@@ -2545,7 +2524,7 @@
 
     // alert('** Reached process');
     // debugger;
-    // console.log('**      serviceCatVsTotalCostMap -------------->: ' + (JSON.stringify(serviceCatVsTotalCostMap)));
+    // // console.log('**      serviceCatVsTotalCostMap -------------->: ' + (JSON.stringify(serviceCatVsTotalCostMap)));
 
     let totalProposalBaseCost = 0 + totalCost;
     let totalProposalBaseValue = 0;
@@ -2574,12 +2553,7 @@
     ocipextendedcost,
     ocipreq
   ) {
-    console.log(
-      proposalAmount +
-      "{..............}" +
-      installCost +
-      "Recalculate table+++++++++++++++++++++==========================="
-    );
+    // console.log( proposalAmount +"{..............}" + installCost +"Recalculate table+++++++++++++++++++++===========================");
     const bomlineIdVsTexturaFee = new Map();
     const bomlineIdVsGLFee = new Map();
     const bomlineIdVsWCFee = new Map();
@@ -2606,11 +2580,11 @@
             proposalAmount != undefined
           ) {
             var texturaExtendedCost;
-            console.log("rate-->" + Number(rate));
+            // console.log("rate-->" + Number(rate));
             var rateVal = Number(rate) * proposalAmount;
-            console.log("rateVal==>" + rateVal);
+            // console.log("rateVal==>" + rateVal);
             rateVal = parseFloat(rateVal).toFixed(2);
-            console.log("rateVal==>" + rateVal);
+            // console.log("rateVal==>" + rateVal);
             if (rateVal > 499.99 && rateVal < 3750.01) {
               texturaExtendedCost = parseFloat(rateVal).toFixed(2);
             } else if (rateVal < 500.0) {
@@ -2668,7 +2642,7 @@
 
             var rateVal = proposalAmount * (nominatorVal / denominatorVal);
             rateVal = parseFloat(rateVal).toFixed(2);
-            console.log("GL Rate----->", rateVal);
+            // console.log("GL Rate----->", rateVal);
             if (rateVal != null && rateVal != undefined) {
               generalLiability[0].extendedCostVal = rateVal;
               glRateValue = rateVal;
@@ -2696,7 +2670,7 @@
           workersComp.length > 0
         ) {
           var nominatorVal = workersComp[0].productRate;
-          console.log("nominatorVal-->" + nominatorVal);
+          // console.log("nominatorVal-->" + nominatorVal);
           if (!nominatorVal || nominatorVal == null) {
             nominatorVal = 1.11;
           }
@@ -2730,24 +2704,24 @@
       }
       /*if (wcRateValue != null && wcRateValue != undefined && glRateValue != null && glRateValue != undefined && bomList[0].buildertek__OCIP_CCIP_Required__c == true) {
                 let OCIPVal = Number(wcRateValue) + Number(glRateValue) + Number(ocipextendedcost);
-                console.log('OCIPVal----->', OCIPVal);
-                console.log(installCost);
-                console.log(nominatorVal);
-                console.log(denominatorVal);
-                console.log(installCost * (nominatorVal / denominatorVal));
-                console.log(wcRateValue);
-                console.log('------------------------------------');
-                console.log(proposalAmount);
-                 console.log(nominatorVal);
-                console.log(denominatorVal);
-                console.log(proposalAmount * (nominatorVal / denominatorVal));
-                console.log(glRateValue);
-              //  console.log(ocipextendedcost);
+                // console.log('OCIPVal----->', OCIPVal);
+                // console.log(installCost);
+                // console.log(nominatorVal);
+                // console.log(denominatorVal);
+                // console.log(installCost * (nominatorVal / denominatorVal));
+                // console.log(wcRateValue);
+                // console.log('------------------------------------');
+                // console.log(proposalAmount);
+                 // console.log(nominatorVal);
+                // console.log(denominatorVal);
+                // console.log(proposalAmount * (nominatorVal / denominatorVal));
+                // console.log(glRateValue);
+              //  // console.log(ocipextendedcost);
                 bomList[0].buildertek__OCIP_CCIP__c = -OCIPVal;
             } else if (bomList[0].buildertek__OCIP_CCIP_Required__c == false) {
                 bomList[0].buildertek__OCIP_CCIP__c = 0.00;
             }*/
-      console.log(component.get("v.buildPhaseName") + "phase name is --------");
+      // console.log(component.get("v.buildPhaseName") + "phase name is --------");
       var phaseName = component.get("v.buildPhaseName");
       let OCIPVal = 0.0;
       if (
@@ -2760,14 +2734,14 @@
       ) {
         OCIPVal = (Number(wcRateValue) + Number(glRateValue)) * -1;
         bomList[0].buildertek__OCIP_CCIP__c = OCIPVal;
-        console.log(OCIPVal + "Ocip vaalue is :)---------");
+        // console.log(OCIPVal + "Ocip vaalue is :)---------");
       } else {
         bomList[0].buildertek__OCIP_CCIP__c = 0.0;
       }
 
-      // console.log('bomlineIdVsTexturaFee----->',bomlineIdVsTexturaFee);
-      // console.log('bomlineIdVsGLFee----->',bomlineIdVsGLFee);
-      // console.log('bomlineIdVsWCFee----->',bomlineIdVsWCFee);
+      // // console.log('bomlineIdVsTexturaFee----->',bomlineIdVsTexturaFee);
+      // // console.log('bomlineIdVsGLFee----->',bomlineIdVsGLFee);
+      // // console.log('bomlineIdVsWCFee----->',bomlineIdVsWCFee);
 
       var allData = component.get("v.dataByGroup");
       if (allData != undefined) {
@@ -2849,8 +2823,8 @@
                 }
               }
 
-              // console.log('bomlineIdVsWCFee');
-              // console.log(bomlineIdVsWCFee.get(bomLineId));
+              // // console.log('bomlineIdVsWCFee');
+              // // console.log(bomlineIdVsWCFee.get(bomLineId));
               if (
                 bomLineId != null &&
                 bomLineId != "" &&
@@ -2908,9 +2882,9 @@
               /*if (record[k].Key == "buildertek__Total_Cost" && serviceCategory != null && serviceCategory!= undefined && serviceCategory == 'Ins'
                             && GLFee != null && GLFee!= undefined)
                             {*/
-              // console.log('record[k].Key=='+record[k].Key);
-              // console.log('serviceCategory=='+serviceCategory);
-              // console.log('GLFee=='+GLFee);
+              // // console.log('record[k].Key=='+record[k].Key);
+              // // console.log('serviceCategory=='+serviceCategory);
+              // // console.log('GLFee=='+GLFee);
               if (
                 record[k].Key == "buildertek__Total_Cost" &&
                 serviceCategory != null &&
@@ -2927,7 +2901,7 @@
                 }
               }
 
-              // console.log('OCIP=='+OCIPVal);
+              // // console.log('OCIP=='+OCIPVal);
               if (
                 record[k].Key == "buildertek__Total_Cost" &&
                 serviceCategory != null &&
@@ -2950,7 +2924,7 @@
                 workrsCompFee != null &&
                 workrsCompFee != undefined
               ) {
-                console.log("workrsCompFee val==" + workrsCompFee);
+                // console.log("workrsCompFee val==" + workrsCompFee);
                 record[k].Value = parseFloat(workrsCompFee).toFixed(2);
               }
 
@@ -2973,8 +2947,8 @@
 
       component.set("v.dataByGroup", allData);
 
-      // console.log('dataByGroup Final 2---->',allData);
-      // console.log('bomList Final----->',bomList[0]);
+      // // console.log('dataByGroup Final 2---->',allData);
+      // // console.log('bomList Final----->',bomList[0]);
       component.set("v.bomList", bomList);
 
       var action = component.get("c.calculateOCIP_CCIP");
@@ -2984,9 +2958,9 @@
       action.setCallback(this, function (response) {
         var state = response.getState();
         if (state === "SUCCESS") {
-          console.log("Success---");
+          // console.log("Success---");
         } else {
-          console.log("@@Not Success");
+          // console.log("@@Not Success");
         }
       });
       $A.enqueueAction(action);
@@ -2998,7 +2972,7 @@
     action.setCallback(this, function (response) {
       var state = response.getState();
       if (state === "SUCCESS") {
-        // console.log('Country List---',response.getReturnValue());
+        // // console.log('Country List---',response.getReturnValue());
         if (
           response.getReturnValue() != null &&
           response.getReturnValue() != undefined
@@ -3006,7 +2980,7 @@
           component.set("v.countryoptions", response.getReturnValue());
         }
       } else {
-        // console.log('@@Not Success');
+        // // console.log('@@Not Success');
         helper.showToast(
           component,
           event,
@@ -3020,10 +2994,10 @@
     $A.enqueueAction(action);
   },
   getExtendedCosts: function (component, event, helper) {
-    console.log("getExtendedCosts called===");
+    // console.log("getExtendedCosts called===");
     component.set("v.isLoading", true);
     var BOMID = component.get("v.recordId");
-    console.log("BOMID===" + BOMID);
+    // console.log("BOMID===" + BOMID);
     var action = component.get("c.getExtendedCosts");
 
     action.setParams({
@@ -3035,7 +3009,7 @@
 
       if (state === "SUCCESS") {
         var extendedCostRecords = response.getReturnValue();
-        // console.log('#@#@extendedCostRecords--',extendedCostRecords);
+        // // console.log('#@#@extendedCostRecords--',extendedCostRecords);
         var nonSlab = "buildertek__Mark_Up_Non_Slab_or_Labor__c";
         var fabricationInstall = "buildertek__Fabrication_Install_Rate__c";
         var fabOnly = "buildertek__Fab_Only_Rate__c";
@@ -3050,7 +3024,7 @@
         var generalLiability =
           "buildertek__General_Liability_Insurance_Long__c";
         var texturaFee = "buildertek__Textura_Fee__c";
-        console.log("gl1=====" + extendedCostRecords[generalLiability]);
+        // console.log("gl1=====" + extendedCostRecords[generalLiability]);
         if (
           extendedCostRecords[fabricationInstall] != null &&
           extendedCostRecords[fabricationInstall] != undefined
@@ -3116,8 +3090,8 @@
           extendedCostRecords[optionsRate] != undefined
         ) {
           component.set("v.OptionsExtndCost", extendedCostRecords[optionsRate]);
-          console.log("extendedCostRecords[optionsRate]");
-          console.log(extendedCostRecords[optionsRate]);
+          // console.log("extendedCostRecords[optionsRate]");
+          // console.log(extendedCostRecords[optionsRate]);
         }
         if (
           extendedCostRecords[workersComp] != null &&
@@ -3131,8 +3105,8 @@
           extendedCostRecords[generalLiability] != undefined
         ) {
           var recordDetail = extendedCostRecords[generalLiability];
-          console.log("gl Insurance cost===" + recordDetail);
-          console.log(recordDetail[generalLiability]);
+          // console.log("gl Insurance cost===" + recordDetail);
+          // console.log(recordDetail[generalLiability]);
           component.set(
             "v.generalLiabilityCost",
             recordDetail[generalLiability]
@@ -3147,7 +3121,7 @@
         }
       } else {
         //helper.showToast(component, event, helper, 'Error!', 'Something went wrong!', 'error');
-        // console.log('Not success extendedCostRecords');
+        // // console.log('Not success extendedCostRecords');
         component.set("v.isLoading", false);
       }
     });
@@ -3387,8 +3361,8 @@
       },
     ]);
 
-    console.log(component.get("v.adjustmentTableColumns"));
-    console.log("-----------Table columns are----------");
+    // console.log(component.get("v.adjustmentTableColumns"));
+    // console.log("-----------Table columns are----------");
   },
   validateData: function (component, event, helper) {
     var updatedRecords = component
@@ -3527,7 +3501,7 @@
       //     dataFromDB[0].buildertek__General_Liability_Insurance__c == undefined ||
       //     dataFromDB[0].buildertek__General_Liability_Insurance__c == '' )
       // {
-      //     // console.log('2nd condition');
+      //     // // console.log('2nd condition');
       //     helper.showToast(component, event, helper, 'Error!', '"Workers Comp Insurance Rate" and "General Liability Insurance" must be entered when OCIP/CCIP is Required.', 'error');
       //     return false;
       // }
@@ -3596,7 +3570,7 @@
   getfieldData: function (component, event, helper) {
     var allData = this.storeAllData;
     var lineMap = new Map();
-    console.log("allData -> ", { allData });
+    // console.log("allData -> ", { allData });
     for (let i = 0; i < allData.length; i++) {
       const record = allData[i].groupedRecordsTmp;
       var groupName = allData[i].groupName;
@@ -3646,17 +3620,17 @@
   },
   quote: function (component, event, helper) {
     var myFieldMap = helper.getfieldData(component, event, helper);
-    console.log('************************************');
+    // console.log('************************************');
     myFieldMap.forEach(element => {
-      // console.log('element ==> ',{element});
+      // // console.log('element ==> ',{element});
       element[0] = Math.abs(element[0]).toFixed(2);
     });
-    console.log('myFieldMap ===> ',{myFieldMap});
+    // console.log('myFieldMap ===> ',{myFieldMap});
     debugger;
     var obj = Object.fromEntries(myFieldMap);
     var jsonString = JSON.stringify(obj);
-    console.log("myFieldMap --> ", { myFieldMap });
-    console.log('myFieldMap --> ',jsonString);
+    // console.log("myFieldMap --> ", { myFieldMap });
+    // console.log('myFieldMap --> ',jsonString);
     component.set("v.Spinner", true);
     var action = component.get("c.createQuoteMethod");
     action.setParams({
@@ -3665,9 +3639,9 @@
     });
     action.setCallback(this, function (response) {
       var status = response.getState();
-      console.log("status ==> " + status);
+      // console.log("status ==> " + status);
       var result = response.getReturnValue();
-      console.log("result ==> " + result);
+      // console.log("result ==> " + result);
       if (result[0] === "Success") {
         helper.showToast1(
           component,
@@ -3702,7 +3676,7 @@
           "info"
         );
       } else {
-        console.log("Error -> ", result);
+        // console.log("Error -> ", result);
         helper.showToast1(
           component,
           event,
@@ -3718,9 +3692,9 @@
     $A.enqueueAction(action);
   },
   showToast1: function (component, event, helper, title, message, type) {
-    console.log("title ", title);
-    console.log("messge ", message);
-    console.log("type ", type);
+    // console.log("title ", title);
+    // console.log("messge ", message);
+    // console.log("type ", type);
     var toastEvent = $A.get("e.force:showToast");
     toastEvent.setParams({
       title: title,
