@@ -3,6 +3,7 @@
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
     <aura:attribute name="rfqName" type="String"/>
     <aura:attribute name="parentRecordId" type="String" default="" />
+    <aura:attribute name="oppRecordId" type="String" default="" />
     <aura:attribute name="isLoading" type="Boolean" />
     <aura:attribute name="listOfFields" type="List" />
     <lightning:workspaceAPI aura:id="workspace" />
@@ -47,7 +48,7 @@
                                                     <lightning:inputField fieldName="{! field.name }" value = "{!v.status}"/>
                                                 </aura:if>
                                                 <aura:if  isTrue="{!field.name =='buildertek__Opportunity__c'}" >        
-                                                    <lightning:inputField fieldName="{!field.name}" value="{!v.parentRecordId}"/>
+                                                    <lightning:inputField fieldName="{!field.name}" value="{!v.oppRecordId}"/>
                                                 </aura:if>
                                             </aura:set>
                                         </aura:if> 

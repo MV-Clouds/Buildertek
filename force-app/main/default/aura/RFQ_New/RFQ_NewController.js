@@ -9,7 +9,7 @@
             parentRecordId = context.attributes.recordId;
             console.log(context);
             console.log(parentRecordId);
-            component.set("v.parentRecordId", parentRecordId);
+            // component.set("v.parentRecordId", parentRecordId);
         } else {
             var relatedList = window.location.pathname;
             var stringList = relatedList.split("/");
@@ -19,7 +19,7 @@
                 parentRecordId = stringList[3];
             }
 
-            component.set("v.parentRecordId", parentRecordId);
+            // component.set("v.parentRecordId", parentRecordId);
         }
         if(parentRecordId != null && parentRecordId != ''){
             var action = component.get("c.getobjectName");
@@ -31,6 +31,8 @@
                     var objName = response.getReturnValue();
                     if(objName == 'buildertek__Project__c'){
                         component.set("v.parentprojectRecordId", parentRecordId);
+                    } else if(objName == 'Opportunity') {
+                        component.set("v.oppRecordId", parentRecordId);
                     }
                 } 
             });
