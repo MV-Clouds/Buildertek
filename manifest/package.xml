@@ -2,36 +2,40 @@
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
    
     <types>
-        <members>QBBatchReqJSON</members>
-        <members>QBBatchResJSON</members>
-        <members>QBCallout</members>
-        <members>QBCallOutService</members>
-        <members>QBCustomerJSON</members>
-        <members>QBCustomerResponseJSON</members>
-        <members>QBException</members>
-        <members>QBIntegrationQueue</members>
-        <members>QBIntegrationQueueable</members>
-        <members>QBIntegrationQueue_TestClass</members>
-        <members>QBInvoiceJSON</members>
-        <members>QBInvoiceLineJSON</members>
-        <members>QBInvoiceLineResponseJSON</members>
-        <members>QBInvoiceResponseJSON</members>
-        <members>QBMap</members>
-        <members>QBMockTest</members>
-        <members>QBOErrorJSON</members>
-        <members>QBReceiptJSON</members>
-        <members>QBReceiptResponseJSON</members>
-        <members>QBRefreshJSON</members>
-        <members>QBTaxCodeJSON</members>
-        <members>QBTaxCodeResponseJSON</members>
-        <members>QBTaxRateJSON</members>
-        <members>QBTermReqJSON</members>
-        <members>QBtermsResponseJSON</members>
+        <members>*</members>
         <name>ApexClass</name>
     </types>
     <types>
-        <members>CreateQBInvoice</members>
+        <members>*</members>
+        <name>ApexComponent</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>ApexPage</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>ApexTestSuite</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>ApexTrigger</name>
+    </types>
+    <types>
+        <members>*</members>
         <name>AuraDefinitionBundle</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>LightningComponentBundle</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>StaticResource</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>Flow</name>
     </types>
 
     <version>55.0</version>
