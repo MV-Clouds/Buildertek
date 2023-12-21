@@ -1,0 +1,69 @@
+.THIS.outerDiv{
+    height: 54vh;
+}
+.THIS .innerDiv{
+    height:auto; 
+    max-height: 54vh; 
+    overflow:auto;
+}
+
+@media only screen and (max-height: 1080px) and (min-height: 990px){
+    .THIS.outerDiv{
+        height: 64vh !important ;
+    }
+    .THIS .innerDiv{
+        height:auto !important; 
+        max-height: 64vh !important; 
+        overflow:auto !important;
+    }
+}
+@media only screen and (max-height: 990px) and (min-height: 900px){
+    .THIS.outerDiv{
+        height: 60vh !important ;
+    }
+    .THIS .innerDiv{
+        height: auto !important; 
+        max-height: 60vh !important; 
+        overflow:auto !important;
+    }
+}
+@media only screen and (max-height: 900px) and (min-height: 810px){
+    .THIS.outerDiv{
+        height: 54vh !important ;
+    }
+    .THIS .innerDiv{
+        height:auto !important; 
+        max-height: 54vh !important; 
+        overflow:auto !important;
+    }
+}
+@media only screen and (max-height: 810px) and (min-height: 720px){
+    .THIS.outerDiv{
+        height: 46vh !important ;
+    } 
+    .THIS .innerDiv{
+        height:auto !important; 
+        max-height: 46vh !important; 
+        overflow:auto !important;
+    }
+}
+@media only screen and (max-height: 720px) and (min-height: 630px){
+    .THIS.outerDiv{
+        height: 43vh !important ;
+    }
+    .THIS .innerDiv{
+        height:auto !important; 
+        max-height: 43vh !important; 
+        overflow:auto !important;
+    }
+}
+@media only screen and (max-height: 630px) and (min-height: 540px){
+    .THIS.outerDiv{
+        height: 40vh !important ;
+    }
+    .THIS .innerDiv{
+        height:auto !important; 
+        max-height: 40vh !important; 
+        overflow:auto !important;
+    }
+}
