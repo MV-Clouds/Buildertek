@@ -47,6 +47,12 @@ public without sharing class importScheduleLineController {
         }
         System.debug('existingTradeTypeMap: ' + existingTradeTypeMap);
 
+        List<buildertek__BT_Grouping__c> groupingList = [SELECT Id, Name FROM buildertek__BT_Grouping__c];
+        Map<String, buildertek__BT_Grouping__c> groupingMap = new Map<String, buildertek__BT_Grouping__c>();
+        for (buildertek__BT_Grouping__c groupingRec : groupingList) {
+            groupingMap.put(groupingRec.Name, groupingRec);
+        }
+
         for (fieldWrapper wrapper : datalist){
             if (wrapper.Name != null && String.isNotBlank(wrapper.Name)){
                 buildertek__Project_Task__c schItem = new buildertek__Project_Task__c();
@@ -70,6 +76,14 @@ public without sharing class importScheduleLineController {
                 if (wrapper.tradeType != null && String.isNotBlank(wrapper.tradeType) && existingTradeTypeMap.containsKey(wrapper.tradeType)) {
                     schItem.buildertek__Trade_Type__c = existingTradeTypeMap.get(wrapper.tradeType).Id;
                     System.debug('TradeType: Mapped Value' + existingTradeTypeMap.get(wrapper.tradeType).Id);
+                }
+                
+                if (wrapper.Phase2 != null && String.isNotBlank(wrapper.Phase2) && groupingMap.containsKey(wrapper.Phase2)) {
+                    schItem.buildertek__BT_Grouping__c = groupingMap.get(wrapper.Phase2).Id;
+                }
+                
+                if (wrapper.Phase3 != null && String.isNotBlank(wrapper.Phase3) && groupingMap.containsKey(wrapper.Phase3)) {
+                    schItem.buildertek__BT_Phase3__c = groupingMap.get(wrapper.Phase3).Id;
                 }
 
                 Date startDate = system.today();
@@ -224,6 +238,8 @@ public without sharing class importScheduleLineController {
         public String Lag;
         public String costCode;
         public String tradeType;
+        public String Phase2;
+        public String Phase3;
     }
 
 }
