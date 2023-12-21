@@ -7,6 +7,8 @@
         if (value != null) {
             context = JSON.parse(window.atob(value));
             parentRecordId = context.attributes.recordId;
+            console.log(context);
+            console.log(parentRecordId);
             component.set("v.parentRecordId", parentRecordId);
         } else {
             var relatedList = window.location.pathname;
@@ -35,6 +37,7 @@
             $A.enqueueAction(action);
         }
         helper.getFields(component, event, helper);
+        console.log('doInit parentRecordId: ' + parentRecordId);
     },
 
     closeModel: function (component, event, helper) {
