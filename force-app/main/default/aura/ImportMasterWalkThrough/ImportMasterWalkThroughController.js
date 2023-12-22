@@ -2,9 +2,11 @@
 	doInit : function(component, event, helper) {
         try {
             $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "SHOW" }).fire();
+            var rfqRecordId = component.get("v.rfqRecordId");
+            console.log('rfqRecordId---->',rfqRecordId);
             var action = component.get("c.getMasterWalkThrough");
             action.setParams({
-                rfqId : component.get("v.recordId")
+                rfqId : rfqRecordId
             });
             action.setCallback(this, function(response){
                 var result = response.getReturnValue();
@@ -97,7 +99,8 @@
     },
 	
 	closeModel : function(component, event, helper){
-	    $A.get("e.force:closeQuickAction").fire();    
+	    // $A.get("e.force:closeQuickAction").fire();
+        component.get("v.onCancel")();    
 	},
 	
 	importWTLines : function(component, event, helper){
@@ -105,11 +108,13 @@
             $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "SHOW" }).fire();
             var selectedRecordIds = component.get("v.checkedRecordIds");
             console.log('selectedRecordIds.length---->' + selectedRecordIds.length);
+            var rfqRecordId = component.get("v.rfqRecordId");
+            console.log('rfqRecordId---->',rfqRecordId);
             if(selectedRecordIds.length > 0){
                 var action = component.get("c.importMasterWTLines");
                 action.setParams({
                     wtIds : selectedRecordIds,
-                    recordId : component.get("v.recordId")
+                    recordId : rfqRecordId
                 });
                 action.setCallback(this, function(response){
                     console.log({response});
@@ -119,19 +124,20 @@
                         var result = response.getReturnValue();  
                         console.log({result});
                         if(result.Status === 'Success'){
-                            var toastEvent = $A.get("e.force:showToast");
-                            toastEvent.setParams({
-                                "title": "Success!",
-                                "message": result.Message,
-                                "type": 'Success'
-                            });
-                            toastEvent.fire(); 
-                            $A.get("e.force:closeQuickAction").fire();  
-                            window.setTimeout(
-                                $A.getCallback(function() {
-                                    document.location.reload(true);    
-                                }), 1000
-                            );
+                            component.get("v.onSuccess")();
+                            // var toastEvent = $A.get("e.force:showToast");
+                            // toastEvent.setParams({
+                            //     "title": "Success!",
+                            //     "message": result.Message,
+                            //     "type": 'Success'
+                            // });
+                            // toastEvent.fire(); 
+                            // // $A.get("e.force:closeQuickAction").fire();  
+                            // window.setTimeout(
+                            //     $A.getCallback(function() {
+                            //         document.location.reload(true);    
+                            //     }), 1000
+                            // );
                         }else{
                             var toastEvent = $A.get("e.force:showToast");
                             toastEvent.setParams({

@@ -32,14 +32,14 @@ public with sharing class ImportMasterWalkThroughController {
         MessageClass msg = new MessageClass();
         try {
             List<buildertek__RFQ_Item__c> newRFQLines = new List<buildertek__RFQ_Item__c>();
-            List<buildertek__Walk_Through_Line_Items__c> walkthroughlines = [SELECT Id, Name, buildertek__Details__c, buildertek__Description__c FROM buildertek__Walk_Through_Line_Items__c WHERE 	buildertek__Walk_Through_List__c IN :wtIds];
+            List<buildertek__Walk_Through_Line_Items__c> walkthroughlines = [SELECT Id, Name, buildertek__Details__c, buildertek__Description__c FROM buildertek__Walk_Through_Line_Items__c WHERE  buildertek__Walk_Through_List__c IN :wtIds];
             if (walkthroughlines.size() > 0) {
                 for (buildertek__Walk_Through_Line_Items__c walkthroughline : walkthroughlines) {
                     buildertek__RFQ_Item__c newRFQLine = new buildertek__RFQ_Item__c();
                     newRFQLine.buildertek__RFQ_Package__c = recordId;
-                    newRFQLine.Name = walkthroughline.Name;
+                    newRFQLine.Name = walkthroughline.buildertek__Description__c;
                     newRFQLine.buildertek__Quantity__c = 1;
-                    newRFQLine.buildertek__Description__c = walkthroughline.buildertek__Description__c;
+                    newRFQLine.buildertek__Description__c = walkthroughline.buildertek__Details__c;
 
                     newRFQLines.add(newRFQLine);
                 }
