@@ -13,6 +13,13 @@ public with sharing class CreateQuoteFromBOMController {
             for (buildertek__Quote_Line_Group__c phaseGroup : groupList) {
                 groupMap.put(phaseGroup.Name, phaseGroup);
             }
+            
+            if(groupMap.get('No Grouping') == null){
+                buildertek__Quote_Line_Group__c noGroup = new buildertek__Quote_Line_Group__c();
+                noGroup.Name = 'No Grouping';
+                insert noGroup;
+                groupMap.put(noGroup.Name, noGroup);
+            }
 
             if (BOMLineList.size() > 0) {
                 buildertek__Quote__c quote = new buildertek__Quote__c();
@@ -51,8 +58,8 @@ public with sharing class CreateQuoteFromBOMController {
             return null;
 
         } catch (Exception e) {
-            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
-            if(StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c limit 1];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
                 BT_ExceptionHandler.Store_Exception(e);
             }
             return null;

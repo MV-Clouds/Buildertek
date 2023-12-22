@@ -1,6 +1,8 @@
 ({
     createNewQuote: function (component, event, helper) {
-        component.set("v.Spinner", true);
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "SHOW"
+        }).fire();
         var recordId = component.get("v.recordId");
         console.log('recordId =>', { recordId });
         var action = component.get("c.createQuote");
@@ -24,7 +26,9 @@
                 });
                 tst.fire();
             } else {
-                component.set("v.Spinner", false);
+                $A.get("e.c:BT_SpinnerEvent").setParams({
+                    "action": "HIDE"
+                }).fire();
                 tst.setParams({
                     title: 'Complete',
                     message: 'Your Quote is created',
