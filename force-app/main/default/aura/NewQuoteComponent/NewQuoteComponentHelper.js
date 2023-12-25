@@ -13,7 +13,9 @@
 			
 		component.set('v.columns', [
             {label: 'Name', fieldName: 'QuoteName', type: 'url' , typeAttributes: {label: { fieldName: 'Name' }, target: '_blank'}},
+            // {label: 'Status', fieldName: 'buildertek__Status__c', type: 'picklist'},
             {label: 'Description', fieldName: 'buildertek__Description__c', type: 'text'},
+			{label: 'Sales Price', fieldName: 'buildertek__Grand_Total__c', type: 'currency' , cellAttributes: { alignment: 'left' }},
         ]);		
 
 		var action = component.get("c.getAllMasterQuote");

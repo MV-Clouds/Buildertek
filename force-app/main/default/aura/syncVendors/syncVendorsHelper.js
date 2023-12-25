@@ -12,11 +12,13 @@
                 if (res.vendorList.length == 0) {
                     this.showToast(component, 'Warning', 'Vendors are not available for Sync', 'warning');
                     this.closeModel(component);
+                    return;
                 }
 
                 if (res.schedulItemList.length == 0) {
                     this.showToast(component, 'Warning', 'There are no Schedule Items that match the Vendors you have set up for this Project.', 'warning');
                     this.closeModel(component);
+                    return;
                 }
 
                 component.set("v.vendorList", res.vendorList);

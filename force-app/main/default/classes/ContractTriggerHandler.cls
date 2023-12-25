@@ -95,6 +95,8 @@ public without sharing class ContractTriggerHandler{
     
     public void OnAfterUpdate(Contract__c[] oldContracts, Contract__c[] updatedContracts, Map<ID, Contract__c> ContractMap, Map<Id, Contract__c> oldContractsMap){
         system.debug('afterUpdate');
+        System.debug(ContractMap);
+        System.debug('ContractMap');
         SET<Id> projectIds = new SET<Id>();
         RecordType rt;
         if (Schema.sObjectType.RecordType.fields.id.isAccessible() && Schema.sObjectType.RecordType.fields.Name.isAccessible() && Schema.sObjectType.RecordType.fields.sObjectType.isAccessible()){
@@ -108,6 +110,8 @@ public without sharing class ContractTriggerHandler{
         for (buildertek__Contract__c cont : updatedContracts){
             projectIds.add(cont.buildertek__Project__c);
         }
+        System.debug(projectIds);
+        System.debug('projectIds');
         if (projectIds.size() > 0){
             List<buildertek__Project__c> projectDetails;
             projectDetails = [SELECT Id, buildertek__Contract_Amount__c
@@ -119,39 +123,71 @@ public without sharing class ContractTriggerHandler{
                 projectContractAmountMap.put(proj.Id, proj.buildertek__Contract_Amount__c);
             }
         }
+        System.debug(updatedContracts);
+        System.debug('updatedContracts');
         for (buildertek__Contract__c cont : updatedContracts){
             if (cont.RecordTypeId == rt.Id && cont.buildertek__Status__c == 'Approved' && cont.buildertek__Project__c != null && oldContractsMap.get(cont.Id).buildertek__Status__c != cont.buildertek__Status__c){
                 system.debug('%%%%%%%%%%%%%%%%%%%%%----->'+cont.buildertek__Status__c);
-                
                 if (projectContractAmountMap.get(cont.buildertek__Project__c) == null){
                     contractAmountMap.put(cont.Id, cont.buildertek__Revised_Contract_Amount__c);
                 } else{
                     decimal finalTotalAmount = projectContractAmountMap.get(cont.buildertek__Project__c)+cont.buildertek__Revised_Contract_Amount__c;
                     contractAmountMap.put(cont.Id, finalTotalAmount);
                 }
-                buildertek__Project__c proj = new buildertek__Project__c();
-                proj.Id = cont.buildertek__Project__c;
-                proj.buildertek__Contract_Amount__c = contractAmountMap.get(cont.Id);
-                projectList.add(proj);
+                Boolean projectExists = false;
+                    for (buildertek__Project__c existingProj : projectList) {
+                        if (existingProj.Id == cont.buildertek__Project__c) {
+                            projectExists = true;
+                            break;
+                        }
+                    }
+                    if (!projectExists) {
+                        buildertek__Project__c proj = new buildertek__Project__c();
+                        proj.Id = cont.buildertek__Project__c;
+                        proj.buildertek__Contract_Amount__c = contractAmountMap.get(cont.Id);
+                        projectList.add(proj);
+                        }                
             } else if (cont.RecordTypeId == rt.Id && oldContractsMap.get(cont.Id).buildertek__Status__c == 'Approved' && cont.buildertek__Status__c != 'Approved'){
                 if (projectContractAmountMap.get(cont.buildertek__Project__c) != null){
+                    System.debug('5');
                     decimal finalTotalAmount = projectContractAmountMap.get(cont.buildertek__Project__c)-cont.buildertek__Revised_Contract_Amount__c;
-                    buildertek__Project__c proj = new buildertek__Project__c();
-                    proj.Id = cont.buildertek__Project__c;
-                    proj.buildertek__Contract_Amount__c = finalTotalAmount;
-                    projectList.add(proj);
+                    Boolean projectExists = false;
+                    for (buildertek__Project__c existingProj : projectList) {
+                        if (existingProj.Id == cont.buildertek__Project__c) {
+                            projectExists = true;
+                            break;
+                        }
+                    }
+                    if (!projectExists) {
+                        buildertek__Project__c proj = new buildertek__Project__c();
+                        proj.Id = cont.buildertek__Project__c;
+                        proj.buildertek__Contract_Amount__c = finalTotalAmount;
+                        projectList.add(proj);
+                    }
                 }
             } else if (cont.RecordTypeId == rt.Id && oldContractsMap.get(cont.Id).buildertek__Status__c == cont.buildertek__Status__c && cont.buildertek__Status__c == 'Approved' && oldContractsMap.get(cont.Id).buildertek__Revised_Contract_Amount__c != cont.buildertek__Revised_Contract_Amount__c){
                 if (projectContractAmountMap.get(cont.buildertek__Project__c) != null){
+                    System.debug('6');
                     decimal finalTotalAmount = projectContractAmountMap.get(cont.buildertek__Project__c)-oldContractsMap.get(cont.Id).buildertek__Revised_Contract_Amount__c;
                     finalTotalAmount = finalTotalAmount + cont.buildertek__Revised_Contract_Amount__c;
-                    buildertek__Project__c proj = new buildertek__Project__c();
-                    proj.Id = cont.buildertek__Project__c;
-                    proj.buildertek__Contract_Amount__c = finalTotalAmount;
-                    projectList.add(proj);
+                    
+                    Boolean projectExists = false;
+                    for (buildertek__Project__c existingProj : projectList) {
+                        if (existingProj.Id == cont.buildertek__Project__c) {
+                            projectExists = true;
+                            break;
+                        }
+                    }
+                    if (!projectExists) {
+                        buildertek__Project__c proj = new buildertek__Project__c();
+                        proj.Id = cont.buildertek__Project__c;
+                        proj.buildertek__Contract_Amount__c = finalTotalAmount;
+                        projectList.add(proj);
+                    }
                 }
             }
         }
+        System.debug('projectlist---> '+projectList);
         if (projectList.size() > 0){
             update projectList;
             

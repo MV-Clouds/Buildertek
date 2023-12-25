@@ -664,8 +664,10 @@ public with sharing class ProjectTriggerHandler {
                 CloneAny(objName, 'buildertek__Selection__c', 'buildertek__Section__c');
             }
 
+            if(objName == 'Project Vendors') {
+                CloneAny(objName, 'buildertek__Project_Vendors__c', '');
+            }
         }
-
     }
 
 
@@ -677,13 +679,13 @@ public with sharing class ProjectTriggerHandler {
         Set<String> sourceProjectIds = ProjectTriggerHandler.sourceProjectIdsSet;
         Map<String, String> sourceToProjectMap = ProjectTriggerHandler.sourceToProjectIdsMap;
         Map<String, List<String>> sourceObjectMap = ProjectTriggerHandler.sourceObjectsMap;
+        string qryStr = (objName == 'Project Vendors') ? prepareQuery(objAPI, 'buildertek__BT_Project__c', sourceProjectIds) : prepareQuery(objAPI, 'buildertek__Project__c', sourceProjectIds);
 
-        string qryStr = prepareQuery(objAPI, 'buildertek__Project__c', sourceProjectIds);
         List<SObject> sobjListToClone = database.query(qryStr);
 
         List<SObject> newSobjListToClone = database.query(qryStr);
         for (SObject sObj : sobjListToClone) {
-            String oldProjectId = String.valueOf(sObj.get('buildertek__Project__c'));
+            String oldProjectId = (objName == 'Project Vendors') ? String.valueOf(sObj.get('buildertek__BT_Project__c')) : String.valueOf(sObj.get('buildertek__Project__c'));
             if (sourceObjectMap.get(oldProjectId).contains(objName)) {
                 newSobjListToClone.add(sObj);
             }
@@ -691,10 +693,14 @@ public with sharing class ProjectTriggerHandler {
 
         Map<String, SObject> cloneSObjList = new Map<String, SObject>();
         for (SObject sObj : newSobjListToClone) {
-            String oldProjectId = String.valueOf(sObj.get('buildertek__Project__c'));
+            String oldProjectId = (objName == 'Project Vendors') ? String.valueOf(sObj.get('buildertek__BT_Project__c')) : String.valueOf(sObj.get('buildertek__Project__c'));
             SObject obj = sobj.clone(false, true);
 
-            obj.put('buildertek__Project__c', sourceToProjectMap.get(oldProjectId));
+            if (objName == 'Project Vendors') {
+                obj.put('buildertek__BT_Project__c', sourceToProjectMap.get(oldProjectId));
+            } else {
+                obj.put('buildertek__Project__c', sourceToProjectMap.get(oldProjectId));
+            }
             cloneSObjList.put(sobj.Id, obj);
         }
 
@@ -745,71 +751,72 @@ public with sharing class ProjectTriggerHandler {
             insert cloneSObjList.values();
         }
 
+        if (String.isNotBlank(childObjAPI)) {
+            String childQry = prepareQuery(childObjAPI, objAPI, cloneSObjList.keySet());
+            System.debug('childQry ==> '+childQry);
+            List<SObject> childSobjList = database.query(childQry);
+            System.debug('childSobjList ==> '+childSobjList);
 
-        String childQry = prepareQuery(childObjAPI, objAPI, cloneSObjList.keySet());
-        System.debug('childQry ==> '+childQry);
-        List<SObject> childSobjList = database.query(childQry);
-        System.debug('childSobjList ==> '+childSobjList);
+            List<SObject> cloneChildRec= new List<SObject>();
 
-        List<SObject> cloneChildRec= new List<SObject>();
+            if (childObjAPI == 'buildertek__Project_Task__c') {
 
-        if (childObjAPI == 'buildertek__Project_Task__c') {
+                Map<String, String> predecessorMap = new Map<String, String>();
+                Map<String, SObject> scheduleTaskMap = new Map<String, SObject>();
 
-            Map<String, String> predecessorMap = new Map<String, String>();
-            Map<String, SObject> scheduleTaskMap = new Map<String, SObject>();
+                for (SObject sObj : childSobjList){
+                    predecessorMap.put(String.valueOf(sObj.Id), String.valueOf(sObj.get('buildertek__Dependency__c')));
+                    sObj.put('buildertek__Dependency__c', null);
 
-            for (SObject sObj : childSobjList){
-                predecessorMap.put(String.valueOf(sObj.Id), String.valueOf(sObj.get('buildertek__Dependency__c')));
-                sObj.put('buildertek__Dependency__c', null);
+                    String oldParentId = String.valueOf(sObj.get(objAPI));
+                    SObject obj = sobj.clone(false, true);
+                    obj.put(objAPI, cloneSObjList.get(oldParentId).Id);
 
-                String oldParentId = String.valueOf(sObj.get(objAPI));
-                SObject obj = sobj.clone(false, true);
-                obj.put(objAPI, cloneSObjList.get(oldParentId).Id);
+                    scheduleTaskMap.put(String.valueOf(sObj.Id), obj);
+                }
 
-                scheduleTaskMap.put(String.valueOf(sObj.Id), obj);
-            }
+                if (scheduleTaskMap.size() > 0) {
+                    insert scheduleTaskMap.values();
 
-            if (scheduleTaskMap.size() > 0) {
-                insert scheduleTaskMap.values();
+                    Map<String, String> newPredecessorMap = new Map<String, String>();
+                    for (String taskId : predecessorMap.keySet()) {
+                        if (predecessorMap.get(taskId) != null) {
+                            String newTaskId = scheduleTaskMap.get(taskId).Id;
+                            String newParentId = scheduleTaskMap.get(predecessorMap.get(taskId)).Id;
+                            newPredecessorMap.put(newTaskId, newParentId);
+                        }
+                    }
 
-                Map<String, String> newPredecessorMap = new Map<String, String>();
-                for (String taskId : predecessorMap.keySet()) {
-                    if (predecessorMap.get(taskId) != null) {
-                        String newTaskId = scheduleTaskMap.get(taskId).Id;
-                        String newParentId = scheduleTaskMap.get(predecessorMap.get(taskId)).Id;
-                        newPredecessorMap.put(newTaskId, newParentId);
+                    List<SObject> updateTaskList = new List<SObject>();
+                    for (SObject task : scheduleTaskMap.values()) {
+                        task.put('buildertek__Dependency__c', newPredecessorMap.get(String.valueOf(task.Id)));
+                        updateTaskList.add(task);
+                    }
+
+                    if (updateTaskList.size() > 0) {
+                        update updateTaskList;
                     }
                 }
 
-                List<SObject> updateTaskList = new List<SObject>();
-                for (SObject task : scheduleTaskMap.values()) {
-                    task.put('buildertek__Dependency__c', newPredecessorMap.get(String.valueOf(task.Id)));
-                    updateTaskList.add(task);
+            } else {
+
+                for (SObject sobj : childSobjList){
+                    System.debug('sobj ==> '+sobj);
+                    String oldParentId = String.valueOf(sObj.get(objAPI));
+
+                    SObject obj = sobj.clone(false, true);
+                    System.debug('objAPI ==> '+objAPI);
+                    System.debug('cloneSObjList.get(oldParentId)) ==> '+cloneSObjList.get(oldParentId));
+                    obj.put(objAPI, cloneSObjList.get(oldParentId).Id);
+
+                    cloneChildRec.add(obj);
                 }
 
-                if (updateTaskList.size() > 0) {
-                    update updateTaskList;
+                System.debug('cloneChildRec ==> '+cloneChildRec);
+
+                if(cloneChildRec.size() > 0){
+                    insert cloneChildRec;
                 }
-            }
-
-        } else {
-
-            for (SObject sobj : childSobjList){
-                System.debug('sobj ==> '+sobj);
-                String oldParentId = String.valueOf(sObj.get(objAPI));
-
-                SObject obj = sobj.clone(false, true);
-                System.debug('objAPI ==> '+objAPI);
-                System.debug('cloneSObjList.get(oldParentId)) ==> '+cloneSObjList.get(oldParentId));
-                obj.put(objAPI, cloneSObjList.get(oldParentId).Id);
-
-                cloneChildRec.add(obj);
-            }
-
-            System.debug('cloneChildRec ==> '+cloneChildRec);
-
-            if(cloneChildRec.size() > 0){
-                insert cloneChildRec;
             }
         }
 
