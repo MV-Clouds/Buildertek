@@ -9,7 +9,8 @@
 
 @media only screen and (max-height: 1080px) and (min-height: 990px){
     .THIS.outerDiv{
-        height: 64vh !important ;
+        height:auto !important; 
+        max-height: 64vh !important; 
     }
     .THIS .innerDiv{
         height:auto !important; 
@@ -19,7 +20,8 @@
 }
 @media only screen and (max-height: 990px) and (min-height: 900px){
     .THIS.outerDiv{
-        height: 60vh !important ;
+        height:auto !important; 
+        max-height: 60vh !important; 
     }
     .THIS .innerDiv{
         height: auto !important; 
@@ -29,7 +31,8 @@
 }
 @media only screen and (max-height: 900px) and (min-height: 810px){
     .THIS.outerDiv{
-        height: 54vh !important ;
+        height:auto !important; 
+        max-height: 54vh !important; 
     }
     .THIS .innerDiv{
         height:auto !important; 
@@ -39,7 +42,8 @@
 }
 @media only screen and (max-height: 810px) and (min-height: 720px){
     .THIS.outerDiv{
-        height: 46vh !important ;
+        height:auto !important; 
+        max-height: 46vh !important; 
     } 
     .THIS .innerDiv{
         height:auto !important; 
@@ -49,7 +53,8 @@
 }
 @media only screen and (max-height: 720px) and (min-height: 630px){
     .THIS.outerDiv{
-        height: 43vh !important ;
+        height:auto !important; 
+        max-height: 43vh !important; 
     }
     .THIS .innerDiv{
         height:auto !important; 
@@ -59,7 +64,8 @@
 }
 @media only screen and (max-height: 630px) and (min-height: 540px){
     .THIS.outerDiv{
-        height: 40vh !important ;
+        height:auto !important; 
+        max-height: 40vh !important; 
     }
     .THIS .innerDiv{
         height:auto !important; 
