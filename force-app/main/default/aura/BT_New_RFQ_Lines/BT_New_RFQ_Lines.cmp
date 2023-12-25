@@ -40,6 +40,7 @@
         <lightning:button name="Add" label="New" onclick="{!c.addNewRFQLine}" disabled = "{!v.isdisabled}"/>
         <lightning:button name="Import Products" label="Import Products" onclick="{!c.importProducts}"/>
         <lightning:button name="Import" label="Import Master RFQ Lines" onclick="{!c.importMasterRFQLine}"/>
+        <lightning:button name="Import WalkThrough" label="Import Master WalkThrough" onclick="{!c.importMasterWalkThrough}"/>
     </lightning:buttonGroup>
     <br/>
     <br/>
