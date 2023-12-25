@@ -1294,19 +1294,13 @@
 
 
                                                                                     <aura:if isTrue="{!value.fieldName == 'buildertek__Cost_Code_Name__c'}">
-                                                                                        <!-- <ui:outputURL
-                                                                                                    value="{!'/one/one.app?#/sObject/'+ value.originalValue + '/view'}"
-                                                                                                    target="_blank"
-                                                                                                    label="{!value.referenceValue}" />-->
                                                                                         <lightning:formattedText value="{!value.originalValue}" />
-                                                                                        <!--  <lightning:input
-                                                                                                        value="{!value.originalValue}" />-->
                                                                                     </aura:if>
 
                                                                                     <aura:if isTrue="{!value.fieldType == 'number'}">
                                                                                         <lightning:formattedNumber value="{!value.originalValue}" />
                                                                                     </aura:if>
-                                                                                    <aura:if isTrue="{!and(and(value.fieldType == 'string', value.fieldName !='buildertek__Item_Name__c'),value.fieldName !='buildertek__CostCodeDivision__c' )}">
+                                                                                    <aura:if isTrue="{!and(and(and(value.fieldType == 'string', value.fieldName !='buildertek__Item_Name__c'),value.fieldName !='buildertek__CostCodeDivision__c' ),value.fieldName !='buildertek__Cost_Code_Name__c')}">
                                                                                         <aura:if isTrue="{!value.fieldName == 'buildertek__Product_Name__c'}">
                                                                                             <div class="textAreaCss textAreaDiv1">
                                                                                                 <lightning:formattedText value="{!value.originalValue}"/>

@@ -594,7 +594,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     assignmentRowData = formatedSchData["assignmentRowData"];
 
     let resourceData = makeComboBoxDataForResourceData(this.contractorAndResources, this.internalResources);
-
+    
     const project = new bryntum.gantt.ProjectModel({
       calendar: data.project.calendar,
       // startDate: data.project.startDate,
@@ -672,12 +672,13 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           type: "name",
           draggable: false,
           width: 250,
+          editor: false,
           renderer: (record) => {
-
             populateIcons(record);
             if (record.record._data.type == "Phase") {
               record.record.readOnly = true;
               record.cellElement.style.margin = "";
+              return record.value;
             }
             if (
               record.record._data.iconCls == "b-fa b-fa-arrow-right indentTrue"
@@ -690,12 +691,15 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
             }
             if (record.record._data.type == "Project") {
               record.record.readOnly = true;
-              // return record.value;
-              return record.record._data.name;
+              return record.record.name;
             } else {
+              if (record.record.type == "Task" && record.record.name != "Milestone Complete") {
+                record.cellElement.style.cursor = "pointer";
+              }
               return record.value;
             }
           },
+
         },
         {
           type: "predecessor",
@@ -879,37 +883,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
         },
         ],
         },
-        {
-          type: "action",
-        draggable: false,
-        //text    : 'Go to Item',
-        width: 30,
-        actions: [
-        {
-              cls: "b-fa b-fa-external-link-alt",
-        onClick: ({ record }) => {
-        if (
-        record._data.id.indexOf("_generate") == -1 &&
-        record._data.name != "Milestone Complete"
-        ) {
-        console.log("Action link", record._data.id);
-        this.navigateToRecordViewPage(record._data.id);
-        }
-              },
-        renderer: ({ action, record }) => {
-        if (
-        record._data.type == "Task" &&
-        record._data.id.indexOf("_generate") == -1 &&
-        record._data.name != "Milestone Complete"
-        ) {
-        return `<i class="b-action-item ${action.cls}" data-btip="Go To Item"></i>`;
-        } else {
-        return `<i class="b-action-item ${action.cls}" data-btip="Go To Item" style="display:none;"></i>`;
-        }
-              },
-        },
-        ],
-        },
       ],
 
       subGridConfigs: {
@@ -924,6 +897,9 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
       columnLines: false,
 
       features: {
+        cellTooltip : {
+          tooltipRenderer : ({ record, column }) => record[column.field],
+        },
         dependencyEdit : true,
         // dependencies : {radius:10},
         rowReorder: false,
@@ -1158,6 +1134,10 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
       }
       if (event.column.text == "Contractor") {
         this.taskRecordId = event.record.id;
+      }
+
+      if ((event.column.data.text == "Name") && (event.record.type == "Task") && (event.record.name != "Milestone Complete")) {
+        this.navigateToRecordViewPage(event.record.id);
       }
     });
 

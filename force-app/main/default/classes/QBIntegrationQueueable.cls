@@ -3,37 +3,37 @@ public without sharing class QBIntegrationQueueable{
     // @future(callout=true)
     // public static void QBIntegrationMethod(Id Sales_invoice_Id, Id receiptID){
     //     try {
-    //         buildertek__Billings__c SI = [SELECT Id, Name, buildertek__Customer_Account__c, buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c,buildertek__Project__r.buildertek__Customer__c,buildertek__Due_Date__c,buildertek__Amount__c,buildertek__Total_Amount_Tax__c FROM buildertek__Billings__c WHERE Id =: Sales_invoice_Id LIMIT 1];
+    //         buildertek__Billings__c SI = [SELECT Id, Name, buildertek__Customer_Account__c, buildertek__QB_Id__c,buildertek__QBO_SyncToken__c,buildertek__Project__r.buildertek__Customer__c,buildertek__Due_Date__c,buildertek__Amount__c,buildertek__Total_Amount_Tax__c FROM buildertek__Billings__c WHERE Id =: Sales_invoice_Id LIMIT 1];
     //         Account acc = new Account();
     //         if(SI.buildertek__Customer_Account__c != null){
-    //             acc = [SELECT ID, Name,buildertek__Email_Address__c,Fax,buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c, Description,ShippingCity,ShippingStreet,ShippingState,ShippingPostalCode,ShippingLatitude,ShippingLongitude,ShippingCountry,Phone,BillingCity,BillingStreet,BillingState,BillingPostalCode,BillingLatitude,BillingLongitude,BillingCountry FROM Account WHERE Id =: SI.buildertek__Customer_Account__c limit 1];
+    //             acc = [SELECT ID, Name,buildertek__Email_Address__c,Fax,buildertek__QB_Id__c,buildertek__QBO_SyncToken__c, Description,ShippingCity,ShippingStreet,ShippingState,ShippingPostalCode,ShippingLatitude,ShippingLongitude,ShippingCountry,Phone,BillingCity,BillingStreet,BillingState,BillingPostalCode,BillingLatitude,BillingLongitude,BillingCountry FROM Account WHERE Id =: SI.buildertek__Customer_Account__c limit 1];
     //         }
     //         else if(SI.buildertek__Customer_Account__c == null){
     //             system.debug('Project Id ' + SI.buildertek__Project__r.buildertek__Customer__c);
-    //             acc = [SELECT ID, Name,buildertek__Email_Address__c,Fax,buildertek__QBO_ID__c,buildertek__QBO_SyncToken__c, Description,ShippingCity,ShippingStreet,ShippingState,ShippingPostalCode,ShippingLatitude,ShippingLongitude,ShippingCountry,Phone,BillingCity,BillingStreet,BillingState,BillingPostalCode,BillingLatitude,BillingLongitude,BillingCountry FROM Account WHERE Id =: SI.buildertek__Project__r.buildertek__Customer__c limit 1];
+    //             acc = [SELECT ID, Name,buildertek__Email_Address__c,Fax,buildertek__QB_Id__c,buildertek__QBO_SyncToken__c, Description,ShippingCity,ShippingStreet,ShippingState,ShippingPostalCode,ShippingLatitude,ShippingLongitude,ShippingCountry,Phone,BillingCity,BillingStreet,BillingState,BillingPostalCode,BillingLatitude,BillingLongitude,BillingCountry FROM Account WHERE Id =: SI.buildertek__Project__r.buildertek__Customer__c limit 1];
     //         }
-    //         List<buildertek__Billable_Lines__c> SILine = [SELECT Id, Name, buildertek__Billings__c,buildertek__Billings__r.Name,buildertek__Item_Name__c,buildertek__Quantity__c,buildertek__QBO_ID__c,QBO_SyncToken__c,Description__c,Unit_Price__c,Type__c FROM buildertek__Billable_Lines__c WHERE buildertek__Billings__c =: Sales_invoice_Id];
+    //         List<buildertek__Billable_Lines__c> SILine = [SELECT Id, Name, buildertek__Billings__c,buildertek__Billings__r.Name,buildertek__Item_Name__c,buildertek__Quantity__c,buildertek__QB_Id__c,QBO_SyncToken__c,Description__c,Unit_Price__c,Type__c FROM buildertek__Billable_Lines__c WHERE buildertek__Billings__c =: Sales_invoice_Id];
 
     //         buildertek__QuickBooks_Setting__mdt QBMetadata = [SELECT Id, DeveloperName,buildertek__Base_Url__c, buildertek__minorversion__c, MasterLabel, buildertek__Access_Token__c, buildertek__Client_Id__c, buildertek__Client_Secret__c, buildertek__Refresh_Token__c, buildertek__Scope__c, buildertek__Company_Id__c FROM buildertek__QuickBooks_Setting__mdt LIMIT 1];
             
     //         Boolean Get_Access_Token = true;
-    //         if(acc.buildertek__QBO_ID__c == null && acc != null){
+    //         if(acc.buildertek__QB_Id__c == null && acc != null){
     //             Create_Customer_invoice_item_payment_in_QB(SILine, SI, acc, QBMetadata, Get_Access_Token, receiptID);
     //         }
     //         else{
     //             System.debug('Customer Already Available in QB ');
     //             if(SILine.size() > 0){
-    //                 if(SILine[0].buildertek__QBO_ID__c == null){
+    //                 if(SILine[0].buildertek__QB_Id__c == null){
     //                     Create_item_invoice_Payment_in_QB(SILine, SI, acc, QBMetadata, Get_Access_Token, receiptID);
     //                 }
     //                 else{
     //                     System.debug('Invoice Item Already Available in QB ');
-    //                     if(SI.buildertek__QBO_ID__c == null){
+    //                     if(SI.buildertek__QB_Id__c == null){
     //                         Create_inoice_Payment_in_QB(SILine, SI, acc, QBMetadata, Get_Access_Token, receiptID);
     //                     }
     //                     else{
     //                         System.debug('Invoice Already Available in QB ');
-    //                         Create_Payment_In_QB(SILine, SI, acc, QBMetadata, Get_Access_Token, receiptID);
+    //                         sync_Payment_In_QB(SILine, SI, acc, QBMetadata, Get_Access_Token, receiptID);
     //                     }
     //                 }
     //             }
@@ -67,7 +67,7 @@ public without sharing class QBIntegrationQueueable{
 
 
     //                 if(SILine.size() > 0){
-    //                     if(SILine[0].buildertek__QBO_ID__c == null){
+    //                     if(SILine[0].buildertek__QB_Id__c == null){
     //                         String InvoiceItem_EndPoint = QBMetadata.buildertek__Base_Url__c + '/v3/company/' + QBMetadata.buildertek__Company_Id__c + '/item?minorversion=' + QBMetadata.buildertek__minorversion__c;            
     //                         String InvoiceItem_RequestBody = QBMap.mapInvoiceLineData(SILine[0]);
 
@@ -84,7 +84,7 @@ public without sharing class QBIntegrationQueueable{
     //                             String InvoiceLineQBId = item.Id;
     //                             String InvoiceLineQBName = item.Name;
 
-    //                             if(SI.buildertek__QBO_ID__c == null){
+    //                             if(SI.buildertek__QB_Id__c == null){
     //                                 String Invoice_EndPoint = QBMetadata.buildertek__Base_Url__c + '/v3/company/' + QBMetadata.buildertek__Company_Id__c + '/invoice?minorversion=' + QBMetadata.buildertek__minorversion__c;            
     //                                 String Invoice_RequestBody = QBMap.mapInvoiceData(SI, CustomerQBID, InvoiceLineQBId, InvoiceLineQBName);
     //                                 system.debug('Invoice_RequestBody >>' +  Invoice_RequestBody);
@@ -165,9 +165,9 @@ public without sharing class QBIntegrationQueueable{
     //                     String InvoiceLineQBId = item.Id;
     //                     String InvoiceLineQBName = item.Name;
 
-    //                     if(SI.buildertek__QBO_ID__c == null){
+    //                     if(SI.buildertek__QB_Id__c == null){
     //                         String Invoice_EndPoint = QBMetadata.buildertek__Base_Url__c + '/v3/company/' + QBMetadata.buildertek__Company_Id__c + '/invoice?minorversion=' + QBMetadata.buildertek__minorversion__c;            
-    //                         String Invoice_RequestBody = QBMap.mapInvoiceData(SI, acc.buildertek__QBO_ID__c, InvoiceLineQBId, InvoiceLineQBName);
+    //                         String Invoice_RequestBody = QBMap.mapInvoiceData(SI, acc.buildertek__QB_Id__c, InvoiceLineQBId, InvoiceLineQBName);
     //                         system.debug('Invoice_RequestBody >>' +  Invoice_RequestBody);
     //                         HttpResponse Invoice_Response = QBCallOutService.QBCallOutServiceWithoutNameCred(Invoice_EndPoint , Invoice_RequestBody, Get_Access_Token);
 
@@ -183,7 +183,7 @@ public without sharing class QBIntegrationQueueable{
 
     //                             buildertek__Receipt__c receipt = [SELECT Id, Name, buildertek__Amount__c FROM buildertek__Receipt__c WHERE Id =: receiptID LIMIT 1];
     //                             String Payment_EndPoint = QBMetadata.buildertek__Base_Url__c + '/v3/company/' + QBMetadata.buildertek__Company_Id__c + '/payment?minorversion=' + QBMetadata.buildertek__minorversion__c;            
-    //                             String Payment_RequestBody = QBMap.mapReceipt_PaymetData(receipt, acc.buildertek__QBO_ID__c, invoiceQBID);
+    //                             String Payment_RequestBody = QBMap.mapReceipt_PaymetData(receipt, acc.buildertek__QB_Id__c, invoiceQBID);
     //                             system.debug('Payment_RequestBody >>' +  Payment_RequestBody);
     //                             HttpResponse Payment_Response = QBCallOutService.QBCallOutServiceWithoutNameCred(Payment_EndPoint , Payment_RequestBody, Get_Access_Token);
     //                             system.debug('Payment_RequestBody API Status Code >> ' + Payment_Response.getStatusCode());
@@ -209,7 +209,7 @@ public without sharing class QBIntegrationQueueable{
     //                     }
     //                     else {
     //                         System.debug('Invoice Already Available in QB ');
-    //                         Create_Payment_In_QB(SILine, SI, acc, QBMetadata, Get_Access_Token, receiptID);
+    //                         sync_Payment_In_QB(SILine, SI, acc, QBMetadata, Get_Access_Token, receiptID);
     //                     }
 
     //                     UpdateSIline(SILine[0].ID, InvoiceLineQBId);
@@ -226,7 +226,7 @@ public without sharing class QBIntegrationQueueable{
     // public static void Create_inoice_Payment_in_QB(List<buildertek__Billable_Lines__c> SILine, buildertek__Billings__c SI, Account acc, buildertek__QuickBooks_Setting__mdt QBMetadata, Boolean Get_Access_Token, String receiptID){
     //     try {
     //         String Invoice_EndPoint = QBMetadata.buildertek__Base_Url__c + '/v3/company/' + QBMetadata.buildertek__Company_Id__c + '/invoice?minorversion=' + QBMetadata.buildertek__minorversion__c;            
-    //         String Invoice_RequestBody = QBMap.mapInvoiceData(SI, acc.buildertek__QBO_ID__c, SILine[0].buildertek__QBO_ID__c, SILine[0].Name);
+    //         String Invoice_RequestBody = QBMap.mapInvoiceData(SI, acc.buildertek__QB_Id__c, SILine[0].buildertek__QB_Id__c, SILine[0].Name);
     //         system.debug('Invoice_RequestBody >>' +  Invoice_RequestBody);
     //         HttpResponse Invoice_Response = QBCallOutService.QBCallOutServiceWithoutNameCred(Invoice_EndPoint , Invoice_RequestBody, Get_Access_Token);
 
@@ -242,7 +242,7 @@ public without sharing class QBIntegrationQueueable{
 
     //             buildertek__Receipt__c receipt = [SELECT Id, Name, buildertek__Amount__c FROM buildertek__Receipt__c WHERE Id =: receiptID LIMIT 1];
     //             String Payment_EndPoint = QBMetadata.buildertek__Base_Url__c + '/v3/company/' + QBMetadata.buildertek__Company_Id__c + '/payment?minorversion=' + QBMetadata.buildertek__minorversion__c;            
-    //             String Payment_RequestBody = QBMap.mapReceipt_PaymetData(receipt, acc.buildertek__QBO_ID__c, invoiceQBID);
+    //             String Payment_RequestBody = QBMap.mapReceipt_PaymetData(receipt, acc.buildertek__QB_Id__c, invoiceQBID);
     //             system.debug('Payment_RequestBody >>' +  Payment_RequestBody);
     //             HttpResponse Payment_Response = QBCallOutService.QBCallOutServiceWithoutNameCred(Payment_EndPoint , Payment_RequestBody, Get_Access_Token);
     //             system.debug('Payment_RequestBody API Status Code >> ' + Payment_Response.getStatusCode());
@@ -271,11 +271,11 @@ public without sharing class QBIntegrationQueueable{
     //     }
     // }
 
-    // public static void Create_Payment_In_QB(List<buildertek__Billable_Lines__c> SILine, buildertek__Billings__c SI, Account acc, buildertek__QuickBooks_Setting__mdt QBMetadata, Boolean Get_Access_Token, String receiptID){
+    // public static void sync_Payment_In_QB(List<buildertek__Billable_Lines__c> SILine, buildertek__Billings__c SI, Account acc, buildertek__QuickBooks_Setting__mdt QBMetadata, Boolean Get_Access_Token, String receiptID){
     //     try {
     //         buildertek__Receipt__c receipt = [SELECT Id, Name, buildertek__Amount__c FROM buildertek__Receipt__c WHERE Id =: receiptID LIMIT 1];
     //         String Payment_EndPoint = QBMetadata.buildertek__Base_Url__c + '/v3/company/' + QBMetadata.buildertek__Company_Id__c + '/payment?minorversion=' + QBMetadata.buildertek__minorversion__c;            
-    //         String Payment_RequestBody = QBMap.mapReceipt_PaymetData(receipt, acc.buildertek__QBO_ID__c, SI.buildertek__QBO_ID__c);
+    //         String Payment_RequestBody = QBMap.mapReceipt_PaymetData(receipt, acc.buildertek__QB_Id__c, SI.buildertek__QB_Id__c);
     //         system.debug('Payment_RequestBody >>' +  Payment_RequestBody);
     //         HttpResponse Payment_Response = QBCallOutService.QBCallOutServiceWithoutNameCred(Payment_EndPoint , Payment_RequestBody, Get_Access_Token);
     //         system.debug('Payment_RequestBody API Status Code >> ' + Payment_Response.getStatusCode());
@@ -293,15 +293,15 @@ public without sharing class QBIntegrationQueueable{
     //         }
             
     //     } catch (Exception e) {
-    //         System.debug('Error in Create_Payment_In_QB : ' + e.getMessage() +'\n'+ e);
+    //         System.debug('Error in sync_Payment_In_QB : ' + e.getMessage() +'\n'+ e);
     //     }
     // }
 
     // public static void UpdateAccount(String acc_Id, String QB_Id){
     //     try {
     //         system.debug('Account going to Update');
-    //         Account Acc = [SELECT Id,Name, buildertek__QBO_ID__c  FROM Account WHERE Id =: acc_Id LIMIT 1];
-    //         Acc.buildertek__QBO_ID__c = QB_Id;
+    //         Account Acc = [SELECT Id,Name, buildertek__QB_Id__c  FROM Account WHERE Id =: acc_Id LIMIT 1];
+    //         Acc.buildertek__QB_Id__c = QB_Id;
     //         update Acc;
         
     //     } catch (Exception e) {
@@ -312,8 +312,8 @@ public without sharing class QBIntegrationQueueable{
     // public static void UpdateSIline(String SIline_Id, String QB_Item_Id){
     //     try {
     //         system.debug('sales Invoice line going to Update');
-    //         buildertek__Billable_Lines__c SIline = [SELECT Id, Name , buildertek__QBO_ID__c FROM buildertek__Billable_Lines__c WHERE ID =:SIline_Id LIMIT 1];
-    //         SIline.buildertek__QBO_ID__c = QB_Item_Id;
+    //         buildertek__Billable_Lines__c SIline = [SELECT Id, Name , buildertek__QB_Id__c FROM buildertek__Billable_Lines__c WHERE ID =:SIline_Id LIMIT 1];
+    //         SIline.buildertek__QB_Id__c = QB_Item_Id;
     //         update SIline;
     //     } catch (Exception e) {
     //         System.debug('Error in UpdateSIline : ' + e.getMessage() +'\n'+ e);
@@ -323,8 +323,8 @@ public without sharing class QBIntegrationQueueable{
     // public static void UpdateSalesInvoice(String invoice_Id, String QB_invoice_Id){
     //     try {
     //         system.debug('sales Invoice going to Update');
-    //         buildertek__Billings__c Invoice = [SELECT Id, Name , buildertek__QBO_ID__c FROM buildertek__Billings__c WHERE ID =:invoice_Id LIMIT 1];
-    //         Invoice.buildertek__QBO_ID__c = QB_invoice_Id;
+    //         buildertek__Billings__c Invoice = [SELECT Id, Name , buildertek__QB_Id__c FROM buildertek__Billings__c WHERE ID =:invoice_Id LIMIT 1];
+    //         Invoice.buildertek__QB_Id__c = QB_invoice_Id;
     //         update Invoice;
     //     } catch (Exception e) {
     //         System.debug('Error in UpdateSalesInvoice : ' + e.getMessage() +'\n'+ e);
@@ -334,8 +334,8 @@ public without sharing class QBIntegrationQueueable{
     // public static void UpdateReceipt(String receipt_Id, String QB_Payment_Id){
     //     try {
     //         system.debug('Receipt going to Update');
-    //         buildertek__Receipt__c receipt = [SELECT Id, Name , buildertek__QBO_ID__c FROM buildertek__Receipt__c WHERE ID =:receipt_Id LIMIT 1];
-    //         receipt.buildertek__QBO_ID__c = QB_Payment_Id;
+    //         buildertek__Receipt__c receipt = [SELECT Id, Name , buildertek__QB_Id__c FROM buildertek__Receipt__c WHERE ID =:receipt_Id LIMIT 1];
+    //         receipt.buildertek__QB_Id__c = QB_Payment_Id;
     //         update receipt;
     //     } catch (Exception e) {
     //         System.debug('Error in UpdateSalesInvoice : ' + e.getMessage() +'\n'+ e);
@@ -358,7 +358,7 @@ public without sharing class QBIntegrationQueueable{
 
     //                 // Create the sublist for the current batch
     //                 for (Integer j = startIdx; j < endIdx; j++) {
-    //                     if(SILines[j].buildertek__QBO_ID__c == null){
+    //                     if(SILines[j].buildertek__QB_Id__c == null){
     //                         itemsBatch.add(SILines[j]);
     //                     }
     //                 }

@@ -8,7 +8,7 @@ public with sharing class QBtermsResponseJSON {
         public String SyncToken;
         public String domain;
         public MetaData MetaData;
-        public Integer DueDays;
+        public Double DueDays;
         public Boolean Active;
         public String Type;
         public String Name;
@@ -16,8 +16,8 @@ public with sharing class QBtermsResponseJSON {
 
     public class QueryResponse{
         public list<Term> Term;
-        public Integer maxResults;
-        public Integer startPosition;
+        public Double maxResults;
+        public Double startPosition;
     }
 
     public class MetaData{

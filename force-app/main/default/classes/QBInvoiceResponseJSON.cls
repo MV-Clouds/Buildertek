@@ -1,5 +1,6 @@
 public class QBInvoiceResponseJSON {
     public Invoice Invoice;
+	public QueryResponse QueryResponse;
 
 	public class TxnTaxDetail{
 		public Double TotalTax;
@@ -85,6 +86,13 @@ public class QBInvoiceResponseJSON {
 		public String PostalCode;
 		public String Id;
 		public String Line1;
+	}
+
+	public class QueryResponse{
+		public Integer startPosition;
+		public Integer maxResults;
+		public list<Invoice> Invoice;
+		public Integer totalCount;
 	}
 
     public static QBInvoiceResponseJSON parse(String json) {

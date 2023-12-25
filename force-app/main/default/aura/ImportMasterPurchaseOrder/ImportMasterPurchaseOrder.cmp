@@ -55,7 +55,7 @@
                                 <ui:inputCheckbox aura:id="checkContractor" text="{!rec.Id}" change="{!c.handleCheckbox}" />
                             </td>
                             <td width="50%" role="gridcell">
-                                <ui:outputText value="{!rec.Name}"/>
+                                <ui:outputURL value="{!'/one/one.app?#/sObject/'+ rec.Id + '/view'}" target="_blank" label="{!rec.Name}" />
                             </td>
                             <td width="50%" role="gridcell">
                                 <ui:outputText value="{!rec.buildertek__Description__c}" />

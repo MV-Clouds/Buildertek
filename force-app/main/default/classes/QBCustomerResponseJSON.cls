@@ -46,6 +46,13 @@ public class QBCustomerResponseJSON {
 		public String Address;
 	}
 
+	public QueryResponse QueryResponse;
+	public class QueryResponse{
+		public Integer startPosition;
+		public Integer maxResults;
+		public list<Customer> Customer;
+		public Integer totalCount;
+	}
 	
 	public static QBCustomerResponseJSON parse(String json) {
 		return (QBCustomerResponseJSON) System.JSON.deserialize(json, QBCustomerResponseJSON.class);

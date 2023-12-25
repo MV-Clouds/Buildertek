@@ -34,7 +34,7 @@
                                 <br />
                                 <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
                                     <div>
-                                        <aura:if  isTrue="{!and(and(field.name !='buildertek__Project__c',field.name !='buildertek__Status__c'),field.name !='Name')}" >                                 
+                                        <aura:if  isTrue="{!and(and(and(field.name !='buildertek__Project__c',field.name !='buildertek__Status__c'),field.name !='Name'),field.name !='buildertek__Opportunity__c')}" >                                 
                                            <lightning:inputField fieldName="{!field.name}" value="" />
                                             <aura:set attribute="else"> 
                                                 <aura:if  isTrue="{!and(field.name =='buildertek__Project__c')}" >                                            
@@ -45,6 +45,9 @@
 											   </aura:if>
                                                 <aura:if  isTrue="{!and(field.name =='buildertek__Status__c')}" >                                            
                                                     <lightning:inputField fieldName="{! field.name }" value = "{!v.status}"/>
+                                                </aura:if>
+                                                <aura:if  isTrue="{!field.name =='buildertek__Opportunity__c'}" >        
+                                                    <lightning:inputField fieldName="{!field.name}" value="{!v.parentRecordId}"/>
                                                 </aura:if>
                                             </aura:set>
                                         </aura:if> 
