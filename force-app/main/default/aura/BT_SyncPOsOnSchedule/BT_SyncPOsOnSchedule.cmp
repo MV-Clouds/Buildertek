@@ -39,20 +39,13 @@
         }
 
     </aura:html>
-    <div class="slds-modal__header"
-        style=" font-weight: bold; font-size: 1.5rem; margin-bottom: 10px; text-align: center;">
+    <div class="slds-modal__header" style="font-size:17px;">
         Sync PO's on Schedule
     </div>
 
     <div class="slds-modal__content">
         <div class="slds slds-scope">
             <table>
-                <thead>
-                    <tr>
-                        <th scope="col" class="slds-text-title--caps slds-text-align_center">Select Schedule Item for
-                            Purchase Order</th>
-                    </tr>
-                </thead>
                 <tbody>
                     <tr>
                         <td>
