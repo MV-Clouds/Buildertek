@@ -2,6 +2,7 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
     var taskDependencyData = [];
     var resourceRowData = [];
     let assignmentRowData = [];
+
     var rows = [];
     var formattedData = {};
     var firstRowDup = {};
@@ -32,6 +33,7 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
             dependencyRow["lag"] = taskListForPhase[i].buildertek__Lag__c
             taskDependencyData.push(dependencyRow)
         }
+
         assignmentRowData.push.apply(assignmentRowData, createAssignmentData(taskListForPhase[i], i)); //adds all the assignment data to the main list.
     }
 
@@ -398,7 +400,9 @@ function mergeArrays(taskData, assignedResources) {
 //* ayther : Mitrajsinh Gohil
 //* Date : 8th Dec 2023
 //* This method is used to create task Assignment Data for each task
+
 function createAssignmentData(taskListForPhase, i) {
+
     var assignmentRow = {}
     var assignmentRowDataChild = [];
     if (!taskListForPhase.buildertek__Milestone__c && taskListForPhase.buildertek__Contractor_Resource_1__c) {
@@ -498,6 +502,7 @@ function grpTaskOnPhase(records) {
         let customtype;
         let duration;
         let classtype;
+
         
         console.log('customtype:- ', customtype);
         let duprecordobj = {
@@ -511,8 +516,8 @@ function grpTaskOnPhase(records) {
             constriantDate : record.buildertek__Start__c,
             expanded: true,
             type: "Task",
-            contractorId: record.buildertek__Contractor__c || "",
             iconCls: "b-fa b-fa-arrow-right",
+            contractorId: record.buildertek__Contractor__c || "",
             // Add other fields as needed
         }
         if (record.Name == "Milestone Complete") {

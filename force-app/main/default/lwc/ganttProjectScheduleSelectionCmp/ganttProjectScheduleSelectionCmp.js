@@ -15,6 +15,7 @@ export default class GanttProjectSchedulesOptionselectionCmp extends LightningEl
     @track selectedScheduleIdForJS;
     @track callscheduleComponent = false;
     @track isDisabled = true;
+    @api projectId;
 
     connectedCallback() {
         this.getScheduleList();
@@ -25,21 +26,18 @@ export default class GanttProjectSchedulesOptionselectionCmp extends LightningEl
         getScheduleDateFromCustomSetting()
             .then((result) => {
                 if (result) {
-                    this.selectedProjectId = result.buildertek__Project_Selected__c;
-                    this.selectedScheduleId = result.buildertek__Schedule_Selected__c;
-                    let checkProjectId = result.hasOwnProperty('buildertek__Project_Selected__c');
-                    if (!checkProjectId) {
-                        this.selectedProjectId = '';
-                    }
-                    console.log('result', result);
+                    this.selectedScheduleId = result[0].buildertek__Schedule_Selected__c;
+                    let checkProjectId = result[0].hasOwnProperty('buildertek__Project_Selected__c');
+                    this.selectedProjectId = checkProjectId ? result[0].buildertek__Project_Selected__c : '';
+                    
+                    console.log('custom setting result', result);
+                    
                     var scheduleWithoutProjectList = [];
                     this.callscheduleComponent = false;
-                    console.log('Selected Project ID:', this.selectedProjectId);
                     if (this.selectedProjectId == undefined || this.selectedProjectId == '') {
                         this.scheduleWithoutProjectList.forEach(ele => {
                             scheduleWithoutProjectList.push({ label: ele.buildertek__Description__c, value: ele.Id });
                         });
-                        console.log('scheduleWithoutProjectList', scheduleWithoutProjectList);
                         this.SchedulesOptions = scheduleWithoutProjectList;
                     } else {
                         this.mapOfSchedulesOptionsByProject[this.selectedProjectId].forEach(ele => {
@@ -47,6 +45,8 @@ export default class GanttProjectSchedulesOptionselectionCmp extends LightningEl
                         })
                         this.SchedulesOptions = scheduleWithoutProjectList;
                     }
+                    console.log('Custom setting Schedule ID:', this.selectedScheduleId);
+                    console.log('Custom setting Project ID', this.selectedProjectId);
                     if (this.selectedScheduleId) {
                         this.onloadScheduleData();
                     }

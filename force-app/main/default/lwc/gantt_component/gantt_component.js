@@ -60,7 +60,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
   @api contractorResourceFilterVal = "";
   @api internalResourceFilterVal = "";
   @track setorignaldates = false;
-@api hideToolBar = false;
+  @api hideToolBar = false;
   //Added for contractor
   @api showContractor = false;
   @api selectedResourceAccount;
@@ -569,7 +569,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     var resourceRowData = [];
     var assignmentRowData = [];
     var rows = [];
-var toolbar;
+    var toolbar;
     if(!this.hideToolBar){
       toolbar = new GanttToolbar()
     }
@@ -619,7 +619,7 @@ var toolbar;
       appendTo: this.template.querySelector(".container"),
       // startDate: "2019-07-01",
       // endDate: "2019-10-01",
-      
+
       tbar: toolbar,
       rowHeight         : 30,
       barMargin         : 5,
