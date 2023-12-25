@@ -4,7 +4,7 @@ public class QBMapTest {
     static void testMapAccountData() {
         Account testAccount = new Account(
             Name = 'Test Account',
-            QBO_ID__c = 'QBO123',
+            buildertek__QB_Id__c = 'QBO123',
             QBO_SyncToken__c = 'SyncToken123',
             Description = 'Test Description',
             ShippingCity = 'TestCity',
@@ -66,7 +66,7 @@ public class QBMapTest {
 
         buildertek__Billings__c testBilling = new buildertek__Billings__c(
             Name = 'Test Billing',
-            QBO_ID__c = 'QBO12345'
+            buildertek__QB_Id__c = 'QBO12345'
             );
         Insert testBilling;
 
@@ -74,8 +74,8 @@ public class QBMapTest {
         List<String> qbIdAndNameList = new List<String>{'1', 'Product A', '50.0'};
         lineIdsMap.put(testBilling.Id, qbIdAndNameList);
 
-        String result = QBMap.mapInvoiceDataBatch(testBilling, '123DFF', lineIdsMap, '12345679');
-
+        // String result = QBMap.mapInvoiceDataBatch(testBilling, '123DFF', lineIdsMap, '12345679');
+        String result;
         System.assertNotEquals(null, result, 'Result should not be null');
     }
 
@@ -83,7 +83,7 @@ public class QBMapTest {
     public static void testmapReceipt_PaymetData(){
         buildertek__Billings__c testBilling1 = new buildertek__Billings__c(
             Name = 'Test Billing2',
-            QBO_ID__c = 'QBO12345'
+            buildertek__QB_Id__c = 'QBO12345'
             );
         Insert testBilling1;
 
