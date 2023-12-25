@@ -23,7 +23,7 @@ table tbody tr td {
 }
 
 table tbody tr .action {
-    display: flex;
+    /* display: flex; */
 }
 
 table tbody tr .action button {

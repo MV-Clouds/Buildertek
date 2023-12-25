@@ -284,4 +284,22 @@ public without sharing class PublicFileShareController {
         }
     }
 
+    @AuraEnabled
+    public static String updateFolder( Id publicFolderId, String folderName, String folderDesc ){
+        try {
+            System.debug('updateFolder');
+            List<buildertek__Public_Folder__c>  publicFolderList = [SELECT Id, Name, buildertek__Description__c FROM buildertek__Public_Folder__c WHERE Id = :publicFolderId];
+            System.debug('publicFolderList >> ' + publicFolderList);
+            if(!publicFolderList.isEmpty()){
+                publicFolderList[0].Name = folderName;
+                publicFolderList[0].buildertek__Description__c = folderDesc;
+                System.debug('publicFolderList2 >> ' + publicFolderList);
+                update publicFolderList;
+            }
+            return 'Success';
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+    }
+
 }

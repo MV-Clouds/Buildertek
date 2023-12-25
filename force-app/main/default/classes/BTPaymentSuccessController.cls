@@ -96,6 +96,9 @@ public class BTPaymentSuccessController {
             system.debug('amount ----------'+amount );
             String PaymentID = string.valueOf(paymentmap.get('id'));
             system.debug('PaymentID ----------'+PaymentID );
+
+            //convert amount to decimal
+            amount = amount/100;
             
             if(InvoiceId!=null){            
                 InvoiceData = [Select id,name,buildertek__Total_Amount_Tax__c from buildertek__Billings__c where id =: InvoiceId];

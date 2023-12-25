@@ -83,6 +83,7 @@
                     <div class="tbl-header">
                         <div class="tbl-hd-th id-cell">No.</div>
                         <div class="tbl-hd-th name-cell">Name</div>
+                        <div class="tbl-hd-th date-cell">Created Date</div>
                         <div class="tbl-hd-th status-cell st-txt">Status</div>
                         <div class="tbl-hd-th notes-cell js-center pd-none-div">Notes</div>
                         <!-- <div class="tbl-hd-th photo-cell pc-hdr hgt-aut">Attached Photos</div> -->
@@ -116,6 +117,12 @@
                                     <!-- <a href="{!orgBaseURL + '/' + ci.Id }" target="_blank">{!ci.Name}</a> -->
                                     <div class="notes-div notes">
                                         <a href="{!orgBaseURL + '/' + ci.Id }" target="_blank">{!ci.Name}</a>
+                                    </div>
+                                </div>
+                                <div class="td-txt date-cell">
+                                    <div class="status-clr-div">
+                                        <lightning:formattedDateTime aura:id="dt" value="{!ci.buildertek__Date_Created__c}" />
+                                            <!-- month="short" day="numeric" year="numeric" /> -->
                                     </div>
                                 </div>
                                 <div class="td-txt status-cell">
@@ -157,21 +164,32 @@
 
                             <div class="ci-row-tab">
                                 <div class="pt-1-tab">
-                                    <div class="id-tab">
-                                        <div class="hdr-tab">No:</div>
-                                        <div class="txt-tab pd-1-tab">{!v.offset + index + 1}</div>
-                                    </div>
-                                    <div class="name-tab">
-                                        <div class="hdr-tab cn-tab-hdr">Name:</div>
-                                        <div class="txt-tab notes-tab">
-                                            <div class="notes-div ">
-                                                <a href="{!orgBaseURL + '/' + ci.Id }">{!ci.Name}</a>
-                                            </div>    
+                                    <div class="name-id-tab">
+                                        <div class="id-tab">
+                                            <div class="hdr-tab">No:</div>
+                                            <div class="txt-tab pd-1-tab">{!v.offset + index + 1}</div>
+                                        </div>
+                                        <div class="id-tab dateCl">
+                                            <div class="hdr-tab">Created Date:</div>
+                                            <div class="txt-tab pd-1-tab">
+                                            <lightning:formattedDateTime aura:id="dt"
+                                                value="{!ci.buildertek__Date_Created__c}" />
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="status-tab">
-                                        <div class="hdr-tab">Status: &nbsp;</div>
-                                        <div class="status-clr-div" data-status="{!ci.buildertek__Status__c}">{!ci.buildertek__Status__c}</div>
+                                    <div class="name-id-tab">
+                                        <div class="name-tab">
+                                            <div class="hdr-tab cn-tab-hdr">Name:</div>
+                                            <div class="txt-tab notes-tab">
+                                                <div class="notes-div ">
+                                                    <a href="{!orgBaseURL + '/' + ci.Id }">{!ci.Name}</a>
+                                                </div>    
+                                            </div>
+                                        </div>
+                                        <div class="status-tab">
+                                            <div class="hdr-tab">Status: &nbsp;</div>
+                                            <div class="status-clr-div" data-status="{!ci.buildertek__Status__c}">{!ci.buildertek__Status__c}</div>
+                                        </div>
                                     </div>
                                 </div>
 

@@ -1,6 +1,8 @@
 import { LightningElement, track, api } from "lwc";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
+import { loadScript, loadStyle } from "lightning/platformResourceLoader";
 import insertData from "@salesforce/apex/importScheduleLineController.insertData";
+import PARSER from "@salesforce/resourceUrl/PapaParse";
 export default class importScheduleLine extends LightningElement {
     fileName;
     fileContent;
@@ -16,6 +18,23 @@ export default class importScheduleLine extends LightningElement {
 
     get acceptedFormats() {
         return [".csv"];
+    }
+
+    renderedCallback() {
+        Promise.all([
+            loadScript(this, PARSER + "/PapaParse/papaparse.js"),
+        ])
+        .then(() => {})
+        .catch((error) => {
+            console.log('error in renderedCallback:',error);
+          this.dispatchEvent(
+            new ShowToastEvent({
+              title: "Error loading papa parse library",
+              message: error,
+              variant: "error",
+            })
+          );
+        });
     }
 
     handleFileChange(event) {
@@ -64,6 +83,8 @@ export default class importScheduleLine extends LightningElement {
             "Phase",
             "Notes",
             "Lag",
+            "Cost Code",
+            "Trade Type",
         ];
         const columnDivider = ",";
         let csvStringResult = "";
@@ -74,7 +95,10 @@ export default class importScheduleLine extends LightningElement {
     CSV2JSON(csv) {
         try {
             let arr = [];
-            arr = csv.split("\n");
+            let modifiedCsvData = this.trimCSVData(csv);
+            let cleanCsv = Papa.parse(modifiedCsvData, {skipEmptyLines:'greedy'});
+            let newCleanCsv = Papa.unparse(cleanCsv.data);
+            arr = newCleanCsv.split("\n");
 
             if (
                 arr[arr.length - 1] === "" ||
@@ -95,7 +119,9 @@ export default class importScheduleLine extends LightningElement {
                 headers[4] !== "% Complete" ||
                 headers[5] !== "Phase" ||
                 headers[6] !== "Notes" ||
-                headers[7] !== "Lag\r"
+                headers[7] !== "Lag" ||
+                headers[8] !== "Cost Code" ||
+                headers[9] !== "Trade Type\r" 
             ) {
                 this.Spinner = false;
                 this.isErrorOccured = true;
@@ -156,25 +182,6 @@ export default class importScheduleLine extends LightningElement {
                         console.log('headers:', headers);
                         if (headers[j]) {
                             if (headers[j].trim() === "StartDate" && data[j].trim() !== "") {
-                                // let date = data[j].trim();
-                                // let splitDate = date.split("/");
-                                // if (
-                                //     parseInt(splitDate[0]) < 10 &&
-                                //     String(parseInt(splitDate[0])).length < 2
-                                // ) {
-                                //     month = "0" + splitDate[0];
-                                // } else {
-                                //     month = splitDate[0];
-                                // }
-                                // if (
-                                //     parseInt(splitDate[1]) < 10 &&
-                                //     String(parseInt(splitDate[1])).length < 2
-                                // ) {
-                                //     day = "0" + splitDate[1];
-                                // } else {
-                                //     day = splitDate[1];
-                                // }
-                                // obj[headers[j].trim()] = month.split("-").reverse().join("-");
                                 let dateFormatToChange = data[j];
                                 console.log('dateFormatToChange :',dateFormatToChange);
                                 let convertedDate = this.convertDateFormat(dateFormatToChange);
@@ -189,6 +196,10 @@ export default class importScheduleLine extends LightningElement {
                                 console.log('Date Loop Else');
                                 if (headers[j].trim() === "% Complete") {
                                     obj["percentComplete"] = data[j].trim();
+                                } else if (headers[j].trim() === "Cost Code") {
+                                    obj["costCode"] = data[j].trim();
+                                } else if (headers[j].trim() === "Trade Type") {
+                                    obj["tradeType"] = data[j].trim();
                                 } else {
                                     console.log('data[j].trim() :',data[j].trim());
                                     obj[headers[j].trim()] = data[j].trim();
@@ -212,42 +223,19 @@ export default class importScheduleLine extends LightningElement {
                         today = yyyy + "-" + mm + "-" + dd;
                         obj.StartDate = today;
                         console.log('obj.StartDate:',obj.StartDate);
-                        // console.log('today:', today);
-                        // console.log('obj.StartDate:', obj.StartDate);
                         jsonObj.push(obj);
 
-                        // const toastEvent = new ShowToastEvent({
-                        //     title: "Error",
-                        //     message: "StartDate should not be null",
-                        //     duration: "10000",
-                        //     key: "info_alt",
-                        //     variant: "error",
-                        //     mode: "dismissible",
-                        // });
-                        // this.dispatchEvent(toastEvent);
                         this.startdateError = true;
                         this.Spinner = false;
                     }
                     if (obj.percentComplete !== "" && obj.percentComplete !== undefined) {
                         // Perform necessary operations
                     } else {
-                        // const toastEvent = new ShowToastEvent({
-                        //     title: 'Error',
-                        //     message: 'Percent Complete should not be null',
-                        //     duration: '10000',
-                        //     key: 'info_alt',
-                        //     variant: 'error',
-                        //     mode: 'dismissible'
-                        // });
-                        // this.dispatchEvent(toastEvent);
-                        // this.startdateError = true;
-                        // this.Spinner = false;
                         obj.percentComplete = 0;
                     }
                 }
             }
 
-            console.log("jsonObj:", jsonObj);
             const taskMap = new Map();
             for (let i = 0; i < jsonObj.length; i++) {
                 let element = jsonObj[i];
@@ -271,7 +259,6 @@ export default class importScheduleLine extends LightningElement {
             jsonObj.forEach((element) => {
                 parentMap.set(element.ID, element.parentID);
             });
-            console.log("parentMap:", parentMap);
 
             let circularDependency = false;
             let totalLoop = 0;
@@ -296,7 +283,6 @@ export default class importScheduleLine extends LightningElement {
                 return !circularDependency;
             });
 
-            console.log("Total Loop:", totalLoop);
             if (circularDependency) {
                 console.log("dependentRecord:", dependentRecord);
                 return "";
@@ -312,9 +298,7 @@ export default class importScheduleLine extends LightningElement {
 
     CreateAccount(jsonstr) {
         const jsonData = JSON.parse(jsonstr);
-        // const action = this.insertData;
-        console.log("CSV File:", JSON.stringify(jsonData));
-        console.log('Create Account Sch recordId',this.recordid);
+
         insertData({
             recordId: this.recordid,
             strFileData: JSON.stringify(jsonData),
@@ -328,10 +312,6 @@ export default class importScheduleLine extends LightningElement {
                         this.showMessage = false;
                         this.isOpen = false;
 
-                        // const baseURL = this.BaseURLs;
-                        // const url = location.href;
-                        // baseURL = url.substring(0, url.indexOf('--', 0));
-
                         const toastEvent = new ShowToastEvent({
                             title: "Success",
                             message: "Schedule lines Imported Successfully.",
@@ -342,59 +322,6 @@ export default class importScheduleLine extends LightningElement {
                         });
                         this.dispatchEvent(toastEvent);
                         document.location.reload(true)
-                        // if (this.isNewGantt) {
-                        //     const workspaceAPI = this.template.querySelector(
-                        //         "lightning-navigation"
-                        //     );
-                        //     if (workspaceAPI) {
-                        //         workspaceAPI
-                        //             .getFocusedTabInfo()
-                        //             .then((response) => {
-                        //                 const focusedTabId = response.tabId;
-                        //                 workspaceAPI
-                        //                     .closeTab({ tabId: focusedTabId })
-                        //                     .then((res) => {
-                        //                         window.setTimeout(() => {
-                        //                             window.open("/" + recordId, "_top");
-                        //                             location.reload();
-                        //                         }, 2000);
-                        //                         if (workspaceAPI.getFocusedTabInfo()) {
-                        //                             workspaceAPI
-                        //                                 .getFocusedTabInfo()
-                        //                                 .then((response) => {
-                        //                                     const focusedTabId = response.tabId;
-                        //                                     window.setTimeout(() => {
-                        //                                         window.open("/" + recordId, "_top");
-                        //                                         location.reload();
-                        //                                     }, 2000);
-                        //                                 })
-                        //                                 .catch((error) => {
-                        //                                     console.log(error);
-                        //                                 });
-                        //                         }
-                        //                     });
-                        //             })
-                        //             .catch((error) => {
-                        //                 console.log(error);
-                        //                 const navEvt = new CustomEvent("navigate", {
-                        //                     detail: {
-                        //                         recordId: recordId,
-                        //                         slideDevName: "detail",
-                        //                     },
-                        //                 });
-                        //                 window.setTimeout(() => {
-                        //                     location.reload();
-                        //                 }, 500);
-                        //                 this.dispatchEvent(navEvt);
-                        //             });
-                        //     } else {
-                        //         window.open("/" + recordId, "_top");
-                        //     }
-                        // } else {
-                        //     // window.open('/apex/BT_Task_Manager?recordId=' + escape(recordId), '_self');
-                        //     debugger;
-                        //     window.open("/"+dummyRecordId, "_self");
-                        // }
                     } else {
                         this.Spinner = false;
                         this.showMessage = false;
@@ -422,7 +349,6 @@ export default class importScheduleLine extends LightningElement {
                     this.dispatchEvent(evt);
                     this.Spinner = false;
                     return '';
-                    // console.error('response:',response);
                 }
             })
             .catch((error) => {
@@ -586,14 +512,23 @@ export default class importScheduleLine extends LightningElement {
             return convertedDate;
         } catch (error) {
             console.log('error:',error);
-            // const event = new ShowToastEvent({
-            //     title: 'Error',
-            //     message: 'Invalid Date format !!!',
-            //     variant: 'error',
-            //     mode: 'dismissable'
-            // });
-            // this.dispatchEvent(event);
             return 'Invalid';
+        }
+    }
+
+    trimCSVData(csvData) {
+        try {
+            const rows = csvData.split('\n');
+            const processedRows = rows.map(row => {
+                const fields = row.split(',');
+                const trimmedFields = fields.map(field => field.trim());
+                return trimmedFields.join(',');
+            });
+            const modifiedCsvData = processedRows.join('\n');
+            return modifiedCsvData;
+        } catch (error) {
+            console.log('error in trimCSVData:',error);
+            return '';
         }
     }
 }

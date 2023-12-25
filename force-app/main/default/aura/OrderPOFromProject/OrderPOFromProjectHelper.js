@@ -56,6 +56,12 @@
                     component.set("v.orgCurr", result[0].orgCurr);
                                        
                     component.set('v.PaginationList', result);
+                    for (let i = 0; i < result[0].poRecInner.length; i++) {
+                        if (result[0].poRecInner[i].poRecord.buildertek__Vendor__r.Name.length > 40) {
+                            result[0].poRecInner[i].poRecord.buildertek__Vendor__r.Name = result[0].poRecInner[i].poRecord.buildertek__Vendor__r.Name.slice(0, 40) + '...';
+                        }
+                        console.log('Vendor Name',result[0].poRecInner[i].poRecord.buildertek__Vendor__r.Name);
+                    }
                     console.log(' --- --- --- doInit --- --- --- ');
                     console.log({result});
                     // console.log(JSON.stringify(result));
@@ -147,5 +153,27 @@
         }
         reader.readAsDataURL(file);
     },
-    
+
+    settempId : function(component, poId){
+        var action = component.get("c.addEmailTemplateId");
+        action.setParams({
+            POIDs: poId
+        });
+        action.setCallback(this, function (response) {
+            var state = response.getState();
+            if (state === "SUCCESS") {
+                console.log('Success');
+            } else if (state === "ERROR") {
+                var errors = response.getError();
+                if (errors && errors[0] && errors[0].message) {
+                    console.log('error-->',errors[0].message);
+                } else {
+                    console.log('Unknown error');
+                }
+            } else if (state === "INCOMPLETE") {
+                console.log('Server request incomplete');
+            }
+        });
+        $A.enqueueAction(action);
+    }
 })

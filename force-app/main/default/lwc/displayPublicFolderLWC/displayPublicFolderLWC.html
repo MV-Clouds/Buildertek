@@ -4,37 +4,51 @@
         <lightning-spinner alternative-text="Loading" variant="brand"></lightning-spinner>
     </template>
 
-    <div class="container slds-align_absolute-center">
+    <div class="container">
         <div>
-            
+
             <div class="detail-div">
-                <div> <b>Folder Name :</b> {folderDetails.Name}</div>
-                <div> <b>Description :</b> {folderDetails.buildertek__Description__c}</div>
-                <div> <b>No. Of Files :</b> {folderDetails.buildertek__File_Count__c} </div>
+                <div>
+                    <p class="fileName">{folderDetails.Name}</p>
+                </div>
+                <div>
+                    <p class="description">{folderDetails.buildertek__Description__c}</p>
+                </div>
+                <div class="searchDiv">
+                    <p>No. Of Files : {folderDetails.buildertek__File_Count__c} </p>
+                </div>
             </div>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Public URL</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <template for:each={folderWrap.publicFileList} for:item="file">
-                        <tr key={file.Id}>
-                            <td>{file.buildertek__File_Name__c}</td>
-                            <td> <a href={file.buildertek__Public_URL__c} target="_blank"> View </a> </td>
+            <div class="table-container">
+                <table class="fixed_header" style="margin:0% !important ">
+                    <thead class="header">
+                        <tr>
+                            <th colspan="2" width="75%">File Name</th>
+                            <th width="7%">Type</th>
+                            <th width="7%">Size</th>
+                            <th width="11%">Created Date</th>
                         </tr>
-                    </template>
-                </tbody>
-            </table>
-
-        <template if:true={noFiles}>
-            <div class="footer-div">
-                No Files Available Under This Folder
+                    </thead>
+                    <tbody>
+                        <template for:each={listFiles} for:item="file">
+                            <tr key={file.Id} class="fileContainer">
+                                <td width="1%">
+                                    <lightning-icon icon-name='doctype:unknown' size='x-small'></lightning-icon>
+                                </td>
+                                <td width="74%"><a href={file.publicURL} target="_blank">{file.fileName}</a></td>
+                                <td width="7%">{file.fileType}</td>
+                                <td width="7%">{file.fileSize}</td>
+                                <td width="11%">{file.fileCreatedDate}</td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
             </div>
-        </template>
+            
+            <template if:true={noFiles}>
+                <div class="footer-div">
+                    No Files Available Under This Folder
+                </div>
+            </template>
 
         </div>
     </div>

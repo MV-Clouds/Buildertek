@@ -3,18 +3,35 @@
         // console.log('bt_fieldSetMassUpdate Controller callled===');
         var record = component.get("v.record");
         // console.log('record=='+record);
-        // console.log({record});
         var field = component.get("v.field");
+        if(record != undefined){
+
         if(field.name == 'buildertek__Contractor__c'){
-            if (record != undefined) {
-                if(record.buildertek__Contractor__c){
-                    component.set("v.contractor",record.buildertek__Contractor__c);
-                }
-            }
-            
+            if(record.buildertek__Contractor__c){
+                component.set("v.contractor",record.buildertek__Contractor__c);
+            }            
         }
+        if(field.name == "buildertek__Purchase_Order__c"){
+            if(record.buildertek__Purchase_Order__c){
+                component.set("v.PurchaseOrderId", record.buildertek__Purchase_Order__c);
+            }
+        }
+            
+        if(field.name == "buildertek__Quantity_Received__c"){
+            if(record.buildertek__Quantity__c){
+                component.set("v.QuantityValue", record.buildertek__Quantity__c);
+            }
+        }
+        }
+
         var objectname = component.get("v.childObjectName");
         var mainobjectname = component.get("v.ObjectName");
+        if(record != undefined){
+            component.set("v.recordId", record.Id);
+            // console.log("recordId :: ", component.get("v.recordId"));
+        }
+
+
         if (record != undefined) {
             component.set("v.cellValue", record[field.name]);
             component.set("v.fieldName", field.name);
@@ -182,8 +199,10 @@
     onInputChange: function (component, event, helper) {
         var fieldName = event.getSource().get("v.name").split('-');
         var fieldLabel = fieldName[1];
+        var inputField = event.getSource();
         // debugger;
         var selectedValue = event.getSource().get("v.value");
+        var QuantityValue = component.get("v.QuantityValue");
         //alert(selectedValue);
         var record = component.get('v.record');
         record[fieldLabel] = selectedValue != '' && selectedValue != 'None' ? selectedValue : '';
@@ -197,6 +216,15 @@
                 if (diffDays > 0) {
                     record.buildertek__Duration__c = diffDays;
                 }
+            }
+        }
+        else if(fieldLabel == 'buildertek__Quantity_Received__c'){
+            // console.log("QuantityValue :: ", component.get("v.QuantityValue"));
+            if(selectedValue > QuantityValue){
+                inputField.setCustomValidity("Received value should be less than the Remaining value.");
+            }
+            else{
+                inputField.setCustomValidity("");
             }
         }
         component.set('v.record', record);
@@ -217,10 +245,11 @@
         var fieldLabel = event.getSource().get("v.name").split('-');
         var selectedValue = event.getSource().get("v.checked");
         var record = component.get('v.record');
+        console.log("record >> ", JSON.parse(JSON.stringify(record)));
         record[fieldLabel] = selectedValue ? true : false;
-        
+
         var index = JSON.stringify(component.get("v.index"));
-        if(fieldLabel != 'buildertek__Tax__c'){
+        if(fieldLabel != 'buildertek__Tax__c' && fieldLabel != 'buildertek__Closed__c'){
            if(selectedValue){
             record['buildertek__Completion__c'] = 100;
             var ele = document.getElementById(index+'_completion');
@@ -244,5 +273,10 @@
         component.set("v.isReferenceField", true);
         $A.enqueueAction(component.get('c.doInit'));
         
-    }
+    },
+
+    setSelectedRecordId: function (component, event, helper) {
+        var selectedRecordId = component.get("v.selectedRecordId");
+        component.find("lookupField").set("v.value", selectedRecordId);
+    },
 })

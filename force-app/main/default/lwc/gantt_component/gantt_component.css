@@ -98,10 +98,3 @@
     cursor: pointer;
     display: none;
 }
-
-/* Modal popup */
-
-.slds-modal__container {
-    max-width: 72rem !important;
-    width: 72% !important;
-}

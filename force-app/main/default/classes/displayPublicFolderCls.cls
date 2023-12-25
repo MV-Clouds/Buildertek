@@ -13,11 +13,40 @@ public without sharing class displayPublicFolderCls {
             filesId.add(junction.buildertek__Public_File__c);
         }
 
-        List<buildertek__Public_File__c> fileList = [SELECT Id, buildertek__File_Name__c, buildertek__Public_URL__c, buildertek__Expiry_Date__c, buildertek__Content_Distrubution__c, buildertek__Content_Version__c FROM buildertek__Public_File__c WHERE Id IN: filesId];
+        List<buildertek__Public_File__c> fileList = [SELECT Id, buildertek__File_Name__c, buildertek__Public_URL__c, buildertek__Expiry_Date__c, buildertek__Content_Distrubution__c, buildertek__Content_Version__c , CreatedDate FROM buildertek__Public_File__c WHERE Id IN: filesId];
+
+        Map<Id, buildertek__Public_File__c> fileMap = new Map<Id, buildertek__Public_File__c>();
+        for (buildertek__Public_File__c file : fileList) {
+            fileMap.put(file.buildertek__Content_Version__c, file);
+        }
+
+        Set<Id> cvIds = new Set<Id>();
+        List<ContentVersion> contentVersionList = [SELECT Id, Title, ContentDocumentId, ContentUrl, FileType, FileExtension, VersionNumber, Description, ContentSize FROM ContentVersion WHERE Id IN: fileMap.keySet()];
+        for (ContentVersion cv : contentVersionList) {
+            cvIds.add(cv.Id);
+        }
+
+        List<FileWrapper> fileWrapperList = new List<FileWrapper>();
+
+        for (ContentVersion conv : contentVersionList) {
+            FileWrapper fw = new FileWrapper();
+            fw.publicFile = fileMap.get(conv.Id);
+            fw.cv = conv;
+            fileWrapperList.add(fw);
+        }
+
+        List<buildertek__Public_File__c> deleteList = new List<buildertek__Public_File__c>();
+        for (buildertek__Public_File__c file : fileList) {
+            if (!cvIds.contains(file.buildertek__Content_Version__c)) {
+                deleteList.add(file);
+            }
+        }
+
+        delete deleteList;
 
         folderWrap.publicFolder = folder;
         folderWrap.publicJunctionList = junctionList;
-        folderWrap.publicFileList = fileList;
+        folderWrap.fileWrapperList = fileWrapperList;
 
         return folderWrap;
     }
@@ -30,7 +59,19 @@ public without sharing class displayPublicFolderCls {
         public List<buildertek__Public_File_Folder_Jn__c> publicJunctionList;  
         
         @AuraEnabled
-        public List<buildertek__Public_File__c> publicFileList;        
+        public List<FileWrapper> fileWrapperList;  
     }
+
+    public class FileWrapper{
+        @AuraEnabled
+        public buildertek__Public_File__c publicFile;  
+
+        @AuraEnabled
+        public ContentVersion cv;
+    }
+
+
+
+
 
 }

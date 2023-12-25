@@ -1,0 +1,93 @@
+<aura:component controller="ScheduleSummaryController" implements="force:appHostable,flexipage:availableForAllPageTypes,force:hasRecordId" access="global">
+
+<aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+<aura:attribute name="tasks" type="Project_Task__c[]" />
+<aura:attribute name="pastDueTasks" type="Project_Task__c[]" />
+<aura:attribute name="dueThisWeekTasks" type="Project_Task__c[]" />
+<aura:attribute name="dueNextWeekTasks" type="Project_Task__c[]" />
+<aura:html tag="style">
+    .buildertekScheduleSummary .container {
+        display: flex;
+        justify-content: center;
+        flex-direction: row;
+        margin-top: 3vh;
+    }
+</aura:html>
+    <div class="mainContainer">
+        <header style="background: #1b5297;padding: 11px 20px;">
+            <div class="left-box" style="display: inline-block;vertical-align: middle;width: 30%;">
+                <h1 style="margin: 0;color: #fff;font-size: 18px;">Schedule Dashboard</h1>
+            </div>
+        </header>
+        <div class="container">
+            <div class="subcontain">
+                <center>Past Due</center>
+                <div class="rkdiv">
+                    <aura:if isTrue="{!not(empty(v.pastDueTasks))}">
+                        <aura:iteration items="{!v.pastDueTasks}" var="task">
+                            <div class="subrkdiv1">
+                                <p class="poppins truncateName"> <ui:outputURL
+                                    value="{!'/one/one.app?#/sObject/'+ task.Id + '/view'}"
+                                    target="_blank"
+                                    label="{!task.Name}" /></p>
+                                <p class="poppins">Finish Date: {!task.buildertek__Finish__c}</p>
+                                <p class="poppins">Completion(%): {!task.buildertek__Completion__c}%</p>
+                            </div>
+                        </aura:iteration>
+                        <aura:set attribute="else">
+                            <div class="emptyList">
+                                There are no tasks available.
+                            </div>
+                        </aura:set>
+                    </aura:if>
+                </div>
+            </div>
+            <div class="subcontain">
+                <center>Due This Week</center>
+                <div class="rkdiv">
+                    <aura:if isTrue="{!not(empty(v.dueThisWeekTasks))}">
+                        <aura:iteration items="{!v.dueThisWeekTasks}" var="task">
+                            <div class="subrkdiv2">
+                                <p class="poppins truncateName"> <ui:outputURL
+                                    value="{!'/one/one.app?#/sObject/'+ task.Id + '/view'}"
+                                    target="_blank"
+                                    label="{!task.Name}"/></p>
+                                <p class="poppins">Finish Date: {!task.buildertek__Finish__c}</p>
+                                <p class="poppins">Completion(%): {!task.buildertek__Completion__c}%</p>
+                            </div>
+                        </aura:iteration>
+                        <aura:set attribute="else">
+                            <div class="emptyList">
+                                There are no tasks available.
+                            </div>
+                        </aura:set>
+                    </aura:if>
+                </div>
+            </div>
+            <div class="subcontain">
+                <center>Due Next Week</center>
+                <div class="rkdiv">
+                    <aura:if isTrue="{!not(empty(v.dueThisWeekTasks))}">
+                        <aura:iteration items="{!v.dueNextWeekTasks}" var="task">
+                            <div class="subrkdiv3">
+                                <p class="poppins truncateName"> <ui:outputURL
+                                    value="{!'/one/one.app?#/sObject/'+ task.Id + '/view'}"
+                                    target="_blank"
+                                    label="{!task.Name}" /></p>
+                                <p class="poppins">Finish Date: {!task.buildertek__Finish__c}</p>
+                                <p class="poppins">Completion(%): {!task.buildertek__Completion__c}%</p>
+                            </div>
+                        </aura:iteration>
+                        <aura:set attribute="else">
+                            <div class="emptyList">
+                                There are no tasks available.
+                            </div>
+                        </aura:set>
+                    </aura:if>
+                    
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</aura:component>

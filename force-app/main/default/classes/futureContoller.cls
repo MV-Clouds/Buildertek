@@ -1,12 +1,12 @@
 public class futureContoller {
     @future
     public static void createContractsFromQuote(List<Id> listQuoteIds){
-        BudgetContractCreateHelper.createContractsFromQuote(listQuoteIds);     
+        BudgetContractCreateHelper.createContractsFromQuote(listQuoteIds);
     }
-    
+
     @future
     public static void createBudgetFromQuote(List<Id> QuoteId){
-        BudgetContractCreateHelper.createBudgetFromQuote(QuoteId);     
+        BudgetContractCreateHelper.createBudgetFromQuote(QuoteId);
     }
     @future
     public static void updatetimecardlist(Map<Id,decimal> timecardmap){
@@ -23,21 +23,21 @@ public class futureContoller {
                                                              buildertek__Daily_Expense__c,buildertek__Description__c,buildertek__Details__c,buildertek__End_Distance__c,
                                                              buildertek__End_Location__c,buildertek__End_Time2__c,buildertek__End_Time__c,buildertek__Entry_Date__c,
                                                              buildertek__Lunch_In__c,buildertek__Lunch_Out__c,buildertek__Schedule_Item__c,buildertek__Start_Time__c,
-                                                             buildertek__Total_Break_Time__c,buildertek__Weekly_OT__c 
+                                                             buildertek__Total_Break_Time__c,buildertek__Weekly_OT__c
                                                              from buildertek__Time_Cards__c
-                                                             where Id =:recordId];  
+                                                             where Id =:recordId];
         resloglist.Id = recordId;
         resloglist.buildertek__Weekly_OT__c = weeklyot;
         Update resloglist;*/
     }
    public static void updateScheduleRec(String recId){
    System.debug('recId-----------'+recId);
-       list<buildertek__Schedule__c> scheduleList =[SELECT Id, 
+       list<buildertek__Schedule__c> scheduleList =[SELECT Id,
                                                     buildertek__Start_Date__c,
-                                                    buildertek__End_Date__c, 
-                                                    buildertek__Original_Start_Date__c, 
+                                                    buildertek__End_Date__c,
+                                                    buildertek__Original_Start_Date__c,
                                                     buildertek__Original_End_Date__c FROM buildertek__Schedule__c where id=:recId];
-       System.debug('scheduleList-----------'+scheduleList[0].buildertek__Start_Date__c);
+       System.debug('scheduleList----------- jon test '+scheduleList[0].buildertek__Start_Date__c);
        System.debug('scheduleList-----------'+scheduleList[0].buildertek__End_Date__c);
        List<buildertek__Schedule__c> scheduleListNew=new List<buildertek__Schedule__c>();
        for(buildertek__Schedule__c scheduleRec:scheduleList){
@@ -48,7 +48,7 @@ public class futureContoller {
                 }
            }
            scheduleListNew.add(scheduleRec);
-          
+
        }
        update scheduleListNew;
        }
@@ -65,7 +65,7 @@ public class futureContoller {
         buildertek__RFQ__c rfqrec = [select id,Name,buildertek__Project__c,buildertek__Project__r.Name,
                 buildertek__Project__r.OwnerId,buildertek__Project__r.Owner.Email
                 from buildertek__RFQ__c where Id =: rfqToVendorListDup[0].buildertek__RFQ__c ];
-    
+
                 string toemailadd='';
                 if(rfqrec.buildertek__Project__c!=null){
                   toemailadd = rfqrec.buildertek__Project__r.Owner.Email;
@@ -98,7 +98,7 @@ public class futureContoller {
                                     update rfqRec1;
                                 }
                             }
-            
+
         } else{
             message.subject = 'Decline [ref:' + rfqToVendorId + ']';
             message.plainTextBody = 'Rejected';
@@ -107,18 +107,18 @@ public class futureContoller {
         Messaging.SingleEmailMessage[] messages = new List<Messaging.SingleEmailMessage>{message};
         Messaging.SendEmailResult[] results = Messaging.sendEmail(messages);
         System.debug('results------>'+results);
-        if (rfqStatus == true && (rfqrec.buildertek__Project__c!=null)){   
+        if (rfqStatus == true && (rfqrec.buildertek__Project__c!=null)){
                        string theTemplate;
                         theTemplate = [SELECT Id
                         FROM EmailTemplate
-                        WHERE Name  = 'Award Accept Manager Email'].Id;        
+                        WHERE Name  = 'Award Accept Manager Email'].Id;
                         system.debug('theTemplate>'+theTemplate);
                //   toemailadd = 'harika.chunduri@diligentforcelabs.com';
-                        List<Messaging.SingleEmailMessage> messageList = new List<Messaging.SingleEmailMessage>();    
+                        List<Messaging.SingleEmailMessage> messageList = new List<Messaging.SingleEmailMessage>();
                         Messaging.SingleEmailMessage message1= new        Messaging.SingleEmailMessage();
-            
+
                         message1.toAddresses = new String[] { toemailadd};
-                        message1.setTemplateID(theTemplate);     
+                        message1.setTemplateID(theTemplate);
                        // message1.setSaveAsActivity(false);
                         //message1.setHTMLBody('HIIIIIIIIIIIIII');
                         message1.setWhatId(rfqToVendorId);
@@ -128,10 +128,10 @@ public class futureContoller {
                         Savepoint sp = Database.setSavepoint();
                         Messaging.sendEmail(messageList);
                         Database.rollback(sp);
-                     //try{ 
-            
-                            //List<string> CCAdresses = new List<string>();                    
-                            //CCAdresses.add('sowndarya.nittala@diligentforcelabs.com'); 
+                     //try{
+
+                            //List<string> CCAdresses = new List<string>();
+                            //CCAdresses.add('sowndarya.nittala@diligentforcelabs.com');
                             List<Messaging.SingleEmailMessage> actualMessageList = new List<Messaging.SingleEmailMessage>();
                             // loop through the previous message list and set the email fields
                             for (Messaging.SingleEmailMessage email : messageList) {
@@ -147,14 +147,55 @@ public class futureContoller {
                             system.debug('emailToSend--->'+emailToSend);
                             }
                              system.debug('actualMessageList---->'+actualMessageList);
-                            Messaging.SendEmailResult [] serList = Messaging.sendEmail(actualMessageList);           
+                            Messaging.SendEmailResult [] serList = Messaging.sendEmail(actualMessageList);
                             System.debug('The email was sent successfully.');
                      // }catch(Exception e){
-                       //    System.debug('The email failed to send: ');             
-                       // }                
+                       //    System.debug('The email failed to send: ');
+                       // }
                     }
 
     }
 
-    
+    public static void updateProjectOnSchedule(String recId){
+        System.debug('recId-----------'+recId);
+            list<buildertek__Schedule__c> scheduleList =[SELECT Id,
+                                                         buildertek__Project__c,
+                                                         buildertek__Start_Date__c,
+                                                         buildertek__End_Date__c,
+                                                         buildertek__Original_Start_Date__c,
+                                                         buildertek__Original_End_Date__c FROM buildertek__Schedule__c where id=:recId];
+            if (scheduleList.size() > 0) {
+                List<buildertek__Schedule__c> scheduleListNew=new List<buildertek__Schedule__c>();
+                String projectId = scheduleList[0].buildertek__Project__c;
+                buildertek__Project__c schProject = new buildertek__Project__c();
+
+                if (!String.isBlank(projectId)) {
+                    schProject = [SELECT Id,
+                                        buildertek__Anticipated_Start_Date__c,
+                                        buildertek__Estimated_Completion_Date__c,
+                                        buildertek__Original_Start_Date__c,
+                                        buildertek__Original_End_Date__c FROM buildertek__Project__c where id=:projectId];
+
+                    if (schProject.buildertek__Original_Start_Date__c == null && schProject.buildertek__Original_End_Date__c== null) {
+                        schProject.buildertek__Original_Start_Date__c = scheduleList[0].buildertek__Original_Start_Date__c;
+                        schProject.buildertek__Original_End_Date__c = scheduleList[0].buildertek__Original_End_Date__c;
+                        schProject.buildertek__Anticipated_Start_Date__c = scheduleList[0].buildertek__Start_Date__c;
+                        schProject.buildertek__Estimated_Completion_Date__c = scheduleList[0].buildertek__End_Date__c;
+                        update schProject;
+                    }
+                }
+
+                // for(buildertek__Schedule__c scheduleRec:scheduleList){
+                //     if ((scheduleRec.buildertek__Start_Date__c!=null && scheduleRec.buildertek__End_Date__c!=null) && (scheduleRec.buildertek__Original_Start_Date__c==null && scheduleRec.buildertek__Original_End_Date__c==null)){
+                //         scheduleRec.buildertek__Original_Start_Date__c=scheduleRec.buildertek__Start_Date__c;
+                //         scheduleRec.buildertek__Original_End_Date__c=scheduleRec.buildertek__End_Date__c;
+                //     }
+                //     scheduleListNew.add(scheduleRec);
+
+                // }
+                // update scheduleListNew;
+            }
+    }
+
+
 }

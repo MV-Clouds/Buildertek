@@ -167,7 +167,10 @@
     <aura:attribute name="total" type="integer" description="total records count store " />
 
     <!-- Pagination End -->
+    <aura:attribute name="askforFilter" type="Boolean" default="false" />
+    <aura:attribute name="selectedFilter" type="String" />
     <aura:attribute name="openProductBox" type="Boolean" default="false" />
+    <aura:attribute name="openProductBoxwithVendor" type="Boolean" default="false" />
     <aura:attribute name="columns1" type="List" />
     <aura:attribute name="data1" type="Object" />
     <aura:attribute name="listOfSelectedIds" type="List" default="[]" />
@@ -339,9 +342,14 @@
                             </div>
                             <aura:set attribute="else">
                                 <div>
-                                    <lightning:button iconPosition="left" onclick="{!c.addProductFromGroup}"
+                                    <lightning:button iconPosition="left" onclick="{!c.askforFilter}"
                                         label="Add Products" class="sldsButtonGroup" />
                                 </div>&nbsp;
+
+                                <!-- <div>
+                                    <lightning:button iconPosition="left" onclick="{!c.addProductFromVendor}"
+                                        label="Products by vendor" class="sldsButtonGroup" />
+                                </div>&nbsp; -->
 
                                 <div>
                                     <lightning:button aura:id='rejectBtn' disabled="true" iconPosition="left"
@@ -351,7 +359,7 @@
 
 
                                 <div>
-                                <lightning:button iconPosition="left" onclick="{!c.onClickAddlines}" label="Mass Add Line" class="sldsButtonGroup" />
+                                <lightning:button iconPosition="left" onclick="{!c.onClickAddlines}" label="New Quote Lines" class="sldsButtonGroup" />
                             </div>&nbsp;
 
                                 <div>
@@ -1029,7 +1037,7 @@
 
                                                         </div>
                                                         <div class="slds-col slds-size_6-of-12 slds-float_right" style="font-size: 10px; height:1.5rem; width:0px;">
-                                                            <lightning:button variant="neutral" value='{!group.Id}' label="Add Quote Line" name="{!groupIndex}" title="Add Quote Line" class="addBudgetLineStyle" onclick="{!c.addProductFromGroup}" />
+                                                            <lightning:button variant="neutral" value='{!group.Id}' label="Add Quote Line" name="{!groupIndex}" title="Add Quote Line" class="addBudgetLineStyle" onclick="{!c.askforFilter}" />
                                                         </div>
                                                     </div>
                                                     <!-- <div class="slds-grid slds-gutters">
@@ -1131,8 +1139,9 @@
                                                         <td style="text-align:left;">
                                                             <div class="slds-truncate">
                                                                 <span data-id="{!tar.recordId}"
-                                                                    onclick="{!c.onclickDuplicate}">
-                                                                    <lightning:icon iconName="utility:copy"
+                                                                    data-record="{!tar.recordId}"
+                                                                    onclick="{!c.doView}">
+                                                                    <lightning:icon iconName="utility:open"
                                                                         size="xx-small" />
                                                                     &nbsp;
                                                                 </span>
@@ -1304,7 +1313,7 @@
                                                                             </aura:if>
                                                                             <aura:if isTrue="{!value.fieldType == 'string'}">
                                                                                 <aura:if isTrue="{!value.fieldName == 'buildertek__Item_Name__c'}">
-                                                                                    <div class="textAreaDiv">
+                                                                                    <div class="textAreaDiv1">
                                                                                         <lightning:formattedRichText
                                                                                             value="{!value.originalValue}"
                                                                                             class="textAreaCss" />
@@ -1330,7 +1339,7 @@
                                                                                 </aura:if>
                                                                             </aura:if>
                                                                             <aura:if isTrue="{!value.fieldType == 'textarea'}">
-                                                                                <div class="textAreaDiv">
+                                                                                <div class="textAreaDiv1">
                                                                                     <lightning:formattedRichText
                                                                                         value="{!value.originalValue}"
                                                                                         class="textAreaCss" />
@@ -1443,7 +1452,7 @@
                                                 style="font-size: 10px; height:1.5rem;">
                                                 <lightning:button variant="neutral" label="Add Quote Line"
                                                     name="{!groupIndex}" title="Add Quote Line"
-                                                    class="addBudgetLineStyle" onclick="{!c.addProductFromGroup}" />
+                                                    class="addBudgetLineStyle" onclick="{!c.askforFilter}" />
                                             </div>
                                         </aura:if>
                                     </tbody>
@@ -1530,8 +1539,8 @@
                                                         </td>
                                                         <td style="text-align:left;">
                                                             <div class="slds-truncate">
-                                                                <span data-id="{!quoteItem.Id}"  onclick="{!c.onclickDuplicate}">
-                                                                    <lightning:icon iconName="utility:copy" size="xx-small" />
+                                                                <span data-id="{!quoteItem.Id}" data-record="{!quoteItem.Id}" onclick="{!c.doView}">
+                                                                    <lightning:icon iconName="utility:open" size="xx-small" />
                                                                     &nbsp;
                                                                 </span>
                                                                 <span data-id="{!quoteItem.Id}" onclick="{!c.editQuote}">
@@ -1699,8 +1708,8 @@
                                                             </td>
                                                             <td style="text-align:left;">
                                                                 <div class="slds-truncate">
-                                                                    <span data-id="{!quoteItem.Id}" onclick="{!c.onclickDuplicate}">
-                                                                        <lightning:icon iconName="utility:copy" size="xx-small" />
+                                                                    <span data-id="{!quoteItem.Id}" data-record="{!quoteItem.Id}" onclick="{!c.doView}">
+                                                                        <lightning:icon iconName="utility:open" size="xx-small" />
                                                                         &nbsp;
                                                                     </span>
                                                                     <span  data-id="{!quoteItem.Id}" onclick="{!c.editQuote}">
@@ -1900,8 +1909,8 @@
                                                                 </td>
                                                                  <td style="text-align:left;">
                                                                 <div class="slds-truncate">
-                                                                    <span data-id="{!quoteItem.Id}"  onclick="{!c.onclickDuplicate}">
-                                                                        <lightning:icon iconName="utility:copy" size="xx-small" />
+                                                                    <span data-id="{!quoteItem.Id}" data-record="{!quoteItem.Id}" onclick="{!c.doView}">
+                                                                        <lightning:icon iconName="utility:open" size="xx-small" />
                                                                         &nbsp;
                                                                     </span>
                                                                     <span  data-id="{!quoteItem.Id}" onclick="{!c.editQuote}">
@@ -2136,8 +2145,8 @@
                                                                      <td class="blankDiv" > </td>
                                                                     <td style="text-align:left;">
                                                                         <div class="slds-truncate">
-                                                                            <span data-id="{!quoteItem.Id}" onclick="{!c.onclickDuplicate}">
-                                                                                <lightning:icon iconName="utility:copy"  size="xx-small" />
+                                                                            <span data-id="{!quoteItem.Id}" data-record="{!quoteItem.Id}" onclick="{!c.doView}">
+                                                                                <lightning:icon iconName="utility:open"  size="xx-small" />
                                                                                 &nbsp;
                                                                             </span>
                                                                             <span  data-id="{!quoteItem.Id}" onclick="{!c.editQuote}">
@@ -2278,6 +2287,44 @@
                         </section>
                         <div class="slds-backdrop slds-backdrop_open"></div>
                     </aura:if>
+                        
+                        <aura:if isTrue="{!v.askforFilter}">
+                             
+                            <!-- Modal/Popup Box starts here-->
+                            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                                <div class="slds-modal__container">
+                                    <!-- Modal/Popup Box Header Starts here-->
+                                    <header class="slds-modal__header">
+                                        <!-- <lightning:buttonIcon iconName="utility:close"
+                                                              onclick="{! c.closeFilterModal }"
+                                                              alternativeText="close"
+                                                              variant="bare-inverse"
+                                                              class="slds-modal__close"/> -->
+                                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Choose Filter</h2>
+                                    </header>
+                                    <!--Modal/Popup Box Body Starts here-->
+                                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                                        <lightning:select aura:id="select" name="select" label="Select a Filter" value="{!v.selectedFilter}" >
+                                            <option value="PriceBook">PriceBook</option>
+                                            <option value="Vendor">Vendor</option>
+                                        </lightning:select>
+                                    </div>
+                                    <!--Modal/Popup Box Footer Starts here-->
+                                    <footer class="slds-modal__footer">
+                                        <lightning:button variant="neutral"
+                                                          label="Cancel"
+                                                          title="Cancel"
+                                                          onclick="{!c.closeFilterModal }"/>
+                                        <lightning:button variant="brand"
+                                                          label="Next"
+                                                          title="Next"
+                                                          onclick="{!c.onSelectChange}"/>
+                                    </footer>
+                                </div>
+                            </section>
+                            <div class="slds-backdrop slds-backdrop_open"></div>
+                        </aura:if>
+
                     <aura:if isTrue="{!v.openProductBox}">
                         <aura:html tag="style">
 
@@ -2288,6 +2335,17 @@
                         </aura:html>
                             <c:Add_QuoteLine_In_Quote getPhase="{!v.phaseName}" quoteId="{!v.recordId}" openProductBox="{!v.openProductBox}" />
 
+                    </aura:if>
+
+                    <aura:if isTrue="{!v.openProductBoxwithVendor}">
+                        <aura:html tag="style">
+
+                            .slds-modal__container{
+                            width: 80% !important;
+                            }
+
+                        </aura:html>
+                            <c:Add_QuoteLine_from_Vendor quoteId="{!v.recordId}" openProductBoxwithVendor="{!v.openProductBoxwithVendor}" />
                     </aura:if>
 
                     <aura:if isTrue="{!v.openQuoteLineBox}">

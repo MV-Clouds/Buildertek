@@ -32,6 +32,20 @@ public without sharing class importScheduleLineController {
         }
 
         String businessHourId = [SELECT Id, IsDefault, IsActive FROM BusinessHours WHERE IsDefault = true LIMIT 1].Id;
+        
+        Map<String, buildertek__Cost_Codes__c> existingCostCodeMap = new Map<String, buildertek__Cost_Codes__c>();
+        List<buildertek__Cost_Codes__c> costCodeList =  [SELECT Id, Name FROM buildertek__Cost_Codes__c];
+        for (buildertek__Cost_Codes__c costCodeRec : costCodeList) {
+            existingCostCodeMap.put(costCodeRec.Name, costCodeRec);
+        }
+        System.debug('existingCostCodeMap: ' + existingCostCodeMap);
+        
+        Map<String, buildertek__Trade_Type__c> existingTradeTypeMap = new Map<String, buildertek__Trade_Type__c>();
+        List<buildertek__Trade_Type__c> tradeTypeList =  [SELECT Id, Name FROM buildertek__Trade_Type__c];
+        for (buildertek__Trade_Type__c tradeTypeRec : tradeTypeList) {
+            existingTradeTypeMap.put(tradeTypeRec.Name, tradeTypeRec);
+        }
+        System.debug('existingTradeTypeMap: ' + existingTradeTypeMap);
 
         for (fieldWrapper wrapper : datalist){
             if (wrapper.Name != null && String.isNotBlank(wrapper.Name)){
@@ -47,6 +61,16 @@ public without sharing class importScheduleLineController {
                 schItem.buildertek__Full_Name__c = wrapper.Name;
                 schItem.buildertek__Schedule__c = recordId;
                 schItem.buildertek__Completion__c = wrapper.percentComplete;
+                System.debug('CostCode: ' + wrapper.costCode);
+                if (wrapper.costCode != null && String.isNotBlank(wrapper.costCode) && existingCostCodeMap.containsKey(wrapper.costCode)) {
+                    schItem.buildertek__Cost_Code__c = existingCostCodeMap.get(wrapper.costCode).Id;
+                    System.debug('CostCode: Mapped Value' + existingCostCodeMap.get(wrapper.costCode).Id);
+                }
+
+                if (wrapper.tradeType != null && String.isNotBlank(wrapper.tradeType) && existingTradeTypeMap.containsKey(wrapper.tradeType)) {
+                    schItem.buildertek__Trade_Type__c = existingTradeTypeMap.get(wrapper.tradeType).Id;
+                    System.debug('TradeType: Mapped Value' + existingTradeTypeMap.get(wrapper.tradeType).Id);
+                }
 
                 Date startDate = system.today();
 
@@ -57,11 +81,11 @@ public without sharing class importScheduleLineController {
                 }
 
                 if (String.isEmpty(wrapper.Dependency) && String.isBlank(wrapper.Dependency)) {
-                    startDate = Date.valueOf(Date.valueOf(wrapper.StartDate);
+                    startDate = Date.valueOf(Date.valueOf(wrapper.StartDate));
                 }
 
                 if (String.isEmpty(wrapper.Dependency) && String.isBlank(wrapper.Dependency)) {
-                    startDate = Date.valueOf(wrapper.StartDate));
+                    startDate = Date.valueOf(wrapper.StartDate);
                 }
 
                 // if (wrapper.StartDate != null) {
@@ -198,6 +222,8 @@ public without sharing class importScheduleLineController {
         public String Phase;
         public String Notes;
         public String Lag;
+        public String costCode;
+        public String tradeType;
     }
 
 }

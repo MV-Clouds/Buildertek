@@ -173,7 +173,10 @@
         helper.getGroupingLevels(component, event, helper);
 
         helper.applyCSSBasedOnURL(component);
+        helper.getCostCodes(component, event, helper);
+        helper.getFieldsFromFieldset(component, event, helper);
 
+        helper.getFieldsFromFieldset(component, event, helper);
     },
 
     checkToogle: function (component, event, helper) {
@@ -348,6 +351,7 @@
         component.set('v.newBudgetLine.buildertek__Unit_Price__c', '');
         component.set('v.newBudgetLine.buildertek__Sales_Price__c', '');
         component.set('v.newBudgetLine.buildertek__Markup__c', '');
+        component.set('v.newBudgetLine.buildertek__Cost_Code__c', '');
     },
 
     onContingency: function (component, event, helper) {
@@ -2214,8 +2218,8 @@ helper.getProductDetails(component,event,helper);
                         var url = location.href;
                         var baseURL = url.substring(0, url.indexOf('/', 14));
                         var result = respo.getReturnValue();
-                        var group = component.find('costCodeId');
-                        group.set("v._text_value", '');
+                        // var group = component.find('costCodeId');
+                        // group.set("v._text_value", '');
                         var costCode = component.find('groupId');
                         costCode.set("v._text_value", '');
                         var product = component.get('v.selectedLookUpRecord');
@@ -4803,7 +4807,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                             var toastEvent = $A.get("e.force:showToast");
                             toastEvent.setParams({
                                 type: 'ERROR',
-                                message: 'You are trying to add Invoice which has contentDisburshment associated with it.',
+                                message: 'You are trying to add Invoice which has Cash Disburshment associated with it.',
                                 duration: '5000',
                             });
                             toastEvent.fire();

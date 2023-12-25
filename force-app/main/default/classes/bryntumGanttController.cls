@@ -13,7 +13,8 @@ public with sharing class bryntumGanttController {
 
         String strQuery = 'SELECT ';
 
-        strQuery += 'Id,Name,buildertek__Type__c,buildertek__Indent_Task__c,buildertek__Completed__c, buildertek__Reference_for_Import__c,buildertek__Lag__c,buildertek__Schedule__c,buildertek__Budget__c,buildertek__ConstraintType__c,buildertek__ConstraintDate__c,buildertek__DependencyStatus__c,buildertek__Add_To_All_Active_Schedules__c,buildertek__Notes__c,buildertek__Schedule__r.Name,buildertek__Schedule__r.buildertek__Description__c,buildertek__Start__c,buildertek__Finish__c,buildertek__Duration__c,buildertek__Contractor__c,buildertek__Contractor__r.Name,buildertek__Phase__c,buildertek__task_color__c,buildertek__Completion__c, buildertek__Dependency__c,buildertek__Dependency__r.Name,buildertek__Contractor_Resource__c,buildertek__Contractor_Resource__r.Name,buildertek__Resource__c, buildertek__Resource__r.Name,buildertek__Contractor_Resource_1__c,buildertek__Contractor_Resource_1__r.Name,buildertek__Contractor_Resource_2__c,buildertek__Contractor_Resource_2__r.Name,buildertek__Contractor_Resource_3__c,buildertek__Contractor_Resource_3__r.Name,buildertek__Internal_Resource_1__c,buildertek__Internal_Resource_1__r.Name,buildertek__Internal_Resource_3__c,buildertek__Internal_Resource_3__r.Name,buildertek__Internal_Resource_4__c,buildertek__Internal_Resource_4__r.Name,buildertek__Milestone__c,buildertek__Order__c,buildertek__Budget_Line__c,CreatedDate FROM buildertek__Project_Task__c where buildertek__Schedule__c = :  scheduleid Order By buildertek__Order__c NULLS LAST,CreatedDate';
+        strQuery += 'Id,Name,buildertek__Type__c,buildertek__Manually_Scheduled__c,buildertek__BT_Grouping__c,buildertek__BT_Grouping__r.Name,buildertek__BT_Phase3__c,buildertek__BT_Phase3__r.Name, buildertek__Indent_Task__c,buildertek__Completed__c, buildertek__Reference_for_Import__c,buildertek__Lag__c,buildertek__Schedule__c,buildertek__Budget__c,buildertek__ConstraintType__c,buildertek__ConstraintDate__c,buildertek__DependencyStatus__c,buildertek__Add_To_All_Active_Schedules__c,buildertek__Notes__c,buildertek__Schedule__r.Name,buildertek__Schedule__r.buildertek__Description__c,buildertek__Start__c,buildertek__Finish__c,buildertek__Duration__c,buildertek__Contractor__c,buildertek__Contractor__r.Name,buildertek__Phase__c,buildertek__task_color__c,buildertek__Completion__c, buildertek__Dependency__c,buildertek__Dependency__r.Name,buildertek__Contractor_Resource__c,buildertek__Contractor_Resource__r.Name,buildertek__Resource__c, buildertek__Resource__r.Name,buildertek__Contractor_Resource_1__c,buildertek__Contractor_Resource_1__r.Name,buildertek__Contractor_Resource_2__c,buildertek__Contractor_Resource_2__r.Name,buildertek__Contractor_Resource_3__c,buildertek__Contractor_Resource_3__r.Name,buildertek__Internal_Resource_1__c,buildertek__Internal_Resource_1__r.Name,buildertek__Internal_Resource_3__c,buildertek__Internal_Resource_3__r.Name,buildertek__Internal_Resource_4__c,buildertek__Internal_Resource_4__r.Name,buildertek__Milestone__c,buildertek__Order__c,buildertek__Budget_Line__c,CreatedDate FROM buildertek__Project_Task__c where buildertek__Schedule__c = : scheduleid Order By  buildertek__Phase__c, buildertek__BT_Grouping__c, buildertek__BT_Phase3__c';
+
         //CreatedDate//Order by buildertek__Milestone__c , Order__c ASC NULLS LAST, Auto_Number__c ASC
         system.debug('strQuery---' + strQuery);
 
@@ -306,7 +307,7 @@ public with sharing class bryntumGanttController {
     }
 
     @AuraEnabled
-    public static String upsertDataOnSaveChanges(String scheduleRecordStr, String taskRecordsStr, List<String> listOfRecordsToDelete, Map<String, String> childParentMap, Map<String, Object> projectTaskMap){
+    public static String upsertDataOnSaveChanges(String scheduleRecordStr, String taskRecordsStr, List<String> listOfRecordsToDelete, Map<String, String> childParentMap, Map<String, Object> projectTaskMap, Boolean updateorginaldates, Id scheduleid){
         String msg;
         buildertek__Schedule__c scheduleRecord = (buildertek__Schedule__c)System.JSON.deserialize(scheduleRecordStr, buildertek__Schedule__c.class);
         List<buildertek__Project_Task__c> taskRecords = (List<buildertek__Project_Task__c>)System.JSON.deserialize(taskRecordsStr, List<buildertek__Project_Task__c>.class);
@@ -348,6 +349,12 @@ public with sharing class bryntumGanttController {
             }
             ProjectTaskTriggerHandler.blnSkipTaskTrigger = false;
             msg = 'Success';
+            if(updateorginaldates){
+                System.debug('updateorignaldates:- '+updateorginaldates);
+                System.debug('scheduleid:- '+scheduleid);
+                futureContoller.updateScheduleRec(scheduleid);
+                futureContoller.updateProjectOnSchedule(scheduleid);
+            }
         } catch (Exception e) {
 
             System.debug('Exception e '+e);
@@ -422,7 +429,7 @@ public with sharing class bryntumGanttController {
 
         Map<Id, buildertek__Project_Task__c> projectInsertTaskMap = new Map<Id, buildertek__Project_Task__c>();
 
-        List<buildertek__Project_Task__c> masterScheduleList = new List<buildertek__Project_Task__c>([select Id, Name, buildertek__Start__c,buildertek__Contractor__c,buildertek__Phase__c, buildertek__Schedule__c,buildertek__Dependency__r.Name, buildertek__Dependency__r.buildertek__Schedule__c, buildertek__Completed__c, buildertek__Completion__c, buildertek__Contractor_Resource__c, buildertek__Type__c,buildertek__Cost_Code__c, buildertek__Duration__c, buildertek__Finish__c, buildertek__Resource__c, buildertek__Lag__c, buildertek__Last_Saved_End_Date__c, buildertek__Last_Saved_Start_Date__c, buildertek__Material_Ordered__c, buildertek__Material_Received__c, buildertek__Milestone__c, buildertek__Notes__c, buildertek__Order__c, buildertek__Original_End_Date__c, buildertek__Original_Start_Date__c, buildertek__Payable_Task__c, buildertek__Project__c, buildertek__Purchase_Order__c, buildertek__Reason_for_Date_Change__c, buildertek__Reason_for_Date_Change_PL__c, buildertek__Required_Completion_Date__c  from buildertek__Project_Task__c where buildertek__Schedule__c = :masterId  ORDER BY buildertek__Order__c ASC NULLS LAST]);
+        List<buildertek__Project_Task__c> masterScheduleList = new List<buildertek__Project_Task__c>([Select Id, Name, buildertek__Start__c,buildertek__Contractor__c,buildertek__Phase__c, buildertek__Schedule__c,buildertek__Dependency__r.Name, buildertek__Dependency__r.buildertek__Schedule__c, buildertek__Completed__c, buildertek__Completion__c, buildertek__Contractor_Resource__c, buildertek__Type__c,buildertek__Cost_Code__c, buildertek__Duration__c, buildertek__Finish__c, buildertek__Resource__c, buildertek__Lag__c, buildertek__Last_Saved_End_Date__c, buildertek__Last_Saved_Start_Date__c, buildertek__Material_Ordered__c, buildertek__Material_Received__c, buildertek__Milestone__c, buildertek__Notes__c, buildertek__Order__c, buildertek__Original_End_Date__c, buildertek__Original_Start_Date__c, buildertek__Payable_Task__c, buildertek__Project__c, buildertek__Purchase_Order__c, buildertek__Reason_for_Date_Change__c, buildertek__Reason_for_Date_Change_PL__c, buildertek__Required_Completion_Date__c, buildertek__Trade_Type__c, buildertek__BT_Grouping__c from buildertek__Project_Task__c where buildertek__Schedule__c = :masterId  ORDER BY buildertek__Order__c ASC NULLS LAST]);
 
         System.debug('masterScheduleList: ' + masterScheduleList);
 
@@ -467,6 +474,9 @@ public with sharing class bryntumGanttController {
                 newSchItem.buildertek__Required_Completion_Date__c = Masterscheduleitem.buildertek__Required_Completion_Date__c;
                 newSchItem.buildertek__Schedule__c = recordId;
                 newSchItem.buildertek__Reference_for_Import__c = Masterscheduleitem.Id;
+                newSchItem.buildertek__Cost_Code__c = Masterscheduleitem.buildertek__Cost_Code__c;
+                newSchItem.buildertek__Trade_Type__c = Masterscheduleitem.buildertek__Trade_Type__c;
+                newSchItem.buildertek__BT_Grouping__c = Masterscheduleitem.buildertek__BT_Grouping__c;
 
                 newSchItem.Name = Masterscheduleitem.Name;
                 buildertek__Project_Task__c newSchItemClone = newSchItem.Clone(false, true);
@@ -486,6 +496,10 @@ public with sharing class bryntumGanttController {
         ProjectTaskTriggerHandler.blnSkipTaskTrigger = true;
         update projectInsertTaskMap.values();
         ProjectTaskTriggerHandler.blnSkipTaskTrigger = false;
+
+        futureContoller.updateScheduleRec(recordId);
+        futureContoller.updateProjectOnSchedule(recordId);
+
 
     }
 
@@ -523,15 +537,29 @@ public with sharing class bryntumGanttController {
     @AuraEnabled
     public static String changeOriginalDates(String recordId){
         try{
-            List<buildertek__Project_Task__c> scheduleTaskList = [SELECT Id, Name, buildertek__Start__c, buildertek__Finish__c, buildertek__Original_Start_Date__c, buildertek__Original_End_Date__c
+            List<buildertek__Project_Task__c> scheduleTaskList = [SELECT Id, Name, buildertek__Project__c,buildertek__Schedule__r.buildertek__Original_Start_Date__c,buildertek__Schedule__r.buildertek__Original_End_Date__c, buildertek__Start__c, buildertek__Finish__c, buildertek__Original_Start_Date__c, buildertek__Original_End_Date__c
                                                                   FROM buildertek__Project_Task__c
                                                                   WHERE buildertek__Schedule__c = :recordId
                                                                   FOR  UPDATE ];
-            for (buildertek__Project_Task__c st : scheduleTaskList){
-                st.buildertek__Original_Start_Date__c = st.buildertek__Start__c;
-                st.buildertek__Original_End_Date__c = st.buildertek__Finish__c;
+            if (scheduleTaskList.size() > 0) {
+
+                for (buildertek__Project_Task__c st : scheduleTaskList){
+                    st.buildertek__Original_Start_Date__c = st.buildertek__Start__c;
+                    st.buildertek__Original_End_Date__c = st.buildertek__Finish__c;
+                }
+
+                update scheduleTaskList;
+
+                if (scheduleTaskList[0].buildertek__Project__c != null) {
+                    buildertek__Project__c taskProject = new buildertek__Project__c();
+                    taskProject.Id = scheduleTaskList[0].buildertek__Project__c;
+                    taskProject.buildertek__Original_Start_Date__c = scheduleTaskList[0].buildertek__Schedule__r.buildertek__Original_Start_Date__c;
+                    taskProject.buildertek__Original_End_Date__c = scheduleTaskList[0].buildertek__Schedule__r.buildertek__Original_End_Date__c;
+                    ProjectTaskTriggerHandler.blnSkipTaskTrigger = true;
+                    update taskProject;
+                    ProjectTaskTriggerHandler.blnSkipTaskTrigger = false;
+                }
             }
-            update scheduleTaskList;
             return 'Success';
 
         } catch (Exception e){

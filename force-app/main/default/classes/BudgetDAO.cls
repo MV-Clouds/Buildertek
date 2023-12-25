@@ -685,7 +685,7 @@ Throws [Exceptions]:
 
         list<PricebookEntry> pList;
 
-        pList = [select id, UnitPrice, buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Discount__c
+        pList = [select id, UnitPrice, buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Discount__c, Product2.buildertek__Cost_Code__c
                 from PricebookEntry
                 where product2Id = :productId and pricebook2Id =: pricebookId];
 
@@ -829,7 +829,7 @@ budgetRec.buildertek__Budget_Line_Group__c = budGroup.Id;
             allFields.add('buildertek__CostCodeDivision__c');
             allFields.add('buildertek__Cost_Code__c');
             allFields.add('buildertek__Cost_Code__r.Name');
-            if(!allFields.contains('buildertek__Contractor__r.Name')){
+            if(allFields.contains('buildertek__Contractor__c')){
                 allFields.add('buildertek__Contractor__c');
                 allFields.add('buildertek__Contractor__r.Name');
                 fieldsType += '{"fieldName": "buildertek__Contractor__c","fieldType": "Reference","isEditable": false},';
@@ -3171,7 +3171,7 @@ buildertek__Budget__c budgetCopy = Database.query(query);*/
         list<buildertek__Account_Payable__c> invoicePoToUpdate = new list<buildertek__Account_Payable__c>();
         list<buildertek__Payment__c> cashDisburshment = [SELECT Id, buildertek__Payable__c FROM buildertek__Payment__c WHERE buildertek__Payable__c IN: invoicePoList];  // Changes for BUIL-3498 START
         System.debug('cashDisburshment -- SIZE---->' + cashDisburshment.size()); 
-        if(invoicePoList.size() > 0 && cashDisburshment.size() == 0){  
+        // if(invoicePoList.size() > 0 && cashDisburshment.size() == 0){   // Changes for BUIL-3675 --> commnent by Brian to disable RestrictToUpdateCashDisbursement Functionality...
             list<buildertek__Account_Payable__c> invPoList = [SELECT Id, Name FROM buildertek__Account_Payable__c WHERE Id IN : invoicePoList];
             for(buildertek__Account_Payable__c invoicePo : invPoList){
                 invoicePo.buildertek__Budget__c = BudgetId;
@@ -3179,10 +3179,10 @@ buildertek__Budget__c budgetCopy = Database.query(query);*/
             }
                 update invoicePoToUpdate;
             return 'Successs';
-        }else if (cashDisburshment.size() > 0) {
-            return 'HasDisburshment';
-        } // Changes for BUIL-3498 END
-        return null;
+        // }else if (cashDisburshment.size() > 0) {
+        //     return 'HasDisburshment';
+        // } // Changes for BUIL-3498 END
+        // return null;
     }
 
     @AuraEnabled
@@ -3281,6 +3281,23 @@ buildertek__Budget__c budgetCopy = Database.query(query);*/
         public Integer total{ get; set; }
     }
 
+    public class fieldsetWrapper {
+        @AuraEnabled
+        public String fieldLabel;
+
+        @AuraEnabled
+        public String fieldType;
+        
+        @AuraEnabled
+        public Object fieldValue;
+
+        public fieldsetWrapper(String label,String fieldType,Object value) {
+            fieldLabel = label;
+            this.fieldType = fieldType;
+            fieldValue = value;
+        }
+    }
+
     @AuraEnabled
     public static List<String> groupingLevels(){
         buildertek__Admin_Interface_Node_Configuration__c adminInterfaceNodeConfigurations = [Select Id, buildertek__Budget_Grouping_Level_1__c,
@@ -3300,7 +3317,51 @@ buildertek__Budget__c budgetCopy = Database.query(query);*/
         return groupingLevels;
     }   
 
+    @AuraEnabled
+    public static List<buildertek__Cost_Codes__c> getCostCodes(){
+        List<buildertek__Cost_Codes__c> costCodes = [SELECT Id, Name FROM buildertek__Cost_Codes__c ORDER BY Name ASC];
+        return costCodes;
+    }
 
+    // * Return list of wrapper class to display fields from fieldset in view budget line 
+    @AuraEnabled
+    public static List<fieldsetWrapper> getFieldsFromFieldset(String budgetId) {
+        List<fieldsetWrapper> fieldsetWrapperList = new List<fieldsetWrapper>();
+        String ObjectName = 'buildertek__Budget__c';
+        String fieldSetName = 'buildertek__Budget_Compact_Layout';
+        Map<String, Schema.SObjectType> GlobalDescribeMap = Schema.getGlobalDescribe(); 
+        
+        Schema.SObjectType SObjectTypeObj = GlobalDescribeMap.get(ObjectName);
+        Schema.DescribeSObjectResult DescribeSObjectResultObj = SObjectTypeObj.getDescribe();
+        Schema.FieldSet fieldSetObj = DescribeSObjectResultObj.FieldSets.getMap().get(fieldSetName);
+        
+        List<Schema.FieldSetMember> fieldSetMemberList = fieldSetObj.getFields();
+    
+        String query = 'SELECT ';
+        for (Schema.FieldSetMember fieldSetMemberObj : fieldSetMemberList) {
+            query += fieldSetMemberObj.getFieldPath() + ', ';
+        }
+        query = query.removeEnd(', ');
+        query += ' FROM buildertek__Budget__c WHERE Id = :budgetId';
+        
+        List<buildertek__Budget__c> records = Database.query(query);
+       
+        
+        buildertek__Budget__c budgetRecord = records[0];
+        
+        for (Schema.FieldSetMember fieldSetMemberObj : fieldSetMemberList) {
+            String fieldLabel = fieldSetMemberObj.getLabel();
+            String fieldPath = fieldSetMemberObj.getFieldPath();
+            String fieldType = String.valueOf(fieldSetMemberObj.getType());
+            fieldsetWrapper conWrapper = new fieldsetWrapper(fieldLabel, fieldType, budgetRecord.get(fieldPath));
+            fieldsetWrapperList.add(conWrapper);
+            System.debug('conWrapper: ' + conWrapper.fieldLabel);
+        }
+
+        System.debug('fieldsetWrapperList: ' + fieldsetWrapperList);
+
+        return fieldsetWrapperList;
+    }
 
 
 }

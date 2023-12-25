@@ -259,7 +259,7 @@
 .THIS .rkclass{
     display: flex;
     flex-direction: row;
-    gap: 25px;
+    gap: 3vw;
 }
 .THIS .rkclasses{
     display: flex;
@@ -333,7 +333,10 @@
 }
 .THIS .textAreaDiv{
     width: 200px;
-
+}
+.THIS .textAreaDiv1{
+    max-width: 22rem;
+    width: max-content;
 }
 
 .THIS .tableRow {
@@ -349,4 +352,10 @@
 .THIS .rkbudclass{
     height: fit-content !important; 
     max-height: 70vh !important;
+}
+.THIS .hidelabel .slds-form-element__label{
+    display: none !important;
+}
+.THIS .hidelabel .slds-select{
+    height: 35px !important;
 }

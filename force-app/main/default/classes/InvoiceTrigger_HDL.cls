@@ -74,16 +74,16 @@ public with sharing class InvoiceTrigger_HDL {
     System.debug('Inside onBeforeUpdate');
         Map<String, buildertek__Budget_Item__c> MapToUpte = new  Map<String, buildertek__Budget_Item__c>();
         String BLGroupID;
-        list<buildertek__Budget_Line_Group__c> BLGroup = [SELECT Id, Name FROM buildertek__Budget_Line_Group__c WHERE Name LIKE '%Sales Invoice%'];
-            // Check is Buddget line group with name sales invoice is avialable or on if not abailabe it will create new
-            if (BLGroup.size() == 0){
+        list<buildertek__Budget_Line_Group__c> BLGroup = [SELECT Id, Name FROM buildertek__Budget_Line_Group__c WHERE Name = 'Sales Invoice'];
+            if (BLGroup.size() != 0){
+                System.debug('Budget Line Group is available');
+                BLGroupID = BLGroup[0].Id;
+            } else {
                 System.debug('Create Budgt Line Group');
                 buildertek__Budget_Line_Group__c BLG = new buildertek__Budget_Line_Group__c(Name = 'Sales Invoice');
                 insert BLG;
 
                 BLGroupID = BLG.Id;
-            } else {
-                BLGroupID = BLGroup[0].Id;
             }
         for(buildertek__Billings__c sl : newInvoiceList){
             if(oldInvoiceMap.get(sl.Id).buildertek__Budget__c == null && sl.buildertek__Budget__c != oldInvoiceMap.get(sl.Id).buildertek__Budget__c){

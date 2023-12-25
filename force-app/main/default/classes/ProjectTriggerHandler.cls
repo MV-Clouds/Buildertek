@@ -32,7 +32,7 @@ public with sharing class ProjectTriggerHandler {
 
 
     public void OnAfterInsert(Project__c[] newProjects, Map<ID, Project__c> newProjectsMap, Project__c[] oldProjects, Project__c[] updatedProjects, Map<ID, Project__c> ProjectMap, Map<Id, Project__c> oldProjectsMap){
-        
+
         for(Project__c project: newProjects){
 
             if(project.Master_Project__c != null) {
@@ -115,8 +115,8 @@ public with sharing class ProjectTriggerHandler {
             }
 
             if(project.Source_Project__c != null){
-                
-                /** 
+
+                /**
                 List<String> selectedITems = project.Source_Project__c.split('~');
                 String projectId = selectedITems[0];
                 if(selectedITems.size() > 1)
@@ -244,9 +244,9 @@ public with sharing class ProjectTriggerHandler {
         try {
             projectCloneController(newProjects, newProjectsMap);
         } catch (Exception e) {
-            System.debug('Error Message => '+e.getMessage()); 
+            System.debug('Error Message => '+e.getMessage());
             System.debug('Error Line no => '+e.getLineNumber());
-            newProjects[0].Id.addError('projectCloneController Method Error => '+e.getMessage());		
+            newProjects[0].Id.addError('projectCloneController Method Error => '+e.getMessage());
         }
 
     }
@@ -353,8 +353,8 @@ public with sharing class ProjectTriggerHandler {
 
                     // newProj.buildertek__Actual_Start__c = sch.buildertek__Start_Date__c;
                     //  newProj.buildertek__Actual_Completion_Date__c = sch.buildertek__End_Date__c;
-                    newProj.buildertek__Original_Start_Date__c = sch.buildertek__Original_Start_Date__c;
-                    newProj.buildertek__Original_End_Date__c= sch.buildertek__Original_End_Date__c;
+                    // newProj.buildertek__Original_Start_Date__c = sch.buildertek__Original_Start_Date__c;
+                    // newProj.buildertek__Original_End_Date__c= sch.buildertek__Original_End_Date__c;
                     //if(proj.buildertek__Project_Completion__c > 1){
                     // newProj.buildertek__Actual_Start__c = sch.buildertek__Start_Date__c;
                     // }
@@ -527,7 +527,7 @@ public with sharing class ProjectTriggerHandler {
             // BUIL-3488 Changes
             List<buildertek__Permit_Line__c> permitLineList = [SELECT Id, Name,buildertek__Description__c,buildertek__Status__c, buildertek__Permit_Owner__c, buildertek__Notes__c, buildertek__Municipality__c, buildertek__Municipality_Contact__c, buildertek__BT_Permit__c From buildertek__Permit_Line__c WHERE buildertek__BT_Permit__c=:permitMap.keySet()];
             List<buildertek__Permit_Line__c> clonePermitLineList = new List<buildertek__Permit_Line__c>();
-           
+
             for (buildertek__Permit_Line__c originalPermitLine : permitLineList) {
                     buildertek__Permit_Line__c clonePermitLine = originalPermitLine.clone(false, true, false, false);
                     clonePermitLine.buildertek__BT_Permit__c = permitMap.get(originalPermitLine.buildertek__BT_Permit__c).Id;
@@ -543,7 +543,7 @@ public with sharing class ProjectTriggerHandler {
 
     // Method added by sakina
     public void dummyMethod(List<buildertek__Project__c> newProjects){
-        
+
         Map<Id,String> sourceValueMap= new  Map<Id,String>();
         Map<Id,List<String>> srcProjSelectedObj = new  Map<Id,List<String>>();
 
@@ -560,7 +560,7 @@ public with sharing class ProjectTriggerHandler {
             if(proj.Source_Project__c!= null){
                 // map of new project Id and source project value
                 sourceValueMap.put(proj.Id, proj.Source_Project__c);
-            }    
+            }
         }
 
         System.debug('sourceValueMap'+sourceValueMap);
@@ -581,13 +581,13 @@ public with sharing class ProjectTriggerHandler {
                     // selectedObjectsToProjectIds.put(projectId,objectName);
 
                 }
-                
+
                 selectedObjectsToProjectIds.get(objectName).add(projectId);
-            }        
-            
+            }
+
         }
         System.debug('selectedObjectsToProjectIds'+selectedObjectsToProjectIds);
-    
+
 
     }
 
@@ -619,7 +619,7 @@ public with sharing class ProjectTriggerHandler {
                     }
                     sourceObjectMap.put(selectedItems[0], selectedObject);
                 }
-            }    
+            }
         }
 
         ProjectTriggerHandler.sourceObjectsMap = sourceObjectMap;
@@ -627,7 +627,7 @@ public with sharing class ProjectTriggerHandler {
         ProjectTriggerHandler.sourceProjectIdsSet = sourceProjectIds;
 
         for (String objName : objectSet) {
-            
+
             if(objName == 'Purchase Order') {
                 CloneAny(objName, 'buildertek__Purchase_Order__c', 'buildertek__Purchase_Order_Item__c');
             }
@@ -664,26 +664,28 @@ public with sharing class ProjectTriggerHandler {
                 CloneAny(objName, 'buildertek__Selection__c', 'buildertek__Section__c');
             }
 
+            if(objName == 'Project Vendors') {
+                CloneAny(objName, 'buildertek__Project_Vendors__c', '');
+            }
         }
-
     }
 
 
     public static void CloneAny(String objName, String objAPI, String childObjAPI){
-        
+
         System.debug('CloneAny Method');
         System.debug('objName ==> '+objName);
 
         Set<String> sourceProjectIds = ProjectTriggerHandler.sourceProjectIdsSet;
         Map<String, String> sourceToProjectMap = ProjectTriggerHandler.sourceToProjectIdsMap;
         Map<String, List<String>> sourceObjectMap = ProjectTriggerHandler.sourceObjectsMap;
+        string qryStr = (objName == 'Project Vendors') ? prepareQuery(objAPI, 'buildertek__BT_Project__c', sourceProjectIds) : prepareQuery(objAPI, 'buildertek__Project__c', sourceProjectIds);
 
-        string qryStr = prepareQuery(objAPI, 'buildertek__Project__c', sourceProjectIds);
         List<SObject> sobjListToClone = database.query(qryStr);
 
         List<SObject> newSobjListToClone = database.query(qryStr);
         for (SObject sObj : sobjListToClone) {
-            String oldProjectId = String.valueOf(sObj.get('buildertek__Project__c'));
+            String oldProjectId = (objName == 'Project Vendors') ? String.valueOf(sObj.get('buildertek__BT_Project__c')) : String.valueOf(sObj.get('buildertek__Project__c'));
             if (sourceObjectMap.get(oldProjectId).contains(objName)) {
                 newSobjListToClone.add(sObj);
             }
@@ -691,10 +693,14 @@ public with sharing class ProjectTriggerHandler {
 
         Map<String, SObject> cloneSObjList = new Map<String, SObject>();
         for (SObject sObj : newSobjListToClone) {
-            String oldProjectId = String.valueOf(sObj.get('buildertek__Project__c'));
+            String oldProjectId = (objName == 'Project Vendors') ? String.valueOf(sObj.get('buildertek__BT_Project__c')) : String.valueOf(sObj.get('buildertek__Project__c'));
             SObject obj = sobj.clone(false, true);
 
-            obj.put('buildertek__Project__c', sourceToProjectMap.get(oldProjectId));
+            if (objName == 'Project Vendors') {
+                obj.put('buildertek__BT_Project__c', sourceToProjectMap.get(oldProjectId));
+            } else {
+                obj.put('buildertek__Project__c', sourceToProjectMap.get(oldProjectId));
+            }
             cloneSObjList.put(sobj.Id, obj);
         }
 
@@ -714,9 +720,9 @@ public with sharing class ProjectTriggerHandler {
             for (SObject sObj : cloneSObjList.values()){
                 parentMap.put(String.valueOf(sObj.Id), String.valueOf(sObj.get('buildertek__Warranty__c')));
                 sObj.put('buildertek__Warranty__c', null);
-    
+
                 SObject obj = sobj.clone(false, true);
-    
+
                 warrantyMap.put(String.valueOf(sObj.Id), obj);
             }
             insert warrantyMap.values();
@@ -745,74 +751,75 @@ public with sharing class ProjectTriggerHandler {
             insert cloneSObjList.values();
         }
 
+        if (String.isNotBlank(childObjAPI)) {
+            String childQry = prepareQuery(childObjAPI, objAPI, cloneSObjList.keySet());
+            System.debug('childQry ==> '+childQry);
+            List<SObject> childSobjList = database.query(childQry);
+            System.debug('childSobjList ==> '+childSobjList);
 
-        String childQry = prepareQuery(childObjAPI, objAPI, cloneSObjList.keySet());
-        System.debug('childQry ==> '+childQry);
-        List<SObject> childSobjList = database.query(childQry);
-        System.debug('childSobjList ==> '+childSobjList);
+            List<SObject> cloneChildRec= new List<SObject>();
 
-        List<SObject> cloneChildRec= new List<SObject>();
+            if (childObjAPI == 'buildertek__Project_Task__c') {
 
-        if (childObjAPI == 'buildertek__Project_Task__c') {
+                Map<String, String> predecessorMap = new Map<String, String>();
+                Map<String, SObject> scheduleTaskMap = new Map<String, SObject>();
 
-            Map<String, String> predecessorMap = new Map<String, String>();
-            Map<String, SObject> scheduleTaskMap = new Map<String, SObject>();
+                for (SObject sObj : childSobjList){
+                    predecessorMap.put(String.valueOf(sObj.Id), String.valueOf(sObj.get('buildertek__Dependency__c')));
+                    sObj.put('buildertek__Dependency__c', null);
 
-            for (SObject sObj : childSobjList){
-                predecessorMap.put(String.valueOf(sObj.Id), String.valueOf(sObj.get('buildertek__Dependency__c')));
-                sObj.put('buildertek__Dependency__c', null);
+                    String oldParentId = String.valueOf(sObj.get(objAPI));
+                    SObject obj = sobj.clone(false, true);
+                    obj.put(objAPI, cloneSObjList.get(oldParentId).Id);
 
-                String oldParentId = String.valueOf(sObj.get(objAPI));
-                SObject obj = sobj.clone(false, true);
-                obj.put(objAPI, cloneSObjList.get(oldParentId).Id);
+                    scheduleTaskMap.put(String.valueOf(sObj.Id), obj);
+                }
 
-                scheduleTaskMap.put(String.valueOf(sObj.Id), obj);
-            }
+                if (scheduleTaskMap.size() > 0) {
+                    insert scheduleTaskMap.values();
 
-            if (scheduleTaskMap.size() > 0) {
-                insert scheduleTaskMap.values();
+                    Map<String, String> newPredecessorMap = new Map<String, String>();
+                    for (String taskId : predecessorMap.keySet()) {
+                        if (predecessorMap.get(taskId) != null) {
+                            String newTaskId = scheduleTaskMap.get(taskId).Id;
+                            String newParentId = scheduleTaskMap.get(predecessorMap.get(taskId)).Id;
+                            newPredecessorMap.put(newTaskId, newParentId);
+                        }
+                    }
 
-                Map<String, String> newPredecessorMap = new Map<String, String>();
-                for (String taskId : predecessorMap.keySet()) {
-                    if (predecessorMap.get(taskId) != null) {
-                        String newTaskId = scheduleTaskMap.get(taskId).Id;
-                        String newParentId = scheduleTaskMap.get(predecessorMap.get(taskId)).Id;
-                        newPredecessorMap.put(newTaskId, newParentId);
+                    List<SObject> updateTaskList = new List<SObject>();
+                    for (SObject task : scheduleTaskMap.values()) {
+                        task.put('buildertek__Dependency__c', newPredecessorMap.get(String.valueOf(task.Id)));
+                        updateTaskList.add(task);
+                    }
+
+                    if (updateTaskList.size() > 0) {
+                        update updateTaskList;
                     }
                 }
 
-                List<SObject> updateTaskList = new List<SObject>();
-                for (SObject task : scheduleTaskMap.values()) {
-                    task.put('buildertek__Dependency__c', newPredecessorMap.get(String.valueOf(task.Id)));
-                    updateTaskList.add(task);
+            } else {
+
+                for (SObject sobj : childSobjList){
+                    System.debug('sobj ==> '+sobj);
+                    String oldParentId = String.valueOf(sObj.get(objAPI));
+
+                    SObject obj = sobj.clone(false, true);
+                    System.debug('objAPI ==> '+objAPI);
+                    System.debug('cloneSObjList.get(oldParentId)) ==> '+cloneSObjList.get(oldParentId));
+                    obj.put(objAPI, cloneSObjList.get(oldParentId).Id);
+
+                    cloneChildRec.add(obj);
                 }
 
-                if (updateTaskList.size() > 0) {
-                    update updateTaskList;
+                System.debug('cloneChildRec ==> '+cloneChildRec);
+
+                if(cloneChildRec.size() > 0){
+                    insert cloneChildRec;
                 }
-            }
-
-        } else {
-
-            for (SObject sobj : childSobjList){
-                System.debug('sobj ==> '+sobj);
-                String oldParentId = String.valueOf(sObj.get(objAPI));
-    
-                SObject obj = sobj.clone(false, true);
-                System.debug('objAPI ==> '+objAPI);
-                System.debug('cloneSObjList.get(oldParentId)) ==> '+cloneSObjList.get(oldParentId));
-                obj.put(objAPI, cloneSObjList.get(oldParentId).Id);
-    
-                cloneChildRec.add(obj);
-            }
-
-            System.debug('cloneChildRec ==> '+cloneChildRec);
-            
-            if(cloneChildRec.size() > 0){
-                insert cloneChildRec;
             }
         }
-        
+
     }
 
 
@@ -822,7 +829,7 @@ public with sharing class ProjectTriggerHandler {
 
         Map<String, Schema.SObjectField> fieldsMap = Schema.getGlobalDescribe().get(sObjName.toLowerCase()).getDescribe().Fields.getMap();
         String fields = '';
-        
+
         for (Schema.SObjectField sf : fieldsMap.values()){
             Schema.DescribeFieldResult fr = sf.getDescribe();
             if (fr.isCreateable()){
@@ -842,13 +849,13 @@ public with sharing class ProjectTriggerHandler {
         String qryString;
         if (sObjName == 'buildertek__Project_Task__c') {
             qryString = 'SELECT ' + fields + ' , buildertek__Dependency__r.Name FROM ' + sObjName + ' where ' + fieldName + ' IN: parentRecordList';
-        } 
+        }
         else{
             qryString = 'SELECT ' + fields + ' FROM ' + sObjName + ' where ' + fieldName + ' IN: parentRecordList';
         }
 
         return qryString;
     }
-    
-   
+
+
 }

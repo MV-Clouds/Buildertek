@@ -863,10 +863,10 @@
                                                   label="Delete" onclick="{!c.openDeleteBox}" />
                             </span> 
                         </div>
-                        <div  style="padding-left: 0px; font-size: 0.7rem;  margin-right: 1rem; ">
+                        <!-- <div  style="padding-left: 0px; font-size: 0.7rem;  margin-right: 1rem; ">
                             <lightning:button label="Manage Product Lines" disabled="false" 
                                               onclick="{!c.manageProductLines}"/>
-                        </div>
+                        </div> -->
 
                         <!-- <aura:iteration items="{!v.fieldBOMLineNameApiList}" var="apiName" indexVar="apiindex">	
                            <div class="slds-col slds-size_1-of-6">	
