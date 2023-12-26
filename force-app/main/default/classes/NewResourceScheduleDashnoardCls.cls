@@ -421,6 +421,7 @@ SchedulerRec.ScheduleProjectId = equ.buildertek__Project__r.Id;*/
         
         String projectSearchVal = '%'+''+'%';
         if(projectSearch != '' && projectSearch != null){
+            projectSearch = projectSearch.toLowerCase();
             projectSearchVal = '%'+projectSearch+'%';
         }
         
