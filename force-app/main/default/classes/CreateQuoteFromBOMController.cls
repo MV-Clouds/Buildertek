@@ -14,6 +14,13 @@ public with sharing class CreateQuoteFromBOMController {
                 groupMap.put(phaseGroup.Name, phaseGroup);
             }
 
+            if(groupMap.get('No Grouping') == null){
+                buildertek__Quote_Line_Group__c noGroup = new buildertek__Quote_Line_Group__c();
+                noGroup.Name = 'No Grouping';
+                insert noGroup;
+                groupMap.put(noGroup.Name, noGroup);
+            }
+
             buildertek__Quote__c quote = new buildertek__Quote__c();
             if (BOMLineList.size() > 0) {
                 quote.buildertek__Bill_of_Material__c = recordId;
