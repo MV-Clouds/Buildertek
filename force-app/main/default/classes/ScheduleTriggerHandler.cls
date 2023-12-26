@@ -220,4 +220,28 @@ public with sharing class ScheduleTriggerHandler{
     //         System.debug('Exception cause-->'+e.getStackTraceString());
     //     }
     // }
+
+    public void OnAfterUpdate(buildertek__Schedule__c[] oldschedules, buildertek__Schedule__c[] updatedschedules) {
+        Map<Id, Id> scheduleIdToProjectIdMap = new Map<Id, Id>();
+    
+        for (Integer i = 0; i < oldschedules.size(); i++) {
+            if (updatedschedules[i].buildertek__Project__c != oldschedules[i].buildertek__Project__c) {
+                scheduleIdToProjectIdMap.put(updatedschedules[i].Id, updatedschedules[i].buildertek__Project__c);
+            }
+        }
+    
+        if (!scheduleIdToProjectIdMap.isEmpty()) {
+            List<buildertek__Project_Task__c> relatedScheduleItems = [SELECT Id, buildertek__Project__c, buildertek__Schedule__c
+                                                                    FROM buildertek__Project_Task__c
+                                                                    WHERE buildertek__Schedule__c IN :scheduleIdToProjectIdMap.keySet()];
+    
+            for (buildertek__Project_Task__c scheduleItem : relatedScheduleItems) {
+                scheduleItem.buildertek__Project__c = scheduleIdToProjectIdMap.get(scheduleItem.buildertek__Schedule__c);
+            }
+    
+            update relatedScheduleItems;
+        }
+    }
+    
+    
 }
