@@ -38,9 +38,10 @@
             if (parentRecordId == 'related') {
                 var stringList = relatedList.split("/");
                 parentRecordId = stringList[3];
-            } else {
-                parentRecordId = '';
-            }
+            } 
+            // else {
+            //     parentRecordId = '';
+            // }
             component.set("v.parentRecordId", parentRecordId);
             console.log('parentRecordId-->>', { parentRecordId });
         }
