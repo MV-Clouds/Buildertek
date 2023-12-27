@@ -27,7 +27,7 @@ import { populateIcons } from "./lib/BryntumGanttIcons";
 
 export default class Gantt_component extends NavigationMixin(LightningElement) {
   @track spinnerDataTable = false;
-
+  @track showSpinner = false;
   @track islibraryloaded = false;
   @track scheduleItemsDataList;
   @track scheduleData;
@@ -231,6 +231,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
   }
 
   getScheduleWrapperDataFromApex() {
+    this.showSpinner = true;
     scheduleWrapperDataFromApex({
       scheduleid: this.SchedulerId,
     })
@@ -366,6 +367,8 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
             variant: "error",
           })
         );
+      }).finally(() => {
+        this.showSpinner = false;
       });
   }
 
@@ -677,7 +680,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
             populateIcons(record);
             if (record.record._data.type == "Phase") {
               record.record.readOnly = true;
-              record.cellElement.style.margin = "";
+              record.cellElement.style.margin = "0 0 0 7px";
               return record.value;
             }
             if (
