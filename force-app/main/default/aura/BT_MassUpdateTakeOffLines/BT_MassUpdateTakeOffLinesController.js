@@ -26,9 +26,10 @@
 
         window.setTimeout(
             $A.getCallback(function () {
-                helper.getTotalRecord(component, event, helper);
-                helper.getTakeOffName(component, event, helper);
-                helper.getTakeOffParentId(component, event, helper);
+                // helper.getTotalRecord(component, event, helper);
+                // helper.getTakeOffName(component, event, helper);
+                // helper.getTakeOffParentId(component, event, helper);
+                helper.takeoffRelatedInfo(component, event, helper);
                 //window.setTimeout(
                 //$A.getCallback(function () {
                 helper.getTableRows(component, event, helper, pageNumber, pageSize, SearchProductType, searchLocation, searchCategory, searchTradeType);
@@ -38,6 +39,7 @@
             }), 2000
         );
     },
+
     refreshPage: function (component, event, helper) {
         var focusedTabId = event.getParam('currentTabId');
         var workspaceAPI = component.find("workspace");
@@ -54,6 +56,7 @@
                 console.log(error);
             });
     },
+
     onAddClick: function (component, event, helper) {
         var fields = component.get('v.fieldSetValues');
         var list = component.get('v.listOfRecords');
@@ -67,6 +70,7 @@
         list.unshift(obj);
         component.set('v.listOfRecords', list);
     },
+
     closeScreen: function (component, event, helper) {
         var theBomId = component.get('v.bomId');
         console.log('theBomId--',theBomId);
@@ -74,7 +78,11 @@
         if(theBomId == null || theBomId == undefined)
         {
             var redirectUrl = '/one/one.app?#/sObject/' + component.get('v.recordId') + '/view';
-            window.open(redirectUrl, '_self');
+            $A.get("e.force:navigateToURL").setParams({
+                "url": redirectUrl,
+                "isredirect": true
+            }).fire();
+            $A.get('e.force:refreshView').fire();
         }
         else if(theBomId != null && theBomId != undefined && theBomId != '')
         {
@@ -93,9 +101,11 @@
         }
         
     },
+
     closeCancelModal: function (component, event, helper) {
         component.set('v.isCancelModalOpen', false);
     },
+
     onMassUpdate: function (component, event, helper) {
         component.set('v.isLoading', true);
         var SearchProductType = component.find("SearchProductType").get("v.value");
@@ -187,8 +197,9 @@
         helper.getTableRows(component, event, helper, pageNumber, pageSize, SearchProductType, searchLocation, searchCategory, searchTradeType);
         component.set('v.isLoading', false);
     },
+
     redirectTakeOff: function (component, event, helper) {
-        debugger;
+        // debugger;
         var projectRecId = component.get("v.parentId");
         if(projectRecId){
             var evt = $A.get("e.force:navigateToRelatedList");
@@ -210,6 +221,7 @@
         
         
     },
+
     gotoURL: function (component, event, helper) {
         var recordId = component.get("v.recordId");
         var urlEvent = $A.get("e.force:navigateToURL");
@@ -219,8 +231,8 @@
         urlEvent.fire();
     },
     
-         selectAllRfq : function (component, event, helper) {
-         debugger;
+    selectAllRfq : function (component, event, helper) {
+        // debugger;
         var checkStatus = event.getSource().get("v.checked");
         var rfqRecordList = JSON.parse(JSON.stringify(component.get("v.listOfRecords")));
         var getAllId = component.find("checkRFQ");
@@ -271,7 +283,7 @@
     },
     
     selectRfq: function (component, event, helper) {
-        debugger;
+        // debugger;
         var checkbox = event.getSource();
         
        // alert('Chechbox--------------  '+component.find("checkRFQ").get("v.name"));
@@ -310,9 +322,8 @@
         
     },
     
-    
-     onClickDelete : function(component, event, helper){
-        debugger;
+    onClickDelete : function(component, event, helper){
+        // debugger;
 
         
         var selectedSOVLines = component.get("v.listOfSelectedTakeOffIds");
@@ -336,8 +347,7 @@
         
     },
     
-    
-      confirmDelete: function (component, event, helper) {
+    confirmDelete: function (component, event, helper) {
         //var selectedSovLineIds = component.get("v.listOfSelectedSOVIds");
         var action = component.get("c.DeleteMassTakeOffLines");
         action.setParams({

@@ -7,49 +7,108 @@ public class MassUpdateTakeOffLines{
         recordId = ApexPages.currentPage().getParameters().get('Id');
     }
 
-    @AuraEnabled
-    public static string getName(String recordId){
-        try{
-            List<buildertek__Project_Takeoff__c> takeOff = [Select Id, Name
-                                                            From buildertek__Project_Takeoff__c
-                                                            WHERE Id = :recordId];
-            if (takeOff.size() > 0){
-                return takeOff[0].Name;
-            }
-        } catch (Exception e){
-            throw new AuraHandledException(e.getMessage());
-        }
-        return null;
+    // @AuraEnabled
+    // public static string getName(String recordId){
+    //     try{
+    //         List<buildertek__Project_Takeoff__c> takeOff = [Select Id, Name
+    //                                                         From buildertek__Project_Takeoff__c
+    //                                                         WHERE Id = :recordId];
+    //         if (takeOff.size() > 0){
+    //             return takeOff[0].Name;
+    //         }
+    //     } catch (Exception e){
+    //         List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+    //         if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+    //             BT_ExceptionHandler.Store_Exception(e);
+    //         }
+    //         throw new AuraHandledException(e.getMessage());
+    //     }
+    //     return null;
+    // }
+
+    // @AuraEnabled
+    // public static string getParentId(String recordId){
+    //     try{
+    //         List<buildertek__Project_Takeoff__c> takeOff = [Select Id, buildertek__Project__c
+    //                                                         From buildertek__Project_Takeoff__c
+    //                                                         WHERE Id = :recordId];
+    //         if (takeOff.size() > 0){
+    //             return takeOff[0].buildertek__Project__c;
+    //         }
+    //     } catch (Exception e){
+    //         List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+    //         if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+    //             BT_ExceptionHandler.Store_Exception(e);
+    //         }
+    //         throw new AuraHandledException(e.getMessage());
+    //     }
+    //     return null;
+    // }
+
+    // @AuraEnabled
+    // public static Integer getCount(String recordId){
+    //     try{
+    //         if (String.isNotBlank(recordId)){
+    //             return [Select COUNT()
+    //                     FROM buildertek__Project_Takeoff_Lines__c
+    //                     WHERE buildertek__Project_Takeoff__c = :recordId];
+
+    //         }
+    //     } catch (Exception e){
+    //         List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+    //         if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+    //             BT_ExceptionHandler.Store_Exception(e);
+    //         }
+    //         throw new AuraHandledException(e.getMessage());
+    //     }
+    //     return null;
+    // }
+
+    public class TakeoffInfoWrapper {
+        @AuraEnabled
+        public String name { get; set; }
+        @AuraEnabled
+        public String parentId { get; set; }
+        @AuraEnabled
+        public Integer count { get; set; }
+        @AuraEnabled
+        public String status { get; set; }
+        @AuraEnabled
+        public String message { get; set; }
     }
 
     @AuraEnabled
-    public static string getParentId(String recordId){
-        try{
-            List<buildertek__Project_Takeoff__c> takeOff = [Select Id, buildertek__Project__c
-                                                            From buildertek__Project_Takeoff__c
-                                                            WHERE Id = :recordId];
-            if (takeOff.size() > 0){
-                return takeOff[0].buildertek__Project__c;
-            }
-        } catch (Exception e){
-            throw new AuraHandledException(e.getMessage());
-        }
-        return null;
-    }
+    public static TakeoffInfoWrapper getTakeoffInfo(String recordId) {
+        TakeoffInfoWrapper result = new TakeoffInfoWrapper();
 
-    @AuraEnabled
-    public static Integer getCount(String recordId){
-        try{
-            if (String.isNotBlank(recordId)){
-                return [Select COUNT()
-                        FROM buildertek__Project_Takeoff_Lines__c
-                        WHERE buildertek__Project_Takeoff__c = :recordId];
+        try {
+            if (String.isNotBlank(recordId)) {
+                List<buildertek__Project_Takeoff__c> takeOffList = [SELECT Id, Name, buildertek__Project__c
+                                                                   FROM buildertek__Project_Takeoff__c
+                                                                   WHERE Id = :recordId
+                                                                   LIMIT 1];
 
+                if (!takeOffList.isEmpty()) {
+                    buildertek__Project_Takeoff__c takeOff = takeOffList[0];
+                    result.name = takeOff.Name;
+                    result.parentId = takeOff.buildertek__Project__c;
+
+                    result.count = [SELECT COUNT()
+                                    FROM buildertek__Project_Takeoff_Lines__c
+                                    WHERE buildertek__Project_Takeoff__c = :recordId];
+
+                    result.status = 'SUCCESS';
+                }
             }
-        } catch (Exception e){
-            throw new AuraHandledException(e.getMessage());
+        } catch (Exception e) {
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if (!storeExcCustomSetting.isEmpty() && storeExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                BT_ExceptionHandler.Store_Exception(e);
+            }
+            result.status = 'FAIL';
+            result.message = e.getMessage() + e.getLineNumber();
         }
-        return null;
+        return result;
     }
 
     @AuraEnabled
@@ -84,6 +143,10 @@ public class MassUpdateTakeOffLines{
             }
 
         } catch (Exception e){
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
             result += e.getLineNumber()+' : ' + e.getMessage();
         }
         return '[' + result + ']';
@@ -127,6 +190,10 @@ public class MassUpdateTakeOffLines{
                 }
             }
         } catch (Exception e){
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
             System.debug('Error' + e.getMessage());
         }
         return null;
@@ -145,6 +212,10 @@ public class MassUpdateTakeOffLines{
                 pickListValuesList.add(pickListVal.getLabel());
             }
         } catch (Exception e){
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
             throw new AuraHandledException(e.getMessage());
         }
         return pickListValuesList;
@@ -167,6 +238,10 @@ public class MassUpdateTakeOffLines{
                 //return getRecords(recordId, fieldSetName, pageNumber, pageSize, searchName, searchPlan, searchCategory, searchTradeType);
             }
         } catch (Exception e){
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
             System.debug('Error::' + e.getMessage());
             System.debug('Error Line::' + e.getLineNumber());
             throw new AuraHandledException(e.getMessage());
@@ -184,6 +259,10 @@ public class MassUpdateTakeOffLines{
                 return getRecords(recordId, fieldSetName, pageNumber, pageSize, searchName, searchPlan, searchCategory, searchTradeType);
             }
         } catch (Exception e){
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
             System.debug('Error::' + e.getMessage());
             System.debug('Error Line::' + e.getLineNumber());
             throw new AuraHandledException(e.getMessage());
