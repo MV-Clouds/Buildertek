@@ -23,7 +23,9 @@ public class InvoiceAPTriggerHandler {
 
         Set<Id> ProjectIds = new Set<Id>();
         for (buildertek__Account_Payable_Clone__c invoice : invoiceList) {
-            ProjectIds.add(invoice.buildertek__Project__c);
+            if (invoice.buildertek__Project__c != null) {
+                ProjectIds.add(invoice.buildertek__Project__c);
+            }
         }
         if (ProjectIds.size() > 0) {
             updateTotalAmountOnProject(ProjectIds);
@@ -124,8 +126,12 @@ public class InvoiceAPTriggerHandler {
         for (buildertek__Account_Payable_Clone__c invoice : invoiceList) {
             buildertek__Account_Payable_Clone__c oldInvoiceData = invoiceOldMap.get(invoice.Id);
             if (invoice.buildertek__Project__c != oldInvoiceData.buildertek__Project__c || invoice.buildertek__Payment_Amount__c != oldInvoiceData.buildertek__Payment_Amount__c) {
-                ProjectIds.add(invoice.buildertek__Project__c);
-                ProjectIds.add(oldInvoiceData.buildertek__Project__c);
+                if (invoice.buildertek__Project__c != null) {
+                    ProjectIds.add(invoice.buildertek__Project__c);
+                }
+                if (oldInvoiceData.buildertek__Project__c != null) {
+                    ProjectIds.add(oldInvoiceData.buildertek__Project__c);
+                }
             }
         }
         if (ProjectIds.size() > 0) {
@@ -153,7 +159,9 @@ public class InvoiceAPTriggerHandler {
         try {
             Set<Id> ProjectIds = new Set<Id>();
             for (buildertek__Account_Payable_Clone__c invoice : oldInvoiceList) {
-                ProjectIds.add(invoice.buildertek__Project__c);
+                if (invoice.buildertek__Project__c != null) {
+                    ProjectIds.add(invoice.buildertek__Project__c);
+                }
             }
             if (ProjectIds.size() > 0) {
                 updateTotalAmountOnProject(ProjectIds);
