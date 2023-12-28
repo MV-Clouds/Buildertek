@@ -31,7 +31,8 @@ private class PaymentTriggerHandler_Tests {
         update payment;
 
         delete payment;
-
+        delete pay;
+        delete ap;
        /* buildertek__BT_Payment_Lines__c payLines = new buildertek__BT_Payment_Lines__c();
         payLines.buildertek__Payment__c = pay.Id;
         payLines.buildertek__Invoice_Line_AP__c = apLines.Id;
