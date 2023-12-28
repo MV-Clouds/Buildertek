@@ -67,6 +67,7 @@
     $A.enqueueAction(action);
     helper.fetchTakeOffLinesData(component, event, helper);
     helper.setColumns(component);
+    helper.getFieldSetFields(component,event);
     // helper.getPoLinesList(component, event, helper,pageNumber,pageSize);
 
     window.setTimeout(
@@ -1090,4 +1091,5 @@
   createQuote: function (component, event, helper) {
     helper.quote(component, event, helper);
   },
+
 });

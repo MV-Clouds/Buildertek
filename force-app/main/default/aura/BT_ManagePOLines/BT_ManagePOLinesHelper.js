@@ -680,11 +680,11 @@
     }
 
     component.set("v.dataByGroup", groupData);
-    // console.log('From formatDataByGroups >> ', component.get("v.dataByGroup"));
     // console.log("groupData===");
     // console.log({ groupData });
     component.set("v.cloneDataByGroup", groupData);
     helper.calculateCostAdjustment(component, event, helper);
+    console.log('From formatDataByGroups >> ', JSON.parse(JSON.stringify(component.get("v.dataByGroup"))));
     // $A.get('e.force:refreshView').fire();
     if (
       !component.get("v.massUpdateEnable") &&
@@ -1017,9 +1017,9 @@
         //  bomLineFields[bomLineFields.length] = JSON.parse(uom);
 
         component.set("v.fieldValues", bomLineFields);
-        // console.log(totalCostCol + "TOTAL COST____");
-        // console.log(bomLineFields);
-        // console.log({bomLineFields} , '********************bomLineFields****************');
+        console.log(totalCostCol + "TOTAL COST____");
+        console.log(bomLineFields);
+        console.log({bomLineFields} , '********************bomLineFields****************');
 
       }
 
@@ -1048,7 +1048,7 @@
       var allData = component.get("v.dataByGroup");
       this.storeAllData = allData;
       var v = this.storeAllData;
-      // console.log("storeAllData in var", { v });
+      console.log("storeAllData in var", { v });
       // // console.log('@@dataByGroup FIRST-', allData);
       var map1 = new Map();
       var map2 = new Map();
@@ -1903,7 +1903,7 @@
     }
     component.set("v.bomLineFieldsSettings", bomLineFields);
     component.set("v.dataByGroup", allData);
-    console.log('dataByGroup Last--', component.get("v.dataByGroup"));
+    // console.log('dataByGroup Last--', component.get("v.dataByGroup"));
     component.set("v.orgData", groupByData);
 
     //helper.formatDataByGroups(component,event,helper,groupByDataNew,fieldMapTyp,allData[0].sObjectRecordsList);
@@ -3703,5 +3703,34 @@
       duration: 3000,
     });
     toastEvent.fire();
+  },
+
+  getFieldSetFields: function(component, event){
+    try {
+      component.set("v.Spinner", true);
+      console.log('Get fieldset');
+      var Fields = [];
+            var getFields = component.get("c.getFieldSet");
+            getFields.setParams({
+                objectName: 'buildertek__Select_Sheet__c',
+                fieldSetName: 'buildertek__Product_list_edit_Line_Fields'
+            });
+            getFields.setCallback(this, function (response) {
+                if (response.getState() == 'SUCCESS' && response.getReturnValue()) {
+                    var listOfFields = JSON.parse(response.getReturnValue());
+                   
+                    listOfFields.map(ele => {
+                        Fields.push(ele.name);
+                    })
+                    console.log({listOfFields});
+                    component.set("v.listOfFields", listOfFields);
+                }
+                component.set("v.Spinner", false);
+            });
+          $A.enqueueAction(getFields);
+      
+    } catch (error) {
+      console.log('error in getFieldSetFields : ', error.stack);
+    }
   },
 });
