@@ -81,6 +81,8 @@ export default class importScheduleLine extends LightningElement {
             "Duration",
             "% Complete",
             "Phase",
+            "Phase2",
+            "Phase3",
             "Notes",
             "Lag",
             "Cost Code",
@@ -118,10 +120,12 @@ export default class importScheduleLine extends LightningElement {
                 headers[3] !== "Duration" ||
                 headers[4] !== "% Complete" ||
                 headers[5] !== "Phase" ||
-                headers[6] !== "Notes" ||
-                headers[7] !== "Lag" ||
-                headers[8] !== "Cost Code" ||
-                headers[9] !== "Trade Type\r" 
+                headers[6] !== "Phase2" ||
+                headers[7] !== "Phase3" ||
+                headers[8] !== "Notes" ||
+                headers[9] !== "Lag" ||
+                headers[10] !== "Cost Code" ||
+                headers[11] !== "Trade Type\r" 
             ) {
                 this.Spinner = false;
                 this.isErrorOccured = true;
@@ -498,10 +502,10 @@ export default class importScheduleLine extends LightningElement {
             // dateString = dateString.trim().replace(/\//g, "-")
             var dateParts = dateString.split('/'); // Split the date string by '/'
             var year = dateParts[2];
-            var month = dateParts[0].padStart(2, '0'); // Pad the month with leading zeros if necessary
-            var day = dateParts[1].padStart(2, '0'); // Pad the day with leading zeros if necessary
+            var month = dateParts[0]?.padStart(2, '0'); // Pad the month with leading zeros if necessary
+            var day = dateParts[1]?.padStart(2, '0'); // Pad the day with leading zeros if necessary
 
-            if (year.length === 2) {
+            if (year?.length === 2) {
             // Convert YY format to YYYY format
             var currentYear = new Date().getFullYear().toString();
             var currentCentury = currentYear.slice(0, 2);
