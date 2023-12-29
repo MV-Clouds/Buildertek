@@ -471,14 +471,14 @@ function grpTaskOnPhase(records) {
             let phase2Node = phase2Node1.children.find(child => child.id === phase1 + phase2);
 
             if (!phase2Node) {
-                phase2Node = { id: phase1 + phase2, name: record.buildertek__BT_Grouping__r.Name, expanded: true, type: "Phase", children: [], Phase2: true };
+                phase2Node = { id: phase1 + phase2, name: record.buildertek__BT_Grouping__r.Name, expanded: true, type: "Phase", children: [] };
                 hierarchy.children.find(child => child.id === phase1).children.push(phase2Node);
             }
 
             let phase3Node = phase2Node.children.find(child => child.id === phase1 + phase2 + phase3);
 
             if (!phase3Node) {
-                phase3Node = { id: phase1 + phase2 + phase3, name: record.buildertek__BT_Phase3__r.Name, expanded: true, type: "Phase", children: [], Phase3: true };
+                phase3Node = { id: phase1 + phase2 + phase3, name: record.buildertek__BT_Phase3__r.Name, expanded: true, type: "Phase", children: [] };
                 phase2Node.children.push(phase3Node);
             }
 
@@ -487,7 +487,7 @@ function grpTaskOnPhase(records) {
             let phase2Node = hierarchy.children.find(child => child.id=== phase1).children.find(child => child.id === phase1 + phase2);
 
             if (!phase2Node) {
-                phase2Node = { id: phase1 + phase2, name: record.buildertek__BT_Grouping__r.Name, expanded: true, type: "Phase", children: [], Phase2: true };
+                phase2Node = { id: phase1 + phase2, name: record.buildertek__BT_Grouping__r.Name, expanded: true, type: "Phase", children: [] };
                 hierarchy.children.find(child => child.id === phase1).children.push(phase2Node);
             }
 
