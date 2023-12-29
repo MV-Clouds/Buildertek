@@ -168,16 +168,20 @@ public without sharing class ManageBOMlinesController {
         
         // String jsonSerializeFields = '[{"value": "buildertek__Takeoff_Line__c","label": "Takeoff Line"},{"value": "buildertek__Pricebook_Name__c","label": "Pricebook Name"},{"value": "Name","label": "Product Name Proposal"},{"value": "buildertek__Quantity__c","label": "Quantity"},{"value": "buildertek__BL_LIST_PRICE__c","label": "List Price"},{"value": "buildertek__UOM_PL__c","label": "UOM"},{"value": "buildertek__Tax__c","label": "Tax"},{"value": "buildertek__Tax_Percent__c","label": "Tax (%)"},{"value": "buildertek__BL_MARKUP__c","label": "Markup"}]';
         String jsonSerializeFields = '[';
-        jsonSerializeFields += '{"value": "Name","label": "Product Name Proposal"},';
-        jsonSerializeFields += '{"value": "buildertek__Takeoff_Line__c","label": "Takeoff Line"},';
         jsonSerializeFields += '{"value": "buildertek__BT_Price_Book__c","label": "Pricebook Name"},';
+        jsonSerializeFields += '{"value": "buildertek__Product__c","label": "Product"},';
+        jsonSerializeFields += '{"value": "buildertek__Takeoff_Line__c","label": "Takeoff Line"},';
+        jsonSerializeFields += '{"value": "Name","label": "Product Name Proposal"},';
+        jsonSerializeFields += '{"value": "buildertek__Vendor__c","label": "Vendor"},';
         jsonSerializeFields += '{"value": "buildertek__Quantity__c","label": "Quantity"},';
         jsonSerializeFields += '{"value": "buildertek__BL_UNIT_COST__c","label": "Unit Cost"},';
         // jsonSerializeFields += '{"value": "buildertek__BL_LIST_PRICE__c","label": "List Price"},';
         jsonSerializeFields += '{"value": "buildertek__UOM_Picklist__c","label": "UOM"},';
         jsonSerializeFields += '{"value": "buildertek__Tax_Percent__c","label": "Tax (%)"},';
         jsonSerializeFields += '{"value": "buildertek__BL_MARKUP__c","label": "Markup"},';
-        jsonSerializeFields += '{"value": "buildertek__Extended_Cost__c","label": "Extended Cost"}';
+        jsonSerializeFields += '{"value": "buildertek__Extended_Cost__c","label": "Total Cost"},';
+        jsonSerializeFields += '{"value": "buildertek__BL_LIST_PRICE_F__c","label": "Unit Sales Price"},';
+        jsonSerializeFields += '{"value": "buildertek__Total_Sales_Price__c","label": "Total sales Price"}';
         jsonSerializeFields += ']';
         String FieldsDefaultValues =    '[{"label":"Name","value":"Name"}]';
         String jsonSerializeFields1 =   FieldsDefaultValues;          
@@ -438,16 +442,20 @@ public without sharing class ManageBOMlinesController {
         //     jsonSerializeFields =   FieldsDefaultValues;          
         // }
         String jsonSerializeFields = '[';
-        jsonSerializeFields += '{"value": "Name","label": "Product Name Proposal"},';
-        jsonSerializeFields += '{"value": "buildertek__Takeoff_Line__c","label": "Takeoff Line"},';
         jsonSerializeFields += '{"value": "buildertek__BT_Price_Book__c","label": "Pricebook Name"},';
+        jsonSerializeFields += '{"value": "buildertek__Product__c","label": "Product"},';
+        jsonSerializeFields += '{"value": "buildertek__Takeoff_Line__c","label": "Takeoff Line"},';
+        jsonSerializeFields += '{"value": "Name","label": "Product Name Proposal"},';
+        jsonSerializeFields += '{"value": "buildertek__Vendor__c","label": "Vendor"},';
         jsonSerializeFields += '{"value": "buildertek__Quantity__c","label": "Quantity"},';
         jsonSerializeFields += '{"value": "buildertek__BL_UNIT_COST__c","label": "Unit Cost"},';
         // jsonSerializeFields += '{"value": "buildertek__BL_LIST_PRICE__c","label": "List Price"},';
         jsonSerializeFields += '{"value": "buildertek__UOM_Picklist__c","label": "UOM"},';
         jsonSerializeFields += '{"value": "buildertek__Tax_Percent__c","label": "Tax (%)"},';
         jsonSerializeFields += '{"value": "buildertek__BL_MARKUP__c","label": "Markup"},';
-        jsonSerializeFields += '{"value": "buildertek__Extended_Cost__c","label": "Extended Cost"}';
+        jsonSerializeFields += '{"value": "buildertek__Extended_Cost__c","label": "Total Cost"},';
+        jsonSerializeFields += '{"value": "buildertek__BL_LIST_PRICE_F__c","label": "Unit Sales Price"},';
+        jsonSerializeFields += '{"value": "buildertek__Total_Sales_Price__c","label": "Total sales Price"}';
         jsonSerializeFields += ']';
 
         
