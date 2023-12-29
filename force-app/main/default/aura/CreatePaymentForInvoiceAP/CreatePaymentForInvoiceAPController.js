@@ -25,8 +25,7 @@
                     component.set("v.invoiceName",result.Invoice.Name);
                     component.set("v.invoiceId",result.Invoice.Id);
                     component.set("v.projectId",result.Invoice.buildertek__Project__c);
-                    component.set("v.isProjectValue",result.Invoice.buildertek__Project__c ? true : false);
-
+                    
                     if(result.Invoice.buildertek__Vendor__c != null || result.Invoice.buildertek__Vendor__c != undefined){
                         component.set("v.vendorId",result.Invoice.buildertek__Vendor__c);
                     }

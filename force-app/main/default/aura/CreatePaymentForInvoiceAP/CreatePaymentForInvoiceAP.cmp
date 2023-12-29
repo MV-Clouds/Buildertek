@@ -11,7 +11,6 @@
     <aura:attribute name="selectedPayLineIds" type="List" default="[]"/>
     <aura:attribute name="sovValues" type="Object" />
     <aura:attribute name="isInvoiceLines" type="Boolean" />
-    <aura:attribute name="isProjectValue" type="Boolean" default="false" />
     <aura:attribute name="Spinner" type="Boolean" />
     <aura:attribute name="showMessage" type="Boolean" default="false" />
     <aura:attribute name="listOfFields" type="List" />
@@ -91,10 +90,10 @@
                                                             <lightning:inputField fieldName="{!field.name}" value="" />
                                                             <aura:set attribute="else">
                                                                 <aura:if  isTrue="{!and(field.name =='buildertek__Invoices_AP__c')}" >
-                                                                    <lightning:inputField fieldName="{!field.name}" value="{!v.invoiceId}" disabled = "true" />
+                                                                    <lightning:inputField fieldName="{!field.name}" value="{!v.invoiceId}" />
                                                                 </aura:if>
                                                                 <aura:if  isTrue="{!and(field.name =='buildertek__Project__c')}" >
-                                                                    <lightning:inputField fieldName="{!field.name}" value="{!v.projectId}" disabled = "{!v.isProjectValue}" />
+                                                                    <lightning:inputField fieldName="{!field.name}" value="{!v.projectId}" />
                                                                 </aura:if>
                                                                 <aura:if  isTrue="{!field.name =='buildertek__Payee__c'}" >
                                                                     <lightning:inputField fieldName="{!field.name}"  value="{!v.vendorId}"/>   <!--  required = "{!field.required}"  -->
