@@ -165,6 +165,8 @@
     <aura:attribute name="BTBOMtype" type="Object" />
     <aura:attribute name="totalBOMlines" type="Integer" />
     <aura:attribute name="massupdateIndex" type="List" />
+    <aura:handler name="onSelectEvt" event="c:BT_LookupEvent" action="{!c.handleLookUpEvent}" />
+    <aura:attribute name="phaseIndex" type="Integer" />
     
     <lightning:navigation aura:id="goToPrevious" />
 
@@ -251,7 +253,28 @@
                                             </span>
                                         </td>
                                         <aura:iteration items="{!v.fieldValues}" var="field">
-                                            <aura:if isTrue="{!(field.label == 'Standard?')}">
+                                            <aura:if isTrue="{!field.name == 'buildertek__BT_Price_Book__c'}">
+                                                <td style = "padding-right:5px; width: 7rem;" > 
+                                                    <c:BT_LookupFields selectedRecordId="{!row.buildertek__BT_Price_Book__c}" childObjectName="buildertek__Select_Sheet__c" phaseIndex="{!v.phaseIndex}" index="{!index}"
+                                                        fieldName="{!field.name}" record="{!row}"
+                                                        callingCmpName="BT_ManageBOMLines"/>
+                                                </td>
+                                            </aura:if>
+                                            <aura:if isTrue="{!(field.name == 'buildertek__Total_Sales_Price__c')}">
+                                                    <td style = "padding-right:5px; width: 7rem;" > 
+                                                        <lightning:input value="{!row.buildertek__Total_Sales_Price__c}" type="number" formatter="currency" name="{!field.name}" variant="label-hidden" disabled="true" width="50%"/>
+                                                    </td>
+                                            </aura:if>
+                                            <aura:if isTrue="{!!(OR(field.name == 'buildertek__BT_Price_Book__c', field.name == 'buildertek__Total_Sales_Price__c'))}">
+                                                <td style = "padding-right:5px; width: 7rem;" > 
+                                                    <c:BT_FieldSetMassUpdate record="{!row}" index="{!index}" field="{!field}"
+                                                        isMassUpdateEnable="{!groupItem.massUpdate}"
+                                                        childObjectName="buildertek__Select_Sheet__c"
+                                                        ObjectName="buildertek__Select_Sheet__c"
+                                                        callingCmpName="BT_ManageBOMLines"/>
+                                                </td>
+                                            </aura:if>
+                                            <!-- <aura:if isTrue="{!(field.label == 'Standard?')}">
                                                 <td>
                                                     <c:BT_FieldSetMassUpdate record="{!row}" index="{!index}" field="{!field}"
                                                                              isMassUpdateEnable="{!groupItem.massUpdate}"
@@ -276,32 +299,13 @@
                                                                                             callingCmpName="BT_ManageBOMLines"/>
                                                                 </td>
                                                                 <aura:set attribute="else">
-                                                                    <td>  
-                                                                    <!-- <aura:if isTrue="{!field.name == 'buildertek__Takeoff_Line__c'}">
-                                                                        <lightning:recordEditForm onload="{!c.recordEditLoaded}" recordId="{!row.Id}" objectApiName="buildertek__Select_Sheet__c">
-                                                                            <div style = "padding-top: 7px !important; padding-bottom: 0px !important;">
-                                                                                <lightning:inputField aura:id="lookupField" fieldName="{!field.name}" value="{!row.buildertek__Takeoff_Line__c}" 
-                                                                                />  
-                                                                            </div> 
-                                                                        </lightning:recordEditForm>
-                                                                    <aura:set attribute="else">
-                                                                        <aura:if isTrue="{!field.name == 'buildertek__BT_Price_Book__c'}">
-                                                                            <lightning:recordEditForm recordId="{!row.Id}" objectApiName="buildertek__Select_Sheet__c}">
-                                                                                <div style = "padding-top: 7px !important; padding-bottom: 0px !important;">
-                                                                                    <lightning:inputField aura:id="lookupField" fieldName="{!field.name}" value="{!row.buildertek__BT_Price_Book__c}" 
-                                                                                    />  
-                                                                                </div> 
-                                                                            </lightning:recordEditForm>
-                                                                            <aura:set attribute="else"> -->
+                                                                    <td> 
                                                                                 <c:BT_FieldSetMassUpdate record="{!row}" index="{!index}" field="{!field}"
                                                                                                         isMassUpdateEnable="{!groupItem.massUpdate}"
                                                                                                         childObjectName="buildertek__Select_Sheet__c" 
                                                                                                         ObjectName="buildertek__Select_Sheet__c"
                                                                                                         callingCmpName="BT_ManageBOMLines"/>
-                                                                            <!-- </aura:set>
-                                                                        </aura:if>
-                                                                    </aura:set>
-                                                                    </aura:if> -->
+                                                                         
                                                                     </td>
                                                                 </aura:set>
                                                             </aura:if>
@@ -310,7 +314,7 @@
                                                         </aura:set>
                                                         </aura:if>
                                                 </aura:set>
-                                            </aura:if> 
+                                            </aura:if>  -->
                                             
                                             
                                         </aura:iteration>

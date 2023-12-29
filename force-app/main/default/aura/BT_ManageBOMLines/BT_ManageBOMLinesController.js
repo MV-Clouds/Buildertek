@@ -174,4 +174,14 @@
       recordEditLoaded: function(component, event, helper){
         console.log('recordEditLoaded');
       },
+
+      handleLookUpEvent: function(component, event, helper){
+        try {
+          var selectedRecordId = event.getParam("selectedRecordId");
+          var index = event.getParam('index');
+          console.log('selectedRecordId : ', selectedRecordId);
+        } catch (error) {
+          console.log('error im child to parent call : ', error.stack);
+        } 
+      },
 })
