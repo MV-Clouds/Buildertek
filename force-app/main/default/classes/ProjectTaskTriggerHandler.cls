@@ -1724,4 +1724,60 @@ public class ProjectTaskTriggerHandler{
 		}
 	}
 
+	public static void populateCompletionOnBudgetLine(List<buildertek__Project_Task__c> updatedProjectTasks, Map<Id, buildertek__Project_Task__c> oldProjectTaskMap){
+		try {
+            Set<Id> budgetLineIdsToUpdate = new Set<Id>();
+    
+            for (buildertek__Project_Task__c ScheduleItem : updatedProjectTasks) {
+                buildertek__Project_Task__c oldScheduleItem = oldProjectTaskMap.get(ScheduleItem.Id);
+    
+                if (ScheduleItem.buildertek__Budget_Line__c != oldScheduleItem.buildertek__Budget_Line__c ||
+				    ScheduleItem.buildertek__Completion__c != oldScheduleItem.buildertek__Completion__c) {
+						if (oldScheduleItem.buildertek__Budget_Line__c != null) {
+							budgetLineIdsToUpdate.add(oldScheduleItem.buildertek__Budget_Line__c);
+						}
+						if (ScheduleItem.buildertek__Budget_Line__c != null) {
+							budgetLineIdsToUpdate.add(ScheduleItem.buildertek__Budget_Line__c);
+						}
+                }
+            }
+            System.debug('budgetLineIdsToUpdate---->'+budgetLineIdsToUpdate);
+            if (!budgetLineIdsToUpdate.isEmpty()) {
+				List<buildertek__Budget_Item__c> budgetLinesToUpdate = [SELECT Id, buildertek__Complete__c FROM buildertek__Budget_Item__c WHERE Id IN :budgetLineIdsToUpdate];
+	
+				Map<Id, buildertek__Budget_Item__c> budgetLinesMap = new Map<Id, buildertek__Budget_Item__c>(budgetLinesToUpdate);
+	
+				for (buildertek__Project_Task__c scheduleItem : updatedProjectTasks) {
+					if (scheduleItem.buildertek__Budget_Line__c != oldProjectTaskMap.get(scheduleItem.Id).buildertek__Budget_Line__c) {
+						buildertek__Budget_Item__c oldBudgetLine = budgetLinesMap.get(oldProjectTaskMap.get(scheduleItem.Id).buildertek__Budget_Line__c);
+						if (oldBudgetLine != null) {
+							oldBudgetLine.buildertek__Complete__c = 0;
+						}
+	
+						buildertek__Budget_Item__c newBudgetLine = budgetLinesMap.get(scheduleItem.buildertek__Budget_Line__c);
+						if (newBudgetLine != null) {
+							newBudgetLine.buildertek__Complete__c = scheduleItem.buildertek__Completion__c;
+						}
+					} else {
+						buildertek__Budget_Item__c newBudgetLine = budgetLinesMap.get(scheduleItem.buildertek__Budget_Line__c);
+						if (newBudgetLine != null) {
+							newBudgetLine.buildertek__Complete__c = scheduleItem.buildertek__Completion__c;
+						}
+					}
+				}
+	            if (!budgetLinesToUpdate.isEmpty()) {
+					update budgetLinesToUpdate;
+				}
+			}
+        } catch (Exception ex) {
+            System.debug('Error: ' + ex.getMessage());
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if (!storeExcCustomSetting.isEmpty() && storeExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
+        }
+
+	}
+
+
 }
