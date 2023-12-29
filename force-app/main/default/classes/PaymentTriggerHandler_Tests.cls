@@ -2,9 +2,13 @@
 private class PaymentTriggerHandler_Tests {
 
     static testMethod void main() {
-
+        buildertek__Project__c project = new buildertek__Project__c();
+        project.Name = 'Sample Project';
+        insert project;
+        
         buildertek__Account_Payable_Clone__c ap = new buildertek__Account_Payable_Clone__c();
         ap.buildertek__Description__c = 'test1';
+        ap.buildertek__Project__c = project.Id;
         insert ap;
 
 
