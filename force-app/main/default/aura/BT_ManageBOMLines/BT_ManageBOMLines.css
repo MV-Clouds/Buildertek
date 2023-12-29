@@ -233,10 +233,15 @@
    background:#fff         
         }
 
-.THIS .Edit_Fields{
+/* ================= add for mass update ================= */
+.THIS .GroupHeader{
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
+    justify-content: space-around;
     align-items: center;
-    justify-content: center;
+    /* width: 100%; */
+}
+
+.THIS .slds-table_bordered tbody td{
+    text-align: start;
 }
