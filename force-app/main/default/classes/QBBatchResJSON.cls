@@ -1,5 +1,6 @@
 public class QBBatchResJSON {
     public List<BatchItemResponse> BatchItemResponse;
+    public QueryResponse QueryResponse;
     // public String time;
 
     public QBBatchResJSON() {
@@ -61,4 +62,10 @@ public class QBBatchResJSON {
     public static QBBatchResJSON parse(String json) {
         return (QBBatchResJSON) System.JSON.deserialize(json, QBBatchResJSON.class);
     }
+
+    public class QueryResponse{
+		public list<Item> Item;
+		public Integer maxResults;
+		public Integer startPosition;
+	}
 }

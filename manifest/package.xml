@@ -10,7 +10,7 @@
         <name>ApexComponent</name>
     </types>
     <types>
-        <members>*</members> 
+        <members>*</members>
         <name>ApexPage</name>
     </types>
     <types>
@@ -34,8 +34,8 @@
         <name>StaticResource</name>
     </types>
     <types>
-        <members>Name</members>
-        <name>Settings</name>
+        <members>*</members>
+        <name>Flow</name>
     </types>
 
     <version>55.0</version>

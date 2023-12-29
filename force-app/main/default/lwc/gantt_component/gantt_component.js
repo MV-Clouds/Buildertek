@@ -27,7 +27,7 @@ import { populateIcons } from "./lib/BryntumGanttIcons";
 
 export default class Gantt_component extends NavigationMixin(LightningElement) {
   @track spinnerDataTable = false;
-
+  @track showSpinner = false;
   @track islibraryloaded = false;
   @track scheduleItemsDataList;
   @track scheduleData;
@@ -60,7 +60,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
   @api contractorResourceFilterVal = "";
   @api internalResourceFilterVal = "";
   @track setorignaldates = false;
-@api hideToolBar = false;
+  @api hideToolBar = false;
   //Added for contractor
   @api showContractor = false;
   @api selectedResourceAccount;
@@ -231,6 +231,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
   }
 
   getScheduleWrapperDataFromApex() {
+    this.showSpinner = true;
     scheduleWrapperDataFromApex({
       scheduleid: this.SchedulerId,
     })
@@ -366,6 +367,9 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
             variant: "error",
           })
         );
+      })
+      .finally(()=>{
+        this.showSpinner = false;
       });
   }
 
@@ -569,7 +573,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     var resourceRowData = [];
     var assignmentRowData = [];
     var rows = [];
-var toolbar;
+    var toolbar;
     if(!this.hideToolBar){
       toolbar = new GanttToolbar()
     }
@@ -594,7 +598,7 @@ var toolbar;
     assignmentRowData = formatedSchData["assignmentRowData"];
 
     let resourceData = makeComboBoxDataForResourceData(this.contractorAndResources, this.internalResources);
-
+    
     const project = new bryntum.gantt.ProjectModel({
       calendar: data.project.calendar,
       // startDate: data.project.startDate,
@@ -619,7 +623,7 @@ var toolbar;
       appendTo: this.template.querySelector(".container"),
       // startDate: "2019-07-01",
       // endDate: "2019-10-01",
-      
+
       tbar: toolbar,
       rowHeight         : 30,
       barMargin         : 5,

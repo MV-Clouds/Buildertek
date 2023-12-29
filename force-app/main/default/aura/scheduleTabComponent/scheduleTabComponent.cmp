@@ -5,6 +5,10 @@
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
 
     <lightning:workspaceAPI aura:id="workspace" />
-    <c:ganttProjectScheduleSelectionCmp></c:ganttProjectScheduleSelectionCmp>
-
+    <aura:if isTrue="{!v.recordId}">
+        <c:scheduleTab projectId="{!v.recordId}"></c:scheduleTab>
+        <aura:set attribute="else">
+            <c:ganttProjectScheduleSelectionCmp></c:ganttProjectScheduleSelectionCmp>
+        </aura:set>
+    </aura:if>
 </aura:component>
