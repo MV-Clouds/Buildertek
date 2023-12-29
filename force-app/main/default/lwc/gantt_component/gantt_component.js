@@ -27,7 +27,7 @@ import { populateIcons } from "./lib/BryntumGanttIcons";
 
 export default class Gantt_component extends NavigationMixin(LightningElement) {
   @track spinnerDataTable = false;
-
+  @track showSpinner = false;
   @track islibraryloaded = false;
   @track scheduleItemsDataList;
   @track scheduleData;
@@ -231,6 +231,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
   }
 
   getScheduleWrapperDataFromApex() {
+    this.showSpinner = true;
     scheduleWrapperDataFromApex({
       scheduleid: this.SchedulerId,
     })
@@ -366,6 +367,9 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
             variant: "error",
           })
         );
+      })
+      .finally(()=>{
+        this.showSpinner = false;
       });
   }
 
