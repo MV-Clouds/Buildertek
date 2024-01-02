@@ -679,7 +679,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           editor: false,
           renderer: (record) => {
             populateIcons(record);
-            console.log('record',record);
             if (record.record._data.type == "Phase") {
               record.record.readOnly = true;
               record.cellElement.style.marginLeft = "7px";
