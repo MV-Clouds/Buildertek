@@ -13,7 +13,7 @@ public class TimeCardTriggerHandler{
         m_isExecuting = isExecuting;
         BatchSize = size;
     }
-    
+
     /* public void OnBeforeInsert(list<buildertek__Time_Cards__c> newtimecardslist){
 list<buildertek__Time_Cards__c> timecardlst = [select id,name,buildertek__End_Time__c,buildertek__Resource__c,createddate from buildertek__Time_Cards__c order by createddate desc limit 1];
 if(timecardlst.size() > 0){
@@ -33,8 +33,8 @@ timecard.adderror('You Need to close your last Time Card before you can create a
         }
         system.debug('owId--'+owId);
         //system.debug('proId--'+proId);
-        list<buildertek__Time_Cards__c> timecardlst = [select id,name,buildertek__Project__c,buildertek__End_Time__c,buildertek__Resource__c,createddate 
-                                                       from buildertek__Time_Cards__c 
+        list<buildertek__Time_Cards__c> timecardlst = [select id,name,buildertek__Project__c,buildertek__End_Time__c,buildertek__Resource__c,createddate
+                                                       from buildertek__Time_Cards__c
                                                        Where OwnerId IN: owId /*AND buildertek__Project__c IN: proId*/ AND buildertek__End_Time__c = null order by createddate desc];
         system.debug('timecardlst--'+timecardlst);
         if(timecardlst.size() > 0){
@@ -73,7 +73,7 @@ timecard.adderror('You Need to close your last Time Card before you can create a
         for (buildertek__Time_Cards__c timecard : newtimecardslist){
             system.debug('timecard.buildertek__Budget_Line__c'+timecard.buildertek__Budget_Line__c);
             if(timecard.buildertek__Budget_Line__c != null){
-                  budgetlineids.add(timecard.buildertek__Budget_Line__c);              
+                  budgetlineids.add(timecard.buildertek__Budget_Line__c);
             }
             if (timecard.buildertek__Resource__c == null && contactId != '' && contactId != null){
                 timecard.buildertek__Resource__c = contactId;
@@ -97,7 +97,7 @@ timecard.adderror('You Need to close your last Time Card before you can create a
                 timecard.buildertek__Old_Overtime_Hourly_Rate__c = timecard.buildertek__Overtime_Hourly_Rate__c;
             }
         }
-        
+
         list<buildertek__Budget_Item__c> budgetlines = [select id,Name,buildertek__Budget__c from buildertek__Budget_Item__c where id IN : budgetlineids];
         for(buildertek__Budget_Item__c budgetRec : budgetlines){
             for(buildertek__Time_Cards__c exp : newtimecardslist){
@@ -105,9 +105,9 @@ timecard.adderror('You Need to close your last Time Card before you can create a
                 system.debug(' exp.buildertek__Budget__c'+ exp.buildertek__Budget__c);
             }
         }
-        
+
     }
-    
+
     public void afterInsert(List<buildertek__Time_Cards__c> newTimeCard, Map<Id, buildertek__Time_Cards__c> timeCardMap){
         Set<ID> budgetLineId = new Set<ID>();
         string RegularHourlyRate = '';
@@ -130,7 +130,7 @@ timecard.adderror('You Need to close your last Time Card before you can create a
         }
         update budgetItemLines;
     }
-    
+
     public void afterUpdate(List<buildertek__Time_Cards__c> oldTimeCard, List<buildertek__Time_Cards__c> newTimeCard, Map<Id, buildertek__Time_Cards__c> oldTimeCardMap, Map<Id, buildertek__Time_Cards__c> newTimeCardMap){
         Set<ID> budgetLineId = new Set<ID>();
         List<buildertek__Time_Cards__c> timecardList= new List<buildertek__Time_Cards__c>();
@@ -160,7 +160,7 @@ timecard.adderror('You Need to close your last Time Card before you can create a
         }
         if(timecardList.size() > 0){
             for(buildertek__Time_Cards__c timeCard : timecardList){
-                CreateBudgetLineItemForTimeCard.updateBudgetItem(timeCard.Id); 
+                CreateBudgetLineItemForTimeCard.updateBudgetItem(timeCard.Id);
             }
         }
 
@@ -194,7 +194,7 @@ timecard.adderror('You Need to close your last Time Card before you can create a
             budgetItemLine.buildertek__Labor__c = val;
         }
         update budgetItemLines;
-        
+
         budgetLineId = new Set<ID>();
         budgetItemLines = new List<buildertek__Budget_Item__c>();
         for (buildertek__Time_Cards__c timecard : oldTimeCard){
@@ -218,7 +218,7 @@ timecard.adderror('You Need to close your last Time Card before you can create a
         update budgetItemLines;
 
 
-         // Just remove etra budget from Time Card 
+         // Just remove etra budget from Time Card
          List<buildertek__Time_Cards__c> newUpdatedTimeCard = [SELECT Id, Name, buildertek__Budget__c, buildertek__Budget_Line__c FROM buildertek__Time_Cards__c WHERE Id IN: newTimeCardMap.keySet() AND buildertek__Budget__c != null AND buildertek__Budget_Line__c = null];
          List<buildertek__Time_Cards__c> newUpdatedTimeCardList = new List<buildertek__Time_Cards__c>();
          for (buildertek__Time_Cards__c timeCard : newUpdatedTimeCard) {
@@ -228,9 +228,12 @@ timecard.adderror('You Need to close your last Time Card before you can create a
              }
          }
          if (newUpdatedTimeCardList.size() > 0) {
-             update newUpdatedTimeCardList;
+            //! preventing recursion in TimecardTrigger Added by Nishit on 2nd Jan 2024
+            TimeCardTriggerHandler.blnSkipTimecardTrigger = true;
+            update newUpdatedTimeCardList;
+            TimeCardTriggerHandler.blnSkipTimecardTrigger = false;
          }
-        
+
         //date weekStartDate;
         //date weekEndDate;
        /* Set<Id> ContactId = new Set<Id>();
@@ -244,33 +247,33 @@ timecard.adderror('You Need to close your last Time Card before you can create a
         dayNames.add('Thursday');
         dayNames.add('Friday');
         dayNames.add('Saturday');
-        
+
         list<buildertek__Time_Cards__c> timecards = new List<buildertek__Time_Cards__c>();
         for (buildertek__Time_Cards__c timecard : newTimeCard){
             timecardid.add(timecard.buildertek__Resource__c);
-        } 
+        }
         con = [Select Id, Name,buildertek__Weekly_Overtime_Premium__c, buildertek__Weekly__c,buildertek__Hourly_Rate__c, (Select Id,buildertek__Resource__c,buildertek__Resource__r.buildertek__Weekly__c,buildertek__Resource__r.buildertek__Hourly_Rate__c,
                                                         buildertek__Resource__r.buildertek__Weekly_Overtime_Premium__c,buildertek__Hours_Worked__c,buildertek__Start_Time__c FROM buildertek__Time_Cards__r)
                FROM Contact WHERE Id IN :timecardid];
-        
+
         Map<String,List<buildertek__Time_Cards__c>> contactTimeCardMap = new Map<String,List<buildertek__Time_Cards__c>>();
         for(Contact conRec: con){
             contactTimeCardMap.put(conRec.Id, conRec.buildertek__Time_Cards__r);
         }
         system.debug(contactTimeCardMap.keySet());
-        
+
         List<buildertek__Time_Cards__c> updateTimeCardList = new List<buildertek__Time_Cards__c>();
-        
+
         for (buildertek__Time_Cards__c timecard : newTimeCard){
              List<buildertek__Time_Cards__c> timeCardsForContact = new List<buildertek__Time_Cards__c>();
-            
+
             //if contact has weekly threshold then only calculation will execute
             if(timecard.buildertek__Resource__r.buildertek__Weekly__c != null && (timecard.buildertek__Resource__r.buildertek__Daily_Over_Time_Threshold__c == null || timecard.buildertek__Resource__r.buildertek__Daily_Over_Time_Threshold__c == 0)){
                 system.debug('176-->'+'only weekly threshold');
                 timeCardsForContact = contactTimeCardMap.get(timecard.buildertek__Resource__c);
-                Date timeCardStDate=(timeCard.buildertek__Start_Time__c == null) ? null : timeCard.buildertek__Start_Time__c.date(); 
+                Date timeCardStDate=(timeCard.buildertek__Start_Time__c == null) ? null : timeCard.buildertek__Start_Time__c.date();
                 system.debug(timeCardStDate);
-                DateTime currDate = DateTime.newInstance(timeCardStDate.year(), timeCardStDate.month(), timeCardStDate.day()); 
+                DateTime currDate = DateTime.newInstance(timeCardStDate.year(), timeCardStDate.month(), timeCardStDate.day());
                 system.debug(currDate);
                 String todayDay = currDate.format('EEEE');
                 system.debug(todayDay);
@@ -293,7 +296,7 @@ timecard.adderror('You Need to close your last Time Card before you can create a
                                     updateTimeCardList.add(weekTimeCard);
                                     system.debug(weekTimeCard);
                                 }
-                                
+
                             }else{
                                 if(weekTimeCard.buildertek__Hours_Worked__c != null){
                                     system.debug(weekTimeCard.buildertek__Hours_Worked__c);
@@ -301,9 +304,9 @@ timecard.adderror('You Need to close your last Time Card before you can create a
                                     if(weekTimeCard.buildertek__Resource__r.buildertek__Hourly_Rate__c != null){
                                         system.debug(weekTimeCard.buildertek__Resource__r.buildertek__Hourly_Rate__c*weekTimeCard.buildertek__Hours_Worked__c);
                                     }
-                                    
+
                                 }
-                                
+
                             }
                             system.debug(sum);
                         }
@@ -311,13 +314,13 @@ timecard.adderror('You Need to close your last Time Card before you can create a
                 }
                 system.debug(currentWeekTimeCards.Size());
                 system.debug(currentWeekTimeCards);
-                system.debug(updateTimeCardList); 
+                system.debug(updateTimeCardList);
             }else{
                 system.debug('223--> no weekly threshold or has value for daily threshold');
             }
-            
+
         }*/
-        
+
     }
     public void onafterUpdate(List<buildertek__Time_Cards__c> newTimeCard,Map<Id, buildertek__Time_Cards__c> oldTimeCardMap){
         list<Id> expenseids = new list<Id>();
@@ -341,9 +344,9 @@ timecard.adderror('You Need to close your last Time Card before you can create a
                            expenseids.add(exprec.id);
                        }else if(exprec.buildertek__Daily_Expense__c != null && exprec.buildertek__End_Time__c != null && oldTimeCardMap.get(exprec.Id).buildertek__Daily_Expense__c == 0
                                 && oldTimeCardMap.get(exprec.Id).buildertek__End_Time__c == null){
-                                    expids.add(exprec.id); 
+                                    expids.add(exprec.id);
                                 }
-                } 
+                }
                 if(expenseprojectids.size()>0){
                     list<buildertek__Budget__c> budgetist = [select id,Name from buildertek__Budget__c where buildertek__Project__c =: expenseprojectids ORDER BY CreatedDate ASC limit 1];
                     list<buildertek__Time_Cards__c> expList = [select id,Name from buildertek__Time_Cards__c Where ID IN: expenseids];
@@ -353,7 +356,7 @@ timecard.adderror('You Need to close your last Time Card before you can create a
                             budgetids.add(budgetRec.id);
                             system.debug('budgetids'+budgetids);
                              system.debug('exp.id'+exp.id);
-                            createBudgetlineitemForTimeCard_AC.createBudgetLinerecs(budgetids,exp.id);                  
+                            createBudgetlineitemForTimeCard_AC.createBudgetLinerecs(budgetids,exp.id);
                         }
                     }
                 }
@@ -364,14 +367,14 @@ timecard.adderror('You Need to close your last Time Card before you can create a
                         for(buildertek__Budget__c budgetRec : budgetist){
                             BudgetId  = budgetRec.id;
                             budgetids.add(budgetRec.id);
-                            createBudgetlineitemForTimeCard_AC.createBudgetLinerecs(budgetids,exp.id);                  
+                            createBudgetlineitemForTimeCard_AC.createBudgetLinerecs(budgetids,exp.id);
                         }
                     }
                 }
             }
         }
     }
-    
+
     public void afterDelete(List<buildertek__Time_Cards__c> timeCardList, Map<Id, buildertek__Time_Cards__c> timeCardMap){
         Set<ID> budgetLineId = new Set<ID>();
         List<buildertek__Budget_Item__c> budgetItemLines = new List<buildertek__Budget_Item__c>();
@@ -397,7 +400,7 @@ timecard.adderror('You Need to close your last Time Card before you can create a
     list<id> budgetlineids = new list<id>();
         for (buildertek__Time_Cards__c timecard : updatedtimecards){
             if(timecard.buildertek__Budget_Line__c != null && timecardsMap.get(timecard.Id).buildertek__Budget_Line__c  != timecard.buildertek__Budget_Line__c){
-                      budgetlineids.add(timecard.buildertek__Budget_Line__c);              
+                      budgetlineids.add(timecard.buildertek__Budget_Line__c);
                 }
             if (timecard.buildertek__Project__c != null && timecardsMap.get(timecard.Id).buildertek__Project__c != timecard.buildertek__Project__c &&
                 timecardsMap.get(timecard.Id).buildertek__Previous_Project__c == null
@@ -433,7 +436,7 @@ timecard.adderror('You Need to close your last Time Card before you can create a
         DateTime weekEndDate;
         for (buildertek__Time_Cards__c timecard : timeCardList){
             if(timecard.buildertek__Resource__c != null){
-                 currDate = DateTime.newInstance(timecard.buildertek__Start_Time__c.year(), timecard.buildertek__Start_Time__c.month(), timecard.buildertek__Start_Time__c.day()); 
+                 currDate = DateTime.newInstance(timecard.buildertek__Start_Time__c.year(), timecard.buildertek__Start_Time__c.month(), timecard.buildertek__Start_Time__c.day());
                  todayDay = currDate.format('EEEE');
                  weekStartDate = DateTime.newInstance(currDate.year(), currDate.month(), currDate.day()- dayNames.indexOf(todayDay));
                  weekEndDate = DateTime.newInstance(currDate.year(), currDate.month(), currDate.day()+6- dayNames.indexOf(todayDay));
@@ -455,30 +458,30 @@ timecard.adderror('You Need to close your last Time Card before you can create a
             Double val2 = 0;
            Decimal totalhours = 0;
            Integer k = 0;
-          //  for (Integer i = 0; i < conRec.buildertek__Time_Cards__r.size(); i++){  
+          //  for (Integer i = 0; i < conRec.buildertek__Time_Cards__r.size(); i++){
                           //  conRec.buildertek__Time_Cards__r[i].Id = rfqToVendorItemMap.get(i);
                       //  }
             for (buildertek__Time_Cards__c timecard : conRec.buildertek__Time_Cards__r){
                 /*date myDate = date.today();
-                DateTime currDate = DateTime.newInstance(myDate.year(), myDate.month(), myDate.day()); 
+                DateTime currDate = DateTime.newInstance(myDate.year(), myDate.month(), myDate.day());
                 String todayDay = currDate.format('EEEE');
                 DateTime weekStartDate = DateTime.newInstance(currDate.year(), currDate.month(), currDate.day()- dayNames.indexOf(todayDay));
                 DateTime weekEndDate = DateTime.newInstance(currDate.year(), currDate.month(), currDate.day()+6- dayNames.indexOf(todayDay));*/
                 date myDate1 = date.today();
-                DateTime currDate1 = DateTime.newInstance(myDate1.year(), myDate1.month(), myDate1.day()); 
+                DateTime currDate1 = DateTime.newInstance(myDate1.year(), myDate1.month(), myDate1.day());
                 String todayDay1 = currDate1.format('EEEE');
                 DateTime weekStartDate1 = DateTime.newInstance(currDate1.year(), currDate1.month(), currDate1.day()- dayNames.indexOf(todayDay1));
                 DateTime weekEndDate1 = DateTime.newInstance(currDate1.year(), currDate1.month(), currDate1.day()+6- dayNames.indexOf(todayDay1));
                 if(timecard.buildertek__Start_Time__c <= weekEndDate && timecard.buildertek__Start_Time__c >= weekStartDate){
                      if(timecard.buildertek__Start_Time__c <= weekEndDate1 && timecard.buildertek__Start_Time__c >= weekStartDate1){
                           if(timecard.buildertek__Total_Break_Time__c != null && timecard.buildertek__Hours_Worked__c != null){
-                        totalhours =  timecard.buildertek__Hours_Worked__c - timecard.buildertek__Total_Break_Time__c;  
+                        totalhours =  timecard.buildertek__Hours_Worked__c - timecard.buildertek__Total_Break_Time__c;
                     }else if(timecard.buildertek__Total_Break_Time__c == null && timecard.buildertek__Hours_Worked__c != null){
                         totalhours =  timecard.buildertek__Hours_Worked__c;
                     }else if(timecard.buildertek__Hours_Worked__c == null && timecard.buildertek__Total_Break_Time__c != null){
                         totalhours = totalhours - timecard.buildertek__Total_Break_Time__c ;
                     }else{
-                        totalhours = 0; 
+                        totalhours = 0;
                     }
                     Decimal weeklyot = 0;
                     val += totalhours;
@@ -501,13 +504,13 @@ timecard.adderror('You Need to close your last Time Card before you can create a
                     conRec.buildertek__Hours_Worked_This_Week__c = val;
                      }else{
                     if(timecard.buildertek__Total_Break_Time__c != null && timecard.buildertek__Hours_Worked__c != null){
-                        totalhours =  timecard.buildertek__Hours_Worked__c - timecard.buildertek__Total_Break_Time__c;  
+                        totalhours =  timecard.buildertek__Hours_Worked__c - timecard.buildertek__Total_Break_Time__c;
                     }else if(timecard.buildertek__Total_Break_Time__c == null && timecard.buildertek__Hours_Worked__c != null){
                         totalhours =  timecard.buildertek__Hours_Worked__c;
                     }else if(timecard.buildertek__Hours_Worked__c == null && timecard.buildertek__Total_Break_Time__c != null){
                         totalhours = totalhours - timecard.buildertek__Total_Break_Time__c ;
                     }else{
-                        totalhours = 0; 
+                        totalhours = 0;
                     }
                     Decimal weeklyot = 0;
                     system.debug('totalhours'+totalhours);
@@ -535,18 +538,21 @@ timecard.adderror('You Need to close your last Time Card before you can create a
                      }
                      k++;
                     }
-                   }  
+                   }
                 }
                 /*else{
                     System.debug('^^^^^***@#$%^&&*(*@))*&())*&&');
                     System.debug('^^^^^***'+timecard.Id+'@@@@@$$$$$'+timecard.Name);
                 }*/
                }
-            
+
         }
+        //! preventing recursion in TimecardTrigger Added by Nishit on 2nd Jan 2024
+        TimeCardTriggerHandler.blnSkipTimecardTrigger = true;
         update contactlist;
+        TimeCardTriggerHandler.blnSkipTimecardTrigger = false;
         futureContoller.updatetimecardlist(timecardmap);
     }
-    
+
 
 }
