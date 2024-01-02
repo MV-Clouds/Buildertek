@@ -4,7 +4,9 @@ public with sharing class ExpenseLineTriggerHandler {
         try {
             Set<Id> ExpenseIds = new Set<Id>();
             for (buildertek__Expense_Line__c expenseLine : newExpenseLineList) {
-                ExpenseIds.add(expenseLine.buildertek__BT_Expense__c);
+                if(expenseLine.buildertek__BT_Expense__c != null) {
+                    ExpenseIds.add(expenseLine.buildertek__BT_Expense__c);
+                }
             }
             updateAmountOnExpense(ExpenseIds);
         } catch (Exception ex) {
@@ -25,8 +27,13 @@ public with sharing class ExpenseLineTriggerHandler {
     
                 if (expenseLine.buildertek__BT_Expense__c != oldExpenseLine.buildertek__BT_Expense__c ||
                     expenseLine.buildertek__Total__c != oldExpenseLine.buildertek__Total__c) {
-                        expenseIdsToUpdate.add(oldExpenseLine.buildertek__BT_Expense__c);
-                        expenseIdsToUpdate.add(expenseLine.buildertek__BT_Expense__c);
+                        if(oldExpenseLine.buildertek__BT_Expense__c != null){
+                            expenseIdsToUpdate.add(oldExpenseLine.buildertek__BT_Expense__c);
+                        }
+                        
+                        if(expenseLine.buildertek__BT_Expense__c != null){
+                            expenseIdsToUpdate.add(expenseLine.buildertek__BT_Expense__c);
+                        }
                 }
             }
     
@@ -48,7 +55,9 @@ public with sharing class ExpenseLineTriggerHandler {
         try {
             Set<Id> ExpenseIds = new Set<Id>();
             for (buildertek__Expense_Line__c expenseLine : oldExpenseLineList) {
-                ExpenseIds.add(expenseLine.buildertek__BT_Expense__c);
+                if(expenseLine.buildertek__BT_Expense__c != null){
+                    ExpenseIds.add(expenseLine.buildertek__BT_Expense__c);
+                }
             }
             updateAmountOnExpense(ExpenseIds);
         } catch (Exception ex) {
