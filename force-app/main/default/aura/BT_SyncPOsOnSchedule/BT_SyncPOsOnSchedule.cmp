@@ -19,7 +19,8 @@
         }
 
         .po-item {
-        padding: 1rem;
+        padding: 0px;
+        margin-left: 10px;
         border-bottom: 1px solid #d8d8d8;
         display: flex;
         align-items: center !important;
@@ -36,23 +37,22 @@
 
         .dropdown-column {
         width: 40%;
+        position: relative;
+        padding-top: 0px !important;
+        min-width: 0;
+        margin-top: 0px !important;
+        bottom: 8px;
+        right: 6px;
         }
 
     </aura:html>
-    <div class="slds-modal__header"
-        style=" font-weight: bold; font-size: 1.5rem; margin-bottom: 10px; text-align: center;">
+    <div class="slds-modal__header" style="font-size:17px;">
         Sync PO's on Schedule
     </div>
 
     <div class="slds-modal__content">
         <div class="slds slds-scope">
             <table>
-                <thead>
-                    <tr>
-                        <th scope="col" class="slds-text-title--caps slds-text-align_center">Select Schedule Item for
-                            Purchase Order</th>
-                    </tr>
-                </thead>
                 <tbody>
                     <tr>
                         <td>

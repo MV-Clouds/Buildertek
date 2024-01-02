@@ -3,11 +3,11 @@ public without sharing class BT_SyncPOsOnScheduleController {
     @AuraEnabled
     public static List<buildertek__Project_Task__c> fetchScheduleItem(String scheduleId){
         try {
-            List<buildertek__Project_Task__c> scheduleItemList = [Select Id, Name, buildertek__Type__c from buildertek__Project_Task__c where buildertek__Schedule__c = :scheduleId and buildertek__Type__c = 'Task' and buildertek__Purchase_Order__c = '' order by Name asc];
+            List<buildertek__Project_Task__c> scheduleItemList = [SELECT Id, Name, buildertek__Type__c FROM buildertek__Project_Task__c WHERE buildertek__Schedule__c = :scheduleId AND buildertek__Type__c = 'Task' AND buildertek__Purchase_Order__c = null ORDER BY Name ASC];
             return scheduleItemList;
         } catch (Exception e) {
-            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_for_Force_Site__c FROM buildertek__Exception_Log_Store_Option__c];
-            if(StoreExcCustomSetting[0].buildertek__Store_Exception_for_Force_Site__c == true){
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
                 BT_ExceptionHandler.Store_Exception(e);
             }
             return null;
@@ -17,11 +17,11 @@ public without sharing class BT_SyncPOsOnScheduleController {
     @AuraEnabled
     public static List<buildertek__Purchase_Order__c> fetchAllPOs(){
         try {
-            List<buildertek__Purchase_Order__c> poList = [SELECT Id, Name, buildertek__Description__c, buildertek__Vendor__r.Name, buildertek__PO_Total__c FROM buildertek__Purchase_Order__c WHERE buildertek__Schedule_Item__c = '' ORDER BY Name ASC];
+            List<buildertek__Purchase_Order__c> poList = [SELECT Id, Name, buildertek__Description__c, buildertek__Vendor__r.Name, buildertek__PO_Total__c FROM buildertek__Purchase_Order__c WHERE buildertek__Schedule_Item__c = null ORDER BY Name ASC];
             return poList;
         } catch (Exception e) {
-            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_for_Force_Site__c FROM buildertek__Exception_Log_Store_Option__c];
-            if(StoreExcCustomSetting[0].buildertek__Store_Exception_for_Force_Site__c == true){
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
                 BT_ExceptionHandler.Store_Exception(e);
             }
             return null;
@@ -74,8 +74,8 @@ public without sharing class BT_SyncPOsOnScheduleController {
     
             return 'Success';
         } catch (Exception e) {
-            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_for_Force_Site__c FROM buildertek__Exception_Log_Store_Option__c];
-            if (StoreExcCustomSetting[0].buildertek__Store_Exception_for_Force_Site__c == true) {
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
                 BT_ExceptionHandler.Store_Exception(e);
             }
             return 'Error: ' + e.getMessage();
