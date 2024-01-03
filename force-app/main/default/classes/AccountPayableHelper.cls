@@ -4,6 +4,21 @@ public with sharing class AccountPayableHelper {
 
 
     public static void beforeDelete(List<buildertek__Account_Payable__c> listAccountPayable) {
+
+        List<buildertek__Account_Payable_Item__c> listAccountPayableItem = [SELECT Id, Name, buildertek__Purchase_Order_Item__c, buildertek__Purchase_Order_Item__r.Id, buildertek__Purchase_Order_Item__r.buildertek__Quantity_Received__c, buildertek__Account_Payable__c, buildertek__Quantity__c FROM buildertek__Account_Payable_Item__c WHERE buildertek__Account_Payable__c IN :listAccountPayable];
+        List<buildertek__Purchase_Order_Item__c> listPurchaseOrderItem = new List<buildertek__Purchase_Order_Item__c>();
+
+        for(buildertek__Account_Payable_Item__c currAccountPayableItem : listAccountPayableItem) {
+            if(currAccountPayableItem.buildertek__Purchase_Order_Item__r != null) {
+                currAccountPayableItem.buildertek__Purchase_Order_Item__r.buildertek__Quantity_Received__c = currAccountPayableItem.buildertek__Purchase_Order_Item__r.buildertek__Quantity_Received__c - currAccountPayableItem.buildertek__Quantity__c;
+                listPurchaseOrderItem.add(currAccountPayableItem.buildertek__Purchase_Order_Item__r);
+            }
+        }
+
+        if(listPurchaseOrderItem.size() > 0) {
+            update listPurchaseOrderItem;
+        }
+
         for(buildertek__Account_Payable__c currPayable : listAccountPayable) {
             if(String.isNotBlank(currPayable.buildertek__Status__c)) {
                 // Changes as per brian Rquirement discussed on call - 29 nov 2023
