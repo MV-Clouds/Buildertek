@@ -49,7 +49,7 @@ public with sharing class BOMLineTriggerHelper
                                update selectionsheetlist1;
    }*/
 
-   public static void onAfterInsert(List<buildertek__Select_Sheet__c> newBomLineList) {
+    public static void onAfterInsert(List<buildertek__Select_Sheet__c> newBomLineList) {
         try {
             Set<Id> bomIds = new Set<Id>();
             for (buildertek__Select_Sheet__c bomLine : newBomLineList) {
@@ -69,7 +69,7 @@ public with sharing class BOMLineTriggerHelper
         }
     }
 
-   public static void onAfterUpdate(List<buildertek__Select_Sheet__c> newBOMLineList, Map<Id, buildertek__Select_Sheet__c> oldBOMLineMap) {
+    public static void onAfterUpdate(List<buildertek__Select_Sheet__c> newBOMLineList, Map<Id, buildertek__Select_Sheet__c> oldBOMLineMap) {
         try {
             Set<Id> bomIds = new Set<Id>();
 
@@ -100,7 +100,7 @@ public with sharing class BOMLineTriggerHelper
         }
     }
 
-   public static void onAfterDelete(List<buildertek__Select_Sheet__c> oldBOMLineList) {
+    public static void onAfterDelete(List<buildertek__Select_Sheet__c> oldBOMLineList) {
         try {
             Set<Id> bomIds = new Set<Id>();
             for (buildertek__Select_Sheet__c bomLine : oldBOMLineList) {
@@ -118,45 +118,45 @@ public with sharing class BOMLineTriggerHelper
         }
     }
 
-   public static void updateAmountOnBOM(Set<Id> BOMIds) {
-    try {
-        Map<Id, AggregateResult> totalAmountMap = new Map<Id, AggregateResult>();
-        for (AggregateResult aggregatedResult : [SELECT buildertek__Selection_Sheet_Takeoff__c, SUM(buildertek__Total_Costs__c) totalCost, SUM(buildertek__Total_Sales_Price__c) totalSales FROM buildertek__Select_Sheet__c WHERE buildertek__Selection_Sheet_Takeoff__c IN :BOMIds GROUP BY buildertek__Selection_Sheet_Takeoff__c]){
-            Id BOMId = (Id)aggregatedResult.get('buildertek__Selection_Sheet_Takeoff__c');
-            totalAmountMap.put(BOMId, aggregatedResult);
-        }
-        
-        List<buildertek__Project_Selection_Sheet_Takeoff__c> bomToUpdate = new List<buildertek__Project_Selection_Sheet_Takeoff__c>();
-        
-        for (Id BOMId :BOMIds) {
-            if(totalAmountMap.containsKey(BOMId)) {
-                AggregateResult aggregatedResult = totalAmountMap.get(BOMId);
-                Decimal totalCost = (Decimal)aggregatedResult.get('totalCost');
-                Decimal totalSales = (Decimal)aggregatedResult.get('totalSales');
-                buildertek__Project_Selection_Sheet_Takeoff__c bom = new buildertek__Project_Selection_Sheet_Takeoff__c(Id = BOMId);
-                bom.buildertek__Total_Costs__c = totalCost;
-                bom.buildertek__Total_Sales_Price__c = totalSales;
-                bomToUpdate.add(bom);
-            } else {
-                buildertek__Project_Selection_Sheet_Takeoff__c bom = new buildertek__Project_Selection_Sheet_Takeoff__c(Id = BOMId);
-                bom.buildertek__Total_Costs__c = 0;
-                bom.buildertek__Total_Sales_Price__c = 0;
-                bomToUpdate.add(bom);
+    public static void updateAmountOnBOM(Set<Id> BOMIds) {
+        try {
+            Map<Id, AggregateResult> totalAmountMap = new Map<Id, AggregateResult>();
+            for (AggregateResult aggregatedResult : [SELECT buildertek__Selection_Sheet_Takeoff__c, SUM(buildertek__Total_Costs__c) totalCost, SUM(buildertek__Total_Sales_Price__c) totalSales FROM buildertek__Select_Sheet__c WHERE buildertek__Selection_Sheet_Takeoff__c IN :BOMIds GROUP BY buildertek__Selection_Sheet_Takeoff__c]){
+                Id BOMId = (Id)aggregatedResult.get('buildertek__Selection_Sheet_Takeoff__c');
+                totalAmountMap.put(BOMId, aggregatedResult);
+            }
+            
+            List<buildertek__Project_Selection_Sheet_Takeoff__c> bomToUpdate = new List<buildertek__Project_Selection_Sheet_Takeoff__c>();
+            
+            for (Id BOMId :BOMIds) {
+                if(totalAmountMap.containsKey(BOMId)) {
+                    AggregateResult aggregatedResult = totalAmountMap.get(BOMId);
+                    Decimal totalCost = (Decimal)aggregatedResult.get('totalCost');
+                    Decimal totalSales = (Decimal)aggregatedResult.get('totalSales');
+                    buildertek__Project_Selection_Sheet_Takeoff__c bom = new buildertek__Project_Selection_Sheet_Takeoff__c(Id = BOMId);
+                    bom.buildertek__Total_Costs__c = totalCost;
+                    bom.buildertek__Total_Sales_Price__c = totalSales;
+                    bomToUpdate.add(bom);
+                } else {
+                    buildertek__Project_Selection_Sheet_Takeoff__c bom = new buildertek__Project_Selection_Sheet_Takeoff__c(Id = BOMId);
+                    bom.buildertek__Total_Costs__c = 0;
+                    bom.buildertek__Total_Sales_Price__c = 0;
+                    bomToUpdate.add(bom);
+                }
+            }
+
+            System.debug('bomToUpdate: ' + bomToUpdate);
+            if (!bomToUpdate.isEmpty()) {
+                update bomToUpdate;
+            }
+
+        } catch (Exception ex) {
+            System.debug('Error: ' + ex.getMessage());
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                BT_ExceptionHandler.Store_Exception(ex);
             }
         }
-
-        System.debug('bomToUpdate: ' + bomToUpdate);
-        if (!bomToUpdate.isEmpty()) {
-            update bomToUpdate;
-        }
-
-    } catch (Exception ex) {
-        System.debug('Error: ' + ex.getMessage());
-        List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
-        if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
-            BT_ExceptionHandler.Store_Exception(ex);
-        }
     }
-}
 
 }
