@@ -1,0 +1,11 @@
+<aura:component controller="CreatePaymentFromPayableInvController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <lightning:notificationsLibrary aura:id="notifLib"/>
+    <div aura:id="progressbar">
+    	<center>
+	    	<img alt="Creating a new Payment record." src="{!$Resource.gearsloading}" style="height:150px !important;"/>
+	    	<br/>
+	    	Creating a new Payment <br/> Please don't leave this page until Payment is created.
+    	</center> 
+    </div>
+</aura:component>
