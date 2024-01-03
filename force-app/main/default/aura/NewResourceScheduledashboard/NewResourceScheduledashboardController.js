@@ -122,6 +122,7 @@
                		 component.set("v.newContractResource","");
             	}*/
            	 component.set("v.newSelectedProjectId",event.currentTarget.dataset.projid);
+           	 component.set("v.newSelectedProjectIdClone",event.currentTarget.dataset.projid);
             }else{
                 component.set("v.newSelectedProjectId","");
             }
@@ -170,7 +171,7 @@
             
             newFromstr = $A.localizationService.formatDate(newfromdate, "yyyy-MM-dd");
        		 newTostr = $A.localizationService.formatDate(newtodate, "yyyy-MM-dd")
-             
+                console.log('ans 2--->' ,component.get("v.newSelectedProjectId"));
             var action = component.get("c.getScheduleItemsByProject");
             action.setParams({
                 fromDate: newFromstr,//newFromstr.toString(),//fromdateStr,newfromdate
@@ -296,7 +297,7 @@
         $A.util.toggleClass(toggleText, "activeResource");
         var projects = component.get("v.projectList");
         var resources = component.get("v.resourcesList");//component.get("v.eventList");
-        console.log(toggleText.dataset);
+        console.log('Hii->' ,toggleText.dataset);
         var projIndex = Number(toggleText.dataset.projindex);
         var resourceIndex = Number(toggleText.dataset.resourceindex);
         var resourceId = toggleText.dataset.contractresourceid;
@@ -360,12 +361,14 @@
                         
                     }
                 });*/
+                console.log('PROJECT-->' , component.get("v.newSelectedProjectIdClone"));
                 if(component.get("v.recordId") != '' && component.get("v.recordId") != undefined && component.get("v.recordId") != null){
                     component.set("v.newSelectedProjectId",component.get("v.newSelectedProjectIdClone"));
                 }
                 
                 newFromstr = $A.localizationService.formatDate(newfromdate, "yyyy-MM-dd");
        		 	newTostr = $A.localizationService.formatDate(newtodate, "yyyy-MM-dd")
+                    console.log('ans 3--->' ,component.get("v.newSelectedProjectId"));
                 var action = component.get("c.getScheduleItemsByProject");
                 action.setParams({
                     fromDate: newFromstr, //newFromstr.toString(),//fromdateStr,newfromdate
@@ -1919,7 +1922,7 @@
         
         newFromstr = $A.localizationService.formatDate(newfromdate, "yyyy-MM-dd");
        	newTostr = $A.localizationService.formatDate(newtodate, "yyyy-MM-dd")
-        
+           console.log('ans 4--->' ,component.get("v.newSelectedProjectId"));
         var action = component.get("c.getScheduleItemsByProject");
             action.setParams({
                 fromDate: newFromstr,//newFromstr.toString(),//fromdateStr,newfromdate
@@ -2077,7 +2080,7 @@
         
         newFromstr = $A.localizationService.formatDate(newfromdate, "yyyy-MM-dd");
        	newTostr = $A.localizationService.formatDate(newtodate, "yyyy-MM-dd")
-        
+           console.log('ans 5--->' ,component.get("v.newSelectedProjectId"));
         var action = component.get("c.getScheduleItemsByProject");
             action.setParams({
                 fromDate: newFromstr,//newFromstr.toString(),//fromdateStr,newfromdate
@@ -2184,7 +2187,7 @@
         
         newFromstr = $A.localizationService.formatDate(newfromdate, "yyyy-MM-dd");
         newTostr = $A.localizationService.formatDate(newtodate, "yyyy-MM-dd")
-        
+        console.log('ans 1--->' ,component.get("v.newSelectedProjectId"));
         var action = component.get("c.getScheduleItemsByProject");
             action.setParams({
                 fromDate: newFromstr,///newFromstr.toString(),//fromdateStr,newfromdate
