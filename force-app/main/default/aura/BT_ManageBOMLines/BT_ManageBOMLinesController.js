@@ -69,8 +69,7 @@
       },
 
       massUpdateLines: function(component, event, helper){
-        // component.set("v.isLoading", true);
-        try {
+
           var headerIndex = event.getSource().get("v.title");
           var massupdateIndex = component.get("v.massupdateIndex");
           console.log('headerIndex :: ', headerIndex);
@@ -88,7 +87,7 @@
               $A.getCallback(function () {
                 component.set("v.isLoading", false);
               }),
-              3000
+              5000
             );
           }
           else{
@@ -96,38 +95,21 @@
             helper.MassUpdateHelper(component, event, helper, headerIndex, massupdateIndex);
 
           }
-          // if(component.get("v.massUpdateEnable")){
-          //   console.log('Update Records');
-          //   helper.MassUpdateHelper(component, event, helper);
-          // }
-          // else{
-          //   console.log('Enable mass Update');
-          //   component.set("v.massUpdateEnable", true);
-
-          //   var TotalRecord = component.get("v.totalBOMlines");
-          //   var spinnerTimeOut = TotalRecord > 200 ? 10000 : TotalRecord * 40;
-          //   spinnerTimeOut = TotalRecord < 30 ? 1200 : spinnerTimeOut;
-          //   window.setTimeout(
-          //     $A.getCallback(function () {
-          //       component.set("v.isLoading", false);
-          //     }),
-          //     spinnerTimeOut
-          //   );
-          // }
-        } catch (error) {
-            console.log('Error in massUpdateLines : ', error.stack);
-            component.set("v.isLoading", false);
-        }
       },
 
       onMassUpdateCancel: function(component, event, helper){
         try {
+          component.set("v.isLoading", true);
           var headerIndex = event.getSource().get("v.title");
-          console.log('headerIndex :: ', headerIndex);
+          // console.log('headerIndex :: ', headerIndex);
 
           var groupData = component.get("v.dataByGroup");
           groupData[headerIndex].massUpdate = false;
+          var Init_dataByGroup = component.get("v.Init_dataByGroup");
+          groupData[headerIndex] = JSON.parse(JSON.stringify(Init_dataByGroup[headerIndex]));
           component.set("v.dataByGroup", groupData);
+          // $A.get('e.force:refreshView').fire();
+          // component.set("v.isLoading", false);
 
           var massupdateIndex = component.get("v.massupdateIndex");
           massupdateIndex = massupdateIndex.filter(ele => ele !== headerIndex)
@@ -136,12 +118,12 @@
 
           // component.set("v.massUpdateEnable", false);
           // component.set("v.isLoading", true);
-          // window.setTimeout(
-          //     $A.getCallback(function () {
-          //       component.set("v.isLoading", false);
-          //     }),
-          //     3000
-          //   );
+          window.setTimeout(
+              $A.getCallback(function () {
+                component.set("v.isLoading", false);
+              }),
+              1500
+            );
 
         } catch (error) {
           console.log('Error in onMassUpdateCancel : ', error.stack);
@@ -176,12 +158,56 @@
       },
 
       handleLookUpEvent: function(component, event, helper){
-        try {
+          component.set("v.isLoading", true);
           var selectedRecordId = event.getParam("selectedRecordId");
           var index = event.getParam('index');
+          var headerIndex = event.getParam('phaseIndex');
           console.log('selectedRecordId : ', selectedRecordId);
-        } catch (error) {
-          console.log('error im child to parent call : ', error.stack);
-        } 
+          console.log('index : ', event.getParam('index'));
+          console.log('childObjectName : ', event.getParam("childObjectName"));
+          console.log('fieldName : ', event.getParam("fieldName"));
+          // console.log('groupIndex : ', event.getParam('groupIndex'));
+          console.log('phaseIndex : ', event.getParam("phaseIndex"));
+
+          
+          if(event.getParam("fieldName") == 'buildertek__BT_Price_Book__c'){
+            var groupData = component.get("v.dataByGroup");
+            groupData[headerIndex].sObjectRecordsList[index].buildertek__BT_Price_Book__c = selectedRecordId[0];
+            component.set("v.dataByGroup", groupData);
+            // component.set("v.pricebookId", selectedRecordId);
+          }
+          component.set("v.isLoading", false);
+
       },
+      
+
+    ProductSelectHandler: function(component, event, helper){
+        component.set("v.isLoading", true);
+        var setProduct = true;
+
+        // to avoid lag after set product...
+        window.setTimeout(
+          $A.getCallback(function () {
+            helper.setProduct(component, event, helper, setProduct); 
+          }),
+          1000
+        );
+
+    },
+
+    
+
+    clearSelectedHandler :  function(component, event, helper){
+        component.set("v.isLoading", true);
+        var setProduct = false;   // Clear product...
+
+        window.setTimeout(
+          $A.getCallback(function () {
+            helper.setProduct(component, event, helper, setProduct); 
+          }),
+          1000
+        );
+    },
+
+     
 })

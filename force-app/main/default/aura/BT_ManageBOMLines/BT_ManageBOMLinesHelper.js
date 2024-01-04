@@ -162,22 +162,14 @@
                 // console.log("fetchTakeOffLinesData");
                 // console.log({ result });
                 if (result != null) {
-                    // // console.log(result);
-                    //alert(JSON.stringify(result.TakeOffFieldSettings));
 
-                    // bom line data
-                    // if(result.bomLineselectedFields != 'buildertek__Tax__c'){
                     component.set("v.bomLineFieldsSettings", result.bomLineFieldSettings);
                     var bomSelectedFieldsLength =
                         result.bomLineselectedFields.split(",").length;
                     bomSelectedFieldsLength = bomSelectedFieldsLength + 2;
-                    component.set(
-                        "v.bomLineselectedFieldsLength",
-                        bomSelectedFieldsLength
-                    );
+                    component.set("v.bomLineselectedFieldsLength", bomSelectedFieldsLength);
                     component.set("v.bomLineselectedFields", result.bomLineselectedFields);
                     // console.log('>>>>>>>>>>>>>>>>>>>>>>>>>' , component.get("v.bomLineselectedFields"));
-                    // }
                 }
                 var getBOMLineFieldMapAction = component.get(
                     "c.getBOMLineFiledNameAndApi"
@@ -214,63 +206,6 @@
             }
         });
         $A.enqueueAction(action);
-    },
-
-    callGetBOMRecord: function (component, event) {
-        console.log('do init 1');
-        // var action = component.get("c.GetBOMRecord");
-        // action.setParams({
-        //     RecordID : component.get("v.recordId"),
-        // });
-        // action.setCallback(this, function(response){
-        //     console.log('response value : ' , response.getReturnValue());
-        // });
-        // $A.enqueueAction(action);
-
-        var action1 = component.get("c.GetBOMRecord");
-        let temp = component.get("v.recordId");
-        console.log('check tyem ', temp);
-        action1.setParams({
-            RecordID: component.get("v.recordId")
-        });
-        action1.setCallback(this, function (response) {
-            console.log('respone---->', { response });
-            var state = response.getState();
-            if (state === "SUCCESS") {
-                // $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
-                var result = response.getReturnValue();
-                console.log({ result });
-                if (result.Status === 'Success') {
-                    component.get("v.onSuccess")();
-                    // var toastEvent = $A.get("e.force:showToast");
-                    // toastEvent.setParams({
-                    //     "title": "Success!",
-                    //     "message": result.Message,
-                    //     "type": 'Success'
-                    // });
-                    // toastEvent.fire(); 
-                    // // $A.get("e.force:closeQuickAction").fire();  
-                    // window.setTimeout(
-                    //     $A.getCallback(function() {
-                    //         document.location.reload(true);    
-                    //     }), 1000
-                    // );
-                } else {
-                    var toastEvent = $A.get("e.force:showToast");
-                    toastEvent.setParams({
-                        "title": "Error!",
-                        "message": result.Message,
-                        "type": 'Error'
-                    });
-                    toastEvent.fire();
-                }
-            } else {
-                console.log('hehe');
-            }
-        });
-
-
-        $A.enqueueAction(action1);
     },
 
     getPoLinesList: function (component, event, helper, pageNumber, pageSize, headerIndex) {
@@ -627,86 +562,18 @@
                 } else {
                     newObj["groupName"] = result[i][0];
                 }
-                // newObj["groupData"] = result[i][1];
                 var newObj_groupData = result[i][1];
 
                 //dynamic field
                 var selectedFields = component.get("v.bomLineselectedFields").split(",");
                 var mainList = [];
                 var sObjectRecordsList = [];
-                //alert('arrkeys '+i+arrkeys);
                 for (var j in newObj_groupData) {
-                    //alert(obj.groupedRecords[j].Name);
-                    // totalRecords += 1;
-                    // let newList = [];
-                    // if (selectedFields.indexOf("Id") < 0) {
-                    //     selectedFields.unshift("Id");
-                    // }
-                    // // // console.log(newObj['groupData'][j])
-                    // for (var k = 0; k < selectedFields.length; k++) {
-                    //     var AllRowListMap = new Map(Object.entries(newObj_groupData[j]));
-                    //     // // console.log('*****************',AllRowListMap);
-                    //     var keyId = Array.from(AllRowListMap.keys())[0];
-                    //     var mapKey = selectedFields[k];
-                    //     var strrecord = JSON.stringify(
-                    //         Object.entries(newObj_groupData[j])
-                    //     );
-                    //     let indexObj = {};
-                    //     indexObj.fieldType = fieldtypemap[mapKey];
-                    //     if (strrecord.indexOf(mapKey) > 0) {
-                    //         if (mapKey.indexOf("__c") > 0) {
-                    //             indexObj.Key = mapKey;
-                    //             indexObj.Value = AllRowListMap.get(mapKey);
-                    //             indexObj.Id = AllRowListMap.get(keyId);
-                    //         }
-
-                    //         if (mapKey.indexOf("__r") > 0) {
-                    //             // // console.log('^^^^^^^'+(mapKey));
-                    //             // // console.log('^^^^^^^'+JSON.stringify(AllRowListMap.get(mapKey)));
-                    //             // // console.log('^^^^^^^'+JSON.stringify(AllRowListMap));
-                    //             // // console.log('^^^^^^^ out'+JSON.stringify(AllRowListMap.get(mapKey)));
-                    //             if (AllRowListMap.get(mapKey) != undefined) {
-                    //                 // // console.log('^^^^^^^ inn'+AllRowListMap.get(mapKey));
-                    //                 var AllRowListMap2 = new Map(
-                    //                     Object.entries(AllRowListMap.get(mapKey))
-                    //                 );
-                    //                 var mapKey2 = Array.from(AllRowListMap2.keys())[0];
-                    //                 indexObj.Key = mapKey;
-                    //                 indexObj.Value = AllRowListMap2.get(mapKey2);
-                    //                 indexObj.Id = AllRowListMap.get(keyId);
-                    //             }
-                    //         }
-                    //         if (mapKey == "Name") {
-                    //             indexObj.Key = mapKey;
-                    //             indexObj.Value = AllRowListMap.get(mapKey);
-                    //             indexObj.Id = AllRowListMap.get(keyId);
-                    //         }
-                    //         if (mapKey == "Id") {
-                    //             indexObj.Key = mapKey;
-                    //             indexObj.Value = AllRowListMap.get(mapKey);
-                    //             indexObj.Id = AllRowListMap.get(keyId);
-                    //             indexObj.showVendorIcon = newObj_groupData[j]["showIcon"];
-                    //         }
-                    //     } else {
-                    //         indexObj.Key = mapKey;
-                    //         indexObj.Value = "";
-                    //         indexObj.Id = AllRowListMap.get(keyId);
-                    //         indexObj.showVendorIcon = newObj_groupData[j]["showIcon"];
-                    //     }
-
-                    //     newList.push(indexObj);
-                    // }
-                    // /* newList.unshift({'Key':'showVenordIcon','showVenordIcon': newObj['groupData'][j]['showIcon'] })
-                    //         delete newObj['groupData'][j]['showIcon'];*/
-                    // delete newObj_groupData[j]["showIcon"];
-                    // mainList.push(newList);
                     sObjectRecordsList.push(
                         sObjectRecordsMap.get(newObj_groupData[j].Id)
                     );
-                    //alert(sObjectRecordsMap.get(newObj['groupData'][j].Id));
                 }
 
-                // newObj.groupedRecordsTmp = mainList;
                 newObj.sObjectRecordsList = sObjectRecordsList;
                 
                 // if(massupdateIndex.includes(parseInt(i))){
@@ -725,6 +592,9 @@
 
             component.set("v.totalBOMlines", totalRecords);
             component.set("v.dataByGroup", groupData);
+            // var Init_dataByGroup = $A.util.json.deepClone(groupData);
+            // Init_dataByGroup.push(groupData);
+            component.set("v.Init_dataByGroup", JSON.parse(JSON.stringify(groupData)));
             console.log('Inside formatDataByGroups >> ', component.get("v.dataByGroup"));
             // console.log("groupData===");
             // console.log({ groupData });
@@ -739,7 +609,7 @@
                 //   helper.calculateCostAdjustment(component, event, helper);
             }
             // $A.get('e.force:refreshView').fire();
-            component.set("v.isLoading", false);
+                component.set("v.isLoading", false);
         }
         catch (error) {
             console.log('error in formatDataByGroups : ', error.stack);
@@ -765,45 +635,64 @@
         component.set("v.isLoading", true);
         var x = component.get("v.dataByGroup");
         var data = JSON.parse(JSON.stringify(component.get("v.dataByGroup")));
+        var BOMlinesWithoutName = [];
+        var groupName = '';
         var newList = [];
         for (var i in data) {
-        for (var j in data[i].sObjectRecordsList) {
-            newList.push(data[i].sObjectRecordsList[j]);
+            if(headerIndex == i){
+                for (var j in data[i].sObjectRecordsList) {
+                    if(data[i].sObjectRecordsList[j].Name == null || (data[i].sObjectRecordsList[j].Name).trim()  == ''){
+                        BOMlinesWithoutName.push(j + 1);
+                        groupName = data[i].groupName;
+                    }
+                    else{
+                        newList.push(data[i].sObjectRecordsList[j]);
+                    }
+                }
+            }
         }
-        }
-        var action = component.get("c.updateBOMlines");
-        action.setParams({
-        recordId: component.get("v.recordId"),
-        updatedRecords: JSON.stringify(newList),
-        });
-
-        action.setCallback(this, function (response) {
-        var state = response.getState();
-        var Result = response.getReturnValue();
-        if (Result === "successfull") {
-                var pageNumber = component.get("v.PageNumber");
-                var pageSize = component.get("v.pageSize");
-
-                var groupData = component.get("v.dataByGroup");
-                groupData[headerIndex].massUpdate = false;
-                component.set("v.dataByGroup", groupData);
-                
-                var massupdateIndex = component.get("v.massupdateIndex");
-                massupdateIndex = massupdateIndex.filter(ele => ele !== headerIndex)
-                component.set("v.massupdateIndex", massupdateIndex);
-                console.log('formate data apex call ', massupdateIndex);
-                
-                helper.getPoLinesList(component, event, helper, pageNumber, pageSize, headerIndex);
-                helper.ToastMessageUtilityMethod(component, "Success", 'Records Updated Succcessfully', 'success', 3000);
-            // component.set("v.massUpdateEnable", false);
-            // component.set("v.isLoading", false);
-        }
-        else {
-            helper.ToastMessageUtilityMethod(component, "Error", 'Something Went Wrong', 'error', 3000);
+        if(BOMlinesWithoutName.length > 0){
+            var Message = 'You can not update items without Product Name Proposal. Item(s) at line no: '+ BOMlinesWithoutName.join(', ') + ' dose not have Product Name Proposal. Phase : '+ groupName +'.'
+            helper.ToastMessageUtilityMethod(component, 'Error', Message, 'error', 5000);
             component.set("v.isLoading", false);
         }
-        });
-        $A.enqueueAction(action);
+        else{
+
+            console.log('update records : ' , newList);
+            var action = component.get("c.updateBOMlines");
+            action.setParams({
+            recordId: component.get("v.recordId"),
+            updatedRecords: JSON.stringify(newList),
+            });
+    
+            action.setCallback(this, function (response) {
+            var state = response.getState();
+            var Result = response.getReturnValue();
+            if (Result === "successfull") {
+                    var pageNumber = component.get("v.PageNumber");
+                    var pageSize = component.get("v.pageSize");
+    
+                    var groupData = component.get("v.dataByGroup");
+                    groupData[headerIndex].massUpdate = false;
+                    component.set("v.dataByGroup", groupData);
+                    
+                    // var massupdateIndex = component.get("v.massupdateIndex");
+                    // massupdateIndex = massupdateIndex.filter(ele => ele !== headerIndex)
+                    // component.set("v.massupdateIndex", massupdateIndex);
+                    // console.log('formate data apex call ', massupdateIndex);
+                    
+                    helper.getPoLinesList(component, event, helper, pageNumber, pageSize, headerIndex);
+                    helper.ToastMessageUtilityMethod(component, "Success", 'Records Updated Succcessfully', 'success', 3000);
+                // component.set("v.massUpdateEnable", false);
+                // component.set("v.isLoading", false);
+            }
+            else {
+                helper.ToastMessageUtilityMethod(component, "Error", 'Something Went Wrong', 'error', 3000);
+                component.set("v.isLoading", false);
+            }
+            });
+            $A.enqueueAction(action);
+        }
     },
 
     ToastMessageUtilityMethod: function(component, Title, Message, Type, Duration){
@@ -815,6 +704,67 @@
             duration: Duration,
         });
         toastEvent.fire();
-    }
+    },
+
+    setProduct: function(component, event, helper, setProduct){
+        try {
+            
+            var index = event.getParam("index");
+            var headerIndex = event.getParam("phaseIndex");
+            
+            var groupData = component.get("v.dataByGroup");
+            if(setProduct){
+                console.log("product : ", JSON.parse(JSON.stringify(event.getParam("recordByEvent"))));
+                var product = JSON.parse(JSON.stringify(event.getParam("recordByEvent")));
+                if(product){
+                    console.log('pricebookEntrybyProd : ' ,  event.getParam("PricebookEntryrecordByEvent"));
+                    var pricebookEntry = event.getParam("PricebookEntryrecordByEvent");
+                    var uom = product.QuantityUnitOfMeasure;
+                    var unitCost = pricebookEntry != null ? (pricebookEntry.buildertek__Unit_Cost__c != null ? pricebookEntry.buildertek__Unit_Cost__c : 0) : 0;
+                    var markup = pricebookEntry != null ? (pricebookEntry.buildertek__Markup__c != null ? pricebookEntry.buildertek__Markup__c : 0) : 0;
+                    var quantity = groupData[headerIndex].sObjectRecordsList[index].buildertek__Quantity__c;
+    
+                    groupData[headerIndex].sObjectRecordsList[index].buildertek__Product__r = product;
+                    groupData[headerIndex].sObjectRecordsList[index].buildertek__Product__c = product.Id;
+                    groupData[headerIndex].sObjectRecordsList[index].Name = product.Name;
+                    groupData[headerIndex].sObjectRecordsList[index].buildertek__Vendor__c = product.buildertek__Vendor__c;
+                    groupData[headerIndex].sObjectRecordsList[index].buildertek__UOM_Picklist__c =  uom;
+                    groupData[headerIndex].sObjectRecordsList[index].buildertek__BL_UNIT_COST__c = unitCost;
+                    groupData[headerIndex].sObjectRecordsList[index].buildertek__BL_MARKUP__c = markup;
+                    groupData[headerIndex].sObjectRecordsList[index].buildertek__Total_Costs__c = (quantity * markup);
+                    groupData[headerIndex].sObjectRecordsList[index].buildertek__BL_LIST_PRICE_F__c = (((unitCost * markup) + unitCost) * quantity);
+                    groupData[headerIndex].sObjectRecordsList[index].buildertek__Total_Sales_Price__c = (((unitCost * markup) + unitCost) * quantity) * quantity;
+                }
+              }
+              else {
+                    groupData[headerIndex].sObjectRecordsList[index].buildertek__Product__r = null;
+                    groupData[headerIndex].sObjectRecordsList[index].buildertek__Product__c = null;
+                    groupData[headerIndex].sObjectRecordsList[index].Name = null;
+                    groupData[headerIndex].sObjectRecordsList[index].buildertek__Vendor__c = null;
+                    groupData[headerIndex].sObjectRecordsList[index].buildertek__UOM_Picklist__c =  null;
+                    groupData[headerIndex].sObjectRecordsList[index].buildertek__BL_UNIT_COST__c = 0;
+                    groupData[headerIndex].sObjectRecordsList[index].buildertek__BL_MARKUP__c = 0;
+                    groupData[headerIndex].sObjectRecordsList[index].buildertek__Total_Costs__c = 0;
+                    groupData[headerIndex].sObjectRecordsList[index].buildertek__BL_LIST_PRICE_F__c = 0;
+                    groupData[headerIndex].sObjectRecordsList[index].buildertek__Total_Sales_Price__c = 0;
+              }
+    
+                groupData[headerIndex].massUpdate = false;
+                component.set("v.dataByGroup", groupData);
+                groupData[headerIndex].massUpdate = true;
+                component.set("v.dataByGroup", groupData);
+                console.log('dataByGroup : ', component.get("v.dataByGroup"));
+    
+                window.setTimeout(
+                    $A.getCallback(function () {
+                    component.set("v.isLoading", false);
+                    }),
+                    500
+                );
+        } catch (error) {
+            console.log('error in setProduct : ', error.stack);
+            
+        }
+      },
 
 })

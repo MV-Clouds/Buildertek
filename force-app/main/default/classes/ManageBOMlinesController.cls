@@ -584,6 +584,7 @@ public without sharing class ManageBOMlinesController {
     public static string updateBOMlines(String recordId, String updatedRecords){
         try {
             if (String.isNotBlank(updatedRecords)){
+                system.debug('updatedRecords : ' + updatedRecords);
                 List<buildertek__Select_Sheet__c> items = (List<buildertek__Select_Sheet__c>)JSON.deserialize(updatedRecords, List<buildertek__Select_Sheet__c>.class);
                 for (buildertek__Select_Sheet__c item : items){
                     System.debug('<--item-->'+item);
@@ -591,6 +592,7 @@ public without sharing class ManageBOMlinesController {
                     if (item.Id == null){
                         item.buildertek__Selection_Sheet_Takeoff__c = recordId;
                     }
+                    item.Name = item.Name.length() > 79 ? item.Name.substring(0, 79) : item.Name;
                 }
                 if (items.size() > 0){
                     upsert items;

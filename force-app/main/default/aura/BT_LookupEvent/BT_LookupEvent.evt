@@ -3,6 +3,8 @@
     <aura:attribute name="fieldName" type="String" />
     <aura:attribute name="selectedRecordId" type="String" />
     <aura:attribute name="index" type="Integer" />
+    <aura:attribute name="phaseIndex" type="Integer" />
+    <aura:attribute name="groupindex" type="Integer" />
     <aura:attribute name="listOfTakeOffLines" type="Project_Takeoff_Lines__c[]" />
     <aura:attribute name="listOfToDoItems" type="To_Do_Items__c[]" />
     <aura:attribute name="listOfScheduleItems" type="Project_Task__c[]" />
