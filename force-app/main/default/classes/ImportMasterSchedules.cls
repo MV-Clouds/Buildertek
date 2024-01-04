@@ -66,9 +66,21 @@ public with sharing class ImportMasterSchedules{
 
             if (initialDate == null){
                 initialDate = [SELECT Id, buildertek__Initial_Start_Date__c
-                               FROM buildertek__Schedule__c
-                               WHERE Id = :recordId].buildertek__Initial_Start_Date__c;
+                            FROM buildertek__Schedule__c
+                            WHERE Id = :recordId].buildertek__Initial_Start_Date__c;
             }
+
+            buildertek__Schedule__c masterSchedule = [SELECT Id, Name, buildertek__Start_Date__c, buildertek__Initial_Start_Date__c FROM buildertek__Schedule__c WHERE Id IN: scheduleRecIds];
+            String businessHourId = [SELECT Id, IsDefault, IsActive FROM BusinessHours WHERE IsDefault = true LIMIT 1].Id;
+            date masterStartDate = masterSchedule.buildertek__Start_Date__c;
+            if (masterStartDate == null) {
+                masterStartDate = System.today();
+            }
+            DateTime oldDate = DateTime.newInstance(masterStartDate.year(), masterStartDate.month(),masterStartDate.day());
+            DateTime newDate = DateTime.newInstance(initialDate.year(), initialDate.month(),initialDate.day());
+
+            Long diffDays = System.BusinessHours.diff(businessHourId, oldDate, newDate);
+
 
             existedScheduleitems = [select id, buildertek__Completion__c, buildertek__Contractor__c, buildertek__Contractor_Resource__c, buildertek__Duration__c, buildertek__Finish__c, buildertek__Resource__c, buildertek__Lag__c, buildertek__Milestone__c, buildertek__Notes__c, buildertek__Order__c, buildertek__Original_End_Date__c, buildertek__Original_Start_Date__c, buildertek__Phase__c, buildertek__Type__c, buildertek__Dependency__c, buildertek__Project__c, buildertek__Purchase_Order__c, buildertek__Reason_for_Date_Change__c, buildertek__Reason_for_Date_Change_PL__c, buildertek__Required_Completion_Date__c, buildertek__Schedule__c, buildertek__Start__c, Name
                                     from buildertek__Project_Task__c
@@ -140,8 +152,14 @@ public with sharing class ImportMasterSchedules{
                         schItem.buildertek__Schedule__c = recordId;
                         schItem.buildertek__Order__c = count;
                         schItem.buildertek__Reference_for_Import__c = scheduleitem.Id;
+
+                        DateTime sDate = DateTime.newInstance(scheduleitem.buildertek__Start__c.year(), scheduleitem.buildertek__Start__c.month(),scheduleitem.buildertek__Start__c.day());
+                        DateTime eDate = DateTime.newInstance(scheduleitem.buildertek__Finish__c.year(), scheduleitem.buildertek__Finish__c.month(),scheduleitem.buildertek__Finish__c.day());
+
+
                         if (initialDate != null){
-                            schItem.buildertek__Start__c = initialDate;
+                            schItem.buildertek__Start__c = System.BusinessHours.add(businessHourId, sDate, diffDays).date();
+                            schItem.buildertek__Finish__c = System.BusinessHours.add(businessHourId, eDate, diffDays).date();
                             System.debug('start date in import master before insertion ==> ' + schItem.buildertek__Start__c);
                         } else{
                             //fromNewSchedule != null && fromNewSchedule &&
