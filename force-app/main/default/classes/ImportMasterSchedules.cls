@@ -66,8 +66,8 @@ public with sharing class ImportMasterSchedules{
 
             if (initialDate == null){
                 initialDate = [SELECT Id, buildertek__Initial_Start_Date__c
-                            FROM buildertek__Schedule__c
-                            WHERE Id = :recordId].buildertek__Initial_Start_Date__c;
+                FROM buildertek__Schedule__c
+                WHERE Id = :recordId].buildertek__Initial_Start_Date__c;
             }
 
             buildertek__Schedule__c masterSchedule = [SELECT Id, Name, buildertek__Start_Date__c, buildertek__Initial_Start_Date__c FROM buildertek__Schedule__c WHERE Id IN: scheduleRecIds];
@@ -75,6 +75,9 @@ public with sharing class ImportMasterSchedules{
             date masterStartDate = masterSchedule.buildertek__Start_Date__c;
             if (masterStartDate == null) {
                 masterStartDate = System.today();
+            }
+            if (initialDate == null) {
+                initialDate = System.today();
             }
             DateTime oldDate = DateTime.newInstance(masterStartDate.year(), masterStartDate.month(),masterStartDate.day());
             DateTime newDate = DateTime.newInstance(initialDate.year(), initialDate.month(),initialDate.day());
@@ -156,17 +159,9 @@ public with sharing class ImportMasterSchedules{
                         DateTime sDate = DateTime.newInstance(scheduleitem.buildertek__Start__c.year(), scheduleitem.buildertek__Start__c.month(),scheduleitem.buildertek__Start__c.day());
                         DateTime eDate = DateTime.newInstance(scheduleitem.buildertek__Finish__c.year(), scheduleitem.buildertek__Finish__c.month(),scheduleitem.buildertek__Finish__c.day());
 
-
-                        if (initialDate != null){
-                            schItem.buildertek__Start__c = System.BusinessHours.add(businessHourId, sDate, diffDays).date();
-                            schItem.buildertek__Finish__c = System.BusinessHours.add(businessHourId, eDate, diffDays).date();
-                            System.debug('start date in import master before insertion ==> ' + schItem.buildertek__Start__c);
-                        } else{
-                            //fromNewSchedule != null && fromNewSchedule &&
-                            Date today = system.today();
-                            schItem.buildertek__Start__c = today;
-                            System.debug('start date in else condition import master before insertion ==> ' + schItem.buildertek__Start__c);
-                        }
+                        schItem.buildertek__Start__c = System.BusinessHours.add(businessHourId, sDate, diffDays).date();
+                        schItem.buildertek__Finish__c = System.BusinessHours.add(businessHourId, eDate, diffDays).date();
+                        System.debug('start date in import master before insertion ==> ' + schItem.buildertek__Start__c);
                         //else{
                         //schItem.buildertek__Start__c = scheduleitem.buildertek__Start__c;
                         //}
