@@ -309,38 +309,38 @@
                                                 <lightning:icon iconName="utility:delete" size="xx-small" />   
                                             </span>                     
                                         </td>
-                                        <td style="width:16% !important">
+                                        <td style="width:14% !important">
                                             <lightning:input name="input1" label="" value="{!item.buildertek__Size__c}" disabled="true" />
                                         </td>
-                                        <td style="width:18% !important">
+                                        <td style="width:16% !important">
                                             <lightning:input name="input1" label="" value="{!item.Name}" disabled="true" />
                                         </td>
-                                        <td style="width:18% !important">
+                                        <td style="width:16% !important">
                                             <lightning:input name="input3" label="" value="{!item.buildertek__Description__c}" />
                                         </td>
-                                        <td style="width:18% !important">
+                                        <td style="width:14% !important">
                                             <lightning:select  name="mySelect" label="" value="{!item.buildertek__Grouping__c}">
                                                 <aura:iteration items="{!v.quoteLineGroupOptions}" var="rec">
                                                     <option value="{!rec.value}" >{!rec.key}</option>
                                                 </aura:iteration>
                                             </lightning:select>
                                         </td>
-                                        <td style="width:6% !important">
+                                        <td style="width:5% !important">
                                             <lightning:input name="input4" label="" value="{!item.buildertek__Quantity__c}" />
                                         </td>
                                         <td style="width:9% !important">
                                             <lightning:input name="input6" label="" value="{!item.buildertek__Unit_Cost__c}" formatter="currency" type="number" maximumFractionDigits="5" step="0.01" />
                                         </td>
-                                        <td style="width:6% !important">
+                                        <td style="width:7% !important">
                                             <lightning:input name="input8" label="" value="{!item.buildertek__Cost_Code__c}" disabled="true"/>
                                         </td>
-                                        <td style="width:6% !important">
+                                        <td style="width:9% !important">
                                             <lightning:input name="input2" label="" value="{!item.buildertek__Unit_Price__c}" formatter="currency" type="number" maximumFractionDigits="5" step="0.01" />
                                         </td>
-                                        <td style="width:2% !important">
+                                        <td style="width:5% !important">
                                             <lightning:input name="input7" label="" value="{!item.buildertek__Markup__c}" />
                                         </td>
-                                        <td style="width:1% !important">
+                                        <td style="width:5% !important">
                                             <lightning:input name="input5" label="" value="{!item.buildertek__Additional_Discount__c}"/>
                                         </td>
                                     </tr>
