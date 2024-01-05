@@ -11,9 +11,9 @@
                     component.set("v.RecordExist", true);
                     var pageSize = component.get("v.pageSize");
                     component.set("v.allPurchaseOrderList", result);
-                    component.set("v.totalRecords", component.get("v.allPurchaseOrderList").length);
+                    component.set("v.totalRecords", component.get("v.allPurchaseOrderList").length - 1);
                     component.set("v.startPage",0);
-                    component.set("v.endPage",pageSize);
+                    component.set("v.endPage",pageSize - 1);
                     var PaginationList = [];
                     for(var i=0; i< pageSize; i++){
                         if(component.get("v.allPurchaseOrderList").length> i)
