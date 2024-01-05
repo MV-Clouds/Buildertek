@@ -47,9 +47,8 @@ trigger AccountPayableTrigger on buildertek__Account_Payable__c (before insert,b
             AccountPayableHelper.afterUpdate(Trigger.old, Trigger.new, Trigger.newMap, trigger.oldMap); 
             AccountPayableHelper.DeleteBudgetLine(Trigger.old ,Trigger.new , Trigger.oldMap , Trigger.newMap);
 
-        } 
-        // else if(Trigger.isDelete){
-        //     AccountPayableHelper.onAfterDelete(Trigger.old); 
-        // }
+        } else if(Trigger.isDelete){
+            AccountPayableHelper.onAfterDelete(Trigger.old); 
+        }
     }
 }
