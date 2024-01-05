@@ -17,6 +17,7 @@
         action.setCallback(this, function (response) {
             var fieldSetObj = JSON.parse(response.getReturnValue());
             component.set("v.fieldSetValues", fieldSetObj);
+            console.log('fieldSetObj:::', fieldSetObj);
             helper.getTotalRecord(component, event, helper);
             var pageNumber = component.get("v.PageNumber");
             var pageSize = component.get("v.pageSize");

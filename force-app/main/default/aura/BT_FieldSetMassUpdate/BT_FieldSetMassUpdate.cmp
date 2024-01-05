@@ -66,7 +66,7 @@
                 onchange="{!c.onInputChange}"/>-->
 
             <lightning:textarea value="{!v.cellValue}" name="{!v.index+'-'+v.fieldName}"
-                onchange="{!c.onInputChange}"/>
+                onchange="{!c.onInputChange}" oncommit="{!c.onInputChange}"/>
             
         </aura:if>
         <aura:if isTrue="{!v.isDateField}">
@@ -269,7 +269,7 @@
 
           <aura:if isTrue="{!v.cellValue}">
               <ui:outputURL value="{!'/one/one.app?#/sObject/'+ v.cellValue + '/view'}"
-                            label="{!v.cellLabel}" />
+                            label="{!v.cellLabel}" target="_blank"/>
             <aura:set attribute="else">
                 <ui:outputText value="-" />
             </aura:set>
