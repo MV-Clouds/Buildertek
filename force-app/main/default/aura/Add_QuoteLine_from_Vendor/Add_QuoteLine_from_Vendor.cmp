@@ -191,47 +191,47 @@
                                             <lightning:input type="checkbox" name="input1" checked="{!product.Selected}" id="{!product.PriceBookEntryId}" onchange="{!c.checkboxChange}" />
                                             </div>
                                         </td>
-                                        <td data-label="Pricebook Name" class="" style="width:10% !important">
+                                        <td data-label="Pricebook Name" class="" style="width:16% !important">
                                             <div class="slds-truncate" title='{!product.PriceBookName}'>
                                                 {!product.PriceBookName}
                                             </div>
                                         </td>
-                                        <td data-label="Product Name" class="" style="width:20% !important">
+                                        <td data-label="Product Name" class="" style="width:18% !important">
                                             <div class="trncatediv" title='{!product.Name}'>
                                                 {!product.Name}
                                             </div>
                                         </td>
-                                        <td data-label="Product Family" scope="row" style="width:10% !important">
+                                        <td data-label="Product Family" scope="row" style="width:18% !important">
                                             <div class="slds-truncate" title='{!product.Family}'>
                                                 {!product.Family}
                                             </div>
                                         </td>
-                                        <td data-label="Product Description" class="" style="width:15% !important">
+                                        <td data-label="Product Description" class="" style="width:16% !important">
                                             <div class="trncatediv" title='{!product.Description}'>
                                                 {!product.Description}
                                             </div>
                                         </td>
-                                        <td data-label="Vendor" class="" style="width:10% !important">
+                                        <td data-label="Vendor" class="" style="width:6% !important">
                                             <div class="slds-truncate" title='{!product.Vendor}'>
                                                 {!product.Vendor}
                                             </div>
                                         </td>
-                                        <td data-label="Product Code" style="width:10% !important">                                        
+                                        <td data-label="Product Code" style="width:6% !important">                                        
                                             <div class="slds-truncate" title='{!product.CostCode}'>
                                                 {!product.CostCode}
                                             </div>
                                         </td>
-                                        <td data-label="Product Code" style="width:10% !important">                                        
+                                        <td data-label="Product Code" style="width: 7% !important">                                        
                                             <div class="slds-truncate" title='{!product.ProductCode}'>
                                                 {!product.ProductCode}
                                             </div>
                                         </td>
-                                        <td data-label="Unit Cost" style="width:5% !important">
+                                        <td data-label="Unit Cost" style="width:6% !important">
                                             <div class="slds-truncate" title='{!product.UnitCost}' >
                                                 <lightning:formattedNumber value="{!product.UnitCost}" style="currency"/>
                                             </div>
                                         </td>
-                                        <td data-label="List Price" style="width:5% !important">
+                                        <td data-label="List Price" style="width:2% !important">
                                             <div class="slds-truncate" title='{!product.UnitPrice}' >
                                                 <lightning:formattedNumber value="{!product.UnitPrice}" style="currency"/>
                                             </div>
@@ -304,44 +304,44 @@
                             <tbody>
                                 <aura:iteration items="{!v.selectedProducts}" var="item" indexVar="recIndex">
                                     <tr title="Product">
-                                        <td>
+                                        <td style="padding-top: 15px;">
                                             <span data-id="{!item.PriceBookEntryId}"  onclick="{!c.removeQuoteLine}">
                                                 <lightning:icon iconName="utility:delete" size="xx-small" />   
                                             </span>                     
                                         </td>
-                                        <td>
+                                        <td style="width:14% !important">
                                             <lightning:input name="input1" label="" value="{!item.buildertek__Size__c}" disabled="true" />
                                         </td>
-                                        <td>
+                                        <td style="width:16% !important">
                                             <lightning:input name="input1" label="" value="{!item.Name}" disabled="true" />
                                         </td>
-                                        <td>
+                                        <td style="width:16% !important">
                                             <lightning:input name="input3" label="" value="{!item.buildertek__Description__c}" />
                                         </td>
-                                        <td>
+                                        <td style="width:14% !important">
                                             <lightning:select  name="mySelect" label="" value="{!item.buildertek__Grouping__c}">
                                                 <aura:iteration items="{!v.quoteLineGroupOptions}" var="rec">
                                                     <option value="{!rec.value}" >{!rec.key}</option>
                                                 </aura:iteration>
                                             </lightning:select>
                                         </td>
-                                        <td>
+                                        <td style="width:5% !important">
                                             <lightning:input name="input4" label="" value="{!item.buildertek__Quantity__c}" />
                                         </td>
-                                        <td>
+                                        <td style="width:9% !important">
                                             <lightning:input name="input6" label="" value="{!item.buildertek__Unit_Cost__c}" formatter="currency" type="number" maximumFractionDigits="5" step="0.01" />
                                         </td>
-                                        <td>
+                                        <td style="width:7% !important">
                                             <lightning:input name="input8" label="" value="{!item.buildertek__Cost_Code__c}" disabled="true"/>
                                         </td>
-                                        <td>
+                                        <td style="width:9% !important">
                                             <lightning:input name="input2" label="" value="{!item.buildertek__Unit_Price__c}" formatter="currency" type="number" maximumFractionDigits="5" step="0.01" />
                                         </td>
-                                        <td>
+                                        <td style="width:5% !important">
                                             <lightning:input name="input7" label="" value="{!item.buildertek__Markup__c}" />
                                         </td>
-                                        <td>
-                                            <lightning:input name="input5" label="" value="{!item.buildertek__Additional_Discount__c}" />
+                                        <td style="width:5% !important">
+                                            <lightning:input name="input5" label="" value="{!item.buildertek__Additional_Discount__c}"/>
                                         </td>
                                     </tr>
                                 </aura:iteration>

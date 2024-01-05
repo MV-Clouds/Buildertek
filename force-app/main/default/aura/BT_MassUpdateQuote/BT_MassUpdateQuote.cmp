@@ -108,7 +108,7 @@
                     <tbody>
                         <aura:iteration items="{!v.quoteLineWrapperList}" var="quoteLineWrapper" indexVar="index">
                             <tr class="slds-hint-parent">
-                                <td>
+                                <td style="width: 12% !important;">
                                     <lightning:select name="{!index}" value="{!quoteLineWrapper.pricebookEntryId}" class="pricebook-class pointer1" onchange="{!c.getFamily}">
                                         <aura:iteration items="{!v.pricebookOptions}" var="pricebookOption">
                                             <option name="{!quoteLineWrapper}" value="{!pricebookOption.value}">{!pricebookOption.label}</option>
@@ -116,14 +116,14 @@
                                     </lightning:select>
 
                                 </td>
-                                <td>
+                                <td style="width: 10% !important;">
                                     <lightning:select name="{!index}" value="{!quoteLineWrapper.productFamily}" class="family-class pointer1" onchange="{!c.getProduct}">
                                         <aura:iteration items="{!quoteLineWrapper.productFamilyList}" var="productFamilyOption">
                                             <option name="{!quoteLineWrapper}" value="{!productFamilyOption.value}">{!productFamilyOption.label}</option>
                                         </aura:iteration>
                                     </lightning:select>
                                 </td>
-                                <td >
+                                <td style="width: 18% !important;">
                                     <aura:html tag="style">
                                         .mainDiv{
                                             padding-top:0% !important;
@@ -143,10 +143,10 @@
                                     <c:BT_LightningLookup objectAPIName="Product2"  IconName="standard:product" selectedRecord="{!quoteLineWrapper.selectedLookUpRecord}" aura:id="productId"   parentId="{!quoteLineWrapper.pricebookEntryId}" prodctfamly="{!quoteLineWrapper.productFamily != '' ? quoteLineWrapper.productFamily : 'All Families'}" />
                                     
                                 </td>
-                                <td>
+                                <td style="width: 15% !important;">
                                     <lightning:input name="{!index}" value="{!quoteLineWrapper.QuoteLine.Name}" class="description-class" />
                                 </td>
-                                <td>
+                                <td style="width: 15% !important;">
 
                                     <!-- <aura:html tag="style">
                                         .slds-lookup__menu{
@@ -180,27 +180,27 @@
                                         </lightning:select>
                                     </aura:if>
                                 </td>
-                                <td>
+                                <td style="width: 15% !important;">
                                     <lightning:input name="{!index}" value="{!quoteLineWrapper.QuoteLine.buildertek__Notes__c}" class="notes-class" />
                                 </td>
-                                <td>
+                                <td style="width: 5% !important;">
                                     <lightning:input name="{!index}" value="{!quoteLineWrapper.QuoteLine.buildertek__Quantity__c}" class="quantity-class" type="number" />
                                 </td>
-                                <td>
+                                <td style="width: 5% !important;">
                                     <lightning:input name="{!index}" value="{!quoteLineWrapper.QuoteLine.buildertek__Unit_Cost__c}" class="unit-cost-class" type="number" formatter="currency" step="0.001" />
                                     <!-- <ui:inputCurrency name="{!index}"  value="{!quoteLineWrapper.QuoteLine.buildertek__Unit_Cost__c}" class="unit-cost-class" aura:id="unitCostId" /> -->
                                 </td>
                                 <aura:if isTrue="{!!v.hideGlobalMargin}">
-                                    <td>
+                                    <td style="width: 5% !important;">
                                         <lightning:input name="{!index}" value="{!quoteLineWrapper.QuoteLine.buildertek__Margin__c}" class="margin-class" type="number" step="0.01" />
                                     </td>
                                 </aura:if>
                                 <aura:if isTrue="{!!v.hideGlobalMarkup}">
-                                    <td>
+                                    <td style="width: 5% !important;">
                                         <lightning:input name="{!index}" value="{!quoteLineWrapper.QuoteLine.buildertek__Markup__c}" class="markup-class" type="number" step="0.01" />
                                     </td>
                                 </aura:if>
-                                <td>
+                                <td style="width: 5% !important; padding-top:15px;">
                                     <span onclick="{!c.deleteRow}" data-index="{!index}" class="slds-icon_container slds-icon-utility-delete pointer1" title="Delete">
                                         <lightning:icon iconName="action:close" alternativeText="Delete"
                                                             class="some-indicator" size="x-small" title="Delete" />
