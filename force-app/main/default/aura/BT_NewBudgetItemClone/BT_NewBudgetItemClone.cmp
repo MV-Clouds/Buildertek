@@ -329,6 +329,14 @@
             min-height: fit-content !important; 
             height: fit-content;
         }
+
+        .borderdiv .slds-input{
+            border: var(--lwc-borderWidthThin,1px) solid var(--lwc-colorBorderInput,rgb(201, 201, 201));
+        }
+
+        .borderdiv .slds-select{
+            border: var(--lwc-borderWidthThin,1px) solid var(--lwc-colorBorderInput,rgb(201, 201, 201));
+        }
         <!-- @media only screen and (max-height: 1080px) and (min-height: 990px){
             .slds-tabs_default{
                 min-height: 67vh; height: 67vh;
@@ -709,7 +717,9 @@
                                                          />
                                         </td> -->
                                                 <td>
-                                                    <c:BT_LookUp aura:id="groupId" _field="buildertek__Group__c" _sobject="buildertek__Budget_Item__c" _value="{!v.newBudgetLine.buildertek__Group__c}" _label="" _filter="" />
+                                                    <div class="borderdiv">
+                                                        <c:BT_LookUp aura:id="groupId" _field="buildertek__Group__c" _sobject="buildertek__Budget_Item__c" _value="{!v.newBudgetLine.buildertek__Group__c}" _label="" _filter="" />
+                                                    </div>    
                                                 </td>
                                                 <!--  <td>
                                                     <c:BT_LookUp aura:id="subGroupId" _field="buildertek__Sub_Grouping__c"
@@ -745,7 +755,7 @@
                                                 
                                                 <td>
                                                     <!-- <c:BT_LookUp aura:id="costCodeId" _field="buildertek__Cost_Code__c" _sobject="buildertek__Budget_Item__c" _value="{!v.newBudgetLine.buildertek__Cost_Code__c}" _label="" _filter="" /> -->
-                                                    <div class="hidelabel">
+                                                    <div class="hidelabel borderdiv">
                                                         <lightning:select value="{!v.newBudgetLine.buildertek__Cost_Code__c}">
                                                             <aura:iteration items="{!v.costCodeList}" var="costCodeOption">
                                                                 <option value="{!costCodeOption.value}">{!costCodeOption.label}</option>
@@ -772,7 +782,7 @@
                                                 </td> -->
                                                 <td>
                                                     <div class="slds-form slds-form_inline">
-                                                        <div class="slds-form-element">
+                                                        <div class="slds-form-element borderdiv">
                                                             <lightning:input class="costInputField" value="{!v.newBudgetLine.buildertek__Markup__c}" formatter="percent-fixed" label="" type="number" step="0.01" />
                                                         </div>
                                                     </div>
