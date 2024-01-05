@@ -478,28 +478,29 @@
                     this.uploadInChunk(component, file, fileContents, startPosition, endPosition, attachId,recid,helper);
                     // debugger;
                 } else {
-                    //this.showMessage('File(s) uploaded successfully',true);
-                   /* var navEvt = $A.get("e.force:navigateToSObject");
-                    navEvt.setParams({
-                        "recordId": component.get('v.recordId'),
-                        "slideDevName": "related"
-                    });
-                    navEvt.fire();*/               
-            		//component.set("v.isAttachDocClick",false);  
-                    //helper.getrfirecords(component, event, helper);
-                    //component.set("v.isSubmit",true);
+                    // if(this.filesCount == this.fileInputLenght){ 
+                        //alert(this.fileIds.length);
+                        console.log('this.fileIds ==> '+this.fileIds);
+                        component.set("v.selectedFillIds",this.fileIds);
+                        $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "SHOW" }).fire();
+                        this.send(component, event, helper);
+                        this.filesCount = 0;
+                        this.fileInputLenght = 0;
+                        this.fileIds = [];
+                       
+                    // }
                 }
-                if(this.filesCount == this.fileInputLenght){ 
-                    //alert(this.fileIds.length);
-                    console.log('this.fileIds ==> '+this.fileIds);
-                    component.set("v.selectedFillIds",this.fileIds);
-                    $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "SHOW" }).fire();
-                	this.send(component, event, helper);
-                    this.filesCount = 0;
-                    this.fileInputLenght = 0;
-                    this.fileIds = [];
+                // if(this.filesCount == this.fileInputLenght){ 
+                //     //alert(this.fileIds.length);
+                //     console.log('this.fileIds ==> '+this.fileIds);
+                //     component.set("v.selectedFillIds",this.fileIds);
+                //     $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "SHOW" }).fire();
+                // 	this.send(component, event, helper);
+                //     this.filesCount = 0;
+                //     this.fileInputLenght = 0;
+                //     this.fileIds = [];
                    
-                }
+                // }
                 // handel the response errors        
             } else if (state === "INCOMPLETE") { 
                 //component.set("v.Spinner", false); 
