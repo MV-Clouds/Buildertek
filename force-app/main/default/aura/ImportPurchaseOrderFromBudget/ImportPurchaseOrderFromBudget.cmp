@@ -84,8 +84,6 @@
                     </div>
                 </aura:set>
             </aura:if>
-            <br />
-
         </div>
     </div>
     <div class="slds-modal__footer">
