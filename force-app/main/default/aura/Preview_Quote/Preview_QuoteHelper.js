@@ -134,12 +134,12 @@
         });
         action.setCallback(this, function(response) {
             var state = response.getState();
-            var subject = 'Quote[ref:' + component.get("v.recordId") + ']';
+            // var subject = 'Quote[ref:' + component.get("v.recordId") + ']';
             if (state === "SUCCESS") {
+                component.set("v.Spinner", false);
                 var result = response.getReturnValue();
                 if (result === 'Success') {
-                    component.set("v.Spinner", false);
-                    $A.get("e.force:closeQuickAction").fire();
+                    $A.get('e.force:refreshView').fire();
                     var toastEvent = $A.get("e.force:showToast");
                     toastEvent.setParams({
                         "title": "Success!",
@@ -149,7 +149,6 @@
                     toastEvent.fire();
                     // location.reload();
                 } else {
-                    $A.get("e.force:closeQuickAction").fire();
                     var toastEvent = $A.get("e.force:showToast");
                     toastEvent.setParams({
                         "type": 'error',
@@ -157,18 +156,16 @@
                     });
                     toastEvent.fire();
                 }
-                $A.get('e.force:refreshView').fire();
+                $A.get("e.force:closeQuickAction").fire();
             }
         });
 
         $A.enqueueAction(action);
 
-        component.set("v.Spinner", false);
-
-
     },
 
     AcceptSignature: function(component, event) {
+        component.set("v.Spinner", true);
         component.set("v.parentId", component.get("v.recordId"));
         var recId = component.get("v.parentId");
 

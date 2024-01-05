@@ -17,7 +17,10 @@ public class futureContoller {
            timerec.buildertek__Weekly_OT__c =timecardmap.get(key);
            timelist.add(timerec);
        }
+       //! preventing recursion in TimecardTrigger Added by Nishit on 2nd Jan 2024
+       TimeCardTriggerHandler.blnSkipTimecardTrigger = true;
        update timelist;
+       TimeCardTriggerHandler.blnSkipTimecardTrigger = false;
         /* buildertek__Time_Cards__c  resloglist = [select id,
                                                              Name,buildertek__Complete__c,buildertek__Budget_Line__c,buildertek__Resource__c,buildertek__Resource__r.Name,
                                                              buildertek__Daily_Expense__c,buildertek__Description__c,buildertek__Details__c,buildertek__End_Distance__c,

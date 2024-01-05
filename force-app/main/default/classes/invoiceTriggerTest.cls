@@ -41,11 +41,17 @@ public class invoiceTriggerTest {
         co.Name = 'test2';
         co.Customer_Account__c=acc.id;
         insert co;
+
+        buildertek__Project__c pro = new buildertek__Project__c();
+        pro.Name = 'test3';
+        pro.buildertek__Customer__c = acc.id;
+        insert pro;
         
         
         Billings__c billing = new Billings__c();
         billing.Name='test2';
         billing.Change_Order__c=co.id;
+        billing.buildertek__Project__c = pro.Id;
         billing.Tax_Rate__c=2;
         insert billing;
         
