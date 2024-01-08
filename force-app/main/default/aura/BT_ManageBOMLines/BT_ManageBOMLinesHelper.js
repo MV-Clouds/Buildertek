@@ -116,41 +116,6 @@
         ]);
     },
 
-    // checkFabricationTaxes: function (component, event, helper) {
-    //     var BOMID = component.get("v.recordId");
-    //     var action = component.get("c.checkFabricationTaxes");
-
-    //     action.setCallback(this, function (response) {
-    //         var state = response.getState();
-    //         console.log('checkFabricationTaxes response : ', response.getReturnValue());
-
-    //         if (state === "SUCCESS") {
-    //             var fabricationCheck = response.getReturnValue();
-    //             if (
-    //                 fabricationCheck != null &&
-    //                 fabricationCheck != undefined &&
-    //                 fabricationCheck == true
-    //             ) {
-    //                 component.set("v.showFabricationDetails", fabricationCheck);
-    //                 var action = component.get("c.handleBTAdmin");
-    //                 $A.enqueueAction(action);
-    //             }
-    //         } else {
-    //             helper.showToast(
-    //                 component,
-    //                 event,
-    //                 helper,
-    //                 "Error!",
-    //                 "Something went wrong!",
-    //                 "error"
-    //             );
-    //             // // console.log('Not success');
-    //         }
-    //     });
-
-    //     $A.enqueueAction(action);
-    // },
-
     fetchTakeOffLinesData: function (component, event, helper) {
         var action = component.get("c.getTakeOffLinesData");
         action.setCallback(this, function (response) {
@@ -273,20 +238,18 @@
             if (state === "SUCCESS") {
                 var pageSize = component.get("v.pageSize");
                 var result = response.getReturnValue();
-                //component.set("v.masterBudgetsList", result);
-                // alert('** result.sObjectRecordsList  ---------->:');
-                // console.log("** result.sObjectRecordsList --------------->:" +JSON.parse(JSON.stringify(result.sObjectRecordsList)));
-                // console.log({ result });
 
                 component.set("v.recordsList", result.recordList);
-                component.set("v.listOfRecords", JSON.parse(result.sObjectRecordsList));
-                component.set(
-                    "v.cloneListOfRecords",
-                    JSON.parse(result.sObjectRecordsList)
-                );
-                // component.set("v.fieldValues", blankFields);
-                // // console.log('@@@@@@@-',JSON.parse(result.fieldValues));
                 component.set("v.fieldValues", JSON.parse(result.fieldValues));
+                var fieldValues = JSON.parse(result.fieldValues)
+                for(var i in fieldValues){
+                    if(fieldValues[i].name == 'buildertek__UOM_Picklist__c'){
+                        var field = fieldValues[i];
+                        if (field.pickListValuesList != undefined) {
+                            component.set('v.UOMpickListValues', field.pickListValuesList);
+                        }
+                    }
+                }
                 // // console.log(component.get("v.fieldValues"));
                 component.set("v.PageNumber", result.pageNumber);
                 component.set("v.TotalRecords", result.totalRecords);
@@ -332,13 +295,10 @@
                         }
                     }
                 }
-                // console.log("rows");
-                // console.log({ rows });
                 component.set("v.orgData", rows);
                 component.set("v.data", rows);
                 var groupByData = component.get("v.orgData");
                 component.set("v.fieldmaptype", result.fieldtypemap);
-                // console.log("result.sObjectRecordsList==" + result.sObjectRecordsList);
                 component.set(
                     "v.sObjectRecords",
                     JSON.parse(result.sObjectRecordsList)
@@ -391,17 +351,13 @@
             }
 
             var massupdateIndex = JSON.parse(JSON.stringify(component.get("v.massupdateIndex")));
-            console.log('formate data massupdateIndex ', massupdateIndex);
-            //alert(sObjectRecordsMap);
+            // console.log('formate data massupdateIndex ', massupdateIndex);
 
             for (var i in mapData) {
-                // console.log("mapData-->");
-                // console.log({ mapData });
                 var toggleVal = component.get("v.groupBytoggle");
 
-                if (component.get("v.groupByPhasetoggle")) {
+                // if (component.get("v.groupByPhasetoggle")) {
                     //group by phase
-                    // console.log(mapData[i].sheetrecord.buildertek__Build_Phase__c);
                     if (mapData[i].sheetrecord.buildertek__Build_Phase__c) {
                         if (
                             !recordsMap.has(
@@ -426,135 +382,22 @@
                             )
                             .push(JSON.parse(JSON.stringify(mapData[i].sheetrecord)));
                     } else {
-                        //// // console.log(recordsMap.has('No vendor'),recordsMap.get("No vendor"))
                         if (!recordsMap.has("No Build Phase")) {
                             recordsMap.set("No Build Phase", []);
                         }
-                        //// // console.log(recordsMap.has('No vendor'),recordsMap.get("No vendor"))
                         mapData[i]["sheetrecord"]["showIcon"] = mapData[i]["isShowIcon"];
                         recordsMap
                             .get("No Build Phase")
                             .push(JSON.parse(JSON.stringify(mapData[i].sheetrecord)));
-                        //// // console.log(recordsMap.get("No vendor"))
                     }
-                } else if (component.get("v.groupByVendortoggle")) {
-                    if (mapData[i].sheetrecord.buildertek__Vendor__c) {
-                        if (
-                            !recordsMap.has(
-                                mapData[i].sheetrecord.buildertek__Vendor__r.Id +
-                                "(#&%*)" +
-                                mapData[i].sheetrecord.buildertek__Vendor__r.Name
-                            )
-                        ) {
-                            recordsMap.set(
-                                mapData[i].sheetrecord.buildertek__Vendor__r.Id +
-                                "(#&%*)" +
-                                mapData[i].sheetrecord.buildertek__Vendor__r.Name,
-                                []
-                            );
-                        }
-                        mapData[i]["sheetrecord"]["showIcon"] = mapData[i]["isShowIcon"];
-                        recordsMap
-                            .get(
-                                mapData[i].sheetrecord.buildertek__Vendor__r.Id +
-                                "(#&%*)" +
-                                mapData[i].sheetrecord.buildertek__Vendor__r.Name
-                            )
-                            .push(JSON.parse(JSON.stringify(mapData[i].sheetrecord)));
-                    } else {
-                        //// // console.log(recordsMap.has('No vendor'),recordsMap.get("No vendor"))
-                        if (!recordsMap.has("No Vendor")) {
-                            recordsMap.set("No Vendor", []);
-                        }
-                        //// // console.log(recordsMap.has('No vendor'),recordsMap.get("No vendor"))
-                        mapData[i]["sheetrecord"]["showIcon"] = mapData[i]["isShowIcon"];
-                        recordsMap
-                            .get("No Vendor")
-                            .push(JSON.parse(JSON.stringify(mapData[i].sheetrecord)));
-                        //// // console.log(recordsMap.get("No vendor"))
-                    }
-                } else if (component.get("v.groupByCategorytoggle")) {
-                    if (mapData[i].sheetrecord.buildertek__Category__c) {
-                        if (
-                            !recordsMap.has(
-                                mapData[i].sheetrecord.buildertek__Category__r.Id +
-                                "(#&%*)" +
-                                mapData[i].sheetrecord.buildertek__Category__r.Name
-                            )
-                        ) {
-                            recordsMap.set(
-                                mapData[i].sheetrecord.buildertek__Category__r.Id +
-                                "(#&%*)" +
-                                mapData[i].sheetrecord.buildertek__Category__r.Name,
-                                []
-                            );
-                        }
-                        mapData[i]["sheetrecord"]["showIcon"] = mapData[i]["isShowIcon"];
-                        recordsMap
-                            .get(
-                                mapData[i].sheetrecord.buildertek__Category__r.Id +
-                                "(#&%*)" +
-                                mapData[i].sheetrecord.buildertek__Category__r.Name
-                            )
-                            .push(JSON.parse(JSON.stringify(mapData[i].sheetrecord)));
-                    } else {
-                        //// // console.log(recordsMap.has('No vendor'),recordsMap.get("No vendor"))
-                        if (!recordsMap.has("No Category")) {
-                            recordsMap.set("No Category", []);
-                        }
-                        //// // console.log(recordsMap.has('No vendor'),recordsMap.get("No vendor"))
-                        mapData[i]["sheetrecord"]["showIcon"] = mapData[i]["isShowIcon"];
-                        recordsMap
-                            .get("No Category")
-                            .push(JSON.parse(JSON.stringify(mapData[i].sheetrecord)));
-                        //// // console.log(recordsMap.get("No vendor"))
-                    }
-                } else if (component.get("v.groupByServiceCategorytoggle")) {
-                    if (mapData[i].sheetrecord.buildertek__Takeoff_Line__c) {
-                        /* if (!recordsMap.has(mapData[i].sheetrecord.buildertek__Service_Category__c + '(#&%*)' + mapData[i].sheetrecord.buildertek__Service_Category__c)) {
-                                      recordsMap.set(mapData[i].sheetrecord.buildertek__Service_Category__c + '(#&%*)' + mapData[i].sheetrecord.buildertek__Service_Category__c, []);
-                                  }
-                                  mapData[i]['sheetrecord']['showIcon'] = mapData[i]['isShowIcon']
-                                  recordsMap.get(mapData[i].sheetrecord.buildertek__Service_Category__c + '(#&%*)' + mapData[i].sheetrecord.buildertek__Service_Category__c).push(JSON.parse(JSON.stringify(mapData[i].sheetrecord)));
-                              */
-                        if (
-                            !recordsMap.has(
-                                mapData[i].sheetrecord.buildertek__BL_SERVICE_CATEGORY__c +
-                                "(#&%*)" +
-                                mapData[i].sheetrecord.buildertek__BL_SERVICE_CATEGORY__c
-                            )
-                        ) {
-                            recordsMap.set(
-                                mapData[i].sheetrecord.buildertek__BL_SERVICE_CATEGORY__c +
-                                "(#&%*)" +
-                                mapData[i].sheetrecord.buildertek__BL_SERVICE_CATEGORY__c,
-                                []
-                            );
-                        }
-                        mapData[i]["sheetrecord"]["showIcon"] = mapData[i]["isShowIcon"];
-                        recordsMap
-                            .get(
-                                mapData[i].sheetrecord.buildertek__BL_SERVICE_CATEGORY__c +
-                                "(#&%*)" +
-                                mapData[i].sheetrecord.buildertek__BL_SERVICE_CATEGORY__c
-                            )
-                            .push(JSON.parse(JSON.stringify(mapData[i].sheetrecord)));
-                    } else {
-                        if (!recordsMap.has("No Service Category")) {
-                            recordsMap.set("No Service Category", []);
-                        }
-                        mapData[i]["sheetrecord"]["showIcon"] = mapData[i]["isShowIcon"];
-                        recordsMap
-                            .get("No Service Category")
-                            .push(JSON.parse(JSON.stringify(mapData[i].sheetrecord)));
-                    }
-                }
+                // }
             }
             var result = Array.from(recordsMap.entries());
-            // console.log("result");
-            // console.log({ result });
             var groupData = [];
             var totalRecords = 0;
+            var totalCost = 0;
+            var totalSalesPrice = 0;
+
             for (var i in result) {
                 var newObj = {};
                 if (result[i][0].indexOf("(#&%*)") > -1) {
@@ -572,6 +415,8 @@
                     sObjectRecordsList.push(
                         sObjectRecordsMap.get(newObj_groupData[j].Id)
                     );
+                    totalCost += newObj_groupData[j].buildertek__Extended_Cost__c;
+                    totalSalesPrice += newObj_groupData[j].buildertek__Total_Sales_Price__c;
                 }
 
                 newObj.sObjectRecordsList = sObjectRecordsList;
@@ -590,25 +435,15 @@
             }
 
 
+            console.log('totalCost : ', totalCost);
+            component.set("v.totalCost", totalCost);
+            component.set("v.totalSalesPrice", totalSalesPrice);
+
             component.set("v.totalBOMlines", totalRecords);
             component.set("v.dataByGroup", groupData);
-            // var Init_dataByGroup = $A.util.json.deepClone(groupData);
-            // Init_dataByGroup.push(groupData);
             component.set("v.Init_dataByGroup", JSON.parse(JSON.stringify(groupData)));
-            console.log('Inside formatDataByGroups >> ', component.get("v.dataByGroup"));
-            // console.log("groupData===");
-            // console.log({ groupData });
             component.set("v.cloneDataByGroup", groupData);
-            // helper.calculateCostAdjustment(component, event, helper);
             console.log('From formatDataByGroups >> ', JSON.parse(JSON.stringify(component.get("v.dataByGroup"))));
-            // $A.get('e.force:refreshView').fire();
-            if (
-                !component.get("v.massUpdateEnable") &&
-                component.get("v.showFabricationDetails") == true
-            ) {
-                //   helper.calculateCostAdjustment(component, event, helper);
-            }
-            // $A.get('e.force:refreshView').fire();
                 component.set("v.isLoading", false);
         }
         catch (error) {
@@ -642,18 +477,29 @@
             if(headerIndex == i){
                 for (var j in data[i].sObjectRecordsList) {
                     if(data[i].sObjectRecordsList[j].Name == null || (data[i].sObjectRecordsList[j].Name).trim()  == ''){
-                        BOMlinesWithoutName.push(j + 1);
+                        BOMlinesWithoutName.push(parseInt(j) + 1);
                         groupName = data[i].groupName;
                     }
                     else{
                         newList.push(data[i].sObjectRecordsList[j]);
                     }
+
+                    // When you use RecordEdit form, for black value it shows emptly list instead of null value.... 
+                    // If Vendor or Takeoff line is null it shows empty list, that need to in null value...
+                    if(data[i].sObjectRecordsList[j].buildertek__Vendor__c && data[i].sObjectRecordsList[j].buildertek__Vendor__c.length == 0){
+                        data[i].sObjectRecordsList[j].buildertek__Vendor__c = null;
+                    }
+                    if(data[i].sObjectRecordsList[j].buildertek__Takeoff_Line__c && data[i].sObjectRecordsList[j].buildertek__Takeoff_Line__c.length == 0){
+                        data[i].sObjectRecordsList[j].buildertek__Takeoff_Line__c = null;
+                    }
+                  
                 }
             }
         }
         if(BOMlinesWithoutName.length > 0){
-            var Message = 'You can not update items without Product Name Proposal. Item(s) at line no: '+ BOMlinesWithoutName.join(', ') + ' dose not have Product Name Proposal. Phase : '+ groupName +'.'
-            helper.ToastMessageUtilityMethod(component, 'Error', Message, 'error', 5000);
+            var Title = 'Error at line no. - '+ BOMlinesWithoutName.join(', ')+ '.';
+            var Message = 'You can not update items without Product Name Proposal. Phase Name : '+ groupName +'.'
+            helper.ToastMessageUtilityMethod(component, Title, Message, 'error', 7000);
             component.set("v.isLoading", false);
         }
         else{
@@ -682,9 +528,7 @@
                     // console.log('formate data apex call ', massupdateIndex);
                     
                     helper.getPoLinesList(component, event, helper, pageNumber, pageSize, headerIndex);
-                    helper.ToastMessageUtilityMethod(component, "Success", 'Records Updated Succcessfully', 'success', 3000);
-                // component.set("v.massUpdateEnable", false);
-                // component.set("v.isLoading", false);
+                    helper.ToastMessageUtilityMethod(component, "Success", 'Lines updated successfully', 'success', 3000);
             }
             else {
                 helper.ToastMessageUtilityMethod(component, "Error", 'Something Went Wrong', 'error', 3000);
@@ -717,23 +561,30 @@
                 console.log("product : ", JSON.parse(JSON.stringify(event.getParam("recordByEvent"))));
                 var product = JSON.parse(JSON.stringify(event.getParam("recordByEvent")));
                 if(product){
-                    console.log('pricebookEntrybyProd : ' ,  event.getParam("PricebookEntryrecordByEvent"));
+                    console.log('pricebookEntrybyProd : ' ,  JSON.parse(JSON.stringify(event.getParam("PricebookEntryrecordByEvent"))));
                     var pricebookEntry = event.getParam("PricebookEntryrecordByEvent");
                     var uom = product.QuantityUnitOfMeasure;
                     var unitCost = pricebookEntry != null ? (pricebookEntry.buildertek__Unit_Cost__c != null ? pricebookEntry.buildertek__Unit_Cost__c : 0) : 0;
-                    var markup = pricebookEntry != null ? (pricebookEntry.buildertek__Markup__c != null ? pricebookEntry.buildertek__Markup__c : 0) : 0;
+                    var markupPrecentage = pricebookEntry != null ? (pricebookEntry.buildertek__Markup__c != null ? pricebookEntry.buildertek__Markup__c : 0) : 0;
+                    var markup = markupPrecentage != 0 ? markupPrecentage / 100 : 0;
                     var quantity = groupData[headerIndex].sObjectRecordsList[index].buildertek__Quantity__c;
+                    var UOMpickListValues = component.get("v.UOMpickListValues");
+                    uom = UOMpickListValues.includes(uom) ? uom : null;
+
+                    console.log('phase 2');
     
                     groupData[headerIndex].sObjectRecordsList[index].buildertek__Product__r = product;
                     groupData[headerIndex].sObjectRecordsList[index].buildertek__Product__c = product.Id;
                     groupData[headerIndex].sObjectRecordsList[index].Name = product.Name;
                     groupData[headerIndex].sObjectRecordsList[index].buildertek__Vendor__c = product.buildertek__Vendor__c;
-                    groupData[headerIndex].sObjectRecordsList[index].buildertek__UOM_Picklist__c =  uom;
+                    groupData[headerIndex].sObjectRecordsList[index].buildertek__UOM_Picklist__c = uom;
                     groupData[headerIndex].sObjectRecordsList[index].buildertek__BL_UNIT_COST__c = unitCost;
-                    groupData[headerIndex].sObjectRecordsList[index].buildertek__BL_MARKUP__c = markup;
-                    groupData[headerIndex].sObjectRecordsList[index].buildertek__Total_Costs__c = (quantity * markup);
-                    groupData[headerIndex].sObjectRecordsList[index].buildertek__BL_LIST_PRICE_F__c = (((unitCost * markup) + unitCost) * quantity);
-                    groupData[headerIndex].sObjectRecordsList[index].buildertek__Total_Sales_Price__c = (((unitCost * markup) + unitCost) * quantity) * quantity;
+                    groupData[headerIndex].sObjectRecordsList[index].buildertek__BL_MARKUP__c = markupPrecentage;
+                    groupData[headerIndex].sObjectRecordsList[index].buildertek__Extended_Cost__c = (quantity * unitCost);
+                    groupData[headerIndex].sObjectRecordsList[index].buildertek__BL_LIST_PRICE_F__c = ((unitCost * markup) + unitCost);
+                    groupData[headerIndex].sObjectRecordsList[index].buildertek__Total_Sales_Price__c = ((unitCost * markup) + unitCost) * quantity;
+                    console.log('phase 3');
+
                 }
               }
               else {
@@ -741,19 +592,14 @@
                     groupData[headerIndex].sObjectRecordsList[index].buildertek__Product__c = null;
                     groupData[headerIndex].sObjectRecordsList[index].Name = null;
                     groupData[headerIndex].sObjectRecordsList[index].buildertek__Vendor__c = null;
-                    groupData[headerIndex].sObjectRecordsList[index].buildertek__UOM_Picklist__c =  null;
+                    groupData[headerIndex].sObjectRecordsList[index].buildertek__UOM_Picklist__c = null;
                     groupData[headerIndex].sObjectRecordsList[index].buildertek__BL_UNIT_COST__c = 0;
                     groupData[headerIndex].sObjectRecordsList[index].buildertek__BL_MARKUP__c = 0;
-                    groupData[headerIndex].sObjectRecordsList[index].buildertek__Total_Costs__c = 0;
+                    groupData[headerIndex].sObjectRecordsList[index].buildertek__Extended_Cost__c = 0;
                     groupData[headerIndex].sObjectRecordsList[index].buildertek__BL_LIST_PRICE_F__c = 0;
                     groupData[headerIndex].sObjectRecordsList[index].buildertek__Total_Sales_Price__c = 0;
               }
-    
-                groupData[headerIndex].massUpdate = false;
                 component.set("v.dataByGroup", groupData);
-                groupData[headerIndex].massUpdate = true;
-                component.set("v.dataByGroup", groupData);
-                console.log('dataByGroup : ', component.get("v.dataByGroup"));
     
                 window.setTimeout(
                     $A.getCallback(function () {
@@ -763,6 +609,62 @@
                 );
         } catch (error) {
             console.log('error in setProduct : ', error.stack);
+            
+        }
+      },
+
+    //   valueChnagedInFildsetMassUpdateHelper : function(component, event, helper){
+      onInputChangeHelper : function(component, event, helper, updatedValue, changedField, index, headerIndex){
+        try{
+            
+            var groupData = component.get("v.dataByGroup");
+            var quantity = 0;
+            var markupPrecentage = 0;
+            var unitCost = 0;
+            if(changedField == 'buildertek__Quantity__c'){
+                //  quantity =  parseFloat(event.getParam("changedValueByEnvent_Integer"));
+                quantity =  updatedValue;
+                markupPrecentage = groupData[headerIndex].sObjectRecordsList[index].buildertek__BL_MARKUP__c;
+                unitCost = groupData[headerIndex].sObjectRecordsList[index].buildertek__BL_UNIT_COST__c;
+            }
+            else if(changedField == 'buildertek__BL_MARKUP__c'){
+                //  markup =  parseFloat(event.getParam("changedValueByEnvent_Integer"));
+                markupPrecentage =  updatedValue;
+                 quantity = groupData[headerIndex].sObjectRecordsList[index].buildertek__Quantity__c;
+                 unitCost = groupData[headerIndex].sObjectRecordsList[index].buildertek__BL_UNIT_COST__c;
+
+            }
+            else if(changedField == 'buildertek__BL_UNIT_COST__c'){
+                //  unitCost = parseFloat(event.getParam("changedValueByEnvent_Integer"));
+                 unitCost = updatedValue;
+                 quantity = groupData[headerIndex].sObjectRecordsList[index].buildertek__Quantity__c;
+                markupPrecentage = groupData[headerIndex].sObjectRecordsList[index].buildertek__BL_MARKUP__c;
+            }
+
+            markupPrecentage = markupPrecentage != null ? markupPrecentage : 0;
+            var markup = markupPrecentage != 0 ? markupPrecentage / 100 : 0;
+            unitCost = unitCost != null ? parseFloat(unitCost) : 0;
+            quantity = quantity != null ? parseFloat(quantity) : 0;
+
+            // console.log('unitCost : ', unitCost);
+            // console.log('quantity : ', quantity);
+            // console.log('markup : ', markup);   
+            groupData[headerIndex].sObjectRecordsList[index].buildertek__Extended_Cost__c = (quantity * unitCost);
+            groupData[headerIndex].sObjectRecordsList[index].buildertek__BL_LIST_PRICE_F__c = ((unitCost * markup) + unitCost);
+            groupData[headerIndex].sObjectRecordsList[index].buildertek__Total_Sales_Price__c = ((unitCost * markup) + unitCost) * quantity;
+
+            component.set("v.dataByGroup", groupData);
+            // console.log('dataByGroup : ', JSON.parse(JSON.stringify(component.get("v.dataByGroup"))));
+
+            window.setTimeout(
+                $A.getCallback(function () {
+                component.set("v.isLoading", false);
+                }),
+                500
+            );
+        }
+        catch(error){
+            console.log('error in valueChnagedInFildsetMassUpdate : ', error.stack);
             
         }
       },

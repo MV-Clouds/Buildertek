@@ -181,7 +181,7 @@ public without sharing class ManageBOMlinesController {
         jsonSerializeFields += '{"value": "buildertek__BL_MARKUP__c","label": "Markup"},';
         jsonSerializeFields += '{"value": "buildertek__Extended_Cost__c","label": "Total Cost"},';
         jsonSerializeFields += '{"value": "buildertek__BL_LIST_PRICE_F__c","label": "Unit Sales Price"},';
-        jsonSerializeFields += '{"value": "buildertek__Total_Sales_Price__c","label": "Total sales Price"}';
+        jsonSerializeFields += '{"value": "buildertek__Total_Sales_Price__c","label": "Total Sales Price"}';
         jsonSerializeFields += ']';
         String FieldsDefaultValues =    '[{"label":"Name","value":"Name"}]';
         String jsonSerializeFields1 =   FieldsDefaultValues;          
@@ -455,7 +455,7 @@ public without sharing class ManageBOMlinesController {
         jsonSerializeFields += '{"value": "buildertek__BL_MARKUP__c","label": "Markup"},';
         jsonSerializeFields += '{"value": "buildertek__Extended_Cost__c","label": "Total Cost"},';
         jsonSerializeFields += '{"value": "buildertek__BL_LIST_PRICE_F__c","label": "Unit Sales Price"},';
-        jsonSerializeFields += '{"value": "buildertek__Total_Sales_Price__c","label": "Total sales Price"}';
+        jsonSerializeFields += '{"value": "buildertek__Total_Sales_Price__c","label": "Total Sales Price"}';
         jsonSerializeFields += ']';
 
         

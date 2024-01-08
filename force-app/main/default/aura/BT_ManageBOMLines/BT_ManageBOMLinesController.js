@@ -51,7 +51,7 @@
               }, 100);
         
             var billOfMeterialId = component.get("v.recordId");
-            component.set("v.bomId", billOfMeterialId);
+            // component.set("v.bomId", billOfMeterialId);
         
             //  helper.getPoList(component, event, helper);
             // component.set("v.isLoading", false);
@@ -72,7 +72,7 @@
 
           var headerIndex = event.getSource().get("v.title");
           var massupdateIndex = component.get("v.massupdateIndex");
-          console.log('headerIndex :: ', headerIndex);
+          // console.log('headerIndex :: ', headerIndex);
           var groupData = component.get("v.dataByGroup");
 
           if(!groupData[headerIndex].massUpdate){
@@ -115,9 +115,6 @@
           massupdateIndex = massupdateIndex.filter(ele => ele !== headerIndex)
           component.set("v.massupdateIndex", massupdateIndex);
 
-
-          // component.set("v.massUpdateEnable", false);
-          // component.set("v.isLoading", true);
           window.setTimeout(
               $A.getCallback(function () {
                 component.set("v.isLoading", false);
@@ -162,21 +159,26 @@
           var selectedRecordId = event.getParam("selectedRecordId");
           var index = event.getParam('index');
           var headerIndex = event.getParam('phaseIndex');
-          console.log('selectedRecordId : ', selectedRecordId);
-          console.log('index : ', event.getParam('index'));
-          console.log('childObjectName : ', event.getParam("childObjectName"));
-          console.log('fieldName : ', event.getParam("fieldName"));
-          // console.log('groupIndex : ', event.getParam('groupIndex'));
-          console.log('phaseIndex : ', event.getParam("phaseIndex"));
-
           
           if(event.getParam("fieldName") == 'buildertek__BT_Price_Book__c'){
+            component.set("v.isLoading", true);
             var groupData = component.get("v.dataByGroup");
             groupData[headerIndex].sObjectRecordsList[index].buildertek__BT_Price_Book__c = selectedRecordId[0];
             component.set("v.dataByGroup", groupData);
+
+            var setProduct = false;   // Clear product...
+    
+            window.setTimeout(
+              $A.getCallback(function () {
+                helper.setProduct(component, event, helper, setProduct); 
+              }),
+              1000
+            );
             // component.set("v.pricebookId", selectedRecordId);
           }
-          component.set("v.isLoading", false);
+          else{
+            component.set("v.isLoading", false);
+          }
 
       },
       
@@ -188,7 +190,7 @@
         // to avoid lag after set product...
         window.setTimeout(
           $A.getCallback(function () {
-            helper.setProduct(component, event, helper, setProduct); 
+            helper.setProduct(component, event, helper, setProduct);
           }),
           1000
         );
@@ -207,6 +209,51 @@
           }),
           1000
         );
+    },
+
+    valueChnagedInFildsetMassUpdate : function(component, event, helper){
+      try{
+        helper.valueChnagedInFildsetMassUpdateHelper(component, event, helper);
+      }
+      catch(error){
+          console.log('error in valueChnagedInFildsetMassUpdate : ', error.stack);
+          
+      }
+    },
+
+    onInputChange: function(component, event, helper){
+      try {
+        // var fieldName = event.getSource().get("v.name").split('-');
+        var name = event.getSource().get("v.name");
+        var parts = name.split('-');
+        var index = parts[0];
+        var headerIndex = parts[1];
+        var fieldLabel = parts[2];
+
+        var inputField = event.getSource();
+        var selectedValue = event.getSource().get("v.value");
+        console.log(' -- field : ', fieldLabel);
+
+
+      if(fieldLabel == 'Name'){
+          if(selectedValue == null || selectedValue.trim() == '' ){
+              inputField.setCustomValidity(" Product Name Proposal is required to update records.");
+          }
+          else{
+              inputField.setCustomValidity("");
+          }
+      }
+      else if(fieldLabel == 'buildertek__Quantity__c' || fieldLabel == 'buildertek__BL_MARKUP__c' || fieldLabel == 'buildertek__BL_UNIT_COST__c'){
+          try {
+              helper.onInputChangeHelper(component, event, helper, selectedValue, fieldLabel,index, headerIndex )
+          } catch (error) {
+              console.log('erro to call event : ', error.stack);
+          }
+      }
+        
+      } catch (error) {
+        console.log('error in onInputChange : ', error.stack);
+      }
     },
 
      
