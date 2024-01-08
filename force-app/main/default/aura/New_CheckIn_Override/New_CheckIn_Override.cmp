@@ -24,8 +24,10 @@
     <aura:attribute name="RecordTypeId" type="String" default="" /> 
     <aura:attribute name="latitude" type="decimal" default="" />
     <aura:attribute name="longitude" type="decimal" default="" />
-      <aura:attribute name="islocationaccess" type="boolean" default="true" />
-    
+    <aura:attribute name="islocationaccess" type="boolean" default="true" />
+    <aura:attribute name="defaultCheckin" type="String" default="Onsite" />
+    <aura:attribute name="defaultWeather" type="String" default="Sunny" />
+
     <ltng:require styles="{!$Resource.ModalWidthCSS}"/>    
     <lightning:workspaceAPI aura:id="workspace" />
     
@@ -64,9 +66,9 @@
                                     
                                     <lightning:layoutItem flexibility="auto" size="12" smallDeviceSize="5" mediumDeviceSize="5" largeDeviceSize="5" >
                                         
-                                        <aura:if  isTrue="{!and(and(and(and(field.name !='buildertek__Project__c',field.name !='buildertek__Schedule_Item__c')
-                                                          ,field.name != 'buildertek__Trade_Type__c'),field.name != 'buildertek__Vendor_Resource__c'),
-                                                          field.name != 'buildertek__Vendor__c')}" >     
+                                    <aura:if  isTrue="{!and(and(and(and(and(and(field.name !='buildertek__Project__c',field.name !='buildertek__Schedule_Item__c')
+                                                    ,field.name != 'buildertek__Trade_Type__c'),field.name != 'buildertek__Vendor_Resource__c'),
+                                                    field.name != 'buildertek__Vendor__c'), field.name != 'buildertek__Reporting_Location__c'), field.name != 'buildertek__Weather__c')}" >  
                                            <!-- <aura:if  isTrue="{!field.name == 'Name'}">
                                                 <lightning:inputField fieldName="{!field.name}"   required="true" value="{!if(field.name=='buildertek__Incident_Date__c',v.todayDateTime,null)}" />
                                                 <aura:set attribute="else">
@@ -94,7 +96,12 @@
                                                 <aura:if  isTrue="{!field.name =='buildertek__Vendor__c'}" >                                            
                                                     <lightning:inputField fieldName="{! field.name }"  aura:id="account"  value = "{!v.parentAccountRecordId}"/>
                                                 </aura:if>
-                                                
+                                                <aura:if  isTrue="{!field.name =='buildertek__Reporting_Location__c'}" >                                            
+                                                    <lightning:inputField fieldName="{! field.name }"  aura:id="location"  value = "{!v.defaultCheckin}"/>
+                                                </aura:if>
+                                                <aura:if  isTrue="{!field.name =='buildertek__Weather__c'}" >                                            
+                                                    <lightning:inputField fieldName="{! field.name }"  aura:id="weather"  value = "{!v.defaultWeather}"/>
+                                                </aura:if>
                                             </aura:set>
                                         </aura:if>
                                     </lightning:layoutItem>
