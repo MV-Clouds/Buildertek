@@ -199,6 +199,15 @@
         console.log("Selected template id : ",templateId)
 		recordId = component.get("v.recordId");
 		pdfFileName = component.get("v.pdfFileName");
+        // var fileInput = component.get("v.selectedfileslist");
+        // var uniqueRecordIdsSet = new Set(fileIds);
+
+        // // Convert the Set back to an array if needed
+        // var uniqueRecordIdsArray = Array.from(uniqueRecordIdsSet);
+        // console.log('uniqueRecordIdsArray :->', uniqueRecordIdsArray);
+        // console.log('uniqueRecordIdsArray length:->', uniqueRecordIdsArray.length);
+        // console.log('fileInput.length :->', fileInput.length);
+        // if (fileInput.length == uniqueRecordIdsArray.length) {
 		var dbAction = component.get("c.SendEmail");
         console.log('pdfFileName' + component.get("v.pdfFileName"));
         // debugger;
@@ -261,7 +270,7 @@
             }
         });
         $A.enqueueAction(dbAction);
-	
+	// }  
 	},
     
     
@@ -592,7 +601,58 @@
         });
         $A.enqueueAction(action);
     },
-           
 
+        // getFileList: function(component) {
+        //     var recordId = component.get("v.recordId");
+        //     var action = component.get("c.getRelatedFiles");
+    
+        //     action.setParams({
+        //         recordId: recordId
+        //     });
+    
+        //     action.setCallback(this, function(response) {
+        //         var state = response.getState();
+        //         if (state === "SUCCESS") {
+        //             var files = response.getReturnValue();
+        //             console.log('FILES :->', files);
+    
+        //             if (files && files.length > 0) {
+        //                 // Convert file sizes to KB or MB
+        //                 files = this.convertFileSizes(files);
+    
+        //                 component.set("v.relatedFiles", files);
+        //                 $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
+        //             } else {
+        //                 console.error('No related files found');
+        //             }
+        //         } else {
+        //             var errors = response.getError();
+        //             console.error('Error fetching related files: ', errors);
+        //         }
+        //     });
+    
+        //     $A.enqueueAction(action);
+        // },
+    
+        // convertFileSizes: function(files) {
+        //     for (var i = 0; i < files.length; i++) {
+        //         var fileSize = files[i].ContentSize; // Assuming ContentSize is the field representing size
+        //         files[i].FormattedSize = this.formatFileSize(fileSize);
+        //     }
+        //     return files;
+        // },
+    
+        // formatFileSize: function(sizeInBytes) {
+        //     if (isNaN(sizeInBytes) || sizeInBytes <= 0) {
+        //         return 'N/A';
+        //     }
+    
+        //     var units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        //     var i = parseInt(Math.floor(Math.log(sizeInBytes) / Math.log(1024)));
+        //     return Math.round((sizeInBytes / Math.pow(1024, i)) * 100) / 100 + ' ' + units[i];
+        // }
+
+    
+        
     
 })

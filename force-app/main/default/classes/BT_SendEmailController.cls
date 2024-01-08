@@ -286,6 +286,8 @@ public with sharing class BT_SendEmailController{
         try{
             Boolean useSignature = false;
             system.debug('files-->'+files);
+            system.debug('pdfNames-->'+pdfFileName);
+
             List<string> strTO = new List<string>();
             List<string> strCC = new List<string>();
             SET<Id> contactIdSet = new SET<Id>();
@@ -1523,9 +1525,6 @@ public with sharing class BT_SendEmailController{
         }
         return pdfName;
     }
-
-
-
     private static void appendToFileNew(Id fileId, String base64Data) {
         system.debug('fileId'+fileId);
         system.debug('appendToFileNew');
@@ -1543,6 +1542,23 @@ public with sharing class BT_SendEmailController{
         
         
         
+    }
+    @AuraEnabled
+    public static List<ContentVersion> getRelatedFiles(String recordId) {
+        List<ContentDocumentLink> fileLinks = [SELECT ContentDocumentId 
+                                               FROM ContentDocumentLink 
+                                               WHERE LinkedEntityId = :recordId];
+        
+        Set<Id> documentIds = new Set<Id>();
+        for(ContentDocumentLink link : fileLinks) {
+            documentIds.add(link.ContentDocumentId);
+        }
+
+        List<ContentVersion> relatedFiles = [SELECT Id, VersionData,ContentDocumentId, Title ,ContentSize
+                                              FROM ContentVersion 
+                                              WHERE ContentDocumentId IN :documentIds];
+        
+        return relatedFiles;
     }
 
 }

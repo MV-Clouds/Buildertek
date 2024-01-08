@@ -189,15 +189,13 @@
     
 	handleFilesChange: function(component, event, helper) {
         console.log('handleFilesChange');
-
-
-
         var fileName = 'No File Selected..';                
             //alert(event.getSource().get("v.files").length);
         if (event.getSource().get("v.files").length > 0) {
             // fileName = event.getSource().get("v.files")[0]['name'];
         }
         component.set("v.selectedfileslist",event.getSource().get("v.files"));
+        console.log('event.getSource().get("v.files"):->' , event.getSource().get("v.files"));
 
         var fileCount=event.getSource().get("v.files").length;
 
@@ -245,16 +243,77 @@
     },                
     closeWindow: function(component, event, helper) {
         $A.get("e.force:closeQuickAction").fire();
-    }
+    },
+    // openPopupModel:function(component, event, helper) {
+    //     $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "SHOW" }).fire();        // var Id=  event.currentTarget.dataset.iconattr;
+    //     // component.set("v.quoteLineId",Id);
+    //     component.set("v.selectedFile", []);
+    //     component.set("v.showModel",true);
+    //     helper.getFileList(component, event, helper);
+    // },    
+    // closeFileModel : function (component,event,helper) {
+    //     component.set("v.showModel",false);
+    //     component.set("v.selectedFile", []);
+    // },  
+    // saveFile: function(component, event, helper){
+    //     component.set("v.showModel",false);
+    // },   
+    // handleCheckboxChange: function(component, event, helper) {
+    //     var fileName = 'No File Selected..';    
+    //     var file = event.getSource().get("v.name");
+    //     console.log('fileId : ->', file);
 
-              
-                
-                
-                
-                
-                
-                
-                
-                
+    //     var selectedFiles = component.get("v.selectedFile") || [];
+
+    //     if (event.getSource().get("v.checked")) {
+    //         selectedFiles.push(file);
+    //     } else {
+    //         selectedFiles = selectedFiles.filter(function (id) {
+    //             return id.Id !== file.Id;
+    //         });
+    //     }
+
+    //     selectedFiles = JSON.parse(JSON.stringify(selectedFiles));
+    //     component.set("v.selectedFile", selectedFiles);
+    //     console.log('selectedFiles :->', selectedFiles);
+
+    //     var fileCount=selectedFiles.length;
+
+        
+    //     var files='';
+    //     var mapData = [];
+    //     if (fileCount > 0) {
+    //         for (var i = 0; i < fileCount; i++) 
+    //         {
+    //             fileName = selectedFiles[i].Title;
+    //             var obj = {};
+    //             obj['Name'] = fileName;                
+    //             if(i == 0){
+    //             	files=fileName;    
+    //             }else{
+    //                 files=files+','+fileName;
+    //             }
+    //             mapData.push(obj);                
+    //         }
+    //     }
+    //     else
+    //     {
+    //         files=fileName;
+    //     }
+    //     component.set("v.fileName", files);            
+    //     component.set("v.selectedfilesFill",mapData);
+    //     var fileIds = [];
+	// 	selectedFiles.forEach(function(v){ fileIds.push(v.Id) });
+    //     component.set("v.selectedFillIds",fileIds);
+
+    //     console.log(component.get("v.fileName"));
+    //     console.log('fileIds :->', fileIds);
+    //     console.log(component.get("v.selectedfilesFill"));
+
+    // }  
+
+    
+
+    
                 
 })
