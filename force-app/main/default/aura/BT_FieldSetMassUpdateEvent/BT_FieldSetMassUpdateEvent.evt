@@ -1,0 +1,7 @@
+<aura:event type="COMPONENT" description="pass value from fieldset mass update to parent component">
+    <aura:attribute name="changedValueByEnvent_Integer" type="Integer"/>
+    <aura:attribute name="changedValueByEnvent_String" type="String"/>
+    <aura:attribute name="changedFieldName" type="String"/>
+        <aura:attribute name="index" type="Integer"/>
+        <aura:attribute name="phaseIndex" type="Integer"/>
+</aura:event>

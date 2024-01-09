@@ -2588,10 +2588,34 @@ public with sharing class QuoteDAO{
                  }      
             }
             if(filter != null){
-                sQuery = 'select id, Name from ' + ObjectName + ' WHERE ' + searchKey + ' AND ' + filter + ' order by Name ASC LIMIT 800';
+                if(ObjectName == 'Product2'){
+                    String PricebookFilter = '';
+                    if(parentId != null && parentId != ''){
+                        PricebookFilter = 'WHERE Pricebook2Id = \''+ parentId +'\' ';
+                        sQuery = 'select id, Name, buildertek__Vendor__c,QuantityUnitOfMeasure, (SELECT Id, Name, buildertek__Unit_Cost__c,buildertek__Markup__c,Pricebook2Id FROM PricebookEntries '+ PricebookFilter +' order by CreatedDate DESC LIMIT 1)  from ' + ObjectName + ' WHERE ' + searchKey + ' AND ' + filter + ' order by Name ASC LIMIT 800';
+                    }
+                    else{
+                        sQuery = 'select id, Name, buildertek__Vendor__c,QuantityUnitOfMeasure, (SELECT Id, Name, buildertek__Unit_Cost__c,buildertek__Markup__c,Pricebook2Id FROM PricebookEntries order by CreatedDate DESC LIMIT 1)  from ' + ObjectName + ' WHERE ' + searchKey + ' AND ' + filter + ' order by Name ASC LIMIT 800';
+                    }
+                }
+                else{
+                    sQuery = 'select id, Name, buildertek__Vendor__c,QuantityUnitOfMeasure from ' + ObjectName + ' WHERE ' + searchKey + ' AND ' + filter + ' order by Name ASC LIMIT 800';
+                }
             }
             else{
-                sQuery = 'select id, Name from ' + ObjectName + ' WHERE ' + searchKey + ' order by Name ASC LIMIT 800';
+                if(ObjectName == 'Product2'){
+                    String PricebookFilter = '';
+                    if(parentId != null && parentId != ''){
+                        PricebookFilter = 'WHERE Pricebook2Id = \''+ parentId +'\' ';
+                        sQuery = 'select id, Name, buildertek__Vendor__c,QuantityUnitOfMeasure, (SELECT Id, Name, buildertek__Unit_Cost__c,buildertek__Markup__c,Pricebook2Id FROM PricebookEntries '+ PricebookFilter +' order by CreatedDate DESC LIMIT 1) from ' + ObjectName + ' WHERE ' + searchKey + ' order by Name ASC LIMIT 800';
+                    }
+                    else{
+                        sQuery = 'select id, Name, buildertek__Vendor__c,QuantityUnitOfMeasure, (SELECT Id, Name, buildertek__Unit_Cost__c,buildertek__Markup__c,Pricebook2Id FROM PricebookEntries order by CreatedDate DESC LIMIT 1) from ' + ObjectName + ' WHERE ' + searchKey + ' order by Name ASC LIMIT 800';
+                    }
+                }
+                else{
+                    sQuery = 'select id, Name, buildertek__Vendor__c,QuantityUnitOfMeasure from ' + ObjectName + ' WHERE ' + searchKey + ' order by Name ASC LIMIT 800';
+                }
             }
         // Query Log
         System.debug(sQuery);

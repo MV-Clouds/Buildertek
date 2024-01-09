@@ -4,6 +4,10 @@
     <aura:attribute name="ObjectAPIName" type="string"/>
     <aura:attribute name="change" type="Aura.Action" />
     <aura:attribute name="selectedValue" type="string" access="public"/>
+
+        <!-- for BT_ManageBOMlines -->
+        <aura:attribute name="index" type="Integer"/>
+        <aura:attribute name="phaseIndex" type="Integer"/>
     
     <!--Register the component level event-->
     <aura:registerEvent name="oSelectedRecordEvent" type="c:BT_LightningLookupEvent"/>

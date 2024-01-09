@@ -51,7 +51,7 @@
               }, 100);
         
             var billOfMeterialId = component.get("v.recordId");
-            component.set("v.bomId", billOfMeterialId);
+            // component.set("v.bomId", billOfMeterialId);
         
             //  helper.getPoList(component, event, helper);
             // component.set("v.isLoading", false);
@@ -69,11 +69,10 @@
       },
 
       massUpdateLines: function(component, event, helper){
-        // component.set("v.isLoading", true);
-        try {
+
           var headerIndex = event.getSource().get("v.title");
           var massupdateIndex = component.get("v.massupdateIndex");
-          console.log('headerIndex :: ', headerIndex);
+          // console.log('headerIndex :: ', headerIndex);
           var groupData = component.get("v.dataByGroup");
 
           if(!groupData[headerIndex].massUpdate){
@@ -88,7 +87,7 @@
               $A.getCallback(function () {
                 component.set("v.isLoading", false);
               }),
-              3000
+              5000
             );
           }
           else{
@@ -96,52 +95,32 @@
             helper.MassUpdateHelper(component, event, helper, headerIndex, massupdateIndex);
 
           }
-          // if(component.get("v.massUpdateEnable")){
-          //   console.log('Update Records');
-          //   helper.MassUpdateHelper(component, event, helper);
-          // }
-          // else{
-          //   console.log('Enable mass Update');
-          //   component.set("v.massUpdateEnable", true);
-
-          //   var TotalRecord = component.get("v.totalBOMlines");
-          //   var spinnerTimeOut = TotalRecord > 200 ? 10000 : TotalRecord * 40;
-          //   spinnerTimeOut = TotalRecord < 30 ? 1200 : spinnerTimeOut;
-          //   window.setTimeout(
-          //     $A.getCallback(function () {
-          //       component.set("v.isLoading", false);
-          //     }),
-          //     spinnerTimeOut
-          //   );
-          // }
-        } catch (error) {
-            console.log('Error in massUpdateLines : ', error.stack);
-            component.set("v.isLoading", false);
-        }
       },
 
       onMassUpdateCancel: function(component, event, helper){
         try {
+          component.set("v.isLoading", true);
           var headerIndex = event.getSource().get("v.title");
-          console.log('headerIndex :: ', headerIndex);
+          // console.log('headerIndex :: ', headerIndex);
 
           var groupData = component.get("v.dataByGroup");
           groupData[headerIndex].massUpdate = false;
+          var Init_dataByGroup = component.get("v.Init_dataByGroup");
+          groupData[headerIndex] = JSON.parse(JSON.stringify(Init_dataByGroup[headerIndex]));
           component.set("v.dataByGroup", groupData);
+          // $A.get('e.force:refreshView').fire();
+          // component.set("v.isLoading", false);
 
           var massupdateIndex = component.get("v.massupdateIndex");
           massupdateIndex = massupdateIndex.filter(ele => ele !== headerIndex)
           component.set("v.massupdateIndex", massupdateIndex);
 
-
-          // component.set("v.massUpdateEnable", false);
-          // component.set("v.isLoading", true);
-          // window.setTimeout(
-          //     $A.getCallback(function () {
-          //       component.set("v.isLoading", false);
-          //     }),
-          //     3000
-          //   );
+          window.setTimeout(
+              $A.getCallback(function () {
+                component.set("v.isLoading", false);
+              }),
+              1500
+            );
 
         } catch (error) {
           console.log('Error in onMassUpdateCancel : ', error.stack);
@@ -174,4 +153,104 @@
       recordEditLoaded: function(component, event, helper){
         console.log('recordEditLoaded');
       },
+
+      handleLookUpEvent: function(component, event, helper){
+          component.set("v.isLoading", true);
+          var selectedRecordId = event.getParam("selectedRecordId");
+          var index = event.getParam('index');
+          var headerIndex = event.getParam('phaseIndex');
+          
+          if(event.getParam("fieldName") == 'buildertek__BT_Price_Book__c'){
+            component.set("v.isLoading", true);
+            var groupData = component.get("v.dataByGroup");
+            groupData[headerIndex].sObjectRecordsList[index].buildertek__BT_Price_Book__c = selectedRecordId[0];
+            component.set("v.dataByGroup", groupData);
+
+            var setProduct = false;   // Clear product...
+    
+            window.setTimeout(
+              $A.getCallback(function () {
+                helper.setProduct(component, event, helper, setProduct); 
+              }),
+              1000
+            );
+            // component.set("v.pricebookId", selectedRecordId);
+          }
+          else{
+            component.set("v.isLoading", false);
+          }
+
+      },
+      
+
+    ProductSelectHandler: function(component, event, helper){
+        component.set("v.isLoading", true);
+        var setProduct = true;
+
+        // to avoid lag after set product...
+        window.setTimeout(
+          $A.getCallback(function () {
+            helper.setProduct(component, event, helper, setProduct);
+          }),
+          1000
+        );
+
+    },
+
+    
+
+    clearSelectedHandler :  function(component, event, helper){
+        component.set("v.isLoading", true);
+        var setProduct = false;   // Clear product...
+
+        window.setTimeout(
+          $A.getCallback(function () {
+            helper.setProduct(component, event, helper, setProduct); 
+          }),
+          1000
+        );
+    },
+
+    valueChnagedInFildsetMassUpdate : function(component, event, helper){
+      try{
+        helper.valueChnagedInFildsetMassUpdateHelper(component, event, helper);
+      }
+      catch(error){
+          console.log('error in valueChnagedInFildsetMassUpdate : ', error.stack);
+          
+      }
+    },
+
+    onInputChange: function(component, event, helper){
+      try {
+        // var fieldName = event.getSource().get("v.name").split('-');
+        var name = event.getSource().get("v.name");
+        var parts = name.split('-');
+        var index = parts[0];
+        var headerIndex = parts[1];
+        var fieldLabel = parts[2];
+
+        var inputField = event.getSource();
+        var selectedValue = event.getSource().get("v.value");
+        console.log(' -- field : ', fieldLabel);
+
+
+      if(fieldLabel == 'Name'){
+          if(selectedValue == null || selectedValue.trim() == '' ){
+              inputField.setCustomValidity(" Product Name Proposal is required to update records.");
+          }
+          else{
+              inputField.setCustomValidity("");
+          }
+      }
+      else if(fieldLabel == 'buildertek__Quantity__c' || fieldLabel == 'buildertek__BL_MARKUP__c' || fieldLabel == 'buildertek__BL_UNIT_COST__c'){
+          helper.onInputChangeHelper(component, event, helper, selectedValue, fieldLabel,index, headerIndex )
+      }
+        
+      } catch (error) {
+        console.log('error in onInputChange : ', error.stack);
+      }
+    },
+
+     
 })

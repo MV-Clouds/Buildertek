@@ -245,3 +245,9 @@
 .THIS .slds-table_bordered tbody td{
     text-align: start;
 }
+
+.THIS .label-hidden {
+    /* display : none;
+    visibility : hidden; */
+    margin-top: -1.2rem
+}

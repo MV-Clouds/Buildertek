@@ -237,7 +237,16 @@
                 inputField.setCustomValidity("");
             }
         }
-        component.set('v.record', record);
+        else if((fieldLabel == 'buildertek__Quantity__c' || fieldLabel == 'buildertek__BL_MARKUP__c' || fieldLabel == 'buildertek__BL_UNIT_COST__c' ) && ObjectName == 'buildertek__Select_Sheet__c'){
+                var compEvent = component.getEvent("changedValueEvent");
+                     compEvent.setParams({
+                        'changedValueByEnvent_Integer' : selectedValue,
+                        'changedFieldName' : fieldLabel,
+                        'index' : component.get("v.index"),
+                        'phaseIndex' : component.get("v.phaseIndex"),
+                    });  
+                compEvent.fire();
+        }
     },
     
     onPercentageChange: function (component, event, helper) {
@@ -249,6 +258,17 @@
         var record = component.get('v.record');
         record[fieldLabel] = selectedValue != undefined && selectedValue != '' && selectedValue != '' ? selectedValue.toFixed(2) : 0;
         component.set('v.record', record);
+
+        if(fieldLabel == 'buildertek__BL_MARKUP__c' && ObjectName == 'buildertek__Select_Sheet__c'){
+                var compEvent = component.getEvent("changedValueEvent");
+                     compEvent.setParams({
+                        'changedValueByEnvent_Integer' : selectedValue,
+                        'changedFieldName' : fieldLabel,
+                        'index' : component.get("v.index"),
+                        'phaseIndex' : component.get("v.phaseIndex"),
+                    });  
+                compEvent.fire();
+        }
     },
     
     onCheckBoxChange: function (component, event, helper) {

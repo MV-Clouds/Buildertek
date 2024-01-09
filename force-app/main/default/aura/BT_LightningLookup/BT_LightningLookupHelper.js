@@ -18,9 +18,9 @@
             'parentId' : component.get("v.parentId"),
             'prodctfamly' : component.get("v.prodctfamly")
           });
-      // set a callBack  
-      console.log( component.get("v.filter"));  
-      console.log( component.get("v.prodctfamly"));
+      // // set a callBack  
+      // console.log( component.get("v.filter"));  
+      // console.log( component.get("v.prodctfamly"));
 
      
 
@@ -35,15 +35,20 @@
                 } else {
                     component.set("v.Message", '');
                 }
+
+                // for(var i in storeResponse){
+                //   delete storeResponse[i].PricebookEntries;
+                // }
+                // console.log('storeResponse filter : ', storeResponse);
                 // set searchResult list with return value from server.
                 component.set("v.listOfSearchRecords", storeResponse);
             }
  
         });
-        console.log(component.get("v.parentId") + '----------------------------->>>>>>>>');
+        // console.log(component.get("v.parentId") + '----------------------------->>>>>>>>');
       // enqueue the Action  
         $A.enqueueAction(action);
-        console.log('listof record-->',component.get("v.listOfSearchRecords"));
+        console.log('listof record-->',component.get("v.listOfSearchRecords").length);
 
     
 	}

@@ -19,6 +19,8 @@
     <!--declare events hendlers-->  
     <aura:registerEvent name="SelectedRecordEvent" type="c:BT_LightningLookupEvent"/>
     <aura:handler name="oSelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.handleComponentEvent}"/>
+    <aura:registerEvent name="oClearRecordEvent" type="c:BT_LightningLookupEvent"/>
+    <!-- <aura:handler name="oClearRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.clear}"/> -->
     <aura:handler event="c:BT_CLearLightningLookupEvent" action="{!c.handlecmp}"/>
     
      <aura:handler  event="c:BT_BudgetItemLookupEvent"  action="{!c.handleChildBudgetLineLookupEvent}"/>
@@ -26,6 +28,16 @@
     <aura:attribute name="childValue" type="String" default="haveValue" />
     <aura:attribute name="costcodeValue" type="String" default="haveValue" />
     <aura:attribute name="unitcostValue" type="String" default="haveValue" />
+
+    <!-- for BT_ManageBOMlines -->
+    <aura:attribute name="index" type="Integer"/>
+    <aura:attribute name="phaseIndex" type="Integer"/>
+    <aura:html tag="style">
+        .pillSize{
+            height: 2rem;
+            padding-inline: 0.25rem;
+        }
+    </aura:html>
 
     
     <!-- https://www.lightningdesignsystem.com/components/lookups/ --> 
@@ -68,7 +80,7 @@
             <lightning:spinner class="slds-hide" variant="brand" size="small" aura:id="mySpinner"/>
             <center> {!v.Message}</center>
             <aura:iteration items="{!v.listOfSearchRecords}" var="singleRec">
-                <c:BT_LightningLookupResult ObjectAPIName="{!v.objectAPIName}" oRecord="{!singleRec}" IconName="{!v.IconName}" change="{!c.getSelectedLookupValue}"/>
+                <c:BT_LightningLookupResult ObjectAPIName="{!v.objectAPIName}" oRecord="{!singleRec}" IconName="{!v.IconName}" change="{!c.getSelectedLookupValue}" phaseIndex="{!v.phaseIndex}" index="{!v.index}"/>
             </aura:iteration>
         </ul>
     </div>
