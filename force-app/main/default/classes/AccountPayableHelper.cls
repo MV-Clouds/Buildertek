@@ -4,6 +4,21 @@ public with sharing class AccountPayableHelper {
 
 
     public static void beforeDelete(List<buildertek__Account_Payable__c> listAccountPayable) {
+
+        List<buildertek__Account_Payable_Item__c> listAccountPayableItem = [SELECT Id, Name, buildertek__Purchase_Order_Item__c, buildertek__Purchase_Order_Item__r.Id, buildertek__Purchase_Order_Item__r.buildertek__Quantity_Received__c, buildertek__Account_Payable__c, buildertek__Quantity__c FROM buildertek__Account_Payable_Item__c WHERE buildertek__Account_Payable__c IN :listAccountPayable];
+        List<buildertek__Purchase_Order_Item__c> listPurchaseOrderItem = new List<buildertek__Purchase_Order_Item__c>();
+
+        for(buildertek__Account_Payable_Item__c currAccountPayableItem : listAccountPayableItem) {
+            if(currAccountPayableItem.buildertek__Purchase_Order_Item__r != null) {
+                currAccountPayableItem.buildertek__Purchase_Order_Item__r.buildertek__Quantity_Received__c = currAccountPayableItem.buildertek__Purchase_Order_Item__r.buildertek__Quantity_Received__c - currAccountPayableItem.buildertek__Quantity__c;
+                listPurchaseOrderItem.add(currAccountPayableItem.buildertek__Purchase_Order_Item__r);
+            }
+        }
+
+        if(listPurchaseOrderItem.size() > 0) {
+            update listPurchaseOrderItem;
+        }
+
         for(buildertek__Account_Payable__c currPayable : listAccountPayable) {
             if(String.isNotBlank(currPayable.buildertek__Status__c)) {
                 // Changes as per brian Rquirement discussed on call - 29 nov 2023
@@ -118,6 +133,24 @@ public with sharing class AccountPayableHelper {
                 update transactionList;
             }
         }
+
+        Set<Id> poIdsToUpdate = new Set<Id>();
+        for (buildertek__Account_Payable__c ci : updatedPayableList) {
+            buildertek__Account_Payable__c oldci = oldPayableMap.get(ci.Id);
+            
+            if (oldci.buildertek__Purchase_Order__c != null){
+                poIdsToUpdate.add(oldci.buildertek__Purchase_Order__c);
+            }
+
+            if (ci.buildertek__Purchase_Order__c != null){
+                poIdsToUpdate.add(ci.buildertek__Purchase_Order__c);
+            }
+        }
+
+        if (!poIdsToUpdate.isEmpty()) {
+            updateAmountOnpurchaseorder(poIdsToUpdate);
+        }
+
     }
     public static void onbeforeUpdate(buildertek__Account_Payable__c[] updatedPayableList){ 
         for(buildertek__Account_Payable__c inv : updatedPayableList){ 
@@ -151,6 +184,16 @@ public with sharing class AccountPayableHelper {
             if (transactionList.size() > 0) {
                 update transactionList;
             }
+        }
+
+        Set<Id> poIdsToUpdate = new Set<Id>();
+        for (buildertek__Account_Payable__c ci : invoiceList) {
+            if (ci.buildertek__Purchase_Order__c != null){
+                poIdsToUpdate.add(ci.buildertek__Purchase_Order__c);
+            }
+        }
+        if (!poIdsToUpdate.isEmpty()) {
+            updateAmountOnpurchaseorder(poIdsToUpdate);
         }
     }
 
@@ -235,5 +278,60 @@ public with sharing class AccountPayableHelper {
             }
 }
 
+    public static void onAfterDelete(List<buildertek__Account_Payable__c> oldContractorInvoiceList) {
+        try {
+            Set<Id> poIds = new Set<Id>();
+            for (buildertek__Account_Payable__c ci : oldContractorInvoiceList) {
+                if (ci.buildertek__Purchase_Order__c != null){
+                    poIds.add(ci.buildertek__Purchase_Order__c);
+                }
+            }
+            updateAmountOnpurchaseorder(poIds);
+        } catch (Exception ex) {
+            System.debug('Error: ' + ex.getMessage());
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
+        }
+    }
+
+    public static void updateAmountOnpurchaseorder(Set<Id> purchaseOrderIds) {
+        try {
+            Map<Id, AggregateResult> totalAmountMap = new Map<Id, AggregateResult>();
+            for (AggregateResult aggregatedResult : [SELECT buildertek__Purchase_Order__c, SUM(buildertek__Net_Amount__c) totalAmount FROM buildertek__Account_Payable__c WHERE buildertek__Purchase_Order__c IN :purchaseOrderIds GROUP BY buildertek__Purchase_Order__c]){
+                Id poId = (Id)aggregatedResult.get('buildertek__Purchase_Order__c');
+                totalAmountMap.put(poId, aggregatedResult);
+            }
+            
+            List<buildertek__Purchase_Order__c> purchaseOrderToUpdate = new List<buildertek__Purchase_Order__c>();
+            
+            for (Id poId :purchaseOrderIds) {
+                if(totalAmountMap.containsKey(poId)) {
+                    AggregateResult aggregatedResult = totalAmountMap.get(poId);
+                    Decimal totalAmount = (Decimal)aggregatedResult.get('totalAmount');
+
+                    buildertek__Purchase_Order__c purchaseorder = new buildertek__Purchase_Order__c(Id = poId);
+                    purchaseorder.buildertek__Total_Invoiced__c = totalAmount;
+                    purchaseOrderToUpdate.add(purchaseorder);
+                } else {
+                    buildertek__Purchase_Order__c purchaseorder = new buildertek__Purchase_Order__c(Id = poId);
+                    purchaseorder.buildertek__Total_Invoiced__c = 0;
+                    purchaseOrderToUpdate.add(purchaseorder);
+                }
+            }
+            System.debug('purchaseOrderToUpdate: ' + purchaseOrderToUpdate);
+            if (!purchaseOrderToUpdate.isEmpty()) {
+                update purchaseOrderToUpdate;
+            }
+
+        } catch (Exception ex) {
+            System.debug('Error: ' + ex.getMessage());
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
+        }
+    }
     
 }

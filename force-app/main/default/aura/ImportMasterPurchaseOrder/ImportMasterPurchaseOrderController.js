@@ -10,9 +10,9 @@
                 if(result != null){
                     var pageSize = component.get("v.pageSize");
                     component.set("v.masterPOList", result);
-                    component.set("v.totalRecords", component.get("v.masterPOList").length);
+                    component.set("v.totalRecords", component.get("v.masterPOList").length - 1);
                     component.set("v.startPage",0);
-                    component.set("v.endPage",pageSize-1);
+                    component.set("v.endPage",pageSize - 1);
                     var PaginationList = [];
                     for(var i=0; i< pageSize; i++){
                         if(component.get("v.masterPOList").length> i)

@@ -1,5 +1,6 @@
 trigger ScheduleRecTrigger on buildertek__Schedule__c (after insert, after update, before delete, before update) {
     System.debug('*** ** ScheduleRecTrigger ** ***');
+    System.debug('check1');
     ScheduleTriggerHandler handler = new ScheduleTriggerHandler(Trigger.isExecuting, Trigger.size);
     UpdateProjecttOnScheduleUpdateHandler projectUpdateHandler = new UpdateProjecttOnScheduleUpdateHandler();
     if (Trigger.isInsert && Trigger.isAfter && !handler.blnSkipTaskTrigger){
@@ -378,5 +379,9 @@ trigger ScheduleRecTrigger on buildertek__Schedule__c (after insert, after updat
                 sch.buildertek__Actual_Start_Date_2__c = system.today();
             }
         }
+    }
+
+    if(Trigger.isUpdate && Trigger.isAfter){
+        handler.OnAfterUpdate(Trigger.old, Trigger.new);
     }
 }

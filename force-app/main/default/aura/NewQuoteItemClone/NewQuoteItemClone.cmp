@@ -802,12 +802,19 @@
                                                     width: auto !important;
                                                     height: 190px !important;
                                                     }
+
+                                                    .borderdiv .slds-input{
+                                                        border: var(--lwc-borderWidthThin,1px) solid var(--lwc-colorBorderInput,rgb(201, 201, 201));
+                                                    }
+                                                    
                                                 </aura:html>
-                                                <c:BT_LookUp aura:id="groupId" _field="buildertek__Grouping__c"
-                                                    _sobject="buildertek__Quote_Item__c"
-                                                    _value="{!v.newQuote.buildertek__Grouping__c}"
-                                                    _text_value="{!v.newQuote.buildertek__Grouping__r.Name}"  _label=""
-                                                    _filter="" />
+                                                <div class="borderdiv">
+                                                    <c:BT_LookUp aura:id="groupId" _field="buildertek__Grouping__c"
+                                                        _sobject="buildertek__Quote_Item__c"
+                                                        _value="{!v.newQuote.buildertek__Grouping__c}"
+                                                        _text_value="{!v.newQuote.buildertek__Grouping__r.Name}"  _label=""
+                                                        _filter="" />
+                                                </div>
                                             </td>
 
                                             <!-- <td>
@@ -825,8 +832,8 @@
                                             </td>
                                             <td style="width: 6% !important;">
                                                 <!-- <ui:inputCurrency value="{!v.unitCost}" aura:id="unitCostId" /> -->
-                                                <ui:inputCurrency value="{!v.newQuote.buildertek__Unit_Cost__c}"
-                                                    aura:id="unitCostId" />
+                                                    <ui:inputCurrency value="{!v.newQuote.buildertek__Unit_Cost__c}"
+                                                        aura:id="unitCostId" />
                                             </td>
 
                                             <aura:if isTrue="{!!v.hideGlobalMargin}">
@@ -836,7 +843,9 @@
                                             </aura:if>
                                             <aura:if isTrue="{!!v.hideGlobalMarkup}">
                                             <td style="padding-bottom:22px; width: 7% !important;">
-                                                <lightning:input type="number" name="input6" label="" value="{!v.newQuote.buildertek__Markup__c}"  aura:id="markUpId"  formatter="percent-fixed" step="0.01" />
+                                                <div class="borderdiv">
+                                                    <lightning:input type="number" name="input6" label="" value="{!v.newQuote.buildertek__Markup__c}"  aura:id="markUpId"  formatter="percent-fixed" step="0.01" />
+                                                </div>
                                             </td>
                                             </aura:if>
 

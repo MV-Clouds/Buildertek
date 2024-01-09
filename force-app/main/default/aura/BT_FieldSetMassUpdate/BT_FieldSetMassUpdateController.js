@@ -247,7 +247,6 @@
                     });  
                 compEvent.fire();
         }
-        component.set('v.record', record);
     },
     
     onPercentageChange: function (component, event, helper) {

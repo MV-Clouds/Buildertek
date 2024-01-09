@@ -33,9 +33,6 @@ public class CreateRFQFromWalkThroughController {
                         msg.Status = 'Success';
                         msg.Message = 'RFQ is Created Successfully';
                         msg.newRecordId = newRFQrecord.Id;
-                    } else {
-                        msg.Status = 'Failed';
-                        msg.Message = 'No RFQ lines to create';
                     }
                 } else {
                     msg.Status = 'Success';

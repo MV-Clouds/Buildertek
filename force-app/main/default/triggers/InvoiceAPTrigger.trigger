@@ -1,4 +1,4 @@
-trigger InvoiceAPTrigger on buildertek__Account_Payable_Clone__c (before update , after insert, after update) {
+trigger InvoiceAPTrigger on buildertek__Account_Payable_Clone__c (before update , after insert, after update, after delete) {
 
     InvoiceAPTriggerHandler handler = new  InvoiceAPTriggerHandler();
 
@@ -13,6 +13,8 @@ trigger InvoiceAPTrigger on buildertek__Account_Payable_Clone__c (before update 
             if(InvoiceAPTriggerHandler.isFirstTime){
                 handler.OnAfterUpdate(Trigger.new, Trigger.newMap, Trigger.oldMap); 
             }
-        }   
+        } else if (Trigger.isDelete){
+            handler.OnAfterDelete(Trigger.old); 
+        }  
     }
 }

@@ -515,6 +515,11 @@ public without sharing class PreviewQuoteController{
              body += '</br> Please &nbsp;';
              body += '<a href='+ SiteUrl +'buildertek__ConfirmationPage?Id='+recordId+'&templateId='+templateId+'>Click here</a>';
              body += '&nbsp;to confirm your Quote Order details.' ; */
+             if (String.isNotBlank(emailBodyValue) && emailBodyValue != null) {
+                emailBodyValue = emailBodyValue.replaceAll('<p><br></p>', '<br>');
+                emailBodyValue = emailBodyValue.replaceAll('<p>', '<p style="margin-top: 0.1em; margin-bottom: 0em; ">');
+                body = emailBodyValue;
+            }
             mail.setReplyTo(fromAddress);
             if (wideOrgEmail.size() > 0) {
                 mail.setOrgWideEmailAddressId(wideOrgEmail[0].Id);

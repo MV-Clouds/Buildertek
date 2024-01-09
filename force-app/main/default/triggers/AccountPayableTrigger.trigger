@@ -5,7 +5,7 @@
  * @last modified on  : 07-18-2023
  * @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
 **/
-trigger AccountPayableTrigger on buildertek__Account_Payable__c (before insert,before update,before delete, after insert, after update) {
+trigger AccountPayableTrigger on buildertek__Account_Payable__c (before insert,before update,before delete, after insert, after update, after delete) {
     if (Trigger.isBefore) {
         System.debug('AccountPayableTrigger Before Trigger');
 
@@ -37,7 +37,7 @@ trigger AccountPayableTrigger on buildertek__Account_Payable__c (before insert,b
         }
     } else if (Trigger.isAfter) {
         // System.debug('After Trigger');
-        system.debug('Id => ' + Trigger.New[0].Id);
+        // system.debug('Id => ' + Trigger.New[0].Id);
 
         if (Trigger.isInsert) {
             System.debug(' AccountPayableTrigger After Trigger insert');
@@ -47,6 +47,8 @@ trigger AccountPayableTrigger on buildertek__Account_Payable__c (before insert,b
             AccountPayableHelper.afterUpdate(Trigger.old, Trigger.new, Trigger.newMap, trigger.oldMap); 
             AccountPayableHelper.DeleteBudgetLine(Trigger.old ,Trigger.new , Trigger.oldMap , Trigger.newMap);
 
+        } else if(Trigger.isDelete){
+            AccountPayableHelper.onAfterDelete(Trigger.old); 
         }
     }
 }

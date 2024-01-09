@@ -14,27 +14,28 @@
                 component.set("v.showMessage", false);
                 var result = response.getReturnValue();
                 if(result != null){
-                    component.set("v.isInvoiceLines",true)    
-                    component.set("v.InvoiceDetails",result.Invoice) 
-                    component.set("v.InvoiceLinesList",result.InvoiceLine) 
+                    component.set("v.isInvoiceLines",true)
+                    component.set("v.InvoiceDetails",result.Invoice)
+                    component.set("v.InvoiceLinesList",result.InvoiceLine)
                     if(result.InvoiceLine == undefined){
                         component.find("headCheckRFQ").set("v.disabled", true);
                     }
-                    
-                    component.set("v.SubTotal",result.Invoice.buildertek__Total__c); 
+
+                    component.set("v.SubTotal",result.Invoice.buildertek__Total__c);
                     component.set("v.invoiceName",result.Invoice.Name);
                     component.set("v.invoiceId",result.Invoice.Id);
+                    component.set("v.projectId",result.Invoice.buildertek__Project__c);
                     
                     if(result.Invoice.buildertek__Vendor__c != null || result.Invoice.buildertek__Vendor__c != undefined){
                         component.set("v.vendorId",result.Invoice.buildertek__Vendor__c);
                     }
-                    
+
                     if(result.Invoice.buildertek__Project__c != undefined){
                         component.set("v.projectName",result.Invoice.buildertek__Project__r.Name) ;
                     }
                 }else{
                     component.set("v.Spinner", false);
-                    component.set("v.showMessage", false);                    
+                    component.set("v.showMessage", false);
                     $A.get("e.force:closeQuickAction").fire();
                     var toastEvent = $A.get("e.force:showToast");
                     toastEvent.setParams({
@@ -46,23 +47,23 @@
                     });
                     toastEvent.fire();
                 }
-                
+
             }
         });
         $A.enqueueAction(action);
         helper.getFields(component, event, helper);
     },
-    
-    
-    
+
+
+
     Createpayment : function (component, event, helper) {
         debugger;
         var Invoice = component.get("v.InvoiceDetails");
         var InvoiceLineList = component.get("v.InvoiceLinesList");
         var selectedLineIds = component.get("v.selectedPayLineIds");
-        
+
         var recordId = component.get("v.recordId");
-        
+
         if(selectedLineIds.length < 1){
             var toastEvent = $A.get("e.force:showToast");
             toastEvent.setParams({
@@ -75,7 +76,7 @@
             toastEvent.fire();
         }
         else{
-            var action = component.get("c.createPayment");  
+            var action = component.get("c.createPayment");
             action.setParams({
                 recordId : recordId,
                 invoice : Invoice,
@@ -86,14 +87,14 @@
                 var state = response.getState();
                 var result = response.getReturnValue();
                 if(result != null){
-                    
+
                     var navEvt = $A.get("e.force:navigateToSObject");
                     navEvt.setParams({
                         "recordId": result.Id,
                         "slideDevName": "detail"
                     });
                     navEvt.fire();
-                    
+
                     $A.get("e.force:refreshView").fire();
                     var toastEvent = $A.get("e.force:showToast");
                     toastEvent.setParams({
@@ -102,15 +103,15 @@
                         "message": "Payment Created Successfully."
                     });
                 }
-                
+
             });
             $A.enqueueAction(action);
-            
+
         }
-        
+
     },
-    
-    
+
+
     selectAllRfq : function (component, event, helper) {
         debugger;
         var checkStatus = event.getSource().get("v.checked");
@@ -159,13 +160,13 @@
             }
         }
         console.log(recordIds);
-        
+
     },
-    
+
     selectRfq: function (component, event, helper) {
         debugger;
         var checkbox = event.getSource();
-        
+
         // alert('Chechbox--------------  '+component.find("checkRFQ").get("v.name"));
         var selectedRfqIds = component.get("v.selectedPayLineIds");
         var getAllId = component.find("checkRFQ");
@@ -184,9 +185,9 @@
                     }
                 }
             }
-            
-            
-            
+
+
+
         }else{
             if(component.find("headCheckRFQ").get("v.checked")){
                 component.find("headCheckRFQ").set("v.checked",false);
@@ -198,31 +199,31 @@
         }
         console.log(selectedRfqIds);
         component.set("v.selectedPayLineIds",selectedRfqIds);
-        
-        
+
+
     },
-    
+
     handleOnSubmit : function(component, event, helper) {
         debugger;
         component.set("v.Spinner", true);
         component.set("v.showMessage", true);
         event.preventDefault(); //Prevent default submit
         var eventFields = event.getParam("fields"); //get the fields
-        
+
         component.find('leadCreateForm').submit(eventFields);
         component.set("v.sovValues",eventFields)
     },
-    
+
     handleOnSuccess : function(component, event, helper) {
-        
+
         var payload = event.getParams().response;
         console.log(payload.id);
         var Invoice = component.get("v.sovValues");
         var InvoiceLineList = component.get("v.InvoiceLinesList");
         var selectedLineIds = component.get("v.selectedPayLineIds");
-        
+
         var invoiceid = component.get("v.recordId");
-        
+
         var action = component.get("c.createSovLines");
         action.setParams({
             recordId : payload.id,
@@ -240,7 +241,7 @@
                     "slideDevName": "detail"
                 });
                 navEvt.fire();
-                
+
                 var toastEvent = $A.get("e.force:showToast");
                 toastEvent.setParams({
                     "type": "success",
@@ -254,17 +255,17 @@
             }
         });
         $A.enqueueAction(action);
-        
-        
-        
-        
-        
+
+
+
+
+
     },
-    
+
     CloseScreen: function (component, event, helper) {
         $A.get("e.force:closeQuickAction").fire();
     },
-    
+
     handleSubmit: function (component, event, helper) {
         debugger;
         component.set("v.Spinner", true);
@@ -272,24 +273,24 @@
         component.set('v.isLoading', true);
         var fields = event.getParam("fields");
         if(fields.buildertek__Status__c == null || fields.buildertek__Status__c == '' || fields.buildertek__Status__c == undefined){
-            fields.buildertek__Status__c = component.get("v.status"); 
+            fields.buildertek__Status__c = component.get("v.status");
         }
         event.preventDefault(); // Prevent default submit
         component.find('recordViewForm').submit(fields); // Submit form
         component.set("v.sovValues",fields);
     },
-    
+
     onRecordSuccess: function (component, event, helper) {
-        
-        
+
+
         var payload = event.getParams().response;
         console.log(payload.id);
         var Invoice = component.get("v.sovValues");
         var InvoiceLineList = component.get("v.InvoiceLinesList");
         var selectedLineIds = component.get("v.selectedPayLineIds");
-        
+
         var invoiceid = component.get("v.recordId");
-        
+
         var action = component.get("c.createSovLines");
         action.setParams({
             recordId : payload.id,
@@ -307,7 +308,7 @@
                     "slideDevName": "detail"
                 });
                 navEvt.fire();
-                
+
                 var toastEvent = $A.get("e.force:showToast");
                 toastEvent.setParams({
                     "type": "success",
@@ -321,16 +322,16 @@
             }
         });
         $A.enqueueAction(action);
-        
-        
-        
-        
+
+
+
+
     },
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
 })

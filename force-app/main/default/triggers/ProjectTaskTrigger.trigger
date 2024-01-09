@@ -63,4 +63,8 @@ trigger ProjectTaskTrigger on buildertek__Project_Task__c(after insert, after up
             }
         }
     }
+
+    if(Trigger.isUpdate || Trigger.isAfter){
+        ProjectTaskTriggerHandler.populateCompletionOnBudgetLine(Trigger.new , Trigger.oldMap);
+    }
 }
