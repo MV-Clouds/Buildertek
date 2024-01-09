@@ -244,11 +244,7 @@
           }
       }
       else if(fieldLabel == 'buildertek__Quantity__c' || fieldLabel == 'buildertek__BL_MARKUP__c' || fieldLabel == 'buildertek__BL_UNIT_COST__c'){
-          try {
-              helper.onInputChangeHelper(component, event, helper, selectedValue, fieldLabel,index, headerIndex )
-          } catch (error) {
-              console.log('erro to call event : ', error.stack);
-          }
+          helper.onInputChangeHelper(component, event, helper, selectedValue, fieldLabel,index, headerIndex )
       }
         
       } catch (error) {
