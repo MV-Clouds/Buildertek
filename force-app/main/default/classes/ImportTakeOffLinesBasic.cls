@@ -6,6 +6,8 @@ public with sharing class ImportTakeOffLinesBasic{
         public String strMessage;
     }
 
+    private static Set<String> validUOMValues;
+
     @AuraEnabled
     public static ResponseBase importRecords(Id takeOffId, String fileData){
         ResponseBase response = new ResponseBase();
@@ -70,9 +72,8 @@ public with sharing class ImportTakeOffLinesBasic{
 
 
             List<buildertek__Project_Takeoff_Lines__c> TakeoffLinesToInsert = new List<buildertek__Project_Takeoff_Lines__c>();
-
+            Decimal counter = 1;
             for (fieldWrapper wrapper : datalist) {
-                
                 buildertek__Project_Takeoff_Lines__c TakeoffLine = new buildertek__Project_Takeoff_Lines__c();
                 TakeoffLine.buildertek__Project_Takeoff__c = takeOffId;
 
@@ -122,14 +123,23 @@ public with sharing class ImportTakeOffLinesBasic{
                 } else {
                     TakeoffLine.buildertek__Quantity__c = 0;
                 }
-                TakeoffLine.buildertek__UOM_PL__c = wrapper.UOM;
+
+                String uomValue = wrapper.UOM;
+                if (isValidUOM(uomValue)) {
+                    TakeoffLine.buildertek__UOM_PL__c = uomValue;
+                } else if (!String.isNotBlank(uomValue)){
+                    counter++;
+                    continue;
+                } else {
+                    throw new MyCustomException('Invalid UOM value at row ' + (counter + 1) + ': ' + uomValue);
+                }
 
                 String codeco = wrapper.CostCode;
                 if (String.isNotBlank(codeco) && existingCostCodeMap.containsKey(codeco)){
                     TakeoffLine.buildertek__Cost_Code__c = existingCostCodeMap.get(codeco).Id;
                 }
                 TakeoffLinesToInsert.add(TakeoffLine);
-
+                counter++;
             }
 
             if (!TakeoffLinesToInsert.isEmpty()) {
@@ -142,7 +152,7 @@ public with sharing class ImportTakeOffLinesBasic{
             }
         } catch (Exception e) {
             List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
-            if(StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
                 BT_ExceptionHandler.Store_Exception(e);
             }
 
@@ -153,6 +163,23 @@ public with sharing class ImportTakeOffLinesBasic{
         }
         
         return response;
+    }
+    
+    public class MyCustomException extends Exception {}
+
+    private static Boolean isValidUOM(String uomValue) {
+        if (validUOMValues == null) {
+            validUOMValues = new Set<String>();
+            List<Schema.PicklistEntry> picklistValues = buildertek__Project_Takeoff_Lines__c.buildertek__UOM_PL__c.getDescribe().getPicklistValues();
+            
+            for (Schema.PicklistEntry picklistEntry : picklistValues) {
+                if (picklistEntry.isActive()) {
+                    validUOMValues.add(picklistEntry.getValue());
+                }
+            }
+        }
+
+        return validUOMValues.contains(uomValue);
     }
 
     public class fieldWrapper{
