@@ -43,12 +43,6 @@
      <aura:attribute name="fromcustomDataTable" type="Boolean" ></aura:attribute>
      
      <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
-     <!-- for BT_ManageBOMlines -->
-    <aura:registerEvent name="changedValueEvent" type="c:BT_FieldSetMassUpdateEvent"/>
-
-    <aura:method name="eventFromManageBOMline" action="{!c.doAction}">
-
-    </aura:method>
 
     <!--Editable Fields-->
     <aura:if isTrue="{!v.isMassUpdateEnable}">

@@ -4,8 +4,6 @@
     <aura:attribute name="Spinner" type="Boolean" />
     <aura:attribute name="fieldmaptype" type="Object" />
     <aura:attribute name="islocked" type="boolean" default="false" />
-    <!--pagination-->
-
 
     <aura:attribute name="PageNumber" type="integer" default="1" />
     <aura:attribute name="pageSize" type="integer" default="10" />
@@ -13,50 +11,15 @@
     <aura:attribute name="TotalRecords" type="integer" default="0" />
     <aura:attribute name="RecordStart" type="integer" default="0" />
     <aura:attribute name="RecordEnd" type="integer" default="0" />
-    <!-- end -->
-
-    <!--search -->
-    <!-- <aura:attribute name="searchVendorFilter" type="String" default="" />
-    <aura:attribute name="searchCategoryFilter" type="String" default="" />
-    <aura:attribute name="searchTradeTypeFilter" type="String" default="" />
-    <aura:attribute name="searchBuildPhaseFilter" type="String" default="" />
-    <aura:attribute name="searchProductTypeFilter" type="String" default="" />
-    <aura:attribute name="searchPurchaseOrderFilter" type="String" default="" />
-
-    <aura:handler name="change" value="{!v.searchVendorFilter}" action="{!c.doSearch}" />
-    <aura:handler name="change" value="{!v.searchCategoryFilter}" action="{!c.doSearch}" />
-    <aura:handler name="change" value="{!v.searchTradeTypeFilter}" action="{!c.doSearch}" />
-    <aura:handler name="change" value="{!v.searchBuildPhaseFilter}" action="{!c.doSearch}" />
-    <aura:handler name="change" value="{!v.searchProductTypeFilter}" action="{!c.doSearch}" />
-    <aura:handler name="change" value="{!v.searchPurchaseOrderFilter}" action="{!c.doSearch}" /> -->
-
-    <!-- <aura:handler name="change" value="{!v.dynamicFilterValue}" action="{!c.doSearch}" /> -->
-    <!-- end -->
-
-
-    <!-- <aura:attribute name="selectedRecords" type="List" default="[]" /> -->
-    <!-- <aura:attribute name="JselectedRecordsIds" type="List" default="[]" /> -->
+    
     <aura:attribute name="recordsList" type="List" default="[]" />
     <aura:attribute name="orgData" type="Object" />
     <aura:attribute name="data" type="Object" />
     <aura:attribute name="columns" type="List" />
 
-    <!-- <aura:attribute name="defaultSortDirection" type="String" default="asc" /> -->
-    <!-- <aura:attribute name="sortedBy" type="String" default=""/> -->
-    <!-- <aura:attribute name="sortDirection" type="String" default="" /> -->
-    <!-- <aura:attribute name="sortingGroupIndex" type="Integer" default="-1" /> -->
-
-    <!-- <aura:attribute name="selectedTableRows" type="List"  />
-    <aura:attribute name="selectedTableRowIds" type="List" />
-    <aura:attribute name="selectedRows" type="List" /> -->
     <aura:attribute name="dataByGroup" type="Object" />
     <aura:attribute name="Init_dataByGroup" type="Object" />
     <aura:attribute name="cloneDataByGroup" type="Object" />
-    <!-- <aura:attribute name="dataGroupByVendor" type="Object" /> -->
-    <!-- <aura:attribute name="selectedRecordMap" type="Object" />
-    <aura:attribute name="selectedRowsByGroupMap" type="Object" />
-    <aura:attribute name="vendors" type="List" />
-    <aura:attribute name="selectedRowIndex" type="List" default="[]"/> -->
 
     <!-- BOM Line -->
     <aura:attribute name="fieldBOMLineNameApiMap" type="Map"  />
@@ -64,61 +27,19 @@
 
     <!-- dynamic BOM Line filed -->
     <aura:attribute name="bomLineFieldsSettings" type="List" default="[]" />
-    <!-- <aura:attribute name="bomLineListTmp" type="List" default="[]" /> -->
     <aura:attribute name="bomLineselectedFields" type="String" />
 
     <aura:attribute name="groupByPhasetoggle" type="Boolean" default="true"/>
-    <!-- <aura:attribute name="groupByVendortoggle" type="Boolean" default="false"/>
-    <aura:attribute name="groupByCategorytoggle" type="Boolean" default="false"/>
-    <aura:attribute name="groupByServiceCategorytoggle" type="Boolean" default="false"/>
-    <aura:attribute name="groupBytoggle" type="Boolean" default="false" /> -->
 
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
-    <!-- <aura:attribute name="showMessage" type="Boolean" default="false" /> -->
-    <!-- <aura:attribute name="showModal" type="Boolean" default="false" /> -->
-    <!-- <aura:attribute name="vendorList" type="Object" /> -->
-    <!-- <aura:attribute name="projectName" type="String" default=""/> -->
-    <!-- <aura:attribute name="projectId" type="String" /> -->
-    <!-- <aura:attribute name="selectedVendor" type="String" default="" /> -->
-    <!-- <aura:attribute name="optionLineId" type="String" default="" /> -->
     <aura:attribute name="BOMName" type="String" default=""/>
-    <!-- <aura:attribute name="isDeletetakeoffLines" type="Boolean" default="false" />
-    <aura:attribute name="storeId" type="String" default=""/>
-    <aura:attribute name="opportunityName" type="String" default=""/>
-    <aura:attribute name="opportunityId" type="String" /> -->
 
     <!-- mass update -->
     <aura:attribute name="massUpdateEnable" type="Boolean" default="true" />
-    <!-- <aura:attribute name="listOfRecords" type="Select_Sheet__c[]" /> -->
-    <!-- <aura:attribute name="cloneListOfRecords" type="Select_Sheet__c[]" /> -->
     <aura:attribute name="fieldValues" type="List" />
-    <!-- <aura:attribute name="quoteLineName" type="String" /> -->
-    <!-- <aura:attribute name="isModalOpen" type="Boolean" /> -->
-    <!-- <aura:attribute name="selectedRecordIndex" type="Integer" /> -->
     <aura:attribute name="isLoading" type="Boolean" default="false" />
     <lightning:workspaceAPI aura:id="workspace" />
     <aura:attribute name="sObjectRecords" type="List" default="[]" />
-
-    <!--Fabrication Taxes-->
-    <!-- <aura:attribute name="showBTAdminButton" type="Boolean" default="false"  /> -->
-    <!-- <aura:attribute type="object" name="bomList"/> -->
-    <!-- <aura:attribute name="showCountryModal" type="Boolean" default="false"  /> -->
-    <!-- <aura:attribute name="bomId" type="String" /> -->
-    <!-- <aura:attribute name="showAdjustmentTable" type="Boolean" default="false"  /> -->
-    <!-- <aura:attribute name="groupByBuildChecked" type="Boolean" default="false"  /> -->
-    <!-- <aura:attribute name="adjustmentTableColumns" type="List"/> -->
-    <!-- <aura:attribute name="showFabricationDetails" type="Boolean" default="false"  /> -->
-    <!-- <aura:attribute name="totalExtendedCost" type="String" />
-    <aura:attribute name="totalGrossCost" type="String" />
-    <aura:attribute name="totalDiscountPercent" type="String" />
-    <aura:attribute name="totalDiscountAmount" type="String" />
-    <aura:attribute name="totalMarkupPercent" type="String" />
-    <aura:attribute name="totalMarkupAmount" type="String" />
-    <aura:attribute name="totalSubTotalAmount" type="String" />
-    <aura:attribute name="totalSalesTax" type="String" />
-    <aura:attribute name="totalAmount" type="String" />
-    <aura:attribute name="totalProposalBaseCost" type="String" />
-    <aura:attribute name="totalProposalBaseValue" type="String" /> -->
 
     <aura:attribute name="bomLineFieldsSettingsClone" type="List" default="[]" />
     <aura:attribute name="countryoptions" type="List" default="[]"/>
@@ -282,7 +203,6 @@
                             <tbody>
                                 <aura:iteration  items="{!groupItem.sObjectRecordsList}" var="row" indexVar="index">
                                     <tr>
-                                        <!-- BUIL-3754 START-->
                                         <td role="gridcell" tabindex="-1">
                                             <span class="slds-grid slds-grid_align-spread">
                                                 <div class="slds-truncate">
@@ -390,58 +310,6 @@
                                                     <lightning:input name="{!index+'-'+phaseIndex+'-'+field.name}" disabled="true" data-fieldapi="{!field.name}" value="{!row.buildertek__Total_Sales_Price__c}" type="number" formatter="currency" onchange="{!c.onInputChange}" step="0.01" variant="label-hidden"/>
                                                 </td>
                                             </aura:if>
-                                                            <!-- </div> -->
-
-                                                    <!-- </td> -->
-                                                <!-- </aura:set>
-                                                </aura:if> -->
-
-                                            <!-- </aura:if> -->
-                                            <!-- BUIL-3754 END-->
-
-                                            <!-- BUIL-3736 START -->
-                                            <!-- <aura:if isTrue="{!(field.label == 'Standard?')}">
-                                                <td>
-                                                    <c:BT_FieldSetMassUpdate record="{!row}" index="{!index}" field="{!field}"
-                                                                             isMassUpdateEnable="{!groupItem.massUpdate}"
-                                                                             childObjectName="buildertek__Select_Sheet__c"
-                                                                             ObjectName="buildertek__Select_Sheet__c"
-                                                                             callingCmpName="BT_ManageBOMLines"/>
-
-                                                </td>
-                                                <aura:set attribute="else">
-                                                    <aura:if isTrue="{!(field.name == 'buildertek__Total_Sales_Price__c')}">
-                                                        <td style = "padding-right:5px; width: 7rem;" >
-                                                            <lightning:input value="{!row.buildertek__Total_Sales_Price__c}" type="number" formatter="currency" name="{!field.name}" variant="label-hidden" disabled="true" width="50%"/>
-                                                        </td>
-                                                        <aura:set attribute="else">
-                                                            <aura:if isTrue="{! or( or(field.type == 'DOUBLE',field.type == 'CURRENCY'), field.type == 'PERCENT') }">
-
-                                                                <td style = "padding-right:5px; width: 7rem;" >
-                                                                    <c:BT_FieldSetMassUpdate record="{!row}" index="{!index}" field="{!field}"
-                                                                                            isMassUpdateEnable="{!groupItem.massUpdate}"
-                                                                                            childObjectName="buildertek__Select_Sheet__c"
-                                                                                            ObjectName="buildertek__Select_Sheet__c"
-                                                                                            callingCmpName="BT_ManageBOMLines"/>
-                                                                </td>
-                                                                <aura:set attribute="else">
-                                                                    <td>
-                                                                                <c:BT_FieldSetMassUpdate record="{!row}" index="{!index}" field="{!field}"
-                                                                                                        isMassUpdateEnable="{!groupItem.massUpdate}"
-                                                                                                        childObjectName="buildertek__Select_Sheet__c"
-                                                                                                        ObjectName="buildertek__Select_Sheet__c"
-                                                                                                        callingCmpName="BT_ManageBOMLines"/>
-
-                                                                    </td>
-                                                                </aura:set>
-                                                            </aura:if>
-
-
-                                                        </aura:set>
-                                                        </aura:if>
-                                                </aura:set>
-                                            </aura:if>  -->
-                                            <!-- BUIL-3736 END -->
 
                                         </aura:iteration>
 
@@ -465,24 +333,6 @@
                                                 </span></span>
                                         </div>
                                     </th>
-                                    <!-- <th class="" scope="col" style="width:2rem">
-                                        <span id="column-group-header" class="slds-assistive-text">Choose a row</span>
-                                        <div class="slds-th__action slds-th__action_form">
-                                            <div class="slds-checkbox">
-                                                <input type="checkbox" name="options" class="{!'checkSelectAll_'+phaseIndex}"
-                                                        id="{!'checkbox-group_'+phaseIndex}" value="checkbox-unique-id-293" tabindex="0"
-                                                        aria-labelledby="check-select-all-label column-group-header"
-                                                        onchange="{!c.selectAll}" />
-                                                <label class="slds-checkbox__label" for="{!'checkbox-group_'+phaseIndex}"
-                                                        id="{!'check-select-all-label-group_'+phaseIndex}">
-                                                    <span class="slds-checkbox_faux"></span>
-                                                    <span class="slds-form-element__label slds-assistive-text">Select All</span>
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </th>
-                                    <th scope="col" style="width:2rem;"></th>
-                                    <th scope="col" style="width:2rem;"></th> -->
                                     <aura:iteration items="{!v.bomLineFieldsSettings}" var="rec" indexVar="SettingsIndex">
                                         <th aria-label="Name" aria-sort="none" class="slds-is-resizable slds-is-sortable" scope="col" style="background-color: white;"
                                             data-sortBy="{!rec.value}" name="{!rec.value}" data-sortGroupIndex="{!phaseIndex}" onclick="{!c.handleSort}" title="{!rec.value}">

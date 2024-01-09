@@ -238,7 +238,6 @@
             }
         }
         else if((fieldLabel == 'buildertek__Quantity__c' || fieldLabel == 'buildertek__BL_MARKUP__c' || fieldLabel == 'buildertek__BL_UNIT_COST__c' ) && ObjectName == 'buildertek__Select_Sheet__c'){
-            try {
                 var compEvent = component.getEvent("changedValueEvent");
                      compEvent.setParams({
                         'changedValueByEnvent_Integer' : selectedValue,
@@ -247,9 +246,6 @@
                         'phaseIndex' : component.get("v.phaseIndex"),
                     });  
                 compEvent.fire();
-            } catch (error) {
-                console.log('erro to call event : ', error.stack);
-            }
         }
         component.set('v.record', record);
     },
@@ -265,7 +261,6 @@
         component.set('v.record', record);
 
         if(fieldLabel == 'buildertek__BL_MARKUP__c' && ObjectName == 'buildertek__Select_Sheet__c'){
-            try {
                 var compEvent = component.getEvent("changedValueEvent");
                      compEvent.setParams({
                         'changedValueByEnvent_Integer' : selectedValue,
@@ -274,9 +269,6 @@
                         'phaseIndex' : component.get("v.phaseIndex"),
                     });  
                 compEvent.fire();
-            } catch (error) {
-                console.log('erro to call event : ', error.stack);
-            }
         }
     },
     
@@ -318,16 +310,4 @@
         var selectedRecordId = component.get("v.selectedRecordId");
         component.find("lookupField").set("v.value", selectedRecordId);
     },
-
-    doAction:  function (component, event, helper){
-        try {
-            var params = event.getParam('arguments');
-            // if (params) {
-            //     var param1 = params.param1;
-            // }
-        } catch (error) {
-            console.log('Error in doAction: ', error.stack);
-            
-        }
-    }
 })
