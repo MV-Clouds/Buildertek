@@ -464,4 +464,35 @@ public with sharing class InvoiceTrigger_HDL {
             }
         }
     }
+
+    public void UpdateSalesInvoiceStatus(List<buildertek__Billings__c> newSalesInvoiceList, Map<Id, buildertek__Billings__c> oldSalesInvoiceMap) {
+        try {
+            Set<Id> salesInvoiceIdsToUpdate = new Set<Id>();
+            List<buildertek__Billings__c> salesInvoiceListForStatusUpdate = new List<buildertek__Billings__c>();
+        
+            for (buildertek__Billings__c salesInvoice : newSalesInvoiceList) {
+                buildertek__Billings__c oldSILine = oldSalesInvoiceMap.get(salesInvoice.Id);
+                if (salesInvoice.buildertek__Receipts__c != oldSILine.buildertek__Receipts__c && salesInvoice.buildertek__Receipts__c == 0) {
+                    salesInvoiceIdsToUpdate.add(salesInvoice.Id);
+                }
+            }
+        
+            List<buildertek__Billings__c> getSalesInvoiceRecord = [Select Id, Name, buildertek__Receipts__c, buildertek__Status__c FROM buildertek__Billings__c WHERE Id IN :salesInvoiceIdsToUpdate];
+
+            for (buildertek__Billings__c updateCI : getSalesInvoiceRecord) {
+                updateCI.buildertek__Status__c = 'Open';
+                salesInvoiceListForStatusUpdate.add(updateCI);
+            }
+            
+            update salesInvoiceListForStatusUpdate;
+
+        } catch (Exception ex) {
+            System.debug('Error: ' + ex.getMessage());
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
+            
+        }
+    }
 }

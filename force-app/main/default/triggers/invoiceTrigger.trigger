@@ -49,7 +49,7 @@ trigger invoiceTrigger on Billings__c (before insert, before update, before dele
             handler.OnAfterUpdate(Trigger.old, Trigger.new, Trigger.newMap, Trigger.oldMap); 
             handler.DeleteBudgetLine(Trigger.old ,Trigger.new , Trigger.oldMap , Trigger.newMap);
             handler.onAfterUpdateSI(Trigger.new , Trigger.oldMap);
-
+            handler.UpdateSalesInvoiceStatus(Trigger.new , Trigger.oldMap);
         } else if(Trigger.isDelete){
             handler.onAfterDeleteSI(Trigger.old);
         }
