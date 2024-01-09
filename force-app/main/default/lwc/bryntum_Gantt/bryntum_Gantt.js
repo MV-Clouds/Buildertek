@@ -2870,7 +2870,7 @@ import {
 
               if (
                 eDate.getTime() < dat.getTime() &&
-                taskRecord.percentDone < 100
+                taskRecord.percentDone < 100 && taskRecord.name != "Milestone Complete"
               ) {
                 renderData.wrapperCls.add("pastdateTextColor");
                 renderData.taskRecord.cls.add("pastDueDatesText");
