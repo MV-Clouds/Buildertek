@@ -286,8 +286,6 @@ public with sharing class BT_SendEmailController{
         try{
             Boolean useSignature = false;
             system.debug('files-->'+files);
-            system.debug('pdfNames-->'+pdfFileName);
-
             List<string> strTO = new List<string>();
             List<string> strCC = new List<string>();
             SET<Id> contactIdSet = new SET<Id>();
@@ -577,45 +575,59 @@ public with sharing class BT_SendEmailController{
                     fileAttachments.add(efa);
                 }
             }
+            // List<ContentVersion> docList;
+            // list<Id> contentVersionIds = new list<Id>();
+
+            // docList = [Select Id, ContentDocumentId, Title, VersionData
+            //            from ContentVersion
+            //            where Id IN :files]; //where ContentDocumentId IN :files];
+
+
+            // system.debug('docList -----------> ' + docList);
+            // system.debug('docList size -------> ' + docList.size());
+            // if (docList.size() > 0){
+            //     for (ContentVersion docs : docList){
+            //         Messaging.Emailfileattachment efa1 = new Messaging.Emailfileattachment();
+            //         efa1.setFileName(docs.Title);
+            //         efa1.setBody(docs.VersionData);
+            //         fileAttachments.add(efa1);
+            //         //fileAttachments.add(docs);
+            //         contentVersionIds.add(docs.Id);
+            //     }
+            // }
+            // List<Attachment> attList;
+
+
+            // attList = [Select Id, Name, Body
+            //            from Attachment
+            //            where Id IN :files];
+
+
+            // system.debug('attList -----------> ' + attList);
+            // system.debug('attList size -------> ' + attList.size());
+            // if (docList.size() > 0){
+            //     for (Attachment att : attList){
+            //         Messaging.Emailfileattachment efa2 = new Messaging.Emailfileattachment();
+            //         efa2.setFileName(att.Name);
+            //         efa2.setBody(att.Body);
+            //         fileAttachments.add(efa2);
+            //         //fileAttachments.add(docs);
+            //     }
+            // }
+
             List<ContentVersion> docList;
             list<Id> contentVersionIds = new list<Id>();
-
-            docList = [Select Id, ContentDocumentId, Title, VersionData
-                       from ContentVersion
-                       where Id IN :files]; //where ContentDocumentId IN :files];
-
-
-            system.debug('docList -----------> ' + docList);
-            system.debug('docList size -------> ' + docList.size());
+            docList = [Select Id, ContentDocumentId, Title, VersionData from ContentVersion where ContentDocumentId IN :files];
             if (docList.size() > 0){
                 for (ContentVersion docs : docList){
                     Messaging.Emailfileattachment efa1 = new Messaging.Emailfileattachment();
                     efa1.setFileName(docs.Title);
                     efa1.setBody(docs.VersionData);
-                    fileAttachments.add(efa1);
-                    //fileAttachments.add(docs);
                     contentVersionIds.add(docs.Id);
                 }
             }
-            List<Attachment> attList;
 
-
-            attList = [Select Id, Name, Body
-                       from Attachment
-                       where Id IN :files];
-
-
-            system.debug('attList -----------> ' + attList);
-            system.debug('attList size -------> ' + attList.size());
-            if (docList.size() > 0){
-                for (Attachment att : attList){
-                    Messaging.Emailfileattachment efa2 = new Messaging.Emailfileattachment();
-                    efa2.setFileName(att.Name);
-                    efa2.setBody(att.Body);
-                    fileAttachments.add(efa2);
-                    //fileAttachments.add(docs);
-                }
-            }
+            mail.setEntityAttachments(contentVersionIds);
 
             system.debug('fileAttachments ----->' + fileAttachments);
             system.debug('contentVersionIds ----->' + contentVersionIds);
@@ -1525,6 +1537,9 @@ public with sharing class BT_SendEmailController{
         }
         return pdfName;
     }
+
+
+
     private static void appendToFileNew(Id fileId, String base64Data) {
         system.debug('fileId'+fileId);
         system.debug('appendToFileNew');

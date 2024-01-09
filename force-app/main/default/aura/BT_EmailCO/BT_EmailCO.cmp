@@ -38,7 +38,7 @@
 	<aura:attribute name="selectedbodyTemplateItem" type="String" default=""/>
     <aura:attribute name="selectedInvoiceBodyContent" type="String" default="" />
 	<aura:attribute name="sobjecttype" type="String" default="{!v.sObjectName}"/>
-
+    <aura:attribute name="filetype" type="List" default="['.png', '.jpg', '.jpeg',  '.zip', '.doc', '.docx', '.ppt', '.pptx', '.xls', '.xlsx', '.pdf', '.txt']" />
     <aura:attribute name="showModel" type="Boolean" default="false" />
     <aura:attribute name="relatedFiles" type="List" default="[]" />
     <aura:attribute name="selectedFile" type="List" default="[]" />
@@ -227,22 +227,27 @@
                         </div>
                     </div> -->
                     
-                    
-                        <div style="border:1px solid lightgray;border-radius:5px;padding:10px;margin-top:10px">
-                            <lightning:layout multipleRows = "true">                                        
-                                <div >
-                                <!-- <div style="display: flex; align-items: center;"> -->
-                                    <lightning:input aura:id="fuploader" onchange="{!c.handleFilesChange}" type="file" variant="label-hidden" name="file" label=""  multiple="true" accept="image/png,image/jpeg,image/jpg,.zip, .doc, .docx, .rtf, .ppt, .pptx, .xls, .xlsx, .pdf, .txt"/>
-                                    <!-- <div style="display: inline-block ;padding-left: 10px;" onclick="{!c.openPopupModel}" >
+                        <div style="border:1px solid lightgray;border-radius:5px;padding:10px;margin-top:10px;">
+                            <lightning:layout multipleRows = "true">
+                                <div style="display: flex; flex-direction :column;">
+                                <div style="display: flex; align-items: center;">
+                                    <lightning:fileUpload label="Attach receipt"
+                                                            name="fileUploader"
+                                                            multiple="true"
+                                                            accept="{!v.filetype}"
+                                                            recordId="{!v.recordId}"
+                                                            aura:id="fuploader"
+                                                            onuploadfinished="{!c.handleFileChange}" />
+                                    
+                                    <div style="display: inline-block; padding-left: 10px;" onclick="{!c.openPopupModel}">
                                         <lightning:button iconPosition="left" label="Select file from record" class="sldsButtonGroup" />
-                                    </div> -->
-                                    <!-- <aura:if isTrue="{!v.showModel}">
+                                    </div>
+                                    <aura:if isTrue="{!v.showModel}">
                                         <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open slds-modal_large">
                                                 <div class="slds-modal__container">
                                                     <header class="slds-modal__header">
                                                             <h2 class="slds-text-heading_medium slds-hyphenate">Select Files</h2>
-                                                    </header>
-                                                    
+                                                    </header>    
                                                     <div class="slds-modal__content divModel" id="modal-content-id-1" style="">
                                                         <table class="slds-table slds-table_bordered slds-table_cell-buffer">
                                                             <thead>
@@ -254,44 +259,41 @@
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
+                                                                
                                                                 <aura:iteration items="{!v.relatedFiles}" var="file">
                                                                     <tr>
                                                                         <td>
-                                                                            <lightning:input type="checkbox" name="{!file}" onchange="{!c.handleCheckboxChange}" />
+                                                                            <lightning:input type="checkbox" name="{!file}" value="{!file.ContentDocumentId}" checked="{!file.isChecked}" onchange="{!c.handleCheckboxChange}" />
                                                                         </td>
                                                                         <td>{!file.Title}</td>
                                                                         <td>{!file.FormattedSize}</td> 
                                                                         <td>{!file.FileType}</td>
                                                                     </tr>
                                                                 </aura:iteration>
+                                                                
                                                             </tbody>
                                                         </table>
                                                     </div>
-                                            
                                                     <footer class="slds-modal__footer">
-                                                        <button class="slds-button slds-button_neutral" aria-label="Cancel and close" onclick="{!c.closeFileModel}">Cancel</button>
-                                                        <button class="slds-button slds-button_brand" onclick="{!c.saveFile}">Save</button>
-                                                    </footer>
-                                                
+                                                        <button class="slds-button slds-button_neutral" aria-label="Cancel and close" onclick="{!c.closeFileModel}">Close</button>
+                                                    </footer>                                                
                                             </div>
                                         </section>
                                         <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
-                                    </aura:if> -->
-                                     <!-- <div class="slds-text-body_small slds-text-color_error">{!v.fileName} </div>-->
-                                    
+                                    </aura:if>
+                                </div>
+                                <div>
                                     <aura:iteration items="{!v.selectedfilesFill}" var="sr">
-                                        <lightning:pill class="slds-m-around_xx-small slds-text-body_small slds-text-color_error" label="{!sr.Name}" name="{!sr.Name}" onremove="{! c.clear }">
+                                        <lightning:pill class="slds-m-around_xx-small slds-text-body_small slds-text-color_error" label="{!sr.Name}" name="{!sr.Id}" onremove="{!c.clear}">
                                             <aura:set attribute="media">
-                                                <lightning:icon iconName="standard:file" size="x-small" alternativeText="icon"/>
+                                                <lightning:icon iconName="standard:file" size="x-small" alternativeText="icon" />
                                             </aura:set>
                                         </lightning:pill>
                                     </aura:iteration>
-                                </div>                                        
+                                </div>
+                            </div>
                             </lightning:layout>
-                        </div>                                       
-                        
-                    
-                    
+                        </div>                                     
                 </div>
             </div>
             </div>

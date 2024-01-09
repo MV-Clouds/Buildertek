@@ -180,10 +180,23 @@
 		var to, cc, toIds = [], ccIds = [], files, fileIds = [], subject, body, recordId, templateId, pdfFileName;
 		
         body = '';
+        var fileInput = '';
+        var contentVersionIds = [];
+        if(component.get("v.selectedfilesFill").length>0) {
+            fileInput = component.get("v.selectedfilesFill");
+            console.log('fileInput z;-->' , fileInput);
+            console.log('fileInput selected;-->' , component.get("v.selectedfilesFill"));
+            for (var i = 0; i < fileInput.length; i++) {
+                var contentVersionId = fileInput[i].Id;
+                contentVersionIds.push(contentVersionId);
+            }
+        }
+        console.log('contentVersionIds :--->' , contentVersionIds);
+
 		to = component.get("v.selectedToContact");
 		cc = component.get("v.selectedCcContact");
         var emailIds = component.get("v.emailIds");
-		files = component.get("v.selectedFillIds"); //selectedFillIds  //selectedFiles
+		files = contentVersionIds; //selectedFillIds  //selectedFiles
 		to.forEach(function(v){ toIds.push(v.Id) });
 		cc.forEach(function(v){ ccIds.push(v.Id) }); 
         files.forEach(function(v){ fileIds.push(v) });
@@ -199,18 +212,8 @@
         console.log("Selected template id : ",templateId)
 		recordId = component.get("v.recordId");
 		pdfFileName = component.get("v.pdfFileName");
-        // var fileInput = component.get("v.selectedfileslist");
-        // var uniqueRecordIdsSet = new Set(fileIds);
-
-        // // Convert the Set back to an array if needed
-        // var uniqueRecordIdsArray = Array.from(uniqueRecordIdsSet);
-        // console.log('uniqueRecordIdsArray :->', uniqueRecordIdsArray);
-        // console.log('uniqueRecordIdsArray length:->', uniqueRecordIdsArray.length);
-        // console.log('fileInput.length :->', fileInput.length);
-        // if (fileInput.length == uniqueRecordIdsArray.length) {
 		var dbAction = component.get("c.SendEmail");
         console.log('pdfFileName' + component.get("v.pdfFileName"));
-        // debugger;
         dbAction.setParams({
             to:toIds,
             cc: ccIds,
@@ -270,7 +273,7 @@
             }
         });
         $A.enqueueAction(dbAction);
-	// }  
+	
 	},
     
     
@@ -489,27 +492,27 @@
                 } else {
                     // if(this.filesCount == this.fileInputLenght){ 
                         //alert(this.fileIds.length);
-                        console.log('this.fileIds ==> '+this.fileIds);
-                        component.set("v.selectedFillIds",this.fileIds);
-                        $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "SHOW" }).fire();
-                        this.send(component, event, helper);
-                        this.filesCount = 0;
-                        this.fileInputLenght = 0;
-                        this.fileIds = [];
+                        // console.log('this.fileIds ==> '+this.fileIds);
+                        // component.set("v.selectedFillIds",this.fileIds);
+                        // $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "SHOW" }).fire();
+                        // this.send(component, event, helper);
+                        // this.filesCount = 0;
+                        // this.fileInputLenght = 0;
+                        // this.fileIds = [];
                        
                     // }
                 }
-                // if(this.filesCount == this.fileInputLenght){ 
-                //     //alert(this.fileIds.length);
-                //     console.log('this.fileIds ==> '+this.fileIds);
-                //     component.set("v.selectedFillIds",this.fileIds);
-                //     $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "SHOW" }).fire();
-                // 	this.send(component, event, helper);
-                //     this.filesCount = 0;
-                //     this.fileInputLenght = 0;
-                //     this.fileIds = [];
+                if(this.filesCount == this.fileInputLenght){ 
+                    //alert(this.fileIds.length);
+                    console.log('this.fileIds ==> '+this.fileIds);
+                    component.set("v.selectedFillIds",this.fileIds);
+                    $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "SHOW" }).fire();
+                	this.send(component, event, helper);
+                    this.filesCount = 0;
+                    this.fileInputLenght = 0;
+                    this.fileIds = [];
                    
-                // }
+                }
                 // handel the response errors        
             } else if (state === "INCOMPLETE") { 
                 //component.set("v.Spinner", false); 
@@ -602,55 +605,80 @@
         $A.enqueueAction(action);
     },
 
-        // getFileList: function(component) {
-        //     var recordId = component.get("v.recordId");
-        //     var action = component.get("c.getRelatedFiles");
-    
-        //     action.setParams({
-        //         recordId: recordId
-        //     });
-    
-        //     action.setCallback(this, function(response) {
-        //         var state = response.getState();
-        //         if (state === "SUCCESS") {
-        //             var files = response.getReturnValue();
-        //             console.log('FILES :->', files);
-    
-        //             if (files && files.length > 0) {
-        //                 // Convert file sizes to KB or MB
-        //                 files = this.convertFileSizes(files);
-    
-        //                 component.set("v.relatedFiles", files);
-        //                 $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
-        //             } else {
-        //                 console.error('No related files found');
-        //             }
-        //         } else {
-        //             var errors = response.getError();
-        //             console.error('Error fetching related files: ', errors);
-        //         }
-        //     });
-    
-        //     $A.enqueueAction(action);
-        // },
-    
-        // convertFileSizes: function(files) {
-        //     for (var i = 0; i < files.length; i++) {
-        //         var fileSize = files[i].ContentSize; // Assuming ContentSize is the field representing size
-        //         files[i].FormattedSize = this.formatFileSize(fileSize);
-        //     }
-        //     return files;
-        // },
-    
-        // formatFileSize: function(sizeInBytes) {
-        //     if (isNaN(sizeInBytes) || sizeInBytes <= 0) {
-        //         return 'N/A';
-        //     }
-    
-        //     var units = ['B', 'KB', 'MB', 'GB', 'TB'];
-        //     var i = parseInt(Math.floor(Math.log(sizeInBytes) / Math.log(1024)));
-        //     return Math.round((sizeInBytes / Math.pow(1024, i)) * 100) / 100 + ' ' + units[i];
-        // }
+    getFileList: function(component) {
+        var recordId = component.get("v.recordId");
+        var action = component.get("c.getRelatedFiles");
+
+        action.setParams({
+            recordId: recordId
+        });
+
+        action.setCallback(this, function(response) {
+            var state = response.getState();
+            if (state === "SUCCESS") {
+                var files = response.getReturnValue();
+                console.log('FILES :->', files);
+
+                if (files && files.length > 0) {
+                    component.set("v.showModel",true);
+                    // Convert file sizes to KB or MB
+                    files = this.convertFileSizes(files);
+                    var selectedFillIds = component.get("v.selectedFillIds");
+                    
+                    files.forEach(function(file) {
+                        file.isChecked = selectedFillIds.includes(file.ContentDocumentId);
+                    });
+                    
+                    component.set("v.relatedFiles", files);
+                    $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
+                } else {
+                    component.set("v.showModel",false);
+                    var toastEvent = $A.get("e.force:showToast");
+                    toastEvent.setParams({
+                        mode: 'sticky',
+                        message: 'There are no files related to the record.',
+                        type : 'error',
+                        duration: '5000',
+                        mode: 'dismissible'
+                    });
+                    toastEvent.fire(); 
+                    $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
+                }
+            } else {
+                var toastEvent = $A.get("e.force:showToast");
+                    toastEvent.setParams({
+                        mode: 'sticky',
+                        message: 'something went wrong.',
+                        type : 'error',
+                        duration: '5000',
+                        mode: 'dismissible'
+                    });
+                    toastEvent.fire(); 
+                    $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
+            }
+        });
+
+        $A.enqueueAction(action);
+    },
+
+    convertFileSizes: function(files) {
+        for (var i = 0; i < files.length; i++) {
+            var fileSize = files[i].ContentSize; // Assuming ContentSize is the field representing size
+            files[i].FormattedSize = this.formatFileSize(fileSize);
+        }
+        return files;
+    },
+
+    formatFileSize: function(sizeInBytes) {
+        if (isNaN(sizeInBytes) || sizeInBytes <= 0) {
+            return 'N/A';
+        }
+
+        var units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        var i = parseInt(Math.floor(Math.log(sizeInBytes) / Math.log(1024)));
+        return Math.round((sizeInBytes / Math.pow(1024, i)) * 100) / 100 + ' ' + units[i];
+    },
+        
 
     
         
