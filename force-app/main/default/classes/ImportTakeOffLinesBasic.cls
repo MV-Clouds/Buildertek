@@ -6,7 +6,7 @@ public with sharing class ImportTakeOffLinesBasic{
         public String strMessage;
     }
 
-    private static Set<String> validUOMValues;
+    private static Map<String, Set<String>> validPicklistValues = new Map<String, Set<String>>();
 
     @AuraEnabled
     public static ResponseBase importRecords(Id takeOffId, String fileData){
@@ -109,14 +109,31 @@ public with sharing class ImportTakeOffLinesBasic{
                 if (String.isNotBlank(buildPhase) && buildPhasemap.containsKey(buildPhase)){
                     TakeoffLine.buildertek__Build_Phase__c = buildPhasemap.get(buildPhase).Id;
                 }
-                TakeoffLine.buildertek__Category__c = wrapper.CategoryPL;
+                
+                String categoryValue = wrapper.CategoryPL;
+                if (isValidPicklistValue('buildertek__Category__c', categoryValue)) {
+                    TakeoffLine.buildertek__Category__c = categoryValue;
+                } else if (!String.isNotBlank(categoryValue)){
+                    counter++;
+                    continue;
+                } else {
+                    throw new MyCustomException('Invalid Location value at row ' + (counter + 1) + ': ' + categoryValue);
+                }
 
                 String tradeType = wrapper.TradeType;
                 if (String.isNotBlank(tradeType) && existingTradeTypeMap.containsKey(tradeType)){
                     TakeoffLine.buildertek__Trade_Type__c = existingTradeTypeMap.get(tradeType).Id;
                 }
-                TakeoffLine.buildertek__Location__c = wrapper.Location;
-               
+
+                String locationValue = wrapper.Location;
+                if (isValidPicklistValue('buildertek__Location__c', locationValue)) {
+                    TakeoffLine.buildertek__Location__c = locationValue;
+                } else if (!String.isNotBlank(locationValue)){
+                    counter++;
+                    continue;
+                } else {
+                    throw new MyCustomException('Invalid Location value at row ' + (counter + 1) + ': ' + locationValue);
+                }
                 String quant = wrapper.Quantity;
                 if (String.isNotBlank(quant)){
                     TakeoffLine.buildertek__Quantity__c = Decimal.valueOf(quant);
@@ -125,7 +142,7 @@ public with sharing class ImportTakeOffLinesBasic{
                 }
 
                 String uomValue = wrapper.UOM;
-                if (isValidUOM(uomValue)) {
+                if (isValidPicklistValue('buildertek__UOM_PL__c', uomValue)) {
                     TakeoffLine.buildertek__UOM_PL__c = uomValue;
                 } else if (!String.isNotBlank(uomValue)){
                     counter++;
@@ -167,19 +184,30 @@ public with sharing class ImportTakeOffLinesBasic{
     
     public class MyCustomException extends Exception {}
 
-    private static Boolean isValidUOM(String uomValue) {
-        if (validUOMValues == null) {
-            validUOMValues = new Set<String>();
-            List<Schema.PicklistEntry> picklistValues = buildertek__Project_Takeoff_Lines__c.buildertek__UOM_PL__c.getDescribe().getPicklistValues();
-            
-            for (Schema.PicklistEntry picklistEntry : picklistValues) {
-                if (picklistEntry.isActive()) {
-                    validUOMValues.add(picklistEntry.getValue());
-                }
+    private static Boolean isValidPicklistValue(String fieldApiName, String value) {
+        if (!validPicklistValues.containsKey(fieldApiName)) {
+            validPicklistValues.put(fieldApiName, fetchValidPicklistValues(fieldApiName));
+        }
+
+        return validPicklistValues.get(fieldApiName).contains(value);
+    }
+
+    private static Set<String> fetchValidPicklistValues(String fieldApiName) {
+        Set<String> validValues = new Set<String>();
+        List<Schema.PicklistEntry> picklistValues = buildertek__Project_Takeoff_Lines__c.getSObjectType()
+            .getDescribe()
+            .fields.getMap()
+            .get(fieldApiName)
+            .getDescribe()
+            .getPicklistValues();
+
+        for (Schema.PicklistEntry picklistEntry : picklistValues) {
+            if (picklistEntry.isActive()) {
+                validValues.add(picklistEntry.getValue());
             }
         }
 
-        return validUOMValues.contains(uomValue);
+        return validValues;
     }
 
     public class fieldWrapper{
