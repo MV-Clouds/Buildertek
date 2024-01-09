@@ -257,6 +257,22 @@
     
             console.log('Pill removed. Updated selected files:', AllPillsList);
             console.log('Updated selectedFillIds:', selectedFillIds);
+            var selectedFiles = component.get("v.selectedFile") || [];
+
+            // Create a Set for faster lookup
+            var selectedFillIdsSet = new Set(selectedFillIds);
+
+            // Filter selectedFiles based on matching selectedFillIds
+            var filteredSelectedFiles = selectedFiles.filter(function(file) {
+                return selectedFillIdsSet.has(file.ContentDocumentId);
+                });
+
+            // var updatedSelectedFiles = selectedFiles.filter(function(selectedFile) {
+            //     return !selectedFillIdsSet.has(selectedFile.contentDocumentId);
+            // });
+
+            // Update the attribute with the filtered list
+            component.set("v.selectedFile", filteredSelectedFiles);
         } else {
             console.log('Pill not found in the list.');
         }
@@ -378,9 +394,16 @@
 
             resultMapArray.push(resultMap);
         });
+        var a = component.get("v.selectedFile") || []; // Get the existing array or initialize an empty array
 
-        component.set("v.selectedFile", resultMapArray);
-        console.log('resultMapArray', resultMapArray);
+        // Using spread operator to add elements of resultMapArray to a
+        a.push(...resultMapArray);
+
+        // Update the selectedFile attribute with the modified array
+        component.set("v.selectedFile", a);
+
+        // Log the modified array
+        console.log('resultMapArray', a);
 
         var fileCount = newFilesList.length;
         var files = '';
