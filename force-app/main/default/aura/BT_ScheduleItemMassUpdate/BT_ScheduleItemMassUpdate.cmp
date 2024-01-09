@@ -48,7 +48,11 @@
     <aura:attribute name="sPhaseList" type="List" />
     <aura:attribute name="tempIndexList" type="List" />
 
-    
+    <aura:html tag="style">
+        .completionMargin .slds-input{
+            margin-top: 0px !important;
+        }
+    </aura:html>
     <!-- refresh gantt -->
     <aura:registerEvent name="apprefreshEventfromTable" type="c:refresh_componenent_event"/>
     
@@ -326,11 +330,42 @@
                                                                 </td>
                                                             </aura:if>
                                                             <aura:iteration items="{!v.fieldSetValues}" var="field"> <!-- scheduleId="{!v.recordId}" -->
-                                                                <td style="padding:5px; margin:5px;">
+                                                            <aura:if isTrue="{!field.label == 'Phase' || field.label == 'Predecessor'}">
+                                                                <td style="padding:5px; margin:5px; width: 20%;">
                                                                     <c:BT_FieldSetMassUpdate record="{!row}" index="{!index}" field="{!field}"  scheduleId="{!v.recordId}"
                                                                                             isMassUpdateEnable="{!v.massUpdateEnable}"
                                                                                             childObjectName="buildertek__Project_Task__c"/>
                                                                 </td>
+                                                            </aura:if>
+                                                            <aura:if isTrue="{!field.label == 'Task Name'}">
+                                                                <td style="padding:5px; margin:5px; width: 40%;">
+                                                                    <c:BT_FieldSetMassUpdate record="{!row}" index="{!index}" field="{!field}"  scheduleId="{!v.recordId}"
+                                                                                            isMassUpdateEnable="{!v.massUpdateEnable}"
+                                                                                            childObjectName="buildertek__Project_Task__c"/>
+                                                                </td>
+                                                            </aura:if>
+                                                            <aura:if isTrue="{!field.label == 'Duration'}">
+                                                                <td style="padding:5px; margin:5px; width: 5%;">
+                                                                    <c:BT_FieldSetMassUpdate record="{!row}" index="{!index}" field="{!field}"  scheduleId="{!v.recordId}"
+                                                                                            isMassUpdateEnable="{!v.massUpdateEnable}"
+                                                                                            childObjectName="buildertek__Project_Task__c"/>
+                                                                </td>
+                                                            </aura:if>
+                                                            <aura:if isTrue="{!field.label == 'Completion (%)'}">
+                                                                <td style="padding:5px; margin:5px; width: 10%; margin-top: 0px !important;">
+                                                                    <div class="completionMargin">
+                                                                        <c:BT_FieldSetMassUpdate record="{!row}" index="{!index}" field="{!field}"  scheduleId="{!v.recordId}"
+                                                                                                isMassUpdateEnable="{!v.massUpdateEnable}"
+                                                                                                childObjectName="buildertek__Project_Task__c"/>
+                                                                    </div>
+                                                                </td>
+                                                            </aura:if>
+                                                            <aura:if isTrue="{!field.label == 'Completed' || field.label == 'Anticipated Start Date' || field.label == 'Anticipated Finish Date'}">
+                                                                <td style="padding:5px; margin:5px;">
+                                                                    <c:BT_FieldSetMassUpdate record="{!row}" index="{!index}" field="{!field}" scheduleId="{!v.recordId}"
+                                                                            isMassUpdateEnable="{!v.massUpdateEnable}" childObjectName="buildertek__Project_Task__c"/>
+                                                                </td>
+                                                            </aura:if>
                                                             </aura:iteration>
                                                         </tr>
                                                     </aura:if>

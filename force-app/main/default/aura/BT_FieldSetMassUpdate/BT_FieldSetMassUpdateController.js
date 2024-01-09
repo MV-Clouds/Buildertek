@@ -200,6 +200,8 @@
         var fieldName = event.getSource().get("v.name").split('-');
         var fieldLabel = fieldName[1];
         var inputField = event.getSource();
+        var ObjectName = component.get("v.ObjectName");
+        console.log('objcet : ', ObjectName ,' -- field : ', fieldLabel);
         // debugger;
         var selectedValue = event.getSource().get("v.value");
         var QuantityValue = component.get("v.QuantityValue");
@@ -222,6 +224,14 @@
             // console.log("QuantityValue :: ", component.get("v.QuantityValue"));
             if(selectedValue > QuantityValue){
                 inputField.setCustomValidity("Received value should be less than the Remaining value.");
+            }
+            else{
+                inputField.setCustomValidity("");
+            }
+        }
+        else if(fieldLabel == 'Name' && ObjectName == 'buildertek__Select_Sheet__c'){
+            if(selectedValue == null || selectedValue.trim() == '' ){
+                inputField.setCustomValidity(" Product Name Proposal is required to update records.");
             }
             else{
                 inputField.setCustomValidity("");
