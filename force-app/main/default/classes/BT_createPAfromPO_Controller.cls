@@ -1,4 +1,4 @@
-public class BT_createPAfromSOV_Controller {
+public class BT_createPAfromPO_Controller {
     
     @AuraEnabled
     public static returnWrapper GetRelatedPaymanetApp(String SOVid){
@@ -22,16 +22,20 @@ public class BT_createPAfromSOV_Controller {
                 buildertek__Schedule_of_Values__c SOV = [SELECT Id, Name,buildertek__Vendor__c, buildertek__BT_Purchase_Order__r.Name, buildertek__BT_Purchase_Order__c, buildertek__BT_Purchase_Order__r.buildertek__Vendor__c FROM buildertek__Schedule_of_Values__c WHERE Id =:SOVid LIMIT 1];
                 if(SOV.buildertek__BT_Purchase_Order__c != null){
 
+                    List<RecordType> recordType = [SELECT Id, Name FROM RecordType WHERE sObjectType='buildertek__SOV_Payment_Application__c' AND Name = 'AR'];
+
                     buildertek__SOV_Payment_Application__c newPA = new buildertek__SOV_Payment_Application__c();
                     // newPA.Name = SOV.Name;                                // SOV
                     newPA.Name = SOV.buildertek__BT_Purchase_Order__r.Name; // PO
                     // newPA.buildertek__PA_Type__c = ;
                     // newPA.buildertek__Owner_Account__c = SOV.buildertek__Vendor__c;     // SOV
                     newPA.buildertek__Owner_Account__c = SOV.buildertek__BT_Purchase_Order__r.buildertek__Vendor__c; // PO
+                    // newPA.buildertek__Payment_Application_To__c = SOV.buildertek__BT_Purchase_Order__r.buildertek__Vendor__c;
                     newPA.buildertek__Period_To__c = dToday;
                     newPA.buildertek__Application__c = '1';
                     newPA.buildertek__BT_Schedule_of_Values__c = SOVid;
                     newPA.buildertek__Retainage__c = 0;
+                    newPA.RecordTypeId = recordType.size() > 0 ? recordType[0].Id : null;
     
                     insert newPA;
     
@@ -61,8 +65,8 @@ public class BT_createPAfromSOV_Controller {
                             conSheetLine.Name = POline.Name;
                             conSheetLine.buildertek__Status__c = 'Pending';
                             conSheetLine.buildertek__Scheduled_Value__c = POline.buildertek__Total_Price__c;
-                            conSheetLine.buildertek__SOV_Continuation_Sheet__c = conSheets[0].Id;
                             conSheetLine.buildertek__Description_of_Work__c = POline.Name;
+                            conSheetLine.buildertek__SOV_Continuation_Sheet__c = conSheets[0].Id;
                             ComSheetLinesToCreate.add(conSheetLine);
                         }
                     }
