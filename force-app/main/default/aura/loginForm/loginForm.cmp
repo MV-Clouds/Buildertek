@@ -6,7 +6,6 @@
     <aura:attribute name="usernameLabel" type="String" required="false" default="Username"/>
     <aura:attribute name="passwordLabel" type="String" required="false" default="Password"/>
     <aura:attribute name="loginButtonLabel" type="String" required="false" default="Log in"/>
-    <aura:attribute name="expid" type="String" required="false" description="The branding experience ID" />        
     
     <aura:attribute name="forgotPasswordLabel" type="String" required="false" default="Forgot your password?"/>
     <aura:attribute name="selfRegisterLabel" type="String" required="false" default="Not a member?"/>
@@ -21,12 +20,8 @@
     <aura:registerevent name="sitePropagatedStartUrl" type="c:setStartUrl"/>
     <aura:handler name="init" value="{!this}" action="{!c.initialize}"/>
     <aura:dependency resource="c:setStartUrl" type="EVENT"/>
-    <!-- Please uncomment
     <aura:dependency resource="siteforce:registerQueryEventMap" type="EVENT"/>
-    -->
     <aura:handler event="c:setStartUrl" action="{!c.setStartUrl}"/>
-    <aura:handler event="c:setExpId" action="{!c.setExpId}"/>    
-    <aura:dependency resource="c:setExpId" type="EVENT"/>  
     
     <div>
         <aura:renderIf isTrue="{!v.isUsernamePasswordEnabled}">
@@ -48,7 +43,7 @@
             </div>
     
             <div class="sfdc">
-                <ui:button aura:id="submitButton" label="{!v.loginButtonLabel}" press="{!c.handleLogin}" class="sfdc_button slds-button__brand"/>
+                <ui:button aura:id="submitButton" label="{!v.loginButtonLabel}" press="{!c.handleLogin}" class="sfdc_button"/>
             </div>
             
             <div id="sfdc_forgot" class="sfdc">

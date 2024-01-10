@@ -1,11 +1,2 @@
-<apex:page id="loginPage" controller="CommunitiesLoginController"  title="{!$Label.site.site_login}">
-     <script>
-        window.onload = onload;
-        function onload{
-            loadData();
-        }
-</script> 
-<apex:form >
-<apex:actionFunction name="loadData" action="{!forwardToAuthPage}" />
-</apex:form> 
+<apex:page id="loginPage" controller="CommunitiesLoginController" action="{!forwardToAuthPage}" title="{!$Label.site.site_login}">
 </apex:page>

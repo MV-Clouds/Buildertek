@@ -1,42 +1,28 @@
-@IsTest(SeeAllData = true)
-public with sharing class LightningLoginFormControllerTest {
+@isTest
+public class LightningLoginFormControllerTest {
     
-    @IsTest
-    static void testLoginWithInvalidCredentials() {
-      //  System.assertEquals('Argument 1 cannot be null', LightningLoginFormController.login('testUser', 'fakepwd', null));
+    @isTest
+    public static void test(){
+        
+        LightningLoginFormController lightingController = new LightningLoginFormController();
+        
+        SiteRegisterController controller = new SiteRegisterController();
+        controller.username = 'test@force.com';
+        controller.email = 'test@force.com';
+        controller.communityNickname = 'test';
+        
+        // registerUser always returns null when the page isn't accessed as a guest user
+        System.assert(controller.registerUser() == null);
+        controller.password = 'abcd1234';
+        controller.confirmPassword = 'abcd1234';
+        System.assert(controller.registerUser() == null);
+        
+        LightningLoginFormController.getIsUsernamePasswordEnabled();
+        LightningLoginFormController.getIsSelfRegistrationEnabled();
+       	LightningLoginFormController.getSelfRegistrationUrl();
+        LightningLoginFormController.getForgotPasswordUrl();
+        string response = LightningLoginFormController.login('test User', 'test@force.com', 'www.test3274984.com');
+        
     }
-    
-    @IsTest
-    static void LightningLoginFormControllerInstantiation() {
-        LightningLoginFormController controller = new LightningLoginFormController();
-        System.assertNotEquals(controller, null);
-    }
-    
-    @IsTest
-    static void testIsUsernamePasswordEnabled() {
-        System.assertEquals(true, LightningLoginFormController.getIsUsernamePasswordEnabled());
-    }
-    
-    @IsTest
-    static void testIsSelfRegistrationEnabled() {
-        System.assertEquals(false, LightningLoginFormController.getIsSelfRegistrationEnabled());
-    }
-    
-    @IsTest
-    static void testGetSelfRegistrationURL() {
-        System.assertEquals(null, LightningLoginFormController.getSelfRegistrationUrl());
-    }
-    
-    @IsTest
-    static void testAuthConfig() {
-        Auth.AuthConfiguration authConfig = LightningLoginFormController.getAuthConfig();
-        System.assertNotEquals(null, authConfig);
-    }
-    static testmethod void testMethod1(){
-        String result='';
-        LightningLoginFormController.getForgotPasswordUrl(); 
-        LightningLoginFormController.setExperienceId(null); 
-        result=LightningLoginFormController.setExperienceId('test');
-        System.assert(true);
-    }
+
 }

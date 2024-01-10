@@ -1,25 +1,20 @@
-global with sharing class LightningSelfRegisterController {
+global class LightningSelfRegisterController {
 
     public LightningSelfRegisterController() {
 
     }
 
-    @TestVisible 
     private static boolean isValidPassword(String password, String confirmPassword) {
         return password == confirmPassword;
     }
     
-    @TestVisible 
-    private static boolean siteAsContainerEnabled(String communityUrl) {
-        Auth.AuthConfiguration authConfig = new Auth.AuthConfiguration(communityUrl,'');
+    private static boolean siteAsContainerEnabled(Id networkId) {
+        Auth.AuthConfiguration authConfig = new Auth.AuthConfiguration(networkId,'');
         return authConfig.isCommunityUsingSiteAsContainer();
     }
     
-    @TestVisible 
     private static void validatePassword(User u, String password, String confirmPassword) {
-        if(!Test.isRunningTest()) {
         Site.validatePassword(u, password, confirmPassword);
-        }
         return;
     }
     
@@ -47,13 +42,13 @@ global with sharing class LightningSelfRegisterController {
             String networkId = Network.getNetworkId();
 
             // If using site to host the community the user should not hit s1 after logging in from mobile.
-            if(networkId != null && siteAsContainerEnabled(Network.getLoginUrl(networkId))) {
+            if(networkId != null && siteAsContainerEnabled(networkId)) {
                 u.put('UserPreferencesHideS1BrowserUI',true);
             }
             
             String nickname = ((firstname != null && firstname.length() > 0) ? firstname.substring(0,1) : '' ) + lastname.substring(0,1);
             nickname += String.valueOf(Crypto.getRandomInteger()).substring(1,7);
-            u.put('CommunityNickname',string.escapeSingleQuotes(nickname));
+            u.put('CommunityNickname', nickname);
                      
             if (extraFields != null) {
                 List<Object> extraFieldsList = (List<Object>) JSON.deserializeUntyped(extraFields);        
@@ -68,7 +63,7 @@ global with sharing class LightningSelfRegisterController {
                 if (!isValidPassword(password, confirmPassword)) {
                     return Label.site.passwords_dont_match;
                 }
-             validatePassword(u, password, confirmPassword);
+                validatePassword(u, password, confirmPassword);
             }
             else {
                 password = null;
@@ -76,23 +71,14 @@ global with sharing class LightningSelfRegisterController {
             
             // lastName is a required field on user, but if it isn't specified, we'll default it to the username
             String userId = Site.createPortalUser(u, accountId, password);
-            // create a fake userId for test.
-            if (Test.isRunningTest()) {
-                userId = 'fakeUserId';           
-            }
             if (userId != null) { 
                 if (password != null && password.length() > 1) {
                     ApexPages.PageReference lgn = Site.login(email, password, startUrl);
-                    if(!Test.isRunningTest()) {
-                     aura.redirect(lgn);
-                    }
+                    aura.redirect(lgn);
                 }
                 else {
-                    ApexPages.PageReference confirmRef = new PageReference(string.escapeSingleQuotes(regConfirmUrl));
-                    if(!Test.isRunningTest()) {
+                    ApexPages.PageReference confirmRef = new PageReference(regConfirmUrl);
                     aura.redirect(confirmRef);
-                   }
-
                 }
             }
             return null;
@@ -107,7 +93,6 @@ global with sharing class LightningSelfRegisterController {
     public static List<Map<String,Object>> getExtraFields(String extraFieldsFieldSet) { 
         List<Map<String,Object>> extraFields = new List<Map<String,Object>>();
         Schema.FieldSet fieldSet = Schema.SObjectType.User.fieldSets.getMap().get(extraFieldsFieldSet);
-        if(!Test.isRunningTest()) {
         if (fieldSet != null) {
             for (Schema.FieldSetMember f : fieldSet.getFields()) {
                 Map<String, Object> fieldDetail = new Map<String, Object>();
@@ -118,20 +103,8 @@ global with sharing class LightningSelfRegisterController {
                 fieldDetail.put('type', f.getType());
                 fieldDetail.put('value', '');   // client will populate
                 extraFields.add(fieldDetail);
-            }}}
+            }
+        }
         return extraFields;
     }
-    
-    @AuraEnabled
-    global static String setExperienceId(String expId) {
-        // Return null if there is no error, else it will return the error message 
-        try {
-            if (expId != null) {
-                Site.setExperienceId(expId);   
-            }
-            return null; 
-        } catch (Exception ex) {
-            return ex.getMessage();            
-        }        
-    }  
 }

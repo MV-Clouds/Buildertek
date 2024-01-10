@@ -1,6 +1,6 @@
 <design:component label="Custom Self Register">
     <design:attribute name="startUrl"/>
-    <design:attribute name="regConfirmUrl" default="./CheckPasswordResetEmail"/>
+    <design:attribute name="regConfirmUrl" default="/apex/SiteRegisterConfirm"/>
     <design:attribute name="firstnameLabel" default="First Name"/>
     <design:attribute name="lastnameLabel" default="Last Name"/>
     <design:attribute name="emailLabel" default="Email"/>

@@ -10,12 +10,7 @@ public class CommunitiesSelfRegController {
     public String confirmPassword {get; set { confirmPassword = value == null ? value : value.trim(); } }
     public String communityNickname {get; set { communityNickname = value == null ? value : value.trim(); } }
     
-    public CommunitiesSelfRegController() {
-        String expid = ApexPages.currentPage().getParameters().get('expid');            
-        if (expId != null) {
-            Site.setExperienceId(expId); 
-        }    
-    }
+    public CommunitiesSelfRegController() {}
     
     private boolean isValidPassword() {
         return password == confirmPassword;
@@ -61,7 +56,7 @@ public class CommunitiesSelfRegController {
         
         if (userId != null) { 
             if (password != null && password.length() > 1) {
-                return Site.login(userName, password, ApexPages.currentPage().getParameters().get('startURL').escapeHtml4());
+                return Site.login(userName, password, ApexPages.currentPage().getParameters().get('startURL'));
             }
             else {
                 PageReference page = System.Page.CommunitiesSelfRegConfirm;

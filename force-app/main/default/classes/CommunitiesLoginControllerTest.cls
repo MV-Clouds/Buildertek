@@ -5,7 +5,6 @@
     @IsTest(SeeAllData=true) 
     global static void testCommunitiesLoginController () {
      	CommunitiesLoginController controller = new CommunitiesLoginController();
-     //	System.assertEquals(null, controller.forwardToAuthPage()); 
-     System.assertEquals('Test','Test');
+     	System.assertEquals(null, controller.forwardToAuthPage());       
     }    
 }
