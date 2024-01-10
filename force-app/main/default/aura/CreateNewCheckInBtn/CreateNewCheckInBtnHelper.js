@@ -38,7 +38,7 @@
                             component.set('v.checkInRec.Name', '');
                             component.set('v.checkInRec.buildertek__Notes__c', '');
                             component.set('v.checkInRec.buildertek__Days_Lost__c', '');
-                            component.set('v.checkInRec.buildertek__Reporting_Location__c', '');
+                            component.set('v.checkInRec.buildertek__Reporting_Location__c', 'Onsite');
                             // component.set('v.checkInRec.buildertek__Weather__c', '');
                             // component.set('v.checkInRec.buildertek__Date_Created__c', '');
                             
