@@ -288,85 +288,112 @@
         helper.getFileList(component, event, helper);
     },    
     closeFileModel : function (component,event,helper) {
+        var selectedFiles = component.get("v.selectedFiles") || [];
+        var selectedFiles2 = component.get("v.selectedFiles2") || [];
+
+        // Remove files from selectedFiles that are in selectedFiles2
+        selectedFiles = selectedFiles.filter(function(file) {
+            return !selectedFiles2.includes(file);
+        });
+
+        // Set the updated selectedFiles attribute
+        component.set("v.selectedFiles", selectedFiles);
+
+        // Reset selectedFiles2
+        component.set("v.selectedFiles2", []);
+
+    console.log('selectedFiles after cancel:', selectedFiles);
         component.set("v.showModel",false);
-        var selectedFile = component.get("v.selectedFile");
-        component.set("v.selectedFile", selectedFile);
+        // var selectedFile = component.get("v.selectedFile");
+        // component.set("v.selectedFile", selectedFile);
     },  
-    handleCheckboxChange: function(component, event, helper) {
-        var fileName = 'No File Selected..';
-        var fileId = '';
-        var file = event.getSource().get("v.name");
-        var selectedFiles = component.get("v.selectedFile") || [];
-        console.log('selectedFiles INIT: ->', selectedFiles);
-    
-        // Check if the file is already in the selectedFiles array
-        var fileIndex = selectedFiles.findIndex(function(selectedFile) {
-            return selectedFile.Id === file.Id;
+    // Assume you have a Save button and the associated function is handleSaveButtonClick
+handleSaveButtonClick: function(component, event, helper) {
+    // Get the selected files and map data
+    var selectedFiles = component.get("v.selectedFile") || [];
+    var mapData = component.get("v.selectedfilesFill") || [];
+
+    // Process the selected files and update mapData
+    var files = '';
+    selectedFiles.forEach(function(selectedFile) {
+        var fileName = selectedFile.Title;
+        var fileId = selectedFile.ContentDocumentId;
+
+        // Check if the fileId is already in the mapData
+        var fileInMap = mapData.some(function(mapFile) {
+            return mapFile.Id === fileId;
         });
-        console.log('fileIndex :--->' , fileIndex);
-        if (event.getSource().get("v.checked")) {
-            // If the file is not already in the array, add it
-            if (fileIndex === -1 && !component.get("v.selectedFillIds").includes(file.ContentDocumentId)) {
-                selectedFiles.push(file);
-            }
-        } else {
-            // If the file is in the array, remove it
-            console.log('ELSE');
-            if (fileIndex !== -1) {
-                selectedFiles.splice(fileIndex, 1);
+
+        // If the fileId is not in the mapData, add it
+        if (!fileInMap) {
+            var obj = {};
+            obj['Name'] = fileName;
+            obj['Id'] = fileId;
+            mapData.push(obj);
+
+            if (files === '') {
+                files = fileName;
+            } else {
+                files += ',' + fileName;
             }
         }
-    
-        // No need to stringify and parse, just set the array
-        component.set("v.selectedFile", selectedFiles);
-        console.log('selectedFiles :->', selectedFiles);
-    
-        var fileCount = selectedFiles.length;
-        var files = '';
-        var mapData = component.get("v.selectedfilesFill") || [];
-        console.log('MAP DATA INIT :-->' ,mapData);
-        if (fileCount > 0) {
-            for (var i = 0; i < fileCount; i++) {
-                fileName = selectedFiles[i].Title;
-                fileId = selectedFiles[i].ContentDocumentId;
-    
-                // Check if the fileId is already in the mapData
-                var fileInMap = mapData.some(function(mapFile) {
-                    return mapFile.Id === fileId;
-                });
-    
-                // If the fileId is not in the mapData, add it
-                if (!fileInMap) {
-                    var obj = {};
-                    obj['Name'] = fileName;
-                    obj['Id'] = fileId;
-                    mapData.push(obj);
-    
-                    if (i == 0) {
-                        files = fileName;
-                    } else {
-                        files = files + ',' + fileName;
-                    }
-                }
-            }
-        } else {
-            files = fileName;
+    });
+
+    // Set the fileName attribute
+    component.set("v.fileName", files);
+
+    // Set the updated mapData, selectedFillIds, and selectedfilesFill attributes
+    component.set("v.selectedfilesFill", mapData);
+
+    var fileIds = selectedFiles.map(function(v) {
+        return v.ContentDocumentId;
+    });
+
+    component.set("v.selectedFillIds", fileIds);
+
+    console.log(component.get("v.fileName"));
+    console.log('fileIds :->', fileIds);
+    console.log('updated mapdata :-->', component.get("v.selectedfilesFill"));
+    component.set("v.showModel",false);
+},
+
+handleCheckboxChange: function(component, event, helper) {
+    var file = event.getSource().get("v.name");
+    console.log('1', file);
+    var selectedFiles2 = component.get("v.selectedFiles2") || [];
+
+    // Add the file to selectedFiles2
+    selectedFiles2.push(file);
+    // Set the updated selectedFiles2 attribute
+    component.set("v.selectedFiles2", selectedFiles2);
+
+    // Log the updated selectedFiles2 array
+console.log('selectedFiles2:', selectedFiles2);
+    var selectedFiles = component.get("v.selectedFile") || [];
+
+    // Check if the file is already in the selectedFiles array
+    var fileIndex = selectedFiles.findIndex(function(selectedFile) {
+        return selectedFile.Id === file.Id;
+    });
+
+    if (event.getSource().get("v.checked")) {
+        // If the file is not already in the array, add it
+        if (fileIndex === -1 && !component.get("v.selectedFillIds").includes(file.ContentDocumentId)) {
+            selectedFiles.push(file);
         }
-    
-        component.set("v.fileName", files);
-        var fileIds = selectedFiles.map(function(v) {
-            return v.ContentDocumentId;
-        });
-        var updatedMapData = mapData.filter(function(entry) {
-            return fileIds.includes(entry.Id);
-        });
-        component.set("v.selectedfilesFill", updatedMapData);
-        component.set("v.selectedFillIds", fileIds);
-    
-        console.log(component.get("v.fileName"));
-        console.log('fileIds :->', fileIds);
-        console.log('updated mapdata :-->', component.get("v.selectedfilesFill"));
-    },
+    } else {
+        // If the file is in the array, remove it
+        if (fileIndex !== -1) {
+            selectedFiles.splice(fileIndex, 1);
+        }
+    }
+
+    // No need to stringify and parse, just set the array
+    component.set("v.selectedFile", selectedFiles);
+
+    console.log('selectedFiles :->', selectedFiles);
+},
+
     
     
     handleFileChange: function(component, event, helper) {
