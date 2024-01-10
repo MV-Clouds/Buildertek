@@ -5,6 +5,23 @@
             loadData();
         }
 </script>-->
+<head>
+  <style>
+      @page {
+          size: A3;
+          margin: 5px !important;
+      }
+      .pdfMiddleBox{
+        padding: 10px 20px !important;
+      }
+      .pdfLeftBox{
+        width: 49% !important;
+      }
+      .pdfRightBox{
+        width: 49% !important;
+      }
+  </style>
+</head>
 
 <apex:form >
 <!--<apex:actionFunction name="loadData" action="{!createPDF}" /> -->
