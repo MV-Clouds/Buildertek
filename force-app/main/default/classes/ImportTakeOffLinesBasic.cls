@@ -115,7 +115,7 @@ public with sharing class ImportTakeOffLinesBasic{
                     if (isValidPicklistValue('buildertek__Category__c', categoryValue)){
                         TakeoffLine.buildertek__Category__c = categoryValue;
                     } else {
-                        throw new MyCustomException('Invalid Location value at row ' + (counter + 1) + ': ' + categoryValue);
+                        throw new MyCustomException('Invalid Category value: '+ categoryValue +' Please review the row No.' + (counter + 1));
                     }
                 }
 
@@ -129,7 +129,7 @@ public with sharing class ImportTakeOffLinesBasic{
                     if (isValidPicklistValue('buildertek__Location__c', locationValue)){
                         TakeoffLine.buildertek__Location__c = locationValue;
                     } else {
-                        throw new MyCustomException('Invalid Location value at row ' + (counter + 1) + ': ' + locationValue);
+                        throw new MyCustomException('Invalid Location value: '+ locationValue +' Please review the row No.' + (counter + 1));
                     }
                 }
                 String quant = wrapper.Quantity;
@@ -144,7 +144,7 @@ public with sharing class ImportTakeOffLinesBasic{
                     if (isValidPicklistValue('buildertek__UOM_PL__c', uomValue)){
                         TakeoffLine.buildertek__UOM_PL__c = uomValue;
                     } else {
-                        throw new MyCustomException('Invalid UOM value at row ' + (counter + 1) + ': ' + uomValue);
+                        throw new MyCustomException('Invalid UOM value: '+ uomValue +' Please review the row No.' + (counter + 1));
                     }
                 }
 
