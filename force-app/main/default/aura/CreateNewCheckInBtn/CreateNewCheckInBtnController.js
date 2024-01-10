@@ -46,6 +46,8 @@
         /*  for Status Default value */
         component.set('v.checkInRec.buildertek__Status__c', 'No Issues');
 
+        component.set('v.checkInRec.buildertek__Reporting_Location__c', 'Onsite');
+
     },
 
     closeModel : function(component, event, helper) {
