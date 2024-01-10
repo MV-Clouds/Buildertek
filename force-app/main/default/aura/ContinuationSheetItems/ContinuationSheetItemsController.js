@@ -934,6 +934,7 @@
                         //     component.set("v.diasbaleWorkCompField", "false");
                         // }
                     }
+    
                     if(localId == "buildertek__Work_Completed__c"){
 
                         if(component.get("v.isCommUser") == true){

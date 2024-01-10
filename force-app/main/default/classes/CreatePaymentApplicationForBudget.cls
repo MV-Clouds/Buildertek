@@ -464,7 +464,9 @@ continutionSheet.Name =*/
                 cd.totalCompletedStored = (Decimal)groupedResults[0].get('totalWork');
                 
                 // cd.gcTotal = (Decimal)groupedResults[0].get('gcTotal');
-                cd.gcTotal = ( (Decimal)groupedResults[0].get('totalWork') / (Decimal)groupedResults[0].get('scheduleValue') ) * 100;
+                if ((Decimal)groupedResults[0].get('scheduleValue') != 0) {
+                    cd.gcTotal = ( (Decimal)groupedResults[0].get('totalWork') / (Decimal)groupedResults[0].get('scheduleValue') ) * 100;
+                }
                 cd.balanceTotal = (Decimal)groupedResults[0].get('balanceTotal');
                 system.debug('cdcddddddddddddddddddddddddddddddd'+cd);
             }
@@ -479,7 +481,7 @@ continutionSheet.Name =*/
     public static responseclass updateSheetLines(String sheetLines, String sheetId, String recordId){
         system.debug('sheetLines---------->'+sheetLines);
         
-        buildertek__SOV_Payment_Application__c  ARPayAPP = [select Id, Name, recordtype.name from buildertek__SOV_Payment_Application__c where Id =: recordId];
+        buildertek__SOV_Payment_Application__c  ARPayAPP = [select Id, Name, buildertek__Status__c, recordtype.name from buildertek__SOV_Payment_Application__c where Id =: recordId];
         
         responseclass rc = new responseclass();
         try{
@@ -559,6 +561,7 @@ continutionSheet.Name =*/
             }
             
             rc.isSuccess = true;
+            // updatePaymentAppStatus(ARPayAPP);
         }
         catch(Exception exp){
             system.debug(exp.getMessage());
@@ -2806,11 +2809,14 @@ InsertedConList = [Select id, name, buildertek__Item_No__c from buildertek__SOV_
     public static User getCommUser(){
         String portalCode = '';
         string userName = userInfo.getUserId();
-        string strQry = 'Select isPortalEnabled From User Where id=: userName';    
+        string strQry = 'Select isPortalEnabled From User Where id=: userName';  
+        System.debug('strQry-------->'+strQry);  
         list<User> userRec = Database.query(strQry);
+        System.debug('userRec-------->'+userRec);
         if(userRec.size() > 0){
             portalCode = userRec[0].get('isPortalEnabled').toString();
         }
+        System.debug('portalCode-------->'+portalCode);
         return  userRec[0] ;
     }
     
@@ -3119,10 +3125,16 @@ system.debug('Final templateBody ----------> ' + templateBody);*/
     public static String AceptConnLines(String recordId){
         list<buildertek__SOV_Continuation_Sheet_Lines__c> coslist = new list<buildertek__SOV_Continuation_Sheet_Lines__c>();
         buildertek__SOV_Payment_Application__c updateStatus = [select Id, Name, buildertek__Status__c from buildertek__SOV_Payment_Application__c where Id =:recordId];
-        buildertek__SOV_Continuation__c continuationsheetRec = [select id,Name from buildertek__SOV_Continuation__c 
+        Set<Id> continuationSheetId = new Set<Id>();
+        list<buildertek__SOV_Continuation__c> continuationsheetRec = [select Id,Name from buildertek__SOV_Continuation__c 
                                                                 where buildertek__SOV_Payment_Application__c =: updateStatus.id];
+        if(!continuationsheetRec.isEmpty()){
+            for(buildertek__SOV_Continuation__c csLine : continuationsheetRec){
+                continuationSheetId.add(csLine.Id);
+            }
+        }                                                        
         list<buildertek__SOV_Continuation_Sheet_Lines__c> sheetlinelist = [select id,Name,buildertek__Status__c,buildertek__SOV_Continuation_Sheet__c,buildertek__Material_Presently_Stored__c,buildertek__Vendor_Sheet_line_Id__c, buildertek__Vendor_Work_Completed_This_Period__c from buildertek__SOV_Continuation_Sheet_Lines__c
-                                                                           where buildertek__SOV_Continuation_Sheet__c =: continuationsheetRec.id ];
+                                                                           where buildertek__SOV_Continuation_Sheet__c IN :continuationSheetId ];
         
         system.debug('sheetlinelist---->'+sheetlinelist);
         list<String> ConSheetLineIds = new list<String> ();
@@ -3214,6 +3226,22 @@ system.debug('Final templateBody ----------> ' + templateBody);*/
         else{
             return null;
         }
+    }
+
+    public static void updatePaymentAppStatus(buildertek__SOV_Payment_Application__c recordToUpdate) {
+        try {
+            if (recordToUpdate != null) {
+                recordToUpdate.buildertek__Status__c = 'Customer Accepted';
+    
+                update recordToUpdate;
+            }
+        } catch (Exception ex) {
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
+        }
+        
     }
     
     
