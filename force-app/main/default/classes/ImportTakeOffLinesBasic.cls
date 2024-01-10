@@ -111,13 +111,12 @@ public with sharing class ImportTakeOffLinesBasic{
                 }
                 
                 String categoryValue = wrapper.CategoryPL;
-                if (isValidPicklistValue('buildertek__Category__c', categoryValue)) {
-                    TakeoffLine.buildertek__Category__c = categoryValue;
-                } else if (!String.isNotBlank(categoryValue)){
-                    counter++;
-                    continue;
-                } else {
-                    throw new MyCustomException('Invalid Location value at row ' + (counter + 1) + ': ' + categoryValue);
+                if (String.isNotBlank(categoryValue)) {
+                    if (isValidPicklistValue('buildertek__Category__c', categoryValue)){
+                        TakeoffLine.buildertek__Category__c = categoryValue;
+                    } else {
+                        throw new MyCustomException('Invalid Location value at row ' + (counter + 1) + ': ' + categoryValue);
+                    }
                 }
 
                 String tradeType = wrapper.TradeType;
@@ -126,13 +125,12 @@ public with sharing class ImportTakeOffLinesBasic{
                 }
 
                 String locationValue = wrapper.Location;
-                if (isValidPicklistValue('buildertek__Location__c', locationValue)) {
-                    TakeoffLine.buildertek__Location__c = locationValue;
-                } else if (!String.isNotBlank(locationValue)){
-                    counter++;
-                    continue;
-                } else {
-                    throw new MyCustomException('Invalid Location value at row ' + (counter + 1) + ': ' + locationValue);
+                if (String.isNotBlank(locationValue)) {
+                    if (isValidPicklistValue('buildertek__Location__c', locationValue)){
+                        TakeoffLine.buildertek__Location__c = locationValue;
+                    } else {
+                        throw new MyCustomException('Invalid Location value at row ' + (counter + 1) + ': ' + locationValue);
+                    }
                 }
                 String quant = wrapper.Quantity;
                 if (String.isNotBlank(quant)){
@@ -142,13 +140,12 @@ public with sharing class ImportTakeOffLinesBasic{
                 }
 
                 String uomValue = wrapper.UOM;
-                if (isValidPicklistValue('buildertek__UOM_PL__c', uomValue)) {
-                    TakeoffLine.buildertek__UOM_PL__c = uomValue;
-                } else if (!String.isNotBlank(uomValue)){
-                    counter++;
-                    continue;
-                } else {
-                    throw new MyCustomException('Invalid UOM value at row ' + (counter + 1) + ': ' + uomValue);
+                if (String.isNotBlank(uomValue)) {
+                    if (isValidPicklistValue('buildertek__UOM_PL__c', uomValue)){
+                        TakeoffLine.buildertek__UOM_PL__c = uomValue;
+                    } else {
+                        throw new MyCustomException('Invalid UOM value at row ' + (counter + 1) + ': ' + uomValue);
+                    }
                 }
 
                 String codeco = wrapper.CostCode;
