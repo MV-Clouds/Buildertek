@@ -3,7 +3,7 @@
         try {
             var action = component.get("c.GetRelatedPaymanetApp");
             action.setParams({
-                SOVid : component.get("v.recordId")
+                recordId : component.get("v.recordId")
             });
             action.setCallback(this, function (response){
                 var result = response.getReturnValue();

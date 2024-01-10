@@ -1,11 +1,11 @@
 public class BT_createPAfromPO_Controller {
     
     @AuraEnabled
-    public static returnWrapper GetRelatedPaymanetApp(String SOVid){
+    public static returnWrapper GetRelatedPaymanetApp(String recordId){
         returnWrapper returnWrapper = new returnWrapper();
         try {
 
-            List<buildertek__SOV_Payment_Application__c> payment_app = [SELECT Id, Name, buildertek__BT_Schedule_of_Values__c, buildertek__Application__c FROM buildertek__SOV_Payment_Application__c WHERE buildertek__BT_Schedule_of_Values__c =: SOVid ORDER BY buildertek__Application__c DESC LIMIT 1];
+            List<buildertek__SOV_Payment_Application__c> payment_app = [SELECT Id, Name, buildertek__Application__c,buildertek__BT_Purchase_Order__c  FROM buildertek__SOV_Payment_Application__c WHERE buildertek__BT_Purchase_Order__c =: recordId ORDER BY buildertek__Application__c DESC LIMIT 1];
             if(payment_app.size() > 0){
                 String payment_app_Id = payment_app[0].Id;
 
@@ -19,21 +19,20 @@ public class BT_createPAfromPO_Controller {
                 Date dToday = Date.today();
                 String dateStr = dToday.year() + '/' + dToday.month() + '/' + dToday.day();
 
-                buildertek__Schedule_of_Values__c SOV = [SELECT Id, Name,buildertek__Vendor__c, buildertek__BT_Purchase_Order__r.Name, buildertek__BT_Purchase_Order__c, buildertek__BT_Purchase_Order__r.buildertek__Vendor__c FROM buildertek__Schedule_of_Values__c WHERE Id =:SOVid LIMIT 1];
-                if(SOV.buildertek__BT_Purchase_Order__c != null){
+                // buildertek__Schedule_of_Values__c SOV = [SELECT Id, Name,buildertek__Vendor__c, buildertek__BT_Purchase_Order__r.Name, buildertek__BT_Purchase_Order__c, buildertek__BT_Purchase_Order__r.buildertek__Vendor__c FROM buildertek__Schedule_of_Values__c WHERE Id =:recordId LIMIT 1];
+
+                    buildertek__Purchase_Order__c PO = [SELECT Id, Name, buildertek__Vendor__c FROM buildertek__Purchase_Order__c WHERE Id =: recordId LIMIT 1];
+                // if(SOV.buildertek__BT_Purchase_Order__c != null){
 
                     List<RecordType> recordType = [SELECT Id, Name FROM RecordType WHERE sObjectType='buildertek__SOV_Payment_Application__c' AND Name = 'AR'];
 
                     buildertek__SOV_Payment_Application__c newPA = new buildertek__SOV_Payment_Application__c();
-                    // newPA.Name = SOV.Name;                                // SOV
-                    newPA.Name = SOV.buildertek__BT_Purchase_Order__r.Name; // PO
+                    newPA.Name = PO.Name; // PO
                     // newPA.buildertek__PA_Type__c = ;
-                    // newPA.buildertek__Owner_Account__c = SOV.buildertek__Vendor__c;     // SOV
-                    newPA.buildertek__Owner_Account__c = SOV.buildertek__BT_Purchase_Order__r.buildertek__Vendor__c; // PO
-                    // newPA.buildertek__Payment_Application_To__c = SOV.buildertek__BT_Purchase_Order__r.buildertek__Vendor__c;
+                    newPA.buildertek__Owner_Account__c = PO.buildertek__Vendor__c; // PO
                     newPA.buildertek__Period_To__c = dToday;
                     newPA.buildertek__Application__c = '1';
-                    newPA.buildertek__BT_Schedule_of_Values__c = SOVid;
+                    newPA.buildertek__BT_Purchase_Order__c = recordId;
                     newPA.buildertek__Retainage__c = 0;
                     newPA.RecordTypeId = recordType.size() > 0 ? recordType[0].Id : null;
     
@@ -44,7 +43,7 @@ public class BT_createPAfromPO_Controller {
                     List<buildertek__SOV_Continuation_Sheet_Lines__c> ComSheetLinesToCreate = new List<buildertek__SOV_Continuation_Sheet_Lines__c>();
     
                     // SOV Lines
-                    // list<buildertek__Schedule_of_Value_Lines__c> SOVLines = [SELECT Id, Name,buildertek__Scheduled_Value__c FROM buildertek__Schedule_of_Value_Lines__c WHERE buildertek__Schedule_of_Values__c =: SOVid];
+                    // list<buildertek__Schedule_of_Value_Lines__c> SOVLines = [SELECT Id, Name,buildertek__Scheduled_Value__c FROM buildertek__Schedule_of_Value_Lines__c WHERE buildertek__Schedule_of_Values__c =: recordId];
                     // if(SOVLines.size() > 0){
                     //     for(buildertek__Schedule_of_Value_Lines__c SOVline : SOVLines){
                     //         buildertek__SOV_Continuation_Sheet_Lines__c conSheetLine = new buildertek__SOV_Continuation_Sheet_Lines__c();
@@ -58,7 +57,7 @@ public class BT_createPAfromPO_Controller {
                     // }
     
                     // PO line
-                    List<buildertek__Purchase_Order_Item__c> POlines = [SELECT Id, Name,buildertek__Total_Price__c FROM buildertek__Purchase_Order_Item__c WHERE buildertek__Purchase_Order__c =: SOV.buildertek__BT_Purchase_Order__c];
+                    List<buildertek__Purchase_Order_Item__c> POlines = [SELECT Id, Name,buildertek__Total_Price__c FROM buildertek__Purchase_Order_Item__c WHERE buildertek__Purchase_Order__c =: recordId];
                     if(POlines.size() > 0){
                         for(buildertek__Purchase_Order_Item__c POline : POlines){
                             buildertek__SOV_Continuation_Sheet_Lines__c conSheetLine = new buildertek__SOV_Continuation_Sheet_Lines__c();
@@ -78,11 +77,11 @@ public class BT_createPAfromPO_Controller {
                     returnWrapper.recordId = newPA.Id;
                     returnWrapper.returnMessage = 'newCreated_PA';
                     return returnWrapper;
-                }
-                else{
-                    returnWrapper.returnMessage = 'po_null';
-                    return returnWrapper;
-                }
+                // }
+                // else{
+                //     returnWrapper.returnMessage = 'po_null';
+                //     return returnWrapper;
+                // }
             }
 
         } catch (Exception e) {
