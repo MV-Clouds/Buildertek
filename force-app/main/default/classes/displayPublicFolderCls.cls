@@ -51,6 +51,36 @@ public without sharing class displayPublicFolderCls {
         return folderWrap;
     }
 
+    @AuraEnabled
+    public static DisplayImageControllerWrapper getDisplayImageData() {
+        DisplayImageControllerWrapper result = new DisplayImageControllerWrapper();
+
+        result.orgId = UserInfo.getOrganizationId();
+        result.customLabelValue = System.Label.Company_Logo;
+        result.confirmationURL = buildertek__ConfirmationPageSiteURL__c.getAll().values();
+
+        if (result.confirmationURL.size() > 0) {
+            result.siteUrl = result.confirmationURL[0].buildertek__SiteURL__c;
+        }
+
+        result.lstDocument = [SELECT Id, Name FROM Document WHERE Name = :result.customLabelValue LIMIT 1];
+
+        List<buildertek__Display_Images_Setting__mdt> displayimagemetadatelist = [SELECT Id, DeveloperName, buildertek__Height__c, buildertek__Width__c FROM buildertek__Display_Images_Setting__mdt WHERE DeveloperName = 'Logo_Settings' LIMIT 1];
+
+        if (displayimagemetadatelist.size() > 0) {
+            result.height = displayimagemetadatelist[0].buildertek__Height__c;
+            result.width = displayimagemetadatelist[0].buildertek__Width__c;
+        }
+
+        if (result.lstDocument.size() > 0) {
+            result.documentId = result.lstDocument[0].Id;
+        }
+
+        system.debug('documentId-----' + result.documentId);
+
+        return result;
+    }
+
     public class FolderWrapper{
         @AuraEnabled
         public buildertek__Public_Folder__c publicFolder;
@@ -70,8 +100,31 @@ public without sharing class displayPublicFolderCls {
         public ContentVersion cv;
     }
 
-
-
-
-
+    public class DisplayImageControllerWrapper {
+    
+        @AuraEnabled
+        public String orgId { get; set; }
+    
+        @AuraEnabled
+        public String customLabelValue { get; set; }
+    
+        @AuraEnabled
+        public List<buildertek__ConfirmationPageSiteURL__c> confirmationURL { get; set; }
+    
+        @AuraEnabled
+        public String siteUrl { get; set; }
+    
+        @AuraEnabled
+        public List<Document> lstDocument { get; set; }
+    
+        @AuraEnabled
+        public Decimal height { get; set; }
+    
+        @AuraEnabled
+        public Decimal width { get; set; }
+    
+        @AuraEnabled
+        public String documentId { get; set; }
+    
+    }
 }
