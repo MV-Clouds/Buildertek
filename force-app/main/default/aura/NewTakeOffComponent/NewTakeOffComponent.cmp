@@ -89,7 +89,7 @@
                 <footer aura:id="footer" class="slds-modal__footer">
                     <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{! c.closeModel }" />
                     <lightning:button variant="neutral" type="submit" title="Save &amp; New" label="Save &amp; New" onclick="{!c.handlesaveNnew}" />
-                    <lightning:button variant="brand" type="submit" name="save" label="Save" disabled="{!v.isDisabled}"/>
+                    <lightning:button variant="brand" type="submit" name="save" label="Save"/>
                 </footer>
             </lightning:recordEditForm>
         </div>
