@@ -80,7 +80,7 @@ public class PaymentTriggerHandler {
 
         
         for(buildertek__BT_Payment__c payment:oldPaymentList){
-            paymentSet.put(payment.buildertek__Invoices_AP__c , payment.buildertek__Amount__c);
+            paymentSet.put(payment.buildertek__Invoices_AP__c , payment.buildertek__Total_Amount__c);
         }
         System.debug('paymentSet' + paymentSet);
         List<buildertek__Account_Payable_Clone__c> invoiceRecList = [select Id, Name, buildertek__Payment_Amount__c  from buildertek__Account_Payable_Clone__c where Id IN: paymentSet.keySet()];
