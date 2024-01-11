@@ -7,7 +7,7 @@
 	<aura:attribute name="selectedCcContact" type="sObject[]" default="[]"/>
 	<aura:attribute name="selectedFiles" type="sObject[]" default="[]"/>
     <aura:attribute name="selectedFillIds" type="sObject[]" default="[]"/>
-	<aura:attribute name="selectedFiles2" type="sObject[]" default="[]"/>
+	<aura:attribute name="selectedFilesNew" type="sObject[]" default="[]"/>
 
 	
 	<aura:attribute name="pdfFileName" type="String"/>
@@ -277,7 +277,7 @@
                                                     </div>
                                                     <footer class="slds-modal__footer">
                                                         <button class="slds-button slds-button_neutral" aria-label="Cancel and close" onclick="{!c.closeFileModel}">Cancel</button>
-                                                        <button class="slds-button slds-button_neutral" aria-label="save" onclick="{!c.handleSaveButtonClick}">Save</button>
+                                                        <button class="slds-button slds-button_brand" aria-label="save" onclick="{!c.handleSaveButtonClick}">Save</button>
                                                     </footer>                                                
                                             </div>
                                         </section>
