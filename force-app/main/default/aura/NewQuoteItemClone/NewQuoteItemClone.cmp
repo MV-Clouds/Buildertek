@@ -844,7 +844,7 @@
                                             <aura:if isTrue="{!!v.hideGlobalMarkup}">
                                             <td style="padding-bottom:22px; width: 7% !important;">
                                                 <div class="borderdiv">
-                                                    <lightning:input type="number" name="input6" label="" value="{!v.newQuote.buildertek__Markup__c}"  aura:id="markUpId"  formatter="percent-fixed" step="0.01" />
+                                                    <lightning:input type="number" name="input6" label="" value="{!v.newQuote.buildertek__Markup__c}"  aura:id="markUpId"  formatter="percent-fixed" step="0.0001" />
                                                 </div>
                                             </td>
                                             </aura:if>
