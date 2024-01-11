@@ -6,15 +6,16 @@ public with sharing class CreatePaymentFromPayableInvController {
             
             List<buildertek__BT_Payment_Lines__c> newPaymentLines = new List<buildertek__BT_Payment_Lines__c>();
 
-            List<buildertek__Account_Payable_Clone__c> payableInvoicerec = [SELECT Id, buildertek__Vendor__c, buildertek__Project__c FROM buildertek__Account_Payable_Clone__c WHERE Id = :payableInvoiceId];
+            List<buildertek__Account_Payable_Clone__c> payableInvoicerec = [SELECT Id, buildertek__Vendor__c, buildertek__Project__c, buildertek__Tax__c  FROM buildertek__Account_Payable_Clone__c WHERE Id = :payableInvoiceId];
 
             if (!payableInvoicerec.isEmpty()) {
-                List<buildertek__Account_Payable_Item_Clone__c> payableInvoiceLines = [SELECT Id FROM buildertek__Account_Payable_Item_Clone__c Where buildertek__Account_Payable_Clone__c = :payableInvoicerec[0].Id];
+                List<buildertek__Account_Payable_Item_Clone__c> payableInvoiceLines = [SELECT Id, buildertek__Quantity__c, buildertek__Tax__c  FROM buildertek__Account_Payable_Item_Clone__c Where buildertek__Account_Payable_Clone__c = :payableInvoicerec[0].Id];
 
                 buildertek__BT_Payment__c newPaymentrecord = new buildertek__BT_Payment__c();
                 newPaymentrecord.buildertek__Invoices_AP__c = payableInvoicerec[0].Id;
                 newPaymentrecord.buildertek__Project__c = payableInvoicerec[0].buildertek__Project__c;
                 newPaymentrecord.buildertek__Amount__c = 0;
+                newPaymentrecord.buildertek__Tax__c = payableInvoicerec[0].buildertek__Tax__c;
                 newPaymentrecord.buildertek__Payee__c = payableInvoicerec[0].buildertek__Vendor__c;
 
                 
@@ -25,7 +26,8 @@ public with sharing class CreatePaymentFromPayableInvController {
                         buildertek__BT_Payment_Lines__c newPaymentLine = new buildertek__BT_Payment_Lines__c();
                         newPaymentLine.buildertek__Payment__c = newPaymentrecord.Id;
                         newPaymentLine.buildertek__Invoice_Line_AP__c = payableInvoiceline.Id;
-
+                        newPaymentLine.buildertek__QuantityEditable__c = payableInvoiceline.buildertek__Quantity__c;
+                        newPaymentLine.buildertek__Tax__c = payableInvoiceline.buildertek__Tax__c;
                         newPaymentLines.add(newPaymentLine);
                     }
 
