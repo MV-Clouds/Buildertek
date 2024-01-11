@@ -180,10 +180,22 @@
 		var to, cc, toIds = [], ccIds = [], files, fileIds = [], subject, body, recordId, templateId, pdfFileName;
 		
         body = '';
+        var fileInput = '';
+        var contentDocumentIds = [];
+        if(component.get("v.selectedfilesFill").length>0) {
+            fileInput = component.get("v.selectedfilesFill");
+            console.log('fileInput selected;-->' , component.get("v.selectedfilesFill"));
+            for (var i = 0; i < fileInput.length; i++) {
+                var contentDocumentId = fileInput[i].Id;
+                contentDocumentIds.push(contentDocumentId);
+            }
+        }
+        console.log('contentDocumentIds :--->' , contentDocumentIds);
+
 		to = component.get("v.selectedToContact");
 		cc = component.get("v.selectedCcContact");
         var emailIds = component.get("v.emailIds");
-		files = component.get("v.selectedFillIds"); //selectedFillIds  //selectedFiles
+		files = contentDocumentIds; //selectedFillIds  //selectedFiles
 		to.forEach(function(v){ toIds.push(v.Id) });
 		cc.forEach(function(v){ ccIds.push(v.Id) }); 
         files.forEach(function(v){ fileIds.push(v) });
@@ -201,7 +213,6 @@
 		pdfFileName = component.get("v.pdfFileName");
 		var dbAction = component.get("c.SendEmail");
         console.log('pdfFileName' + component.get("v.pdfFileName"));
-        // debugger;
         dbAction.setParams({
             to:toIds,
             cc: ccIds,
@@ -478,16 +489,17 @@
                     this.uploadInChunk(component, file, fileContents, startPosition, endPosition, attachId,recid,helper);
                     // debugger;
                 } else {
-                    //this.showMessage('File(s) uploaded successfully',true);
-                   /* var navEvt = $A.get("e.force:navigateToSObject");
-                    navEvt.setParams({
-                        "recordId": component.get('v.recordId'),
-                        "slideDevName": "related"
-                    });
-                    navEvt.fire();*/               
-            		//component.set("v.isAttachDocClick",false);  
-                    //helper.getrfirecords(component, event, helper);
-                    //component.set("v.isSubmit",true);
+                    // if(this.filesCount == this.fileInputLenght){ 
+                        //alert(this.fileIds.length);
+                        // console.log('this.fileIds ==> '+this.fileIds);
+                        // component.set("v.selectedFillIds",this.fileIds);
+                        // $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "SHOW" }).fire();
+                        // this.send(component, event, helper);
+                        // this.filesCount = 0;
+                        // this.fileInputLenght = 0;
+                        // this.fileIds = [];
+                       
+                    // }
                 }
                 if(this.filesCount == this.fileInputLenght){ 
                     //alert(this.fileIds.length);
@@ -591,7 +603,265 @@
         });
         $A.enqueueAction(action);
     },
-           
 
+    getFileList: function(component) {
+        var recordId = component.get("v.recordId");
+        var action = component.get("c.getRelatedFiles");
+
+        action.setParams({
+            recordId: recordId
+        });
+
+        action.setCallback(this, function(response) {
+            var state = response.getState();
+            if (state === "SUCCESS") {
+                var files = response.getReturnValue();
+                console.log('FILES :->', files);
+
+                if (files && files.length > 0) {
+                    component.set("v.showModel",true);
+                    files = this.convertFileSizes(files);
+                    var selectedFillIds = component.get("v.selectedFillIds");
+                    
+                    files.forEach(function(file) {
+                        file.isChecked = selectedFillIds.includes(file.ContentDocumentId);
+                    });
+                    
+                    component.set("v.relatedFiles", files);
+                    $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
+                } else {
+                    component.set("v.showModel",false);
+                    var toastEvent = $A.get("e.force:showToast");
+                    toastEvent.setParams({
+                        mode: 'sticky',
+                        message: 'There are no files related to the record.',
+                        type : 'error',
+                        duration: '5000',
+                        mode: 'dismissible'
+                    });
+                    toastEvent.fire(); 
+                    $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
+                }
+            } else {
+                var toastEvent = $A.get("e.force:showToast");
+                    toastEvent.setParams({
+                        mode: 'sticky',
+                        message: 'something went wrong.',
+                        type : 'error',
+                        duration: '5000',
+                        mode: 'dismissible'
+                    });
+                    toastEvent.fire(); 
+                    $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
+            }
+        });
+
+        $A.enqueueAction(action);
+    },
+
+    convertFileSizes: function(files) {
+        for (var i = 0; i < files.length; i++) {
+            var fileSize = files[i].ContentSize;
+            files[i].FormattedSize = this.formatFileSize(fileSize);
+        }
+        return files;
+    },
+
+    formatFileSize: function(sizeInBytes) {
+        if (isNaN(sizeInBytes) || sizeInBytes <= 0) {
+            return 'N/A';
+        }
+
+        var units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        var i = parseInt(Math.floor(Math.log(sizeInBytes) / Math.log(1024)));
+        return Math.round((sizeInBytes / Math.pow(1024, i)) * 100) / 100 + ' ' + units[i];
+    },
+    saveButton: function(component, event, helper) {
+        // Get the selected files and map data
+        var selectedFiles = component.get("v.selectedFile") || [];
+        var mapData = component.get("v.selectedfilesFill") || [];
+
+        // Process the selected files and update mapData
+        var files = '';
+        selectedFiles.forEach(function(selectedFile) {
+            var fileName = selectedFile.Title;
+            var fileId = selectedFile.ContentDocumentId;
+
+            // Check if the fileId is already in the mapData
+            var fileInMap = mapData.some(function(mapFile) {
+                return mapFile.Id === fileId;
+            });
+
+            // If the fileId is not in the mapData, add it
+            if (!fileInMap) {
+                var obj = {};
+                obj['Name'] = fileName;
+                obj['Id'] = fileId;
+                mapData.push(obj);
+
+                if (files === '') {
+                    files = fileName;
+                } else {
+                    files += ',' + fileName;
+                }
+            }
+        });
+
+        component.set("v.fileName", files);
+        component.set("v.selectedfilesFill", mapData);
+
+        var fileIds = selectedFiles.map(function(v) {
+            return v.ContentDocumentId;
+        });
+
+        component.set("v.selectedFillIds", fileIds);
+
+        console.log(component.get("v.fileName"));
+        console.log('fileIds :->', fileIds);
+        console.log('updated mapdata :-->', component.get("v.selectedfilesFill"));
+        component.set("v.showModel",false);
+    },
+    onChecboxChanges: function(component, event, helper) {
+        var file = event.getSource().get("v.name");
+        var selectedFiles2 = component.get("v.selectedFiles2") || [];
+
+        selectedFiles2.push(file);
+        component.set("v.selectedFiles2", selectedFiles2);
+        console.log('selectedFiles2:', selectedFiles2);
+        var selectedFiles = component.get("v.selectedFile") || [];
+
+        // Check if the file is already in the selectedFiles array
+        var fileIndex = selectedFiles.findIndex(function(selectedFile) {
+            return selectedFile.Id === file.Id;
+        });
+
+        if (event.getSource().get("v.checked")) {
+            // If the file is not already in the array, add it
+            if (fileIndex === -1 && !component.get("v.selectedFillIds").includes(file.ContentDocumentId)) {
+                selectedFiles.push(file);
+            }
+        } else {
+            // If the file is in the array, remove it
+            if (fileIndex !== -1) {
+                selectedFiles.splice(fileIndex, 1);
+            }
+        }
+
+        component.set("v.selectedFile", selectedFiles);
+        console.log('selectedFiles :->', selectedFiles);
+    },
+    standardFileUploderFileChange: function(component, event, helper) {
+        var fileName = 'No File Selected..';
+        var fileId = '';
+    
+        var existingMapData = component.get('v.selectedfilesFill');
+        var newFilesList = event.getParam('files');
+        console.log('newFilesList', newFilesList);
+
+        var resultMapArray = [];
+
+        newFilesList.forEach(function(newMap) {
+            var resultMap = {
+                "Id": newMap.contentVersionId,
+                "ContentDocumentId": newMap.documentId,
+                "Title": newMap.name.substring(0, newMap.name.lastIndexOf(".")), 
+                "ContentSize":  0, 
+                "ContentBodyId": newMap.contentBodyId,
+                "FileType": newMap.mimeType.split("/")[1],
+                "VersionData": '0',
+                "FormattedSize": '0KB',
+                "isChecked": true 
+            };
+
+            resultMapArray.push(resultMap);
+        });
+        var selected = component.get("v.selectedFile") || [];
+        selected.push(...resultMapArray);
+        component.set("v.selectedFile", selected);
+        console.log('resultMapArray', selected);
+
+        var fileCount = newFilesList.length;
+        var files = '';
+        var mapData = existingMapData || [];
+    
+        if (fileCount > 0) {
+            for (var i = 0; i < fileCount; i++) {
+                fileName = newFilesList[i]['name'].substring(0, newFilesList[i]['name'].lastIndexOf("."));
+                fileId = newFilesList[i].documentId;
+    
+                var obj = {};
+                obj['Name'] = fileName;
+                obj['Id'] = fileId;
+    
+                mapData.push(obj);
+            }
+            files = mapData.map(function(file) {
+                return file.Name;
+            }).join(', ');
+        } else {
+            files = fileName;
+        }
+    
+        component.set('v.selectedfilesFill', mapData);
+        var fileIds = component.get("v.selectedFillIds") || [];
+        mapData.forEach(function(data) {
+            // Check if data.Id is not in fileIds before pushing
+            if (!fileIds.includes(data.Id)) {
+                fileIds.push(data.Id);
+            }
+        });
+        component.set("v.selectedFillIds", fileIds);
+        console.log('fileIds 2:->', fileIds);
+        console.log('mapData 2 :-->',component.get('v.selectedfilesFill'));
+    },
+    clearPillValues :function(component,event,heplper){
+        var selectedPillId = event.getSource().get("v.name");    
+        var AllPillsList = component.get("v.selectedfilesFill") || [];    
+        var selectedFillIds = component.get("v.selectedFillIds") || [];
+    
+        // Use Array.findIndex to find the index of the selected pill in the list
+        var pillIndex = AllPillsList.findIndex(function(pill) {
+            return pill.Id === selectedPillId;
+        });
+    
+        if (pillIndex !== -1) {
+            // Add the Id to selectedFillIds if not already present
+            if (!selectedFillIds.includes(selectedPillId)) {
+                selectedFillIds.push(selectedPillId);
+            }
+    
+            // Remove the pill from selected files
+            AllPillsList.splice(pillIndex, 1);
+    
+            // Remove the Id from selectedFillIds
+            var fillIdIndex = selectedFillIds.indexOf(selectedPillId);
+            if (fillIdIndex !== -1) {
+                selectedFillIds.splice(fillIdIndex, 1);
+            }
+    
+            // Update the selected files and selectedFillIds attributes
+            component.set("v.selectedfilesFill", AllPillsList);
+            component.set("v.selectedFillIds", selectedFillIds);
+    
+            console.log('Pill removed. Updated selected files:', AllPillsList);
+            console.log('Updated selectedFillIds:', selectedFillIds);
+            var selectedFiles = component.get("v.selectedFile") || [];
+            var selectedFillIdsSet = new Set(selectedFillIds);
+
+            // Filter selectedFiles based on matching selectedFillIds
+            var filteredSelectedFiles = selectedFiles.filter(function(file) {
+                return selectedFillIdsSet.has(file.ContentDocumentId);
+                });
+
+            // Update the attribute with the filtered list
+            component.set("v.selectedFile", filteredSelectedFiles);
+        } else {
+            console.log('Pill not found in the list.');
+        }
+        
+    },
+
+    
+        
     
 })

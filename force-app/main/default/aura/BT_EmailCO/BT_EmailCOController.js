@@ -70,20 +70,17 @@
 	sendemail : function(component, event, helper) {
 		console.log("selectedToContact--->",component.get("v.selectedToContact"));
 		console.log("selectedCcContact--->",component.get("v.selectedCcContact"));
-		console.log("selectedCcContact--->",component.get("v.selectedFiles"));
-		 //alert('selected Users-------'+JSON.stringify(component.get("v.selectedFiles")));
-       
-        
-        
+		console.log("selectedfiles--->",component.get("v.selectedFiles"));
+		 //alert('selected Users-------'+JSON.stringify(component.get("v.selectedFiles")));        
 	    if(component.get("v.selectedToContact") != ''){ 
-            if(component.get("v.selectedfilesFill").length>0) {
-                $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "SHOW" }).fire();
+            // if(component.get("v.selectedfilesFill").length>0) {
+                // $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "SHOW" }).fire();
 
-                helper.uploadHelper(component, event, component.get("v.recordId"),helper);    
-            }else{
+                // helper.uploadHelper(component, event, component.get("v.recordId"),helper);    
+            // }else{
                 $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "SHOW" }).fire();
                 helper.send(component, event, helper);
-            }
+            // }
            
         }else{
             var toastEvent = $A.get("e.force:showToast");
@@ -189,9 +186,6 @@
     
 	handleFilesChange: function(component, event, helper) {
         console.log('handleFilesChange');
-
-
-
         var fileName = 'No File Selected..';                
             //alert(event.getSource().get("v.files").length);
         if (event.getSource().get("v.files").length > 0) {
@@ -228,33 +222,40 @@
         console.log(component.get("v.fileName"));
         console.log(component.get("v.selectedfilesFill"));
 
-    }, 
-                
-                
-  // function for clear the Record Selaction 
+    },                 
     clear :function(component,event,heplper){
-        var selectedPillId = event.getSource().get("v.name");
-        var AllPillsList = component.get("v.selectedfilesFill"); 
-        
-        for(var i = 0; i < AllPillsList.length; i++){
-            if(AllPillsList[i].Name == selectedPillId){
-                AllPillsList.splice(i, 1);
-                component.set("v.selectedfilesFill", AllPillsList);
-            }  
-        }
+        helper.clearPillValues(component, event, helper);
     },                
     closeWindow: function(component, event, helper) {
         $A.get("e.force:closeQuickAction").fire();
-    }
+    },
+     openPopupModel:function(component, event, helper) {
+        $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "SHOW" }).fire();    
+        var selectedFile = component.get("v.selectedFile");
+        component.set("v.selectedFile", selectedFile);
+        helper.getFileList(component, event, helper);
+    },    
+    closeFileModel : function (component,event,helper) {
+        var selectedFiles = component.get("v.selectedFiles") || [];
+        var selectedFiles2 = component.get("v.selectedFiles2") || [];
 
-              
-                
-                
-                
-                
-                
-                
-                
-                
+        selectedFiles = selectedFiles.filter(function(file) {
+            return !selectedFiles2.includes(file);
+        });
+        component.set("v.selectedFiles", selectedFiles);
+        component.set("v.selectedFiles2", []);
+        console.log('selectedFiles after cancel:', selectedFiles);
+        component.set("v.showModel",false);
+    },  
+    handleSaveButtonClick: function(component, event, helper) {
+        helper.saveButton(component, event, helper);
+    },
+
+    handleCheckboxChange: function(component, event, helper) {
+        helper.onChecboxChanges(component, event, helper);
+    },
+    handleFileChange: function(component, event, helper) {
+        helper.standardFileUploderFileChange(component, event, helper);
+    },
                 
 })

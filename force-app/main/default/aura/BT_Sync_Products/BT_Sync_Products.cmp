@@ -67,7 +67,7 @@
                                     <td width="39%" role="gridcell">
                                         <ui:outputText value="{!rec.buildertek__Product__r.Name}" />
                                     </td>
-                                    <td width="10%" role="gridcell">
+                                    <td width="10%" role="gridcell" style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
                                         <ui:outputText value="{!rec.buildertek__Grouping__r.Name}" />
                                     </td>
                                     <td width="21%" role="gridcell" style="text-align: center;">

@@ -575,49 +575,63 @@ public with sharing class BT_SendEmailController{
                     fileAttachments.add(efa);
                 }
             }
+            // List<ContentVersion> docList;
+            // list<Id> contentVersionIds = new list<Id>();
+
+            // docList = [Select Id, ContentDocumentId, Title, VersionData
+            //            from ContentVersion
+            //            where Id IN :files]; //where ContentDocumentId IN :files];
+
+
+            // system.debug('docList -----------> ' + docList);
+            // system.debug('docList size -------> ' + docList.size());
+            // if (docList.size() > 0){
+            //     for (ContentVersion docs : docList){
+            //         Messaging.Emailfileattachment efa1 = new Messaging.Emailfileattachment();
+            //         efa1.setFileName(docs.Title);
+            //         efa1.setBody(docs.VersionData);
+            //         fileAttachments.add(efa1);
+            //         //fileAttachments.add(docs);
+            //         contentVersionIds.add(docs.Id);
+            //     }
+            // }
+            // List<Attachment> attList;
+
+
+            // attList = [Select Id, Name, Body
+            //            from Attachment
+            //            where Id IN :files];
+
+
+            // system.debug('attList -----------> ' + attList);
+            // system.debug('attList size -------> ' + attList.size());
+            // if (docList.size() > 0){
+            //     for (Attachment att : attList){
+            //         Messaging.Emailfileattachment efa2 = new Messaging.Emailfileattachment();
+            //         efa2.setFileName(att.Name);
+            //         efa2.setBody(att.Body);
+            //         fileAttachments.add(efa2);
+            //         //fileAttachments.add(docs);
+            //     }
+            // }
+
             List<ContentVersion> docList;
             list<Id> contentVersionIds = new list<Id>();
-
-            docList = [Select Id, ContentDocumentId, Title, VersionData
-                       from ContentVersion
-                       where Id IN :files]; //where ContentDocumentId IN :files];
-
-
-            system.debug('docList -----------> ' + docList);
-            system.debug('docList size -------> ' + docList.size());
+            docList = [Select Id, ContentDocumentId, Title, VersionData from ContentVersion where ContentDocumentId IN :files];
             if (docList.size() > 0){
                 for (ContentVersion docs : docList){
                     Messaging.Emailfileattachment efa1 = new Messaging.Emailfileattachment();
                     efa1.setFileName(docs.Title);
                     efa1.setBody(docs.VersionData);
-                    fileAttachments.add(efa1);
-                    //fileAttachments.add(docs);
                     contentVersionIds.add(docs.Id);
                 }
             }
-            List<Attachment> attList;
 
-
-            attList = [Select Id, Name, Body
-                       from Attachment
-                       where Id IN :files];
-
-
-            system.debug('attList -----------> ' + attList);
-            system.debug('attList size -------> ' + attList.size());
-            if (docList.size() > 0){
-                for (Attachment att : attList){
-                    Messaging.Emailfileattachment efa2 = new Messaging.Emailfileattachment();
-                    efa2.setFileName(att.Name);
-                    efa2.setBody(att.Body);
-                    fileAttachments.add(efa2);
-                    //fileAttachments.add(docs);
-                }
-            }
+            mail.setEntityAttachments(contentVersionIds);
 
             system.debug('fileAttachments ----->' + fileAttachments);
             system.debug('contentVersionIds ----->' + contentVersionIds);
-            mail.setEntityAttachments(contentVersionIds);
+            // mail.setEntityAttachments(contentVersionIds);
             mail.setUseSignature(useSignature);
             if(Id.valueOf(recordId).getSObjectType().getDescribe().getName() == 'buildertek__Change_Order__c'){
             mail.setFileAttachments(fileAttachments);
@@ -902,6 +916,10 @@ public with sharing class BT_SendEmailController{
             String message = 'Success';
             return message;
         } catch (Exception exp){
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+                BT_ExceptionHandler.Store_Exception(exp);
+            }
             String message = exp.getMessage();
             system.debug('message ---------> ' + exp.getMessage());
             return message;
@@ -1130,47 +1148,39 @@ public with sharing class BT_SendEmailController{
 
     }
 
-      @AuraEnabled
+    @AuraEnabled
     public static String uploadFile(String parentId, String fileName, String base64Data, String contentType, String fileId) {
-        // check if fileId id ''(Always blank in first chunk), then call the saveTheFile method,
-        //  which is save the check data and return the attachemnt Id after insert,
-        //  next time (in else) we are call the appentTOFile() method
-        //   for update the attachment with reamins chunks
-        System.debug(' parentId  ++++++++++++++++++++++++++++++++++'+parentId);
+        system.debug('saveTheChunk');
+        system.debug('parentI'+parentId);
+        system.debug('fileId'+fileId); 
+        base64Data = EncodingUtil.urlDecode(base64Data, 'UTF-8');
         if (fileId == '') {
             fileId = saveTheFile(parentId, fileName, base64Data, contentType);
-            system.debug('****'+fileId);
         } else {
-            //   appendToFile(fileId, base64Data);
+            appendToFileNew(fileId, base64Data);
         }
+        
         return string.valueOf(fileId);
     }
     public static Id saveTheFile(String parentId, String fileName, String base64Data, String contentType) {
         system.debug('parentId--->'+parentId);
-        base64Data = EncodingUtil.urlDecode(base64Data, 'UTF-8');
-        ContentVersion conVer = new ContentVersion();
-        Set<SObjectField> ContentVersionFields = new set<SObjectField>{ContentVersion.ContentLocation,
-            ContentVersion.PathOnClient,
-            ContentVersion.Title,
-            ContentVersion.VersionData};
-                conVer.ContentLocation = 'S'; // to use S specify this document is in Salesforce, to use E for external files
-        conVer.PathOnClient = fileName; // The files name, extension is very important here which will help the file in preview.
-        conVer.Title = fileName; // Display name of the files
-        conVer.VersionData = EncodingUtil.base64Decode(base64Data); // converting your binary string to Blog
-        insert conVer;    //Insert ContentVersion
-        // First get the Content Document Id from ContentVersion Object
-        Id conDoc = [SELECT ContentDocumentId FROM ContentVersion WHERE Id =:conVer.Id].ContentDocumentId;
-        //create ContentDocumentLink  record
-        ContentDocumentLink conDocLink = New ContentDocumentLink();
-        Set<SObjectField> ContentDocumentLinkFields = new set<SObjectField>{ContentDocumentLink.LinkedEntityId,
-            ContentDocumentLink.ContentDocumentId,
-            ContentDocumentLink.shareType};
-                conDocLink.LinkedEntityId = parentId; // Specify RECORD ID here i.e Any Object ID (Standard Object/Custom Object)
-        conDocLink.ContentDocumentId = conDoc;  //ContentDocumentId Id from ContentVersion
-        conDocLink.shareType = 'I';
-        insert conDocLink;
-        system.debug('inserted--------------'+conDocLink.Id);
-        return conVer.Id;
+        
+        ContentVersion contentToInsert =new ContentVersion(); 
+        contentToInsert.Title =fileName; 
+        contentToInsert.VersionData=EncodingUtil.base64Decode(base64Data);
+        contentToInsert.PathOnClient='/' + fileName ;
+        contentToInsert.IsMajorVersion = false;
+        insert contentToInsert; 
+        
+        contentToInsert = [select id, ContentDocumentId from ContentVersion WHERE Id =: contentToInsert.Id];
+        ContentDocumentLink cl = new ContentDocumentLink();
+        cl.ContentDocumentId = contentToInsert.ContentDocumentId;
+        cl.LinkedEntityId = parentId; 
+        cl.ShareType = 'V';
+        cl.Visibility = 'AllUsers';
+        insert cl;
+        
+        return contentToInsert.id;
     }
 
     @AuraEnabled
@@ -1453,6 +1463,10 @@ public with sharing class BT_SendEmailController{
             }
             catch(Exception ex)
             {
+                List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+                if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+                    BT_ExceptionHandler.Store_Exception(ex);
+                }
                 System.debug(ex);
             }
             Blob pageData = vfPage.getContentAsPDF();
@@ -1485,6 +1499,10 @@ public with sharing class BT_SendEmailController{
             return 'Success';
         }
         catch (exception e){
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
             throw new AuraHandledException(e.getMessage());
             return null;
         }
@@ -1522,33 +1540,40 @@ public with sharing class BT_SendEmailController{
 
 
 
+    private static void appendToFileNew(Id fileId, String base64Data) {
+        system.debug('fileId'+fileId);
+        system.debug('appendToFileNew');
+        
+        ContentVersion versionData = [
+            SELECT Id, VersionData,ContentDocumentId
+            FROM ContentVersion
+            WHERE Id = :fileId
+        ];
+        
+        String existingBody     = EncodingUtil.base64Encode(versionData.VersionData);
+        versionData.VersionData = EncodingUtil.base64Decode(existingBody + base64Data); 
+        
+        update versionData;
+        
+        
+        
+    }
+    @AuraEnabled
+    public static List<ContentVersion> getRelatedFiles(String recordId) {
+        List<ContentDocumentLink> fileLinks = [SELECT ContentDocumentId 
+                                               FROM ContentDocumentLink 
+                                               WHERE LinkedEntityId = :recordId];
+        
+        Set<Id> documentIds = new Set<Id>();
+        for(ContentDocumentLink link : fileLinks) {
+            documentIds.add(link.ContentDocumentId);
+        }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        List<ContentVersion> relatedFiles = [SELECT Id, VersionData,ContentDocumentId, Title ,ContentSize
+                                              FROM ContentVersion 
+                                              WHERE ContentDocumentId IN :documentIds];
+        
+        return relatedFiles;
+    }
 
 }
