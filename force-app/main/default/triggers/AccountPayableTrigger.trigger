@@ -37,15 +37,14 @@ trigger AccountPayableTrigger on buildertek__Account_Payable__c (before insert,b
         }
     } else if (Trigger.isAfter) {
         // System.debug('After Trigger');
-        // system.debug('Id => ' + Trigger.New[0].Id);
-
         if (Trigger.isInsert) {
             System.debug(' AccountPayableTrigger After Trigger insert');
             AccountPayableHelper.OnAfterInsert(Trigger.new, Trigger.newMap); 
         } else if(Trigger.isUpdate){
             System.debug(' AccountPayableTrigger After Trigger update');
-            AccountPayableHelper.afterUpdate(Trigger.old, Trigger.new, Trigger.newMap, trigger.oldMap); 
+            AccountPayableHelper.afterUpdate(Trigger.old, Trigger.new, Trigger.newMap, Trigger.oldMap); 
             AccountPayableHelper.DeleteBudgetLine(Trigger.old ,Trigger.new , Trigger.oldMap , Trigger.newMap);
+            AccountPayableHelper.UpdateCOntractorInvoiceStatus(Trigger.new , Trigger.oldMap);
 
         } else if(Trigger.isDelete){
             AccountPayableHelper.onAfterDelete(Trigger.old); 
