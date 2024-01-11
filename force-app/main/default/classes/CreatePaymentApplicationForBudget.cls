@@ -561,7 +561,7 @@ continutionSheet.Name =*/
             }
             
             rc.isSuccess = true;
-            updatePaymentAppStatus(ARPayAPP);
+            // updatePaymentAppStatus(ARPayAPP);
         }
         catch(Exception exp){
             system.debug(exp.getMessage());
@@ -3125,6 +3125,7 @@ system.debug('Final templateBody ----------> ' + templateBody);*/
     public static String AceptConnLines(String recordId){
         list<buildertek__SOV_Continuation_Sheet_Lines__c> coslist = new list<buildertek__SOV_Continuation_Sheet_Lines__c>();
         buildertek__SOV_Payment_Application__c updateStatus = [select Id, Name, buildertek__Status__c from buildertek__SOV_Payment_Application__c where Id =:recordId];
+
         Set<Id> continuationSheetId = new Set<Id>();
         list<buildertek__SOV_Continuation__c> continuationsheetRec = [select Id,Name from buildertek__SOV_Continuation__c 
                                                                 where buildertek__SOV_Payment_Application__c =: updateStatus.id];
@@ -3190,7 +3191,7 @@ system.debug('Final templateBody ----------> ' + templateBody);*/
             }
             system.debug('sheetlineslist2'+sheetlineslist1);
         }
-        
+        updatePaymentAppStatus(updateStatus);
         return 'success';
     }
     
