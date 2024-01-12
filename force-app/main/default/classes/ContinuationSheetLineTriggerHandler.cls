@@ -329,11 +329,24 @@ public class ContinuationSheetLineTriggerHandler {
                 }
             }
             System.debug('updateAppList=====>>>>>'+updateAppList);
+
+            Set<Id> uniqueIds = new Set<Id>();
+            List<buildertek__SOV_Payment_Application__c> recordsToUpdate = new List<buildertek__SOV_Payment_Application__c>();
+
+            // Iterate over the original list and add records to the new list only if their Id is unique
+            if(updateAppList.size() > 0){
+                for (buildertek__SOV_Payment_Application__c cosRecord : updateAppList) {
+                    if (!uniqueIds.contains(cosRecord.Id)) {
+                        recordsToUpdate.add(cosRecord);
+                        uniqueIds.add(cosRecord.Id);
+                    }
+                }
+            }
             
-            if(updateAppList.Size()>0){
+            if(recordsToUpdate.Size()>0){
                 ContinuationSheetLineTriggerHandler.blnSkipSheetLineTrigger = true;
-                update updateAppList;
-                System.debug('IF updateAppList=====>>>>>'+updateAppList);
+                update recordsToUpdate;
+                System.debug('IF recordsToUpdate=====>>>>>'+recordsToUpdate);
                 ContinuationSheetLineTriggerHandler.blnSkipSheetLineTrigger = false; 
             }
         }

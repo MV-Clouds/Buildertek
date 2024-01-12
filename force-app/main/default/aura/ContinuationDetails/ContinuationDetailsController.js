@@ -1,6 +1,6 @@
 ({
     doInit : function(component, event, helper) {
-        debugger;
+        // debugger;
         var action9 = component.get("c.getState");
         action9.setParams({
             recId: component.get("v.recordId")
