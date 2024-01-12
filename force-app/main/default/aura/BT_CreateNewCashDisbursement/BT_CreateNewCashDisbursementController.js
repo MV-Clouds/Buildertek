@@ -61,7 +61,7 @@
         component.set('v.isdisabled', true);
         event.preventDefault(); // stop form submission
         var eventFields = event.getParam("fields");
-        component.set('v.isLoading', false);
+        component.set('v.isLoading', true);
         component.find('recordViewForm').submit(eventFields); // Submit form'
     },
     handleError: function(component, event, helper) {

@@ -28,6 +28,7 @@ trigger AccountPayableTrigger on buildertek__Account_Payable__c (before insert,b
             if(Trigger.isUpdate){
                 // AccountPayableHelper.RestrictToUpdateCashDisbursement(Trigger.new, Trigger.newMap ,Trigger.oldMap);       // -->>>>> Changes for BUIL-3675 --> commnent by Brian to disable RestrictToUpdateCashDisbursement Functionality...
                 AccountPayableHelper.updateBudgetAndBudgetLine(Trigger.new, Trigger.newMap ,Trigger.oldMap);
+                AccountPayableHelper.UpdateCOntractorInvoiceStatus(Trigger.new , Trigger.oldMap);
             }
 
 
@@ -44,7 +45,6 @@ trigger AccountPayableTrigger on buildertek__Account_Payable__c (before insert,b
             System.debug(' AccountPayableTrigger After Trigger update');
             AccountPayableHelper.afterUpdate(Trigger.old, Trigger.new, Trigger.newMap, Trigger.oldMap); 
             AccountPayableHelper.DeleteBudgetLine(Trigger.old ,Trigger.new , Trigger.oldMap , Trigger.newMap);
-            AccountPayableHelper.UpdateCOntractorInvoiceStatus(Trigger.new , Trigger.oldMap);
 
         } else if(Trigger.isDelete){
             AccountPayableHelper.onAfterDelete(Trigger.old); 

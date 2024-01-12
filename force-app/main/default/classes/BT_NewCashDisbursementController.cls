@@ -28,6 +28,7 @@ public with sharing class BT_NewCashDisbursementController {
 
             BT_NewCashDisbursementController obj = new BT_NewCashDisbursementController();
             storeFieldSetAndProjectId.projectId = obj.getProjectFromContractorInvoice(recordId);
+            storeFieldSetAndProjectId.vendorId = obj.getVendorFromContractorInvoice(recordId);
             storeFieldSetAndProjectId.fieldSet = '[' + storeFieldSetAndProjectId.fieldSet + ']';
 
         } catch (Exception e){
@@ -74,9 +75,25 @@ public with sharing class BT_NewCashDisbursementController {
         }
         return result;
     }
+    public String getVendorFromContractorInvoice(String recordId) {
+        String result = '';
+        try{
+            List<buildertek__Account_Payable__c> contractorInvoiceList = [SELECT buildertek__Vendor__c FROM buildertek__Account_Payable__c WHERE Id =: recordId];
+            if (contractorInvoiceList.size() > 0){
+                result = contractorInvoiceList[0].buildertek__Vendor__c;
+            }
+        } catch (Exception ex){
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if (!storeExcCustomSetting.isEmpty() && storeExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
+        }
+        return result;
+    }
 
     public class CollectResultWrapper {
         @AuraEnabled public String fieldSet = '';
         @AuraEnabled public String projectId;
+        @AuraEnabled public String vendorId;
     }
 }
