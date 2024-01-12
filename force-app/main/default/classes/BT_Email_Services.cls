@@ -89,7 +89,7 @@ global with sharing class BT_Email_Services implements Messaging.InboundEmailHan
                 system.debug(objectAPI.toLowerCase());
                 if (objectAPI.toLowerCase() == 'buildertek__Quote__c'){
 
-                    if(plainTextBody.contains('Action:SavePDF;')){
+                    if(plainTextBody != null && plainTextBody.contains('Action:SavePDF;')){
                         pagereference pdf;
                         pdf = Page.buildertek__BT_GenerateQuotePDF;
                         system.debug('*********' + pdf);
