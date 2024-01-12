@@ -24,6 +24,9 @@
         else if(Objectname == 'buildertek__Expense__c'){
             helper.SyncExpense(component, event, helper)
         }
+        else if(Objectname == 'buildertek__Receipt__c'){
+            helper.SyncReceipt(component, event, helper)
+        }
     },
 
     // this method only run when Object Is Account
@@ -31,7 +34,7 @@
 
         console.log(component.get("v.BTAccountType.buildertek__BT_Account_Type__c"));
         var BTAccountType = component.get("v.BTAccountType")["buildertek__BT_Account_Type__c"];
-        var QBID = component.get("v.BTAccountType")["buildertek__QB_Type__c"];
+        var QBID = component.get("v.BTAccountType")["buildertek__QB_Id__c"];
         var QBType = component.get("v.BTAccountType")["buildertek__QB_Type__c"];
         if(BTAccountType == "Customer" || BTAccountType == "Vendor"){
             component.set("v.AccountType", BTAccountType)
@@ -45,7 +48,7 @@
             }
             else{
                 component.find('notifLib').showNotice({
-                    "variant": "error",
+                    "variant": "warning",
                     "header": "Validation Warning",
                     "message":  'This account is synced as ' + QBType + ' in QB, you can not resync this account as ' + BTAccountType +  '.',
                 }); 
