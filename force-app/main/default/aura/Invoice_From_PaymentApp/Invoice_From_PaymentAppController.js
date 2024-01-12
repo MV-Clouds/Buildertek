@@ -11,10 +11,11 @@
             if (result.buildertek__PA_Type__c == null) {
                 helper.showToast("Error", "Error", "Please add PA Type in Payment Application", "5000");
                 $A.get("e.force:closeQuickAction").fire();
-            } else if (result.buildertek__PA_Type__c == 'AP' && result.buildertek__Invoice_AP__c != null) {       
+            } else if (result.buildertek__PA_Type__c == 'AP' && result.buildertek__Invoice_AP_Contract__c != null) {       
                 helper.showToast("Error", "Error", "Invoice (AP) is already exist", "5000");
                 $A.get("e.force:closeQuickAction").fire();
-            } else if (result.buildertek__PA_Type__c == 'AR' && result.buildertek__Invoice_AR__c != null) {       
+            }
+             else if (result.buildertek__PA_Type__c == 'AR' && result.buildertek__Invoice_AR__c != null) {       
                 helper.showToast("Error", "Error", "Invoice (AR) is already exist", "5000");
                 $A.get("e.force:closeQuickAction").fire();
             } else{

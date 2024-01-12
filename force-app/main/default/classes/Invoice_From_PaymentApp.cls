@@ -2,7 +2,7 @@ public with sharing class Invoice_From_PaymentApp {
 
     @AuraEnabled
     public static buildertek__SOV_Payment_Application__c getPaymentAppData(String recordId) {
-        buildertek__SOV_Payment_Application__c paymentApp = [SELECT Id, Name, buildertek__PA_Type__c, buildertek__Invoice_AP__c, buildertek__Invoice_AR__c, buildertek__BT_Purchase_Order__c FROM buildertek__SOV_Payment_Application__c WHERE Id =: recordId];
+        buildertek__SOV_Payment_Application__c paymentApp = [SELECT Id, Name, buildertek__PA_Type__c, buildertek__Invoice_AP_Contract__c, buildertek__Invoice_AR__c, buildertek__BT_Purchase_Order__c FROM buildertek__SOV_Payment_Application__c WHERE Id =: recordId];
         return paymentApp;
     }
 
