@@ -39,6 +39,14 @@ public without sharing class QBReceiptResponseJSON {
 		public String value;
 	}
 
+	public QueryResponse QueryResponse;
+	public class QueryResponse{
+		public Integer startPosition;
+		public Integer maxResults;
+		public list<Payment> Payment;
+		public Integer totalCount;
+	}
+
     public static QBReceiptResponseJSON parse(String json_Body) {
 		return (QBReceiptResponseJSON) JSON.deserialize(json_Body, QBReceiptResponseJSON.class);
 	}
