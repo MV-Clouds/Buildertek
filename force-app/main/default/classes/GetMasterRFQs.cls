@@ -98,24 +98,48 @@ public class GetMasterRFQs {
         try{
             List<String> RFQrecordIds = rfqIds;
             String budgetRecId = budgetId;
-            List<buildertek__RFQ_Item__c> rfqLines = [SELECT Id, Name, buildertek__RFQ_Package__r.buildertek__Vendor__r.buildertek__Vendor__c, buildertek__Description__c, buildertek__Quantity__c, buildertek__Unit_Price__c, buildertek__Total_Price__c FROM buildertek__RFQ_Item__c Where buildertek__RFQ_Package__c IN :RFQrecordIds ];
+
+            List<buildertek__RFQ_Item__c> rfqLines = [SELECT Id, Name, buildertek__RFQ_Package__r.buildertek__Vendor__r.buildertek__Vendor__c, buildertek__Description__c, buildertek__Quantity__c, buildertek__Unit_Price__c, buildertek__Total_Price__c FROM buildertek__RFQ_Item__c WHERE buildertek__RFQ_Package__c IN :RFQrecordIds ORDER BY Name ASC];
+
+            Map<Id, buildertek__RFQ_Item__c> uniqueRFQLinesMap = new Map<Id, buildertek__RFQ_Item__c>();
+            List<buildertek__RFQ_Item__c> updateRFQLineList = new List<buildertek__RFQ_Item__c>();
             List<buildertek__Budget_Item__c> budgetItemList = new List<buildertek__Budget_Item__c>();
-            for(buildertek__RFQ_Item__c rfqLineItem : rfqLines){
-                buildertek__Budget_Item__c budgetItem = new buildertek__Budget_Item__c();
-                budgetItem.Name = rfqLineItem.Name;
-                budgetItem.buildertek__Budget__c = budgetRecId;
-                if(rfqLineItem.buildertek__RFQ_Package__r.buildertek__Vendor__r.buildertek__Vendor__c != null){
-                    budgetItem.buildertek__Contractor__c = rfqLineItem.buildertek__RFQ_Package__r.buildertek__Vendor__r.buildertek__Vendor__c;
+
+            for (buildertek__RFQ_Item__c rfqLine : rfqLines) {
+                if (!uniqueRFQLinesMap.containsKey(rfqLine.buildertek__RFQ_Package__c)) {
+                    uniqueRFQLinesMap.put(rfqLine.buildertek__RFQ_Package__c, rfqLine);
                 }
-                
-                budgetItem.buildertek__Unit_Price__c = rfqLineItem.buildertek__Unit_Price__c;
-                budgetItem.buildertek__Quantity__c = rfqLineItem.buildertek__Quantity__c;
-                budgetItem.buildertek__Description__c = rfqLineItem.buildertek__Description__c;
-                budgetItem.buildertek__RFQ__c = rfqLineItem.buildertek__RFQ_Package__c;
+            }
+
+            List<buildertek__RFQ_Item__c> uniqueRFQLines = new List<buildertek__RFQ_Item__c>(uniqueRFQLinesMap.values());
+
+            for (buildertek__RFQ_Item__c rfqLine : uniqueRFQLines) {
+                buildertek__Budget_Item__c budgetItem = new buildertek__Budget_Item__c();
+                budgetItem.Name = rfqLine.Name;
+                budgetItem.buildertek__Budget__c = budgetRecId;
+                if(rfqLine.buildertek__RFQ_Package__r.buildertek__Vendor__r.buildertek__Vendor__c != null){
+                    budgetItem.buildertek__Contractor__c = rfqLine.buildertek__RFQ_Package__r.buildertek__Vendor__r.buildertek__Vendor__c;
+                }
+                budgetItem.buildertek__Unit_Price__c = rfqLine.buildertek__Unit_Price__c;
+                budgetItem.buildertek__Quantity__c = rfqLine.buildertek__Quantity__c;
+                budgetItem.buildertek__Description__c = rfqLine.buildertek__Description__c;
+                budgetItem.buildertek__RFQ__c = rfqLine.buildertek__RFQ_Package__c;
                 budgetItemList.add(budgetItem);
             }
             system.debug(budgetItemList);
             insert budgetItemList;
+
+            for(buildertek__Budget_Item__c budgetItem : budgetItemList){
+                for(buildertek__RFQ_Item__c rfqLine : rfqLines){
+                    if(budgetItem.buildertek__RFQ__c == rfqLine.buildertek__RFQ_Package__c){
+                        rfqLine.buildertek__Budget_Item__c = budgetItem.Id;
+                        updateRFQLineList.add(rfqLine);
+                    }
+                }
+            }
+
+            update updateRFQLineList;
+            
             return 'SUCCESS';
         }catch (Exception ex){
             String error =ex.getMessage();
