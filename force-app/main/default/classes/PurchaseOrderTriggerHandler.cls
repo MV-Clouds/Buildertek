@@ -69,24 +69,37 @@ public with sharing class PurchaseOrderTriggerHandler{
     }
 
     public void OnBeforeUpdate(Purchase_Order__c[] oldPurchaseOrders, Purchase_Order__c[] updatedPurchaseOrders, Map<ID, Purchase_Order__c> oldPurchaseOrderMap, Map<ID, Purchase_Order__c> PurchaseOrderMap){
-        for (Purchase_Order__c PO : updatedPurchaseOrders){
-            if ((PO.buildertek__Completion__c == 100 && PO.buildertek__Completion__c != oldPurchaseOrderMap.get(PO.Id).buildertek__Completion__c)){
-                PO.buildertek__Completion_Date__c = Date.today();
-            }
-            if ((PO.buildertek__Completion__c != 100 && PO.buildertek__Completion__c != oldPurchaseOrderMap.get(PO.Id).buildertek__Completion__c)){
-                PO.buildertek__Completion_Date__c = null;
-            }
-            if (PO.buildertek__Paid__c > 0 && PO.buildertek__Paid__c < 100){
-                if (PO.buildertek__Status__c != 'Partially Paid'){
-                    PO.buildertek__Status__c = 'Partially Paid';
+        try {
+            
+            for (Purchase_Order__c PO : updatedPurchaseOrders){
+                if ((PO.buildertek__Completion__c == 100 && PO.buildertek__Completion__c != oldPurchaseOrderMap.get(PO.Id).buildertek__Completion__c)){
+                    PO.buildertek__Completion_Date__c = Date.today();
                 }
-            } else if (PO.buildertek__Paid__c == 100){
-                if (PO.buildertek__Status__c != 'Paid'){
-                    PO.buildertek__Status__c = 'Paid';
+                if ((PO.buildertek__Completion__c != 100 && PO.buildertek__Completion__c != oldPurchaseOrderMap.get(PO.Id).buildertek__Completion__c)){
+                    PO.buildertek__Completion_Date__c = null;
                 }
+                if (PO.buildertek__Paid__c > 0 && PO.buildertek__Paid__c < 100){
+                    if (PO.buildertek__Status__c != 'Partially Paid'){
+                        PO.buildertek__Status__c = 'Partially Paid';
+                    }
+                } else if (PO.buildertek__Paid__c == 100){
+                    if (PO.buildertek__Status__c != 'Paid'){
+                        PO.buildertek__Status__c = 'Paid';
+                    }
+                }
+                else if(PO.buildertek__Paid__c == 0){
+                    if(PO.buildertek__Status__c != 'Open'){
+                        PO.buildertek__Status__c = 'Open';
+                    }
+                }
+                //made process builder inactive and added
+                 PO.buildertek__Date_Created__c = System.today();
             }
-            //made process builder inactive and added
-             PO.buildertek__Date_Created__c = System.today();
+        } catch (Exception e) {
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
         }
     }
 
