@@ -318,6 +318,8 @@
     <aura:attribute name="costCodeList" type="List" />
     <aura:attribute name="budgetFields" type="List" />
 
+    <lightning:overlayLibrary aura:id="overlay"/>
+    <aura:attribute name="modalPromise" type="Aura.Action"/>
     
     <aura:HTML tag="style">
         .slds-tabs_card{
@@ -547,6 +549,7 @@
                                         <lightning:button label="Add Invoice (AP)" onclick="{!c.addInvoice}" class="sldsButtonGroup" />
                                         <lightning:button label="Add Sales Invoice" onclick="{!c.addSalesInvoice}" class="sldsButtonGroup" />
                                         <lightning:button label="Add Labor" onclick="{!c.addTimeCard}" class="sldsButtonGroup" />
+                                        <lightning:button label="Import PO" onclick="{!c.importPO}" class="sldsButtonGroup" />
                                         <lightning:button iconPosition="left" onclick="{!c.onClickAddlines}" label="New Budget Lines" class="sldsButtonGroup" />
                                         <!-- <lightning:button label="Add Product" onclick="{!c.addProduct}" class="sldsButtonGroup" />-->
                                         <!--  <lightning:button label="Create Scheduled Items" onclick="{!c.checkSchedules}" class="sldsButtonGroup"/>-->
