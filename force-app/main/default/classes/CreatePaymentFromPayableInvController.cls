@@ -6,7 +6,14 @@ public with sharing class CreatePaymentFromPayableInvController {
             
             List<buildertek__BT_Payment_Lines__c> newPaymentLines = new List<buildertek__BT_Payment_Lines__c>();
 
-            List<buildertek__Account_Payable_Clone__c> payableInvoicerec = [SELECT Id, buildertek__Vendor__c, buildertek__Project__c, buildertek__Tax__c  FROM buildertek__Account_Payable_Clone__c WHERE Id = :payableInvoiceId];
+            List<buildertek__Account_Payable_Clone__c> payableInvoicerec = [SELECT Id, buildertek__Vendor__c, buildertek__Project__c, buildertek__Tax__c, buildertek__Net_Amount__c  FROM buildertek__Account_Payable_Clone__c WHERE Id = :payableInvoiceId];
+
+            //if buildertek__Net_Amount__c is 0 show error message
+            if (payableInvoicerec[0].buildertek__Net_Amount__c == 0) {
+                msg.Status = 'Failed';
+                msg.Message = 'Remaining Amount is 0. Payment cannot be created.';
+                return msg;
+            }
 
             if (!payableInvoicerec.isEmpty()) {
                 List<buildertek__Account_Payable_Item_Clone__c> payableInvoiceLines = [SELECT Id, buildertek__Quantity__c, buildertek__Tax__c  FROM buildertek__Account_Payable_Item_Clone__c Where buildertek__Account_Payable_Clone__c = :payableInvoicerec[0].Id];
