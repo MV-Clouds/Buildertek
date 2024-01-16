@@ -271,7 +271,8 @@ public without sharing class BudgetContractCreateHelper {
                             for(buildertek__Purchase_Order_Item__c currPOLine : purchaseOrderRec.buildertek__Purchase_Order_Items__r) {
 
                                 buildertek__PO_Item_To_Budget_Item_Link__c budgetItemLinkRec = new buildertek__PO_Item_To_Budget_Item_Link__c();
-                                budgetItemLinkRec.buildertek__Approved_PO__c=currPOLine.buildertek__Unit_Price__c;
+                                // budgetItemLinkRec.buildertek__Approved_PO__c=currPOLine.buildertek__Unit_Price__c;
+                                budgetItemLinkRec.buildertek__Approved_PO__c=currPOLine.buildertek__Total_Price__c; // Changes for BUIL-3800
                                     budgetItemLinkRec.buildertek__PO_Item__c=currPOLine.id;
                                  budgetItemLinkRec.buildertek__Budget_Item__c=budgetItemRec.id;
                                 budgetItemLinkRecs.add(budgetItemLinkRec);
@@ -519,7 +520,7 @@ public without sharing class BudgetContractCreateHelper {
             Schema.sObjectType.buildertek__Purchase_Order_Item__c.fields.Id.isAccessible() &&
             Schema.sObjectType.buildertek__Purchase_Order_Item__c.fields.buildertek__Unit_Price__c.isAccessible() &&
              Schema.sObjectType.buildertek__Purchase_Order_Item__c.fields.buildertek__Purchase_Order__c.isAccessible()){
-                purchaseorderlist = [select id,(select id,buildertek__Unit_Price__c from buildertek__Purchase_Order_Items__r) from buildertek__Purchase_Order__c where id In :listPoIds];
+                purchaseorderlist = [select id,(select id,buildertek__Unit_Price__c,buildertek__Total_Price__c from buildertek__Purchase_Order_Items__r) from buildertek__Purchase_Order__c where id In :listPoIds];
         }
         return purchaseorderlist;
     }
