@@ -23,9 +23,10 @@ trigger PaymentApplicationTrigger on buildertek__SOV_Payment_Application__c (bef
         } 
         
     }
-    /* if(Trigger.isBefore && Trigger.isUpdate){
-handler.OnBeforeupdate(Trigger.new, Trigger.oldMap);
-}*/
+         if(Trigger.isBefore && Trigger.isUpdate){
+                // handler.OnBeforeupdate(Trigger.new, Trigger.oldMap);
+                handler.Sync_PAType_RecordType(Trigger.new, Trigger.oldMap);
+        }
     if(Trigger.isAfter && Trigger.isUpdate){
         if (PaymentApplicationTriggerHandler.blnSkipPayAppInsertTrigger ){
             system.debug('insert1'+PaymentApplicationTriggerHandler.blnSkipPayAppInsertTrigger );

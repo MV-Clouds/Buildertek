@@ -24,7 +24,7 @@
                 var state = response.getState(); 
                 if(state === "SUCCESS") {
                     var resultData = response.getReturnValue();
-                console.log('resultData => ' ,resultData.payment);
+                // console.log('resultData => ' ,resultData.payment);
                 // console.log(resultData.payment.buildertek__SOV_Payment_Application__r.buildertek__Status__c );
                 //if((resultData.payment.buildertek__IsNextPayment__c == true) /*&& resultData.userrec.isPortalEnabled == true*/){
                 if(resultData.multipleContinuationSheet == true){
