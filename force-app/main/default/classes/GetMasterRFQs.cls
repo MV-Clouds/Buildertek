@@ -112,40 +112,43 @@ public class GetMasterRFQs {
             }
 
             List<buildertek__RFQ_Item__c> uniqueRFQLines = new List<buildertek__RFQ_Item__c>(uniqueRFQLinesMap.values());
-
-            for (buildertek__RFQ_Item__c rfqLine : uniqueRFQLines) {
-                buildertek__Budget_Item__c budgetItem = new buildertek__Budget_Item__c();
-                budgetItem.Name = rfqLine.Name;
-                budgetItem.buildertek__Budget__c = budgetRecId;
-                if(rfqLine.buildertek__RFQ_Package__r.buildertek__Vendor__r.buildertek__Vendor__c != null){
-                    budgetItem.buildertek__Contractor__c = rfqLine.buildertek__RFQ_Package__r.buildertek__Vendor__r.buildertek__Vendor__c;
+            if (uniqueRFQLines.size() > 0){
+                for (buildertek__RFQ_Item__c rfqLine : uniqueRFQLines) {
+                    buildertek__Budget_Item__c budgetItem = new buildertek__Budget_Item__c();
+                    budgetItem.Name = rfqLine.Name;
+                    budgetItem.buildertek__Budget__c = budgetRecId;
+                    if(rfqLine.buildertek__RFQ_Package__r.buildertek__Vendor__r.buildertek__Vendor__c != null){
+                        budgetItem.buildertek__Contractor__c = rfqLine.buildertek__RFQ_Package__r.buildertek__Vendor__r.buildertek__Vendor__c;
+                    }
+                    budgetItem.buildertek__Unit_Price__c = rfqLine.buildertek__Unit_Price__c;
+                    budgetItem.buildertek__Quantity__c = rfqLine.buildertek__Quantity__c;
+                    budgetItem.buildertek__Description__c = rfqLine.buildertek__Description__c;
+                    budgetItem.buildertek__RFQ__c = rfqLine.buildertek__RFQ_Package__c;
+                    budgetItemList.add(budgetItem);
                 }
-                budgetItem.buildertek__Unit_Price__c = rfqLine.buildertek__Unit_Price__c;
-                budgetItem.buildertek__Quantity__c = rfqLine.buildertek__Quantity__c;
-                budgetItem.buildertek__Description__c = rfqLine.buildertek__Description__c;
-                budgetItem.buildertek__RFQ__c = rfqLine.buildertek__RFQ_Package__c;
-                budgetItemList.add(budgetItem);
-            }
-            system.debug(budgetItemList);
-            insert budgetItemList;
+                system.debug(budgetItemList);
+                insert budgetItemList;
 
-            for(buildertek__Budget_Item__c budgetItem : budgetItemList){
-                for(buildertek__RFQ_Item__c rfqLine : rfqLines){
-                    if(budgetItem.buildertek__RFQ__c == rfqLine.buildertek__RFQ_Package__c){
-                        rfqLine.buildertek__Budget_Item__c = budgetItem.Id;
-                        updateRFQLineList.add(rfqLine);
+                for(buildertek__Budget_Item__c budgetItem : budgetItemList){
+                    for(buildertek__RFQ_Item__c rfqLine : rfqLines){
+                        if(budgetItem.buildertek__RFQ__c == rfqLine.buildertek__RFQ_Package__c){
+                            rfqLine.buildertek__Budget_Item__c = budgetItem.Id;
+                            updateRFQLineList.add(rfqLine);
+                        }
                     }
                 }
+
+                update updateRFQLineList;
+                
+                return 'SUCCESS';
+            } else{
+                return 'NO RFQ LINES FOUND';
             }
 
-            update updateRFQLineList;
-            
-            return 'SUCCESS';
-        }catch (Exception ex){
+        } catch (Exception ex){
             String error =ex.getMessage();
             return error;
         }
-        
     }
 
     @AuraEnabled

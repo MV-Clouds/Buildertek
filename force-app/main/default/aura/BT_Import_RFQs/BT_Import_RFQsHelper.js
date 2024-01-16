@@ -30,12 +30,14 @@
             "budgetId" : budgetId
         });
         action.setCallback(this,function(response){
-            if(response.getState() == "SUCCESS"){
+            if (response.getReturnValue() == "NO RFQ LINES FOUND"){
+                helper.showErrorToast(component,event,helper,"Error occurs","No RFQ Line found!");
+                $A.get("e.force:closeQuickAction").fire();
+            } else if (response.getState() == "SUCCESS"){
                 console.log(response);
                 helper.showSuccessToast(component,event,helper, "Success!",'Successfully added RFQ to Budget!');
                 $A.get("e.force:closeQuickAction").fire();
                 setTimeout(function(){ location.reload(); }, 1800);
-                
             }else{
                 helper.showErrorToast(component,event,helper,"Error occurs","Something went wrong!");
             }
