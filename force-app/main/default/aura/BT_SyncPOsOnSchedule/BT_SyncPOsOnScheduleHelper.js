@@ -10,7 +10,7 @@
             if (state === "SUCCESS") {
                 let result = response.getReturnValue();
                 if (result.length === 0) {
-                    helper.showToast('warning', 'Warning', 'There are no schedule items to sync', '3000');
+                    helper.showToast('warning', 'Warning', 'All schedule items have been synced to a PO, or there are no schedule items available for this schedule', '3000');
                     $A.get("e.force:closeQuickAction").fire();
                 }
                 result.forEach(item => {
@@ -30,6 +30,9 @@
     getAllPOs: function (component, event, helper) {
         component.set("v.spinner", true);
         let action = component.get("c.fetchAllPOs");
+        action.setParams({
+            "scheduleId": component.get("v.recordId"),
+        });
         action.setCallback(this, function (response) {
             let state = response.getState();
             if (state === "SUCCESS") {
