@@ -24,6 +24,7 @@
         toastEvent.fire();
     },
     addRFQToBudget :function (component, event, helper, rfqIds, budgetId) {
+        $A.get("e.c:BT_SpinnerEvent").setParams({"action": "SHOW"}).fire();
         var action = component.get("c.addRfqLinesToBudget");
         action.setParams({
             "rfqIds" : rfqIds,
@@ -41,6 +42,7 @@
             }else{
                 helper.showErrorToast(component,event,helper,"Error occurs","Something went wrong!");
             }
+            $A.get("e.c:BT_SpinnerEvent").setParams({"action": "HIDE"}).fire();
         });
         $A.enqueueAction(action);
     },
