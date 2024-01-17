@@ -4748,6 +4748,61 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
 
     },
 
+    importPO: function (component, event, helper) {
+        if (component.get("v.HaveCreateAccess")) {
+            $A.createComponents(
+                [
+                    [
+                        "aura:html",
+                        {
+                            HTMLAttributes: {
+                                class: "slds-text-heading_medium slds-hyphenate",
+                            },
+                        },
+                    ],
+                    [
+                        "c:ImportPurchaseOrderFromBudget",
+                        {
+                            recordId: component.get("v.recordId"),
+                            onCancel: function () {
+                                component.get("v.modalPromise").then(function (modal) {
+                                    modal.close();
+                                });
+                            },
+                            onSuccess: function () {
+                                component.get("v.modalPromise").then(function (modal) {
+                                    modal.close();
+                                });
+                                $A.get("e.force:refreshView").fire();
+                            },
+                        },
+                    ],
+                ],
+                function (components, status) {
+                    console.log('status', status);
+                    if (status === "SUCCESS") {
+                        var modalPromise = component.find("overlay").showCustomModal({
+                            body: components[1],
+                        });
+                        component.set("v.modalPromise", modalPromise);
+                    }
+                }
+            );
+        }
+        else {
+            component.find('notifLib').showNotice({
+                "variant": "error",
+                "header": "Error!",
+                "message": "You don\'t have the necessary privileges to Create record.",
+                closeCallback: function () {
+                    $A.get("e.c:BT_SpinnerEvent").setParams({
+                        "action": "HIDE"
+                    }).fire();
+                }
+            });
+        }
+    },
+
     checkAllInvoicePO:function (component, event, helper) {
         var invoicePoList=component.get('v.invoicePORecordList');
         var value = event.getSource().get("v.checked");

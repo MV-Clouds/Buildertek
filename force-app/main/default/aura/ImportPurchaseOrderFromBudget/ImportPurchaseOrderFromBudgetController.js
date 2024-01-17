@@ -95,6 +95,7 @@
     },
 	
 	closeModel : function(component, event, helper){
+        component.get("v.onCancel");
 	    $A.get("e.force:closeQuickAction").fire();    
 	},
 	
@@ -113,6 +114,7 @@
                     console.log({response});
                     var state = response.getState();
                     if(state === "SUCCESS"){
+                        component.get("v.onSuccess");
                         $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                         var result = response.getReturnValue();  
                         console.log({result});
