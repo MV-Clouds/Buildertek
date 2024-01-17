@@ -272,7 +272,7 @@ public without sharing class BudgetContractCreateHelper {
 
                                 buildertek__PO_Item_To_Budget_Item_Link__c budgetItemLinkRec = new buildertek__PO_Item_To_Budget_Item_Link__c();
                                 // budgetItemLinkRec.buildertek__Approved_PO__c=currPOLine.buildertek__Unit_Price__c;
-                                budgetItemLinkRec.buildertek__Approved_PO__c=currPOLine.buildertek__Total_Price__c; // Changes for BUIL-3800
+                                budgetItemLinkRec.buildertek__Approved_PO__c=currPOLine.buildertek__Total_Price__c;         // =====> Changes for BUIL-3800
                                     budgetItemLinkRec.buildertek__PO_Item__c=currPOLine.id;
                                  budgetItemLinkRec.buildertek__Budget_Item__c=budgetItemRec.id;
                                 budgetItemLinkRecs.add(budgetItemLinkRec);
