@@ -210,6 +210,7 @@ public with sharing class QuoteDAO{
             List<buildertek__Quote_Item__c> quoteItemsToInsert = (List<buildertek__Quote_Item__c>)System.JSON.deserialize(quoteItemsJSON, List<buildertek__Quote_Item__c>.class);
             //insert (List<Quote_Item__c>)System.JSON.deserialize(quoteItemsJSON, List<Quote_Item__c>.class);
 
+            String QuoteId = quoteItemsToInsert[0].buildertek__Quote__c;
 
             List<String> rfqIds = new List<String>();
             Map<String, String> poMap = new Map<String, String>();
@@ -226,6 +227,14 @@ public with sharing class QuoteDAO{
                 }
             }
 
+            list<buildertek__RFQ__c> rfqList = [SELECT Id, Name, buildertek__Added_to_Quote__c
+                                                FROM buildertek__RFQ__c
+                                                WHERE Id IN :rfqIds];
+            for (buildertek__RFQ__c rfq : rfqList){    
+                rfq.buildertek__Added_to_Quote__c = QuoteId;
+            }
+            update rfqList;
+            
             
             List<buildertek__Purchase_Order__c> purchaseOrderRecs;
             if (Schema.sObjectType.buildertek__Purchase_Order__c.fields.Id.isAccessible() && Schema.sObjectType.buildertek__Purchase_Order__c.fields.Name.isAccessible() && Schema.sObjectType.buildertek__Purchase_Order__c.fields.buildertek__RFQ__c.isAccessible()){
@@ -310,8 +319,8 @@ public with sharing class QuoteDAO{
             }
             System.debug('quoteItemsToInsert' + quoteItemsToInsert);
             insert quoteItemsToInsert;
-            List<buildertek__RFQ_Item__c> rfqLinesList =[Select Id ,buildertek__RFQ_Package__c  , buildertek__Quote_Item__c ,Name From buildertek__RFQ_Item__c where buildertek__RFQ_Package__c=:rfqIds];
 
+            List<buildertek__RFQ_Item__c> rfqLinesList =[Select Id ,buildertek__RFQ_Package__c  , buildertek__Quote_Item__c ,Name From buildertek__RFQ_Item__c where buildertek__RFQ_Package__c=:rfqIds];
 
             for (buildertek__Quote_Item__c qItem : quoteItemsToInsert){
                 qItem.buildertek__RFQ__c=qItem.buildertek__Quote__c;
