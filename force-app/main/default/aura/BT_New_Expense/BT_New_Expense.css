@@ -10,5 +10,5 @@
 .THIS .modalheight{
     position: relative;
     overflow: visible;
-    height: 60vh;
+    margin-bottom: 25%;
 }

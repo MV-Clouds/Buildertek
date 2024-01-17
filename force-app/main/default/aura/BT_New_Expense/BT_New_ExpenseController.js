@@ -89,6 +89,7 @@
         component.set("v.isLoading", true);
         console.log('handleSumit');
         event.preventDefault();
+        var classname = 'budgetList';
         var fields = event.getParam('fields');
         fields["buildertek__Budget__c"] = component.get("v.budgetName");
         fields["buildertek__Budget_Line__c"] = component.get("v.budgetLineName");
@@ -96,6 +97,7 @@
         var expenseType;
         if (fields["buildertek__Type__c"] == undefined) {
             expenseType = component.get("v.typevalue");
+
         } else{
             expenseType = fields["buildertek__Type__c"];
         }
