@@ -128,7 +128,7 @@
                         var toastEvent = $A.get("e.force:showToast");
                         toastEvent.setParams({
                             title: '',
-                            message: 'You cannot create another Payment Application until this Payment Application is Company Accepted',
+                            message: 'You have an existing Payment Application that is Pending for this Project. You cannot create another Payment Application until this Payment Application is Company Accepted',
                             duration: "5000",
                             key: "info_alt",
                             type: "error",
@@ -159,14 +159,14 @@
                                 if(state === "SUCCESS") {
                                     component.set("v.Spinner", false);
                                     component.set("v.showMessage", false);
-                                    var action1 = component.get("c.updateClonedRecord");
-                                    action1.setParams({"recordId": component.get("v.recordId"),
-                                                       "newRecId": response.getReturnValue()
-                                                      });
-                                 /*   action1.setCallback(this, function(response) {
+                                //     var action1 = component.get("c.updateClonedRecord");
+                                //     action1.setParams({"recordId": component.get("v.recordId"),
+                                //                        "newRecId": response.getReturnValue()
+                                //                       });
+                                //  /*   action1.setCallback(this, function(response) {
                                         
-                                    }); */
-                                    $A.enqueueAction(action1);
+                                //     }); */
+                                //     $A.enqueueAction(action1);
                                     
                                     
                                     var sObjectEvent = $A.get("e.force:navigateToSObject");
