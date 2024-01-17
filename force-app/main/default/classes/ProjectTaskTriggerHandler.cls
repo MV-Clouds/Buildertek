@@ -1779,5 +1779,125 @@ public class ProjectTaskTriggerHandler{
 
 	}
 
+	public static void removeCompletionOnBudgetLine (List<buildertek__Project_Task__c> deletedProjectTasks) {
+		try {
+			Set<Id> budgetLineIdsToUpdate = new Set<Id>();
+	
+			for (buildertek__Project_Task__c ScheduleItem : deletedProjectTasks) {
+				if (ScheduleItem.buildertek__Budget_Line__c != null) {
+					budgetLineIdsToUpdate.add(ScheduleItem.buildertek__Budget_Line__c);
+				}
+			}
+			if (!budgetLineIdsToUpdate.isEmpty()) {
+				List<buildertek__Budget_Item__c> budgetLineIdsToUpdateList = [SELECT Id, buildertek__Complete__c FROM buildertek__Budget_Item__c WHERE Id IN :budgetLineIdsToUpdate];
+	
+				Map<Id, buildertek__Budget_Item__c> budgetLineMap = new Map<Id, buildertek__Budget_Item__c>(budgetLineIdsToUpdateList);
+	
+				for (buildertek__Project_Task__c scheduleItem : deletedProjectTasks) {
+					buildertek__Budget_Item__c newBudgetLine = budgetLineMap.get(scheduleItem.buildertek__Budget_Line__c);
+					if (newBudgetLine != null) {
+						newBudgetLine.buildertek__Complete__c = 0;
+					}
+				}
+				if (!budgetLineIdsToUpdate.isEmpty()) {
+					update budgetLineIdsToUpdateList;
+				}
+			}
+		} catch (Exception ex) {
+			System.debug('Error: ' + ex.getMessage());
+			List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+			if (!storeExcCustomSetting.isEmpty() && storeExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+				BT_ExceptionHandler.Store_Exception(ex);
+			}
+		}
+	
+	}
+
+	public static void populateCompletionOnPurchaseOrder(List<buildertek__Project_Task__c> updatedProjectTasks, Map<Id, buildertek__Project_Task__c> oldProjectTaskMap){
+		try {
+			Set<Id> purchaseOrderIdsToUpdate = new Set<Id>();
+	
+			for (buildertek__Project_Task__c ScheduleItem : updatedProjectTasks) {
+				buildertek__Project_Task__c oldScheduleItem = oldProjectTaskMap.get(ScheduleItem.Id);
+	
+				if (ScheduleItem.buildertek__Purchase_Order__c != oldScheduleItem.buildertek__Purchase_Order__c ||
+					ScheduleItem.buildertek__Completion__c != oldScheduleItem.buildertek__Completion__c) {
+						if (oldScheduleItem.buildertek__Purchase_Order__c != null) {
+							purchaseOrderIdsToUpdate.add(oldScheduleItem.buildertek__Purchase_Order__c);
+						}
+						if (ScheduleItem.buildertek__Purchase_Order__c != null) {
+							purchaseOrderIdsToUpdate.add(ScheduleItem.buildertek__Purchase_Order__c);
+						}
+				}
+			}
+			if (!purchaseOrderIdsToUpdate.isEmpty()) {
+				List<buildertek__Purchase_Order__c> purchaseOrdersToUpdate = [SELECT Id, buildertek__Completion__c FROM buildertek__Purchase_Order__c WHERE Id IN :purchaseOrderIdsToUpdate];
+	
+				Map<Id, buildertek__Purchase_Order__c> purchaseOrdersMap = new Map<Id, buildertek__Purchase_Order__c>(purchaseOrdersToUpdate);
+	
+				for (buildertek__Project_Task__c scheduleItem : updatedProjectTasks) {
+					if (scheduleItem.buildertek__Purchase_Order__c != oldProjectTaskMap.get(scheduleItem.Id).buildertek__Purchase_Order__c) {
+						buildertek__Purchase_Order__c oldPurchaseOrder = purchaseOrdersMap.get(oldProjectTaskMap.get(scheduleItem.Id).buildertek__Purchase_Order__c);
+						if (oldPurchaseOrder != null) {
+							oldPurchaseOrder.buildertek__Completion__c = 0;
+						}
+	
+						buildertek__Purchase_Order__c newPurchaseOrder = purchaseOrdersMap.get(scheduleItem.buildertek__Purchase_Order__c);
+						if (newPurchaseOrder != null) {
+							newPurchaseOrder.buildertek__Completion__c = scheduleItem.buildertek__Completion__c;
+						}
+					} else {
+						buildertek__Purchase_Order__c newPurchaseOrder = purchaseOrdersMap.get(scheduleItem.buildertek__Purchase_Order__c);
+						if (newPurchaseOrder != null) {
+							newPurchaseOrder.buildertek__Completion__c = scheduleItem.buildertek__Completion__c;
+						}
+					}
+				}
+				if (!purchaseOrdersToUpdate.isEmpty()) {
+					update purchaseOrdersToUpdate;
+				}
+			}
+		} catch (Exception ex) {
+			System.debug('Error: ' + ex.getMessage());
+			List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+			if (!storeExcCustomSetting.isEmpty() && storeExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+				BT_ExceptionHandler.Store_Exception(ex);
+			}
+		}
+	}
+	
+	public static void removeCompletionOnPurchaseOrder (List<buildertek__Project_Task__c> deletedProjectTasks) {
+		try {
+			Set<Id> purchaseOrderIdsToUpdate = new Set<Id>();
+	
+			for (buildertek__Project_Task__c ScheduleItem : deletedProjectTasks) {
+				if (ScheduleItem.buildertek__Purchase_Order__c != null) {
+					purchaseOrderIdsToUpdate.add(ScheduleItem.buildertek__Purchase_Order__c);
+				}
+			}
+			if (!purchaseOrderIdsToUpdate.isEmpty()) {
+				List<buildertek__Purchase_Order__c> purchaseOrdersToUpdate = [SELECT Id, buildertek__Completion__c FROM buildertek__Purchase_Order__c WHERE Id IN :purchaseOrderIdsToUpdate];
+	
+				Map<Id, buildertek__Purchase_Order__c> purchaseOrdersMap = new Map<Id, buildertek__Purchase_Order__c>(purchaseOrdersToUpdate);
+	
+				for (buildertek__Project_Task__c scheduleItem : deletedProjectTasks) {
+					buildertek__Purchase_Order__c newPurchaseOrder = purchaseOrdersMap.get(scheduleItem.buildertek__Purchase_Order__c);
+					if (newPurchaseOrder != null) {
+						newPurchaseOrder.buildertek__Completion__c = 0;
+					}
+				}
+				if (!purchaseOrdersToUpdate.isEmpty()) {
+					update purchaseOrdersToUpdate;
+				}
+			}
+		} catch (Exception ex) {
+			System.debug('Error: ' + ex.getMessage());
+			List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+			if (!storeExcCustomSetting.isEmpty() && storeExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+				BT_ExceptionHandler.Store_Exception(ex);
+			}
+		}
+
+	}
 
 }
