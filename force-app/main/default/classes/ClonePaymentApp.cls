@@ -219,7 +219,7 @@ public class ClonePaymentApp {
             clondedParentRecordID.buildertek__Change_Order_Additions__c  = 0 ;
             clondedParentRecordID.buildertek__Change_Order_Decuctions__c  = 0;
             clondedParentRecordID.buildertek__Less__c  = sovPaymentAppRec.buildertek__Total_Earned_Less_Retainage__c;
-            // clondedParentRecordID.buildertek__Amount_Certified__c  = sovPaymentAppRec.buildertek__Amount_Certified__c; ===> Commented for BUIL-3792...
+            clondedParentRecordID.buildertek__Amount_Certified__c  = 0;
             clondedParentRecordID.buildertek__Is_Imported__c  = false;
             clondedParentRecordID.buildertek__Submission_Date__c = null;
             
