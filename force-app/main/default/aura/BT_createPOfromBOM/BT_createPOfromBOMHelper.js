@@ -115,11 +115,15 @@
             console.log(' ========= createPOHelper ======');
         component.set("v.isSpinner", true);
 
-            var SelecetdLinesId = [];
-            var vendorVsselectdLinesId = component.get("v.vendorVsselectdLinesId");
-            if(vendorVsselectdLinesId.some(obj => obj['groupIndex'] == groupIndex)){
-                SelecetdLinesId = vendorVsselectdLinesId[groupIndex].SelecetdLinesId;
+        var SelecetdLinesId = [];
+        var vendorVsselectdLinesId = component.get("v.vendorVsselectdLinesId");
+        if(vendorVsselectdLinesId.some(obj => obj['groupIndex'] == groupIndex)){
+          for(var i in vendorVsselectdLinesId){
+            if(vendorVsselectdLinesId[i].groupIndex == groupIndex){
+              SelecetdLinesId = vendorVsselectdLinesId[i].SelecetdLinesId;
             }
+          }
+        }
 
           var action = component.get("c.createPOfromBOM");
           action.setParams({
@@ -137,9 +141,8 @@
                   var navEvt = $A.get("e.force:navigateToSObject");
                     navEvt.setParams({
                         recordId: result.POiD,
-                        slideDevName: "view",
                     });
-                navEvt.fire();
+                    navEvt.fire();
               }
               else if(result.state == 'error'){
                   component.set("v.isSpinner", false);

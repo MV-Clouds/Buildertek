@@ -23,7 +23,8 @@
     onClickCreatePOhadler: function(component, event, helper){
       try {
         var groupIndex = event.getSource().get("v.title");
-        console.log('groupIndex :: ', groupIndex);
+
+        console.log('groupIndex :: ', groupIndex.toString());
         var groupData = component.get("v.GroupByVendors");
 
         // When Create PO is Disabled
@@ -40,8 +41,10 @@
 
           var SelecetdLinesId = [];
           var vendorVsselectdLinesId = component.get("v.vendorVsselectdLinesId");
-          if(vendorVsselectdLinesId.some(obj => obj['groupIndex'] == groupIndex)){
-              SelecetdLinesId = vendorVsselectdLinesId[toString(groupIndex)].SelecetdLinesId;
+            for(var i in vendorVsselectdLinesId){
+              if(vendorVsselectdLinesId[i].groupIndex == groupIndex){
+                SelecetdLinesId = vendorVsselectdLinesId[i].SelecetdLinesId;
+              }
           }
           
           if(SelecetdLinesId.length == 0){
