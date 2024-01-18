@@ -38,16 +38,29 @@
         else{
           // When create PO is Enabled
           // var SelecetdLinesId = component.get("v.selectdLinesId");
-
           var SelecetdLinesId = [];
           var vendorVsselectdLinesId = component.get("v.vendorVsselectdLinesId");
-            for(var i in vendorVsselectdLinesId){
-              if(vendorVsselectdLinesId[i].groupIndex == groupIndex){
-                SelecetdLinesId = vendorVsselectdLinesId[i].SelecetdLinesId;
-              }
+          for(var i in vendorVsselectdLinesId){
+            if(vendorVsselectdLinesId[i].groupIndex == groupIndex){
+              SelecetdLinesId = vendorVsselectdLinesId[i].SelecetdLinesId;
+              
+            }
           }
           
-          if(SelecetdLinesId.length == 0){
+          var is_AllLinesHavePO = true;                // To define all BOM line for the perticular vendor are associted eith PO or Not...
+          var sObjectlist_forVendor = groupData[groupIndex].sObjectList;
+          for(var j in sObjectlist_forVendor){
+            if(!sObjectlist_forVendor[j].buildertek__Purchase_Order__c){
+              is_AllLinesHavePO = false;
+            }
+          }
+          console.log('isFlag : ', is_AllLinesHavePO);
+
+          if(is_AllLinesHavePO){
+            // When all Lines for the Vendor are associated with PO.
+            helper.ToastMessageUtilityMethod(component, '', 'All lines for this Vendor are already associated with PO. Please select another Vendor\'s lines.', 'error', 3000);
+          }
+          else if(SelecetdLinesId.length == 0){
             // When User did not selectd any Line and click save Button....
             helper.ToastMessageUtilityMethod(component, '', 'Please select atlease one line for this Vendor to create PO.', 'error', 3000);
           }
@@ -140,7 +153,6 @@
                 }
 
                 else if(!vendorVsselectdLinesId.some(obj => obj['groupIndex'] == groupIndex)){
-                  // console.log('value not exist');
                   if(isChecked){
                     vendorVsselectdLinesId.push({'groupIndex' : groupIndex , 'SelecetdLinesId' : [lineId]});
                   }
@@ -171,12 +183,44 @@
             var isChecked = selectedCheckbox.get("v.checked");
 
             var RelatedChecboxes = document.querySelectorAll(`[data-groupindex="${groupIndex}"]`);
-            // var RelatedChecboxes = component.find(groupIndex);
             console.log('RelatedChecboxes : ', RelatedChecboxes.length);
 
         } catch (error) {
             console.log('error in selectAllcheckboxChange : ', error.stack);
         }
+    },
+
+    redirectToObjectTab: function (component, event, helper) {
+    try {
+      
+      console.log('Button Title : ', event.currentTarget.title);
+
+      
+      var navEvt = $A.get("e.force:navigateToSObject");
+      navEvt.setParams({
+        recordId: component.get("v.recordId"),
+        slideDevName: "related",
+      });
+      navEvt.fire();
+  
+      if(event.currentTarget.title == undefined){
+        var workspaceAPI = component.find("workspace");
+        workspaceAPI
+          .getFocusedTabInfo()
+          .then(function (response) {
+            var focusedTabId = response.tabId;
+            workspaceAPI.closeTab({
+              tabId: focusedTabId,
+            });
+          })
+          .catch(function (error) {
+            // console.log("Error", error);
+          });
+      }
+    } catch (error) {
+      console.log('error in redirectToObjectTab : ', error.stack);
+      
+    }
     },
 
 })

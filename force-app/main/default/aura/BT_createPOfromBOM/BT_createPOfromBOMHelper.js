@@ -34,9 +34,10 @@
                     helper.formmateByGroup(component, event, helper, result);
                 }
                 else if(result.state == 'error'){
-    
+
+                    component.set("v.isSpinner", false);
+                    
                 }
-                component.set("v.isSpinner", false);
             });
             $A.enqueueAction(action);
         } catch (error) {
@@ -71,8 +72,9 @@
             }
 
             console.log('formatedData after sObject List : ', formatedData);
-            component.set("v.GroupByVendors", formatedData)
-            
+            component.set("v.GroupByVendors", formatedData);
+
+            component.set("v.isSpinner", false);
         } catch (error) {
             console.log('error in formmateByGroup : ', error.stack);
         }
@@ -117,12 +119,10 @@
 
         var SelecetdLinesId = [];
         var vendorVsselectdLinesId = component.get("v.vendorVsselectdLinesId");
-        if(vendorVsselectdLinesId.some(obj => obj['groupIndex'] == groupIndex)){
           for(var i in vendorVsselectdLinesId){
             if(vendorVsselectdLinesId[i].groupIndex == groupIndex){
               SelecetdLinesId = vendorVsselectdLinesId[i].SelecetdLinesId;
             }
-          }
         }
 
           var action = component.get("c.createPOfromBOM");
@@ -134,20 +134,21 @@
               var result = response.getReturnValue();
               console.log('create PO Result : ', result);
               if(result.state == 'success'){
-                  helper.ToastMessageUtilityMethod(component, 'Success', 'PO Created Successfully.', 'success', 3000);
+                  helper.ToastMessageUtilityMethod(component, 'Success', 'Purchase Order created successfully.', 'success', 3000);
                   helper.getBOMlinesHelper(component, event, helper);
-                  component.set("v.isSpinner", false);
 
-                  var navEvt = $A.get("e.force:navigateToSObject");
+                  component.set("v.vendorVsselectdLinesId", []);
+                  
+                    var navEvt = $A.get("e.force:navigateToSObject");
                     navEvt.setParams({
-                        recordId: result.POiD,
+                        recordId: result.POid,
+                        slideDevName: "related",
                     });
                     navEvt.fire();
               }
               else if(result.state == 'error'){
-                  component.set("v.isSpinner", false);
+                component.set("v.isSpinner", false);
                 helper.ToastMessageUtilityMethod(component, '', 'Something Went Wrong', 'error', 3000);
-
               }
               // console.log('response : ', result);
           });
@@ -169,4 +170,6 @@
         });
         toastEvent.fire();
     },
+
+    
 })

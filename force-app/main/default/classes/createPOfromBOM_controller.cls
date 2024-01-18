@@ -117,7 +117,8 @@ public class createPOfromBOM_controller {
                                                                   WHERE Id =: BOMiD];
 
                                 
-            List<buildertek__Select_Sheet__c> BOMlines = [SELECT Id, Name, buildertek__Selection_Sheet_Takeoff__c, buildertek__Vendor__c, buildertek__Vendor__r.Name, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.Name,buildertek__Purchase_Order_Line__c, buildertek__Quantity__c, buildertek__Total_Sales_Price__c, buildertek__Total_Costs__c, buildertek__BL_UNIT_COST__c, buildertek__BT_Price_Book__c, buildertek__BT_Price_Book__r.Name, buildertek__Product__c, buildertek__Product__r.Name
+            List<buildertek__Select_Sheet__c> BOMlines = [SELECT Id, Name, buildertek__Selection_Sheet_Takeoff__c, buildertek__Vendor__c, buildertek__Vendor__r.Name, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.Name,
+                                                                  buildertek__Purchase_Order_Line__c, buildertek__Quantity__c, buildertek__Total_Sales_Price__c, buildertek__Total_Costs__c, buildertek__BL_UNIT_COST__c, buildertek__BT_Price_Book__c, buildertek__BT_Price_Book__r.Name, buildertek__Product__c, buildertek__Product__r.Name, buildertek__Cost_Code__c
                                                           FROM buildertek__Select_Sheet__c 
                                                           WHERE Id IN : slectedLinesId];
 
@@ -143,6 +144,7 @@ public class createPOfromBOM_controller {
                     Poline.Name = line.Name;
                     Poline.buildertek__Product__c = line.buildertek__Product__c;
                     Poline.buildertek__Quantity__c = line.buildertek__Quantity__c;
+                    Poline.buildertek__Cost_Code__c = line.buildertek__Cost_Code__c;
                     Poline.buildertek__Unit_Price__c = line.buildertek__BL_UNIT_COST__c;
                     Poline.buildertek__Purchase_Order__c = POtoCreate.Id;
                     
