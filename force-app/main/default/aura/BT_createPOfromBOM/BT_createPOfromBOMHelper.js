@@ -52,24 +52,40 @@
             var formatedData = [];
             var Vendors = JSON.parse(JSON.stringify(result.vendorList));
             var BOMlines = JSON.parse(JSON.stringify(result.BOMLines))
-            for(var i in Vendors){
-                formatedData.push({"groupName" : Vendors[i], 'isCreatePOEnable' :  false, "sObjectList" : [] });
-            }
+            // for(var i in Vendors){
+            //     formatedData.push({"groupName" : Vendors[i], 'isCreatePOEnable' :  false, "sObjectList" : [] });
+            // }
 
-            for(var i in BOMlines){
-                for(var j in formatedData){
-                    if(BOMlines[i].buildertek__Vendor__r == undefined || BOMlines[i].buildertek__Vendor__r.Name == undefined || BOMlines[i].buildertek__Vendor__r.Name == ''){
-                        if(formatedData[j].groupName == 'No Vendor'){
-                            formatedData[j].sObjectList = [...formatedData[j].sObjectList, BOMlines[i]];
-                        }
-                    }
-                    else{
-                        if(formatedData[j].groupName == BOMlines[i].buildertek__Vendor__r.Name){
-                            formatedData[j].sObjectList = [...formatedData[j].sObjectList, BOMlines[i]];
-                        }
-                    }
+            // for(var i in BOMlines){
+            //     for(var j in formatedData){
+            //         if(BOMlines[i].buildertek__Vendor__r == undefined || BOMlines[i].buildertek__Vendor__r.Name == undefined || BOMlines[i].buildertek__Vendor__r.Name == ''){
+            //             if(formatedData[j].groupName == 'No Vendor'){
+            //                 formatedData[j].sObjectList = [...formatedData[j].sObjectList, BOMlines[i]];
+            //             }
+            //         }
+            //         else{
+            //             if(formatedData[j].groupName == BOMlines[i].buildertek__Vendor__r.Name){
+            //                 formatedData[j].sObjectList = [...formatedData[j].sObjectList, BOMlines[i]];
+            //             }
+            //         }
+            //     }
+            // }
+
+            Vendors.forEach(vendor => {
+                formatedData.push({
+                    "groupName": vendor,
+                    "isCreatePOEnable": false,
+                    "sObjectList": []
+                });
+            });
+            
+            BOMlines.forEach(line => {
+                const vendorName = line.buildertek__Vendor__c ? line.buildertek__Vendor__r.Name : 'No Vendor';
+                const group = formatedData.find(group => group.groupName === vendorName);
+                if (group) {
+                    group.sObjectList.push(line);
                 }
-            }
+            });
 
             console.log('formatedData after sObject List : ', formatedData);
             component.set("v.GroupByVendors", formatedData);
@@ -113,8 +129,7 @@
 
     createPOHelper: function(component, event, helper, groupIndex){
         try {
-        //   var SelecetdLinesId = component.get("v.createPOfromBOM");
-            console.log(' ========= createPOHelper ======');
+        console.log(' ========= createPOHelper ======');
         component.set("v.isSpinner", true);
 
         var SelecetdLinesId = [];

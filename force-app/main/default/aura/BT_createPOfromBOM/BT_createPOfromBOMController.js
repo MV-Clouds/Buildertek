@@ -36,25 +36,17 @@
           
         }
         else{
-          // When create PO is Enabled
-          // var SelecetdLinesId = component.get("v.selectdLinesId");
           var SelecetdLinesId = [];
           var vendorVsselectdLinesId = component.get("v.vendorVsselectdLinesId");
-          for(var i in vendorVsselectdLinesId){
-            if(vendorVsselectdLinesId[i].groupIndex == groupIndex){
-              SelecetdLinesId = vendorVsselectdLinesId[i].SelecetdLinesId;
-              
-            }
+          // Get selected Line for the Perticular vendor(Group Index)....
+          const group = vendorVsselectdLinesId.find(group => group.groupIndex == groupIndex);   // find will return the object where "groupIndex's value" match groupIndex.....
+          if(group){
+            SelecetdLinesId = group.SelecetdLinesId;
           }
           
-          var is_AllLinesHavePO = true;                // To define all BOM line for the perticular vendor are associted eith PO or Not...
-          var sObjectlist_forVendor = groupData[groupIndex].sObjectList;
-          for(var j in sObjectlist_forVendor){
-            if(!sObjectlist_forVendor[j].buildertek__Purchase_Order__c){
-              is_AllLinesHavePO = false;
-            }
-          }
-          console.log('isFlag : ', is_AllLinesHavePO);
+          // To check wheather all BOM line for the perticular vendor are associted with PO or Not...
+          var is_AllLinesHavePO = groupData[groupIndex].sObjectList.every(line => line.buildertek__Purchase_Order__c);               
+          console.log('is_AllLinesHavePO : ', is_AllLinesHavePO);
 
           if(is_AllLinesHavePO){
             // When all Lines for the Vendor are associated with PO.
