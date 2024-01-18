@@ -172,7 +172,7 @@
                 </div>
                 <div class="slds-col slds-size_2-of-8" style="text-align: right;">
                     <lightning:button iconName="utility:save" title="{!phaseIndex}" iconPosition="left" onclick="{!c.massUpdateLines}"
-                    label="{!groupItem.massUpdate==true?'Save':'Mass Update'}" class="" />
+                    label="{!groupItem.massUpdate==true?'Save':'Update'}" class="" />
                     <aura:if isTrue="{!groupItem.massUpdate}">
                         <lightning:button iconName="utility:close" title="{!phaseIndex}" iconPosition="left" onclick="{!c.onMassUpdateCancel}" label="Cancel" />
                     </aura:if>
