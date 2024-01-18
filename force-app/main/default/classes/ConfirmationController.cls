@@ -662,7 +662,7 @@ Messaging.sendEmail(new Messaging.SingleEmailMessage[] { email });  */
                 quoterec.buildertek__Customer_Accepted_Date__c = nowDT;
                 quoterec.buildertek__Status__c = 'Customer Accepted';
                 quoterec.buildertek__Date_Accepted_by_Customer__c = system.now();
-                quoterec.buildertek__Date_Sent_To_Customer__c = System.today();
+                // quoterec.buildertek__Date_Sent_To_Customer__c = System.today();
                 update quoterec;
 
                 buildertek__RFQ_Template_Settings__c rfqTemplateSettings = buildertek__RFQ_Template_Settings__c.getOrgDefaults();
