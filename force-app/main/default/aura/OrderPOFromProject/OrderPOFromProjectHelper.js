@@ -124,35 +124,57 @@
     
     
     
-    readFiles2 : function(component, event, helper, file,poId){
-        // debugger;
-        var filesList = component.get("v.fileData2");
-        var reader = new FileReader(); 
+    readFiles2: function(component, event, helper, file, poId) {
+        let maxSize = 4194304;
+        let filesList = component.get("v.fileData2");
+        let reader = new FileReader();
+    
         reader.onload = () => {
-            var base64 = reader.result.split(',')[1]; 
-            var fileData2 = {
-            'fileName': file.name,
-            'fileContent': base64,
-            'POId': poId
-        }
-        console.log(JSON.stringify(fileData2));
-        component.get("v.fileData2").push(fileData2);
-        component.set("v.fileData2",component.get("v.fileData2"))
-
-        var names = []
-
-        for (var i = 0; i < component.get("v.fileData2").length; i++) {
-            var name = {};
-            name['FileName'] = [];
-            name['poId'] = JSON.parse(JSON.stringify(component.get("v.fileData2")[i])).POId
-            name['FileName'] = JSON.parse(JSON.stringify(component.get("v.fileData2")[i]))["fileName"];
-            names.push(name);
-        }
-        component.set("v.FileNameList",names);
-        component.set("v.fileBody", filesList.fileName);
-        }
+            let base64 = reader.result.split(',')[1];
+            let fileData2 = {
+                'fileName': file.name,
+                'fileContent': base64,
+                'POId': poId
+            };
+    
+            let existingFilesSize = 0;
+    
+            for (let i = 0; i < component.get("v.fileData2").length; i++) {
+                existingFilesSize += component.get("v.fileData2")[i].fileContent.length;
+            }
+    
+            let totalFileSize = existingFilesSize + file.size;
+    
+            if (totalFileSize < maxSize) {
+                component.get("v.fileData2").push(fileData2);
+                component.set("v.fileData2", component.get("v.fileData2"));
+            } else {
+                var toastEvent = $A.get("e.force:showToast");
+                toastEvent.setParams({
+                    "type": "Error",
+                    "title": "File Size Exceeded",
+                    "message": "The uploaded file exceeds the limit. Please upload a smaller file."
+                });
+                toastEvent.fire();
+                return;
+            }
+    
+            let names = [];
+    
+            for (let i = 0; i < component.get("v.fileData2").length; i++) {
+                let name = {
+                    'FileName': component.get("v.fileData2")[i].fileName,
+                    'poId': component.get("v.fileData2")[i].POId
+                };
+                names.push(name);
+            }
+    
+            component.set("v.FileNameList", names);
+            component.set("v.fileBody", filesList.fileName);
+        };
+    
         reader.readAsDataURL(file);
-    },
+    },        
 
     settempId : function(component, poId){
         var action = component.get("c.addEmailTemplateId");
