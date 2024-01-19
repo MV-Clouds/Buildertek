@@ -8,6 +8,8 @@ public class ContinuationSheetLineTriggerHandler {
     public static Boolean blnSkipconSheetLineUpdateTrigger = false;
     
     public static Boolean blnSkipAterInsertSheetLineTrigger = false;
+
+    public static Boolean blnSkipAmoutCetrifiedUpate = false;
     
     public void afterInsert(List<SOV_Continuation_Sheet_Lines__c> newconsheetline, Map<Id, SOV_Continuation_Sheet_Lines__c> consheetline){
         
@@ -48,8 +50,8 @@ public class ContinuationSheetLineTriggerHandler {
         
         String payApp =  conSheetList.buildertek__SOV_Payment_Application__c;
         
-        
-        futureUpdatePayApp(payApp, NewChildIds);
+        System.debug('blnSkipAmoutCetrifiedUpate ==> 0.1 ==> ' + ContinuationSheetLineTriggerHandler.blnSkipAmoutCetrifiedUpate);
+        futureUpdatePayApp(payApp, NewChildIds, ContinuationSheetLineTriggerHandler.blnSkipAmoutCetrifiedUpate);
         
      
 
@@ -59,7 +61,7 @@ public class ContinuationSheetLineTriggerHandler {
     
     
     @future
-    public static void futureUpdatePayApp(String payApp, List<String> NewChildIds){
+    public static void futureUpdatePayApp(String payApp, List<String> NewChildIds, Boolean blnSkipAmoutCetrifiedUpate){
                   
         buildertek__SOV_Payment_Application__c PaymentApp = [select Id, Name, buildertek__Total_Balance_To_Finish__c, buildertek__Total_Completed__c,buildertek__Total_Completed_From_Previous_App__c,buildertek__Net_Change_by_Change_Orders__c, buildertek__Total_Material_Stored_To_Date__c, buildertek__Original_Contract_Sum__c from buildertek__SOV_Payment_Application__c where Id =: payApp  Limit 10000];
         List<buildertek__SOV_Payment_Application__c> newPaymentApp = [select Id, Name,buildertek__Application_Number__c, buildertek__Total_Balance_To_Finish__c, buildertek__Total_Completed__c,buildertek__Total_Completed_From_Previous_App__c,buildertek__Net_Change_by_Change_Orders__c, buildertek__Total_Material_Stored_To_Date__c, buildertek__Original_Contract_Sum__c, RecordType.Name from buildertek__SOV_Payment_Application__c where Id =:PaymentApp.Id  Limit 10000];
@@ -117,10 +119,13 @@ public class ContinuationSheetLineTriggerHandler {
             }
             
             if (newPaymentApp.size() > 0){
+
                 ContinuationSheetLineTriggerHandler.blnSkipconSheetLineUpdateTrigger = false;
-                PaymentApplicationTriggerHandler.blnSkipAmoutCetrifiedUpate = true;
+                System.debug('blnSkipAmoutCetrifiedUpate ==> 1 ==> ' + blnSkipAmoutCetrifiedUpate);
+                // Restrict Amount certifeid field to Update when method run form create Payment Application Button.....
+                PaymentApplicationTriggerHandler.blnSkipAmoutCetrifiedUpate = blnSkipAmoutCetrifiedUpate;
                 update newPaymentApp;
-                
+                PaymentApplicationTriggerHandler.blnSkipAmoutCetrifiedUpate = false;
                 
                 system.debug('newPaymentApp[078]---->'+newPaymentApp[0].buildertek__Original_Contract_Sum__c);
                 system.debug('newPaymentApp[1]98---->'+newPaymentApp[0].buildertek__Net_Change_by_Change_Orders__c);
@@ -215,7 +220,6 @@ public class ContinuationSheetLineTriggerHandler {
                 
                 if (newPaymentApp.size() > 0){
                     ContinuationSheetLineTriggerHandler.blnSkipconSheetLineUpdateTrigger = false;
-                    PaymentApplicationTriggerHandler.blnSkipAmoutCetrifiedUpate = true;
                     update newPaymentApp;
                     
                     System.debug('newPaymentApp ===> '+newPaymentApp);
@@ -347,8 +351,8 @@ public class ContinuationSheetLineTriggerHandler {
             
             if(recordsToUpdate.Size()>0){
                 ContinuationSheetLineTriggerHandler.blnSkipSheetLineTrigger = true;
-                PaymentApplicationTriggerHandler.blnSkipAmoutCetrifiedUpate = true;
                 update recordsToUpdate;
+
                 System.debug('IF recordsToUpdate=====>>>>>'+recordsToUpdate);
                 ContinuationSheetLineTriggerHandler.blnSkipSheetLineTrigger = false; 
             }
@@ -560,8 +564,8 @@ public class ContinuationSheetLineTriggerHandler {
                 newPaymentApp[0].buildertek__Original_Contract_Sum__c = (decimal)agg.get('totalContractSum') - PaymentApp.buildertek__Net_Change_by_Change_Orders__c ;
             }
             ContinuationSheetLineTriggerHandler.blnSkipSheetLineTrigger = true;
-            PaymentApplicationTriggerHandler.blnSkipAmoutCetrifiedUpate = true;
             update newPaymentApp;
+
             ContinuationSheetLineTriggerHandler.blnSkipSheetLineTrigger = false;
         }   
     }
@@ -620,8 +624,8 @@ public class ContinuationSheetLineTriggerHandler {
             
             if(!paymentApp.isEmpty()){
                 ContinuationSheetLineTriggerHandler.blnSkipSheetLineTrigger = true;
-                PaymentApplicationTriggerHandler.blnSkipAmoutCetrifiedUpate = true;
                 update paymentApp;
+
                 ContinuationSheetLineTriggerHandler.blnSkipSheetLineTrigger = false;
             }
         }
@@ -745,8 +749,8 @@ public class ContinuationSheetLineTriggerHandler {
                     }
                     if(!paymentAppList.isEmpty()){
                         ContinuationSheetLineTriggerHandler.blnSkipSheetLineTrigger = true;
-                        PaymentApplicationTriggerHandler.blnSkipAmoutCetrifiedUpate = true;
                         update paymentAppList;
+                        
                         ContinuationSheetLineTriggerHandler.blnSkipSheetLineTrigger = false;
                     }
                 }

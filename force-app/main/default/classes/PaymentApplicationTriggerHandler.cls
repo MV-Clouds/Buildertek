@@ -3,11 +3,10 @@ public class PaymentApplicationTriggerHandler {
     public static Boolean blnSkipPayAppInsertTrigger = false;
     
     public static Boolean blnSkipPayAppForEmail = false;
-    
-public static Boolean blnSkipAmoutCetrifiedUpate = false;
+
+    public static Boolean blnSkipAmoutCetrifiedUpate = false;
     
      public static Boolean blnSkipPayAppForupdateOriginal = false;
-    
     
     public void beforeInsert(List<buildertek__SOV_Payment_Application__c> NewApp){
         Set<Id> projectId=new Set<Id>();
@@ -141,20 +140,22 @@ public static Boolean blnSkipAmoutCetrifiedUpate = false;
         
         if(!arPaymentApp.isEmpty()){
             for(buildertek__SOV_Payment_Application__c paymentRec : arPaymentApp){
+
                 System.debug('Value in Boolean---->'+PaymentApplicationTriggerHandler.blnSkipAmoutCetrifiedUpate);
+                // Restrict Amount certifeid field to Update when method run form create Payment Application Button.....
                 if(PaymentApplicationTriggerHandler.blnSkipAmoutCetrifiedUpate){
                     paymentRec.buildertek__Amount_Certified__c = 0;
                 } else {
-                paymentRec.buildertek__Amount_Certified__c = paymentRec.buildertek__Current_Payment_Due__c;
-}
+                    paymentRec.buildertek__Amount_Certified__c = paymentRec.buildertek__Current_Payment_Due__c;
+                }
                 
                 
                 /* if(paymentRec.buildertek__Status__c == 'Customer Accepted' && paymentRec.RecordType.Name == 'AR'){
-paymentRec.buildertek__Amount_Certified__c = paymentRec.buildertek__Current_Payment_Due__c;
-paymentRec.buildertek__Certified_Date__c = Date.today();
-}else if(paymentRec.buildertek__Status__c == 'Company Accepted' && paymentRec.RecordType.Name == 'AP'){
-paymentRec.buildertek__Amount_Certified__c = paymentRec.buildertek__Current_Payment_Due__c;
-}*/
+                paymentRec.buildertek__Amount_Certified__c = paymentRec.buildertek__Current_Payment_Due__c;
+                paymentRec.buildertek__Certified_Date__c = Date.today();
+                }else if(paymentRec.buildertek__Status__c == 'Company Accepted' && paymentRec.RecordType.Name == 'AP'){
+                paymentRec.buildertek__Amount_Certified__c = paymentRec.buildertek__Current_Payment_Due__c;
+                }*/
             }                    
         }  
         
