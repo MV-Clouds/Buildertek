@@ -56,11 +56,15 @@
                     component.set("v.orgCurr", result[0].orgCurr);
                                        
                     component.set('v.PaginationList', result);
-                    for (let i = 0; i < result[0].poRecInner.length; i++) {
-                        if (result[0].poRecInner[i].poRecord.buildertek__Vendor__r.Name.length > 40) {
-                            result[0].poRecInner[i].poRecord.buildertek__Vendor__r.Name = result[0].poRecInner[i].poRecord.buildertek__Vendor__r.Name.slice(0, 40) + '...';
+                    if (result[0].poRecInner != undefined) {
+                        for (let i = 0; i < result[0].poRecInner.length; i++) {
+                            if (result[0].poRecInner[i].poRecord.hasOwnProperty('buildertek__Vendor__r')) {
+                                let name = result[0].poRecInner[i].poRecord.buildertek__Vendor__r.Name;
+                                if (name != undefined && name.length > 40) {
+                                    result[0].poRecInner[i].poRecord.buildertek__Vendor__r.Name = name.slice(0, 40) + '...';
+                                }
+                            }
                         }
-                        console.log('Vendor Name',result[0].poRecInner[i].poRecord.buildertek__Vendor__r.Name);
                     }
                     console.log(' --- --- --- doInit --- --- --- ');
                     console.log({result});
