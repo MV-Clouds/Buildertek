@@ -129,7 +129,7 @@
                                 <aura:iteration items="{!groupItem.sObjectList}" var="row" indexVar="dataIndex">
                                     <tr>
                                     <aura:if isTrue="{!groupItem.isCreatePOEnable}">
-                                        <aura:if isTrue="{!row.buildertek__Purchase_Order__c}">
+                                        <aura:if isTrue="{!or(row.buildertek__Purchase_Order__c, groupItem.groupName == 'No Vendor')}">
                                             <td class="slds-text-align_right slds-cell_action-mode" role="gridcell" style="width:1% !important">
                                                     <div class="slds-checkbox">
                                                         <lightning:input type="checkbox" name="Singleinput" checked="false" data-groupindex="{!phaseIndex}" id="{!row.Id+'_'+phaseIndex+'_'+dataIndex}" onchange="{!c.checkboxChange}" disabled="true" />
@@ -180,7 +180,7 @@
                                                                     </td>
                                                                     <aura:set attribute="else">
                                                                         <aura:if isTrue="{!field.name == 'buildertek__Purchase_Order__c'}">
-                                                                            <td style="max-width: 12rem; min-width: 12rem; overflow: hidden; text-overflow: ellipsis;">
+                                                                            <td style="max-width: 6rem; min-width: 6rem; overflow: hidden; text-overflow: ellipsis;">
                                                                                 <c:BT_FieldSetMassUpdate record="{!row}" index="{!index}" field="{!field}"
                                                                                                             isMassUpdateEnable="false"
                                                                                                             childObjectName="buildertek__Select_Sheet__c"
@@ -198,7 +198,7 @@
                                                                             </td>
                                                                         </aura:if>
                                                                         <aura:if isTrue="{!!or(field.name == 'buildertek__Purchase_Order__c', field.name == 'buildertek__BT_Price_Book__c')}">
-                                                                            <td style="max-width: 20rem; min-width: 20rem; overflow: hidden; text-overflow: ellipsis;">
+                                                                            <td style="max-width: 23rem; min-width: 23rem; overflow: hidden; text-overflow: ellipsis;">
                                                                                 <c:BT_FieldSetMassUpdate record="{!row}" index="{!index}" field="{!field}"
                                                                                                             isMassUpdateEnable="false"
                                                                                                             childObjectName="buildertek__Select_Sheet__c"
