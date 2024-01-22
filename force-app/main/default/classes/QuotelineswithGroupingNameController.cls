@@ -167,8 +167,8 @@ global  without sharing class QuotelineswithGroupingNameController {
              decimal quoteitemNetunitprice =0.0;
             decimal quoteitemlistTotal = 0.0;
             wrapperClass wrap = new wrapperClass();
-            wrap.groupName = quotelinegrouprec.Name;
              wrap.quotelineitemlst = quotegroupingmap.get(quotelinegrouprec.Id);
+            Integer counter = 0;
             for(buildertek__Quote_Item__c quoteitemrec : quotegroupingmap.get(quotelinegrouprec.Id)){
                  if(quoteitemrec.buildertek__Net_Unit__c != null){
                      quoteitemNetunitprice += quoteitemrec.buildertek__Net_Unit__c;
@@ -176,7 +176,10 @@ global  without sharing class QuotelineswithGroupingNameController {
                  if(quoteitemrec.buildertek__Net_Total_Price__c !=null){
                      quoteitemlistTotal += quoteitemrec.buildertek__Net_Total_Price__c;
                  }
-
+                 if (quoteitemrec.Not_Customer_Visible__c == false && counter == 0){
+                     wrap.groupName = quoteitemrec.buildertek__Grouping__r.Name;
+                     counter = 1;
+                 }
             }
             wrap.netunitprice = quoteitemNetunitprice;
             wrap.listTotal = quoteitemlistTotal;
