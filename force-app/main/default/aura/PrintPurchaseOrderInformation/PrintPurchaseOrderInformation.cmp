@@ -1,0 +1,58 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,force:hasRecordId,force:lightningQuickActionWithoutHeader" access="global" controller="PreviewPurchaseOrderController">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="Spinner" type="Boolean" default="false"/>
+    <aura:attribute name="BaseURL" type="String"/>
+    <aura:attribute name="record" type="Object" />
+    <aura:attribute name="purchaseOrder" type="Object" />
+    <aura:attribute name="poLines" type="String" />
+    <aura:attribute name="error" type="String" />
+    <aura:attribute name="Header" type="String" />
+    <aura:attribute name="templates" type="List" default="[]" />
+    <aura:attribute name="selectedTemplate" type="String" default="" />
+    <aura:attribute name="templatefolderName" type="String" />
+    <ltng:require styles="{!$Resource.ModalPreviewCSS}" />
+
+    
+    <aura:html tag="style">
+        .slds-modal__container { width:80% !important; max-width: 80% !important; overflow: hidden !important; } .slds-modal__content { overflow: hidden !important; } .slds-modal__close{ display:block !important; }
+    </aura:html>
+
+      <div class="slds-modal__content">
+
+         <div class="slds slds-scope">
+             <header class="slds-modal__header">
+                 <div class="" id="header" style="font-size:17px;">
+                     Print Purchase Order
+                 </div>
+             </header>
+             <div class=" slds-p-around_medium slds-scrollable--y" id="pageTop" style="height:auto;overflow-y:auto">
+                 <div class="slds-modal__content slds-p-around_small slds-scrollable_y" style="width:100%;height:100%;">
+                     <div class="slds-scrollable_y">
+                         <aura:if isTrue="{!v.Spinner}">
+                             <div aura:id="spinnerId" class="slds-spinner_container">
+                                 <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                                     <span class="slds-assistive-text">Loading</span>
+                                     <div class="slds-spinner__dot-a"></div>
+                                     <div class="slds-spinner__dot-b"></div>
+                                 </div>
+                             </div>
+                         </aura:if>
+                             <aura:html tag="style">
+                                 .slds-modal__container { width:70% !important; max-width: 70% !important; height: 99% !important; } .slds-modal__content { padding: 0 0rem !important; height:97% !important; max-height:97% !important; } .cuf-content { padding: 0 0rem !important; } .slds-p-around--medium
+                                 { padding: 0rem !important; }
+                             </aura:html>
+ 
+                             <p class="slds-text-longform tile__title red-txt" id="contnet">
+                                 <aura:unescapedHtml value="{!v.poLines}" />
+                             </p>  
+                             <br />
+                     </div>
+                 </div>
+             </div>
+             <footer role="contentinfo" class="slds-docked-form-footer fixedFooter" style="display:block;text-align:right;padding-right:5px;">
+                  <button class="slds-button slds-button--brand" onclick="{!c.downloadFile}">Download</button>
+                 <button class="slds-button slds-button--neutral sldsbutton" onclick="{!c.closeModel}">Cancel</button>
+             </footer>
+         </div>
+     </div>
+   </aura:component>

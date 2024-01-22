@@ -12,7 +12,7 @@ public with sharing class PreviewPurchaseOrderController {
             nameList.add('Purchase Order Approved Template');
 
           // temrec = [Select Id, Name, folder.name from Emailtemplate where folder.name = 'BT PO' and Name !=:'Purchase Order Line Template'];
-           temrec = [Select Id, Name, folder.name from Emailtemplate where folder.name = 'BT PO' and Name !=: nameList and  DeveloperName !=:'Purchase_Order_Template'];
+           temrec = [Select Id, Name, folder.name,DeveloperName from Emailtemplate where folder.name = 'BT PO' and Name !=: nameList and  DeveloperName !=:'Purchase_Order_Template'];
            }
        return temrec;
    }
@@ -52,6 +52,17 @@ public with sharing class PreviewPurchaseOrderController {
        }
        templateBody = templateBody1 ;
        system.debug('Final templateBody ----------> '+templateBody);
+
+       List<buildertek__Purchase_Order__c> corec=[SELECT id,  buildertek__TemplateId__c , buildertek__Template_Name__c  from buildertek__Purchase_Order__c where Id=:recordId limit 1];
+       List<EmailTemplate> emailTemp = [SELECT Id,Name,Subject FROM EmailTemplate WHERE Id =:templateId];
+       if(corec.size()>0){
+            corec[0].buildertek__TemplateId__c = templateId;
+            if(!emailTemp.isEmpty()){
+                corec[0].buildertek__Template_Name__c= emailTemp[0].Name;
+            }
+        }
+        update corec;
+        
        return templateBody;
        
    }
@@ -64,6 +75,8 @@ public with sharing class PreviewPurchaseOrderController {
            String body = '';
            //String subject = 'Purchase Order';
            String subject = ''; 
+           string templateBody1 = '';
+           Blob filebody;
            list<buildertek__Admin_Interface_Node_Configuration__c> adminInterfaceNodeConfigurations = [Select Id,
                                                                                                 buildertek__Quote_Configuration__c,buildertek__Email_Subject__c 
                                                                                                 from buildertek__Admin_Interface_Node_Configuration__c
@@ -100,6 +113,25 @@ public with sharing class PreviewPurchaseOrderController {
                   strCC.add(con.email);
               }    
           }
+          System.debug('conList[0].Id-->'+conList[0].Id);
+
+          List<Messaging.SingleEmailMessage> msgList = new List<Messaging.SingleEmailMessage>();
+          Savepoint sp = Database.setSavepoint();
+          Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
+          string theTemplatebodyid = [SELECT Id  FROM EmailTemplate  WHERE DeveloperName = 'PurchaseOrderBodyTemplate'].Id;
+          email.setTemplateId(theTemplatebodyid);
+          email.setTargetObjectId(conList[0].Id);
+          email.setSaveAsActivity(false);
+          email.setWhatId(recordId);
+          email.setToAddresses(new List<String>{'noreplay@buildertek.com'});
+          msgList.add(email);
+          System.debug('msgList---->'+msgList);
+          Messaging.SendEmailResult[] r = Messaging.sendEmail(new Messaging.SingleEmailMessage[]{email});
+          Database.rollback(sp);
+          for (Messaging.SingleEmailMessage emailNew : msgList){
+              system.debug(emailNew);
+              templateBody1 = emailNew.getHTMLBody();
+          }
            
           List<ContentVersion> contentList = [SELECT id, Title, Versiondata, FileType FROM ContentVersion WHERE ContentDocumentId IN: attacheDocs];
           System.debug('contentList => '+contentList);
@@ -121,19 +153,20 @@ public with sharing class PreviewPurchaseOrderController {
                eServices =  [SELECT Id,AuthorizedSenders,EmailDomainName,IsActive,LocalPart FROM EmailServicesAddress where LocalPart = 'projects'];
           } 
            string fromAddress = eServices.LocalPart+'@'+eServices.EmailDomainName;
-            body += 'Hi, <br/><br/> ';
-           body += '</br> Please &nbsp;'; 
-           body += '<a href='+ SiteUrl +'buildertek__ConfirmationPage?Id='+recordId+'&templateId='+templateId+'>Click here</a>';
-           body += '&nbsp;to confirm your Purchase Order details.' ;
+        //     body += 'Hi, <br/><br/> ';
+        //    body += '</br> Please &nbsp;'; 
+        //    body += '<a href='+ SiteUrl +'buildertek__ConfirmationPage?Id='+recordId+'&templateId='+templateId+'>Click here</a>';
+        //    body += '&nbsp;to confirm your Purchase Order details.' ;
            mail.setReplyTo(fromAddress);
            subject = subject +'[ref:'+recordId+']'; 
            mail.setSubject(subject);
-           mail.setHTMLBody(body);
-           mail.setSaveAsActivity(true);
+           mail.setHTMLBody(templateBody1);
+           mail.setSaveAsActivity(false);
            List<Messaging.Emailfileattachment> fileAttachments = new List<Messaging.Emailfileattachment>();
            Messaging.Emailfileattachment efa = new Messaging.Emailfileattachment();
            efa.setFileName('PurchaseOrder.pdf');
            system.debug('Blob ---> '+setAttachmentBody(recordId, templateId,fileid));
+           filebody = setAttachmentBody(recordId, templateId,fileid);
            efa.setBody(setAttachmentBody(recordId, templateId,fileid));
            fileAttachments.add(efa); 
            for (ContentVersion condocs : contentList) {
@@ -168,6 +201,11 @@ public with sharing class PreviewPurchaseOrderController {
                       i++;
                       
                   }
+
+                  String anchorTagRegex = '<a href=\"(.*?)">(.*?)</a>';
+                   String plainText = templateBody1.replaceAll(anchorTagRegex, ' ');
+                   String plainText2 = plainText.stripHtmlTags();
+
                   system.debug('CCaddresses ----------> '+CCaddresses);
                    EmailMessage caseEmailMessage = new EmailMessage();
                   caseEmailMessage.fromAddress= UserInfo.getUserEmail();
@@ -175,18 +213,29 @@ public with sharing class PreviewPurchaseOrderController {
                   caseEmailMessage.FromName = UserInfo.getUserName();
                   caseEmailMessage.CcAddress = CCaddresses;
                   caseEmailMessage.Subject = subject;
-                  caseEmailMessage.HtmlBody = body;
+                  caseEmailMessage.HtmlBody = templateBody1;
                   caseEmailMessage.Incoming= False;
                   //caseEmailMessage.IsTracked=true;
                   caseEmailMessage.buildertek__Is_Incoming_Email__c = false;
                   caseEmailMessage.MessageDate = system.now();
-                  caseEmailMessage.TextBody = body.replaceAll('<br/>', '\n');
-                  system.debug('Content length ---------> '+body.length());
+                  caseEmailMessage.TextBody = plainText2;
                   caseEmailMessage.status = '5';
                   caseEmailMessage.RelatedToId = recordId;
                   caseEmailMessage.buildertek__Subject__c = 'Re: '+subject;
                   
                   insert caseEmailMessage;        
+
+                  ContentVersion conVer1 = new ContentVersion();
+                   conVer1.PathOnClient = 'PO.pdf'; // The files name, extension is very important here which will help the file in preview.
+                   conver1.Title = 'PO.pdf';
+                   conVer1.VersionData = filebody; // converting your binary string to Blog
+                   insert conVer1;    //Insert ContentVersion
+
+                   ContentDocumentLink conDocLink1 = New ContentDocumentLink();
+                   conDocLink1.LinkedEntityId = caseEmailMessage.Id; // Specify RECORD ID here i.e Any Object ID (Standard Object/Custom Object)
+                   conDocLink1.ContentDocumentId = [SELECT ContentDocumentId FROM ContentVersion WHERE Id =:conVer1.Id].ContentDocumentId;  //ContentDocumentId Id from ContentVersion
+                   conDocLink1.Visibility = 'AllUsers';
+                   insert conDocLink1; 
                   
                   
                   
@@ -513,5 +562,18 @@ public with sharing class PreviewPurchaseOrderController {
        }
        
    } 
+   @AuraEnabled
+    public static String getBlobBody(String recordId, String templateId, String fileid){
+
+        pagereference pdf;
+        pdf = Page.buildertek__BT_GenerateQuotePDF;
+        system.debug('*********'+pdf);
+        pdf.getParameters().put('recordId', recordId);
+        pdf.getParameters().put('templateId', templateId);
+        pdf.getParameters().put('fileId', fileId);
+        pdf.setRedirect(true);
+
+        return EncodingUtil.base64Encode(pdf.getContent());
+    }
    
 }
