@@ -1820,8 +1820,7 @@ public class ProjectTaskTriggerHandler{
 			for (buildertek__Project_Task__c ScheduleItem : updatedProjectTasks) {
 				buildertek__Project_Task__c oldScheduleItem = oldProjectTaskMap.get(ScheduleItem.Id);
 	
-				if (ScheduleItem.buildertek__Purchase_Order__c != oldScheduleItem.buildertek__Purchase_Order__c ||
-					ScheduleItem.buildertek__Completion__c != oldScheduleItem.buildertek__Completion__c) {
+				if (ScheduleItem.buildertek__Purchase_Order__c != oldScheduleItem.buildertek__Purchase_Order__c || ScheduleItem.buildertek__Completion__c != oldScheduleItem.buildertek__Completion__c || ScheduleItem.buildertek__Start__c != oldScheduleItem.buildertek__Start__c || ScheduleItem.buildertek__Finish__c != oldScheduleItem.buildertek__Finish__c) {
 						if (oldScheduleItem.buildertek__Purchase_Order__c != null) {
 							purchaseOrderIdsToUpdate.add(oldScheduleItem.buildertek__Purchase_Order__c);
 						}
@@ -1831,7 +1830,7 @@ public class ProjectTaskTriggerHandler{
 				}
 			}
 			if (!purchaseOrderIdsToUpdate.isEmpty()) {
-				List<buildertek__Purchase_Order__c> purchaseOrdersToUpdate = [SELECT Id, buildertek__Completion__c FROM buildertek__Purchase_Order__c WHERE Id IN :purchaseOrderIdsToUpdate];
+				List<buildertek__Purchase_Order__c> purchaseOrdersToUpdate = [SELECT Id, buildertek__Completion__c,buildertek__Projected_Start_Date__c, buildertek__Projected_Completion_Date__c FROM buildertek__Purchase_Order__c WHERE Id IN :purchaseOrderIdsToUpdate];
 	
 				Map<Id, buildertek__Purchase_Order__c> purchaseOrdersMap = new Map<Id, buildertek__Purchase_Order__c>(purchaseOrdersToUpdate);
 	
@@ -1840,16 +1839,23 @@ public class ProjectTaskTriggerHandler{
 						buildertek__Purchase_Order__c oldPurchaseOrder = purchaseOrdersMap.get(oldProjectTaskMap.get(scheduleItem.Id).buildertek__Purchase_Order__c);
 						if (oldPurchaseOrder != null) {
 							oldPurchaseOrder.buildertek__Completion__c = 0;
+							oldPurchaseOrder.buildertek__Schedule__c = null;
+							oldPurchaseOrder.buildertek__Projected_Start_Date__c = null;
+							oldPurchaseOrder.buildertek__Projected_Completion_Date__c = null;
 						}
 	
 						buildertek__Purchase_Order__c newPurchaseOrder = purchaseOrdersMap.get(scheduleItem.buildertek__Purchase_Order__c);
 						if (newPurchaseOrder != null) {
 							newPurchaseOrder.buildertek__Completion__c = scheduleItem.buildertek__Completion__c;
+							newPurchaseOrder.buildertek__Projected_Start_Date__c = scheduleItem.buildertek__Start__c;
+							newPurchaseOrder.buildertek__Projected_Completion_Date__c = scheduleItem.buildertek__Finish__c;
 						}
 					} else {
 						buildertek__Purchase_Order__c newPurchaseOrder = purchaseOrdersMap.get(scheduleItem.buildertek__Purchase_Order__c);
 						if (newPurchaseOrder != null) {
 							newPurchaseOrder.buildertek__Completion__c = scheduleItem.buildertek__Completion__c;
+							newPurchaseOrder.buildertek__Projected_Start_Date__c = scheduleItem.buildertek__Start__c;
+							newPurchaseOrder.buildertek__Projected_Completion_Date__c = scheduleItem.buildertek__Finish__c;
 						}
 					}
 				}
@@ -1884,6 +1890,9 @@ public class ProjectTaskTriggerHandler{
 					buildertek__Purchase_Order__c newPurchaseOrder = purchaseOrdersMap.get(scheduleItem.buildertek__Purchase_Order__c);
 					if (newPurchaseOrder != null) {
 						newPurchaseOrder.buildertek__Completion__c = 0;
+						newPurchaseOrder.buildertek__Schedule__c = null;
+						newPurchaseOrder.buildertek__Projected_Start_Date__c = null;
+						newPurchaseOrder.buildertek__Projected_Completion_Date__c = null;
 					}
 				}
 				if (!purchaseOrdersToUpdate.isEmpty()) {
