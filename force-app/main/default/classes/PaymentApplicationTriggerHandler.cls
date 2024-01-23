@@ -3,9 +3,10 @@ public class PaymentApplicationTriggerHandler {
     public static Boolean blnSkipPayAppInsertTrigger = false;
     
     public static Boolean blnSkipPayAppForEmail = false;
+
+    public static Boolean blnSkipAmoutCetrifiedUpate = false;
     
      public static Boolean blnSkipPayAppForupdateOriginal = false;
-    
     
     public void beforeInsert(List<buildertek__SOV_Payment_Application__c> NewApp){
         Set<Id> projectId=new Set<Id>();
@@ -74,13 +75,36 @@ public class PaymentApplicationTriggerHandler {
                 }
             }
             
-            
-            
+        }
+    }
+
+    // As per the brian's commet on Ticket BUIL-37824... need to add new logic - Update recordType Based on PA Type...
+    public void Sync_PAType_RecordType(List<buildertek__SOV_Payment_Application__c> newPayment,Map<Id, buildertek__SOV_Payment_Application__c> oldPaymetnMap){
+        try {
+            Map<String, String> rtMap = new Map<String, String>();
+            for (RecordType rt : [Select Id, Name from RecordType where SobjectType = 'buildertek__SOV_Payment_Application__c']) {
+                rtMap.put(rt.Name, rt.Id);
+            }
+
+            for(buildertek__SOV_Payment_Application__c PA : newPayment){
+                // When PA Type changed....
+                if(PA.buildertek__PA_Type__c != oldPaymetnMap.get(PA.Id).buildertek__PA_Type__c && PA.buildertek__PA_Type__c != PA.RecordType.Name){
+                    PA.RecordTypeId = rtMap.get(PA.buildertek__PA_Type__c);
+                }
+                // When RecordType changed....
+                // else if(PA.RecordType != oldPaymetnMap.get(PA.Id).RecordType && PA.RecordType.Name != PA.buildertek__PA_Type__c){
+                //     PA.buildertek__PA_Type__c = PA.RecordType.Name;
+                // }
+            }
+
+        } catch (Exception e) {
+            system.debug('Exception in Sync_PAType_RecordType : ' + e.getMessage());
         }
     }
     
+    
     public void OnAfterupdate(List<buildertek__SOV_Payment_Application__c> oldPayment, List<buildertek__SOV_Payment_Application__c> newPayment,Map<Id, buildertek__SOV_Payment_Application__c> oldPaymetnMap, Map<Id, buildertek__SOV_Payment_Application__c> newPaymentMap){
-        
+
         system.debug('calling');
         String portalCode = '';
         string userName = userInfo.getUserId();
@@ -116,15 +140,22 @@ public class PaymentApplicationTriggerHandler {
         
         if(!arPaymentApp.isEmpty()){
             for(buildertek__SOV_Payment_Application__c paymentRec : arPaymentApp){
+
+                System.debug('Value in Boolean---->'+PaymentApplicationTriggerHandler.blnSkipAmoutCetrifiedUpate);
+                // Restrict Amount certifeid field to Update when method run form create Payment Application Button.....
+                if(PaymentApplicationTriggerHandler.blnSkipAmoutCetrifiedUpate){
+                    paymentRec.buildertek__Amount_Certified__c = 0;
+                } else {
+                    paymentRec.buildertek__Amount_Certified__c = paymentRec.buildertek__Current_Payment_Due__c;
+                }
                 
-                paymentRec.buildertek__Amount_Certified__c = paymentRec.buildertek__Current_Payment_Due__c;
                 
                 /* if(paymentRec.buildertek__Status__c == 'Customer Accepted' && paymentRec.RecordType.Name == 'AR'){
-paymentRec.buildertek__Amount_Certified__c = paymentRec.buildertek__Current_Payment_Due__c;
-paymentRec.buildertek__Certified_Date__c = Date.today();
-}else if(paymentRec.buildertek__Status__c == 'Company Accepted' && paymentRec.RecordType.Name == 'AP'){
-paymentRec.buildertek__Amount_Certified__c = paymentRec.buildertek__Current_Payment_Due__c;
-}*/
+                paymentRec.buildertek__Amount_Certified__c = paymentRec.buildertek__Current_Payment_Due__c;
+                paymentRec.buildertek__Certified_Date__c = Date.today();
+                }else if(paymentRec.buildertek__Status__c == 'Company Accepted' && paymentRec.RecordType.Name == 'AP'){
+                paymentRec.buildertek__Amount_Certified__c = paymentRec.buildertek__Current_Payment_Due__c;
+                }*/
             }                    
         }  
         
