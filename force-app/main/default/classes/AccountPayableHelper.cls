@@ -156,23 +156,13 @@ public with sharing class AccountPayableHelper {
 
     public static void UpdateCOntractorInvoiceStatus(List<buildertek__Account_Payable__c> newAccountPayList, Map<Id, buildertek__Account_Payable__c> oldAccountPayMap) {
         try {
-            Set<Id> contractorInvoiceIdsToUpdate = new Set<Id>();
-            List<buildertek__Account_Payable__c> contractorInvoiceListForStatusUpdate = new List<buildertek__Account_Payable__c>();
         
             for (buildertek__Account_Payable__c pay : newAccountPayList) {
                 buildertek__Account_Payable__c oldAPLine = oldAccountPayMap.get(pay.Id);
                 if (pay.buildertek__Payments__c != oldAPLine.buildertek__Payments__c && pay.buildertek__Payments__c == 0) {
-                    contractorInvoiceIdsToUpdate.add(pay.Id);
+                    pay.buildertek__Status__c = 'Open';
                 }
             }
-        
-            List<buildertek__Account_Payable__c> getContInvoiceRecord = [Select Id, Name, buildertek__Payments__c, buildertek__Status__c FROM buildertek__Account_Payable__c WHERE Id IN :contractorInvoiceIdsToUpdate];
-
-            for (buildertek__Account_Payable__c updateCI : getContInvoiceRecord) {
-                updateCI.buildertek__Status__c = 'Open';
-                contractorInvoiceListForStatusUpdate.add(updateCI);
-            }
-            update contractorInvoiceListForStatusUpdate;
 
         } catch (Exception ex) {
             System.debug('Error: ' + ex.getMessage());

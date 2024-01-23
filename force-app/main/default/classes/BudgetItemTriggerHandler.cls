@@ -45,7 +45,17 @@ public with sharing class BudgetItemTriggerHandler {
  	}
      
  	public void OnBeforeUpdate(Budget_Item__c[] oldBudgetItems, Budget_Item__c[] updatedBudgetItems, Map<ID, Budget_Item__c> BudgetItemMap){
-     	
+
+		List<Budget_Item__c> bItems = new List<Budget_Item__c>();
+		for(Budget_Item__c bItem: updatedBudgetItems) {
+			if(bItem.buildertek__Group__c == null) { 
+				bItems.add(bItem);
+			}
+		}
+		
+	   system.debug('bItems.isEmpty(): ' + bItems.isEmpty());
+		// Set default Grouping
+		if(!bItems.isEmpty()) BudgetDAO.setDefaultGrouping(bItems);
  	}
      
  	public void OnBeforeDelete(Budget_Item__c[] BudgetItemToDelete, Map<ID, Budget_Item__c> BudgetItemMap){
@@ -134,9 +144,9 @@ public with sharing class BudgetItemTriggerHandler {
     	
  	}
  	
- 	public void OnBeforeUpdate(Budget_Item__c[] newBudgetItems, Map<ID, Budget_Item__c> newBudgetItemsMap){
+ 	// public void OnBeforeUpdate(Budget_Item__c[] newBudgetItems, Map<ID, Budget_Item__c> newBudgetItemsMap){
      
- 	}
+ 	// }
  	
  	public void OnAfterDelete(Budget_Item__c[] oldBudgetItems){
     	

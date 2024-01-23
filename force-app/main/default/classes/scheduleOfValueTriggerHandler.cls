@@ -121,11 +121,22 @@ public class scheduleOfValueTriggerHandler {
             
         }
         system.debug('***************************'+sovLinesList);
+        Set<Id> uniqueIds = new Set<Id>();
+        List<buildertek__Schedule_of_Value_Lines__c> recordsToUpdate = new List<buildertek__Schedule_of_Value_Lines__c>();
+
+        if(!sovLinesList.isEmpty()){
+            for (buildertek__Schedule_of_Value_Lines__c record : sovLinesList) {
+                if (!uniqueIds.contains(record.Id)) {
+                    recordsToUpdate.add(record);
+                    uniqueIds.add(record.Id);
+                }
+            }
+        }
         if(!sovLinesList.isEmpty()){
             
             
             scheduleOfValueTriggerHandler.blnSkipSOVTrigger = true;
-            update sovLinesList;
+            update recordsToUpdate;
             scheduleOfValueTriggerHandler.blnSkipSOVTrigger = false;
             
             

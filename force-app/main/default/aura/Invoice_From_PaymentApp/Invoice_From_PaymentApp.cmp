@@ -24,9 +24,9 @@
         <div class="slds slds-scope">
             <header class="slds-modal__header">
                 <div class="" id="header" style="font-size:20px;">
-                    Create Invoice
+                        {!v.paymentAppData.buildertek__PA_Type__c == 'AP' ? 'Create Contractor Invoice' : 'Create Sales Invoice'}
                 </div>
-            </header>    
+            </header>       
             <div class=" slds-p-around_medium slds-scrollable--y" id="pageTop" style="height:auto;overflow-y:auto">
                 <div class="slds-modal__content slds-p-around_small slds-scrollable_y" style="width:100%;height:100%;">
                     <div class="slds-scrollable_y" >
@@ -39,7 +39,7 @@
                                 </div>
                             </div>
                         </aura:if>   
-                        <h2 style="font-size:17px;"><center>Would you like to create a new Invoice ({!v.paymentAppData.buildertek__PA_Type__c})?</center></h2>
+                        <h2 style="font-size:17px;"><center>Would you like to create a new {!v.paymentAppData.buildertek__PA_Type__c == 'AP' ? 'Contractor Invoice' : 'Sales Invoice'}</center></h2>
                     </div>
                 </div>
             </div>

@@ -6,6 +6,8 @@ public with sharing class ImportTakeOffLinesBasic{
         public String strMessage;
     }
 
+    private static Map<String, Set<String>> validPicklistValues = new Map<String, Set<String>>();
+
     @AuraEnabled
     public static ResponseBase importRecords(Id takeOffId, String fileData){
         ResponseBase response = new ResponseBase();
@@ -70,9 +72,8 @@ public with sharing class ImportTakeOffLinesBasic{
 
 
             List<buildertek__Project_Takeoff_Lines__c> TakeoffLinesToInsert = new List<buildertek__Project_Takeoff_Lines__c>();
-
+            Decimal counter = 1;
             for (fieldWrapper wrapper : datalist) {
-                
                 buildertek__Project_Takeoff_Lines__c TakeoffLine = new buildertek__Project_Takeoff_Lines__c();
                 TakeoffLine.buildertek__Project_Takeoff__c = takeOffId;
 
@@ -108,28 +109,51 @@ public with sharing class ImportTakeOffLinesBasic{
                 if (String.isNotBlank(buildPhase) && buildPhasemap.containsKey(buildPhase)){
                     TakeoffLine.buildertek__Build_Phase__c = buildPhasemap.get(buildPhase).Id;
                 }
-                TakeoffLine.buildertek__Category__c = wrapper.CategoryPL;
+                
+                String categoryValue = wrapper.CategoryPL;
+                if (String.isNotBlank(categoryValue)) {
+                    if (isValidPicklistValue('buildertek__Category__c', categoryValue)){
+                        TakeoffLine.buildertek__Category__c = categoryValue;
+                    } else {
+                        throw new MyCustomException('Invalid Category value: '+ categoryValue +' Please review the row No.' + (counter + 1));
+                    }
+                }
 
                 String tradeType = wrapper.TradeType;
                 if (String.isNotBlank(tradeType) && existingTradeTypeMap.containsKey(tradeType)){
                     TakeoffLine.buildertek__Trade_Type__c = existingTradeTypeMap.get(tradeType).Id;
                 }
-                TakeoffLine.buildertek__Location__c = wrapper.Location;
-               
+
+                String locationValue = wrapper.Location;
+                if (String.isNotBlank(locationValue)) {
+                    if (isValidPicklistValue('buildertek__Location__c', locationValue)){
+                        TakeoffLine.buildertek__Location__c = locationValue;
+                    } else {
+                        throw new MyCustomException('Invalid Location value: '+ locationValue +' Please review the row No.' + (counter + 1));
+                    }
+                }
                 String quant = wrapper.Quantity;
                 if (String.isNotBlank(quant)){
                     TakeoffLine.buildertek__Quantity__c = Decimal.valueOf(quant);
                 } else {
                     TakeoffLine.buildertek__Quantity__c = 0;
                 }
-                TakeoffLine.buildertek__UOM_PL__c = wrapper.UOM;
+
+                String uomValue = wrapper.UOM;
+                if (String.isNotBlank(uomValue)) {
+                    if (isValidPicklistValue('buildertek__UOM_PL__c', uomValue)){
+                        TakeoffLine.buildertek__UOM_PL__c = uomValue;
+                    } else {
+                        throw new MyCustomException('Invalid UOM value: '+ uomValue +' Please review the row No.' + (counter + 1));
+                    }
+                }
 
                 String codeco = wrapper.CostCode;
                 if (String.isNotBlank(codeco) && existingCostCodeMap.containsKey(codeco)){
                     TakeoffLine.buildertek__Cost_Code__c = existingCostCodeMap.get(codeco).Id;
                 }
                 TakeoffLinesToInsert.add(TakeoffLine);
-
+                counter++;
             }
 
             if (!TakeoffLinesToInsert.isEmpty()) {
@@ -142,7 +166,7 @@ public with sharing class ImportTakeOffLinesBasic{
             }
         } catch (Exception e) {
             List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
-            if(StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
                 BT_ExceptionHandler.Store_Exception(e);
             }
 
@@ -153,6 +177,34 @@ public with sharing class ImportTakeOffLinesBasic{
         }
         
         return response;
+    }
+    
+    public class MyCustomException extends Exception {}
+
+    private static Boolean isValidPicklistValue(String fieldApiName, String value) {
+        if (!validPicklistValues.containsKey(fieldApiName)) {
+            validPicklistValues.put(fieldApiName, fetchValidPicklistValues(fieldApiName));
+        }
+
+        return validPicklistValues.get(fieldApiName).contains(value);
+    }
+
+    private static Set<String> fetchValidPicklistValues(String fieldApiName) {
+        Set<String> validValues = new Set<String>();
+        List<Schema.PicklistEntry> picklistValues = buildertek__Project_Takeoff_Lines__c.getSObjectType()
+            .getDescribe()
+            .fields.getMap()
+            .get(fieldApiName)
+            .getDescribe()
+            .getPicklistValues();
+
+        for (Schema.PicklistEntry picklistEntry : picklistValues) {
+            if (picklistEntry.isActive()) {
+                validValues.add(picklistEntry.getValue());
+            }
+        }
+
+        return validValues;
     }
 
     public class fieldWrapper{

@@ -54,7 +54,7 @@
             <header class="slds-modal__header">
                     <h2 class="slds-text-heading_medium slds-hyphenate">Products</h2>
             </header>
-            
+
             <div class="slds-modal__content" id="modal-content-id-1" style="max-height: 70vh;">
                 <lightning:layout>
                     <lightning:layoutItem padding="around-small" size="3">
@@ -117,8 +117,8 @@
                                 <th class="" scope="col" style="width:10% !important">
                                     <div class="slds-truncate" title="Cost Code">Cost Code</div>
                                 </th>
-                                <th class="" scope="col" style="width:15% !important">
-                                    <div class="slds-truncate" title="Product Code">Product Code</div>
+                                <th class="" scope="col" style="width:10% !important">
+                                    <div class="mediumWidthDiv" title="Product Code">Product Code</div>
                                 </th>
                                 <th class="" scope="col" style="width:10% !important">
                                     <div class="slds-truncate" title="Vendor">Vendor</div>
@@ -154,13 +154,13 @@
                                             {!product.Description}
                                         </div>
                                     </td>
-                                    <td data-label="Product Code" style="width:5% !important">                                        
+                                    <td data-label="Product Code" style="width:5% !important">
                                         <div class="slds-truncate" title='{!product.ProductCode}'>
                                             {!product.CostCode}
                                         </div>
                                     </td>
-                                    <td data-label="Product Code" style="width:5% !important">                                        
-                                        <div class="slds-truncate" title='{!product.ProductCode}'>
+                                    <td data-label="Product Code" style="width:5% !important">
+                                        <div class="mediumWidthDiv" title='{!product.ProductCode}'>
                                             {!product.ProductCode}
                                         </div>
                                     </td>
@@ -190,15 +190,15 @@
                                 <center class="elseMsg">No Products Found!!!</center>
                             </aura:if>
                         </aura:set>
-                    </aura:if> 
+                    </aura:if>
                 </div>
             </div>
-    
+
             <footer class="slds-modal__footer">
                 <button class="slds-button slds-button_neutral" aria-label="Cancel and close" onclick="{!c.closeCmp}">Cancel</button>
                 <button class="slds-button slds-button_brand" onclick="{!c.goToEditModal}">Next</button>
             </footer>
-    
+
         </aura:if>
 
         <aura:if isTrue="{!!v.selecteProducts}">
@@ -249,8 +249,8 @@
                                 <tr title="Product">
                                     <td style="padding-top: 15px !important;">
                                         <span data-id="{!item.Id}"  onclick="{!c.removeQuoteLine}">
-                                            <lightning:icon iconName="utility:delete" size="xx-small" />   
-                                        </span>                     
+                                            <lightning:icon iconName="utility:delete" size="xx-small" />
+                                        </span>
                                     </td>
                                     <td style="width: 14% !important;">
                                         <lightning:input name="input1" label="" value="{!item.buildertek__Size__c}" disabled="true" />
@@ -292,17 +292,17 @@
                     </table>
                 </div>
             </div>
-    
+
             <footer class="slds-modal__footer">
                 <button class="slds-button slds-button_neutral" aria-label="Cancel and close" onclick="{!c.closeCmp}">Cancel</button>
                 <button class="slds-button slds-button_neutral" aria-label="Cancel and close" onclick="{!c.goToProductModal}">Back</button>
                 <button class="slds-button slds-button_brand" onclick="{!c.saveQuoteLine}">Save</button>
             </footer>
 
-            
+
 
         </aura:if>
-        
+
     </div>
     </section>
     <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
