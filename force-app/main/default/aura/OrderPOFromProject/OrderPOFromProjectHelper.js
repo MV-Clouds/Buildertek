@@ -130,6 +130,7 @@
     
     readFiles2: function(component, event, helper, file, poId) {
         let maxSize = 4194304;
+        // let maxSize = 2097152;
         let filesList = component.get("v.fileData2");
         let reader = new FileReader();
     
@@ -144,6 +145,8 @@
             let existingFilesSize = 0;
     
             for (let i = 0; i < component.get("v.fileData2").length; i++) {
+                console.log('existingFilesSize => ' + existingFilesSize);
+                console.log('file.size => ' + component.get("v.fileData2")[i].fileContent.length);
                 existingFilesSize += component.get("v.fileData2")[i].fileContent.length;
             }
     
