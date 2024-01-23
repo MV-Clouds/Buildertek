@@ -1,0 +1,113 @@
+<aura:component controller="ImagePreviewController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global">
+
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <aura:attribute name="contentDocsList" type="List" />
+    <aura:attribute name="activeSections" type="List"/>
+    <aura:attribute name="activeSectionsMessage" type="String" default="" />
+    <aura:attribute name="selectionType" type="Object"/>
+    <aura:attribute name="recordLoadError" type="String"/>
+    <aura:attribute name="displayImage" type="boolean" default="true"/>
+    <aura:attribute name="sObjectName" type="String" />
+    <force:recordData aura:id="forceRecord" recordId="{!v.recordId}" fields="Id, Name" targetFields="{!v.selectionType}" targetError="{!v.recordLoadError}" />
+
+    <!-- ============= New Image Preview ============= -->
+    <aura:attribute name="Show_ImagePreview" type="boolean" default="false"/>
+    <aura:attribute name="PreviewImageSrc" type="String" />
+    <aura:attribute name="PreviewImageId" type="String" />
+    <aura:attribute name="PreviewImageTitle" type="String" />
+    <aura:attribute name="outerId" type="String" />
+    <aura:attribute name="Is_ImageHavePreview" type="boolean" default="true"/>
+    <aura:attribute name="PreviewImgSpinner" type="boolean" default="false"/>
+    <aura:attribute name="NotFirstImg" type="boolean" default="true"/>
+    <aura:attribute name="NotLastImg" type="boolean" default="true"/>
+    <!-- ============= New Image Preview END ============= -->
+
+    <aura:attribute name="selectionTypeId" type="String"/>
+    <aura:attribute name="selectionTypeName" type="String"/>
+    <aura:attribute name="mainRecordId" type="String"/>
+
+    <lightning:card>
+
+    <aura:if isTrue="{!v.Show_ImagePreview}">
+        <div class="slds-backdrop slds-backdrop_open" ></div>
+        <div class="slds-modal slds-fade-in-open image_preview"  aura:id="img_preview" style='background: rgba(0, 0, 0, 0.8);' role="dialog" aria-modal="true">
+            <div class="image_control_bar" style="background: #0000008c;" onclick="{!c.stopEventPropogation}">
+                <div class="image_title">
+                    <lightning:icon iconName="doctype:image" alternativeText="Image file" title="Image" size="medium" />
+                    <h2>{!v.PreviewImageTitle}</h2>
+                </div>
+                <div class="close_img" onclick="{!c.closeImagePreview}">
+                    <lightning:icon iconName="utility:close" alternativeText="close!" title="close" size="small"/>
+                </div>
+            </div>        
+            <div class="img_preview_container" >
+                <aura:if isTrue="{!v.Is_ImageHavePreview}">
+                    <img src="{!v.PreviewImageSrc}" onload="{!c.Handle_imageLoaded}" onerror="{!c.Handle_imageNotLoaded}" onclick="{!c.stopEventPropogation}"/>
+                    <aura:set attribute="else">
+                        <h2 style="color: white; font-size: 1rem;"> Sorry, This Image Preview Does Not Supported</h2>
+                    </aura:set>
+                </aura:if>
+                <aura:if isTrue="{!v.PreviewImgSpinner}">
+                    <div aura:id="spinnerId" class="slds-spinner_container" style="position: absolute; background : #04040466">
+                        <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                            <span class="slds-assistive-text">Loading</span>
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                        </div>
+                    </div>      
+                </aura:if>
+            </div>    
+            <div class="Next_Previous_btn">
+                <aura:if isTrue="{!v.NotFirstImg}">
+                    <div class="Previous_img_btn" onclick="{!c.ChangeImg}" data-name="Previous_Image">
+                        <lightning:icon iconName="utility:chevronleft" title="Previous" size="small"/>
+                    </div>
+                </aura:if>
+                <aura:if isTrue="{!v.NotLastImg}">
+                    <div class="Next_img_btn" onclick="{!c.ChangeImg}" data-name="Next_Image">
+                        <lightning:icon iconName="utility:chevronright"  title="Next" size="small"/>
+                    </div>
+                </aura:if>
+            </div>
+        </div>
+    </aura:if>
+
+    <aura:if isTrue="{!v.sObjectName == 'buildertek__Question_Group__c'}">
+        <div class="titleStyle">{!v.selectionType.Name}</div>
+        <aura:set attribute="else">
+            <div class="titleStyle rkdivfora"><ui:outputURL value="{!'/one/one.app?#/sObject/'+ v.selectionTypeId + '/view'}" target="_blank" label="{!v.selectionTypeName}"/></div>
+        </aura:set>
+    </aura:if>
+        
+    <div class="rkdiv" style="display: flex; flex-wrap: wrap; overflow: auto; max-height:57.4vh;height:auto;margin: 5px;">
+        <aura:if isTrue="{!v.displayImage}">
+            <lightning:accordion allowMultipleSectionsOpen="true" onsectiontoggle="{! c.handleSectionToggle }" activeSectionName="{! v.activeSections }">
+                <aura:iteration items="{!v.contentDocsList}" var="contentDocsItem">
+                    <div style="display: flex;">
+                        <span class="iconstyle" data-record="{!contentDocsItem.optionId}" onclick="{!c.doView}">
+                            <lightning:icon iconName="utility:open" size="x-small" style="padding-top: 17px;cursor:pointer;"/>
+                        </span>
+                        <lightning:accordionSection label="{!contentDocsItem.optionName}">
+                            <aura:if isTrue="{!not(empty(contentDocsItem.contentDocumentLinks))}">
+                                <aura:iteration items="{!contentDocsItem.contentDocumentLinks}" var="optionItem" indexVar="indexNum">
+                                    <div style="flex: 0 0 calc(16.6667% - 10px); margin: 5px;" id="{!optionItem.ContentDocumentId}" onclick="{!c.handle_img_click}" data-outerid="{!contentDocsItem.optionId}" data-cdid="{!optionItem.ContentDocumentId}" data-cid="{!optionItem.Id}" data-cdlindex="{!indexNum}" data-description="{!optionItem.ContentDocument.Title}" data-src="{!orgBaseURL + '/sfc/servlet.shepherd/document/download/' + optionItem.ContentDocumentId}">
+                                        <img style="min-width: 100%; min-height: 100%; width: 100%; height: 175px; border: 1px solid grey;cursor:pointer;;" src="{!orgBaseURL + '/sfc/servlet.shepherd/document/download/' + optionItem.ContentDocumentId}"/>
+                                    </div>
+                                </aura:iteration>
+                                <aura:set attribute="else">
+                                    <span class="blankStyle">There are no option images for this Selection Option.</span>
+                                </aura:set>
+                            </aura:if>
+                        </lightning:accordionSection>
+                    </div>
+                </aura:iteration>
+            </lightning:accordion>
+            <aura:set attribute="else">
+                <span class="blankStyle">There are no Option(s) for this Selection Type.</span>
+            </aura:set>
+        </aura:if>
+    </div>
+
+</lightning:card> 
+
+</aura:component>

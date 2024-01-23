@@ -1,0 +1,65 @@
+.THIS .titleStyle{
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    width: 100%;
+    height: 30px;
+    padding-left:15px;
+    background-color:rgb(77 154 241);
+    color: white;
+    font-size: large;
+
+}
+.THIS .rkdivfora a{
+    color: white !important;
+}
+.THIS .main-file-cmp {
+    flex-direction: row;
+    max-height:62.4vh;
+    height:auto;
+    margin: 15px 5px;
+    display: flex;
+    justify-content: space-between;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    padding: 8px;
+    width: -webkit-fill-available;
+}
+.THIS .main-file-cmp-2 {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    height:auto;
+    border-radius: 4px;
+    width: -webkit-fill-available;
+}
+.THIS .side-btn{
+    display: flex;
+    align-items: center;
+}
+.THIS .center {
+    position: absolute;
+    top: -10%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 16px; 
+    text-align: center;
+    font-weight: bold;
+  }
+  .THIS div.messageDiv {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px;
+    font-size: 16px;
+
+  }
+  /* @font-face {
+    font-family: "my custom font";
+    src: url('/resource/poppins/Poppins-Black.ttf') format('TrueType');
+ }
+ 
+.THIS .poppins {
+    font-family: "my custom font";
+    font-variant: traditional;
+ } */
