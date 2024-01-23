@@ -1,0 +1,239 @@
+<aura:component controller="createPOfromBOM_controller" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable" access="global">
+
+<aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+<aura:attribute name="isSpinner" type="Boolean" />
+<aura:attribute name="GroupByVendors" type="List" default="[]" />
+<aura:attribute name="fieldSetValues" type="List" default="[]" />
+<aura:attribute name="selectdLinesId" type="List" default="[]" />
+<aura:attribute name="vendorVsselectdLinesId" type="List" default="[]" />
+<aura:attribute name="BOMName" type="String" />
+<aura:attribute name="record" type="Object" />
+<aura:attribute name="BTBOMtype" type="Object" />
+<lightning:workspaceAPI aura:id="workspace" />
+
+
+<aura:html tag="style">
+    .slds-dropdown {
+        z-index: 90 !important;
+        top: 100% !important;
+    }
+
+    .UOMPicklist .slds-form-element__label{
+        display: none !important;
+    } 
+
+    .vendorlookup lightning-helptext{
+        display : none !important;
+    }
+</aura:html>
+
+<lightning:navigation aura:id="goToPrevious" />
+
+<force:recordData aura:id="recordLoader"
+            recordId="{!v.recordId}"
+            fields="Name"
+            targetRecord="{!v.record}"
+            targetFields="{!v.BTBOMtype}"
+            targetError="{!v.recordError}"
+            recordUpdated="{! c.handleRecordLoaded }"/>
+
+    <div>
+        <div class="slds-card">
+            <div class="slds-grid slds-gutters cardCss slds-wrap">
+                <div class="slds-col slds-size_6-of-8" >
+                    <div style="display: flex; justify-content: flex-start; gap: 2rem;" >
+                        <div>
+                            <span>
+                                <span style=" color: #6b6d70;">BOM</span>
+                                <h2 class="slds-card__header-title">
+                                    <span onclick="{!c.redirectToObjectTab}" title="BOMName" style="color:#0176d3;cursor:pointer;"><!-- #0176d3 -->
+                                        {!v.BOMName}
+                                    </span>
+                                </h2>
+                            </span>
+                        </div>
+                        <!-- <div>
+                            <span>
+                                <span style=" color: #6b6d70;">Total Cost</span>
+                                <h2 class="slds-card__header-title">
+                                    <aura:if isTrue="{!and(v.totalCost != null,v.totalCost != undefined)}">
+                                        <span style="color:#0176d3;cursor:pointer;">
+                                            <lightning:formattedNumber value="{!v.totalCost}" style="currency" currencyCode="USD" currencyDisplayAs="code"/>
+                                        </span>
+                                    </aura:if>
+                                </h2>
+                            </span>
+                        </div>
+                        <div>
+                            <span>
+                                <span style=" color: #6b6d70;">Total Sales Price</span>
+                                <h2 class="slds-card__header-title">
+                                    <aura:if isTrue="{!and(v.totalSalesPrice != null,v.totalSalesPrice != undefined)}">
+                                        <span style="color:#0176d3;cursor:pointer;">
+                                            <lightning:formattedNumber value="{!v.totalSalesPrice}" style="currency" currencyCode="USD" currencyDisplayAs="code"/>
+                                        </span>
+                                    </aura:if>
+                                </h2>
+                            </span>
+                        </div> -->
+                    </div>
+                </div>
+                <div class="slds-col slds-size_2-of-8" style="text-align: right;">
+                    <lightning:button iconName="utility:back" iconPosition="left" title="BackBtn" onclick="{!c.redirectToObjectTab}" label="Back" class="" />
+                </div>
+
+            </div>
+        </div>
+
+        <div class="searchCointainer" style="background: var(--lwc-pageHeaderColorBackground, rgb(243, 242, 242));padding: 1rem 1rem;overflow-x: auto;white-space: nowrap; margin-top: 8px; border-radius: 4px;">
+            <aura:iteration items="{!v.GroupByVendors}" var="groupItem" indexVar="phaseIndex">
+                <div class="slds-grid slds-gutters slds-wrap" style="border-block: 2px solid #2a77d4; margin: 30px 0px 8px 0px!important; padding-block: 4px; background: white;">
+                    <div class="slds-modal__header slds-p-around_xx-small GroupHeader slds-col slds-size_6-of-8" style="font-size:18px; border-block: 0px !important;font-weight:bold;">
+                        <div style="flex: 1;">
+                            {!groupItem.groupName}
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_2-of-8" style="text-align: right;">
+                        <lightning:button iconName="utility:save" title="{!phaseIndex}" iconPosition="left" onclick="{!c.onClickCreatePOhadler}"
+                        label="{!groupItem.isCreatePOEnable==true?'Save':'Create PO'}" class="" />
+                        <aura:if isTrue="{!groupItem.isCreatePOEnable}">
+                            <lightning:button iconName="utility:close" title="{!phaseIndex}" iconPosition="left" onclick="{!c.onCancelCreatePOhadler}" label="Cancel" />
+                        </aura:if>
+                    </div>
+                </div>
+                <div id="{!groupItem.groupName+'_'+phaseIndex}" class="customDataTable" style="overflow-x: auto;overflow-y: hidden; background: white; padding-bottom: 0rem; border-bottom : 1px solid #c7c7c7;"><!-- aura:id = "tableByGroup" aura:id="poTable"-->
+                    <div style = "background-color:white;" >
+                        <table class="slds-table slds-table--bordered">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <aura:if isTrue="{!groupItem.isCreatePOEnable}">
+                                        <th class="slds-text-align_right slds-cell_action-mode" role="gridcell" style="width:1% !important; width: 52px; background-color: #164486; color: white;">
+                                            <div class="slds-checkbox">
+                                                <!-- <lightning:input type="checkbox" name="inputAll" id="{!groupItem.groupName+'_'+phaseIndex}" onchange="{!c.selectAllcheckboxChange}" /> -->
+                                            </div>
+                                        </th>
+                                    </aura:if>
+                                    <th scope="col" tabindex="-1" aria-label="Row Number" style="width: 52px; background-color: #164486; color: white;">
+                                        <div class="slds-cell-fixed" style="width: 52px; outline: none; display: none;">
+                                            <span><span title="Row Number" class="slds-truncate">
+                                                </span></span>
+                                        </div>
+                                    </th>
+                                    <aura:iteration items="{!v.fieldSetValues}" var="field" indexVar="fieldIndex">
+                                        <th style="background-color: #164486; color: white; padding: 0.5rem 0.5rem; border-left : 1px solid #c7c7c7" class="slds-is-resizable slds-is-sortable"> &nbsp;{!field.label}</th>
+                                    </aura:iteration>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!groupItem.sObjectList}" var="row" indexVar="dataIndex">
+                                    <tr>
+                                    <aura:if isTrue="{!groupItem.isCreatePOEnable}">
+                                        <aura:if isTrue="{!or(row.buildertek__Purchase_Order__c, groupItem.groupName == 'No Vendor')}">
+                                            <td class="slds-text-align_right slds-cell_action-mode" role="gridcell" style="width:1% !important">
+                                                    <div class="slds-checkbox">
+                                                        <lightning:input type="checkbox" name="Singleinput" checked="false" data-groupindex="{!phaseIndex}" id="{!row.Id+'_'+phaseIndex+'_'+dataIndex}" onchange="{!c.checkboxChange}" disabled="true" />
+                                                    </div>
+                                                </td>
+                                            <aura:set attribute="else">
+                                                <td class="slds-text-align_right slds-cell_action-mode" role="gridcell" style="width:1% !important">
+                                                    <div class="slds-checkbox">
+                                                        <lightning:input type="checkbox" name="Singleinput" checked="false" data-groupindex="{!phaseIndex}" id="{!row.Id+'_'+phaseIndex+'_'+dataIndex}" onchange="{!c.checkboxChange}" />
+                                                    </div>
+                                                </td>
+                                            </aura:set>
+                                        </aura:if>
+                                    </aura:if>
+                                        <td role="gridcell" tabindex="-1">
+                                            <span class="slds-grid slds-grid_align-spread">
+                                                <div class="slds-truncate">
+                                                    {!dataIndex+1}
+                                                </div>
+                                            </span>
+                                        </td>
+                                        <aura:iteration items="{!v.fieldSetValues}" var="field" indexVar="index">
+                                            <aura:if isTrue="{!field.name == 'Name'}">
+                                                <td style="max-width: 16rem; min-width: 16rem; overflow: hidden; text-overflow: ellipsis;" >
+                                                    <ui:outputURL value="{!'/one/one.app?#/sObject/'+ row.Id + '/view'}"
+                                                            label="{!row.Name}" target="_blank"/>
+                                                </td>
+                                                <aura:set attribute="else">
+                                                        <aura:if isTrue="{!(field.label == 'Standard?')}">
+                                                            <td>
+
+                                                                <c:BT_FieldSetMassUpdate record="{!row}" index="{!index}" field="{!field}"
+                                                                                        isMassUpdateEnable="false"
+                                                                                        childObjectName="buildertek__Select_Sheet__c"
+                                                                                        ObjectName="buildertek__Select_Sheet__c"
+                                                                                        callingCmpName="BT_createPOfromBOM"/>
+
+                                                            </td>
+                                                            <aura:set attribute="else">
+                                                                <aura:if isTrue="{! or( or(field.type == 'DOUBLE',field.type == 'CURRENCY'), field.type == 'PERCENT') }">
+
+                                                                    <td style = "padding-right:5px; padding-left: 16px; min-width: 5rem;" >
+                                                                        <c:BT_FieldSetMassUpdate record="{!row}" index="{!index}" field="{!field}"
+                                                                                                isMassUpdateEnable="false"
+                                                                                                childObjectName="buildertek__Select_Sheet__c"
+                                                                                                ObjectName="buildertek__Select_Sheet__c"
+                                                                                                callingCmpName="BT_createPOfromBOM"/>
+                                                                    </td>
+                                                                    <aura:set attribute="else">
+                                                                        <aura:if isTrue="{!field.name == 'buildertek__Purchase_Order__c'}">
+                                                                            <td style="max-width: 6rem; min-width: 6rem; overflow: hidden; text-overflow: ellipsis;">
+                                                                                <c:BT_FieldSetMassUpdate record="{!row}" index="{!index}" field="{!field}"
+                                                                                                            isMassUpdateEnable="false"
+                                                                                                            childObjectName="buildertek__Select_Sheet__c"
+                                                                                                            ObjectName="buildertek__Select_Sheet__c"
+                                                                                                            callingCmpName="BT_createPOfromBOM"/>
+                                                                            </td>
+                                                                        </aura:if>
+                                                                        <aura:if isTrue="{!field.name == 'buildertek__BT_Price_Book__c'}">
+                                                                            <td style="max-width: 14rem; min-width: 14rem; overflow: hidden; text-overflow: ellipsis;">
+                                                                                <c:BT_FieldSetMassUpdate record="{!row}" index="{!index}" field="{!field}"
+                                                                                                            isMassUpdateEnable="false"
+                                                                                                            childObjectName="buildertek__Select_Sheet__c"
+                                                                                                            ObjectName="buildertek__Select_Sheet__c"
+                                                                                                            callingCmpName="BT_createPOfromBOM"/>
+                                                                            </td>
+                                                                        </aura:if>
+                                                                        <aura:if isTrue="{!!or(field.name == 'buildertek__Purchase_Order__c', field.name == 'buildertek__BT_Price_Book__c')}">
+                                                                            <td style="max-width: 23rem; min-width: 23rem; overflow: hidden; text-overflow: ellipsis;">
+                                                                                <c:BT_FieldSetMassUpdate record="{!row}" index="{!index}" field="{!field}"
+                                                                                                            isMassUpdateEnable="false"
+                                                                                                            childObjectName="buildertek__Select_Sheet__c"
+                                                                                                            ObjectName="buildertek__Select_Sheet__c"
+                                                                                                            callingCmpName="BT_createPOfromBOM"/>
+                                                                            </td>
+                                                                        </aura:if>
+                                                                    </aura:set>
+                                                                </aura:if>
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </aura:set>
+                                            </aura:if>
+                                        </aura:iteration>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </aura:iteration>
+        </div>
+    </div>
+
+        <aura:if isTrue="{!v.isSpinner}">
+            <div aura:id="spinnerId" class="slds-spinner_container" style="position:fixed;">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                    <div class="custom-loading-text">
+                        <b>Processing, Please Wait</b>
+                    </div>
+                </div>
+            </div>
+        </aura:if>
+
+</aura:component>
