@@ -15,9 +15,13 @@ public without sharing class BT_SyncPOsOnScheduleController {
     }
     
     @AuraEnabled
-    public static List<buildertek__Purchase_Order__c> fetchAllPOs(){
+    public static List<buildertek__Purchase_Order__c> fetchAllPOs(String scheduleId){
         try {
-            List<buildertek__Purchase_Order__c> poList = [SELECT Id, Name, buildertek__Description__c, buildertek__Vendor__r.Name, buildertek__PO_Total__c FROM buildertek__Purchase_Order__c WHERE buildertek__Schedule_Item__c = null ORDER BY Name ASC];
+            Id projectId = [SELECT Id, buildertek__Project__c FROM buildertek__Schedule__c WHERE Id = :scheduleId].buildertek__Project__c;
+            if (projectId == null) {
+                return null;
+            }
+            List<buildertek__Purchase_Order__c> poList = [SELECT Id, Name, buildertek__Description__c, buildertek__Vendor__r.Name, buildertek__PO_Total__c FROM buildertek__Purchase_Order__c WHERE buildertek__Schedule_Item__c = null AND buildertek__Project__c =:projectId ORDER BY Name ASC];
             return poList;
         } catch (Exception e) {
             List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
@@ -40,8 +44,8 @@ public without sharing class BT_SyncPOsOnScheduleController {
                 scheduleItemIds.add(schedulePOItem.scheduleItemId);
             }
             
-            List<buildertek__Purchase_Order__c> poList = [SELECT Id, Name, buildertek__Description__c, buildertek__Schedule__c, buildertek__Completion__c, buildertek__Schedule_Item__c FROM buildertek__Purchase_Order__c WHERE Id IN :poIds];
-            List<buildertek__Project_Task__c> scheduleItemList = [SELECT Id, Name, buildertek__Completion__c, buildertek__Purchase_Order__c FROM buildertek__Project_Task__c WHERE Id IN :scheduleItemIds];
+            List<buildertek__Purchase_Order__c> poList = [SELECT Id, Name, buildertek__Description__c, buildertek__Schedule__c, buildertek__Completion__c, buildertek__Schedule_Item__c,buildertek__Projected_Start_Date__c, buildertek__Projected_Completion_Date__c FROM buildertek__Purchase_Order__c WHERE Id IN :poIds];
+            List<buildertek__Project_Task__c> scheduleItemList = [SELECT Id, Name, buildertek__Completion__c, buildertek__Purchase_Order__c, buildertek__Start__c, buildertek__Finish__c FROM buildertek__Project_Task__c WHERE Id IN :scheduleItemIds];
             Map<Id, buildertek__Project_Task__c> scheduleItemMap = new Map<Id, buildertek__Project_Task__c>();
             for (SchedulePOWrapper schedulePOItem : schedulePOList) {
                 
@@ -58,6 +62,8 @@ public without sharing class BT_SyncPOsOnScheduleController {
                         po.buildertek__Schedule__c = scheduleId;
                         po.buildertek__Schedule_Item__c = schedulePOItem.scheduleItemId;
                         po.buildertek__Completion__c = scheduleItemMap.get(schedulePOItem.scheduleItemId).buildertek__Completion__c; 
+                        po.buildertek__Projected_Start_Date__c = scheduleItemMap.get(schedulePOItem.scheduleItemId).buildertek__Start__c;
+                        po.buildertek__Projected_Completion_Date__c = scheduleItemMap.get(schedulePOItem.scheduleItemId).buildertek__Finish__c; 
                         System.debug('po: ' + po);
                     }
                 }

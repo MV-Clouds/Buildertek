@@ -92,6 +92,20 @@ public with sharing class PurchaseOrderTriggerHandler{
                         PO.buildertek__Status__c = 'Open';
                     }
                 }
+                System.debug('In po status update');
+                System.debug('Received--->'+PO.buildertek__Received__c);
+                System.debug('Remaining--->'+PO.buildertek__Remaining__c);
+                if (PO.buildertek__Received__c > 0 && PO.buildertek__Remaining__c < 100 && PO.buildertek__Received__c != 100 && PO.buildertek__Remaining__c != 0) {
+                    System.debug('In Inventory');
+                    if (PO.buildertek__Inventory_Status__c != 'Partially Filled'){
+                        PO.buildertek__Inventory_Status__c = 'Partially Filled';
+                    }
+                } else if(PO.buildertek__Received__c == 100 && PO.buildertek__Remaining__c == 0){
+                    System.debug('Else In Inventory');
+                    if (PO.buildertek__Inventory_Status__c != 'Filled'){
+                        PO.buildertek__Inventory_Status__c = 'Filled';
+                    }
+                }
                 //made process builder inactive and added
                  PO.buildertek__Date_Created__c = System.today();
             }

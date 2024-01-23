@@ -43,6 +43,7 @@
                                                     <th colspan="3" style="text-align: center;padding: 8px;">
                                                         {!vlist.buildertek__Vendor__r.Name}</th>
                                                     <th></th>
+                                                    <th></th>
                                                     <th colspan="1" style="text-align: center;">
                                                         <aura:if isTrue="{!!v.isAwarded}">
                                                             <aura:if isTrue="{!vlist.buildertek__Status__c=='Awarded'}">
@@ -71,10 +72,11 @@
                                             </thead>
                                             <tbody>
                                                 <tr style="font-weight: bold;font-size: 13px;width:50%;height:3rem">
-                                                    <td style="width:15%;padding: 8px;">Item Name</td>
-                                                    <td style="width:5%;text-align: center;padding: 8px;">Quantity</td>
-                                                     <td style="width:5%;text-align: center;padding: 8px;">Estimated Work(Days)</td>
-                                                    <td style="width:6%;text-align: center;padding: 8px;">Unit Price
+                                                    <td style="width:15%;padding: 8px 0px 8px 8px;">Item Name</td>
+                                                    <td style="width:23%;padding: 8px 0px;">Vendor Notes</td>
+                                                    <td style="width:3%;text-align: center;padding: 8px 0px;">Quantity</td>
+                                                     <td style="width:3%;text-align: center;padding: 8px 0px;">Estimated Work(Days)</td>
+                                                    <td style="width:6%;text-align: center;padding: 8px 0px;">Unit Price
                                                     </td>
                                                     <td
                                                         style="background: #eee;width: 5%;text-align: center;padding: 4px;">
@@ -83,23 +85,25 @@
                                                 <aura:iteration items="{!vlist.buildertek__Vendor_Items__r}"
                                                     var="recordList">
                                                     <tr style="width:50%">
-                                                        <td style="width:15%;padding: 8px;height:3rem;">
+                                                        <td style="width:15%;padding: 8px 0px 8px 8px;height:3rem;">
                                                             {!recordList.Name}</td>
+                                                        <td style="width:15%;max-width:23%;padding: 8px 0px;height:3rem;">
+                                                            {!recordList.buildertek__Vendor_Note__c}</td>    
                                                         <td
-                                                            style="width:5%;text-align: center;padding: 8px;height:3rem;">
+                                                            style="width:3%;text-align: center;padding: 8px 0px;height:3rem;">
                                                             {!recordList.buildertek__Quantity__c}</td>
                                                          <td
-                                                            style="width:5%;text-align: center;padding: 8px;height:3rem;">
+                                                            style="width:3%;text-align: center;padding: 8px 0px;height:3rem;">
                                                             {!recordList.buildertek__Estimated_Work_Days__c}</td>
                                                         <td
-                                                            style="width:12%;text-align: center;padding: 8px;">
+                                                            style="width:8%;text-align: center;padding: 8px 0px;">
                                                            <!-- {!recordList.buildertek__Unit_Price__c}-->
                                                             <lightning:formattedNumber value="{!recordList.buildertek__Unit_Price__c}" 
                                                                                   style="currency" currencyCode="USD" currencyDisplayAs="code"/>
                                                         </td>
                                                         
                                                         <td
-                                                            style="background: #eee;width: 6.4%;text-align: center;padding: 8px;">
+                                                            style="background: #eee;width: 6.4%;text-align: center;padding: 8px 0px;">
                                                             <!--{!recordList.buildertek__Total_Price__c}-->
                                                             <lightning:formattedNumber value="{!recordList.buildertek__Total_Price__c}" 
                                                                                   style="currency" currencyCode="USD" currencyDisplayAs="code"/>
@@ -110,6 +114,7 @@
                                                     <td  style="padding: 8px;"></td>
                                                     <td style="padding: 8px;"></td>
                                                     <td style="padding: 8px;"></td>
+                                                    <td></td>
                                                     <td></td>
                                                     <td style="background: #3a8ed8;
                                                                    color: #fff;padding: 4px; width: 5%;text-align:center;">

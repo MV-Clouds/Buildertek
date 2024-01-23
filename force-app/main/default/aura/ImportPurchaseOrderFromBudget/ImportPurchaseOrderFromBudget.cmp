@@ -13,7 +13,8 @@
     <aura:attribute name="currencycode" type="String" />
     <aura:attribute name="checkedRecordIds" type="List" />
     <aura:attribute name="RecordExist" type="Boolean" default="false" />
-
+    <aura:attribute name="onCancel" type="Object"/>
+    <aura:attribute name="onSuccess" type="Object"/>
     <!-- Attribute Declration For Pagination End-->
 
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />

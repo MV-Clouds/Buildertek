@@ -12,6 +12,7 @@
 					let result = response.getReturnValue();
 					var listOfFields = JSON.parse(result.fieldSet);
 					component.set("v.listOfFields", listOfFields);
+					component.set("v.vendorId", result.vendorId);
 					component.set("v.projectId", result.projectId);
 			} else {
 				console.log('Error', response.getError());
