@@ -14,7 +14,7 @@ public with sharing class Product_Files {
 
             if (option.size() > 0 && option[0].buildertek__Product__c != null) {
                 System.debug('IN IF :->'+ option[0].buildertek__Product__c);
-                List<ContentDocumentLink> contentLinkList = [SELECT Id,ContentDocument.Title, ContentDocumentId, LinkedEntityId FROM ContentDocumentLink WHERE LinkedEntityId =: option[0].buildertek__Product__c];
+                List<ContentDocumentLink> contentLinkList = [SELECT Id,ContentDocument.Title, ContentDocumentId, LinkedEntityId FROM ContentDocumentLink WHERE LinkedEntityId =: option[0].buildertek__Product__c AND ContentDocument.FileType NOT IN ('HTML','CSV','PDF')];
                 System.debug('contentLinkList => '+contentLinkList);
 
                 if (contentLinkList.size() > 0) {

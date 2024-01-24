@@ -3,8 +3,6 @@
     <aura:attribute name="recordLoadError" type="String"/>
     <aura:attribute name="sObjectName" type="String"/>
     <aura:attribute name="orgBaseURL" type="string" />
-    <aura:attribute name="contentDocsList" type="List" />
-    <aura:attribute name="contentDocsId" type="String" />
     <aura:attribute name="categoryList" type="List" />
     <aura:attribute name="currentPage" type="Integer" />
     <aura:attribute name="totalPages" type="Integer" />

@@ -3,9 +3,6 @@ public with sharing class ImagePreviewController {
     public String status;
 
     @AuraEnabled
-    public List<ContentDocumentLink> contentLink;
-
-    @AuraEnabled
     public List<buildertek__Question_Group__c> selectionCategory;
 
     public class FilesWrapper {
@@ -29,26 +26,31 @@ public with sharing class ImagePreviewController {
             // Collect buildertek__Question__c Ids
             Set<Id> questionIds = new Set<Id>();
             List<buildertek__Question__c> options = [SELECT Id, Name, buildertek__Question_Group__c, buildertek__Product__c FROM buildertek__Question__c WHERE buildertek__Question_Group__c =: recordId];
-            for (buildertek__Question__c option : options) {
-                questionIds.add(option.buildertek__Product__c);
-            }
-
-            // Perform ContentDocumentLink query outside of the loop
-            List<ContentDocumentLink> contentLinkList = [SELECT Id, ContentDocumentId, ContentDocument.title, LinkedEntityId FROM ContentDocumentLink WHERE LinkedEntityId IN :questionIds];
-
-            for (buildertek__Question__c option : options) {
-                List<ContentDocumentLink> contentLinks = new List<ContentDocumentLink>();
-
-                for (ContentDocumentLink link : contentLinkList) {
-                    if (link.LinkedEntityId == option.buildertek__Product__c) {
-                        contentLinks.add(link);
-                    }
+            if (options.size() > 0) {
+                for (buildertek__Question__c option : options) {
+                    questionIds.add(option.buildertek__Product__c);
                 }
-
-                // Merge option Name and Id with a symbol for the key
-                String optionKey = option.Name + '__' + option.Id;
-                resultMap.put(optionKey, contentLinks);
+                // Perform ContentDocumentLink query outside of the loop
+                List<ContentDocumentLink> contentLinkList = [SELECT Id, ContentDocumentId, ContentDocument.title, LinkedEntityId FROM ContentDocumentLink WHERE LinkedEntityId IN :questionIds AND ContentDocument.FileType NOT IN ('HTML','CSV','PDF')];
+    
+                for (buildertek__Question__c option : options) {
+                    List<ContentDocumentLink> contentLinks = new List<ContentDocumentLink>();
+    
+                    for (ContentDocumentLink link : contentLinkList) {
+                        if (link.LinkedEntityId == option.buildertek__Product__c) {
+                            contentLinks.add(link);
+                        }
+                    }
+    
+                    // Merge option Name and Id with a symbol for the key
+                    String optionKey = option.Name + '__' + option.Id;
+                    resultMap.put(optionKey, contentLinks);
+                }
+            } else {
+                status = 'Fail';
+                resultMap = new Map<String, List<ContentDocumentLink>>();
             }
+
         } catch (Exception e) {
             List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
             if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
@@ -63,22 +65,18 @@ public with sharing class ImagePreviewController {
     
     @AuraEnabled
     public static ImagePreviewController getSelectionCategoryFiles(String recordId) {
-        try {   
-            List<ContentDocumentLink> contentLinkList = [SELECT Id,ContentDocument.Title, ContentDocumentId, LinkedEntityId FROM ContentDocumentLink WHERE ContentDocumentId = '0691K00000wF73bQAC'];
+        try {
             List<buildertek__Question_Group__c> selectionCategoryList = [SELECT Id,Name,buildertek__Section__c FROM buildertek__Question_Group__c WHERE buildertek__Section__c =: recordId];
-            System.debug('contentLinkList => '+contentLinkList);
 
             if (selectionCategoryList.size() > 0) {
                 ImagePreviewController files = new ImagePreviewController();
                 files.status = 'success';
-                files.contentLink = contentLinkList;
                 files.selectionCategory = selectionCategoryList;
                 return files;
             } else{
                 System.debug('There Are No Files');
                 ImagePreviewController files = new ImagePreviewController();
                 files.status = 'There Are No Files.';
-                files.contentLink = null;
                 files.selectionCategory = null;
                 return files;
             }
@@ -89,7 +87,6 @@ public with sharing class ImagePreviewController {
             }
             ImagePreviewController files = new ImagePreviewController();
                 files.status = 'error';
-                files.contentLink = null;
                 files.selectionCategory = null;
                 return files;
         }
