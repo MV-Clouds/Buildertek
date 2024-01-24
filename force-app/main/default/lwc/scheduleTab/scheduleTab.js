@@ -1,8 +1,9 @@
 import { LightningElement, api, track } from 'lwc';
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
+import { NavigationMixin } from 'lightning/navigation';
 import getScheduleDataByProjectId from "@salesforce/apex/GetProjectAndScheduleForGanttCmp.getScheduleDataByProjectId";
 
-export default class ScheduleTab extends LightningElement {
+export default class ScheduleTab extends NavigationMixin(LightningElement) {
 
     @api projectId;
     @api recordId;
@@ -12,6 +13,7 @@ export default class ScheduleTab extends LightningElement {
     @track isScheduleAvailable = false;
     @track callscheduleComponent = false;
     @track hideToolbar = true;
+
     connectedCallback() {
         console.log('Project Id: ' + this.projectId);
         this.getScheduleData();
@@ -61,5 +63,16 @@ export default class ScheduleTab extends LightningElement {
         }
     }
 
+    handleViewSchedule() {
+        console.log('Current scheduleId: ' + this.selectedScheduleId);
+        this[NavigationMixin.Navigate]({
+            type: 'standard__recordPage',
+            attributes: {
+                recordId: this.selectedScheduleId,
+                objectApiName: 'buildertek__Schedule__c',
+                actionName: 'view'
+            },
+        });
+    }
 
 }
