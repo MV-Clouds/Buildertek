@@ -1,13 +1,14 @@
 <template>
     <template if:true={isScheduleAvailable}>
         <lightning-card title="Select Schedule" icon-name="custom:custom14">
-            <div class="slds-p-around_x-small picklistcombo" style="display: flex; justify-content: space-between; align-items: center;">
-                <div class="picklist" style="width: 92%;">
+            <div class="slds-p-around_x-small picklistcombo">
+                <div class="picklist">
                     <lightning-combobox name="schedule" value={selectedScheduleId} options={SchedulesOptions}
                         onchange={handleScheduleChange} placeholder="Select Schedule"></lightning-combobox>
                 </div>
-                <div class="button" style="margin-top: 13px;">
-                    <lightning-button label="Go To Schedule" onclick={handleViewSchedule} variant="brand"></lightning-button>
+                <div class="button">
+                    <lightning-button label="Go To Schedule" onclick={handleViewSchedule}
+                        variant="brand"></lightning-button>
                 </div>
             </div>
 

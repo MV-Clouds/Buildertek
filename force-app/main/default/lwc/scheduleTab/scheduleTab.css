@@ -1,0 +1,23 @@
+.picklistcombo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.picklist {
+    width: 92%;
+}
+
+.button {
+    margin-top: 13px;
+}
+
+@media only screen and (max-width: 1440px) {
+    .picklist {
+        width: 89%;
+    }
+
+    .button {
+        margin-top: 19px;
+    }
+}
