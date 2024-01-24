@@ -279,86 +279,102 @@
 				}), 1000);
 
 			console.log(JSON.stringify(component.get("v.fileData2")))
+			let fileData = JSON.stringify(component.get("v.fileData2"));
+			console.log('fileData.length => ' + fileData.length);
 			component.set("v.selectedobjInfo", budgetIds);
-			var action = component.get("c.sendMail");
-			action.setParams({
-				budgetIds: budgetIds,
-				filedata: JSON.stringify(component.get("v.fileData2"))
-			});
+			if (fileData.length > 4194304) {
+				component.set("v.Spinner", false);
+				component.set("v.Spinner2", false);
+				component.set("v.selectedPOList", false);
+				var toastEvent = $A.get("e.force:showToast");
+				toastEvent.setParams({
+					"type": "Error",
+					"title": "File Size Exceeded",
+					"message": "The uploaded file exceeds the limit. Please upload a smaller file."
+				});
+				toastEvent.fire();
+			} else {
+				var action = component.get("c.sendMail");
+				action.setParams({
+					budgetIds: budgetIds,
+					filedata: fileData
+				});
 
-			action.setCallback(this, function (response) {
-				var state = response.getState();
-				if (state === "SUCCESS") {
-					var result = response.getReturnValue();
-					if (result.Status === 'Success') {
-						component.set("v.Spinner", false);
-						component.set("v.Spinner2", false);
-						component.set("v.selectedPOList", false);
-						var toastEvent = $A.get("e.force:showToast");
-						toastEvent.setParams({
-							"title": "Success!",
-							"message": result.Message,
-							"type": 'Success'
-						});
-						toastEvent.fire();
+				action.setCallback(this, function (response) {
+					var state = response.getState();
+					if (state === "SUCCESS") {
+						var result = response.getReturnValue();
+						if (result.Status === 'Success') {
+							component.set("v.Spinner", false);
+							component.set("v.Spinner2", false);
+							component.set("v.selectedPOList", false);
+							var toastEvent = $A.get("e.force:showToast");
+							toastEvent.setParams({
+								"title": "Success!",
+								"message": result.Message,
+								"type": 'Success'
+							});
+							toastEvent.fire();
 
 
-						$A.get("e.force:closeQuickAction").fire();
-						window.setTimeout(
-							$A.getCallback(function () {
-								//document.location.reload(true);   
-								var action1 = component.get("c.getMasterBudgets");
-								action1.setParams({
-									recId: component.get("v.recordId"),
-									"pageNumber": component.get("v.PageNumber"),
-									"pageSize": component.get("v.pageSize"),
-									"poFilter" : '',
-									"poLineFilter" : '',
-									"tradeTypeFilter" : '',
-									"projectFilter" : '',
-									"productFilter" : '',
-									"permitFilter" : ''
-								});
-								action1.setCallback(this, function (response) {
-									var state = response.getState();
-									if (state === "SUCCESS") {
-										// debugger;
-										var pageSize = component.get("v.pageSize");
-										var result = response.getReturnValue();
-										component.set("v.masterBudgetsList", result);
-										component.set("v.totalRecords", component.get("v.masterBudgetsList").length);
-										component.set("v.startPage", 0);
-										component.set("v.endPage", pageSize - 1);
-										var PaginationList = [];
-										for (var i = 0; i < pageSize; i++) {
-											if (component.get("v.masterBudgetsList").length > i)
-												PaginationList.push(result[i]);
+							$A.get("e.force:closeQuickAction").fire();
+							window.setTimeout(
+								$A.getCallback(function () {
+									//document.location.reload(true);   
+									var action1 = component.get("c.getMasterBudgets");
+									action1.setParams({
+										recId: component.get("v.recordId"),
+										"pageNumber": component.get("v.PageNumber"),
+										"pageSize": component.get("v.pageSize"),
+										"poFilter": '',
+										"poLineFilter": '',
+										"tradeTypeFilter": '',
+										"projectFilter": '',
+										"productFilter": '',
+										"permitFilter": ''
+									});
+									action1.setCallback(this, function (response) {
+										var state = response.getState();
+										if (state === "SUCCESS") {
+											// debugger;
+											var pageSize = component.get("v.pageSize");
+											var result = response.getReturnValue();
+											component.set("v.masterBudgetsList", result);
+											component.set("v.totalRecords", component.get("v.masterBudgetsList").length);
+											component.set("v.startPage", 0);
+											component.set("v.endPage", pageSize - 1);
+											var PaginationList = [];
+											for (var i = 0; i < pageSize; i++) {
+												if (component.get("v.masterBudgetsList").length > i)
+													PaginationList.push(result[i]);
+											}
+											component.set('v.PaginationList', PaginationList);
+											component.set("v.Spinner", false);
+										} else {
+											component.set("v.Spinner", false);
 										}
-										component.set('v.PaginationList', PaginationList);
-										component.set("v.Spinner", false);
-									} else {
-										component.set("v.Spinner", false);
-									}
-								});
-								$A.enqueueAction(action1);
-							}), 1000
-						);
-					} else {
-						component.set("v.Spinner2", false);
-						component.set("v.selectedPOList", false);
-						var toastEvent = $A.get("e.force:showToast");
-						toastEvent.setParams({
-							"title": "Error!",
-							"message": result.Message,
-							"type": 'Error'
-						});
-						toastEvent.fire();
+									});
+									$A.enqueueAction(action1);
+								}), 1000
+							);
+						} else {
+							component.set("v.Spinner2", false);
+							component.set("v.selectedPOList", false);
+							var toastEvent = $A.get("e.force:showToast");
+							toastEvent.setParams({
+								"title": "Error!",
+								"message": result.Message,
+								"type": 'Error'
+							});
+							toastEvent.fire();
+						}
 					}
-				}
-			});
-			$A.enqueueAction(action);
+				});
+				$A.enqueueAction(action);
 
+			}
 		}
+
 	},
 
 	orderPO: function (component, event, helper) {
@@ -538,7 +554,7 @@
 					checkboxes.set("v.checked", false);
 				}
 			}
-	
+
 			// Loop through the records and set the 'poCheck' property to false
 			records.forEach(function (record) {
 				record.poRecInner.forEach(function (innerRecord) {
@@ -548,10 +564,10 @@
 					});
 				});
 			});
-	
+
 			// Update the 'records' attribute with the modified array
 			component.set("v.PaginationList", records);
-	
+
 			// Uncheck checkboxes
 			component.find("checkContractors").set("v.value",false);
 			uncheckCheckboxes(component.find("checkContractor"));
@@ -563,10 +579,10 @@
 			console.log('error--->', error);
 		}
 	},
-	
-	
-	
- 
+
+
+
+
 	massUpdate: function (component, event, helper) {
 		component.set("v.enableMassUpdate", true);
 	},
@@ -707,7 +723,7 @@
 	doSearch: function (component, event, helper) {
 		var pageNumber = component.get("v.PageNumber");
 		var pageSize = component.get("v.pageSize");
-        helper.getPurchaseOrders(component, event, helper, pageNumber, pageSize);
+		helper.getPurchaseOrders(component, event, helper, pageNumber, pageSize);
 	},
 
 	handleBlur: function (component, event, helper) {
@@ -786,7 +802,7 @@
 						for(var k=0;k<Submittals[i].poRecInner[j].poLinesWrapper.length;k++){
 							if (j+'-'+i+'-'+k == id) {
 								Submittals[i].poRecInner[j].poLinesWrapper[k].poLineCheck = !Submittals[i].poRecInner[j].poLinesWrapper[k].poLineCheck;
-							} 
+							}
 						}
 					}
 				}
@@ -817,7 +833,7 @@
 					}
 				}
 			}
-		} else{
+		} else {
 			if (parentItems != undefined) {
 				for (var i = 0; i < parentItems.length; i++) {
 					if (parentItems[i].poRecInner != undefined) {
@@ -839,7 +855,7 @@
 		component.set("v.isExpanded", isExpanded);
 	},
 
-	
+
 	removePO: function(component, event, helper) {
 		var POId = event.currentTarget.dataset.index;
 		var vendorList = component.get("v.SelectedPurchaseOrders");
@@ -851,28 +867,28 @@
 				updatedVendorList.push(vendorList[i]);
 			}
 		}
-        component.set("v.SelectedPurchaseOrders", updatedVendorList);
+		component.set("v.SelectedPurchaseOrders", updatedVendorList);
 		var disableBtn = false;
 		if (updatedVendorList.length > 0) {
 			console.log('in if');
 			updatedVendorList.forEach(element => {
-			  console.log('element.buildertek__Vendor__c ==> ' + element.buildertek__Vendor__c);
-			  if (element.buildertek__Vendor__c != null && element.buildertek__Vendor__c != '') {
-				if (element.buildertek__Vendor__r.buildertek__Email_Address__c == null || element.buildertek__Vendor__r.buildertek__Email_Address__c == '') {
-				  disableBtn = true;
+				console.log('element.buildertek__Vendor__c ==> ' + element.buildertek__Vendor__c);
+				if (element.buildertek__Vendor__c != null && element.buildertek__Vendor__c != '') {
+					if (element.buildertek__Vendor__r.buildertek__Email_Address__c == null || element.buildertek__Vendor__r.buildertek__Email_Address__c == '') {
+						disableBtn = true;
+					}
+				} else {
+					disableBtn = true;
 				}
-			  } else {
-				disableBtn = true;
-			  }
 			});
-		  } else {
+		} else {
 			// disableBtn = false;
 			component.set("v.selectedPOList", false);
 			var a = component.get('c.closePOListPopUp');
-            $A.enqueueAction(a);
-		  }
-		  
-        console.log('disableBtn',disableBtn);
+			$A.enqueueAction(a);
+		}
+
+		console.log('disableBtn',disableBtn);
 		component.set("v.disableOrder", disableBtn);
 
 	},
