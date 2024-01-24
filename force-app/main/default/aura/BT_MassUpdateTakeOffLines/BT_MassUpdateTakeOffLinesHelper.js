@@ -116,7 +116,7 @@
                     component.set("v.RecordStart", (pageNumber - 1) * pageSize + 1);
                     component.set("v.RecordEnd", (list.length + 3) * pageNumber);
                     component.set("v.TotalPages", Math.ceil(list.length / component.get('v.TotalRecords')));
-                    component.set('v.isLoading', false);
+                  
                     // debugger;
                     if (component.get('v.TotalRecords') < pageNumber * pageSize) {
                         component.set("v.isNextDisabled", true);
@@ -132,8 +132,14 @@
                     component.set("v.RecordEnd", 0);
                     component.set("v.TotalPages", 0);
                     component.set("v.isNextVisible", true);
-                    component.set('v.isLoading', false);
+                    // component.set('v.isLoading', false);
                 }
+                window.setTimeout(
+                    $A.getCallback(function () {
+                      component.set('v.isLoading', false);
+                    }),
+                    1000
+                );
             } else {
                 component.set("v.listOfRecords", []);
                 component.set("v.cloneListOfRecords", []);
@@ -186,8 +192,9 @@
             // console.log('state-- ',state);
             if (state === "SUCCESS" && response.getReturnValue() == 'Success' && (theBomId == null || theBomId == undefined)) {
                 component.set('v.isCancelModalOpen', false);
-                var redirectUrl = '/one/one.app?#/sObject/' + component.get('v.recordId') + '/view';
-                window.open(redirectUrl, '_self');
+                // var redirectUrl = '/one/one.app?#/sObject/' + component.get('v.recordId') + '/view';
+                $A.get("e.force:refreshView").fire();
+                // window.open(redirectUrl, '_self');
             }else if (state === "SUCCESS" && response.getReturnValue() == 'Success' && theBomId != null && theBomId != undefined && theBomId != '') {
                 component.set('v.isCancelModalOpen', false);
                 component.find("goToPrevious").navigate({
@@ -261,41 +268,34 @@
                 console.log("product : ", JSON.parse(JSON.stringify(event.getParam("recordByEvent"))));
                 var product = event.getParam("recordByEvent");
                 if(product){
-                    console.log('phase 2');
                     listOfRecords[index].buildertek__Product__r = product;
                     listOfRecords[index].buildertek__Product__c = product.Id;
                     listOfRecords[index].buildertek__Description__c = product.Name;
                     listOfRecords[index].buildertek__Vendor__c = product.buildertek__Vendor__c;
                     listOfRecords[index].buildertek__Cost_Code__c = product.buildertek__Cost_Code__c;
                     listOfRecords[index].buildertek__Build_Phase__c = product.buildertek__Quote_Group__c;
-                    console.log('phase 3');
+                    listOfRecords[index].buildertek__Quantity__c = 1;
 
                 }
               }
               else {
-                console.log('phase 4');
                 listOfRecords[index].buildertek__Product__r = null;
                 listOfRecords[index].buildertek__Product__c = null;
                 listOfRecords[index].buildertek__Description__c = null;
                 listOfRecords[index].buildertek__Vendor__c = null;
                 listOfRecords[index].buildertek__Cost_Code__c = null;
                 listOfRecords[index].buildertek__Build_Phase__c = null;
+                listOfRecords[index].buildertek__Quantity__c = 0;
               }
-              console.log('phase 5');
 
-                component.set("v.listOfRecords", listOfRecords);
-          console.log('listOfRecords After Update >> ', JSON.parse(JSON.stringify(listOfRecords)));
-          console.log('phase 6');
-
-          
+            component.set("v.listOfRecords", listOfRecords);
+            console.log('listOfRecords After Update >> ', JSON.parse(JSON.stringify(listOfRecords)));
           
           window.setTimeout(
               $A.getCallback(function () {
                   component.set("v.isLoading", false);
-                }),
-                500
-                );
-        console.log('phase 7');
+            }),500
+        );
         } catch (error) {
             console.log('error in setProduct : ', error.stack);
             
