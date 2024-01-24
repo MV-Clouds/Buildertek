@@ -77,7 +77,7 @@
                         overflow: auto;
                     }
                 </aura:html>
-            <lightning:spinner class="slds-hide" variant="brand" size="small" aura:id="mySpinner"/>
+            <lightning:spinner class="slds-hide" alternativeText="Loading" variant="brand" size="small" aura:id="mySpinner"/>
             <center> {!v.Message}</center>
             <aura:iteration items="{!v.listOfSearchRecords}" var="singleRec">
                 <c:BT_LightningLookupResult ObjectAPIName="{!v.objectAPIName}" oRecord="{!singleRec}" IconName="{!v.IconName}" change="{!c.getSelectedLookupValue}" phaseIndex="{!v.phaseIndex}" index="{!v.index}"/>

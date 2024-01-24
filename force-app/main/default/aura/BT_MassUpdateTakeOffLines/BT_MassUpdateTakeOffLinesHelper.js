@@ -42,7 +42,7 @@
     // },
 
     takeoffRelatedInfo: function (component, event, helper) {
-        console.log('in takeoffRelatedInfo');
+        // console.log('in takeoffRelatedInfo');
         if(component.get('v.recordId') != undefined){
             var action = component.get("c.getTakeoffInfo");
             action.setParams({
@@ -74,7 +74,7 @@
         component.set('v.isLoading', true);
         var action = component.get("c.getRecords");
         var fieldSetValues = component.get("v.fieldSetValues");
-        console.log('@@fieldSetValues--'+fieldSetValues);
+        console.log('@@fieldSetValues-- ', JSON.parse(JSON.stringify(fieldSetValues)));
         var setfieldNames = new Set();
 
         for (var c = 0, clang = fieldSetValues.length; c < clang; c++) {
@@ -92,8 +92,8 @@
 
         var arrfieldNames = [];
         setfieldNames.forEach(v => arrfieldNames.push(v));
-        console.log('@@arrfieldNames--'+arrfieldNames);
-        component.set('v.arrfieldNames', arrfieldNames);
+        // console.log('@@arrfieldNames-- ', arrfieldNames);
+        // component.set('v.arrfieldNames', arrfieldNames);
         action.setParams({
             recordId: component.get('v.recordId'),
             fieldNameJson: JSON.stringify(arrfieldNames),
@@ -108,7 +108,7 @@
             if (response.getState() == 'SUCCESS' && response.getReturnValue()) {
                 var list = JSON.parse(response.getReturnValue());
                 if (list.length > 0) {
-                    console.log('@@list--'+list);
+                    console.log('@@list-- ', list);
                     component.set("v.listOfRecords", list);
                     component.set("v.cloneListOfRecords", list);
                     component.set('v.numberOfItems', list.length);
@@ -182,8 +182,8 @@
         action.setCallback(this, function (response) {
             var state = response.getState();
             var theBomId = component.get('v.bomId');
-            console.log('theBomId--',theBomId);
-            console.log('state--',state);
+            // console.log('theBomId-- ',theBomId);
+            // console.log('state-- ',state);
             if (state === "SUCCESS" && response.getReturnValue() == 'Success' && (theBomId == null || theBomId == undefined)) {
                 component.set('v.isCancelModalOpen', false);
                 var redirectUrl = '/one/one.app?#/sObject/' + component.get('v.recordId') + '/view';
@@ -252,4 +252,53 @@
         });
         $A.enqueueAction(action);
     },
+
+    setProduct: function(component, event, helper, setProduct){
+        try {
+            var index = event.getParam("index");
+            var listOfRecords = JSON.parse(JSON.stringify(component.get("v.listOfRecords")));
+            if(setProduct){
+                console.log("product : ", JSON.parse(JSON.stringify(event.getParam("recordByEvent"))));
+                var product = event.getParam("recordByEvent");
+                if(product){
+                    console.log('phase 2');
+                    listOfRecords[index].buildertek__Product__r = product;
+                    listOfRecords[index].buildertek__Product__c = product.Id;
+                    listOfRecords[index].buildertek__Description__c = product.Name;
+                    listOfRecords[index].buildertek__Vendor__c = product.buildertek__Vendor__c;
+                    listOfRecords[index].buildertek__Cost_Code__c = product.buildertek__Cost_Code__c;
+                    listOfRecords[index].buildertek__Build_Phase__c = product.buildertek__Quote_Group__c;
+                    console.log('phase 3');
+
+                }
+              }
+              else {
+                console.log('phase 4');
+                listOfRecords[index].buildertek__Product__r = null;
+                listOfRecords[index].buildertek__Product__c = null;
+                listOfRecords[index].buildertek__Description__c = null;
+                listOfRecords[index].buildertek__Vendor__c = null;
+                listOfRecords[index].buildertek__Cost_Code__c = null;
+                listOfRecords[index].buildertek__Build_Phase__c = null;
+              }
+              console.log('phase 5');
+
+                component.set("v.listOfRecords", listOfRecords);
+          console.log('listOfRecords After Update >> ', JSON.parse(JSON.stringify(listOfRecords)));
+          console.log('phase 6');
+
+          
+          
+          window.setTimeout(
+              $A.getCallback(function () {
+                  component.set("v.isLoading", false);
+                }),
+                500
+                );
+        console.log('phase 7');
+        } catch (error) {
+            console.log('error in setProduct : ', error.stack);
+            
+        }
+      },
 })

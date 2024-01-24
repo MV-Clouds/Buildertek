@@ -1,10 +1,10 @@
 ({
     doInit: function (component, event, helper) {
         var pageRef = component.get("v.pageReference");
-        console.log('pageRef--',JSON.stringify(pageRef));
+        // console.log('pageRef--',JSON.stringify(pageRef));
         if (pageRef != undefined) {
             var state = pageRef.state; // state holds any query params	        
-            console.log('state = ' + JSON.stringify(state));
+            // console.log('state = ' + JSON.stringify(state));
             if (state != undefined && state.c__Id != undefined) {
                 component.set("v.recordId", state.c__Id);
             }
@@ -22,7 +22,7 @@
         var searchCategory = component.find("searchCategory").get("v.value");
         var searchTradeType = component.find("searchTradeType").get("v.value");
         helper.getTableFieldSet(component, event, helper);
-        console.log('recID--',component.get('v.recordId'));
+        // console.log('recID--',component.get('v.recordId'));
 
         window.setTimeout(
             $A.getCallback(function () {
@@ -45,7 +45,7 @@
         var workspaceAPI = component.find("workspace");
 
         workspaceAPI.getEnclosingTabId().then(function (tabId) {
-                console.log(tabId)
+                // console.log(tabId)
                 if (tabId == focusedTabId) {
                     setTimeout(function () {
                         location.reload()
@@ -73,7 +73,7 @@
 
     closeScreen: function (component, event, helper) {
         var theBomId = component.get('v.bomId');
-        console.log('theBomId--',theBomId);
+        // console.log('theBomId--',theBomId);
         component.set('v.isCancelModalOpen', false);
         if(theBomId == null || theBomId == undefined)
         {
@@ -278,7 +278,7 @@
                 component.set("v.listOfSelectedTakeOffIds",recordIds);
             }
         }
-        console.log(recordIds);
+        // console.log(recordIds);
            
     },
     
@@ -316,7 +316,7 @@
                 selectedRfqIds.splice(index,1);
             }
         }
-        console.log(selectedRfqIds);
+        // console.log(selectedRfqIds);
         component.set("v.listOfSelectedTakeOffIds",selectedRfqIds);
       
         
@@ -383,6 +383,62 @@
 
     cancelDelete: function (component, event, helper) {
         component.set('v.isMassDeleteClick', false);
+    },
+
+    handleLookUpEvent: function(component, event, helper){
+        component.set("v.isLoading", true);
+        var selectedRecordId = event.getParam("selectedRecordId");
+        var index = event.getParam('index');
+        console.log('selectedRecordId : ', selectedRecordId);
+        console.log('index : ', index);
+        console.log('fieldName 1 : ', event.getParam("fieldName"));
+        
+        if(event.getParam("fieldName") == 'buildertek__Price_Book__c'){
+          component.set("v.isLoading", true);
+          var listOfRecords = component.get("v.listOfRecords");
+          listOfRecords[index].buildertek__Price_Book__c = selectedRecordId[0];
+          component.set("v.listOfRecords", listOfRecords);
+
+          var setProduct = false;   // Clear product...
+
+        // to avoid lag after set product...
+          window.setTimeout(
+            $A.getCallback(function () {
+              helper.setProduct(component, event, helper, setProduct);
+            }),
+            1000
+          );
+        }
+        else{
+          component.set("v.isLoading", false);
+        }
+    },
+
+    clearSelectedHandler :  function(component, event, helper){
+        component.set("v.isLoading", true);
+        var setProduct = false;   // Clear product...
+
+        // to avoid lag after set product...
+        window.setTimeout(
+          $A.getCallback(function () {
+            helper.setProduct(component, event, helper, setProduct);
+          }),
+          1000
+        );
+    },
+
+    ProductSelectHandler: function(component, event, helper){
+        component.set("v.isLoading", true);
+        var setProduct = true;
+
+        // to avoid lag after set product...
+        window.setTimeout(
+          $A.getCallback(function () {
+            helper.setProduct(component, event, helper, setProduct);
+          }),
+          1000
+        );
+
     },
     
 })
