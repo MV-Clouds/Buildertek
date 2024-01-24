@@ -51,6 +51,7 @@ trigger BOMLineTrigger on Select_Sheet__c (after insert,after update, after dele
                 update bomToUpdate;
             }
             BOMLineTriggerHelper.onAfterInsert(Trigger.new);
+            BOMLineTriggerHelper.updateStatusOnBOM(Trigger.new);
         }
     }
    if(Trigger.isAfter && Trigger.isUpdate){
@@ -62,9 +63,11 @@ trigger BOMLineTrigger on Select_Sheet__c (after insert,after update, after dele
     //         BOMLineTriggerHelper.afterUpdate(Trigger.oldMap, Trigger.newMap,Trigger.old, Trigger.new);
     //     }
         BOMLineTriggerHelper.onAfterUpdate(Trigger.new, Trigger.oldMap);
+        BOMLineTriggerHelper.updateStatusOnBOM(Trigger.new);
     }
 
     if(Trigger.isAfter && Trigger.isDelete){
         BOMLineTriggerHelper.onAfterDelete(Trigger.old);
+        BOMLineTriggerHelper.updateStatusOnBOM(Trigger.old);
     }
 }
