@@ -66,6 +66,15 @@
         action.setCallback(this, function (response) {
             var fieldSetObj = JSON.parse(response.getReturnValue());
             component.set("v.fieldSetValues", fieldSetObj);
+
+            var pageNumber = component.get("v.PageNumber");
+            var pageSize = component.get("v.pageSize");
+            var SearchProductType = component.find("SearchProductType").get("v.value");
+            var searchLocation = component.find("searchLocation").get("v.value");
+            var searchCategory = component.find("searchCategory").get("v.value");
+            var searchTradeType = component.find("searchTradeType").get("v.value");
+            helper.getTableRows(component, event, helper, pageNumber, pageSize, SearchProductType, searchLocation, searchCategory, searchTradeType);
+
         })
         $A.enqueueAction(action);
     },
@@ -138,7 +147,7 @@
                     $A.getCallback(function () {
                       component.set('v.isLoading', false);
                     }),
-                    1000
+                    3000
                 );
             } else {
                 component.set("v.listOfRecords", []);
@@ -265,7 +274,7 @@
             var index = event.getParam("index");
             var listOfRecords = JSON.parse(JSON.stringify(component.get("v.listOfRecords")));
             if(setProduct){
-                console.log("product : ", JSON.parse(JSON.stringify(event.getParam("recordByEvent"))));
+                // console.log("product : ", JSON.parse(JSON.stringify(event.getParam("recordByEvent"))));
                 var product = event.getParam("recordByEvent");
                 if(product){
                     listOfRecords[index].buildertek__Product__r = product;
@@ -289,7 +298,7 @@
               }
 
             component.set("v.listOfRecords", listOfRecords);
-            console.log('listOfRecords After Update >> ', JSON.parse(JSON.stringify(listOfRecords)));
+            // console.log('listOfRecords After Update >> ', JSON.parse(JSON.stringify(listOfRecords)));
           
           window.setTimeout(
               $A.getCallback(function () {

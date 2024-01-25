@@ -15,27 +15,14 @@
 
 
         component.set('v.isLoading', true);
-        var pageNumber = component.get("v.PageNumber");
-        var pageSize = component.get("v.pageSize");
-        var SearchProductType = component.find("SearchProductType").get("v.value");
-        var searchLocation = component.find("searchLocation").get("v.value");
-        var searchCategory = component.find("searchCategory").get("v.value");
-        var searchTradeType = component.find("searchTradeType").get("v.value");
-        helper.getTableFieldSet(component, event, helper);
-        // console.log('recID--',component.get('v.recordId'));
 
+        // Optimized code for fast rendering...
+        helper.takeoffRelatedInfo(component, event, helper);
+        // console.log('recID--',component.get('v.recordId'));
+        
         window.setTimeout(
             $A.getCallback(function () {
-                // helper.getTotalRecord(component, event, helper);
-                // helper.getTakeOffName(component, event, helper);
-                // helper.getTakeOffParentId(component, event, helper);
-                helper.takeoffRelatedInfo(component, event, helper);
-                //window.setTimeout(
-                //$A.getCallback(function () {
-                helper.getTableRows(component, event, helper, pageNumber, pageSize, SearchProductType, searchLocation, searchCategory, searchTradeType);
-                //}), 100
-                //);
-                component.set('v.isLoading', false);
+                helper.getTableFieldSet(component, event, helper);
             }), 2000
         );
     },
