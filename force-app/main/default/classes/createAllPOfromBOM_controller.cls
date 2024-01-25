@@ -28,13 +28,13 @@ public class createAllPOfromBOM_controller {
                     }
                 }
 
-                if(AllBOMlinesAssigesWithPO == true){
-                    returnValue.state = 'error';
-                    returnValue.returnMessage = 'All lines with vendor are already assiged with PO.';
-                }
-                else if(AllBOMlinesNotHaveVendor == true){
+                if(AllBOMlinesNotHaveVendor == true){
                     returnValue.state = 'error';
                     returnValue.returnMessage = 'Please assign a vendor for each line. all lines not have a vendor assigned to create purchase orders.';
+                }
+                else if(AllBOMlinesAssigesWithPO == true){
+                    returnValue.state = 'error';
+                    returnValue.returnMessage = 'All lines with vendor are already assiged with PO.';
                 }
                 else{
 
@@ -123,12 +123,6 @@ public class createAllPOfromBOM_controller {
             returnValue.returnMessage = 'Something went wrong!';
             return returnValue;
         }
-    }
-
-    public class vendor_BOMLine_class{
-        public string VendorId;
-        public string BOMlineId;
-        public string POId;
     }
 
     public class responseWrapper{
