@@ -3152,6 +3152,18 @@
                             </aura:if>
                         </aura:iteration>
                     </lightning:select>
+                    <lightning:select name="field3" label="Select Field 3" value="{!v.valueofField3}">
+                        <option text="--None--" value="" />
+                        <aura:iteration items="{!v.GroupingOptions}" var="item">
+                            <aura:if
+                                isTrue="{! (item.value == v.valueofField1 || item.value == v.valueofField2 || item.value==v.valueofField4)}">
+                                <option text="{!item.label}" value="{!item.value}" disabled="true" />
+                                <aura:set attribute="else">
+                                    <option text="{!item.label}" value="{!item.value}" />
+                                </aura:set>
+                            </aura:if>
+                        </aura:iteration>
+                    </lightning:select>
                     <!-- <lightning:select name="field3" label="Select Field 3" value="{!v.valueofField3}">
                         <option text="None" value="" />
                         <aura:iteration items="{!v.GroupingOptions}" var="item">

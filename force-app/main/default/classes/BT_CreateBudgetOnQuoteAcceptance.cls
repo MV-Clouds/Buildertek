@@ -8,6 +8,7 @@ public class BT_CreateBudgetOnQuoteAcceptance {
 
     public String GroupingLevel1 { get; set; }
     public String GroupingLevel2 { get; set; }
+    public String GroupingLevel3 { get; set; }
 
     
  // public buildertek__Admin_Interface_Node_Configuration__c adminterface {get;set;} 
@@ -17,8 +18,8 @@ public class BT_CreateBudgetOnQuoteAcceptance {
         buildertek__Admin_Interface_Node_Configuration__c adminInterfaceNodeConfigurations = [Select Id,buildertek__Create_Budget_on_Quote_Acceptance__c,
                                                                                               buildertek__Email_Subject__c,buildertek__Automatically_add_Expense_to_Budget__c,
                                                                                               buildertek__Automatically_add_Time_Card_to_Budget__c,buildertek__Group_by_Cost_Code__c , 
-                                                                                              buildertek__Group_by_vendor__c, buildertek__Budget_Grouping_Data__c ,buildertek__Budget_Grouping_Level_1__c , buildertek__Budget_Grouping_Level_2__c
-                                                                                              from buildertek__Admin_Interface_Node_Configuration__c WHERE Name=:'Budget Configuration'];
+                                                                                              buildertek__Group_by_vendor__c, buildertek__Budget_Grouping_Data__c ,buildertek__Budget_Grouping_Level_1__c , buildertek__Budget_Grouping_Level_2__c,
+                                                                                              buildertek__Budget_Grouping_Level_3__c from buildertek__Admin_Interface_Node_Configuration__c WHERE Name=:'Budget Configuration'];
 
         isCreateChangeOrderonOverage=adminInterfaceNodeConfigurations.buildertek__Create_Budget_on_Quote_Acceptance__c	;
         isCreateexpense = adminInterfaceNodeConfigurations.buildertek__Automatically_add_Expense_to_Budget__c;
@@ -29,6 +30,7 @@ public class BT_CreateBudgetOnQuoteAcceptance {
 
         GroupingLevel1 = adminInterfaceNodeConfigurations.buildertek__Budget_Grouping_Level_1__c;
         GroupingLevel2 = adminInterfaceNodeConfigurations.buildertek__Budget_Grouping_Level_2__c;
+        GroupingLevel3 = adminInterfaceNodeConfigurations.buildertek__Budget_Grouping_Level_3__c;
 
 
     }
@@ -49,8 +51,8 @@ public class BT_CreateBudgetOnQuoteAcceptance {
         buildertek__Admin_Interface_Node_Configuration__c adminInterfaceNodeConfigurations = [Select Id,buildertek__Create_Budget_on_Quote_Acceptance__c,
                                                                                               buildertek__Email_Subject__c,buildertek__Automatically_add_Expense_to_Budget__c,
                                                                                               buildertek__Automatically_add_Time_Card_to_Budget__c,buildertek__Group_by_Cost_Code__c , 
-                                                                                              buildertek__Group_by_vendor__c, buildertek__Budget_Grouping_Data__c ,buildertek__Budget_Grouping_Level_1__c , buildertek__Budget_Grouping_Level_2__c
-                                                                                              from buildertek__Admin_Interface_Node_Configuration__c WHERE Name=:'Budget Configuration'];
+                                                                                              buildertek__Group_by_vendor__c, buildertek__Budget_Grouping_Data__c ,buildertek__Budget_Grouping_Level_1__c , buildertek__Budget_Grouping_Level_2__c,
+                                                                                              buildertek__Budget_Grouping_Level_3__c from buildertek__Admin_Interface_Node_Configuration__c WHERE Name=:'Budget Configuration'];
         adminInterfaceNodeConfigurations.buildertek__Create_Budget_on_Quote_Acceptance__c	=isCreateChangeOrderonOverage;
         adminInterfaceNodeConfigurations.buildertek__Automatically_add_Expense_to_Budget__c = isCreateexpense;
         adminInterfaceNodeConfigurations.buildertek__Automatically_add_Time_Card_to_Budget__c = isCreateTimeCard;
@@ -64,13 +66,21 @@ public class BT_CreateBudgetOnQuoteAcceptance {
         if(GroupingLevel2 == 'None'){
             GroupingLevel2 = null;
         }
+        if(GroupingLevel3 == 'None'){
+            GroupingLevel3 = null;
+        }
          adminInterfaceNodeConfigurations.buildertek__Budget_Grouping_Level_1__c = GroupingLevel1;
          adminInterfaceNodeConfigurations.buildertek__Budget_Grouping_Level_2__c = GroupingLevel2;
-
-        if(GroupingLevel1 == GroupingLevel2 && GroupingLevel1 != null && GroupingLevel2 != null){
-            ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, 'Grouping Level 1 and Grouping Level 2 cannot be same.'));
-            return; // Validation fails, no data saving will be performed
-        }
+         adminInterfaceNodeConfigurations.buildertek__Budget_Grouping_Level_3__c = GroupingLevel3;
+        
+         if (GroupingLevel1 == GroupingLevel2 && GroupingLevel1 != null && GroupingLevel2 != null
+         || GroupingLevel1 == GroupingLevel3 && GroupingLevel1 != null && GroupingLevel3 != null
+         || GroupingLevel2 == GroupingLevel3 && GroupingLevel2 != null && GroupingLevel3 != null
+         || GroupingLevel1 == GroupingLevel2 && GroupingLevel2 == GroupingLevel3 && GroupingLevel1 == GroupingLevel3 && GroupingLevel1 != null && GroupingLevel2 != null && GroupingLevel3 != null ) {
+         ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, 'Grouping Levels cannot be the same.'));
+         return; // Validation fails, no data saving will be performed
+     }
+     
 
         
         update adminInterfaceNodeConfigurations;

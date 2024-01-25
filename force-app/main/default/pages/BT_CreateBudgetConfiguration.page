@@ -28,6 +28,9 @@
                     <apex:selectOptions value="{!GroupingOptions}" />
                 </apex:selectList>
                 
+                <apex:selectList label="Grouping Level 3" id="grouping3" value="{!GroupingLevel3}" size="1">
+                    <apex:selectOptions value="{!GroupingOptions}" />
+                </apex:selectList>
 
 
 

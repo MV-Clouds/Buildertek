@@ -2534,6 +2534,7 @@
     submitDetails: function(component, event, helper) {
         var valueofField1 = component.get("v.valueofField1");
         var valueofField2 = component.get("v.valueofField2");
+        var valueofField3 = component.get("v.valueofField3");
         // var valueofField1 = 'buildertek__Group__c';
         // var valueofField2 = 'buildertek__Sub_Grouping__c';
         // var valueofField3 = component.get("v.valueofField3")
@@ -2545,7 +2546,7 @@
         // console.log({valueofField4});
 
 
-        if(valueofField1 == "" && valueofField2 == ""){
+        if(valueofField1 == "" && valueofField2 == "" && valueofField3 == ""){
             var toastEvent = $A.get("e.force:showToast");
             toastEvent.setParams({
                 "type": "Error",
@@ -2561,9 +2562,9 @@
             if (valueofField2 != "") {
                 selectedFieldList.push(valueofField2)
             }
-            // if (valueofField3 != "") {
-            //     selectedFieldList.push(valueofField3)
-            // }
+            if (valueofField3 != "") {
+                selectedFieldList.push(valueofField3)
+            }
             // if (valueofField4 != "") {
             //     selectedFieldList.push(valueofField4)
             // }
