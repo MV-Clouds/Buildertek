@@ -1,0 +1,70 @@
+<aura:component controller="ImagePreviewController" implements="force:appHostable,force:hasSObjectName,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+    <aura:attribute name="selectionCategory" type="Object"/>
+    <aura:attribute name="recordLoadError" type="String"/>
+    <aura:attribute name="sObjectName" type="String"/>
+    <aura:attribute name="orgBaseURL" type="string" />
+    <aura:attribute name="categoryList" type="List" />
+    <aura:attribute name="currentPage" type="Integer" />
+    <aura:attribute name="totalPages" type="Integer" />
+    <aura:attribute name="displayedCategories" type="List" />
+    <aura:attribute name="selectionTypeId" type="String" />
+    <aura:attribute name="showPreviousButton" type="Boolean" />
+    <aura:attribute name="showSelectionOptions" type="Boolean" default="false"/>
+    <aura:attribute name="showNextButton" type="Boolean" />
+    <aura:attribute name="categoriesPerPage" type="Integer" default="6" />
+    <aura:attribute name="selectedCategoryId" type="String" default="" />
+    <aura:attribute name="selectedCategoryName" type="String" />
+    <aura:attribute name="selectionTypeName" type="String"/>
+    <aura:attribute name="mainRecordId" type="String" />
+    <aura:attribute name="message" type="string" default="Loading Selection Types..." />
+    <force:recordData aura:id="forceRecord" recordId="{!v.recordId}" fields="Id, Name" targetFields="{!v.selectionCategory}" targetError="{!v.recordLoadError}" />
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+
+    <lightning:card>
+        <aura:if isTrue="{!v.sObjectName == 'buildertek__Section__c'}">
+            <div class="titleStyle">{!v.selectionCategory.Name}</div>
+            <aura:set attribute="else">
+                <div class="titleStyle rkdivfora"><ui:outputURL value="{!'/one/one.app?#/sObject/'+ v.selectedCategoryId + '/view'}" target="_blank" label="{!v.selectedCategoryName}"/></div>
+            </aura:set>
+        </aura:if>
+        <!-- <div class="titleStyle">{!v.selectionCategory.Name}</div> -->
+        <aura:if isTrue="{!v.categoryList.length > 0}">
+        <div class="slds-m-around_medium main-file-cmp">
+            <div class="side-btn">
+                <!-- <aura:if isTrue="{!v.showPreviousButton}"> -->
+                    <button class="slds-button slds-button_icon" onclick="{!c.previousPage}" style="{!v.showPreviousButton == false ? 'display:none;' : ''}">
+                        <lightning:icon iconName="utility:left" size="small" alternativeText="Previous" />
+                    </button>
+                <!-- </aura:if> -->
+            </div>
+            <div class="main-file-cmp-2">
+                <aura:iteration items="{!v.displayedCategories}" var="category" indexVar="indexNum">
+                    <div style="flex: 0 0 calc(16.6667% - 19px); margin: 5px 9.5px; cursor: pointer; position: relative;" id="{!category.Id}" data-name="{!category.Name}" onclick="{!c.handleImageClick}">
+                        <img style="min-width: 100%; min-height: 100%; width: 100%; height: 175px; border: 1px solid grey; opacity: 0.3;" src="{!$Resource.selectionCategoryImage}" id="{!category.Id}" />
+                        <div class="center">{!category.Name}</div>
+                    </div>
+                </aura:iteration>
+            </div>
+            <div class="side-btn">
+                <!-- <aura:if isTrue="{!v.showNextButton}"> -->
+                    <button class="slds-button slds-button_icon" onclick="{!c.nextPage}" style="{!v.showNextButton == false ? 'display:none;' : ''}" > 
+                        <lightning:icon iconName="utility:right" size="small" alternativeText="Next" />
+                    </button>
+                <!-- </aura:if> -->
+            </div>
+        </div>
+        <aura:if isTrue="{!v.showSelectionOptions}">
+            <div>
+                    <c:ImagePreviewOnSelectionType selectionTypeId="{!v.selectionTypeId}" selectionTypeName="{!v.selectionTypeName}" sObjectName="{!v.sObjectName}" />
+            </div>
+        </aura:if>
+        <aura:set attribute="else"> 
+            <div class="messageDiv">
+                <h2><b>{!v.message}</b></h2>
+            </div>   
+        </aura:set>
+        </aura:if>
+
+    </lightning:card>
+
+</aura:component>

@@ -1,0 +1,19 @@
+<aura:component controller="ImagePreviewController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global">
+    <aura:attribute name="selectionCategories" type="List" />
+    <aura:attribute name="selectedCategoryId" type="String" default="" />
+    <aura:attribute name="selectedCategoryName" type="String" default="" />
+    <aura:attribute name="sObjectName" type="String"/>
+    <aura:attribute name="showChildComponent" type="Boolean" default="false" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <lightning:card>
+        <lightning:select  aura:id="selectionCategory" label="Select Selection Category..." onchange="{!c.handleCategoryChange}">
+            <aura:iteration items="{!v.selectionCategories}" var="category">
+                <option value="{!category.Id}" data-id="{!category.Name}">{!category.Name}</option>
+            </aura:iteration>
+        </lightning:select>
+        <aura:if isTrue="{!v.showChildComponent}">
+            <c:ImagePreviewOnSelectionCategory selectedCategoryId="{!v.selectedCategoryId}" sObjectName="{!v.sObjectName}" selectedCategoryName="{!v.selectedCategoryName}"/>
+        </aura:if>
+    </lightning:card>
+</aura:component>
