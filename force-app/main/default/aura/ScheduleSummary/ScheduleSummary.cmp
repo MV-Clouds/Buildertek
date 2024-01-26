@@ -30,8 +30,10 @@
                                     value="{!'/one/one.app?#/sObject/'+ task.Id + '/view'}"
                                     target="_blank"
                                     label="{!task.Name}" /></p>
-                                <p class="poppins">Finish Date: {!task.buildertek__Finish__c}</p>
-                                <p class="poppins">Completion(%): {!task.buildertek__Completion__c}%</p>
+                                <div style="display: flex; justify-content: space-between; ">
+                                    <p class="poppins">Finish Date: {!task.buildertek__Finish__c}</p>
+                                    <p class="poppins">Completion(%): {!task.buildertek__Completion__c}%</p>
+                                </div>
                             </div>
                         </aura:iteration>
                         <aura:set attribute="else">
@@ -52,8 +54,10 @@
                                     value="{!'/one/one.app?#/sObject/'+ task.Id + '/view'}"
                                     target="_blank"
                                     label="{!task.Name}"/></p>
-                                <p class="poppins">Finish Date: {!task.buildertek__Finish__c}</p>
-                                <p class="poppins">Completion(%): {!task.buildertek__Completion__c}%</p>
+                                <div style="display: flex; justify-content: space-between; ">
+                                    <p class="poppins">Finish Date: {!task.buildertek__Finish__c}</p>
+                                    <p class="poppins">Completion(%): {!task.buildertek__Completion__c}%</p>
+                                </div>
                             </div>
                         </aura:iteration>
                         <aura:set attribute="else">
@@ -74,9 +78,11 @@
                                     value="{!'/one/one.app?#/sObject/'+ task.Id + '/view'}"
                                     target="_blank"
                                     label="{!task.Name}" /></p>
-                                <p class="poppins">Finish Date: {!task.buildertek__Finish__c}</p>
-                                <p class="poppins">Completion(%): {!task.buildertek__Completion__c}%</p>
-                            </div>
+                                <div style="display: flex; justify-content: space-between; ">
+                                    <p class="poppins">Finish Date: {!task.buildertek__Finish__c}</p>
+                                    <p class="poppins">Completion(%): {!task.buildertek__Completion__c}%</p>
+                                </div>
+                                </div>
                         </aura:iteration>
                         <aura:set attribute="else">
                             <div class="emptyList">
