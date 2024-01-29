@@ -131,6 +131,7 @@ public class createPOfromBOM_controller {
             buildertek__Purchase_Order__c POtoCreate = new buildertek__Purchase_Order__c();
             POtoCreate.buildertek__Description__c = BOM.buildertek__Name__c;
             POtoCreate.buildertek__Project__c = BOM.buildertek__Project__c;
+            POtoCreate.buildertek__Bill_of_Material__c = BOM.Id;
             POtoCreate.buildertek__Status__c = 'Open';
             POtoCreate.buildertek__Vendor__c = VendorId;
             insert POtoCreate;
