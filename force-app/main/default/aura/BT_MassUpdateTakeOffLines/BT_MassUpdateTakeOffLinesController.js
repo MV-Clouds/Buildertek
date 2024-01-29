@@ -373,57 +373,50 @@
     },
 
     handleLookUpEvent: function(component, event, helper){
-        component.set("v.isLoading", true);
-        var selectedRecordId = event.getParam("selectedRecordId");
-        var index = event.getParam('index');
-        console.log('selectedRecordId : ', selectedRecordId);
-        console.log('index : ', index);
-        console.log('fieldName 1 : ', event.getParam("fieldName"));
-        
-        if(event.getParam("fieldName") == 'buildertek__Price_Book__c'){
-          component.set("v.isLoading", true);
-          var listOfRecords = component.get("v.listOfRecords");
-          listOfRecords[index].buildertek__Price_Book__c = selectedRecordId[0];
-          component.set("v.listOfRecords", listOfRecords);
+        try {
+            
+            var selectedRecordId = event.getParam("selectedRecordId");
+            var index = event.getParam('index');
+            
+            if(event.getParam("fieldName") == 'buildertek__Price_Book__c'){
+            //   component.set("v.isLoading", true);
+              var listOfRecords = component.get("v.listOfRecords");
+              listOfRecords[index].buildertek__Price_Book__c = selectedRecordId[0];
+              component.set("v.rerender", !component.get("v.rerender"));
+              component.set("v.listOfRecords", listOfRecords);
 
-          var setProduct = false;   // Clear product...
-
-        // to avoid lag after set product...
-          window.setTimeout(
-            $A.getCallback(function () {
-              helper.setProduct(component, event, helper, setProduct);
-            }),
-            1000
-          );
-        }
-        else{
-          component.set("v.isLoading", false);
+              var setProduct = false;   // Clear product...
+              helper.setProduct(component, event, helper, setProduct, index);
+            }
+        } catch (error) {
+            console.log(' error in handleLookUpEvent: ', error.stack);
         }
     },
 
     clearSelectedHandler :  function(component, event, helper){
-        component.set("v.isLoading", true);
-        var setProduct = false;   // Clear product...
+        var index = event.getParam("index");
+        console.log('field : ', event.getParam("fieldName"));
+        if(event.getParam("fieldName") == 'buildertek__Price_Book__c' || event.getParam("fieldName") == undefined){ 
+            // undefiend when function call from "BT_LightningLookup" component...
+            // component.set("v.isLoading", true);
 
-        // to avoid lag after set product...
-        window.setTimeout(
-          $A.getCallback(function () {
-            helper.setProduct(component, event, helper, setProduct);
-          }),
-          1000
-        );
+            var setProduct = false;   // Clear product...
+            helper.setProduct(component, event, helper, setProduct, index);
+        }
     },
 
     ProductSelectHandler: function(component, event, helper){
-        component.set("v.isLoading", true);
+        // component.set("v.isLoading", true);
+        console.log('ProductSelectHandler');
+        var index = event.getParam("index");
         var setProduct = true;
-
+        
         // to avoid lag after set product...
         window.setTimeout(
-          $A.getCallback(function () {
-            helper.setProduct(component, event, helper, setProduct);
+            $A.getCallback(function () {
+              helper.setProduct(component, event, helper, setProduct, index);
           }),
-          1000
+          100
         );
 
     },

@@ -269,10 +269,11 @@
         $A.enqueueAction(action);
     },
 
-    setProduct: function(component, event, helper, setProduct){
+    setProduct: function(component, event, helper, setProduct, index){
         try {
-            var index = event.getParam("index");
-            var listOfRecords = JSON.parse(JSON.stringify(component.get("v.listOfRecords")));
+            // var index = event.getParam("index");
+            // var listOfRecords = JSON.parse(JSON.stringify(component.get("v.listOfRecords")));
+            var listOfRecords = component.get("v.listOfRecords");
             if(setProduct){
                 // console.log("product : ", JSON.parse(JSON.stringify(event.getParam("recordByEvent"))));
                 var product = event.getParam("recordByEvent");
@@ -297,14 +298,19 @@
                 listOfRecords[index].buildertek__Quantity__c = 0;
               }
 
+            //   v.currectModifiedIndex & v.rerender used to Rerender FieldSetMass Update child Component (BUIL-3824)... 
+            // these attribue used to rerendr only perticualar index's field...
+            component.set("v.currectModifiedIndex", index);
+            component.set("v.rerender", true);
             component.set("v.listOfRecords", listOfRecords);
+            component.set("v.rerender", false);
             // console.log('listOfRecords After Update >> ', JSON.parse(JSON.stringify(listOfRecords)));
           
-          window.setTimeout(
-              $A.getCallback(function () {
-                  component.set("v.isLoading", false);
-            }),500
-        );
+        //   window.setTimeout(
+        //       $A.getCallback(function () {
+        //           component.set("v.isLoading", false);
+        //     }),500
+        // );
         } catch (error) {
             console.log('error in setProduct : ', error.stack);
             

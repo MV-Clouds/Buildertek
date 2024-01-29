@@ -34,7 +34,8 @@
                 var cmpEvent = component.getEvent("oClearRecordEvent");
                 cmpEvent.setParams({
                     "phaseIndex": component.get('v.phaseIndex'),
-                    "index": component.get('v.index')
+                    "index": component.get('v.index'),
+                    "fieldName": component.get("v.fieldName")
                 });
                 cmpEvent.fire();
             }
