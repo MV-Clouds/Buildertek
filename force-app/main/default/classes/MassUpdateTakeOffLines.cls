@@ -178,7 +178,7 @@ public class MassUpdateTakeOffLines{
                     searchTradeType = '%' + searchTradeType + '%';
                     query += ' AND buildertek__Trade_Type__r.Name LIKE : searchTradeType';
                 }
-                query += ' ORDER BY Name ASC NULLS LAST';
+                query += ' ORDER BY Name DESC NULLS LAST';
                 query += ' LIMIT : pageSize OFFSET : offset';
 
                 for (sObject s : Database.query(query)){
@@ -186,6 +186,7 @@ public class MassUpdateTakeOffLines{
                 }
                 if (lstResult.size() > 0){
                     result = JSON.serialize(lstResult);
+                    system.debug('return takeoff lines : '+ lstResult.size());
                     return result;
                 }
             }
@@ -229,11 +230,13 @@ public class MassUpdateTakeOffLines{
                 for (buildertek__Project_Takeoff_Lines__c item : items){
                     if (item.Id == null){
                         item.buildertek__Project_Takeoff__c = recordId;
+                        system.debug('id Null : ' + item);
                     }
                 }
                 if (items.size() > 0){
                     upsert items;
                 }
+                system.debug('item size : ' + items.size());
                 return 'Success';
                 //return getRecords(recordId, fieldSetName, pageNumber, pageSize, searchName, searchPlan, searchCategory, searchTradeType);
             }
@@ -284,5 +287,46 @@ public class MassUpdateTakeOffLines{
         }else{
             return null;
         }  
+    }
+
+    @AuraEnabled
+    public static Map<Id, Id> getProductPhase_BuildPhase(String takeOffId){
+        try {
+            List<buildertek__Quote_Line_Group__c> ProductPhase = [SELECT Id, Name FROM buildertek__Quote_Line_Group__c];
+            List<buildertek__Build_Phase__c> BuildPhases = [SELECT Id, Name FROM buildertek__Build_Phase__c];
+
+            Map<Id, String> ProPhaseId_PhaseName = new Map<Id, String>();
+            Map<String, Id> ProPhaseName_PhaseId = new Map<String, Id>();
+            for(buildertek__Quote_Line_Group__c proPhase : ProductPhase){
+                ProPhaseId_PhaseName.put(proPhase.Id, proPhase.Name);
+                ProPhaseName_PhaseId.put(proPhase.Name, proPhase.Id);
+            }
+
+            Map<Id, String> BuildPhaseId_PhaseName = new Map<Id, String>();
+            Map<String, Id> BuildPhaseName_PhaseId = new Map<String, Id>();
+            for(buildertek__Build_Phase__c BuildPhase : BuildPhases){
+                BuildPhaseId_PhaseName.put(BuildPhase.Id, BuildPhase.Name);
+                BuildPhaseName_PhaseId.put(BuildPhase.Name, BuildPhase.Id);
+            }
+
+            Map<Id, Id> ProductPhaseId_BuildPhaseId = new Map<Id, Id>();
+            for(String ProPhaseName : ProPhaseName_PhaseId.keySet()){
+                ProductPhaseId_BuildPhaseId.put(ProPhaseName_PhaseId.get(ProPhaseName), BuildPhaseName_PhaseId.get(ProPhaseName));
+            }
+
+            for(String BuildPhaseName : BuildPhaseName_PhaseId.keySet()){
+                ProductPhaseId_BuildPhaseId.put(ProPhaseName_PhaseId.get(BuildPhaseName), BuildPhaseName_PhaseId.get(BuildPhaseName));
+            }
+
+            return ProductPhaseId_BuildPhaseId;
+        } catch (Exception e) {
+            System.debug('Error in getBOMlines ..' + e.getMessage() + '\n' + e +'\n Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
+
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
+            return null;
+        }
     }
 }

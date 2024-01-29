@@ -61,6 +61,21 @@
         }
     },
 
+    helpergetProductPhase_BuildPhase: function(component, event, helper){
+        var action = component.get("c.getProductPhase_BuildPhase");
+        action.setParams({
+            recordId: component.get('v.recordId'),
+        });
+        action.setCallback(this, function (response) {
+            var result = response.getReturnValue();
+            console.log('helpergetProductPhase_BuildPhase : ', result);
+            if(result !=  null){
+                component.set("v.ProductPhase_BuildPhase", result);
+            }
+        })
+        $A.enqueueAction(action);
+    },
+
     getTableFieldSet: function (component, event, helper) {
         var action = component.get("c.getFieldSet");
         action.setCallback(this, function (response) {
@@ -278,12 +293,15 @@
                 // console.log("product : ", JSON.parse(JSON.stringify(event.getParam("recordByEvent"))));
                 var product = event.getParam("recordByEvent");
                 if(product){
+                    var ProductPhase_BuildPhase = component.get("v.ProductPhase_BuildPhase");
+                    // console.log('selected phase : ', product.buildertek__Quote_Group__c);
+                    // console.log('current phase : ', ProductPhase_BuildPhase[product.buildertek__Quote_Group__c]);
                     listOfRecords[index].buildertek__Product__r = product;
                     listOfRecords[index].buildertek__Product__c = product.Id;
                     listOfRecords[index].buildertek__Description__c = product.Name;
                     listOfRecords[index].buildertek__Vendor__c = product.buildertek__Vendor__c;
                     listOfRecords[index].buildertek__Cost_Code__c = product.buildertek__Cost_Code__c;
-                    listOfRecords[index].buildertek__Build_Phase__c = product.buildertek__Quote_Group__c;
+                    listOfRecords[index].buildertek__Build_Phase__c = ProductPhase_BuildPhase[product.buildertek__Quote_Group__c] ? ProductPhase_BuildPhase[product.buildertek__Quote_Group__c] : null;
                     listOfRecords[index].buildertek__Quantity__c = 1;
 
                 }
@@ -298,6 +316,7 @@
                 listOfRecords[index].buildertek__Quantity__c = 0;
               }
 
+
             //   v.currectModifiedIndex & v.rerender used to Rerender FieldSetMass Update child Component (BUIL-3824)... 
             // these attribue used to rerendr only perticualar index's field...
             component.set("v.currectModifiedIndex", index);
@@ -306,14 +325,13 @@
             component.set("v.rerender", false);
             // console.log('listOfRecords After Update >> ', JSON.parse(JSON.stringify(listOfRecords)));
           
-        //   window.setTimeout(
-        //       $A.getCallback(function () {
-        //           component.set("v.isLoading", false);
-        //     }),500
-        // );
+          window.setTimeout(
+              $A.getCallback(function () {
+                  component.set("v.isLoading", false);
+            }),500
+        );
         } catch (error) {
             console.log('error in setProduct : ', error.stack);
-            
         }
       },
 })

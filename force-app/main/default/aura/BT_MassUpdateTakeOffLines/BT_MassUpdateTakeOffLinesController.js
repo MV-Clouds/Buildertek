@@ -18,6 +18,7 @@
 
         // Optimized code for fast rendering...
         helper.takeoffRelatedInfo(component, event, helper);
+        helper.helpergetProductPhase_BuildPhase(component, event, helper);
         // console.log('recID--',component.get('v.recordId'));
         
         window.setTimeout(
@@ -56,6 +57,7 @@
         }
         list.unshift(obj);
         component.set('v.listOfRecords', list);
+        console.log('new raw added  : ', JSON.parse(JSON.stringify(list)));
     },
 
     closeScreen: function (component, event, helper) {
@@ -406,7 +408,7 @@
     },
 
     ProductSelectHandler: function(component, event, helper){
-        // component.set("v.isLoading", true);
+        component.set("v.isLoading", true);
         console.log('ProductSelectHandler');
         var index = event.getParam("index");
         var setProduct = true;
