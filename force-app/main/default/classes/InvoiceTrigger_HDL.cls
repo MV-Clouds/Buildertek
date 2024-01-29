@@ -495,4 +495,32 @@ public with sharing class InvoiceTrigger_HDL {
             
         }
     }
+
+    public void updateCOFieldOnReceiptsWhenUpdateCOFromSalesInvoice(buildertek__Billings__c[] newReceiptList, Map<Id,buildertek__Billings__c> oldReceiptMap, Map<Id,buildertek__Billings__c> newReceiptMap){
+        try {
+            Set<Id> billingIds = new Set<Id>();
+            for (buildertek__Billings__c billing : newReceiptList) {
+                if (oldReceiptMap.get(billing.Id).buildertek__Change_Order__c != billing.buildertek__Change_Order__c) {
+                    billingIds.add(billing.Id);
+                }
+            }
+            List<buildertek__Receipt__c> relatedReceipts = [SELECT Id, buildertek__BT_Change_Order__c,buildertek__Billing__c
+                                                            FROM buildertek__Receipt__c
+                                                            WHERE buildertek__Billing__c IN :billingIds];
+            
+            for (buildertek__Receipt__c receipt : relatedReceipts) {
+                if (newReceiptMap.get(receipt.buildertek__Billing__c).buildertek__Change_Order__c != oldReceiptMap.get(receipt.buildertek__Billing__c).buildertek__Change_Order__c) { 
+                    receipt.buildertek__BT_Change_Order__c = newReceiptMap.get(receipt.buildertek__Billing__c).buildertek__Change_Order__c;
+                    receipt.buildertek__Project__c = newReceiptMap.get(receipt.buildertek__Billing__c).buildertek__Project__c;
+                }
+            }
+
+            if (!relatedReceipts.isEmpty()) {
+                update relatedReceipts;
+            }
+        } catch (Exception e) {
+            System.debug('Error in QBIntegrationOnInsert Trigger handler >> ' + e.getMessage() + '\n' + e);
+        }
+    }
+
 }
