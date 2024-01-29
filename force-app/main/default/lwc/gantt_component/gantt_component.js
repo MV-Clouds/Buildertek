@@ -761,7 +761,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
         },
         {
           type: "widget",
-          text: "Contractor",
+          text: "Vendor",
           draggable: false,
           width: 180,
           widgets: [
