@@ -10,7 +10,7 @@
                     component.set('v.fieldSetValues', JSON.parse([result.FieldSetValues]));
                 }
                 else if(result.state == 'error'){
-    
+                    
                 }
             });
             $A.enqueueAction(action);
@@ -31,7 +31,13 @@
                 var result = response.getReturnValue();
                 // console.log('response : ', result);
                 if(result.state == 'success'){
-                    helper.formmateByGroup(component, event, helper, result);
+                    if(result.BOMLines){
+                        helper.formmateByGroup(component, event, helper, result);
+                    }
+                    else{
+                        helper.ToastMessageUtilityMethod(component, 'Error', 'There are no BOM line available. Please create atleast one BOM line.', 'error', 3000);
+                        component.set("v.isSpinner", false);
+                    }
                 }
                 else if(result.state == 'error'){
 
