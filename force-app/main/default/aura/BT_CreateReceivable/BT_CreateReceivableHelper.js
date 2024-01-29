@@ -24,7 +24,6 @@
                                 });
                                 toastEvent.fire();
                 } else {
-					console.log('entered in wrong place');
                     // Continue with the createARFromCO action
                     var createARAction = component.get("c.createARFromCO");
                     createARAction.setParams({
