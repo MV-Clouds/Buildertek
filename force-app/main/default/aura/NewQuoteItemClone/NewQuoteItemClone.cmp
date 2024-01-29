@@ -2354,7 +2354,7 @@
                             }
 
                         </aura:html>
-                            <c:Add_QuoteLine_from_Vendor quoteId="{!v.recordId}" openProductBoxwithVendor="{!v.openProductBoxwithVendor}" />
+                            <c:Add_QuoteLine_from_Vendor getPhase="{!v.phaseName}" quoteId="{!v.recordId}" openProductBoxwithVendor="{!v.openProductBoxwithVendor}" />
                     </aura:if>
 
                     <aura:if isTrue="{!v.openQuoteLineBox}">
