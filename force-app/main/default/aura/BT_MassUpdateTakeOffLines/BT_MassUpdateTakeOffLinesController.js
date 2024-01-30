@@ -359,6 +359,15 @@
                     });
                     toastEvent.fire();
                 }
+                else{
+                    var toastEvent = $A.get("e.force:showToast");
+                    toastEvent.setParams({
+                        "title": "Error!",
+                        "message": 'Something went wrong!',
+                        "type": 'error'
+                    });
+                    toastEvent.fire();
+                }
                 
                 $A.get('e.force:refreshView').fire();
             } 

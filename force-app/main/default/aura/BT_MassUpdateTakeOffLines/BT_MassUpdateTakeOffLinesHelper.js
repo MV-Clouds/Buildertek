@@ -226,6 +226,13 @@
                 component.set('v.isCancelModalOpen', false);
                 // var redirectUrl = '/one/one.app?#/sObject/' + component.get('v.recordId') + '/view';
                 $A.get("e.force:refreshView").fire();
+                var toastEvent = $A.get("e.force:showToast");
+                toastEvent.setParams({
+                    "title": "Success!",
+                    "message": 'Record Save Successfully.',
+                    "type": 'Success'
+                });
+                toastEvent.fire(); 
                 // window.open(redirectUrl, '_self');
             }else if (state === "SUCCESS" && response.getReturnValue() == 'Success' && theBomId != null && theBomId != undefined && theBomId != '') {
                 component.set('v.isCancelModalOpen', false);
@@ -241,8 +248,22 @@
                     //     "c__recordId": component.get("v.recordId")
                     // }
                 });
+                var toastEvent = $A.get("e.force:showToast");
+                toastEvent.setParams({
+                    "title": "Success!",
+                    "message": 'Record Save Successfully.',
+                    "type": 'Success'
+                });
+                toastEvent.fire(); 
             } else if (state === "ERROR") {
                 component.set('v.isLoading', false);
+                var toastEvent = $A.get("e.force:showToast");
+                toastEvent.setParams({
+                    "title": "Error!",
+                    "message": 'Something went wrong!',
+                    "type": 'error'
+                });
+                toastEvent.fire();
                 console.log('A Problem Occurred: ' + JSON.stringify(response.error));
             }
         });
