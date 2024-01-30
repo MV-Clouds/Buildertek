@@ -159,8 +159,26 @@ public class MassUpdateTakeOffLines{
         try{
             if (String.isNotBlank(recordId)){
                 Integer offset = (pageNumber - 1) * pageSize;
-                List<String> fieldNames = (List<String>)JSON.deserialize(fieldNameJson, List<String>.class);
-                Set<String> setFieldNames = new Set<String>();
+
+                String Fieldset = getFieldSet();
+                List<FieldSetObject> FieldSetList = (List<FieldSetObject>) JSON.deserialize(Fieldset, List<FieldSetObject>.class);
+                List<String> setfieldNames = new List<String>();
+
+                for (Integer c = 0; c < FieldSetList.size(); c++) {
+                        setfieldNames.add(FieldSetList[c].name);
+                        if (FieldSetList[c].type == 'REFERENCE') {
+                            if (FieldSetList[c].name.indexOf('__c') == -1) {
+                                setfieldNames.add(FieldSetList[c].name.substring(0, FieldSetList[c].name.indexOf('Id')) + '.Name');
+                            } else {
+                                setfieldNames.add(FieldSetList[c].name.substring(0, FieldSetList[c].name.indexOf('__c')) + '__r.Name');
+                            }
+                        }
+                }
+                system.debug('setfieldNames : ' + setfieldNames);
+
+                List<String> fieldNames = setfieldNames;
+                // List<String> fieldNames = (List<String>)JSON.deserialize(fieldNameJson, List<String>.class);
+                // Set<String> setFieldNames = new Set<String>();
                 String query = 'SELECT ' + String.join(fieldNames, ',')+' FROM buildertek__Project_Takeoff_Lines__c WHERE buildertek__Project_Takeoff__c=: recordId';
                 if (String.isNotBlank(productType)){
                     productType = '%' + productType + '%';
@@ -336,5 +354,12 @@ public class MassUpdateTakeOffLines{
             }
             return null;
         }
+    }
+
+    public class FieldSetObject {
+        public String label;
+        public String required;
+        public String type;
+        public String name;
     }
 }

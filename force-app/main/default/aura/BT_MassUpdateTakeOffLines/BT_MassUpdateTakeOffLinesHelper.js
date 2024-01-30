@@ -81,14 +81,15 @@
         action.setCallback(this, function (response) {
             var fieldSetObj = JSON.parse(response.getReturnValue());
             component.set("v.fieldSetValues", fieldSetObj);
+            console.log('@@fieldSetValues-- ', JSON.parse(JSON.stringify(fieldSetValues)));
 
-            var pageNumber = component.get("v.PageNumber");
-            var pageSize = component.get("v.pageSize");
-            var SearchProductType = component.find("SearchProductType").get("v.value");
-            var searchLocation = component.find("searchLocation").get("v.value");
-            var searchCategory = component.find("searchCategory").get("v.value");
-            var searchTradeType = component.find("searchTradeType").get("v.value");
-            helper.getTableRows(component, event, helper, pageNumber, pageSize, SearchProductType, searchLocation, searchCategory, searchTradeType);
+            // var pageNumber = component.get("v.PageNumber");
+            // var pageSize = component.get("v.pageSize");
+            // var SearchProductType = component.find("SearchProductType").get("v.value");
+            // var searchLocation = component.find("searchLocation").get("v.value");
+            // var searchCategory = component.find("searchCategory").get("v.value");
+            // var searchTradeType = component.find("searchTradeType").get("v.value");
+            // helper.getTableRows(component, event, helper, pageNumber, pageSize, SearchProductType, searchLocation, searchCategory, searchTradeType);
 
         })
         $A.enqueueAction(action);
@@ -98,24 +99,24 @@
         component.set('v.isLoading', true);
         var action = component.get("c.getRecords");
         var fieldSetValues = component.get("v.fieldSetValues");
-        console.log('@@fieldSetValues-- ', JSON.parse(JSON.stringify(fieldSetValues)));
-        var setfieldNames = new Set();
+        // console.log('@@fieldSetValues-- ', JSON.parse(JSON.stringify(fieldSetValues)));
+        // var setfieldNames = new Set();
 
-        for (var c = 0, clang = fieldSetValues.length; c < clang; c++) {
-            if (!setfieldNames.has(fieldSetValues[c].name)) {
-                setfieldNames.add(fieldSetValues[c].name);
-                if (fieldSetValues[c].type == 'REFERENCE') {
-                    if (fieldSetValues[c].name.indexOf('__c') == -1) {
-                        setfieldNames.add(fieldSetValues[c].name.substring(0, fieldSetValues[c].name.indexOf('Id')) + '.Name');
-                    } else {
-                        setfieldNames.add(fieldSetValues[c].name.substring(0, fieldSetValues[c].name.indexOf('__c')) + '__r.Name');
-                    }
-                }
-            }
-        }
+        // for (var c = 0, clang = fieldSetValues.length; c < clang; c++) {
+        //     if (!setfieldNames.has(fieldSetValues[c].name)) {
+        //         setfieldNames.add(fieldSetValues[c].name);
+        //         if (fieldSetValues[c].type == 'REFERENCE') {
+        //             if (fieldSetValues[c].name.indexOf('__c') == -1) {
+        //                 setfieldNames.add(fieldSetValues[c].name.substring(0, fieldSetValues[c].name.indexOf('Id')) + '.Name');
+        //             } else {
+        //                 setfieldNames.add(fieldSetValues[c].name.substring(0, fieldSetValues[c].name.indexOf('__c')) + '__r.Name');
+        //             }
+        //         }
+        //     }
+        // }
 
-        var arrfieldNames = [];
-        setfieldNames.forEach(v => arrfieldNames.push(v));
+        // var arrfieldNames = [];
+        // setfieldNames.forEach(v => arrfieldNames.push(v));
         // console.log('@@arrfieldNames-- ', arrfieldNames);
         // component.set('v.arrfieldNames', arrfieldNames);
         action.setParams({

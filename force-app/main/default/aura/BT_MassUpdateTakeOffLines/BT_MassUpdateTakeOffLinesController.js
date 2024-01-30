@@ -19,11 +19,18 @@
         // Optimized code for fast rendering...
         helper.takeoffRelatedInfo(component, event, helper);
         helper.helpergetProductPhase_BuildPhase(component, event, helper);
+        var pageNumber = component.get("v.PageNumber");
+            var pageSize = component.get("v.pageSize");
+            var SearchProductType = component.find("SearchProductType").get("v.value");
+            var searchLocation = component.find("searchLocation").get("v.value");
+            var searchCategory = component.find("searchCategory").get("v.value");
+            var searchTradeType = component.find("searchTradeType").get("v.value");
+        helper.getTableRows(component, event, helper, pageNumber, pageSize, SearchProductType, searchLocation, searchCategory, searchTradeType);
+        helper.getTableFieldSet(component, event, helper);
         // console.log('recID--',component.get('v.recordId'));
         
         window.setTimeout(
             $A.getCallback(function () {
-                helper.getTableFieldSet(component, event, helper);
             }), 2000
         );
     },
