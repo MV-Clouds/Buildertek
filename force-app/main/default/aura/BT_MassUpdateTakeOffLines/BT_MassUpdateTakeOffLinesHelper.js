@@ -62,7 +62,7 @@
     },
 
     helpergetProductPhase_BuildPhase: function(component, event, helper){
-        var action = component.get("c.getProductPhase_BuildPhase");
+        var action = component.get("c.get_ProductPhase_BuildPhase");
         action.setParams({
             recordId: component.get('v.recordId'),
         });
@@ -70,7 +70,7 @@
             var result = response.getReturnValue();
             console.log('helpergetProductPhase_BuildPhase : ', result);
             if(result !=  null){
-                component.set("v.ProductPhase_BuildPhase", result);
+                component.set("v.ProductPhase_Vs_BuildPhase", result);
             }
         })
         $A.enqueueAction(action);
@@ -293,15 +293,15 @@
                 // console.log("product : ", JSON.parse(JSON.stringify(event.getParam("recordByEvent"))));
                 var product = event.getParam("recordByEvent");
                 if(product){
-                    var ProductPhase_BuildPhase = component.get("v.ProductPhase_BuildPhase");
+                    var ProductPhase_Vs_BuildPhase = component.get("v.ProductPhase_Vs_BuildPhase");
                     // console.log('selected phase : ', product.buildertek__Quote_Group__c);
-                    // console.log('current phase : ', ProductPhase_BuildPhase[product.buildertek__Quote_Group__c]);
+                    // console.log('current phase : ', ProductPhase_Vs_BuildPhase[product.buildertek__Quote_Group__c]);
                     listOfRecords[index].buildertek__Product__r = product;
                     listOfRecords[index].buildertek__Product__c = product.Id;
                     listOfRecords[index].buildertek__Description__c = product.Name;
                     listOfRecords[index].buildertek__Vendor__c = product.buildertek__Vendor__c;
                     listOfRecords[index].buildertek__Cost_Code__c = product.buildertek__Cost_Code__c;
-                    listOfRecords[index].buildertek__Build_Phase__c = ProductPhase_BuildPhase[product.buildertek__Quote_Group__c] ? ProductPhase_BuildPhase[product.buildertek__Quote_Group__c] : null;
+                    listOfRecords[index].buildertek__Build_Phase__c = ProductPhase_Vs_BuildPhase[product.buildertek__Quote_Group__c] ? ProductPhase_Vs_BuildPhase[product.buildertek__Quote_Group__c] : null;
                     listOfRecords[index].buildertek__Quantity__c = 1;
 
                 }

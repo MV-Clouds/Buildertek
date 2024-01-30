@@ -53,7 +53,7 @@
     <aura:handler name="oClearRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.clearSelectedHandler}" />
     <aura:handler name="oSelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.ProductSelectHandler}" />
 
-    <aura:attribute name="ProductPhase_BuildPhase" type="Object" />
+    <aura:attribute name="ProductPhase_Vs_BuildPhase" type="Map" />
 
     <lightning:navigation aura:id="goToPrevious" />	
 

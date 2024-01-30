@@ -290,10 +290,18 @@ public class MassUpdateTakeOffLines{
     }
 
     @AuraEnabled
-    public static Map<Id, Id> getProductPhase_BuildPhase(String takeOffId){
+    public static Map<Id, Id> get_ProductPhase_BuildPhase(String takeOffId){
         try {
             List<buildertek__Quote_Line_Group__c> ProductPhase = [SELECT Id, Name FROM buildertek__Quote_Line_Group__c];
             List<buildertek__Build_Phase__c> BuildPhases = [SELECT Id, Name FROM buildertek__Build_Phase__c];
+
+            List<buildertek__Build_Phase__c> NoGroping_BuildPhases = [SELECT Id, Name FROM buildertek__Build_Phase__c WHERE Name LIKE '%No Grouping%' LIMIT 1];
+            if(NoGroping_BuildPhases.size() == 0){
+                system.debug('new No Grouping created');
+                buildertek__Build_Phase__c NoGroping_BuildPhases_toCreate = new buildertek__Build_Phase__c(Name = 'No Grouping');
+                insert NoGroping_BuildPhases_toCreate;
+                NoGroping_BuildPhases = [SELECT Id, Name FROM buildertek__Build_Phase__c WHERE Id =: NoGroping_BuildPhases_toCreate.Id LIMIT 1];
+            }
 
             Map<Id, String> ProPhaseId_PhaseName = new Map<Id, String>();
             Map<String, Id> ProPhaseName_PhaseId = new Map<String, Id>();
@@ -311,11 +319,13 @@ public class MassUpdateTakeOffLines{
 
             Map<Id, Id> ProductPhaseId_BuildPhaseId = new Map<Id, Id>();
             for(String ProPhaseName : ProPhaseName_PhaseId.keySet()){
-                ProductPhaseId_BuildPhaseId.put(ProPhaseName_PhaseId.get(ProPhaseName), BuildPhaseName_PhaseId.get(ProPhaseName));
+                String BuildPhaseId = BuildPhaseName_PhaseId.get(ProPhaseName) != null ? BuildPhaseName_PhaseId.get(ProPhaseName) : NoGroping_BuildPhases[0].Id;
+                ProductPhaseId_BuildPhaseId.put(ProPhaseName_PhaseId.get(ProPhaseName), BuildPhaseId);
             }
 
             for(String BuildPhaseName : BuildPhaseName_PhaseId.keySet()){
-                ProductPhaseId_BuildPhaseId.put(ProPhaseName_PhaseId.get(BuildPhaseName), BuildPhaseName_PhaseId.get(BuildPhaseName));
+                String BuildPhaseId = BuildPhaseName_PhaseId.get(BuildPhaseName) != null ? BuildPhaseName_PhaseId.get(BuildPhaseName) : NoGroping_BuildPhases[0].Id;
+                ProductPhaseId_BuildPhaseId.put(ProPhaseName_PhaseId.get(BuildPhaseName), BuildPhaseId);
             }
 
             return ProductPhaseId_BuildPhaseId;
@@ -328,5 +338,10 @@ public class MassUpdateTakeOffLines{
             }
             return null;
         }
+    }
+
+    public class productPhase_vs_buildPhase{
+        @AuraEnabled public string productPhaseId;
+        @AuraEnabled public string buildPhaseId;
     }
 }

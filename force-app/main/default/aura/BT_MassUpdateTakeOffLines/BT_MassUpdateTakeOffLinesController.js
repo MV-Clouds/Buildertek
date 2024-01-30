@@ -409,7 +409,6 @@
 
     ProductSelectHandler: function(component, event, helper){
         component.set("v.isLoading", true);
-        console.log('ProductSelectHandler');
         var index = event.getParam("index");
         var setProduct = true;
         
