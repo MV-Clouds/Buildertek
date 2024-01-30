@@ -146,6 +146,7 @@ public class createPOfromBOM_controller {
             insert POtoCreate;
 
             system.debug('created PO : ' + POtoCreate.Id);
+            buildertek__Purchase_Order__c CreatedPOs = [SELECT Id, Name,buildertek__Project__c,buildertek__Bill_of_Material__c,buildertek__Vendor__c,buildertek__Cost_Code__c,buildertek__BT_Build_Phase__c,buildertek__BT_Build_Phase__r.Name FROM buildertek__Purchase_Order__c WHERE ID =: POtoCreate.Id LIMIT 1];
 
             List<buildertek__Purchase_Order_Item__c> POlinesToCreate = new List<buildertek__Purchase_Order_Item__c>();
             Map<Id, buildertek__Purchase_Order_Item__c> LineId_POlines = new Map<Id, buildertek__Purchase_Order_Item__c>();
@@ -158,7 +159,7 @@ public class createPOfromBOM_controller {
                     Poline.buildertek__Quantity__c = line.buildertek__Quantity__c;
                     Poline.buildertek__Cost_Code__c = line.buildertek__Cost_Code__c;
                     Poline.buildertek__Unit_Price__c = line.buildertek__BL_UNIT_COST__c;
-                    Poline.buildertek__Purchase_Order__c = POtoCreate.Id;
+                    Poline.buildertek__Purchase_Order__c = CreatedPOs.Id;
                     
                     POlinesToCreate.add(Poline);
                     LineId_POlines.put(line.Id, Poline);
@@ -171,7 +172,7 @@ public class createPOfromBOM_controller {
 
             for(buildertek__Select_Sheet__c line: BOMlines){
                 line.buildertek__Purchase_Order_Line__c = LineId_POlines.get(line.Id).Id;
-                line.buildertek__Purchase_Order__c = POtoCreate.Id;
+                line.buildertek__Purchase_Order__c = CreatedPOs.Id;
             }
 
             update BOMlines;
@@ -180,7 +181,7 @@ public class createPOfromBOM_controller {
             if(adminInterfaceNodeConfigurations.buildertek__Match_BOM_Lines_with_Schedule_Items__c == true){
                 buildertek__Schedule__c schedule = [SELECT ID, Name FROM buildertek__Schedule__c WHERE buildertek__Project__c =: BOM.buildertek__Project__c ORDER BY CreatedDate DESC LIMIT 1];
                 
-                List<buildertek__Project_Task__c> ScheduleItems = [SELECT Id, Name, buildertek__Schedule__c,buildertek__Contractor__c, buildertek__Cost_Code__c,buildertek__Phase__c, buildertek__Completion__c,buildertek__Expected_Start_Date__c,buildertek__Expected_End_Date__c
+                List<buildertek__Project_Task__c> ScheduleItems = [SELECT Id, Name, buildertek__Schedule__c,buildertek__Contractor__c, buildertek__Cost_Code__c,buildertek__Phase__c, buildertek__Completion__c,buildertek__Start__c,buildertek__Finish__c
                                                                     FROM buildertek__Project_Task__c WHERE buildertek__Schedule__c =: schedule.Id ORDER BY CreatedDate DESC];
 
                 List<buildertek__Project_Task__c> matchedSchItems = new List<buildertek__Project_Task__c>();
@@ -197,8 +198,8 @@ public class createPOfromBOM_controller {
                 // }
 
                 for(buildertek__Project_Task__c SchItem : ScheduleItems){
-                    if( SchItem.buildertek__Contractor__c == POtoCreate.buildertek__Vendor__c 
-                        && SchItem.buildertek__Phase__c == POtoCreate.buildertek__BT_Build_Phase__r.Name && SchItem.buildertek__Cost_Code__c == POtoCreate.buildertek__Cost_Code__c 
+                    if( SchItem.buildertek__Contractor__c == CreatedPOs.buildertek__Vendor__c 
+                        && SchItem.buildertek__Phase__c == CreatedPOs.buildertek__BT_Build_Phase__r.Name && SchItem.buildertek__Cost_Code__c == CreatedPOs.buildertek__Cost_Code__c 
                         && matchedSchItems.size() == 0)
                     {
                         matchedSchItems.add(SchItem);
@@ -210,15 +211,15 @@ public class createPOfromBOM_controller {
 
                 if(matchedSchItems.size() > 0){
                     buildertek__Project_Task__c MatchedScheduleItem = matchedSchItems[0];
-                    POtoCreate.buildertek__Schedule__c = schedule.Id;
-                    POtoCreate.buildertek__Schedule_Item__c = MatchedScheduleItem.Id;
-                    POtoCreate.buildertek__Completion__c = MatchedScheduleItem.buildertek__Completion__c;
-                    POtoCreate.buildertek__Projected_Start_Date__c = MatchedScheduleItem.buildertek__Expected_Start_Date__c;
-                    POtoCreate.buildertek__Projected_Completion_Date__c = MatchedScheduleItem.buildertek__Expected_End_Date__c;
-                    MatchedScheduleItem.buildertek__Purchase_Order__c = POtoCreate.Id;
+                    CreatedPOs.buildertek__Schedule__c = schedule.Id;
+                    CreatedPOs.buildertek__Schedule_Item__c = MatchedScheduleItem.Id;
+                    CreatedPOs.buildertek__Completion__c = MatchedScheduleItem.buildertek__Completion__c;
+                    CreatedPOs.buildertek__Projected_Start_Date__c = MatchedScheduleItem.buildertek__Start__c;
+                    CreatedPOs.buildertek__Projected_Completion_Date__c = MatchedScheduleItem.buildertek__Finish__c;
+                    MatchedScheduleItem.buildertek__Purchase_Order__c = CreatedPOs.Id;
 
                     update MatchedScheduleItem;
-                    update POtoCreate;
+                    update CreatedPOs;
                 }
             }
 
