@@ -123,9 +123,16 @@ public class createPOfromBOM_controller {
                                                           WHERE Id IN : slectedLinesId];
 
             String VendorId;
-            if(BOMlines.size() > 0){
-                // All BOM lines have same Vendors...
-                VendorId = BOMlines[0].buildertek__Vendor__c;
+            String CostCode;
+            String Phase;
+            Boolean assign_flag = true;
+            for(buildertek__Select_Sheet__c line : BOMlines){
+                VendorId = line.buildertek__Vendor__c;
+                if(line.buildertek__Cost_Code__c != null && line.buildertek__Build_Phase__c != null && assign_flag == true){
+                    CostCode = line.buildertek__Cost_Code__c;
+                    Phase = line.buildertek__Build_Phase__c;
+                    assign_flag = false;
+                }
             }
 
             buildertek__Purchase_Order__c POtoCreate = new buildertek__Purchase_Order__c();
@@ -134,6 +141,8 @@ public class createPOfromBOM_controller {
             POtoCreate.buildertek__Bill_of_Material__c = BOM.Id;
             POtoCreate.buildertek__Status__c = 'Open';
             POtoCreate.buildertek__Vendor__c = VendorId;
+            POtoCreate.buildertek__BT_Build_Phase__c = Phase;
+            POtoCreate.buildertek__Cost_Code__c = CostCode;
             insert POtoCreate;
 
             system.debug('created PO : ' + POtoCreate.Id);
@@ -176,11 +185,23 @@ public class createPOfromBOM_controller {
 
                 List<buildertek__Project_Task__c> matchedSchItems = new List<buildertek__Project_Task__c>();
 
-                for(buildertek__Select_Sheet__c BOMline: BOMlines){
-                    for(buildertek__Project_Task__c SchItem : ScheduleItems){
-                        if( SchItem.buildertek__Contractor__c == BOMline.buildertek__Vendor__c && SchItem.buildertek__Phase__c == BOMline.buildertek__Build_Phase__r.Name && SchItem.buildertek__Cost_Code__c == BOMline.buildertek__Cost_Code__c){
-                            matchedSchItems.add(SchItem);
-                        }
+                // for(buildertek__Select_Sheet__c BOMline: BOMlines){
+                //     for(buildertek__Project_Task__c SchItem : ScheduleItems){
+                //         if( SchItem.buildertek__Contractor__c == BOMline.buildertek__Vendor__c 
+                //             && SchItem.buildertek__Phase__c == BOMline.buildertek__Build_Phase__r.Name && SchItem.buildertek__Cost_Code__c == BOMline.buildertek__Cost_Code__c 
+                //             && matchedSchItems.size() == 0)
+                //         {
+                //             matchedSchItems.add(SchItem);
+                //         }
+                //     }
+                // }
+
+                for(buildertek__Project_Task__c SchItem : ScheduleItems){
+                    if( SchItem.buildertek__Contractor__c == POtoCreate.buildertek__Vendor__c 
+                        && SchItem.buildertek__Phase__c == POtoCreate.buildertek__BT_Build_Phase__r.Name && SchItem.buildertek__Cost_Code__c == POtoCreate.buildertek__Cost_Code__c 
+                        && matchedSchItems.size() == 0)
+                    {
+                        matchedSchItems.add(SchItem);
                     }
                 }
                 system.debug('matched Sch Item : ' + matchedSchItems);
