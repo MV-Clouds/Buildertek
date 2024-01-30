@@ -115,7 +115,7 @@
         //     }
         // }
 
-        // var arrfieldNames = [];
+        var arrfieldNames = [];
         // setfieldNames.forEach(v => arrfieldNames.push(v));
         // console.log('@@arrfieldNames-- ', arrfieldNames);
         // component.set('v.arrfieldNames', arrfieldNames);
