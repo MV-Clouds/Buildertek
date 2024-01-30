@@ -189,6 +189,7 @@ public class MassUpdateTakeOffLines{
                     system.debug('return takeoff lines : '+ lstResult.size());
                     return result;
                 }
+                return result;
             }
         } catch (Exception e){
             List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];

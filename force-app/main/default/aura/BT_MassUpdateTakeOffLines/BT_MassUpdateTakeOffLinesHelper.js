@@ -156,7 +156,15 @@
                     component.set("v.RecordEnd", 0);
                     component.set("v.TotalPages", 0);
                     component.set("v.isNextVisible", true);
-                    // component.set('v.isLoading', false);
+
+                    var toastEvent = $A.get("e.force:showToast");
+                    toastEvent.setParams({
+                        "title": "Error!",
+                        "message": 'This TakeOff doesn\'t have any takeoff line!',
+                        "type": 'Error',
+                        "duration" : 5000
+                    });
+                    toastEvent.fire();
                 }
                 window.setTimeout(
                     $A.getCallback(function () {
