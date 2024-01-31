@@ -555,4 +555,116 @@ timecard.adderror('You Need to close your last Time Card before you can create a
     }
 
 
+
+    // ------------UPDATE Total Time Cards Fields on Project----------------------
+
+    public void onAfterInsertTC(List<buildertek__Time_Cards__c> newTimeCardList) {
+        try {
+            Set<Id> ProjectIds = new Set<Id>();
+            for (buildertek__Time_Cards__c TimeCard : newTimeCardList) {
+                if(TimeCard.buildertek__Project__c != null) {
+                    ProjectIds.add(TimeCard.buildertek__Project__c);
+                }
+            }
+            updateAmountOnProject(ProjectIds);
+        } catch (Exception ex) {
+            System.debug('Error: ' + ex.getMessage());
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
+        }
+    }
+    
+    public void onAfterUpdateTC(List<buildertek__Time_Cards__c> newTimeCardList, Map<Id, buildertek__Time_Cards__c> oldTimeCardList) {
+        try {
+            Set<Id> expenseIdsToUpdate = new Set<Id>();
+    
+            for (buildertek__Time_Cards__c TimeCard : newTimeCardList) {
+                buildertek__Time_Cards__c oldExpenseLine = oldTimeCardList.get(TimeCard.Id);
+
+                if(TimeCard.buildertek__Project__c != null){
+                    expenseIdsToUpdate.add(TimeCard.buildertek__Project__c);
+                }
+                
+                if (TimeCard.buildertek__Project__c != oldExpenseLine.buildertek__Project__c) {
+                    if(oldExpenseLine.buildertek__Project__c != null){
+                        expenseIdsToUpdate.add(oldExpenseLine.buildertek__Project__c);
+                    }  
+                }
+            }
+    
+            if (!expenseIdsToUpdate.isEmpty()) {
+                updateAmountOnProject(expenseIdsToUpdate);
+            }
+        } catch (Exception ex) {
+            System.debug('Error: ' + ex.getMessage());
+    
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            
+            if (!storeExcCustomSetting.isEmpty() && storeExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
+        }
+    }    
+
+    public void onAfterDeleteTC(List<buildertek__Time_Cards__c> oldExpenseLineList) {
+        try {
+            Set<Id> ProjectIds = new Set<Id>();
+            for (buildertek__Time_Cards__c TimeCard : oldExpenseLineList) {
+                if(TimeCard.buildertek__Project__c != null){
+                    ProjectIds.add(TimeCard.buildertek__Project__c);
+                }
+            }
+            updateAmountOnProject(ProjectIds);
+        } catch (Exception ex) {
+            System.debug('Error: ' + ex.getMessage());
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
+        }
+    }
+
+    public void updateAmountOnProject(Set<Id> ProjectIds) {
+        try {
+            Map<Id, AggregateResult> totalAmountMap = new Map<Id, AggregateResult>();
+            for (AggregateResult aggregatedResult : [SELECT buildertek__Project__c, SUM(buildertek__Daily_Expense__c) totalAmount FROM buildertek__Time_Cards__c WHERE buildertek__Project__c IN :ProjectIds GROUP BY buildertek__Project__c]){
+                Id ExpenseId = (Id)aggregatedResult.get('buildertek__Project__c');
+                totalAmountMap.put(ExpenseId, aggregatedResult);
+            }
+            
+            List<buildertek__Project__c> projectToUpdate = new List<buildertek__Project__c>();
+            
+            for (Id projectId :ProjectIds) {
+                if(totalAmountMap.containsKey(projectId)) {
+                    AggregateResult aggregatedResult = totalAmountMap.get(projectId);
+                    Decimal totalAmount = (Decimal)aggregatedResult.get('totalAmount');
+
+                    buildertek__Project__c expense = new buildertek__Project__c(Id = projectId);
+                    expense.buildertek__Time_Card_Total__c = totalAmount;
+                    projectToUpdate.add(expense);
+                } else {
+                    buildertek__Project__c expense = new buildertek__Project__c(Id = projectId);
+                    expense.buildertek__Time_Card_Total__c = 0;
+                    projectToUpdate.add(expense);
+                }
+            }
+            System.debug('projectToUpdate: ' + projectToUpdate);
+            if (!projectToUpdate.isEmpty()) {
+                update projectToUpdate;
+            }
+
+        } catch (Exception ex) {
+            System.debug('Error: ' + ex.getMessage());
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
+        }
+    }
+
+    // ------------UPDATE Total Time Cards Fields on Project----------------------
+
+
 }

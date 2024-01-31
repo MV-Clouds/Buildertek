@@ -18,6 +18,7 @@ trigger BudgetTrigger on Budget__c (after delete, after insert, after undelete, 
 		 
 		else if(Trigger.isInsert && Trigger.isAfter){
 			handler.OnAfterInsert(Trigger.new, Trigger.newMap);
+			handler.onAfterInsertforProject(Trigger.new);
 		}
 		
 		else if(Trigger.isUpdate && Trigger.isBefore){
@@ -25,7 +26,7 @@ trigger BudgetTrigger on Budget__c (after delete, after insert, after undelete, 
 		}
 		
 		else if(Trigger.isUpdate && Trigger.isAfter){
-			handler.OnAfterUpdate(Trigger.old, Trigger.new, Trigger.newMap, trigger.oldMap);
+			handler.onAfterUpdate(Trigger.new, Trigger.oldMap);
 		}
 		
 		else if(Trigger.isDelete && Trigger.isBefore){
