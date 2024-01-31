@@ -226,9 +226,13 @@
             
                     if(saveNnew){
                         // $A.get('e.force:refreshView').fire();
+                        let parentprojectId = component.get("v.parentprojectRecordId");
                         var evt = $A.get("e.force:navigateToComponent");
                         evt.setParams({
                             componentDef: "c:ChangeOrderRecordType",
+                            componentAttributes: {
+                                projectId: parentprojectId
+                            }
                         });
 
                         evt.fire();
@@ -318,11 +322,14 @@
             
                     if(saveNnew){
                         // $A.get('e.force:refreshView').fire();
+                        let parentprojectId = component.get("v.parentprojectRecordId");
                         var evt = $A.get("e.force:navigateToComponent");
                         evt.setParams({
                             componentDef: "c:ChangeOrderRecordType",
+                            componentAttributes: {
+                                projectId: parentprojectId
+                            }
                         });
-
                         evt.fire();
                         var workspaceAPI = component.find("workspace");
                         workspaceAPI.getFocusedTabInfo().then(function (response) {

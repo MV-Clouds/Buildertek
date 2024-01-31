@@ -4,22 +4,23 @@
         var value = helper.getParameterByName(component, event, 'inContextOfRef');
         var context = '';
         var projectId = '';
-        component.set("v.projectId", projectId);
-
-        if (value != null) {
-            context = JSON.parse(window.atob(value));
-            projectId = context.attributes.recordId;
-            component.set("v.projectId", projectId);
-        } else {
-            var relatedList = window.location.pathname;
-            var stringList = relatedList.split("/");
-            projectId = stringList[4];
-
-            if (projectId == 'related') {
+        let projectIdFromCO = component.get("v.projectId");
+        if (!projectIdFromCO) {
+            if (value != null) {
+                context = JSON.parse(window.atob(value));
+                projectId = context.attributes.recordId;
+                component.set("v.projectId", projectId);
+            } else {
+                var relatedList = window.location.pathname;
                 var stringList = relatedList.split("/");
-                projectId = stringList[3];
+                projectId = stringList[4];
+
+                if (projectId == 'related') {
+                    var stringList = relatedList.split("/");
+                    projectId = stringList[3];
+                }
+                component.set("v.projectId", projectId);
             }
-            component.set("v.projectId", projectId);
         }
 
     },

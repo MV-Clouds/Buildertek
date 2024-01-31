@@ -9,7 +9,7 @@
     <aura:attribute name="RecordTypeId" type="String" default="" />
 
     <lightning:workspaceAPI aura:id="workspace" />
-    <ltng:require styles="{!$Resource.ModalPreviewWidth72}" />
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
 
     <aura:html tag="style">
         .slds-modal__container{
