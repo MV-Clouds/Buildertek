@@ -154,7 +154,7 @@
                                             <td style = " max-width: 13rem; min-width: 13rem;">
                                                 <c:BT_LightningLookup objectAPIName="Product2" IconName="standard:product"
                                                     selectedRecord="{!row.buildertek__Product__r}" aura:id="productId"
-                                                    parentId="{!row.buildertek__Price_Book__c}" prodctfamly="{!v.productfamily}" index="{!index}" />
+                                                    parentId="{!row.buildertek__Price_Book__c}" prodctfamly="All Families" index="{!index}" />
                                             </td>
                                         </aura:if>
                                         <aura:if isTrue="{!and(field.name != 'buildertek__Price_Book__c', field.name != 'buildertek__Product__c')}">
