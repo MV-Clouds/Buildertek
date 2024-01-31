@@ -236,6 +236,9 @@
         console.log('askforFilter');
         var HaveCreateAccess = component.get("v.HaveCreateAccess");
             if(HaveCreateAccess){
+                var buttonValue = event.getSource().get("v.value");
+                    component.set('v.phaseName', buttonValue);
+                    console.log(component.get('v.phaseName'));
                 component.set('v.askforFilter', true);
             }
             else{
@@ -263,9 +266,9 @@
         console.log('selectedOptionValue', selectedOptionValue);
         if (selectedOptionValue == 'PriceBook') {
             
-            console.log(event.getSource().get('v.value'));
-            let phaseValue=event.getSource().get('v.value');
-            component.set('v.phaseName', phaseValue);
+            console.log(event.getSource());
+            // let phaseValue=event.getSource().get('v.value');
+            // component.set('v.phaseName', phaseValue);
             console.log(component.get('v.phaseName'));
             component.set('v.askforFilter', false);
             component.set('v.openProductBox', true); 

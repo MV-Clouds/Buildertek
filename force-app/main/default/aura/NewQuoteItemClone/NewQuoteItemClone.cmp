@@ -1046,7 +1046,7 @@
 
                                                         </div>
                                                         <div class="slds-col slds-size_6-of-12 slds-float_right" style="font-size: 10px; height:1.5rem; width:0px;">
-                                                            <lightning:button variant="neutral" value='{!group.Id}' label="Add Quote Line" name="{!groupIndex}" title="Add Quote Line" class="addBudgetLineStyle" onclick="{!c.askforFilter}" />
+                                                            <lightning:button variant="neutral" value="{!group.Id}" label="Add Quote Line" name="{!groupIndex}" title="Add Quote Line" class="addBudgetLineStyle" onclick="{!c.askforFilter}" />
                                                         </div>
                                                     </div>
                                                     <!-- <div class="slds-grid slds-gutters">
@@ -2354,7 +2354,7 @@
                             }
 
                         </aura:html>
-                            <c:Add_QuoteLine_from_Vendor quoteId="{!v.recordId}" openProductBoxwithVendor="{!v.openProductBoxwithVendor}" />
+                            <c:Add_QuoteLine_from_Vendor getPhase="{!v.phaseName}" quoteId="{!v.recordId}" openProductBoxwithVendor="{!v.openProductBoxwithVendor}" />
                     </aura:if>
 
                     <aura:if isTrue="{!v.openQuoteLineBox}">
