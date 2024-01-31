@@ -125,6 +125,7 @@ function convertJSONtoApexData(data, taskData, dependenciesData, resourceData) {
                 } else {
                     if (rowData[i]['duration'] == 0) {
                         updateData['buildertek__Type__c'] = 'Milestone'
+                        rowData[i]['eventColor'] = ''
                     } else {
                         updateData['buildertek__Type__c'] = 'Task'
                     }
@@ -531,6 +532,7 @@ function grpTaskOnPhase(records) {
             if(record.buildertek__Dependency__r){
                 duprecordobj['predecessorName'] = record.buildertek__Dependency__r.Name
             }
+            duprecordobj['eventColor'] = record.buildertek__task_color__c || "";
         }
         targetNode.children.push(duprecordobj);
     });
