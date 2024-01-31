@@ -10,28 +10,15 @@
             action.setCallback(this, function (response) {
                 var result = response.getReturnValue();
                 console.log('return value : ', result);
-                if (result.state == 'success') {
-                    $A.get("e.force:closeQuickAction").fire()
-                    var toastEvent = $A.get("e.force:showToast");
-                    toastEvent.setParams({
-                        "title": "Success!",
-                        "type": "success",
-                        "message": result.returnMessage,
-                        "duration": 3000,
-                    });
-                    toastEvent.fire();
-                }
-                else if (result.state == 'error') {
-                    $A.get("e.force:closeQuickAction").fire()
-                    var toastEvent = $A.get("e.force:showToast");
-                    toastEvent.setParams({
-                        "title": "Error!",
-                        "type": "error",
-                        "message": result.returnMessage,
-                        "duration": 3000,
-                    });
-                    toastEvent.fire();
-                }
+                $A.get("e.force:closeQuickAction").fire()
+                var toastEvent = $A.get("e.force:showToast");
+                toastEvent.setParams({
+                    "title": result.state + "!",
+                    "type": result.state,
+                    "message": result.returnMessage,
+                    "duration": 3000,
+                });
+                toastEvent.fire();
             });
             $A.enqueueAction(action);
 

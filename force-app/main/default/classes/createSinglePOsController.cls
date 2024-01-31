@@ -24,12 +24,12 @@ public with sharing class createSinglePOsController {
                 }
 
                 if(AllBOMlinesNotHaveVendor == true){
-                    returnValue.state = 'error';
-                    returnValue.returnMessage = 'Please assign a vendor for each line. all lines not have a vendor assigned to create purchase orders.';
+                    returnValue.state = 'Warning';
+                    returnValue.returnMessage = 'No lines have vendors assigned to create purchase order.';
                 }
                 else if(AllBOMlinesAssigesWithPO == true){
-                    returnValue.state = 'error';
-                    returnValue.returnMessage = 'All lines with vendor are already assiged with PO.';
+                    returnValue.state = 'Warning';
+                    returnValue.returnMessage = 'Unable to create purchase order. No vendor assigned to available lines.';
                 } else {
                     List<buildertek__Purchase_Order__c> createPOList = new List<buildertek__Purchase_Order__c>();
                     Map<Id, buildertek__Purchase_Order__c> poMap = new Map<Id, buildertek__Purchase_Order__c>();
@@ -49,8 +49,8 @@ public with sharing class createSinglePOsController {
                     
                     if (!createPOList.isEmpty()) {
                         insert createPOList;
-                        returnValue.state = 'success';
-                        returnValue.returnMessage = 'All PO\'s created successfully.';
+                        returnValue.state = 'Success';
+                        returnValue.returnMessage = 'All PO\'s created Successfully.';
                         returnValue.BOMLines = BOMLines;
                         for (buildertek__Select_Sheet__c bomline : BOMLines) {
                             if (bomline.buildertek__Vendor__c != null && bomline.buildertek__Purchase_Order__c == null) {
@@ -59,13 +59,13 @@ public with sharing class createSinglePOsController {
                         }
                         update BOMLines;
                     } else {
-                        returnValue.state = 'error';
+                        returnValue.state = 'Error';
                         returnValue.returnMessage = 'Failed to create any PO.';
                     }   
                 }
             } else {
-                returnValue.state = 'error';
-                returnValue.returnMessage = 'Please create at least one line to create a PO.';
+                returnValue.state = 'Error';
+                returnValue.returnMessage = 'Please create atleast one line to create a PO.';
             }
             return returnValue;
         } catch (Exception e) {
@@ -75,7 +75,7 @@ public with sharing class createSinglePOsController {
             if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
                 BT_ExceptionHandler.Store_Exception(e);
             }
-            returnValue.state = 'error';
+            returnValue.state = 'Error';
             returnValue.returnMessage = 'Something went wrong!';
             return returnValue;
         }
