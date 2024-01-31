@@ -120,7 +120,7 @@ global  without sharing class QuotelineswithGroupingNameController {
                     quoteitemquery += ' FROM ' + objectName;
 
                     // Add on a WHERE/ORDER/LIMIT statement as needed
-                    quoteitemquery += ' WHERE buildertek__Quote__c = \''+quoteid +'\' AND buildertek__Status__c =\''+ statusval +'\''+ ' Order BY buildertek__Priority__c ASC'; // modify as needed
+                    quoteitemquery += ' WHERE buildertek__Quote__c = \''+quoteid +'\' AND buildertek__Status__c =\''+ statusval +'\''+ ' Order BY buildertek__Priority__c,Name ASC'; // modify as needed
 
                     try {
                         QuoteItem = database.query(quoteitemquery);
@@ -159,7 +159,7 @@ global  without sharing class QuotelineswithGroupingNameController {
             }
         }
 
-        Quotelinegroup = [Select Id, Name from buildertek__Quote_Line_Group__c where Id =: groupId order by Name asc];
+        Quotelinegroup = [Select Id, Name,buildertek__Sort_Id__c from buildertek__Quote_Line_Group__c where Id =: groupId order by buildertek__Sort_Id__c asc];
         system.debug('Quotelinegroupsize---->'+ Quotelinegroup.size());
 
         for(buildertek__Quote_Line_Group__c quotelinegrouprec : Quotelinegroup){
