@@ -151,7 +151,7 @@
                     <footer class="slds-modal__footer" style = "padding-top: 10px">
                         
                         <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{!c.gotoList }" />
-                        <!-- <lightning:button variant="neutral" type="submit" title="Save &amp; New" label="Save &amp; New" onclick="{!c.handlesaveNnew}" /> -->
+                        <lightning:button variant="neutral" type="submit" title="Save &amp; New" label="Save &amp; New" onclick="{!c.handlesaveNnew}" />
                         <lightning:button variant="brand" type="submit" name="save" label="Save"  />
                         
                     </footer>
@@ -318,7 +318,7 @@
                     <footer class="slds-modal__footer" style = "padding-top: 10px">
                         
                         <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{!c.gotoList }" />
-                        <!-- <lightning:button variant="neutral" type="submit" title="Save &amp; New" label="Save &amp; New" onclick="{!c.handlesaveNnew}" /> -->
+                        <lightning:button variant="neutral" type="submit" title="Save &amp; New" label="Save &amp; New" onclick="{!c.handlesaveNnew}" />
                         <lightning:button variant="brand" type="submit" name="save" label="Save"  />
                         
                     </footer>

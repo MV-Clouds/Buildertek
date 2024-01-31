@@ -1,5 +1,5 @@
 ({
-    getRecordTypes : function(component, event, helper) {
+    getRecordTypes: function (component, event, helper) {
         component.set('v.isLoading', true);
         let action = component.get("c.getRecordType");
         action.setCallback(this, function (response) {
@@ -26,5 +26,15 @@
             component.set('v.isLoading', false);
         });
         $A.enqueueAction(action);
-    }
+    },
+
+    getParameterByName: function (component, event, name) {
+        name = name.replace(/[\[\]]/g, "\\$&");
+        var url = window.location.href;
+        var regex = new RegExp("[?&]" + name + "(=1\.([^&#]*)|&|#|$)");
+        var results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
+    },
 })

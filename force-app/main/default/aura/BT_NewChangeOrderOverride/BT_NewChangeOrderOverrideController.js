@@ -225,7 +225,21 @@
                     console.log('saveNnew: ' + saveNnew);
             
                     if(saveNnew){
-                        $A.get('e.force:refreshView').fire();
+                        // $A.get('e.force:refreshView').fire();
+                        var evt = $A.get("e.force:navigateToComponent");
+                        evt.setParams({
+                            componentDef: "c:ChangeOrderRecordType",
+                        });
+
+                        evt.fire();
+                        var workspaceAPI = component.find("workspace");
+                        workspaceAPI.getFocusedTabInfo().then(function (response) {
+                            var focusedTabId = response.tabId;
+                            workspaceAPI.closeTab({ tabId: focusedTabId });
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });
                     }
                     else{
                         console.log('---Else---');
@@ -303,7 +317,21 @@
                     console.log('saveNnew: ' + saveNnew);
             
                     if(saveNnew){
-                        $A.get('e.force:refreshView').fire();
+                        // $A.get('e.force:refreshView').fire();
+                        var evt = $A.get("e.force:navigateToComponent");
+                        evt.setParams({
+                            componentDef: "c:ChangeOrderRecordType",
+                        });
+
+                        evt.fire();
+                        var workspaceAPI = component.find("workspace");
+                        workspaceAPI.getFocusedTabInfo().then(function (response) {
+                            var focusedTabId = response.tabId;
+                            workspaceAPI.closeTab({ tabId: focusedTabId });
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });
                     }
                     else{
                         var navEvt = $A.get("e.force:navigateToSObject");
