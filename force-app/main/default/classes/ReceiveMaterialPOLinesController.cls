@@ -4,8 +4,7 @@ public with sharing class ReceiveMaterialPOLinesController {
     public static list<buildertek__Purchase_Order_Item__c> getProducts(String recordId)
     {
         //system.debug(recordId);
-        list<buildertek__Purchase_Order_Item__c> Products =[select id,Name,buildertek__Purchase_Order__c, buildertek__Product__r.Name,buildertek__Product__r.Id,buildertek__Product__c,buildertek__Quantity__c, buildertek__Quantity_Remaining__c
-        from buildertek__Purchase_Order_Item__c WHERE buildertek__Purchase_Order__c =:recordId];
+        list<buildertek__Purchase_Order_Item__c> Products =[select id,Name,buildertek__Purchase_Order__c, buildertek__Product__r.Name,buildertek__Product__r.Id,buildertek__Product__c,buildertek__Quantity__c, buildertek__Quantity_Remaining__c, buildertek__Quantity_Received__c from buildertek__Purchase_Order_Item__c WHERE buildertek__Purchase_Order__c =:recordId];
         system.debug(Products);
         return Products;
     }

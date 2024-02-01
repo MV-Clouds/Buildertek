@@ -232,10 +232,13 @@
 
         if((paginationList[Index].quantity_recieved > paginationList[Index].buildertek__Quantity__c) || (paginationList[Index].quantity_recieved > paginationList[Index].buildertek__Quantity_Remaining__c)) {
             
-            inputField.setCustomValidity("Items Delivered must be less than Quantity remaining");
-       
+            inputField.setCustomValidity("Items Delivered must be less or equal to Quantity remaining");
+        
             component.find("submit").set("v.disabled", true);
-        }else{
+        } else if (paginationList[Index].quantity_recieved < 0){
+            inputField.setCustomValidity("Items Delivered must be greater than 0");
+            component.find("submit").set("v.disabled", true);
+        } else{
             inputField.setCustomValidity("");
             component.find("submit").set("v.disabled", false);
         }

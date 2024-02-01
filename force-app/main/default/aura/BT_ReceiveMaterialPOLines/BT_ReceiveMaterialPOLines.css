@@ -9,3 +9,10 @@
     white-space: nowrap;
     font-size: 20px;
 }
+
+.THIS .truncate-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 17rem;
+}
