@@ -941,11 +941,11 @@ public with sharing class QuoteDAO{
 
         if (groupId != null){
             If (Schema.sObjectType.buildertek__quote_line_group__c.fields.Id.isAccessible() && Schema.sObjectType.buildertek__quote_line_group__c.fields.Name.isAccessible()){
-                budgetGroup = Database.query('Select Id, Name, buildertek__Description__c,buildertek__Sort_Id__c From quote_line_group__c where Id =: groupId  ORDER BY buildertek__Sort_Id__c,Name ASC');
+                budgetGroup = Database.query('Select Id, Name, buildertek__Description__c,buildertek__Sort_Id__c From quote_line_group__c where Id =: groupId  ORDER BY buildertek__Sort_Id__c ASC NULLS LAST, Name ASC');
             }
         } else{
             If (Schema.sObjectType.buildertek__quote_line_group__c.fields.Id.isAccessible() && Schema.sObjectType.buildertek__quote_line_group__c.fields.Name.isAccessible()){
-                budgetGroup = Database.query('Select Id, Name,buildertek__Description__c,buildertek__Sort_Id__c From quote_line_group__c where Id IN: groupIdSet ORDER BY buildertek__Sort_Id__c,Name ASC');
+                budgetGroup = Database.query('Select Id, Name,buildertek__Description__c,buildertek__Sort_Id__c From quote_line_group__c where Id IN: groupIdSet ORDER BY buildertek__Sort_Id__c ASC NULLS LAST, Name ASC');
             }
         }
         system.debug('budgetGroup ----------> ' + budgetGroup);
@@ -1658,7 +1658,7 @@ public with sharing class QuoteDAO{
         childObjGroup = database.query(myqueries);
         /*}*/
         system.debug('childObjGroup Results ' + childObjGroup);
-        string Childs = 'select Id, Name from buildertek__Quote_Line_Group__c where id IN: groupIds order by buildertek__Sort_Id__c,Name ASC';
+        string Childs = 'select Id, Name from buildertek__Quote_Line_Group__c where id IN: groupIds order by buildertek__Sort_Id__c ASC NULLS LAST, Name ASC';
         list<buildertek__Quote_Line_Group__c> childObjGroups;
         if (Schema.sObjectType.buildertek__Quote_Line_Group__c.fields.Id.isAccessible() && Schema.sObjectType.buildertek__Quote_Line_Group__c.fields.Name.isAccessible()){
             childObjGroups = database.query(Childs);

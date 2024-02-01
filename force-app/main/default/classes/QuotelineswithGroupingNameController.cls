@@ -159,7 +159,7 @@ global  without sharing class QuotelineswithGroupingNameController {
             }
         }
 
-        Quotelinegroup = [Select Id, Name,buildertek__Sort_Id__c from buildertek__Quote_Line_Group__c where Id =: groupId order by buildertek__Sort_Id__c asc];
+        Quotelinegroup = [Select Id, Name,buildertek__Sort_Id__c from buildertek__Quote_Line_Group__c where Id =: groupId order by buildertek__Sort_Id__c ASC NULLS LAST, Name ASC];
         system.debug('Quotelinegroupsize---->'+ Quotelinegroup.size());
 
         for(buildertek__Quote_Line_Group__c quotelinegrouprec : Quotelinegroup){
