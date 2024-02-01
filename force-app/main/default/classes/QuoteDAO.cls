@@ -1621,7 +1621,7 @@ public with sharing class QuoteDAO{
             queryFields += ', ' + sumOfFields.trim();
         }
         // string status = 'Accept';
-        myquery = 'select buildertek__Grouping__c ' + queryFields + ' from buildertek__Quote_Item__c where buildertek__Quote__c =: recordId AND buildertek__Status__c =: status Order by buildertek__Grouping__r.buildertek__Sort_Id__c,buildertek__Grouping__r.Name, buildertek__Priority__c ASC, Name ASC limit ' + recordToDisply + ' OFFSET ' + offset;
+        myquery = 'select buildertek__Grouping__c ' + queryFields + ' from buildertek__Quote_Item__c where buildertek__Quote__c =: recordId AND buildertek__Status__c =: status Order by buildertek__Grouping__r.buildertek__Sort_Id__c,buildertek__Grouping__r.Name, buildertek__Priority__c ASC NULLS LAST, Name ASC limit ' + recordToDisply + ' OFFSET ' + offset;
         system.debug('----myquery -----------> ' + myquery);
         /*if(Schema.sObjectType.buildertek__Quote_Item__c.fields.Id.isAccessible()&&
          Schema.sObjectType.buildertek__Quote_Item__c.fields.Name.isAccessible() &&
@@ -1720,7 +1720,7 @@ public with sharing class QuoteDAO{
         String myqueries = '';
         String myqueries2 = '';
 
-        myqueries = 'select buildertek__Quote__c,buildertek__Status__c ,buildertek__Grouping__r.Name,buildertek__Grouping__r.buildertek__Sort_Id__c ' + aggregateFields + ' from buildertek__Quote_Item__c where buildertek__Quote__c =: recordId  AND buildertek__Status__c =: status  Order By buildertek__Grouping__r.buildertek__Sort_Id__c,buildertek__Grouping__r.Name, buildertek__Priority__c ASC , Name ASC limit ' + recordToDisply + ' OFFSET ' + offset;
+        myqueries = 'select buildertek__Quote__c,buildertek__Status__c ,buildertek__Grouping__r.Name,buildertek__Grouping__r.buildertek__Sort_Id__c ' + aggregateFields + ' from buildertek__Quote_Item__c where buildertek__Quote__c =: recordId  AND buildertek__Status__c =: status  Order By buildertek__Grouping__r.buildertek__Sort_Id__c,buildertek__Grouping__r.Name, buildertek__Priority__c ASC NULLS LAST, Name ASC limit ' + recordToDisply + ' OFFSET ' + offset;
         // myqueries2 = 'select buildertek__Quote__c,buildertek__Status__c ,buildertek__Grouping__r.Name,buildertek__Grouping__r.buildertek__Sort_Id__c ' + aggregateFields + ' from buildertek__Quote_Item__c where buildertek__Quote__c =: recordId  AND buildertek__Status__c =Accept  Order By buildertek__Grouping__r.buildertek__Sort_Id__c,buildertek__Grouping__r.Name, buildertek__Priority__c ASC , Name ASC limit ' + recordToDisply + ' OFFSET ' + offset;
         List<SObject> ListOfRecords;
         ListOfRecords = Database.query(myqueries);

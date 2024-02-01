@@ -394,7 +394,7 @@ public without sharing class ConfirmationController{
         quotelinerecords = [select id, Name, buildertek__Net_Total_Price__c, buildertek__Grouping__c, buildertek__Net_Unit__c, buildertek__Grouping__r.Name, buildertek__Quote__c, buildertek__Status__c
                             from buildertek__Quote_Item__c
                             where buildertek__Quote__c = :recordID
-                            ORDER BY buildertek__Priority__c ASC];
+                            ORDER BY buildertek__Priority__c ASC NULLS LAST, Name ASC];
         //}
         //}
         /* for(buildertek__Quote_Item__c  quoteitem : quotelinerecords){

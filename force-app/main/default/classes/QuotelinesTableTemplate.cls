@@ -50,7 +50,7 @@ global  without sharing class QuotelinesTableTemplate {
           Totalquotelineamount = 0.0;
          string query = 'Select '+ queryfields ;
          string statusval = 'Accept';
-         query += ' from buildertek__Quote_Item__c where buildertek__Quote__c = \''+quoteid +'\' AND buildertek__Status__c =\''+ statusval +'\''+'Order By buildertek__Priority__c ASC';
+         query += ' from buildertek__Quote_Item__c where buildertek__Quote__c = \''+quoteid +'\' AND buildertek__Status__c =\''+ statusval +'\''+'Order By buildertek__Priority__c ASC NULLS LAST, Name ASC';
          system.debug('query---->'+query);
           lableslst = queryfields.split(',');
          colomspanvalue = lableslst.size()-1;
@@ -112,7 +112,7 @@ global  without sharing class QuotelinesTableTemplate {
                      quoteitemquery += ' FROM ' + objectName;
 
                      // Add on a WHERE/ORDER/LIMIT statement as needed
-                     quoteitemquery += ' WHERE buildertek__Quote__c = \''+quoteid +'\' AND buildertek__Status__c =\''+ statusval +'\''+ ' Order BY buildertek__Priority__c ASC'; // modify as needed
+                     quoteitemquery += ' WHERE buildertek__Quote__c = \''+quoteid +'\' AND buildertek__Status__c =\''+ statusval +'\''+ ' Order BY buildertek__Priority__c ASC NULLS LAST, Name ASC'; // modify as needed
 
                      try {
                          QuoteItem = database.query(quoteitemquery);
