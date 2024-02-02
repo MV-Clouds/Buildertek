@@ -71,10 +71,10 @@
 			}
 		}
 		component.set("v.masterBudgetsList", Submittals);
-		if(selectedHeaderCheck==false){
+		if (selectedHeaderCheck == false) {
 			component.set("v.isSelected", true);
 		}
-		else{
+		else {
 			component.set("v.isSelected", false);
 		}
 
@@ -145,7 +145,7 @@
 										Submittals[i].poRecInner[j].poCheck = true;
 									}
 									var poLines = Submittals[i]['poRecInner'][j]['poLinesWrapper'];
-									if (poLines != undefined){
+									if (poLines != undefined) {
 										for (var k = 0; k < poLines.length; k++) {
 											poLines[k].poLineCheck = true;
 										}
@@ -172,7 +172,7 @@
 										Submittals[i].poRecInner[j].poCheck = false;
 									}
 									var poLines = Submittals[i]['poRecInner'][j]['poLinesWrapper'];
-									if (poLines != undefined){
+									if (poLines != undefined) {
 										for (var k = 0; k < poLines.length; k++) {
 											poLines[k].poLineCheck = false;
 										}
@@ -383,7 +383,7 @@
 		var record = component.get("v.recordId");
 		var select = component.get("v.selectedobjInfo");
 		var budgetsList = component.get("v.masterBudgetsList");
-		console.log({budgetsList});
+		console.log({ budgetsList });
 		var budgetIds = [];
 		var budgetId = [];
 		if (budgetsList != null) {
@@ -404,12 +404,12 @@
 
 		var disableBtn = false;
 		budgetIds.forEach(element => {
-			console.log('element.buildertek__Vendor__c ==> '+element.buildertek__Vendor__c);
+			console.log('element.buildertek__Vendor__c ==> ' + element.buildertek__Vendor__c);
 			if (element.buildertek__Vendor__c != null && element.buildertek__Vendor__c != '') {
 				if (element.buildertek__Vendor__r.buildertek__Email_Address__c == null || element.buildertek__Vendor__r.buildertek__Email_Address__c == '') {
 					disableBtn = true;
 				}
-			} else{
+			} else {
 				disableBtn = true;
 			}
 		});
@@ -420,7 +420,7 @@
 
 		if (budgetIds.length > 0) {
 			component.set("v.selectedPOList", true);
-		    helper.settempId(component, budgetId);
+			helper.settempId(component, budgetId);
 		} else {
 			component.set("v.Spinner", false);
 			var toastEvent = $A.get("e.force:showToast");
@@ -535,15 +535,15 @@
 
 	},
 
-	
+
 	unSelect: function (component, event, helper) {
 		try {
 			console.log('test-->');
 			component.set("v.isSelected", true);
 
-	
+
 			var records = component.get("v.PaginationList");
-	
+
 			// Helper function to uncheck checkboxes
 			function uncheckCheckboxes(checkboxes) {
 				if (Array.isArray(checkboxes)) {
@@ -569,7 +569,7 @@
 			component.set("v.PaginationList", records);
 
 			// Uncheck checkboxes
-			component.find("checkContractors").set("v.value",false);
+			component.find("checkContractors").set("v.value", false);
 			uncheckCheckboxes(component.find("checkContractor"));
 			uncheckCheckboxes(component.find("checkPOLine"));
 			// Reset the selectedCount to 0
@@ -624,7 +624,7 @@
 
 			component.set("v.Spinner", true);
 
-			console.log({budgetIds});
+			console.log({ budgetIds });
 			if (budgetIds.length > 0) {
 				var action = component.get("c.updatePOLines");
 				action.setParams({
@@ -795,12 +795,12 @@
 		// debugger;
 		var id = event.target.id;
 		var Submittals = component.get("v.masterBudgetsList");
-		for(var i=0 ; i < Submittals.length;i++){
-			if(Submittals[i].poRecInner != null){
-				for(var j=0;j<Submittals[i].poRecInner.length;j++){
-					if(Submittals[i].poRecInner[j].poLinesWrapper != null){
-						for(var k=0;k<Submittals[i].poRecInner[j].poLinesWrapper.length;k++){
-							if (j+'-'+i+'-'+k == id) {
+		for (var i = 0; i < Submittals.length; i++) {
+			if (Submittals[i].poRecInner != null) {
+				for (var j = 0; j < Submittals[i].poRecInner.length; j++) {
+					if (Submittals[i].poRecInner[j].poLinesWrapper != null) {
+						for (var k = 0; k < Submittals[i].poRecInner[j].poLinesWrapper.length; k++) {
+							if (j + '-' + i + '-' + k == id) {
 								Submittals[i].poRecInner[j].poLinesWrapper[k].poLineCheck = !Submittals[i].poRecInner[j].poLinesWrapper[k].poLineCheck;
 							}
 						}
@@ -808,7 +808,7 @@
 				}
 			}
 		}
-		component.set("v.PaginationList",Submittals);
+		component.set("v.PaginationList", Submittals);
 	},
 
 
@@ -856,10 +856,10 @@
 	},
 
 
-	removePO: function(component, event, helper) {
+	removePO: function (component, event, helper) {
 		var POId = event.currentTarget.dataset.index;
 		var vendorList = component.get("v.SelectedPurchaseOrders");
-		console.log('vendorList',vendorList);
+		console.log('vendorList', vendorList);
 		var updatedVendorList = [];
 
 		for (var i = 0; i < vendorList.length; i++) {
@@ -888,7 +888,7 @@
 			$A.enqueueAction(a);
 		}
 
-		console.log('disableBtn',disableBtn);
+		console.log('disableBtn', disableBtn);
 		component.set("v.disableOrder", disableBtn);
 
 	},
