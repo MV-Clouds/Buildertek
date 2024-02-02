@@ -25,14 +25,18 @@ public with sharing class ImportTakeOffLinesBasic{
             Map<String, Account> accountMap = new Map<String, Account>();
             Map<String, PricebookEntry> PBEMap = new Map<String, PricebookEntry>();
             Map<String, Pricebook2> PBMap = new Map<String, Pricebook2>();
+            Map<String, buildertek__Category__c> categoryMap = new Map<String, buildertek__Category__c>();
 
             List<String> productList = new List<String>();
             List<String> priceBookList = new List<String>();
             List<String> vendorList = new List<String>();
+            List<String> categoryList = new List<String>();
             for (fieldWrapper data : dataList) {
                 productList.add(data.Product);
                 priceBookList.add(data.PriceBook);
                 vendorList.add(data.Vendor);
+                categoryList.add(data.Category);
+
             }
             
             // Find existing products
@@ -70,6 +74,11 @@ public with sharing class ImportTakeOffLinesBasic{
                 existingCostCodeMap.put(costCodeRec.Name, costCodeRec);
             }
 
+            // Find existing Categories
+            for (buildertek__Category__c categoryRec : [SELECT Id, Name FROM buildertek__Category__c]) {
+                categoryMap.put(categoryRec.Name, categoryRec);
+            }
+
 
             List<buildertek__Project_Takeoff_Lines__c> TakeoffLinesToInsert = new List<buildertek__Project_Takeoff_Lines__c>();
             Decimal counter = 1;
@@ -102,6 +111,10 @@ public with sharing class ImportTakeOffLinesBasic{
                 if (String.isNotBlank(vendorName) && accountMap.containsKey(vendorName)){
                     TakeoffLine.buildertek__Vendor__c = accountMap.get(vendorName).Id;
                 }
+                String sorting = wrapper.SortId;
+                if (String.isNotBlank(sorting)){
+                    TakeoffLine.buildertek__Sort_Id__c = Decimal.valueOf(sorting);
+                }
                 TakeoffLine.buildertek__StockKeepingUnit__c = wrapper.ProductSKU;
                 TakeoffLine.buildertek__Product_Code__c = wrapper.ProductCode;
 
@@ -110,13 +123,9 @@ public with sharing class ImportTakeOffLinesBasic{
                     TakeoffLine.buildertek__Build_Phase__c = buildPhasemap.get(buildPhase).Id;
                 }
                 
-                String categoryValue = wrapper.CategoryPL;
-                if (String.isNotBlank(categoryValue)) {
-                    if (isValidPicklistValue('buildertek__Category__c', categoryValue)){
-                        TakeoffLine.buildertek__Category__c = categoryValue;
-                    } else {
-                        throw new MyCustomException('Invalid Category value: '+ categoryValue +' Please review the row No.' + (counter + 1));
-                    }
+                String categoryValue = wrapper.Category;
+                if (String.isNotBlank(categoryValue) && categoryMap.containsKey(categoryValue)) {
+                    TakeoffLine.buildertek__Categories__c = categoryMap.get(categoryValue).Id;
                 }
 
                 String tradeType = wrapper.TradeType;
@@ -211,10 +220,11 @@ public with sharing class ImportTakeOffLinesBasic{
         public String Product;
         public String PriceBook;
         public String Vendor;
+        public String SortId;
         public String ProductSKU;
         public String ProductCode;
         public String BuildPhase;
-        public String CategoryPL;
+        public String Category;
         public String TradeType;
         public String Location;
         public String Quantity;
