@@ -187,19 +187,7 @@ public class createPOfromBOM_controller {
                 }
                 
                 List<buildertek__Project_Task__c> ScheduleItems = [SELECT Id, Name, buildertek__Schedule__c,buildertek__Contractor__c, buildertek__Cost_Code__c,buildertek__Phase__c, buildertek__Completion__c,buildertek__Start__c,buildertek__Finish__c
-                                                                    FROM buildertek__Project_Task__c WHERE buildertek__Schedule__c =: scheduleId ORDER BY CreatedDate DESC];
-
-                                                                    
-                // for(buildertek__Select_Sheet__c BOMline: BOMlines){
-                //     for(buildertek__Project_Task__c SchItem : ScheduleItems){
-                //         if( SchItem.buildertek__Contractor__c == BOMline.buildertek__Vendor__c 
-                //             && SchItem.buildertek__Phase__c == BOMline.buildertek__Build_Phase__r.Name && SchItem.buildertek__Cost_Code__c == BOMline.buildertek__Cost_Code__c 
-                //             && matchedSchItems.size() == 0)
-                //         {
-                    //             matchedSchItems.add(SchItem);
-                    //         }
-                    //     }
-                    // }
+                                                                    FROM buildertek__Project_Task__c WHERE buildertek__Schedule__c =: scheduleId AND buildertek__Cost_Code__c != null AND buildertek__Phase__c != null ORDER BY CreatedDate DESC];
                                                                                 
                 if(ScheduleItems.size() > 0){
                     List<buildertek__Project_Task__c> matchedSchItems = new List<buildertek__Project_Task__c>();
