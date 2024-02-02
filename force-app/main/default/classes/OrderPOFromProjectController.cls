@@ -149,12 +149,12 @@ public class OrderPOFromProjectController {
         map<String , List<buildertek__Purchase_Order__c>> GroupingMap = new map<String , List<buildertek__Purchase_Order__c>>();
 
         for(buildertek__Purchase_Order__c POrec : MainpoRecList){
-            if(POrec.Purchase_Order_Items__r.size() > 0){
+            // if(POrec.Purchase_Order_Items__r.size() > 0){
                 if(GroupingMap.get(POrec.buildertek__Phase__c) == null){
                     GroupingMap.put(POrec.buildertek__Phase__c , new List<buildertek__Purchase_Order__c>());
                 }
                 GroupingMap.get(POrec.buildertek__Phase__c).add(POrec);
-            }
+            // }
         }
         System.debug('GroupingMap>>>'+GroupingMap);
         for(String PO : GroupingMap.keySet()){
@@ -178,7 +178,7 @@ public class OrderPOFromProjectController {
 
             for(buildertek__Purchase_Order__c PO1 : GroupingMap.get(PO)){
                 system.debug('varmatest--->'+PO1.Purchase_Order_Items__r.size());
-                if(PO1.Purchase_Order_Items__r.size() > 0){
+                // if(PO1.Purchase_Order_Items__r.size() > 0){
                     POInnerClass POInnerClassRecord = new POInnerClass();
                     POLinesList = new List<POLinesWrapper>();
                     for(buildertek__Purchase_Order_Item__c lines : PO1.Purchase_Order_Items__r){
@@ -286,11 +286,12 @@ public class OrderPOFromProjectController {
                     POInnerClassRecord.poCheck = false;
                     POInnerClassRecord.poRecord = PO1;
                     POInnerClassRecord.expanded = false;
+                    POInnerClassList.add(POInnerClassRecord);
 
                     if(POLinesList.size() > 0){
-                        POInnerClassList.add(POInnerClassRecord);
+                        // POInnerClassList.add(POInnerClassRecord);
                     }
-                }
+                // }
             }
 
             system.debug('polinelist Size'+POInnerClassList.size());
@@ -425,11 +426,25 @@ public class OrderPOFromProjectController {
                                                          buildertek__PO_Total__c,
                                                          buildertek__Paid_Amount__c,
                                                          buildertek__PO_Balance__c,
-                                                         buildertek__Project__c
-                                                         FROM buildertek__Purchase_Order__c WHERE buildertek__Project__c =: recId];
+                                                         buildertek__Project__c,
+                                                         (SELECT Id, Name,
+                                                            buildertek__Purchase_Order__c,
+                                                            buildertek__Purchase_Order__r.Name,
+                                                            buildertek__Quantity__c,
+                                                            buildertek__Unit_Price__c,
+                                                            buildertek__Description__c,
+                                                            buildertek__Tax__c,
+                                                            buildertek__Total_Price__c,
+                                                            buildertek__Total_Amount_Tax__c,
+                                                            buildertek__Product__c,
+                                                            buildertek__Product__r.ProductCode FROM Purchase_Order_Items__r)
+                                                         FROM buildertek__Purchase_Order__c WHERE buildertek__Project__c =: recId ORDER BY buildertek__Phase__c  DESC NULLS last, buildertek__Vendor__r.Name ASC NULLS last, Name DESC, buildertek__Status__c ASC];
 
 
         totalRecords = [SELECT COUNT() FROM buildertek__Purchase_Order__c WHERE buildertek__Project__c =: recId];
+        // for(buildertek__Purchase_Order__c PO : poRecList){
+        //     totalRecords = PO.Purchase_Order_Items__r.size() > 0 ? (totalRecords + 1) : totalRecords;
+        // }
 
         AggregateResult result = [SELECT SUM(buildertek__PO_Total__c )totalPO, buildertek__Project__c FROM buildertek__Purchase_Order__c WHERE buildertek__Project__c =: recId GROUP BY buildertek__Project__c];
 
