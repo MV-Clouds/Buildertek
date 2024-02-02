@@ -30,7 +30,8 @@ public class createAllPOfromBOM_controller {
 
                 if(AllBOMlinesNotHaveVendor == true){
                     returnValue.state = 'error';
-                    returnValue.returnMessage = 'Please assign a vendor for each line. lines does not have a vendor assigned to create purchase orders.';
+                    // returnValue.returnMessage = 'No lines are available with vendors assigned to them in order to create a purchase order.';
+                    returnValue.returnMessage = 'Unable to create purchase order. No vendor assigned to available lines.';
                 }
                 else if(AllBOMlinesAssigesWithPO == true){
                     returnValue.state = 'error';
@@ -128,56 +129,63 @@ public class createAllPOfromBOM_controller {
 
                     buildertek__Admin_Interface_Node_Configuration__c adminInterfaceNodeConfigurations = [SELECT Id,buildertek__Update_Quantity__c,buildertek__Show_Fabrication_taxes__c, buildertek__Match_BOM_Lines_with_Schedule_Items__c FROM buildertek__Admin_Interface_Node_Configuration__c WHERE Name=:'BOM Settings' LIMIT 1];
                     if(adminInterfaceNodeConfigurations.buildertek__Match_BOM_Lines_with_Schedule_Items__c == true){
-                        buildertek__Schedule__c schedule = [SELECT ID,buildertek__Description__c, Name FROM buildertek__Schedule__c WHERE buildertek__Project__c =: BOM.buildertek__Project__c ORDER BY CreatedDate DESC LIMIT 1];
-                        
+                        List<buildertek__Schedule__c> scheduleList = [SELECT ID,buildertek__Description__c, Name FROM buildertek__Schedule__c WHERE buildertek__Project__c =: BOM.buildertek__Project__c ORDER BY CreatedDate DESC LIMIT 1];
+                        String scheduleId = '';
+                        if(scheduleList.size() > 0){
+                            scheduleId = scheduleList[0].Id;
+                            System.debug('matched schedule : ' + scheduleList[0].buildertek__Description__c);
+                        }
                         List<buildertek__Project_Task__c> ScheduleItems = [SELECT Id, Name, buildertek__Schedule__c,buildertek__Contractor__c, buildertek__Cost_Code__c,buildertek__Phase__c, buildertek__Completion__c,buildertek__Start__c,buildertek__Finish__c
-                                                                            FROM buildertek__Project_Task__c WHERE buildertek__Schedule__c =: schedule.Id ORDER BY CreatedDate DESC];
+                                                                            FROM buildertek__Project_Task__c WHERE buildertek__Schedule__c =: scheduleId ORDER BY CreatedDate DESC];
 
-                        System.debug('matched schedule : ' + schedule.buildertek__Description__c);
                         Map<Id, buildertek__Project_Task__c> PO_to_matchedSchItems = new Map<Id, buildertek__Project_Task__c>();
                         List<buildertek__Purchase_Order__c> poToUpdate = new List<buildertek__Purchase_Order__c>();
 
-                        for(buildertek__Purchase_Order__c PO : CreatedPOs){
-                            for(buildertek__Project_Task__c SchItem : ScheduleItems){
-                                if( SchItem.buildertek__Contractor__c == PO.buildertek__Vendor__c 
-                                && SchItem.buildertek__Phase__c == PO.buildertek__BT_Build_Phase__r.Name && SchItem.buildertek__Cost_Code__c == PO.buildertek__Cost_Code__c 
-                                && !PO_to_matchedSchItems.containsKey(PO.Id))
-                                {
-                                    PO_to_matchedSchItems.put(PO.Id, SchItem);
-                                    poToUpdate.add(PO);
+                        if(ScheduleItems.size() > 0){
+                                for(buildertek__Purchase_Order__c PO : CreatedPOs){
+                                    for(buildertek__Project_Task__c SchItem : ScheduleItems){
+                                        String schItemPhaseName = SchItem.buildertek__Phase__c != null ? SchItem.buildertek__Phase__c.toLowercase() : null;
+                                        String poPhaseName = PO.buildertek__BT_Build_Phase__r.Name != null ? PO.buildertek__BT_Build_Phase__r.Name.toLowercase() : null;
+                                        if( SchItem.buildertek__Contractor__c == PO.buildertek__Vendor__c 
+                                        && schItemPhaseName == poPhaseName && SchItem.buildertek__Cost_Code__c == PO.buildertek__Cost_Code__c 
+                                        && !PO_to_matchedSchItems.containsKey(PO.Id))
+                                        {
+                                            PO_to_matchedSchItems.put(PO.Id, SchItem);
+                                            poToUpdate.add(PO);
+                                        }
+                                    }
+                                }
+        
+                                system.debug('matched Sch Item : ' + PO_to_matchedSchItems.values());
+                                system.debug('no of matched Sch Item : ' + PO_to_matchedSchItems.keySet().size());
+        
+                                List<buildertek__Project_Task__c> schItemsToUpdate = new List<buildertek__Project_Task__c>();
+        
+                                if(poToUpdate.size() > 0){
+                                    for(buildertek__Purchase_Order__c PO : poToUpdate){
+                                            buildertek__Project_Task__c MatchedScheduleItem = PO_to_matchedSchItems.get(PO.Id);
+                                            PO.buildertek__Schedule__c = scheduleId;
+                                            PO.buildertek__Schedule_Item__c = MatchedScheduleItem.Id;
+                                            PO.buildertek__Completion__c = MatchedScheduleItem.buildertek__Completion__c;
+                                            PO.buildertek__Projected_Start_Date__c = MatchedScheduleItem.buildertek__Start__c;
+                                            PO.buildertek__Projected_Completion_Date__c = MatchedScheduleItem.buildertek__Finish__c;
+                                            MatchedScheduleItem.buildertek__Purchase_Order__c = PO.Id;
+                                            // poToUpdate.add(PO);
+                                            schItemsToUpdate.add(MatchedScheduleItem);
+                                    }
+                                }
+                                
+                                system.debug('poToUpdate : ' + poToUpdate);
+                                system.debug('schItemsToUpdate ' + schItemsToUpdate);
+            
+                                if(poToUpdate.size() > 0){
+                                    update poToUpdate;
+                                }
+                                if(schItemsToUpdate.size() > 0){
+                                    update schItemsToUpdate;
                                 }
                             }
                         }
-
-                        system.debug('matched Sch Item : ' + PO_to_matchedSchItems.values());
-                        system.debug('no of matched Sch Item : ' + PO_to_matchedSchItems.keySet().size());
-
-                        List<buildertek__Project_Task__c> schItemsToUpdate = new List<buildertek__Project_Task__c>();
-
-                        if(poToUpdate.size() > 0){
-                            for(buildertek__Purchase_Order__c PO : poToUpdate){
-                                    buildertek__Project_Task__c MatchedScheduleItem = PO_to_matchedSchItems.get(PO.Id);
-                                    PO.buildertek__Schedule__c = schedule.Id;
-                                    PO.buildertek__Schedule_Item__c = MatchedScheduleItem.Id;
-                                    PO.buildertek__Completion__c = MatchedScheduleItem.buildertek__Completion__c;
-                                    PO.buildertek__Projected_Start_Date__c = MatchedScheduleItem.buildertek__Start__c;
-                                    PO.buildertek__Projected_Completion_Date__c = MatchedScheduleItem.buildertek__Finish__c;
-                                    MatchedScheduleItem.buildertek__Purchase_Order__c = PO.Id;
-                                    // poToUpdate.add(PO);
-                                    schItemsToUpdate.add(MatchedScheduleItem);
-                            }
-                        }
-                        
-                        system.debug('poToUpdate : ' + poToUpdate);
-                        system.debug('schItemsToUpdate ' + schItemsToUpdate);
-    
-                        if(poToUpdate.size() > 0){
-                            update poToUpdate;
-                        }
-                        if(schItemsToUpdate.size() > 0){
-                            update schItemsToUpdate;
-                        }
-                    }
 
                     returnValue.state = 'success';
                     returnValue.returnMessage = 'All PO\'s created successfully.';

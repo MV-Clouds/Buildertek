@@ -179,47 +179,58 @@ public class createPOfromBOM_controller {
 
             buildertek__Admin_Interface_Node_Configuration__c adminInterfaceNodeConfigurations = [SELECT Id,buildertek__Update_Quantity__c,buildertek__Show_Fabrication_taxes__c, buildertek__Match_BOM_Lines_with_Schedule_Items__c FROM buildertek__Admin_Interface_Node_Configuration__c WHERE Name=:'BOM Settings' LIMIT 1];
             if(adminInterfaceNodeConfigurations.buildertek__Match_BOM_Lines_with_Schedule_Items__c == true){
-                buildertek__Schedule__c schedule = [SELECT ID, Name FROM buildertek__Schedule__c WHERE buildertek__Project__c =: BOM.buildertek__Project__c ORDER BY CreatedDate DESC LIMIT 1];
+                List<buildertek__Schedule__c> scheduleList = [SELECT ID, Name, buildertek__Description__c FROM buildertek__Schedule__c WHERE buildertek__Project__c =: BOM.buildertek__Project__c ORDER BY CreatedDate DESC LIMIT 1];
+                String scheduleId = '';
+                if(scheduleList.size() > 0){
+                    scheduleId = scheduleList[0].Id;
+                    System.debug('matched schedule : ' + scheduleList[0].buildertek__Description__c);
+                }
                 
                 List<buildertek__Project_Task__c> ScheduleItems = [SELECT Id, Name, buildertek__Schedule__c,buildertek__Contractor__c, buildertek__Cost_Code__c,buildertek__Phase__c, buildertek__Completion__c,buildertek__Start__c,buildertek__Finish__c
-                                                                    FROM buildertek__Project_Task__c WHERE buildertek__Schedule__c =: schedule.Id ORDER BY CreatedDate DESC];
+                                                                    FROM buildertek__Project_Task__c WHERE buildertek__Schedule__c =: scheduleId ORDER BY CreatedDate DESC];
 
-                List<buildertek__Project_Task__c> matchedSchItems = new List<buildertek__Project_Task__c>();
-
+                                                                    
                 // for(buildertek__Select_Sheet__c BOMline: BOMlines){
                 //     for(buildertek__Project_Task__c SchItem : ScheduleItems){
                 //         if( SchItem.buildertek__Contractor__c == BOMline.buildertek__Vendor__c 
                 //             && SchItem.buildertek__Phase__c == BOMline.buildertek__Build_Phase__r.Name && SchItem.buildertek__Cost_Code__c == BOMline.buildertek__Cost_Code__c 
                 //             && matchedSchItems.size() == 0)
                 //         {
-                //             matchedSchItems.add(SchItem);
-                //         }
-                //     }
-                // }
-
-                for(buildertek__Project_Task__c SchItem : ScheduleItems){
-                    if( SchItem.buildertek__Contractor__c == CreatedPOs.buildertek__Vendor__c 
-                        && SchItem.buildertek__Phase__c == CreatedPOs.buildertek__BT_Build_Phase__r.Name && SchItem.buildertek__Cost_Code__c == CreatedPOs.buildertek__Cost_Code__c 
-                        && matchedSchItems.size() == 0)
-                    {
-                        matchedSchItems.add(SchItem);
+                    //             matchedSchItems.add(SchItem);
+                    //         }
+                    //     }
+                    // }
+                                                                                
+                if(ScheduleItems.size() > 0){
+                    List<buildertek__Project_Task__c> matchedSchItems = new List<buildertek__Project_Task__c>();
+                    for(buildertek__Project_Task__c SchItem : ScheduleItems){
+                        String schItemPhaseName = SchItem.buildertek__Phase__c != null ? SchItem.buildertek__Phase__c.toLowercase() : null;
+                        String poPhaseName = CreatedPOs.buildertek__BT_Build_Phase__r.Name != null ? CreatedPOs.buildertek__BT_Build_Phase__r.Name.toLowercase() : null;
+                        System.debug('Phase : ' + poPhaseName +' Vs '+ schItemPhaseName);
+                        System.debug('Cost Code : ' + CreatedPOs.buildertek__Cost_Code__c  +' Vs '+ SchItem.buildertek__Cost_Code__c);
+                        if( SchItem.buildertek__Contractor__c == CreatedPOs.buildertek__Vendor__c 
+                            && schItemPhaseName == poPhaseName && SchItem.buildertek__Cost_Code__c == CreatedPOs.buildertek__Cost_Code__c 
+                            && matchedSchItems.size() == 0)
+                        {
+                            matchedSchItems.add(SchItem);
+                        }
                     }
-                }
-                system.debug('matched Sch Item : ' + matchedSchItems);
-                system.debug('no of matched Sch Item : ' + matchedSchItems.size());
-
-
-                if(matchedSchItems.size() > 0){
-                    buildertek__Project_Task__c MatchedScheduleItem = matchedSchItems[0];
-                    CreatedPOs.buildertek__Schedule__c = schedule.Id;
-                    CreatedPOs.buildertek__Schedule_Item__c = MatchedScheduleItem.Id;
-                    CreatedPOs.buildertek__Completion__c = MatchedScheduleItem.buildertek__Completion__c;
-                    CreatedPOs.buildertek__Projected_Start_Date__c = MatchedScheduleItem.buildertek__Start__c;
-                    CreatedPOs.buildertek__Projected_Completion_Date__c = MatchedScheduleItem.buildertek__Finish__c;
-                    MatchedScheduleItem.buildertek__Purchase_Order__c = CreatedPOs.Id;
-
-                    update MatchedScheduleItem;
-                    update CreatedPOs;
+                    system.debug('matched Sch Item : ' + matchedSchItems);
+                    system.debug('no of matched Sch Item : ' + matchedSchItems.size());
+    
+    
+                    if(matchedSchItems.size() > 0){
+                        buildertek__Project_Task__c MatchedScheduleItem = matchedSchItems[0];
+                        CreatedPOs.buildertek__Schedule__c = scheduleId;
+                        CreatedPOs.buildertek__Schedule_Item__c = MatchedScheduleItem.Id;
+                        CreatedPOs.buildertek__Completion__c = MatchedScheduleItem.buildertek__Completion__c;
+                        CreatedPOs.buildertek__Projected_Start_Date__c = MatchedScheduleItem.buildertek__Start__c;
+                        CreatedPOs.buildertek__Projected_Completion_Date__c = MatchedScheduleItem.buildertek__Finish__c;
+                        MatchedScheduleItem.buildertek__Purchase_Order__c = CreatedPOs.Id;
+    
+                        update MatchedScheduleItem;
+                        update CreatedPOs;
+                    }
                 }
             }
 
