@@ -97,6 +97,19 @@
                     toastEvent.fire();
                     return;
                 }
+                if (rfqlist[i].quantity_recieved > rfqlist[i].buildertek__Quantity__c || rfqlist[i].quantity_recieved > rfqlist[i].buildertek__Quantity_Remaining__c) {
+                    var toastEvent = $A.get("e.force:showToast");
+                    toastEvent.setParams({
+                        title: 'Error',
+                        message: 'Items Delivered must be less or equal to Quantity remaining. ',
+                        duration: ' 5000',
+                        key: 'info_alt',
+                        type: 'error',
+                        mode: 'pester'
+                    });
+                    toastEvent.fire();
+                    return;
+                }
             }
         }
         
