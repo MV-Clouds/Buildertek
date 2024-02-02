@@ -24,12 +24,12 @@ public with sharing class createSinglePOsController {
                 }
 
                 if(AllBOMlinesWithoutVendor == true){
-                    returnValue.state = 'Warning';
-                    returnValue.returnMessage = 'No lines have vendors assigned to create purchase order.';
+                    returnValue.state = 'Error';
+                    returnValue.returnMessage = 'Unable to create purchase order. No vendor assigned to available lines.';
                 }
                 else if(AllBOMlinesAssigedWithPO == true){
-                    returnValue.state = 'Warning';
-                    returnValue.returnMessage = 'Unable to create purchase order. No vendor assigned to available lines.';
+                    returnValue.state = 'Error';
+                    returnValue.returnMessage = 'All PO lines are already assiged to PO.';
                 } else {
                     List<buildertek__Purchase_Order__c> createPOList = new List<buildertek__Purchase_Order__c>();
                     Map<Id, buildertek__Purchase_Order__c> poMap = new Map<Id, buildertek__Purchase_Order__c>();
