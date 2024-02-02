@@ -147,9 +147,24 @@ public with sharing class QuoteDAO{
                                                  group by family];
         list<productfamilyClass> pfwrapperlst = new list<productfamilyClass>();
         if (productfamlylst.size() > 0){
-            for (AggregateResult agg : productfamlylst){
+            // for (AggregateResult agg : productfamlylst){
+            //     productfamilyClass pf = new productfamilyClass();
+            //     pf.productfamilyvalues = string.valueof(agg.get('familyLabel'));
+            //     pfwrapperlst.add(pf);
+            // }
+            List<String> sortedProductFamilies = new List<String>();
+    
+            for (AggregateResult agg : productfamlylst) {
+                sortedProductFamilies.add(String.valueOf(agg.get('familyLabel')));
+            }
+            
+            sortedProductFamilies.sort();
+
+            // List<productfamilyClass> pfwrapperlst = new List<productfamilyClass>();
+
+            for (String family : sortedProductFamilies) {
                 productfamilyClass pf = new productfamilyClass();
-                pf.productfamilyvalues = string.valueof(agg.get('familyLabel'));
+                pf.productfamilyvalues = family;
                 pfwrapperlst.add(pf);
             }
             system.debug('pfwrapperlst---->' + pfwrapperlst);
@@ -887,7 +902,7 @@ public with sharing class QuoteDAO{
         }
         soql = soql + ' FROM buildertek__Quote_Item__c';
         // string status = 'Accept';
-        soql = soql + ' WHERE buildertek__Quote__c =: quoteId AND buildertek__status__c =: status ORDER BY buildertek__Grouping__r.buildertek__Sort_Id__c,buildertek__Grouping__r.Name  ASC limit ' + recordToDisply + ' OFFSET ' + offset;
+        soql = soql + ' WHERE buildertek__Quote__c =: quoteId AND buildertek__status__c =: status ORDER BY buildertek__Grouping__r.buildertek__Sort_Id__c NULLS Last,buildertek__Grouping__r.Name, buildertek__Priority__c ASC NULLS Last , Name ASC limit ' + recordToDisply + ' OFFSET ' + offset;
 
         List<buildertek__Quote_Item__c> quoteItemList = new List<buildertek__Quote_Item__c>();
         /* if(Schema.sObjectType.buildertek__Quote_Item__c.fields.Id.isAccessible()&&
@@ -908,6 +923,7 @@ public with sharing class QuoteDAO{
         for (buildertek__Quote_Item__c quoteItem : quoteItemList){
             groupIdSet.add(quoteItem.Grouping__c);
         }
+        System.debug('groupIdSet ' + groupIdSet);
         /*List<quote_line_group__c> budgetGroup;
 
          String query = 'SELECT Id, Name ';
@@ -941,11 +957,11 @@ public with sharing class QuoteDAO{
 
         if (groupId != null){
             If (Schema.sObjectType.buildertek__quote_line_group__c.fields.Id.isAccessible() && Schema.sObjectType.buildertek__quote_line_group__c.fields.Name.isAccessible()){
-                budgetGroup = Database.query('Select Id, Name, buildertek__Description__c,buildertek__Sort_Id__c From quote_line_group__c where Id =: groupId  ORDER BY buildertek__Sort_Id__c ASC NULLS LAST, Name ASC');
+                budgetGroup = Database.query('Select Id, Name, buildertek__Description__c,buildertek__Sort_Id__c From quote_line_group__c where Id =: groupId  ORDER BY buildertek__Sort_Id__c NULLS Last,Name ASC');
             }
         } else{
             If (Schema.sObjectType.buildertek__quote_line_group__c.fields.Id.isAccessible() && Schema.sObjectType.buildertek__quote_line_group__c.fields.Name.isAccessible()){
-                budgetGroup = Database.query('Select Id, Name,buildertek__Description__c,buildertek__Sort_Id__c From quote_line_group__c where Id IN: groupIdSet ORDER BY buildertek__Sort_Id__c ASC NULLS LAST, Name ASC');
+                budgetGroup = Database.query('Select Id, Name,buildertek__Description__c,buildertek__Sort_Id__c From quote_line_group__c where Id IN: groupIdSet ORDER BY buildertek__Sort_Id__c NULLS Last,Name ASC');
             }
         }
         system.debug('budgetGroup ----------> ' + budgetGroup);
@@ -1621,7 +1637,7 @@ public with sharing class QuoteDAO{
             queryFields += ', ' + sumOfFields.trim();
         }
         // string status = 'Accept';
-        myquery = 'select buildertek__Grouping__c ' + queryFields + ' from buildertek__Quote_Item__c where buildertek__Quote__c =: recordId AND buildertek__Status__c =: status Order by buildertek__Grouping__r.buildertek__Sort_Id__c,buildertek__Grouping__r.Name, buildertek__Priority__c ASC NULLS LAST, Name ASC limit ' + recordToDisply + ' OFFSET ' + offset;
+        myquery = 'select buildertek__Grouping__c ' + queryFields + ' from buildertek__Quote_Item__c where buildertek__Quote__c =: recordId AND buildertek__Status__c =: status Order by buildertek__Grouping__r.buildertek__Sort_Id__c Nulls Last,buildertek__Grouping__r.Name, buildertek__Priority__c ASC NULLS Last, Name ASC limit ' + recordToDisply + ' OFFSET ' + offset;
         system.debug('----myquery -----------> ' + myquery);
         /*if(Schema.sObjectType.buildertek__Quote_Item__c.fields.Id.isAccessible()&&
          Schema.sObjectType.buildertek__Quote_Item__c.fields.Name.isAccessible() &&
@@ -1658,7 +1674,7 @@ public with sharing class QuoteDAO{
         childObjGroup = database.query(myqueries);
         /*}*/
         system.debug('childObjGroup Results ' + childObjGroup);
-        string Childs = 'select Id, Name from buildertek__Quote_Line_Group__c where id IN: groupIds order by buildertek__Sort_Id__c ASC NULLS LAST, Name ASC';
+        string Childs = 'select Id, Name from buildertek__Quote_Line_Group__c where id IN: groupIds order by buildertek__Sort_Id__c Nulls Last,Name ASC';
         list<buildertek__Quote_Line_Group__c> childObjGroups;
         if (Schema.sObjectType.buildertek__Quote_Line_Group__c.fields.Id.isAccessible() && Schema.sObjectType.buildertek__Quote_Line_Group__c.fields.Name.isAccessible()){
             childObjGroups = database.query(Childs);
@@ -1720,7 +1736,7 @@ public with sharing class QuoteDAO{
         String myqueries = '';
         String myqueries2 = '';
 
-        myqueries = 'select buildertek__Quote__c,buildertek__Status__c ,buildertek__Grouping__r.Name,buildertek__Grouping__r.buildertek__Sort_Id__c ' + aggregateFields + ' from buildertek__Quote_Item__c where buildertek__Quote__c =: recordId  AND buildertek__Status__c =: status  Order By buildertek__Grouping__r.buildertek__Sort_Id__c,buildertek__Grouping__r.Name, buildertek__Priority__c ASC NULLS LAST, Name ASC limit ' + recordToDisply + ' OFFSET ' + offset;
+        myqueries = 'select buildertek__Quote__c,buildertek__Status__c ,buildertek__Grouping__r.Name,buildertek__Grouping__r.buildertek__Sort_Id__c ' + aggregateFields + ' from buildertek__Quote_Item__c where buildertek__Quote__c =: recordId  AND buildertek__Status__c =: status  Order By buildertek__Grouping__r.buildertek__Sort_Id__c NULLS Last,buildertek__Grouping__r.Name, buildertek__Priority__c ASC NULLS Last , Name ASC limit ' + recordToDisply + ' OFFSET ' + offset;
         // myqueries2 = 'select buildertek__Quote__c,buildertek__Status__c ,buildertek__Grouping__r.Name,buildertek__Grouping__r.buildertek__Sort_Id__c ' + aggregateFields + ' from buildertek__Quote_Item__c where buildertek__Quote__c =: recordId  AND buildertek__Status__c =Accept  Order By buildertek__Grouping__r.buildertek__Sort_Id__c,buildertek__Grouping__r.Name, buildertek__Priority__c ASC , Name ASC limit ' + recordToDisply + ' OFFSET ' + offset;
         List<SObject> ListOfRecords;
         ListOfRecords = Database.query(myqueries);
@@ -2601,10 +2617,10 @@ public with sharing class QuoteDAO{
                     String PricebookFilter = '';
                     if(parentId != null && parentId != ''){
                         PricebookFilter = 'WHERE Pricebook2Id = \''+ parentId +'\' ';
-                        sQuery = 'select id, Name, buildertek__Vendor__c,QuantityUnitOfMeasure, (SELECT Id, Name, buildertek__Unit_Cost__c,buildertek__Markup__c,Pricebook2Id FROM PricebookEntries '+ PricebookFilter +' order by CreatedDate DESC LIMIT 1)  from ' + ObjectName + ' WHERE ' + searchKey + ' AND ' + filter + ' order by Name ASC LIMIT 800';
+                        sQuery = 'select id, Name, buildertek__Vendor__c,QuantityUnitOfMeasure,buildertek__Cost_Code__c,buildertek__Quote_Group__c, (SELECT Id, Name, buildertek__Unit_Cost__c,buildertek__Markup__c,Pricebook2Id FROM PricebookEntries '+ PricebookFilter +' order by CreatedDate DESC LIMIT 1)  from ' + ObjectName + ' WHERE ' + searchKey + ' AND ' + filter + ' order by Name ASC LIMIT 800';
                     }
                     else{
-                        sQuery = 'select id, Name, buildertek__Vendor__c,QuantityUnitOfMeasure, (SELECT Id, Name, buildertek__Unit_Cost__c,buildertek__Markup__c,Pricebook2Id FROM PricebookEntries order by CreatedDate DESC LIMIT 1)  from ' + ObjectName + ' WHERE ' + searchKey + ' AND ' + filter + ' order by Name ASC LIMIT 800';
+                        sQuery = 'select id, Name, buildertek__Vendor__c,QuantityUnitOfMeasure,buildertek__Cost_Code__c,buildertek__Quote_Group__c, (SELECT Id, Name, buildertek__Unit_Cost__c,buildertek__Markup__c,Pricebook2Id FROM PricebookEntries order by CreatedDate DESC LIMIT 1)  from ' + ObjectName + ' WHERE ' + searchKey + ' AND ' + filter + ' order by Name ASC LIMIT 800';
                     }
                 }
                 else{
@@ -2616,10 +2632,10 @@ public with sharing class QuoteDAO{
                     String PricebookFilter = '';
                     if(parentId != null && parentId != ''){
                         PricebookFilter = 'WHERE Pricebook2Id = \''+ parentId +'\' ';
-                        sQuery = 'select id, Name, buildertek__Vendor__c,QuantityUnitOfMeasure, (SELECT Id, Name, buildertek__Unit_Cost__c,buildertek__Markup__c,Pricebook2Id FROM PricebookEntries '+ PricebookFilter +' order by CreatedDate DESC LIMIT 1) from ' + ObjectName + ' WHERE ' + searchKey + ' order by Name ASC LIMIT 800';
+                        sQuery = 'select id, Name, buildertek__Vendor__c,QuantityUnitOfMeasure,buildertek__Cost_Code__c,buildertek__Quote_Group__c (SELECT Id, Name, buildertek__Unit_Cost__c,buildertek__Markup__c,Pricebook2Id FROM PricebookEntries '+ PricebookFilter +' order by CreatedDate DESC LIMIT 1) from ' + ObjectName + ' WHERE ' + searchKey + ' order by Name ASC LIMIT 800';
                     }
                     else{
-                        sQuery = 'select id, Name, buildertek__Vendor__c,QuantityUnitOfMeasure, (SELECT Id, Name, buildertek__Unit_Cost__c,buildertek__Markup__c,Pricebook2Id FROM PricebookEntries order by CreatedDate DESC LIMIT 1) from ' + ObjectName + ' WHERE ' + searchKey + ' order by Name ASC LIMIT 800';
+                        sQuery = 'select id, Name, buildertek__Vendor__c,QuantityUnitOfMeasure,buildertek__Cost_Code__c,buildertek__Quote_Group__c (SELECT Id, Name, buildertek__Unit_Cost__c,buildertek__Markup__c,Pricebook2Id FROM PricebookEntries order by CreatedDate DESC LIMIT 1) from ' + ObjectName + ' WHERE ' + searchKey + ' order by Name ASC LIMIT 800';
                     }
                 }
                 else{
