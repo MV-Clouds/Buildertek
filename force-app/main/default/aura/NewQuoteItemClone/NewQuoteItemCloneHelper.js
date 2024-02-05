@@ -653,7 +653,10 @@
 
     getGroups: function(component, event, helper, page) {
 
-        //component.set("v.groupLoaded", false);
+        // component.set("v.Spinner1", true);
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "SHOW"
+        }).fire();
         var quoteId = component.get("v.quoteId");
         if (quoteId) {
             if (component.find('expandCollapeseAllBtn2')) {
@@ -697,10 +700,13 @@
                 var state = response.getState();
                 console.log({state});
                 console.log(response.getError());
-
+                $A.get("e.c:BT_SpinnerEvent").setParams({
+                    "action": "HIDE"
+                }).fire();
                 if (state === "SUCCESS") {
                     var result = response.getReturnValue();
                     console.log(result.group);
+                    // component.set("v.Spinner1", false);
                     console.log('TotalRecords ==> ',{ result });
                     // console.log(result.status);
                     // console.log(result.tarTable.ListOfEachRecord);
