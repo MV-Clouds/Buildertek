@@ -75,7 +75,7 @@ public with sharing class ImportTakeOffLinesBasic{
             }
 
             // Find existing Categories
-            for (buildertek__Category__c categoryRec : [SELECT Id, Name FROM buildertek__Category__c]) {
+            for (buildertek__Category__c categoryRec : [SELECT Id, Name FROM buildertek__Category__c WHERE Name IN :categoryList]) {
                 categoryMap.put(categoryRec.Name, categoryRec);
             }
 
