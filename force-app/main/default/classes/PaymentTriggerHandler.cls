@@ -4,7 +4,7 @@ public class PaymentTriggerHandler {
     
     public void afterInsert(List<buildertek__BT_Payment__c> newPaymentline, Map<Id, buildertek__BT_Payment__c> newPaymentlineMap){
         
-        list<String> invoiceIds = new list<String> ();
+        Set<String> invoiceIds = new Set<String> ();
         if(!newPaymentline.isEmpty()){
             for(buildertek__BT_Payment__c payment : newPaymentline){
                 invoiceIds.add(payment.buildertek__Invoices_AP__c);
@@ -14,7 +14,7 @@ public class PaymentTriggerHandler {
         system.debug('invoiceIds----->'+invoiceIds);        
         List<buildertek__Account_Payable_Clone__c> invoiceRecList = [select Id, Name, buildertek__Payment_Amount__c  from buildertek__Account_Payable_Clone__c where Id IN: invoiceIds];
         
-        List<AggregateResult> result = [SELECT SUM(buildertek__Amount__c)totalCost, buildertek__Invoices_AP__c FROM buildertek__BT_Payment__c
+        List<AggregateResult> result = [SELECT SUM(buildertek__Total_Amount__c )totalCost, buildertek__Invoices_AP__c FROM buildertek__BT_Payment__c
                                         WHERE buildertek__Invoices_AP__c IN: invoiceIds group by buildertek__Invoices_AP__c];
         
         system.debug('result----->'+result);
@@ -49,7 +49,7 @@ public class PaymentTriggerHandler {
         system.debug('invoiceIds----->'+invoiceIds);        
         List<buildertek__Account_Payable_Clone__c> invoiceRecList = [select Id, Name, buildertek__Payment_Amount__c  from buildertek__Account_Payable_Clone__c where Id IN: invoiceIds];
         
-        List<AggregateResult> result = [SELECT SUM(buildertek__Amount__c)totalCost, buildertek__Invoices_AP__c FROM buildertek__BT_Payment__c
+        List<AggregateResult> result = [SELECT SUM(buildertek__Total_Amount__c)totalCost, buildertek__Invoices_AP__c FROM buildertek__BT_Payment__c
                                         WHERE buildertek__Invoices_AP__c IN: invoiceIds group by buildertek__Invoices_AP__c];
         
         system.debug('result----->'+result);
@@ -80,7 +80,7 @@ public class PaymentTriggerHandler {
 
         
         for(buildertek__BT_Payment__c payment:oldPaymentList){
-            paymentSet.put(payment.buildertek__Invoices_AP__c , payment.buildertek__Amount__c);
+            paymentSet.put(payment.buildertek__Invoices_AP__c , payment.buildertek__Total_Amount__c);
         }
         System.debug('paymentSet' + paymentSet);
         List<buildertek__Account_Payable_Clone__c> invoiceRecList = [select Id, Name, buildertek__Payment_Amount__c  from buildertek__Account_Payable_Clone__c where Id IN: paymentSet.keySet()];

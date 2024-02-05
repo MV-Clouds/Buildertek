@@ -40,9 +40,9 @@
     <aura:handler name="change" value="{!v.contractor}" action="{!c.handleContractorChange}"/>
     
      <aura:registerEvent name="dataTableRow" type="c:BT_BudgetAddLineEvent"/>
-    <aura:attribute name="fromcustomDataTable" type="Boolean" ></aura:attribute>
-
-    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+     <aura:attribute name="fromcustomDataTable" type="Boolean" ></aura:attribute>
+     
+     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
 
     <!--Editable Fields-->
     <aura:if isTrue="{!v.isMassUpdateEnable}">
@@ -66,7 +66,7 @@
                 onchange="{!c.onInputChange}"/>-->
 
             <lightning:textarea value="{!v.cellValue}" name="{!v.index+'-'+v.fieldName}"
-                onchange="{!c.onInputChange}"/>
+                onchange="{!c.onInputChange}" oncommit="{!c.onInputChange}"/>
             
         </aura:if>
         <aura:if isTrue="{!v.isDateField}">
@@ -95,7 +95,7 @@
                 name="{!v.index+'-'+v.fieldName}" onchange="{!c.onPercentageChange}" />  formatter="percent"-->
               
             <div class="slds-form-element" >
-                <div class="slds-form-element__control" style="margin-bottom:15px;">
+                <div class="slds-form-element__control" style="">
                     <aura:if isTrue="{!(v.ObjectName == 'buildertek__Select_Sheet__c')}">
 
                         <div fieldapi="{!v.fieldName}">
@@ -161,13 +161,26 @@
                         <!---->
                         <aura:if isTrue = "{!v.fieldName == 'buildertek__Takeoff_Line__c'}">
 
+                        <aura:if isTrue="{!v.callingCmpName == 'BT_ManagePOLines'}">
                             <div data-fieldapi="{!v.fieldName}" class="takeoff-line-col">
                                 <c:BT_LookupFields selectedRecordId="{!v.cellValue}" childObjectName="{!v.childObjectName}" phaseIndex="{!v.phaseIndex}" index="{!v.index}"
                                     fieldName="{!v.fieldName}" record="{!v.record}"
                                     callingCmpName="{!v.callingCmpName}"/>
-                                    <!-- {!v.record.Name} -->
-
                             </div>
+                            <aura:set attribute="else">
+                                <!-- <lightning:recordEditForm objectApiName="{!v.childObjectName}">
+                                    <div style = "padding-top: 7px !important; padding-bottom: 0px !important;">
+                                        <lightning:inputField aura:id="lookupField" fieldName="{!v.fieldName}" value="{!v.record.buildertek__Takeoff_Line__c}" 
+                                         class="slds-size-1-of-1"/>  
+                                    </div> 
+                                </lightning:recordEditForm> -->
+                                <div data-fieldapi="{!v.fieldName}">
+                                <c:BT_LookupFields selectedRecordId="{!v.cellValue}" childObjectName="{!v.childObjectName}" phaseIndex="{!v.phaseIndex}" index="{!v.index}"
+                                    fieldName="{!v.fieldName}" record="{!v.record}"
+                                    callingCmpName="{!v.callingCmpName}"/>
+                            </div>
+                            </aura:set>
+                        </aura:if>
                             <aura:set attribute="else">
                                 <aura:if isTrue="{!v.fieldName == 'buildertek__Purchase_Order__c'}">
                                     <lightning:recordEditForm onload="{!c.setSelectedRecordId}" objectApiName="{!v.childObjectName}">
@@ -207,23 +220,33 @@
            <!-- <div style="padding-bottom:0.3rem; padding-top:0.3rem; ">-->
              
            
-            <ui:outputText value="{!v.cellValue}" />
+            <ui:outputText value="{!v.cellValue ? v.cellValue : '-'}" />
            
            <!-- </div>-->
         </aura:if>
         <aura:if isTrue="{!v.isTextAreaField}">
         
-            <aura:unescapedHtml value="{!v.cellValue}" />
+            <aura:unescapedHtml value="{!v.cellValue ? v.cellValue : '-'}" />
             <!-- <ui:outputText value="{!v.cellValue}" /> -->
         </aura:if>
         <aura:if isTrue="{!v.isDoubleField}">
-            <ui:outputNumber value="{!v.cellValue}" />
+            <aura:if isTrue="{!v.cellValue}">
+                <ui:outputNumber value="{!v.cellValue}" />
+              <aura:set attribute="else">
+                  <ui:outputText value="-" />
+              </aura:set>
+            </aura:if>
         </aura:if>
         <aura:if isTrue="{!v.isPercentField}">
-                <ui:outputNumber value="{!v.percentageValue}"/>
+            <aura:if isTrue="{!v.cellValue}">
+                <ui:outputNumber value="{!v.cellValue}" />
+              <aura:set attribute="else">
+                  <ui:outputText value="-" />
+              </aura:set>
+            </aura:if>
         </aura:if>
         <aura:if isTrue="{!v.isDropDownField}">
-            <ui:outputText value="{!v.cellValue}" />
+            <ui:outputText value="{!v.cellValue ? v.cellValue : '-'}" />
         </aura:if>
         <aura:if isTrue="{!v.isDateField}">
             <ui:outputDate value="{!v.cellValue}" />
@@ -232,17 +255,26 @@
             <ui:outputDateTime value="{!v.cellValue}" />
         </aura:if>
         <aura:if isTrue="{!v.isCurrencyField}">
-            <ui:outputCurrency value="{!v.cellValue}" />
+            <aura:if isTrue="{!v.cellValue}">
+                <ui:outputCurrency value="{!v.cellValue}" />
+              <aura:set attribute="else">
+                  <ui:outputText value="-" />
+              </aura:set>
+            </aura:if>
         </aura:if>
         <aura:if isTrue="{!v.isCheckBoxField}">
             <ui:outputCheckbox value="{!v.checkBoxValue}" />
         </aura:if>
         <aura:if isTrue="{!v.isReferenceField}">
-          
-           <ui:outputURL value="{!'/one/one.app?#/sObject/'+ v.cellValue + '/view'}"
-                         
-                         
-                label="{!v.cellLabel}" />
+
+          <aura:if isTrue="{!v.cellValue}">
+              <ui:outputURL value="{!'/one/one.app?#/sObject/'+ v.cellValue + '/view'}"
+                            label="{!v.cellLabel}" target="_blank"/>
+            <aura:set attribute="else">
+                <ui:outputText value="-" />
+            </aura:set>
+          </aura:if>
+
         </aura:if>
     </aura:if>
 </aura:component>

@@ -18,9 +18,9 @@
     });
     action.setCallback(this, function (response) {
       if (response.getState() == "SUCCESS") {
-        console.log("response.getReturnValue()-->" + response.getReturnValue());
+        // // console.log("response.getReturnValue()-->" + response.getReturnValue());
         var projectData = JSON.parse(JSON.stringify(response.getReturnValue()));
-        console.log("projectData-->" + projectData);
+        // // console.log("projectData-->" + projectData);
         if (projectData.buildertek__Project__c) {
           component.set(
             "v.projectName",
@@ -55,7 +55,7 @@
               });
             })
             .catch(function (error) {
-              console.log("sub tab error::", error);
+              // console.log("sub tab error::", error);
               // alert(error);
             });
         }, 100);
@@ -67,6 +67,7 @@
     $A.enqueueAction(action);
     helper.fetchTakeOffLinesData(component, event, helper);
     helper.setColumns(component);
+    helper.getFieldSetFields(component,event);
     // helper.getPoLinesList(component, event, helper,pageNumber,pageSize);
 
     window.setTimeout(
@@ -102,7 +103,7 @@
     //         "slideDevName": "related"
     //     });
     //     navEvt.fire();
-    //     console.log(error);
+    //     // console.log(error);
     // });
 
     var navEvt = $A.get("e.force:navigateToSObject");
@@ -122,7 +123,7 @@
         });
       })
       .catch(function (error) {
-        console.log("Error", error);
+        // console.log("Error", error);
       });
   },
 
@@ -255,7 +256,7 @@
       }
     }
     var toggleVal = component.get("v.groupBytoggle");
-    console.log("@@Toggle Data--" + JSON.stringify(data));
+    // // console.log("@@Toggle Data--" + JSON.stringify(data));
     helper.formatDataByGroups(
       component,
       event,
@@ -346,16 +347,16 @@
                             selectedRecordMap.get(filteredData[i].buildertek__Vendor__c).push(JSON.parse(JSON.stringify(filteredData[i])));
                         }else{
                             vendors.push("No Vendor");
-                            //console.log(recordsMap.has('No vendor'),recordsMap.get("No vendor"))
+                            //// console.log(recordsMap.has('No vendor'),recordsMap.get("No vendor"))
                             if (!selectedRecordMap.has('No Vendor')) {
                                 selectedRecordMap.set('No Vendor', []);
                             }
-                            //console.log(recordsMap.has('No vendor'),recordsMap.get("No vendor"))
+                            //// console.log(recordsMap.has('No vendor'),recordsMap.get("No vendor"))
                             selectedRecordMap.get('No Vendor').push(JSON.parse(JSON.stringify(filteredData[i])));
-                            //console.log(recordsMap.get("No vendor"))
+                            //// console.log(recordsMap.get("No vendor"))
                         }
                     }*/
-        //console.log(selectedRecordMap);
+        //// console.log(selectedRecordMap);
         //component.set("v.vendors",vendors);
         component.set("v.JselectedRecordsIds", recordIds);
         //component.set("v.selectedRecordMap",selectedRecordMap);
@@ -381,7 +382,7 @@
         component.set("v.JselectedRecordsIds", recordIds);
       }
     }
-    console.log(recordIds);
+    // // console.log(recordIds);
     if (recordIds.length == 0) {
       event.currentTarget.checked = false;
     }
@@ -428,7 +429,7 @@
       }
     }
 
-    console.log(selectedRfqIds);
+    // // console.log(selectedRfqIds);
     component.set("v.JselectedRecordsIds", selectedRfqIds);
   },
 
@@ -450,7 +451,7 @@
           component.set("v.showMessage", false);
           location.reload();
         } else {
-          console.log(response);
+          // console.log(response);
         }
       });
       $A.enqueueAction(action);
@@ -476,7 +477,7 @@
     });
     action.setCallback(this, function (response) {
       if (response.getState() == "SUCCESS") {
-        console.log(response.getReturnValue());
+        // // console.log(response.getReturnValue());
         component.set("v.Spinner", false);
         if (JSON.parse(JSON.stringify(response.getReturnValue())).length) {
           component.set(
@@ -496,7 +497,7 @@
         //component.set("v.showMessage",false);
         //location.reload();
       } else {
-        console.log(response);
+        // console.log(response);
       }
     });
     $A.enqueueAction(action);
@@ -525,7 +526,7 @@
         //  alert('success state');
         component.set("v.Spinner", false);
         var pageNumber = component.get("v.PageNumber");
-        console.log(response.getReturnValue());
+        // // console.log(response.getReturnValue());
         var pageSize = component.get("v.pageSize");
 
         if (response.getReturnValue() == "Deleted") {
@@ -574,7 +575,7 @@
       action.setCallback(this, function (response) {
         if (response.getState() == "SUCCESS") {
           var pageNumber = component.get("v.PageNumber");
-          console.log(response.getReturnValue());
+          // // console.log(response.getReturnValue());
           var pageSize = component.get("v.pageSize");
           //component.set()
           helper.getPoLinesList(component, event, helper, pageNumber, pageSize);
@@ -592,7 +593,7 @@
   onMassUpdate: function (component, event, helper) {
     component.set("v.isLoading", true);
     var checkFabrication = component.get("v.showFabricationDetails");
-    console.log("@@Mass update--", component.get("v.massUpdateEnable"));
+    // // console.log("@@Mass update--", component.get("v.massUpdateEnable"));
     if (!component.get("v.massUpdateEnable")) {
       component.set("v.massUpdateEnable", true);
       component.set("v.isLoading", false);
@@ -695,7 +696,7 @@
     });
   },
   handleBTAdmin: function (component, event, helper) {
-    console.log("<--handleBTAdmin-->");
+    // // console.log("<--handleBTAdmin-->");
     component.set("v.isLoading", true);
     var BOMID = component.get("v.recordId");
     var action = component.get("c.getBTAdminRecorDetails");
@@ -712,7 +713,7 @@
 
       if (state === "SUCCESS") {
         var bomRecords = response.getReturnValue();
-        console.log('seee bomRecords ', bomRecords);
+        // // console.log('seee bomRecords ', bomRecords);
         //If the records present then we will show the table otherwise we will let the user to fill the field values
         if (
           bomRecords != null &&
@@ -725,7 +726,7 @@
               bomRecords[i].LastModifiedBy.Name;
             // slabDiscount = bomRecords[i].buildertek__Slab_Discount_Rate__c;
             taxRate1 = bomRecords[i].buildertek__Tax_Rate_1__c;
-            console.log("<--taxRate1-->" + taxRate1);
+            // // console.log("<--taxRate1-->" + taxRate1);
             savedSelectedCountry =
               bomRecords[i].buildertek__Region_State_Country_County__c;
           }
@@ -735,7 +736,7 @@
           component.set("v.isLoading", false);
 
           helper.getExtendedCosts(component, event, helper);
-          console.log("GL====" + component.get("v.generalLiabilityCost"));
+          // // console.log("GL====" + component.get("v.generalLiabilityCost"));
 
           // //helper.getCountryOptions(component, event, helper);
           // if(savedSelectedCountry != null && savedSelectedCountry != undefined)
@@ -743,16 +744,16 @@
           //     component.set('v.selectedCountry',savedSelectedCountry);
           //     component.set("v.selectedCountryDB",savedSelectedCountry);
           // }
-          console.log("adjustmentTableColumns call ******************");
+          // // console.log("adjustmentTableColumns call ******************");
 
           helper.setCostAdjustmentTableColumns(component, event, helper);
-          console.log("adjustmentTableColumns call ******************");
+          // // console.log("adjustmentTableColumns call ******************");
 
           //helper.calculateCostAdjustment(component, event, helper);
           window.setTimeout(
             $A.getCallback(function () {
               var isUpdated = component.get("v.adjustCostUpdated");
-              console.log("isUpdated--", isUpdated);
+              // // console.log("isUpdated--", isUpdated);
               if (isUpdated == true) {
                 component.set("v.adjustCostUpdated", false);
                 var pageNumber = component.get("v.PageNumber");
@@ -770,9 +771,7 @@
             }),
             2000
           );
-          console.log(
-            "adjustmentTableColumns call *******-------------------***********"
-          );
+          // // console.log("adjustmentTableColumns call *******-------------------***********" );
 
           //helper.getProductCodes(component, event, helper);
         }
@@ -785,7 +784,7 @@
           "Something went wrong!",
           "error"
         );
-        console.log("Not success");
+        // console.log("Not success");
         component.set("v.isLoading", false);
       }
     });
@@ -794,13 +793,13 @@
   },
 
   onAdjustmentTableSave: function (component, event, helper) {
-    console.log('onAdjustmentTableSave');
+    // console.log('onAdjustmentTableSave');
 
     var updatedRecords = component.find("adjustmentTaxesTable") .get("v.draftValues");
 
-    console.log(updatedRecords , '_________________update Records are______________')
+    // console.log(updatedRecords , '_________________update Records are______________')
     // var successfullValidation = helper.validateData( component, event, helper );
-    // console.log('successfullValidation--',successfullValidation);
+    // // console.log('successfullValidation--',successfullValidation);
 
     // if (successfullValidation != null && successfullValidation != undefined && successfullValidation == true)
     // {
@@ -812,7 +811,7 @@
       var state = response.getState();
       if (state === "SUCCESS") {
         var result = response.getReturnValue();
-        console.log("result***", result);
+        // console.log("result***", result);
 
         if (result.isSuccess) {
           helper.showToast(
@@ -828,7 +827,7 @@
           var action = component.get("c.handleBTAdmin");
           $A.enqueueAction(action);
         } else {
-          console.log("@@Return Value False");
+          // console.log("@@Return Value False");
           helper.showToast(component,event,helper,
               "Error!",
               result.message,
@@ -836,7 +835,7 @@
           );
         }
       } else {
-        console.log("@@Not Success");
+        // console.log("@@Not Success");
         helper.showToast(
           component,
           event,
@@ -855,7 +854,7 @@
     component.set("v.showCountryModal", false);
   },
   closeProductCodeModal: function (component, event, helper) {
-    console.log("@@API---", component.get("v.fieldAPINameToPass"));
+    // console.log("@@API---", component.get("v.fieldAPINameToPass"));
     component.set("v.showProductCodeModal", false);
     var fieldApiName = component.get("v.fieldAPINameToPass");
     if (
@@ -883,13 +882,13 @@
     var params = event.getParam("arguments");
 
     helper.getExtendedCosts(component, event, helper);
-    console.log("GL====" + component.get("v.generalLiabilityCost"));
+    // console.log("GL====" + component.get("v.generalLiabilityCost"));
 
     var action = component.get("c.handleBTAdmin");
     $A.enqueueAction(action);
 
     // helper.getExtendedCosts(component, event, helper);
-    // console.log('GL===='+component.get('v.generalLiabilityCost'));
+    // // console.log('GL===='+component.get('v.generalLiabilityCost'));
 
     if (params) {
       // var allExtendedCosts = params.extendedCosts;
@@ -922,7 +921,7 @@
   },
   handleRowAction: function (component, event, helper) {
     var actionName = event.getParam("action").name;
-    console.log("@@actionName--", actionName);
+    // console.log("@@actionName--", actionName);
 
     if (actionName == "state_Country") {
       component.set("v.showCountryModal", true);
@@ -1037,7 +1036,7 @@
           $A.enqueueAction(action);
           component.set("v.Spinner", false);
         } else {
-          console.log("@@Return Value False");
+          // console.log("@@Return Value False");
           helper.showToast(
             component,
             event,
@@ -1049,7 +1048,7 @@
           component.set("v.Spinner", false);
         }
       } else {
-        console.log("@@Not Success");
+        // console.log("@@Not Success");
         helper.showToast(
           component,
           event,
@@ -1092,4 +1091,5 @@
   createQuote: function (component, event, helper) {
     helper.quote(component, event, helper);
   },
+
 });

@@ -96,32 +96,56 @@ public class GetMasterRFQs {
     @AuraEnabled
     public static String addRfqLinesToBudget(List<String>rfqIds, String budgetId){
         try{
-            List<String> RFQrecordIds = rfqIds;
-            String budgetRecId = budgetId;
-            List<buildertek__RFQ_Item__c> rfqLines = [SELECT Id, Name, buildertek__RFQ_Package__r.buildertek__Vendor__r.buildertek__Vendor__c, buildertek__Description__c, buildertek__Quantity__c, buildertek__Unit_Price__c, buildertek__Total_Price__c FROM buildertek__RFQ_Item__c Where buildertek__RFQ_Package__c IN :RFQrecordIds ];
+            List<AggregateResult> aggregateResults = [SELECT buildertek__RFQ_Package__c, SUM(buildertek__Unit_Price__c) unitPrice FROM buildertek__RFQ_Item__c WHERE buildertek__RFQ_Package__c IN :rfqIds GROUP BY buildertek__RFQ_Package__c];
+            List<buildertek__RFQ_Item__c> rfqLines = [SELECT Id, Name, buildertek__RFQ_Package__c, buildertek__RFQ_Package__r.Name, buildertek__RFQ_Package__r.buildertek__Vendor__r.buildertek__Vendor__c FROM buildertek__RFQ_Item__c WHERE buildertek__RFQ_Package__c IN :rfqIds ];
             List<buildertek__Budget_Item__c> budgetItemList = new List<buildertek__Budget_Item__c>();
-            for(buildertek__RFQ_Item__c rfqLineItem : rfqLines){
-                buildertek__Budget_Item__c budgetItem = new buildertek__Budget_Item__c();
-                budgetItem.Name = rfqLineItem.Name;
-                budgetItem.buildertek__Budget__c = budgetRecId;
-                if(rfqLineItem.buildertek__RFQ_Package__r.buildertek__Vendor__r.buildertek__Vendor__c != null){
-                    budgetItem.buildertek__Contractor__c = rfqLineItem.buildertek__RFQ_Package__r.buildertek__Vendor__r.buildertek__Vendor__c;
-                }
-                
-                budgetItem.buildertek__Unit_Price__c = rfqLineItem.buildertek__Unit_Price__c;
-                budgetItem.buildertek__Quantity__c = rfqLineItem.buildertek__Quantity__c;
-                budgetItem.buildertek__Description__c = rfqLineItem.buildertek__Description__c;
-                budgetItem.buildertek__RFQ__c = rfqLineItem.buildertek__RFQ_Package__c;
-                budgetItemList.add(budgetItem);
+            List<buildertek__RFQ_Item__c> updateRFQLineList = new List<buildertek__RFQ_Item__c>(); 
+
+            Map<Id, buildertek__RFQ_Item__c> rfqLinesMap = new Map<Id, buildertek__RFQ_Item__c>();
+            for (buildertek__RFQ_Item__c rfqLine : rfqLines) {
+                rfqLinesMap.put(rfqLine.buildertek__RFQ_Package__c, rfqLine);
             }
-            system.debug(budgetItemList);
-            insert budgetItemList;
-            return 'SUCCESS';
-        }catch (Exception ex){
-            String error =ex.getMessage();
+
+            if (aggregateResults.size() > 0) {
+                for (AggregateResult aggregateResult : aggregateResults) {
+                    buildertek__Budget_Item__c budgetLine = new buildertek__Budget_Item__c();
+                    budgetLine.buildertek__Budget__c = budgetId;
+
+                    Id rfqPackageId = (Id)aggregateResult.get('buildertek__RFQ_Package__c');
+                    buildertek__RFQ_Item__c rfqLine = rfqLinesMap.get(rfqPackageId);
+
+                    if (rfqLine != null) {
+                        budgetLine.Name = rfqLine.buildertek__RFQ_Package__r.Name;
+                        budgetLine.buildertek__RFQ__c = rfqLine.buildertek__RFQ_Package__c;
+                        budgetLine.buildertek__Quantity__c = 1;
+                        budgetLine.buildertek__Unit_Price__c = (Decimal)aggregateResult.get('unitPrice');
+                        budgetLine.buildertek__Contractor__c = rfqLine.buildertek__RFQ_Package__r.buildertek__Vendor__r.buildertek__Vendor__c;
+                        budgetItemList.add(budgetLine);
+                    }
+                }
+
+                insert budgetItemList;
+                for(buildertek__Budget_Item__c budgetItem : budgetItemList){
+                    for(buildertek__RFQ_Item__c rfqLine : rfqLines){
+                        if(budgetItem.buildertek__RFQ__c == rfqLine.buildertek__RFQ_Package__c){
+                            rfqLine.buildertek__Budget_Item__c = budgetItem.Id;
+                            updateRFQLineList.add(rfqLine);
+                        }
+                    }
+                }
+
+                if (!updateRFQLineList.isEmpty()) {
+                    update updateRFQLineList;
+                }
+
+                return 'SUCCESS';
+            } else {
+                return 'NO RFQ LINES FOUND';
+            }
+        } catch (Exception ex){
+            String error = ex.getMessage();
             return error;
         }
-        
     }
 
     @AuraEnabled

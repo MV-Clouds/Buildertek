@@ -3,7 +3,7 @@
 		var evt = $A.get("e.force:navigateToComponent");
         evt.setParams({
             componentDef : "c:BT_ManagePOLines",
-            componentAttributes: {
+                        componentAttributes: {
                 recordId : component.get("v.recordId")
             }
         });

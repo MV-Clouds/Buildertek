@@ -22,6 +22,8 @@
                         mode: 'pester'
                     });
                     toastEvent.fire();
+                    $A.get("e.c:BT_SpinnerEvent").setParams({ "action": "HIDE" }).fire();
+
                  //   alert('response.getReturnValue().strRecordId'+response.getReturnValue().strRecordId);
                     if(response.getReturnValue().strRecordId != null && response.getReturnValue().strRecordId != undefined){
                         var navEvt = $A.get("e.force:navigateToSObject");
@@ -33,6 +35,7 @@
                        
                     }else{
                       //  $A.get('e.force:refreshView').fire();
+
                         var urlEvent = $A.get("e.force:navigateToURL");
                         urlEvent.setParams({
                             "url": '/lightning/r/buildertek__Change_Order__c/'+recordId+'/related/buildertek__Purchase_Orders__r/view'
@@ -57,6 +60,7 @@
 			        }); */
             	}
             	else{
+
             	    $A.get("e.force:closeQuickAction").fire();
                         var messageString = response.getReturnValue().strMessage;
                         if(messageString == undefined || messageString == null || messageString == '')
@@ -73,6 +77,8 @@
                                                     mode: 'pester'
                                                 });
                                                 toastEvent.fire();
+                        $A.get("e.c:BT_SpinnerEvent").setParams({ "action": "HIDE" }).fire();
+
                   /*  component.find('notifLib').showNotice({
 			            "variant": "error",
 			            "header": "Error",
@@ -82,7 +88,8 @@
 			            }
 			        }); */
             	}
-            } 
+            }
+ 
         });
         
         $A.enqueueAction(action); 

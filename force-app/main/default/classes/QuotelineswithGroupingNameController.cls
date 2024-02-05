@@ -58,7 +58,7 @@ global  without sharing class QuotelineswithGroupingNameController {
 
         string query = 'Select Name, buildertek__Item_Name__c, buildertek__Description__c, buildertek__Quantity__c, buildertek__Unit_Price__c, buildertek__Total_Cost__c, buildertek__Quote__c, buildertek__Cost_Code__c, buildertek__Auto_Number__c, buildertek__RFQ__c, buildertek__Product__c, buildertek__Grouping__c, buildertek__UOM__c, buildertek__Vendor__c, buildertek__List_Unit_Price__c, buildertek__Markup__c, buildertek__Additional_Discount__c, buildertek__Unit_Cost__c, buildertek__List_Total__c, buildertek__Net_Total_Price__c, buildertek__Net_Unit__c, buildertek__Applied_Markup__c, buildertek__Net_Total__c, buildertek__MFG_Discount__c, buildertek__Pricing_Method__c, buildertek__Discount__c, buildertek__Profit_Margin__c, buildertek__Gross_Profit__c, buildertek__Notes__c, buildertek__Purchase_Order__c, buildertek__Status__c, buildertek__Sub_Group__c, buildertek__Margin__c, buildertek__Priority__c, buildertek__Not_Customer_Visible__c, buildertek__Tax__c, buildertek__Markup_Amount__c, buildertek__Tax_Amount__c, buildertek__Discount_Amount__c, buildertek__Margin_To_Markup__c, buildertek__Margin_Amount__c, buildertek__Sales_Tax_Amount_Manual__c, buildertek__BOM_Tax__c, buildertek__Total_Pre_Tax_Amount__c, buildertek__BOM_Line__c, buildertek__Division_Lookup__c, buildertek__Markup_to_Margin__c, buildertek__Build_Phase__c, buildertek__Build_Reference_1__c, buildertek__Product_Family__c, buildertek__Location_Picklist__c, buildertek__Location_Detailed_Area__c, buildertek__Location_Detail_Reference_1__c, buildertek__BL_SERVICE_CATEGORY__c, buildertek__Base_Location__c, buildertek__Additional_Costs__c, buildertek__SubTotal_Sales_Price__c ' ;
         string statusval = 'Accept';
-        query += ' from buildertek__Quote_Item__c where buildertek__Quote__c = \''+quoteid +'\' AND buildertek__Status__c =\''+ statusval +'\''+'Order By buildertek__Priority__c ASC';
+        query += ' from buildertek__Quote_Item__c where buildertek__Quote__c = \''+quoteid +'\' AND buildertek__Status__c =\''+ statusval +'\''+'Order By buildertek__Priority__c ASC NULLS LAST, Name ASC';
         system.debug('query---->'+query);
          lableslst = queryfields.split(',');
         colomspanvalue = lableslst.size()-1;
@@ -120,7 +120,7 @@ global  without sharing class QuotelineswithGroupingNameController {
                     quoteitemquery += ' FROM ' + objectName;
 
                     // Add on a WHERE/ORDER/LIMIT statement as needed
-                    quoteitemquery += ' WHERE buildertek__Quote__c = \''+quoteid +'\' AND buildertek__Status__c =\''+ statusval +'\''+ ' Order BY buildertek__Priority__c ASC'; // modify as needed
+                    quoteitemquery += ' WHERE buildertek__Quote__c = \''+quoteid +'\' AND buildertek__Status__c =\''+ statusval +'\''+ ' Order BY buildertek__Priority__c ASC NULLS LAST, Name ASC'; // modify as needed
 
                     try {
                         QuoteItem = database.query(quoteitemquery);
@@ -159,7 +159,7 @@ global  without sharing class QuotelineswithGroupingNameController {
             }
         }
 
-        Quotelinegroup = [Select Id, Name from buildertek__Quote_Line_Group__c where Id =: groupId order by Name asc];
+        Quotelinegroup = [Select Id, Name,buildertek__Sort_Id__c from buildertek__Quote_Line_Group__c where Id =: groupId order by buildertek__Sort_Id__c ASC NULLS LAST, Name ASC];
         system.debug('Quotelinegroupsize---->'+ Quotelinegroup.size());
 
         for(buildertek__Quote_Line_Group__c quotelinegrouprec : Quotelinegroup){
@@ -167,8 +167,8 @@ global  without sharing class QuotelineswithGroupingNameController {
              decimal quoteitemNetunitprice =0.0;
             decimal quoteitemlistTotal = 0.0;
             wrapperClass wrap = new wrapperClass();
-            wrap.groupName = quotelinegrouprec.Name;
              wrap.quotelineitemlst = quotegroupingmap.get(quotelinegrouprec.Id);
+            Integer counter = 0;
             for(buildertek__Quote_Item__c quoteitemrec : quotegroupingmap.get(quotelinegrouprec.Id)){
                  if(quoteitemrec.buildertek__Net_Unit__c != null){
                      quoteitemNetunitprice += quoteitemrec.buildertek__Net_Unit__c;
@@ -176,7 +176,10 @@ global  without sharing class QuotelineswithGroupingNameController {
                  if(quoteitemrec.buildertek__Net_Total_Price__c !=null){
                      quoteitemlistTotal += quoteitemrec.buildertek__Net_Total_Price__c;
                  }
-
+                 if (quoteitemrec.Not_Customer_Visible__c == false && counter == 0){
+                     wrap.groupName = quoteitemrec.buildertek__Grouping__r.Name;
+                     counter = 1;
+                 }
             }
             wrap.netunitprice = quoteitemNetunitprice;
             wrap.listTotal = quoteitemlistTotal;

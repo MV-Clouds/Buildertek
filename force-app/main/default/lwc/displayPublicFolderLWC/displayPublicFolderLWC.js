@@ -1,5 +1,6 @@
 import { LightningElement, api, track } from 'lwc';
 import getDataFromFolder from '@salesforce/apex/displayPublicFolderCls.getDataFromFolder';
+import getDisplayImageData from '@salesforce/apex/displayPublicFolderCls.getDisplayImageData';
 
 export default class DisplayPublicFolderLWC extends LightningElement {
     @api folderId;
@@ -10,9 +11,29 @@ export default class DisplayPublicFolderLWC extends LightningElement {
     @track noFiles = false;
     @track listFiles = [];
     @track InitialLoad = true;
-
+    @track siteUrl;
+    @track documentId;
+    @track orgId;
+    @track width;
+    @track height;
+    
+    get imageUrl() {
+            return `${this.siteUrl}/servlet/servlet.ImageServer?id=${this.documentId}&oid=${this.orgId}`;
+        }
     connectedCallback() {
         this.fetchFolderData();
+        getDisplayImageData()
+            .then(result => {
+                console.log('Result ==> ', result);
+                this.width = result.width;
+                this.height = result.height;
+                this.siteUrl = result.siteUrl;
+                this.documentId = result.documentId;
+                this.orgId = result.orgId;
+            })
+            .catch(error => {
+                console.error('Error => ', error);
+            });
     }
 
     fetchFolderData() {

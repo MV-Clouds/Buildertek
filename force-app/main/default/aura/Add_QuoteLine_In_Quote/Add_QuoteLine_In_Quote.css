@@ -20,7 +20,14 @@
  }
  .THIS .trncatediv {
     width: 16rem;
-    white-space: nowrap; 
-    overflow: hidden; 
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+ }
+
+ .THIS .mediumWidthDiv {
+    width: 6rem;
+    white-space: nowrap;
+    overflow: hidden;
     text-overflow: ellipsis;
  }

@@ -232,3 +232,11 @@
 .THIS .custom-vertical-table tbody .common-edit-col:hover{
    background:#fff         
         }
+
+.THIS .Edit_Fields{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+}

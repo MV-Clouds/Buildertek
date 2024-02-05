@@ -24,7 +24,7 @@
                 var state = response.getState(); 
                 if(state === "SUCCESS") {
                     var resultData = response.getReturnValue();
-                // console.log(resultData.payment);
+                // console.log('resultData => ' ,resultData.payment);
                 // console.log(resultData.payment.buildertek__SOV_Payment_Application__r.buildertek__Status__c );
                 //if((resultData.payment.buildertek__IsNextPayment__c == true) /*&& resultData.userrec.isPortalEnabled == true*/){
                 if(resultData.multipleContinuationSheet == true){
@@ -88,22 +88,22 @@
                     });
                     toastEvent.fire();
                 }
-                else if(resultData.payment.buildertek__SOV_Payment_Application__r.RecordType.Name == "AP" && component.get("v.Iscommunity") == false){
-                        component.set("v.Spinner", false);
-                        component.set("v.showMessage", false);
-                        $A.get("e.force:closeQuickAction").fire();
-                        var toastEvent = $A.get("e.force:showToast");
-                        toastEvent.setParams({
-                            title: '',
-                            message: 'You cannot create Next Payment Application for Vendor Created Payment Application',
-                            duration: "5000",
-                            key: "info_alt",
-                            type: "error",
-                            mode: "pester",
-                        });
-                        toastEvent.fire();
-                    }
-                    else if(resultData.payment.buildertek__SOV_Payment_Application__r.buildertek__Status__c != "Customer Accepted" && component.get("v.Iscommunity") == false){
+                // else if(resultData.payment.buildertek__SOV_Payment_Application__r.RecordType.Name == "AP" && component.get("v.Iscommunity") == false){
+                //         component.set("v.Spinner", false);
+                //         component.set("v.showMessage", false);
+                //         $A.get("e.force:closeQuickAction").fire();
+                //         var toastEvent = $A.get("e.force:showToast");
+                //         toastEvent.setParams({
+                //             title: '',
+                //             message: 'You cannot create Next Payment Application for Vendor Created Payment Application',
+                //             duration: "5000",
+                //             key: "info_alt",
+                //             type: "error",
+                //             mode: "pester",
+                //         });
+                //         toastEvent.fire();
+                //     }
+                    else if(resultData.payment.buildertek__SOV_Payment_Application__r.RecordType.Name == "AR" && resultData.payment.buildertek__SOV_Payment_Application__r.buildertek__Status__c != "Customer Accepted" && component.get("v.Iscommunity") == false){
                         var IsCommunity = component.get("v.Iscommunity")
                         console.log('IsCommunity ==> ',{IsCommunity});
                         component.set("v.Spinner", false);
@@ -113,7 +113,7 @@
                         toastEvent.setParams({
                             title: '',
                             // message: 'You cannot create another Payment Application until this Payment Application is Customer Accepted',
-                            message: 'You have an existing Payment Application that is Pending for this Project.  You cannot create a new Payment Application until all Payment Apps are Customer Approved.',
+                            message: 'You have an existing Payment Application that is Pending for this Project.  You cannot create a new Payment Application until all Payment Apps are Customer Accepted.',
                             duration: "5000",
                             key: "info_alt",
                             type: "error",
@@ -121,14 +121,14 @@
                         });
                         toastEvent.fire();
                     }
-                else if(resultData.payment.buildertek__SOV_Payment_Application__r.buildertek__Status__c != "Company Accepted" && component.get("v.Iscommunity") == true){
+                else if(resultData.payment.buildertek__SOV_Payment_Application__r.RecordType.Name == "AP" && resultData.payment.buildertek__SOV_Payment_Application__r.buildertek__Status__c != "Company Accepted" && component.get("v.Iscommunity") == false){
                         component.set("v.Spinner", false);
                         component.set("v.showMessage", false);
                         $A.get("e.force:closeQuickAction").fire();
                         var toastEvent = $A.get("e.force:showToast");
                         toastEvent.setParams({
                             title: '',
-                            message: 'You cannot create another Payment Application until this Payment Application is Company Accepted',
+                            message: 'You have an existing Payment Application that is Pending for this Project. You cannot create another Payment Application until this Payment Application is Company Accepted',
                             duration: "5000",
                             key: "info_alt",
                             type: "error",
@@ -159,14 +159,14 @@
                                 if(state === "SUCCESS") {
                                     component.set("v.Spinner", false);
                                     component.set("v.showMessage", false);
-                                    var action1 = component.get("c.updateClonedRecord");
-                                    action1.setParams({"recordId": component.get("v.recordId"),
-                                                       "newRecId": response.getReturnValue()
-                                                      });
-                                 /*   action1.setCallback(this, function(response) {
+                                //     var action1 = component.get("c.updateClonedRecord");
+                                //     action1.setParams({"recordId": component.get("v.recordId"),
+                                //                        "newRecId": response.getReturnValue()
+                                //                       });
+                                //  /*   action1.setCallback(this, function(response) {
                                         
-                                    }); */
-                                    $A.enqueueAction(action1);
+                                //     }); */
+                                //     $A.enqueueAction(action1);
                                     
                                     
                                     var sObjectEvent = $A.get("e.force:navigateToSObject");

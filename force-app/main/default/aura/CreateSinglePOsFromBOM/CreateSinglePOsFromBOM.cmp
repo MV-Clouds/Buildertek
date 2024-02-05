@@ -1,0 +1,14 @@
+<aura:component controller="createSinglePOsController"
+    implements="force:hasSObjectName,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable"
+    access="global">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <center>
+        <img alt="Creating all po's." src="{!$Resource.gearsloading}" style="height:150px !important;" />
+        <br />
+        <div style="margin-block: 10px;">
+            <br />
+            <p>Please don't leave this page until PO's are created.</p>
+        </div>
+    </center>
+</aura:component>

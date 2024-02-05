@@ -1,5 +1,6 @@
 public with sharing class BOMLineTriggerHelper
 {
+    private static Boolean isExecuting = false;
     public Map<Id, List<Select_Sheet__c>> getBOMLineFromBOMIds(Set<Id> bomIds)
     {
         Map<Id, List<Select_Sheet__c>> mapBOMIdAndBOMLines = new Map<Id, List<Select_Sheet__c>>();
@@ -48,4 +49,191 @@ public with sharing class BOMLineTriggerHelper
                                }
                                update selectionsheetlist1;
    }*/
+
+    public static void onAfterInsert(List<buildertek__Select_Sheet__c> newBomLineList) {
+        try {
+            String methodName = 'onAfterInsert';
+            Set<Id> bomIds = new Set<Id>();
+            for (buildertek__Select_Sheet__c bomLine : newBomLineList) {
+                if(bomLine.buildertek__Selection_Sheet_Takeoff__c != null) {
+                    bomIds.add(bomLine.buildertek__Selection_Sheet_Takeoff__c);
+                }
+            }
+            if (!bomIds.isEmpty()) {
+                updateAmountOnBOM(bomIds, methodName);
+                
+            }
+        } catch (Exception ex) {
+            System.debug('Error: ' + ex.getMessage());
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
+        }
+    }
+
+    public static void onAfterUpdate(List<buildertek__Select_Sheet__c> newBOMLineList, Map<Id, buildertek__Select_Sheet__c> oldBOMLineMap) {
+        try {
+            String methodName = 'onAfterUpdate';
+            Set<Id> bomIds = new Set<Id>();
+
+            for (buildertek__Select_Sheet__c bomLine : newBOMLineList) {
+                buildertek__Select_Sheet__c oldbomLine = oldBOMLineMap.get(bomLine.Id);
+
+                if (bomLine.buildertek__Selection_Sheet_Takeoff__c != oldbomLine.buildertek__Selection_Sheet_Takeoff__c || bomLine.buildertek__Total_Costs__c != oldbomLine.buildertek__Total_Costs__c || bomLine.buildertek__Total_Sales_Price__c != oldbomLine.buildertek__Total_Sales_Price__c) {
+                    
+                    if(oldbomLine.buildertek__Selection_Sheet_Takeoff__c != null){
+                        bomIds.add(oldbomLine.buildertek__Selection_Sheet_Takeoff__c);
+                    }
+                    
+                    if(bomLine.buildertek__Selection_Sheet_Takeoff__c != null){
+                        bomIds.add(bomLine.buildertek__Selection_Sheet_Takeoff__c);
+                    }
+                }
+            }
+
+            if (!bomIds.isEmpty()) {
+                updateAmountOnBOM(bomIds, methodName);
+            }
+        } catch (Exception ex) {
+            System.debug('Error: ' + ex.getMessage());
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if (!storeExcCustomSetting.isEmpty() && storeExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
+        }
+    }
+
+    public static void onAfterDelete(List<buildertek__Select_Sheet__c> oldBOMLineList) {
+        try {
+            String methodName = 'onAfterDelete';
+            Set<Id> bomIds = new Set<Id>();
+            for (buildertek__Select_Sheet__c bomLine : oldBOMLineList) {
+                if(bomLine.buildertek__Selection_Sheet_Takeoff__c != null){
+                    bomIds.add(bomLine.buildertek__Selection_Sheet_Takeoff__c);
+                }
+            }
+            updateAmountOnBOM(bomIds, methodName);
+        } catch (Exception ex) {
+            System.debug('Error: ' + ex.getMessage());
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
+        }
+    }
+
+    public static void updateAmountOnBOM(Set<Id> BOMIds, String methodName) {
+        try {
+            Map<Id, AggregateResult> totalAmountMap = new Map<Id, AggregateResult>();
+            for (AggregateResult aggregatedResult : [SELECT buildertek__Selection_Sheet_Takeoff__c, SUM(buildertek__Total_Costs__c) totalCost, SUM(buildertek__Total_Sales_Price__c) totalSales FROM buildertek__Select_Sheet__c WHERE buildertek__Selection_Sheet_Takeoff__c IN :BOMIds GROUP BY buildertek__Selection_Sheet_Takeoff__c]){
+                Id BOMId = (Id)aggregatedResult.get('buildertek__Selection_Sheet_Takeoff__c');
+                totalAmountMap.put(BOMId, aggregatedResult);
+            }
+            
+            List<buildertek__Project_Selection_Sheet_Takeoff__c> bomToUpdate = new List<buildertek__Project_Selection_Sheet_Takeoff__c>();
+            
+            for (Id BOMId :BOMIds) {
+                if(totalAmountMap.containsKey(BOMId)) {
+                    AggregateResult aggregatedResult = totalAmountMap.get(BOMId);
+                    Decimal totalCost = (Decimal)aggregatedResult.get('totalCost');
+                    Decimal totalSales = (Decimal)aggregatedResult.get('totalSales');
+                    buildertek__Project_Selection_Sheet_Takeoff__c bom = new buildertek__Project_Selection_Sheet_Takeoff__c(Id = BOMId);
+                    bom.buildertek__Total_Costs__c = totalCost;
+                    bom.buildertek__Total_Sales_Price__c = totalSales;
+                    if (methodName == 'onAfterInsert'){
+                        bom.buildertek__Status__c = 'Open';
+                    }
+                    bomToUpdate.add(bom);
+                } else {
+                    buildertek__Project_Selection_Sheet_Takeoff__c bom = new buildertek__Project_Selection_Sheet_Takeoff__c(Id = BOMId);
+                    bom.buildertek__Total_Costs__c = 0;
+                    bom.buildertek__Total_Sales_Price__c = 0;
+                    if (methodName == 'onAfterInsert'){
+                        bom.buildertek__Status__c = 'Open';
+                    }
+                    bomToUpdate.add(bom);
+                }
+            }
+
+            System.debug('bomToUpdate: ' + bomToUpdate);
+            if (!bomToUpdate.isEmpty()) {
+                update bomToUpdate;
+            }
+
+        } catch (Exception ex) {
+            System.debug('Error: ' + ex.getMessage());
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
+        }
+    }
+    
+    public static void updateStatusOnBOM(List<buildertek__Select_Sheet__c> bomLineIds) {
+        if (!isExecuting) {
+            isExecuting = true;
+            try {
+                Set<Id> bomIds = new Set<Id>();
+                // For fetching all the BOM Ids
+                for (buildertek__Select_Sheet__c bomLine : bomLineIds) {
+                    if(bomLine.buildertek__Selection_Sheet_Takeoff__c != null){
+                        bomIds.add(bomLine.buildertek__Selection_Sheet_Takeoff__c);
+                    }
+                }
+                if (!bomIds.isEmpty()) {
+                    List<buildertek__Select_Sheet__c> bomLines = [SELECT Id, Name, buildertek__Purchase_Order__c, buildertek__Selection_Sheet_Takeoff__c FROM buildertek__Select_Sheet__c WHERE buildertek__Selection_Sheet_Takeoff__c IN :bomIds];
+                    // Creating a map of BOM Id and count of POs
+                    Map<Id, Integer> bomIdToPoCountMap = new Map<Id, Integer>();
+                    for (buildertek__Select_Sheet__c bomLine : bomLines) {
+                        Id bomId = bomLine.buildertek__Selection_Sheet_Takeoff__c;
+                        
+                        if (!bomIdToPoCountMap.containsKey(bomId)) {
+                            bomIdToPoCountMap.put(bomId, 0);
+                        }
+
+                        bomIdToPoCountMap.put(bomId, bomIdToPoCountMap.get(bomId) + (bomLine.buildertek__Purchase_Order__c != null ? 1 : 0));
+                    }
+            
+                    List<buildertek__Project_Selection_Sheet_Takeoff__c> updatedBOMs = new List<buildertek__Project_Selection_Sheet_Takeoff__c>();
+                    // Updating the status of BOMs
+                    for (Id bomId : bomIdToPoCountMap.keySet()) {
+                        Integer poCount = bomIdToPoCountMap.get(bomId);
+                        buildertek__Project_Selection_Sheet_Takeoff__c updatedBOM = new buildertek__Project_Selection_Sheet_Takeoff__c(Id = bomId);
+
+                        if (poCount <= 0) {
+                            updatedBOM.buildertek__Status__c = 'Open';
+                        } else if (poCount == bomLines.size()) {
+                            updatedBOM.buildertek__Status__c = 'Ordered';
+                        } else {
+                            updatedBOM.buildertek__Status__c = 'Partially Ordered';
+                        }
+                        updatedBOMs.add(updatedBOM);
+                    }
+                    // Updating the status of BOMs which are not present in bomIdToPoCountMap
+                    Set<Id> bomIdsWithoutCount = bomIds.clone();
+                    bomIdsWithoutCount.removeAll(bomIdToPoCountMap.keySet());
+                    for (Id bomId : bomIdsWithoutCount) {
+                        buildertek__Project_Selection_Sheet_Takeoff__c updatedBOM = new buildertek__Project_Selection_Sheet_Takeoff__c(Id = bomId);
+                        updatedBOM.buildertek__Status__c = 'Open';
+                        updatedBOMs.add(updatedBOM);
+                    }
+
+                    if (!updatedBOMs.isEmpty()) {
+                        update updatedBOMs;
+                    }
+                }
+            } catch (Exception ex) {
+                System.debug('Error: ' + ex.getMessage());
+                List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c LIMIT 1];
+                
+                if (!storeExcCustomSetting.isEmpty() && storeExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c) {
+                    BT_ExceptionHandler.Store_Exception(ex);
+                }
+            } finally {
+                isExecuting = false;
+            }
+        }
+    }
+    
 }

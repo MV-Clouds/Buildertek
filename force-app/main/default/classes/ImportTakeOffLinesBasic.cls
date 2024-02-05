@@ -1,402 +1,226 @@
 public with sharing class ImportTakeOffLinesBasic{
-	public virtual class ResponseBase{
-		@AuraEnabled
-		public Boolean isSuccess;
-		@AuraEnabled
-		public String strMessage;
-	}
+    public virtual class ResponseBase{
+        @AuraEnabled
+        public Boolean isSuccess;
+        @AuraEnabled
+        public String strMessage;
+    }
 
-	@AuraEnabled
-	public static ResponseBase importRecords(Id takeOffId, String fileData){
-		ResponseBase response = new ResponseBase();
-		response.isSuccess = true;
-		WrapperClass wrapper = new WrapperClass();
-		Set<String> productNames = new Set<String>();
-		try{
-			if (fileData != null){
-				List<List<String>> listCSVData;
-				String strFileData;
-				Blob fileContent = EncodingUtil.base64Decode(fileData);
-				strFileData = fileContent.toString();
-				System.debug('strFileData--->'+strFileData);
-				if (!String.isBlank(strFileData) && response.isSuccess){
-					List<buildertek__Project_Takeoff_Lines__c> schItemToInsert = new List<buildertek__Project_Takeoff_Lines__c>();
-					wrapper = getListOfFileContentsAsStrings(strFileData);
-					listCSVData = wrapper.listOfFileContentsAsStrings;
-					productNames = wrapper.productNames;
-					Id productFamilyId = null;
+    private static Map<String, Set<String>> validPicklistValues = new Map<String, Set<String>>();
 
-					Map<String, Product2> existingProductMap = new Map<String, Product2>();
-					Map<String, buildertek__Build_Phase__c> buildPhasemap = new Map<String, buildertek__Build_Phase__c>();
-					Map<String, buildertek__Trade_Type__c> existingTradeTypeMap = new Map<String, buildertek__Trade_Type__c>();
-					Map<String, buildertek__Cost_Codes__c> existingCostCodeMap = new Map<String, buildertek__Cost_Codes__c>();
-					Map<String, Account> accountMap = new Map<String, Account>();
-					Map<String, PricebookEntry> PBEMap = new Map<String, PricebookEntry>();
-					Map<String, Pricebook2> PBMap = new Map<String, Pricebook2>();
+    @AuraEnabled
+    public static ResponseBase importRecords(Id takeOffId, String fileData){
+        ResponseBase response = new ResponseBase();
+        System.debug('fileData----> '+fileData);
+        Id productFamilyId = null;
 
-					List<String> productList = new List<String>();
-                    List<String> vendorList = new List<String>();
-                    
-                    for(Integer intIndex = 1; intIndex < listCSVData.size(); intIndex++) {
-                        for(Integer intInnerIndex = 0; intInnerIndex < listCSVData.get(intIndex).size(); intInnerIndex++) {
-                            switch on listCSVData.get(0).get(intInnerIndex) {
-                                when 'Product' {
-                                    if(String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))) {
-                                        productList.add(listCSVData.get(intIndex).get(intInnerIndex).replace('\n',''));
-                                    }
-                                }
-                                when 'Vendor' {
-                                    if(String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))) {
-                                       vendorList.add(listCSVData.get(intIndex).get(intInnerIndex).replace('\n',''));
-                                    }
-                                }
-                            }
+        try {
+
+            List<fieldWrapper> datalist = (List<fieldWrapper>)JSON.deserialize(fileData, List<fieldWrapper>.class);
+
+            Map<String, Product2> existingProductMap = new Map<String, Product2>();
+            Map<String, buildertek__Build_Phase__c> buildPhasemap = new Map<String, buildertek__Build_Phase__c>();
+            Map<String, buildertek__Trade_Type__c> existingTradeTypeMap = new Map<String, buildertek__Trade_Type__c>();
+            Map<String, buildertek__Cost_Codes__c> existingCostCodeMap = new Map<String, buildertek__Cost_Codes__c>();
+            Map<String, Account> accountMap = new Map<String, Account>();
+            Map<String, PricebookEntry> PBEMap = new Map<String, PricebookEntry>();
+            Map<String, Pricebook2> PBMap = new Map<String, Pricebook2>();
+
+            List<String> productList = new List<String>();
+            List<String> priceBookList = new List<String>();
+            List<String> vendorList = new List<String>();
+            for (fieldWrapper data : dataList) {
+                productList.add(data.Product);
+                priceBookList.add(data.PriceBook);
+                vendorList.add(data.Vendor);
+            }
+            
+            // Find existing products
+            for (Product2 prod : [SELECT Id, Name FROM Product2 WHERE Name IN :productList]) {
+                existingProductMap.put(prod.Name, prod);
+            }
+
+            // Find existing pricebooks
+            for (Pricebook2 pricebook : [SELECT Id, Name FROM Pricebook2 WHERE Name IN :priceBookList]) {
+                PBMap.put(pricebook.Name, pricebook);
+            }
+
+            // Find existing vendors
+            for (Account Acc : [SELECT Id, Name FROM Account WHERE Name IN :vendorList]) {
+                accountMap.put(Acc.Name, Acc);
+            }
+
+            // Find existing pricebookentries
+            for (PricebookEntry pricebookentry : [SELECT Id, Name, Pricebook2Id, Product2Id, Product2.Name, Pricebook2.Name FROM PricebookEntry WHERE Product2.Name IN :productList]) {
+                PBEMap.put(pricebookentry.Id, pricebookentry);
+            }
+
+            // Find existing build phases
+            for (buildertek__Build_Phase__c newbuildphase : [SELECT Id, Name FROM buildertek__Build_Phase__c]) {
+                buildPhasemap.put(newbuildphase.Name, newbuildphase);
+            }
+
+            // Find existing trade types
+            for (buildertek__Trade_Type__c tradeTypeRec : [SELECT Id, Name FROM buildertek__Trade_Type__c]) {
+                existingTradeTypeMap.put(tradeTypeRec.Name, tradeTypeRec);
+            }
+
+            // Find existing cost codes
+            for (buildertek__Cost_Codes__c costCodeRec : [SELECT Id, Name FROM buildertek__Cost_Codes__c]) {
+                existingCostCodeMap.put(costCodeRec.Name, costCodeRec);
+            }
+
+
+            List<buildertek__Project_Takeoff_Lines__c> TakeoffLinesToInsert = new List<buildertek__Project_Takeoff_Lines__c>();
+            Decimal counter = 1;
+            for (fieldWrapper wrapper : datalist) {
+                buildertek__Project_Takeoff_Lines__c TakeoffLine = new buildertek__Project_Takeoff_Lines__c();
+                TakeoffLine.buildertek__Project_Takeoff__c = takeOffId;
+
+                String productName = wrapper.Product;
+                if (String.isNotBlank(productName) && existingProductMap.containsKey(productName)){
+                    productFamilyId = existingProductMap.get(productName).Id;
+                    TakeoffLine.buildertek__Product__c = productFamilyId;
+                    TakeoffLine.buildertek__Description__c = productName;
+                } else {
+                    TakeoffLine.buildertek__Description__c = productName;
+                }
+                
+                String tempPBphase = wrapper.PriceBook;
+                if (String.isNotBlank(tempPBphase) && PBMap.containsKey(tempPBphase) && productFamilyId != null) {
+                    for (PricebookEntry pbe : PBEMap.values()) {
+                        if (pbe.Pricebook2Id == PBMap.get(tempPBphase).Id &&
+                            pbe.Product2Id == productFamilyId) {
+                            TakeoffLine.buildertek__Price_Book__c = PBMap.get(tempPBphase).Id;
+                            break;
                         }
                     }
-					// Find existing products
-					for (Product2 prod : [SELECT Id, Name FROM Product2 WHERE Name IN :productList]) {
-						existingProductMap.put(prod.Name, prod);
-					}
+                    productFamilyId = null;
+                }
+                
+                String vendorName = wrapper.Vendor;
+                if (String.isNotBlank(vendorName) && accountMap.containsKey(vendorName)){
+                    TakeoffLine.buildertek__Vendor__c = accountMap.get(vendorName).Id;
+                }
+                TakeoffLine.buildertek__StockKeepingUnit__c = wrapper.ProductSKU;
+                TakeoffLine.buildertek__Product_Code__c = wrapper.ProductCode;
 
-					// Find existing pricebooks
-					for (Pricebook2 pricebook : [SELECT Id, Name FROM Pricebook2]) {
-						PBMap.put(pricebook.Name, pricebook);
-					}
+                String buildPhase = wrapper.BuildPhase;
+                if (String.isNotBlank(buildPhase) && buildPhasemap.containsKey(buildPhase)){
+                    TakeoffLine.buildertek__Build_Phase__c = buildPhasemap.get(buildPhase).Id;
+                }
+                
+                String categoryValue = wrapper.CategoryPL;
+                if (String.isNotBlank(categoryValue)) {
+                    if (isValidPicklistValue('buildertek__Category__c', categoryValue)){
+                        TakeoffLine.buildertek__Category__c = categoryValue;
+                    } else {
+                        throw new MyCustomException('Invalid Category value: '+ categoryValue +' Please review the row No.' + (counter + 1));
+                    }
+                }
 
-					// Find existing vendors
-					for (Account Acc : [SELECT Id, Name FROM Account WHERE Name IN :vendorList]) {
-						accountMap.put(Acc.Name, Acc);
-					}
+                String tradeType = wrapper.TradeType;
+                if (String.isNotBlank(tradeType) && existingTradeTypeMap.containsKey(tradeType)){
+                    TakeoffLine.buildertek__Trade_Type__c = existingTradeTypeMap.get(tradeType).Id;
+                }
 
-					// Find existing pricebookentries
-					for (PricebookEntry pricebookentry : [SELECT Id, Name, Pricebook2Id, Product2Id, Product2.Name, Pricebook2.Name FROM PricebookEntry WHERE Product2.Name IN :productList]) {
-						PBEMap.put(pricebookentry.Name, pricebookentry);
-					}
+                String locationValue = wrapper.Location;
+                if (String.isNotBlank(locationValue)) {
+                    if (isValidPicklistValue('buildertek__Location__c', locationValue)){
+                        TakeoffLine.buildertek__Location__c = locationValue;
+                    } else {
+                        throw new MyCustomException('Invalid Location value: '+ locationValue +' Please review the row No.' + (counter + 1));
+                    }
+                }
+                String quant = wrapper.Quantity;
+                if (String.isNotBlank(quant)){
+                    TakeoffLine.buildertek__Quantity__c = Decimal.valueOf(quant);
+                } else {
+                    TakeoffLine.buildertek__Quantity__c = 0;
+                }
 
-					// Find existing build phases
-					for (buildertek__Build_Phase__c newbuildphase : [SELECT Id, Name FROM buildertek__Build_Phase__c]) {
-						buildPhasemap.put(newbuildphase.Name, newbuildphase);
-					}
+                String uomValue = wrapper.UOM;
+                if (String.isNotBlank(uomValue)) {
+                    if (isValidPicklistValue('buildertek__UOM_PL__c', uomValue)){
+                        TakeoffLine.buildertek__UOM_PL__c = uomValue;
+                    } else {
+                        throw new MyCustomException('Invalid UOM value: '+ uomValue +' Please review the row No.' + (counter + 1));
+                    }
+                }
 
-					// Find existing trade types
-					for (buildertek__Trade_Type__c tradeTypeRec : [SELECT Id, Name FROM buildertek__Trade_Type__c]) {
-						existingTradeTypeMap.put(tradeTypeRec.Name, tradeTypeRec);
-					}
+                String codeco = wrapper.CostCode;
+                if (String.isNotBlank(codeco) && existingCostCodeMap.containsKey(codeco)){
+                    TakeoffLine.buildertek__Cost_Code__c = existingCostCodeMap.get(codeco).Id;
+                }
+                TakeoffLinesToInsert.add(TakeoffLine);
+                counter++;
+            }
 
-					// Find existing cost codes
-					for (buildertek__Cost_Codes__c costCodeRec : [SELECT Id, Name FROM buildertek__Cost_Codes__c]) {
-						existingCostCodeMap.put(costCodeRec.Name, costCodeRec);
-					}
+            if (!TakeoffLinesToInsert.isEmpty()) {
+                insert TakeoffLinesToInsert;
+                response.isSuccess = true;
+                response.strMessage = 'Takeoff Lines inserted Successfully.';
+            } else {
+                response.isSuccess = false;
+                response.strMessage = 'File is empty.';
+            }
+        } catch (Exception e) {
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
 
-					for (Integer intIndex = 1; intIndex < listCSVData.size(); intIndex++){
-						buildertek__Project_Takeoff_Lines__c takeoffLines = new buildertek__Project_Takeoff_Lines__c(buildertek__Project_Takeoff__c = takeOffId);
+            System.debug('error-->' + e.getMessage());
+            System.debug('error line--->' + e.getLineNumber());
+            response.isSuccess = false;
+            response.strMessage = e.getMessage();
+        }
+        
+        return response;
+    }
+    
+    public class MyCustomException extends Exception {}
 
-						for (Integer intInnerIndex = 0; intInnerIndex < listCSVData.get(intIndex).size(); intInnerIndex++){
-							switch on listCSVData.get(0).get(intInnerIndex){
-								when 'Product'{
-									if (String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))){
-										String tempProductNames  = listCSVData.get(intIndex).get(intInnerIndex).replace('\n', '');
-										if (tempProductNames.startsWith('"') && tempProductNames.endsWith('"')) {
-											String withoutOuterQuotes = tempProductNames.replaceAll('^"|"$', '');
-											String finalString = withoutOuterQuotes.replaceAll('""', '"');
-											if (existingProductMap.containsKey(finalString)){
-												productFamilyId = existingProductMap.get(finalString).Id;
-												takeoffLines.buildertek__Product__c = productFamilyId;
-											}
-										} else {
-											if (existingProductMap.containsKey(tempProductNames)){
-												productFamilyId = existingProductMap.get(tempProductNames).Id;
-												takeoffLines.buildertek__Product__c = productFamilyId;
-											}
-										}
-										 
-									}
-									
-								}
+    private static Boolean isValidPicklistValue(String fieldApiName, String value) {
+        if (!validPicklistValues.containsKey(fieldApiName)) {
+            validPicklistValues.put(fieldApiName, fetchValidPicklistValues(fieldApiName));
+        }
 
-								when 'Price Book' {
-									String tempPBphase = listCSVData.get(intIndex).get(intInnerIndex);
-									if (String.isNotBlank(tempPBphase) && PBMap.containsKey(tempPBphase) && productFamilyId != null) {
-										for (PricebookEntry pbe : PBEMap.values()) {
-											if (pbe.Pricebook2Id == PBMap.get(tempPBphase).Id &&
-												pbe.Product2Id == productFamilyId) {
-												takeoffLines.buildertek__Price_Book__c = PBMap.get(tempPBphase).Id;
-												break;
-											}
-										}
-										productFamilyId = null;
-									}
-								}
+        return validPicklistValues.get(fieldApiName).contains(value);
+    }
 
-								when 'Vendor'{
-									if (String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))){
-										String tempVendorNames  = listCSVData.get(intIndex).get(intInnerIndex).replace('\n', '');
-										if (tempVendorNames.startsWith('"') && tempVendorNames.endsWith('"')) {
-											String withoutOuterQuotes = tempVendorNames.replaceAll('^"|"$', '');
-											String finalVendorString = withoutOuterQuotes.replaceAll('""', '"');
-											if (accountMap.containsKey(finalVendorString)){
-												// vendorId = existingProductMap.get(finalVendorString).Id;
-												takeoffLines.buildertek__Vendor__c = accountMap.get(finalVendorString).Id;
-											}
-										} else {
-											if (accountMap.containsKey(tempVendorNames)){
-												// vendorId = existingProductMap.get(finalVendorString).Id;
-												takeoffLines.buildertek__Vendor__c = accountMap.get(tempVendorNames).Id;
-											}
-										}
-										 
-									}
-									
-								}
+    private static Set<String> fetchValidPicklistValues(String fieldApiName) {
+        Set<String> validValues = new Set<String>();
+        List<Schema.PicklistEntry> picklistValues = buildertek__Project_Takeoff_Lines__c.getSObjectType()
+            .getDescribe()
+            .fields.getMap()
+            .get(fieldApiName)
+            .getDescribe()
+            .getPicklistValues();
 
-								when 'Product SKU'{
-									if (String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))){
-                                        takeoffLines.buildertek__StockKeepingUnit__c = listCSVData.get(intIndex).get(intInnerIndex);
-									}
-								}
+        for (Schema.PicklistEntry picklistEntry : picklistValues) {
+            if (picklistEntry.isActive()) {
+                validValues.add(picklistEntry.getValue());
+            }
+        }
 
-								when 'Product Code'{
-									if (String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))){
-										takeoffLines.buildertek__Product_Code__c = listCSVData.get(intIndex).get(intInnerIndex);
-									}
-								}
+        return validValues;
+    }
 
-								when 'Build Phase'{
-									String tempbuildphase = listCSVData.get(intIndex).get(intInnerIndex);
-									if (String.isNotBlank(tempbuildphase) && buildPhasemap.containsKey(tempbuildphase)){
-										takeoffLines.buildertek__Build_Phase__c = buildPhasemap.get(tempbuildphase).Id;
-									}
-								}
+    public class fieldWrapper{
+        public String Product;
+        public String PriceBook;
+        public String Vendor;
+        public String ProductSKU;
+        public String ProductCode;
+        public String BuildPhase;
+        public String CategoryPL;
+        public String TradeType;
+        public String Location;
+        public String Quantity;
+        public String UOM;
+        public String CostCode;
+       
+    }
 
-								when 'CategoryPL'{
-                                    if (String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))){
-									    takeoffLines.buildertek__Category__c = listCSVData.get(intIndex).get(intInnerIndex);
-                                    }
-								}
-
-								when 'Trade Type'{
-									String temptradetype = listCSVData.get(intIndex).get(intInnerIndex);
-									if (String.isNotBlank(temptradetype) && existingTradeTypeMap.containsKey(temptradetype)){
-										takeoffLines.buildertek__Trade_Type__c = existingTradeTypeMap.get(temptradetype).Id;
-									}
-								}
-
-								when 'Location'{
-                                    if (String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))){
-									    takeoffLines.buildertek__Location__c = listCSVData.get(intIndex).get(intInnerIndex);
-                                    }
-								}
-
-								when 'Quantity'{
-                                    if (String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))){
-									    String quantityString = listCSVData.get(intIndex).get(intInnerIndex).replaceAll('[^0-9.]', '');
-                                        takeoffLines.buildertek__Quantity__c = Decimal.valueOf(quantityString);
-                                    }
-								}
-
-								when 'UOM'{
-                                    if (String.isNotBlank(listCSVData.get(intIndex).get(intInnerIndex))){
-									    takeoffLines.buildertek__UOM_PL__c = listCSVData.get(intIndex).get(intInnerIndex);
-                                    }
-								}
-
-                                when 'Cost Code'{
-									String tempcostcode = listCSVData.get(intIndex).get(intInnerIndex);
-									if (String.isNotBlank(tempcostcode) && existingCostCodeMap.containsKey(tempcostcode)){
-											takeoffLines.buildertek__Cost_Code__c = existingCostCodeMap.get(tempcostcode).Id;
-									}
-								}
-
-								when else {
-                                    response.isSuccess = false;
-                                }
-							}
-						}
-						schItemToInsert.add(takeoffLines);
-					}
-					if (!schItemToInsert.isEmpty()){
-						if (response.isSuccess) {
-                            insert schItemToInsert;
-                            response.strMessage = 'TakeOff lines inserted successfully.';
-                        }
-                        else {   
-                            response.isSuccess = false;
-                            response.strMessage = 'Please check the header.';
-                        }
-					} else{
-						response.isSuccess = false;
-						response.strMessage = 'No takeoff lines present.';
-					}
-				} else{
-					response.isSuccess = false;
-					response.strMessage = 'Please select valid CSV file.';
-				}
-			}
-		} catch (Exception ex){
-			response.isSuccess = false;
-			response.strMessage = ex.getMessage();
-			System.debug('Message:2:' + ex.getMessage());
-			System.debug('Line:2:' + ex.getLineNumber());
-		}
-		return response;
-	}
-
-	/*
-	 @ Purpose     : Parse each row and column value into the element of List.
-	 @ Parameters  : String [ Contents of CSV file ].
-	 @ Return Type : List<List<String>> [ List of rows and Each row will have the list of columns ].
-	 */
-	public static WrapperClass getListOfFileContentsAsStrings(String strContents){
-		WrapperClass wrapper = new WrapperClass();
-		List<List<String>> listOfFileContentsAsStrings;
-		Set<String> productNames = new Set<String>();
-		if (String.isNotBlank(strContents)){
-			List<String> listLines;
-
-			if (strContents.contains('\r')){
-				// Split up the file contents into List of rows [ Using new line ].
-				listLines = strContents.split('\r');
-			} else if (strContents.contains('\n')){
-				// Split up the file contents into List of rows [ Using new line ].
-				listLines = strContents.split('\n');
-			}
-
-			if (listLines != Null && !listLines.isEmpty()){
-				// Appending cell values separated by New Lines.
-				listLines = appendCellValuesSeparatedByNewLines(listLines);
-				if (listLines != Null && !listLines.isEmpty()){
-
-					// Split up the each element of the list into List of columns [ Using comma ].
-					List<String> listRowContents;
-					listOfFileContentsAsStrings = new List<List<String>>();
-					for (String line : listLines){
-
-						if (line.contains(',')){
-							listRowContents = line.split(',');
-							if (listRowContents != Null && !listRowContents.isEmpty()){
-
-								// Appending cell values separated by Commas.
-								listRowContents = appendCellValuesSeparatedByCommas(listRowContents);
-								if (listRowContents != Null && !listRowContents.isEmpty()){
-									listOfFileContentsAsStrings.add(listRowContents);
-									productNames.add(listRowContents[0].replace('\n',''));
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-
-		wrapper.listOfFileContentsAsStrings = listOfFileContentsAsStrings;
-		wrapper.productNames = productNames;
-		return wrapper;
-	}
-
-	/*
-	 @ Purpose     : Appends the CSV cells which are separated by New Line.
-	 @ Parameters  : List<String> [ List holds the strings separated by New Line ].
-	 @ Return Type : List<String> [ List appends the strings belong to same CSV cell ].
-	 */
-	public Static List<String> appendCellValuesSeparatedByNewLines(List<String> listValues){
-
-		List<String> listToAppendCellValues;
-		if (listValues != Null && !listValues.isEmpty()){
-
-			Boolean isNewLineFound = False;
-			String strValueToBeMerged = '';
-			listToAppendCellValues = new List<String>();
-			Integer intCountDoubleQuotes;
-
-			for (String strValue : listValues){
-
-				if (!isNewLineFound){
-					intCountDoubleQuotes = strValue.countMatches('\"');
-					if (intCountDoubleQuotes == 1){
-						isNewLineFound = True;
-					}
-				}
-
-				if (isNewLineFound){
-					strValueToBeMerged += strValue + '\n';
-					if (strValue.contains('\",')){
-
-						intCountDoubleQuotes = strValue.countMatches('\"');
-						if (Math.mod(intCountDoubleQuotes, 2) != 0){
-
-							isNewLineFound = False;
-							listToAppendCellValues.add(strValueToBeMerged);
-							strValueToBeMerged = '';
-						}
-					}
-				} else{
-					listToAppendCellValues.add(strValue);
-				}
-			}
-		}
-		return listToAppendCellValues;
-	}
-
-	/*
-	 @ Purpose     : Appends the CSV cells which are separated by Commas.
-	 @ Parameters  : List<String> [ List holds the strings separated by Commas ].
-	 @ Return Type : List<String> [ List appends the strings belong to same CSV cell ].
-	 */
-	public static List<String> appendCellValuesSeparatedByCommas(List<String> listValues){
-
-		List<String> listToAppendCellValues;
-		if (listValues != Null && !listValues.isEmpty()){
-
-			Boolean isCommaFoundInTheValue;
-			listToAppendCellValues = new List<String>();
-			String strValueToBeMerged = '';
-			Integer intCountDoubleQuotes = 0;
-
-			for (String strValue : listValues){
-
-				if (isCommaFoundInTheValue == Null){
-					if (strValue.startsWith('\"')){
-						isCommaFoundInTheValue = True;
-						if (strValue.endsWith('\"')){
-							if (strValue.contains('\n') || strValue.contains('\r')){
-								isCommaFoundInTheValue = False;
-							} else{
-								intCountDoubleQuotes = strValue.countMatches('\"');
-								if (Math.mod(intCountDoubleQuotes, 2) == 0){
-									isCommaFoundInTheValue = False;
-								}
-							}
-						}
-					}
-				} else if (strValue.endsWith('\"')){
-					intCountDoubleQuotes = strValue.countMatches('\"');
-					if (Math.mod(intCountDoubleQuotes, 2) != 0){
-						isCommaFoundInTheValue = False;
-					}
-				}
-
-				if (isCommaFoundInTheValue != Null){
-					if (isCommaFoundInTheValue){
-						strValueToBeMerged += strValue + ',';
-					} else{
-						strValueToBeMerged += strValue;
-						if (strValueToBeMerged.contains('\"')){
-							strValueToBeMerged = strValueToBeMerged.replaceAll('\\\"+', '"');
-						}
-						listToAppendCellValues.add(strValueToBeMerged);
-						strValueToBeMerged = '';
-						isCommaFoundInTheValue = Null;
-					}
-				} else{
-					listToAppendCellValues.add(strValue);
-				}
-			}
-		}
-		return listToAppendCellValues;
-	}
-
-	public class WrapperClass{
-		public List<List<String>> listOfFileContentsAsStrings;
-		public Set<String> productNames;
-	}
 }

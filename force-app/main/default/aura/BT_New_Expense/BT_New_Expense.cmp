@@ -41,7 +41,7 @@
                 <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New Expense</h2>
             </header>
             <lightning:recordEditForm aura:id="newExpense" objectApiName="buildertek__Expense__c" onsubmit="{!c.handlesubmit}" density="Comfy" >
-                <lightning:layout multipleRows="true">
+                <lightning:layout multipleRows="true" class="modalheight">
                     <aura:iteration items="{!v.listOfFields}" var="field">
                         <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
                             <aura:if isTrue="{! (field.name == 'buildertek__Project__c' || field.name == 'buildertek__Budget__c' || field.name=='buildertek__Budget_Line__c')}">
@@ -76,7 +76,7 @@
                                 </aura:if>
 
                                 <aura:set attribute="else">
-                                    <lightning:inputField fieldName="{!field.name}" />
+                                        <lightning:inputField fieldName="{!field.name}" />
                                 </aura:set>
                             </aura:if>  
                     </lightning:layoutItem>                               

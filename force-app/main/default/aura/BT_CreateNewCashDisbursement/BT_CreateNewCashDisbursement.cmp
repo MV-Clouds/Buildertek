@@ -1,11 +1,13 @@
-<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" 
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader"
                 access="global" controller="BT_NewCashDisbursementController">
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
     <aura:attribute name="listOfFields" type="List" />
     <aura:attribute name="parentRecordId" type="String" default="" />
+    <aura:attribute name="projectId" type="String" default="" />
+    <aura:attribute name="vendorId" type="String" default="" />
     <aura:attribute name="isLoading" type="Boolean" />
     <aura:attribute name="isdisabled" type="Boolean" default="false"/>
-    <lightning:workspaceAPI aura:id="workspace" />   
+    <lightning:workspaceAPI aura:id="workspace" />
     <aura:html tag="style">
         .quick-actions-panel {
         overflow: hidden !important;
@@ -13,7 +15,7 @@
         .slds-modal__content{
         overflow: hidden !important;
         }
-    </aura:html> 
+    </aura:html>
     <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/>
     <div class="slds-modal__content ">
         <div class="slds slds-scope">
@@ -26,19 +28,25 @@
                 <lightning:recordEditForm aura:id="recordViewForm"
                                           objectApiName="buildertek__Payment__c"
                                           onsubmit="{!c.handleSubmit}"
-                                          onsuccess="{!c.handleSuccess}" 
+                                          onsuccess="{!c.handleSuccess}"
                                           onerror = "{!handleError}">
                     <lightning:layout verticalAlign="center" multipleRows="true">
                         <aura:iteration items="{!v.listOfFields}" var="field">
                             <br />
                             <br />
                             <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
-                                <div class="custom-box"> 
-                                    <aura:if isTrue="{!and(field.name !='buildertek__Payable__c')}">
+                                <div class="custom-box">
+                                    <aura:if isTrue="{!and(and(field.name != 'buildertek__Payable__c', field.name != 'buildertek__Project__c'), field.name != 'buildertek__Vendor__c')}">
                                         <lightning:inputField fieldName="{!field.name}" value="" />
                                         <aura:set attribute="else">
-                                            <aura:if isTrue="{!field.name=='buildertek__Payable__c'}" > 
+                                            <aura:if isTrue="{!field.name=='buildertek__Payable__c'}" >
                                                 <lightning:inputField fieldName="buildertek__Payable__c"  value = "{!v.parentRecordId}"/>
+                                            </aura:if>
+                                            <aura:if isTrue="{!field.name=='buildertek__Project__c'}" >
+                                                <lightning:inputField fieldName="buildertek__Project__c"  value = "{!v.projectId}"/>
+                                            </aura:if>
+                                            <aura:if isTrue="{!field.name=='buildertek__Vendor__c'}" >
+                                                <lightning:inputField fieldName="buildertek__Vendor__c" value="{!v.vendorId}"/>
                                             </aura:if>
                                         </aura:set>
                                     </aura:if>
@@ -50,8 +58,8 @@
                     <div class="slds-col modal-footer slds-modal__footer slds-buttoncustom" >
                         <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{! c.closeModel }" />
                         <lightning:button variant="brand" type="submit" name="save" label="Save" disabled="{!v.isdisabled}"/>
-                    </div> 
-                </lightning:recordEditForm> 
+                    </div>
+                </lightning:recordEditForm>
             </div>
         </div>
     </div>
@@ -67,5 +75,5 @@
             </div>
         </div>
     </aura:if>
-    <lightning:notificationsLibrary aura:id="notifLib" />  
+    <lightning:notificationsLibrary aura:id="notifLib" />
 </aura:component>

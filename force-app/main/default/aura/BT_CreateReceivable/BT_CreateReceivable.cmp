@@ -15,10 +15,8 @@
                 <div class="slds-spinner__dot-a"></div>
                 <div class="slds-spinner__dot-b"></div>
                 <div class="custom-loading-text">
-                    <aura:if isTrue="{!v.showMessage}">
                         <!--<b>Importing Schedule Lines... </b>-->
                         <b>Processing, Please Wait</b>
-                    </aura:if>
                 </div>
             </div>
         </div>

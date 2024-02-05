@@ -1,0 +1,13 @@
+<aura:component controller="BT_createPAfromPO_Controller" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable" access="global" >
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <div aura:id="progressbar">
+    	<center>
+            <img alt="Creating new record in QuickBook." src="{!$Resource.gearsloading}" style="height:150px !important;"/>
+                        <br/>
+            <div style="margin-block: 10px;">
+                Work in Progress... Please wait until process is finished....
+            </div>
+        </center>
+    </div>
+</aura:component>

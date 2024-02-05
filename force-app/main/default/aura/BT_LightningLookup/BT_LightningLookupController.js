@@ -70,6 +70,7 @@
   // function for clear the Record Selaction 
     clear :function(component,event,helper){
         //alert('Hiiiiii');
+        console.log('clear');
          var pillTarget = component.find("lookup-pill");
          var lookUpTarget = component.find("lookupField"); 
         
@@ -86,12 +87,14 @@
          component.set("v.selectedRecord", {} );  
          var getInputkeyWord = component.get("v.SearchKeyWord");
         if(getInputkeyWord == undefined){
+            console.log('clear 1');
              var getSelectedRecord = '{"Id":"","Name":""}';
             var result = JSON.parse(getSelectedRecord);
             var compEvent = component.getEvent("SelectedRecordEvent");
             compEvent.setParams({"recordByEvent" : {},"recordByEventstring": component.get("v.objectAPIName") });  
             compEvent.fire();
         }else if(getInputkeyWord.length == 0){
+            console.log('clear 2');
             var getSelectedRecord = '{"Id":"","Name":""}';
             var result = JSON.parse(getSelectedRecord);
             var compEvent = component.getEvent("SelectedRecordEvent");
@@ -101,7 +104,13 @@
         component.set('v.childValue' , '');
         component.set('v.costcodeValue' , '');
         component.set('v.unitcostValue' , '');
-         
+
+        var compEvent = component.getEvent("oClearRecordEvent");
+        compEvent.setParams({
+            "phaseIndex" : component.get("v.phaseIndex"),
+            "index": component.get("v.index"),
+          });  
+        compEvent.fire(); 
         
     },
     

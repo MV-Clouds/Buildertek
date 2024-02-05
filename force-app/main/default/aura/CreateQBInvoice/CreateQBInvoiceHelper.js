@@ -1,8 +1,9 @@
 ({
     createInvoice : function(component, event, helper) {
-        var action = component.get("c.Create_customer_item_invoice_in_QB_flow");
+        var action = component.get("c.Create_Invoice_in_QB_AuraCallout");
         action.setParams({
-            Sales_invoice_Id : component.get("v.recordId") 
+            recordId : component.get("v.recordId"),
+            SyncObjName : 'buildertek__Billings__c' 
         });
         
         action.setCallback(this, function(response) {

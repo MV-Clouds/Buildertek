@@ -1,0 +1,113 @@
+
+.THIS .grid{
+    display: grid;
+    grid-template-columns: auto auto;
+    padding: 10px;
+    align-items: center;
+    justify-items: start;
+}
+.THIS.grid{
+    display: grid;
+    grid-template-columns: auto auto;
+    padding: 10px;
+    align-items: center;
+    justify-items: start;
+}
+.THIS .slds-size_1-of-2{
+    width: 100%;
+    margin: 0 1%;
+    padding-right: 8px;
+    /* margin-top: 0.5rem; */
+}
+
+.THIS .bottom-line{
+    border-bottom: solid 1px rgb(229, 229, 229);
+    /* margin-bottom: 0.3rem; */
+}
+
+.THIS .field-container{
+    display: flex;
+}
+
+.THIS .field-container lightning-primitive-icon{
+    /* color: rgb(243, 243, 243); */
+    /* margin-bottom: 10px; */
+}
+.THIS .headingDiv{
+    margin-top: 20px;
+    background: rgb(243, 243, 243);
+    color: #000;
+    font-size: 1rem;
+    padding: 5px 10px;
+}
+.THIS .save{
+    background-color: rgba(236, 235, 234, 0.9);
+    margin: auto;
+    text-align: center;
+    width: 100%;
+    padding: 10px;
+    height: auto;
+}
+
+.THIS .save .saveBtn{
+    /* padding-left: 10px; */
+}
+
+.THIS .custom-loading-text {
+    transform: rotate(-90deg);
+    position: absolute;
+    top: -0.5rem;
+    left: 1rem;
+    white-space: nowrap;
+    font-size: 20px;
+}
+
+.THIS .rkclass{
+    color: var(--slds-g-color-neutral-base-30, var(--lwc-colorTextLabel,rgb(68, 68, 68)));
+    font-size: var(--lwc-formLabelFontSize,0.75rem);
+    padding-right: var(--lwc-spacingXSmall,0.5rem);
+    padding-top: var(--lwc-spacingXxSmall,0.25rem);
+    margin-bottom: var(--lwc-spacingXxxSmall,0.125rem);
+}
+.THIS .CustomLookupField{
+    display: flex;
+    /* padding-left: 1%; */
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.THIS .inputSize{
+    width: 65.5%;
+    margin-right: 1%;
+}
+
+.THIS .pbInput .slds-input__icon_left{
+    display: none;
+}
+.THIS .pbInput .slds-input__icon_right{
+    display: none;
+}
+.THIS .crossicon{
+    right: calc(var(--lwc-spacingXxSmall,0.25rem) + 1px) !important;
+    left: unset !important;
+}
+.THIS .crossicon .slds-button_icon-border{
+    border: unset !important;
+}
+.THIS .slds-form-element__help {
+    display: none;
+}
+.THIS .slds-has-error .slds-input {
+    --slds-c-input-color-border: var(--lwc-borderWidthThin,1px) solid var(--slds-c-input-color-border, var(--sds-c-input-color-border, var(--slds-g-color-border-base-4, var(--lwc-colorBorderInput,rgb(201, 201, 201)))));
+    --slds-c-input-shadow: var(--slds-c-input-shadow, var(--sds-c-input-shadow)) inset;
+}
+.THIS .standard_field .slds-input{
+    --slds-c-input-spacing-horizontal-start: 12px;
+}
+.THIS .rkclasses .slds-input{
+    padding-left: 10px !important;
+}
+.THIS .rkclasses1 .slds-input{
+    padding-left: 35px !important;
+}

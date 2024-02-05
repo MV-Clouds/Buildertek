@@ -156,6 +156,10 @@
     <aura:attribute name="totalInstallCost" type="String" />
     <aura:attribute name="totalProposalAmount" type="String" />
     <aura:attribute name="buildPhaseName" type="String"/>
+
+    <aura:attribute name="EditRecordId" type="String" />
+    <aura:attribute name="OpenEditPopup" type="Boolean" default="false" />
+    <aura:attribute name="listOfFields" type="List" />
     
     <lightning:navigation aura:id="goToPrevious" />
     
@@ -603,6 +607,9 @@
                         <div style="text-align:right;">
                             <lightning:button iconName="utility:back" iconPosition="left" 
                                               label="Back" onclick="{!c.redirectToPreviousCmp}"/>
+
+                            <!-- <lightning:button iconName="utility:edit" iconPosition="left" 
+                            label="Edit Lines" onclick="{!c.Redirect_To_ManageBOMLines}"/> -->
                             <!--<aura:if isTrue="{!v.showBTAdminButton}">
                             <lightning:button label="Create Fabrication Record" onclick="{!c.handleOpenModalButton}" />
                         </aura:if>-->
@@ -648,7 +655,7 @@
                                                     <aura:if isTrue="{!or(rec.label == 'Build Phase',rec.label == 'List Price')}">
                                                        <th style="padding-right:3.1rem;"> &nbsp;{!rec.label} </th>
                                                         <aura:set attribute="else">
-                                                           <th> &nbsp;{!rec.label} </th>
+                                                           <th> &nbsp;{!rec.label}</th>
                                                         </aura:set>
                                                     </aura:if>
                                                 </aura:iteration>
@@ -1229,5 +1236,5 @@
             </div>
         </aura:if>
     </div>
-    
+
 </aura:component>

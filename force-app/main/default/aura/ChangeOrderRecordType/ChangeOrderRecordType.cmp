@@ -1,0 +1,59 @@
+<aura:component
+    implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction,lightning:actionOverride,lightning:hasPageReference"
+    access="global" controller="NewChangeOrderController">
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="projectId" type="String" />
+    <aura:attribute name="isLoading" type="Boolean" />
+    <aura:attribute name="recordTypes" type="List" />
+    <aura:attribute name="RecordTypeId" type="String" default="" />
+
+    <lightning:workspaceAPI aura:id="workspace" />
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
+
+    <aura:html tag="style">
+        .slds-modal__container{
+        width: 60% !important;
+        padding: 0 !important;
+        max-width: 80rem !important;
+        }
+
+        .slds-form-element__control{
+        padding-top: 10px;
+        padding-left: 15px;
+        padding-bottom: 10px;
+        }
+    </aura:html>
+
+    <div class="slds-modal__container">
+        <header class="slds-modal__header">
+            <h1 id="modal-heading-01" class="slds-text-heading--medium">Select Record Type</h1>
+        </header>
+
+        <div class="slds-modal__content" id="modal-content-id-1">
+            <aura:iteration items="{!v.recordTypes}" var="recordType">
+                <lightning:input type="radio" label="{!recordType.Name}" value="{!recordType.Id}" name="recordTypeRadio"
+                    checked="{!recordType.Name == 'Customer'}" onchange="{!c.handleRadioChange}" />
+            </aura:iteration>
+
+            <footer class="slds-modal__footer" style="padding-top: 10px">
+                <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{!c.handleCancel}" />
+                <lightning:button variant="brand" type="submit" name="save" label="Next" onclick="{!c.handleSave}" />
+            </footer>
+        </div>
+    </div>
+
+    <aura:if isTrue="{!v.isLoading}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                    <b>Processing, Please Wait</b>
+                </div>
+            </div>
+        </div>
+    </aura:if>
+
+</aura:component>

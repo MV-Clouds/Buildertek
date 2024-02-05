@@ -164,5 +164,6 @@
     </div> 
     <!-- </footer> -->
     <lightning:notificationsLibrary aura:id="notifLib" />
+    <c:BT_Spinner />
 
 </aura:component>

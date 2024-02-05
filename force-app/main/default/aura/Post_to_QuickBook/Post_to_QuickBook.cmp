@@ -1,0 +1,164 @@
+<aura:component controller="QBIntegrationQueue" implements="force:hasSObjectName,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable" access="global" >
+	<aura:attribute name="recordId" type="Id"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="sobjecttype" type="String" default="{!v.sObjectName}"/>
+    <aura:attribute name="ShowAccountTypeOpt" type="boolean" default="true" />
+    <aura:attribute name="AccountTypeOption" type="List" default="[
+    {'label': 'Customer', 'value': 'Customer'},
+    {'label': 'Vendor', 'value': 'Vendor'}
+    ]"/>
+    <aura:attribute name="AccountType" type="String" />
+    <aura:attribute name="Spinner" type="boolean" default="false"/> 
+    <lightning:notificationsLibrary aura:id="notifLib"/>
+    <aura:attribute name="record" type="Object" />
+    <aura:attribute name="BTAccountType" type="Object" />
+    <!-- <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/> -->
+
+    <aura:html tag="style">
+        .slds-modal__container {
+            max-width: 50rem !important;
+            width: 50% !important;
+        }
+        
+        .cuf-content {
+            padding: 0 0rem !important;
+        }
+        
+        .slds-p-around--medium {
+            padding: 0rem !important;
+        }
+        
+        .slds-modal__content {
+            height: unset !important;
+            max-height: unset !important;
+            box-shadow: none !important;
+        }
+        
+        .scrollable {
+            height: 400px;
+            overflow-y: auto;
+        }
+    </aura:html>
+
+    <div aura:id="progressbar">
+    	<center>
+	    	<!-- <img alt="Creating new record in QuickBook." src="{!$Resource.gearsloading}" style="height:150px !important;"/>
+	    	<br/> -->
+
+            <aura:if isTrue="{!v.sObjectName == 'Account'}">
+                
+                <force:recordData aura:id="recordLoader"
+                recordId="{!v.recordId}"
+                fields="buildertek__BT_Account_Type__c, buildertek__QB_Id__c, buildertek__QB_Type__c"
+                targetRecord="{!v.record}"
+                targetFields="{!v.BTAccountType}"
+                targetError="{!v.recordError}"
+                recordUpdated="{! c.handleRecordLoaded }"/>
+
+                <!-- <aura:if isTrue="{!v.ShowAccountTypeOpt == true}"> -->
+                    <!-- <div class="slds-modal__content ">
+                        <div class="slds slds-scope">
+                            <header class="slds-modal__header">
+                                <lightning:buttonIcon iconName="utility:close" onclick="{!c.CloseQuickAction}" alternativeText="close"
+                                                      variant="bare-inverse" class="slds-modal__close" />
+                                
+                                
+                                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Please Select an Account Type</h2>
+                            </header>
+                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="height:100%; text-align: left">
+                                <lightning:radioGroup aura:id="test" name="testName" 
+                                                      options="{!v.AccountTypeOption}" value="{!v.AccountType}"
+                                                      onchange="{!c.handleChangeAccountType}"/> 
+                            </div>
+                            <footer class="slds-modal__footer">
+                                <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{!c.CloseQuickAction}" />
+                                <lightning:button variant="brand" type="submit" name="Save" label="Save" onclick="{!c.PostAccountToQuickbook}" />
+                            </footer>
+                        </div>
+                    </div> -->
+                    <!-- <aura:set attribute="else"> -->
+                        <img alt="Creating new record in QuickBook." src="{!$Resource.gearsloading}" style="height:150px !important;"/>
+	    	            <br/>
+                        <div style="margin-block: 10px;">
+                            Posting {!v.AccountType} to Quickbooks...
+                            <br/>
+                            Please don't leave this page until record is posted.
+                            <br/>
+                        </div>
+                    <!-- </aura:set> -->
+                <!-- </aura:if> -->
+            </aura:if>
+
+            <aura:if isTrue="{!v.sObjectName == 'buildertek__Purchase_Order__c'}">
+                <img alt="Creating new record in QuickBook." src="{!$Resource.gearsloading}" style="height:150px !important;"/>
+                <br/>
+                <div style="margin-block: 10px;">
+                    Syncing PO and PO Lines with Quickbooks... 
+                    <br/> Please don't leave this page until PO is Synced to Quickbook.
+                    <br/>
+                </div>
+            </aura:if>
+
+            <aura:if isTrue="{!v.sObjectName == 'buildertek__Account_Payable__c'}">
+                <img alt="Creating new record in QuickBook." src="{!$Resource.gearsloading}" style="height:150px !important;"/>
+                <br/>
+                <div style="margin-block: 10px;">
+                    Syncing Contractor Invoice with Quickbooks... 
+                    <br/> Please don't leave this page until Contractor Invoice is Synced to Quickbook.
+                    <br/>
+                </div>
+            </aura:if>
+
+            <aura:if isTrue="{!v.sObjectName == 'buildertek__Account_Payable_Clone__c'}">
+                <img alt="Creating new record in QuickBook." src="{!$Resource.gearsloading}" style="height:150px !important;"/>
+                <br/>
+                <div style="margin-block: 10px;">
+                    Syncing Payable Invoice with Quickbooks... 
+                    <br/> Please don't leave this page until Payable Invoice is Synced to Quickbook.
+                    <br/>
+                </div>
+            </aura:if>
+
+            <aura:if isTrue="{!v.sObjectName == 'buildertek__Billings__c'}">
+                <img alt="Creating new record in QuickBook." src="{!$Resource.gearsloading}" style="height:150px !important;"/>
+                <br/>
+                <div style="margin-block: 10px;">
+                    Syncing Sales Invoice with Quickbooks... 
+                    <br/> Please don't leave this page until Sales Invoice is Synced to Quickbook.
+                    <br/>
+                </div>
+            </aura:if>
+
+            <aura:if isTrue="{!v.sObjectName == 'buildertek__Expense__c'}">
+                <img alt="Creating new record in QuickBook." src="{!$Resource.gearsloading}" style="height:150px !important;"/>
+                <br/>
+                <div style="margin-block: 10px;">
+                    Syncing Expense with Quickbooks... 
+                    <br/> Please don't leave this page until Expense is Synced to Quickbook.
+                    <br/>
+                </div>
+            </aura:if>
+
+            <aura:if isTrue="{!v.sObjectName == 'buildertek__Receipt__c'}">
+                <img alt="Creating new record in QuickBook." src="{!$Resource.gearsloading}" style="height:150px !important;"/>
+                <br/>
+                <div style="margin-block: 10px;">
+                    Syncing Receipt with Quickbooks... 
+                    <br/> Please don't leave this page until Receipt is Synced to Quickbook.
+                    <br/>
+                </div>
+            </aura:if>
+
+    	</center>
+    </div>
+
+    <aura:if isTrue="{!v.Spinner}">                
+            <div aura:id="spinnerId" class="slds-spinner_container">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </aura:if>
+</aura:component>

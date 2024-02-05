@@ -688,23 +688,23 @@
                     value = 0;
                 }
                 if(localId == "buildertek__Scheduled_Value__c"){
-                    sheetLines[i].buildertek__Scheduled_Value__c = parseInt(value);
+                    sheetLines[i].buildertek__Scheduled_Value__c = parseFloat(value);
                 }
                 if(localId == "buildertek__Work_Completed_from_Previous_Application__c"){
-                    sheetLines[i].buildertek__Work_Completed_from_Previous_Application__c = parseInt(value);
+                    sheetLines[i].buildertek__Work_Completed_from_Previous_Application__c = parseFloat(value);
                 }
                 if(localId == "buildertek__Work_Completed__c"){
-                    sheetLines[i].buildertek__Work_Completed__c = parseInt(value);   
+                    sheetLines[i].buildertek__Work_Completed__c = parseFloat(value);   
                 }
                 if(localId == "buildertek__Material_Presently_Stored__c"){
-                    sheetLines[i].buildertek__Material_Presently_Stored__c = parseInt(value);
+                    sheetLines[i].buildertek__Material_Presently_Stored__c = parseFloat(value);
                 }
-                sheetLines[i].buildertek__Total__c = parseInt(sheetLines[i].buildertek__Material_Presently_Stored__c) + parseInt(sheetLines[i].buildertek__Work_Completed_from_Previous_Application__c) + parseInt(sheetLines[i].buildertek__Work_Completed__c);
-                sheetLines[i].buildertek__G_C__c = (parseInt(sheetLines[i].buildertek__Total__c) / parseInt(sheetLines[i].buildertek__Scheduled_Value__c))*100;
-                sheetLines[i].buildertek__Balance_To_Finish__c = parseInt(sheetLines[i].buildertek__Scheduled_Value__c) - parseInt(sheetLines[i].buildertek__Total__c);
+                sheetLines[i].buildertek__Total__c = parseFloat(sheetLines[i].buildertek__Material_Presently_Stored__c) + parseFloat(sheetLines[i].buildertek__Work_Completed_from_Previous_Application__c) + parseFloat(sheetLines[i].buildertek__Work_Completed__c);
+                sheetLines[i].buildertek__G_C__c = (parseFloat(sheetLines[i].buildertek__Total__c) / parseFloat(sheetLines[i].buildertek__Scheduled_Value__c))*100;
+                sheetLines[i].buildertek__Balance_To_Finish__c = parseFloat(sheetLines[i].buildertek__Scheduled_Value__c) - parseFloat(sheetLines[i].buildertek__Total__c);
                 
-                var balToFinish2 = parseInt(sheetLines[i].buildertek__Scheduled_Value__c) - (parseInt(sheetLines[i].buildertek__Total__c)-workCompletedThisPeriod);                
-                var balToFinish22 = parseInt(sheetLines[i].buildertek__Scheduled_Value__c) - (parseInt(sheetLines[i].buildertek__Total__c)-materialPresentlyStored);                
+                var balToFinish2 = parseFloat(sheetLines[i].buildertek__Scheduled_Value__c) - (parseFloat(sheetLines[i].buildertek__Total__c)-workCompletedThisPeriod);                
+                var balToFinish22 = parseFloat(sheetLines[i].buildertek__Scheduled_Value__c) - (parseFloat(sheetLines[i].buildertek__Total__c)-materialPresentlyStored);                
 
                 if(localId == "buildertek__Work_Completed__c"){
                     if(workCompletedThisPeriod > balToFinish2){
@@ -733,23 +733,23 @@
                         value = 0;
                     }
                     if(localId == "buildertek__Scheduled_Value__c"){
-                        sheetLines[index].buildertek__Scheduled_Value__c = parseInt(value);
+                        sheetLines[index].buildertek__Scheduled_Value__c = parseFloat(value);
                     }
                     if(localId == "buildertek__Work_Completed_from_Previous_Application__c"){
-                        sheetLines[index].buildertek__Work_Completed_from_Previous_Application__c = parseInt(value);
+                        sheetLines[index].buildertek__Work_Completed_from_Previous_Application__c = parseFloat(value);
                     }
                     if(localId == "buildertek__Work_Completed__c"){
-                        sheetLines[index].buildertek__Work_Completed__c = parseInt(value);
+                        sheetLines[index].buildertek__Work_Completed__c = parseFloat(value);
                     }
                     if(localId == "buildertek__Material_Presently_Stored__c"){
-                        sheetLines[index].buildertek__Material_Presently_Stored__c = parseInt(value);
+                        sheetLines[index].buildertek__Material_Presently_Stored__c = parseFloat(value);
                     }
-                    sheetLines[index].buildertek__Total__c = parseInt(sheetLines[index].buildertek__Material_Presently_Stored__c) + parseInt(sheetLines[index].buildertek__Work_Completed_from_Previous_Application__c) + parseInt(sheetLines[index].buildertek__Work_Completed__c);
-                    sheetLines[index].buildertek__G_C__c = (parseInt(sheetLines[index].buildertek__Total__c) / parseInt(sheetLines[index].buildertek__Scheduled_Value__c))*100;
-                    sheetLines[index].buildertek__Balance_To_Finish__c = parseInt(sheetLines[index].buildertek__Scheduled_Value__c) - parseInt(sheetLines[index].buildertek__Total__c);
+                    sheetLines[index].buildertek__Total__c = parseFloat(sheetLines[index].buildertek__Material_Presently_Stored__c) + parseFloat(sheetLines[index].buildertek__Work_Completed_from_Previous_Application__c) + parseFloat(sheetLines[index].buildertek__Work_Completed__c);
+                    sheetLines[index].buildertek__G_C__c = (parseFloat(sheetLines[index].buildertek__Total__c) / parseFloat(sheetLines[index].buildertek__Scheduled_Value__c))*100;
+                    sheetLines[index].buildertek__Balance_To_Finish__c = parseFloat(sheetLines[index].buildertek__Scheduled_Value__c) - parseFloat(sheetLines[index].buildertek__Total__c);
                     
-                    var balToFinish1 = parseInt(sheetLines[index].buildertek__Scheduled_Value__c) - (parseInt(sheetLines[index].buildertek__Total__c)-workCompletedThisPeriod); 
-                    var balToFinish11 = parseInt(sheetLines[index].buildertek__Scheduled_Value__c) - (parseInt(sheetLines[index].buildertek__Total__c)-materialPresentlyStored); 
+                    var balToFinish1 = parseFloat(sheetLines[index].buildertek__Scheduled_Value__c) - (parseFloat(sheetLines[index].buildertek__Total__c)-workCompletedThisPeriod); 
+                    var balToFinish11 = parseFloat(sheetLines[index].buildertek__Scheduled_Value__c) - (parseFloat(sheetLines[index].buildertek__Total__c)-materialPresentlyStored); 
 
                     if(localId == "buildertek__Work_Completed__c"){
                         if(workCompletedThisPeriod > balToFinish1){
@@ -832,22 +832,22 @@
                     
                     if(component.get("v.isCommUser") == true){
                         if(localId == "buildertek__Scheduled_Value__c"){
-                            updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Scheduled_Value__c = parseInt(value);
+                            updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Scheduled_Value__c = parseFloat(value);
                         }  
                     }else{
                         if(localId == "buildertek__Scheduled_Value__c"){
-                            updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Scheduled_Value__c = parseInt(value);
+                            updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Scheduled_Value__c = parseFloat(value);
                         } 
                     }
                     
                     
                     if(component.get("v.isCommUser") == true){
                         if(localId == "buildertek__Work_Completed_from_Previous_Application__c"){
-                            updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Vendor_Work_Completed_from_Previous_Appl__c = parseInt(value);
+                            updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Vendor_Work_Completed_from_Previous_Appl__c = parseFloat(value);
                         } 
                     }else{
                         if(localId == "buildertek__Work_Completed_from_Previous_Application__c"){
-                            updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Work_Completed_from_Previous_Application__c = parseInt(value);
+                            updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Work_Completed_from_Previous_Application__c = parseFloat(value);
                         }
                     }
     
@@ -909,12 +909,10 @@
 
                     if(localId == "buildertek__Completion__c" || localId == "buildertek__Material_Presently_Stored__c"){
                         if(component.get("v.isCommUser") == true){
-                            updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Vendor_Work_Completed_This_Period__c = ((parseInt(recordItem.buildertek__Scheduled_Value__c) - (parseInt(recordItem.buildertek__Work_Completed_from_Previous_Application__c)) - parseFloat(recordItem.buildertek__Vendor_Material_Presently_Stored__c)) * parseFloat(recordItem.buildertek__Completion__c) )/ 100; // ---
+                            updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Vendor_Work_Completed_This_Period__c = ((parseFloat(recordItem.buildertek__Scheduled_Value__c) - (parseFloat(recordItem.buildertek__Work_Completed_from_Previous_Application__c)) - parseFloat(recordItem.buildertek__Vendor_Material_Presently_Stored__c)) * parseFloat(recordItem.buildertek__Completion__c) )/ 100; // ---
                         }
                         else{
-                            updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Work_Completed__c = ((parseInt(recordItem.buildertek__Scheduled_Value__c) - (parseInt(recordItem.buildertek__Work_Completed_from_Previous_Application__c)) - parseFloat(recordItem.buildertek__Material_Presently_Stored__c)) * parseFloat(recordItem.buildertek__Completion__c) )/ 100; // ---
-                            console.log('(parseFloat(recordItem.buildertek__Vendor_Material_Presently_Stored__c) : ', recordItem.buildertek__Vendor_Material_Presently_Stored__c);
-                            console.log('buildertek__Work_Completed__c : ', updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Work_Completed__c);
+                            updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Work_Completed__c = ((parseFloat(recordItem.buildertek__Scheduled_Value__c) - (parseFloat(recordItem.buildertek__Work_Completed_from_Previous_Application__c)) - parseFloat(recordItem.buildertek__Material_Presently_Stored__c)) * parseFloat(recordItem.buildertek__Completion__c) )/ 100; // ---
                         }
 
                         // if(parseFloat(value) != 0){
@@ -937,10 +935,10 @@
                     if(localId == "buildertek__Work_Completed__c"){
 
                         if(component.get("v.isCommUser") == true){
-                            updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Completion__c = ((parseInt(recordItem.buildertek__Work_Completed__c) * 100) / (parseInt(recordItem.buildertek__Vendor_Work_Completed_This_Period__c) - parseInt(recordItem.buildertek__Work_Completed_from_Previous_Application__c) - parseFloat(recordItem.buildertek__Vendor_Material_Presently_Stored__c))).toFixed(2);
+                            updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Completion__c = ((parseFloat(recordItem.buildertek__Work_Completed__c) * 100) / (parseFloat(recordItem.buildertek__Vendor_Work_Completed_This_Period__c) - parseFloat(recordItem.buildertek__Work_Completed_from_Previous_Application__c) - parseFloat(recordItem.buildertek__Vendor_Material_Presently_Stored__c))).toFixed(2);
                         }
                         else{
-                            updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Completion__c = ((parseInt(recordItem.buildertek__Work_Completed__c) * 100) / (parseInt(recordItem.buildertek__Scheduled_Value__c) - parseInt(recordItem.buildertek__Work_Completed_from_Previous_Application__c) - parseFloat(recordItem.buildertek__Material_Presently_Stored__c))).toFixed(2);
+                            updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Completion__c = ((parseFloat(recordItem.buildertek__Work_Completed__c) * 100) / (parseFloat(recordItem.buildertek__Scheduled_Value__c) - parseFloat(recordItem.buildertek__Work_Completed_from_Previous_Application__c) - parseFloat(recordItem.buildertek__Material_Presently_Stored__c))).toFixed(2);
                         }
 
                         // if(parseFloat(value) != 0){
@@ -952,13 +950,13 @@
                     }
 
                     if(component.get("v.isCommUser") == true){
-                        updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Vendor_Total__c = parseFloat(recordItem.buildertek__Vendor_Material_Presently_Stored__c) + parseInt(recordItem.buildertek__Vendor_Work_Completed_from_Previous_Appl__c) + parseFloat(recordItem.buildertek__Vendor_Work_Completed_This_Period__c);
-                        var gcPercent =  (parseInt(recordItem.buildertek__Vendor_Total__c) / parseInt(recordItem.buildertek__Scheduled_Value__c))*100;
+                        updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Vendor_Total__c = parseFloat(recordItem.buildertek__Vendor_Material_Presently_Stored__c) + parseFloat(recordItem.buildertek__Vendor_Work_Completed_from_Previous_Appl__c) + parseFloat(recordItem.buildertek__Vendor_Work_Completed_This_Period__c);
+                        var gcPercent =  (parseFloat(recordItem.buildertek__Vendor_Total__c) / parseFloat(recordItem.buildertek__Scheduled_Value__c))*100;
                         updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Vendor_G_C__c = gcPercent.toFixed(2);
                         updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Vendor_Balance_To_Finish__c = Number(recordItem.buildertek__Scheduled_Value__c) - Number(recordItem.buildertek__Vendor_Total__c);
                     }else{
                         updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Total__c = parseFloat(recordItem.buildertek__Material_Presently_Stored__c) + parseFloat(recordItem.buildertek__Work_Completed_from_Previous_Application__c) + parseFloat(recordItem.buildertek__Work_Completed__c);
-                        var gcPercent =  (parseInt(recordItem.buildertek__Total__c) / parseInt(recordItem.buildertek__Scheduled_Value__c))*100;
+                        var gcPercent =  (parseFloat(recordItem.buildertek__Total__c) / parseFloat(recordItem.buildertek__Scheduled_Value__c))*100;
                         updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__G_C__c = gcPercent.toFixed(2);
                         updatedLinesInGroup[parentGrpIndex].subGroupRecords[subGrpIndex].records[recIndex].buildertek__Balance_To_Finish__c = Number(recordItem.buildertek__Scheduled_Value__c) - Number(recordItem.buildertek__Total__c);
                     }
@@ -1008,21 +1006,21 @@
                                 }
                                 if(component.get("v.isCommUser") == true){
                                     if(localId == "buildertek__Scheduled_Value__c"){
-                                        records[recIndex].buildertek__Scheduled_Value__c = parseInt(value);
+                                        records[recIndex].buildertek__Scheduled_Value__c = parseFloat(value);
                                     }  
                                 }else{
                                     if(localId == "buildertek__Scheduled_Value__c"){
-                                        records[recIndex].buildertek__Scheduled_Value__c = parseInt(value);
+                                        records[recIndex].buildertek__Scheduled_Value__c = parseFloat(value);
                                     }  
                                 }
                                 
                                 if(component.get("v.isCommUser") == true){
                                     if(localId == "buildertek__Work_Completed_from_Previous_Application__c"){
-                                        records[recIndex].buildertek__Vendor_Work_Completed_from_Previous_Appl__c = parseInt(value);
+                                        records[recIndex].buildertek__Vendor_Work_Completed_from_Previous_Appl__c = parseFloat(value);
                                     }  
                                 }else{
                                     if(localId == "buildertek__Work_Completed_from_Previous_Application__c"){
-                                        records[recIndex].buildertek__Work_Completed_from_Previous_Application__c = parseInt(value);
+                                        records[recIndex].buildertek__Work_Completed_from_Previous_Application__c = parseFloat(value);
                                     }  
                                 }
                                 
@@ -1047,13 +1045,13 @@
                                 }
                                 
                                 if(component.get("v.isCommUser") == true){
-                                    records[recIndex].buildertek__Vendor_Total__c = parseFloat(records[recIndex].buildertek__Vendor_Material_Presently_Stored__c) + parseInt(records[recIndex].buildertek__Vendor_Work_Completed_from_Previous_Appl__c) + parseFloat(records[recIndex].buildertek__Vendor_Work_Completed_This_Period__c);
-                                   var gcPercent = (parseInt(records[recIndex].buildertek__Vendor_Total__c) / parseInt(records[recIndex].buildertek__Scheduled_Value__c))*100;
+                                    records[recIndex].buildertek__Vendor_Total__c = parseFloat(records[recIndex].buildertek__Vendor_Material_Presently_Stored__c) + parseFloat(records[recIndex].buildertek__Vendor_Work_Completed_from_Previous_Appl__c) + parseFloat(records[recIndex].buildertek__Vendor_Work_Completed_This_Period__c);
+                                   var gcPercent = (parseFloat(records[recIndex].buildertek__Vendor_Total__c) / parseFloat(records[recIndex].buildertek__Scheduled_Value__c))*100;
                                     records[recIndex].buildertek__Vendor_G_C__c = gcPercent.toFixed(2);
                                     records[recIndex].buildertek__Vendor_Balance_To_Finish__c = Number(records[recIndex].buildertek__Scheduled_Value__c) - Number(records[recIndex].buildertek__Vendor_Total__c);
                                 }else{
-                                    records[recIndex].buildertek__Total__c = parseFloat(records[recIndex].buildertek__Material_Presently_Stored__c) + parseInt(records[recIndex].buildertek__Work_Completed_from_Previous_Application__c) + parseFloat(records[recIndex].buildertek__Work_Completed__c);
-                                   var gcPercent =  (parseInt(records[recIndex].buildertek__Total__c) / parseInt(records[recIndex].buildertek__Scheduled_Value__c))*100;
+                                    records[recIndex].buildertek__Total__c = parseFloat(records[recIndex].buildertek__Material_Presently_Stored__c) + parseFloat(records[recIndex].buildertek__Work_Completed_from_Previous_Application__c) + parseFloat(records[recIndex].buildertek__Work_Completed__c);
+                                   var gcPercent =  (parseFloat(records[recIndex].buildertek__Total__c) / parseFloat(records[recIndex].buildertek__Scheduled_Value__c))*100;
                                     records[recIndex].buildertek__G_C__c =gcPercent.toFixed(2);
                                     records[recIndex].buildertek__Balance_To_Finish__c = Number(records[recIndex].buildertek__Scheduled_Value__c) - Number(records[recIndex].buildertek__Total__c);
                                     console.log('changes 2');
@@ -1061,7 +1059,7 @@
                                 
                                 if(component.get("v.isCommUser") == true){
                                     if(localId == "buildertek__Work_Completed__c"){
-                                        if(workCompletedThisPeriod > parseInt(records[recIndex].buildertek__Vendor_Balance_To_Finish__c)){
+                                        if(workCompletedThisPeriod > parseFloat(records[recIndex].buildertek__Vendor_Balance_To_Finish__c)){
                                              component.set("v.isGCPercent",true);
                                             inputField.setCustomValidity("Work Completed This Period must be less than Balance To Finish");
                                         }else{
@@ -1071,7 +1069,7 @@
                                         
                                     }
                                     if(localId == "buildertek__Material_Presently_Stored__c"){
-                                        if(materialPresentlyStored > parseInt(records[recIndex].buildertek__Vendor_Balance_To_Finish__c)){
+                                        if(materialPresentlyStored > parseFloat(records[recIndex].buildertek__Vendor_Balance_To_Finish__c)){
                                             inputField.setCustomValidity("Material Presently Stored must be less than Balance To Finish");
                                              component.set("v.isGCPercent",true);
                                         }else{
@@ -1081,7 +1079,7 @@
                                     }
                                 }else{
                                     if(localId == "buildertek__Work_Completed__c"){
-                                        if(workCompletedThisPeriod > parseInt(records[recIndex].buildertek__Balance_To_Finish__c)){
+                                        if(workCompletedThisPeriod > parseFloat(records[recIndex].buildertek__Balance_To_Finish__c)){
                                              component.set("v.isGCPercent",true);
                                             inputField.setCustomValidity("Work Completed This Period must be less than Balance To Finish");
                                         }else{
@@ -1091,7 +1089,7 @@
                                         
                                     }
                                     if(localId == "buildertek__Material_Presently_Stored__c"){
-                                        if(materialPresentlyStored > parseInt(records[recIndex].buildertek__Balance_To_Finish__c)){
+                                        if(materialPresentlyStored > parseFloat(records[recIndex].buildertek__Balance_To_Finish__c)){
                                             inputField.setCustomValidity("Material Presently Stored must be less than Balance To Finish");
                                              component.set("v.isGCPercent",true);
                                         }else{

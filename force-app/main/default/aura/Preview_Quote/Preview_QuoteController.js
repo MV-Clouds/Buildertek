@@ -248,7 +248,7 @@
     },
 
     AcceptandsendEmail: function(component, event, helper) {
-        component.set("v.Spinner", true);
+        // component.set("v.Spinner", true);
         var toIds = [];
         var ccIds = [];
         var to = component.get("v.selectedToContact");
@@ -265,7 +265,7 @@
             if (!signaturePad.isEmpty()) {
                 helper.AcceptSignature(component, event);
             } else {
-                component.set("v.Spinner", false);
+                // component.set("v.Spinner", false);
                 var toastEvent = $A.get("e.force:showToast");
                 toastEvent.setParams({
                     "title": "Error!",
@@ -275,7 +275,7 @@
                 toastEvent.fire();
             }
         } else {
-            component.set("v.Spinner", false);
+            // component.set("v.Spinner", false);
             var toastEvent = $A.get("e.force:showToast");
             toastEvent.setParams({
                 "title": "Error!",

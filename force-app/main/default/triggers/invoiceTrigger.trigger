@@ -1,4 +1,4 @@
-trigger invoiceTrigger on Billings__c (before insert, before update, before delete, after insert, after update) {
+trigger invoiceTrigger on Billings__c (before insert, before update, before delete, after insert, after update, after delete) {
     InvoiceTrigger_HDL handler = new InvoiceTrigger_HDL();
     list<buildertek__Billings__c> BillingRecordList = new list<buildertek__Billings__c>();
 
@@ -23,6 +23,8 @@ trigger invoiceTrigger on Billings__c (before insert, before update, before dele
             handler.OnBeforeInsert(Trigger.new);
 
             if(Trigger.isUpdate){
+            handler.updateCOFieldOnReceiptsWhenUpdateCOFromSalesInvoice(Trigger.new , Trigger.oldMap, Trigger.newMap);
+
             // handler.DeleteBudgetLine(Trigger.old ,Trigger.new , Trigger.oldMap , Trigger.newMap);
                 handler.onBeforeUpdate(Trigger.old ,Trigger.new , Trigger.oldMap , Trigger.newMap);
             }
@@ -43,12 +45,17 @@ trigger invoiceTrigger on Billings__c (before insert, before update, before dele
         }
     } else if (Trigger.isAfter) {
         if (Trigger.isInsert) {
-            handler.OnAfterInsert(Trigger.new, Trigger.newMap); 
+            handler.OnAfterInsert(Trigger.new, Trigger.newMap);
+            handler.onAfterInsertSI(Trigger.new); 
         } else if(Trigger.isUpdate){
             handler.OnAfterUpdate(Trigger.old, Trigger.new, Trigger.newMap, Trigger.oldMap); 
             handler.DeleteBudgetLine(Trigger.old ,Trigger.new , Trigger.oldMap , Trigger.newMap);
-
-        } 
+            handler.onAfterUpdateSI(Trigger.new , Trigger.oldMap);
+            handler.UpdateSalesInvoiceStatus(Trigger.new , Trigger.oldMap);
+            // handler.updateCOFieldOnReceiptsWhenUpdateCOFromSalesInvoice(Trigger.new , Trigger.oldMap, Trigger.newMap);
+        } else if(Trigger.isDelete){
+            handler.onAfterDeleteSI(Trigger.old);
+        }
     }
     
     

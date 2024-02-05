@@ -27,7 +27,7 @@ import { populateIcons } from "./lib/BryntumGanttIcons";
 
 export default class Gantt_component extends NavigationMixin(LightningElement) {
   @track spinnerDataTable = false;
-
+  @track showSpinner = false;
   @track islibraryloaded = false;
   @track scheduleItemsDataList;
   @track scheduleData;
@@ -60,7 +60,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
   @api contractorResourceFilterVal = "";
   @api internalResourceFilterVal = "";
   @track setorignaldates = false;
-
+  @api hideToolBar = false;
   //Added for contractor
   @api showContractor = false;
   @api selectedResourceAccount;
@@ -157,6 +157,11 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     }, 1500);
   }
 
+  @api updaterecordId(newid){
+    this.SchedulerId = newid;
+    this.getScheduleWrapperDataFromApex();
+  }
+
   loadLibraries() {
     Promise.all([
       // loadScript(this, GANTT + "/gantt.lwc.module.min.js"),
@@ -226,6 +231,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
   }
 
   getScheduleWrapperDataFromApex() {
+    this.showSpinner = true;
     scheduleWrapperDataFromApex({
       scheduleid: this.SchedulerId,
     })
@@ -337,7 +343,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
 
         if (this.template.querySelector(".container").children.length) {
           this.template.querySelector(".container").innerHTML = "";
-          this.template.querySelector(".container1").innerHTML = "";
+          // this.template.querySelector(".container1").innerHTML = "";
           // this.handleHideSpinner();
           this.createGanttChartInitially();
           // this.createGantt();
@@ -347,12 +353,13 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           // this.createGantt();
           // this.isLoaded = false;
         }
-      })
+              })
       .catch((error) => {
         console.log(
           "error message to get while getting data from apex:- ",
           error.message
         );
+        console.log("error:-", {error} )
         this.dispatchEvent(
           new ShowToastEvent({
             title: "Error",
@@ -360,6 +367,9 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
             variant: "error",
           })
         );
+      })
+      .finally(()=>{
+        this.showSpinner = false;
       });
   }
 
@@ -563,7 +573,10 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     var resourceRowData = [];
     var assignmentRowData = [];
     var rows = [];
-
+    var toolbar;
+    if(!this.hideToolBar){
+      toolbar = new GanttToolbar()
+    }
     var scheduleDataList = this.scheduleItemsDataList;
     this.scheduleItemsDataList = scheduleDataList;
     var formatedSchData = formatApexDatatoJSData(
@@ -585,7 +598,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     assignmentRowData = formatedSchData["assignmentRowData"];
 
     let resourceData = makeComboBoxDataForResourceData(this.contractorAndResources, this.internalResources);
-
+    
     const project = new bryntum.gantt.ProjectModel({
       calendar: data.project.calendar,
       // startDate: data.project.startDate,
@@ -611,7 +624,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
       // startDate: "2019-07-01",
       // endDate: "2019-10-01",
 
-      tbar: new GanttToolbar(),
+      tbar: toolbar,
       rowHeight         : 30,
       barMargin         : 5,
 
@@ -663,12 +676,15 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           type: "name",
           draggable: false,
           width: 250,
+          editor: false,
           renderer: (record) => {
-
             populateIcons(record);
             if (record.record._data.type == "Phase") {
               record.record.readOnly = true;
-              record.cellElement.style.margin = "";
+              record.cellElement.style.marginLeft = "7px";
+              return record.value;
+            } else{
+              record.cellElement.style.marginLeft = "0";
             }
             if (
               record.record._data.iconCls == "b-fa b-fa-arrow-right indentTrue"
@@ -681,12 +697,15 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
             }
             if (record.record._data.type == "Project") {
               record.record.readOnly = true;
-              // return record.value;
-              return record.record._data.name;
+              return record.record.name;
             } else {
+              if (record.record.type == "Task" && record.record.name != "Milestone Complete") {
+                record.cellElement.style.cursor = "pointer";
+              }
               return record.value;
             }
           },
+
         },
         {
           type: "predecessor",
@@ -742,7 +761,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
         },
         {
           type: "widget",
-          text: "Contractor",
+          text: "Vendor",
           draggable: false,
           width: 180,
           widgets: [
@@ -810,96 +829,65 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
         },
         {
           type: "action",
-          draggable: false,
-          // text    : 'Attach File',
-          width: 30,
-          actions: [
-            {
+        draggable: false,
+        // text    : 'Attach File',
+        width: 30,
+        actions: [
+        {
               cls: "b-fa b-fa-paperclip",
-              onClick: ({ record }) => {
-                if (
-                  record._data.type == "Task" &&
-                  record._data.id.indexOf("_generate") == -1 &&
-                  record._data.name != "Milestone Complete"
-                ) {
-                  this.showpopup = true;
-                  this.fileTaskId = record._data.id;
-                }
+        onClick: ({ record }) => {
+        if (
+        record._data.type == "Task" &&
+        record._data.id.indexOf("_generate") == -1 &&
+        record._data.name != "Milestone Complete"
+        ) {
+        this.showpopup = true;
+        this.fileTaskId = record._data.id;
+        }
               },
-              renderer: ({ action, record }) => {
-                if (
-                  record._data.type == "Task" &&
-                  record._data.id.indexOf("_generate") == -1 &&
-                  record._data.name != "Milestone Complete"
-                ) {
-                  return `<i class="b-action-item ${action.cls}" data-btip="Attach"></i>`;
-                } else {
-                  return `<i class="b-action-item ${action.cls}" data-btip="Attach" style="display:none;"></i>`;
-                }
+        renderer: ({ action, record }) => {
+        if (
+        record._data.type == "Task" &&
+        record._data.id.indexOf("_generate") == -1 &&
+        record._data.name != "Milestone Complete"
+        ) {
+        return `<i class="b-action-item ${action.cls}" data-btip="Attach"></i>`;
+        } else {
+        return `<i class="b-action-item ${action.cls}" data-btip="Attach" style="display:none;"></i>`;
+        }
               },
-            },
-          ],
+        },
+        ],
         },
         {
           type: "action",
-          draggable: false,
-          // text    : 'Files',
-          width: 30,
-          actions: [
-            {
+        draggable: false,
+        // text    : 'Files',
+        width: 30,
+        actions: [
+        {
               cls: "b-fa b-fa-file",
-              onClick: ({ record }) => {
-                this.showFileForRecord = record._data.id;
-                this.showFilePopup = true;
-              },
-              renderer: ({ action, record }) => {
-                if (
-                  record._data.type == "Task" &&
-                  record._data.id.indexOf("_generate") == -1 &&
-                  record._data.name != "Milestone Complete"
-                ) {
-                  if (this.storeRes["" + record._data.id]["fileLength"]) {
-                    return `<i style="font-size:1.1rem;color:green;" class="b-action-item ${action.cls}" data-btip="File"></i>`;
-                  }
-                  return `<i style="font-size:1.1rem;" class="b-action-item ${action.cls}" data-btip="File"></i>`;
-                  // return `<i class="b-action-item ${action.cls}" data-btip="File"></i>`;
-                } else {
-                  return `<i class="b-action-item ${action.cls}" data-btip="File" style="display:none;"></i>`;
-                }
-              },
-            },
-          ],
+        onClick: ({ record }) => {
+        this.showFileForRecord = record._data.id;
+        this.showFilePopup = true;
         },
-        {
-          type: "action",
-          draggable: false,
-          //text    : 'Go to Item',
-          width: 30,
-          actions: [
-            {
-              cls: "b-fa b-fa-external-link-alt",
-              onClick: ({ record }) => {
-                if (
-                  record._data.id.indexOf("_generate") == -1 &&
-                  record._data.name != "Milestone Complete"
-                ) {
-                  console.log("Action link", record._data.id);
-                  this.navigateToRecordViewPage(record._data.id);
-                }
+        renderer: ({ action, record }) => {
+        if (
+        record._data.type == "Task" &&
+        record._data.id.indexOf("_generate") == -1 &&
+        record._data.name != "Milestone Complete"
+        ) {
+        if (this.storeRes["" + record._data.id]["fileLength"]) {
+        return `<i style="font-size:1.1rem;color:green;" class="b-action-item ${action.cls}" data-btip="File"></i>`;
+        }
+                  return `<i style="font-size:1.1rem;" class="b-action-item ${action.cls}" data-btip="File"></i>`;
+        // return `<i class="b-action-item ${action.cls}" data-btip="File"></i>`;
+        } else {
+        return `<i class="b-action-item ${action.cls}" data-btip="File" style="display:none;"></i>`;
+        }
               },
-              renderer: ({ action, record }) => {
-                if (
-                  record._data.type == "Task" &&
-                  record._data.id.indexOf("_generate") == -1 &&
-                  record._data.name != "Milestone Complete"
-                ) {
-                  return `<i class="b-action-item ${action.cls}" data-btip="Go To Item"></i>`;
-                } else {
-                  return `<i class="b-action-item ${action.cls}" data-btip="Go To Item" style="display:none;"></i>`;
-                }
-              },
-            },
-          ],
+        },
+        ],
         },
       ],
 
@@ -915,6 +903,9 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
       columnLines: false,
 
       features: {
+        cellTooltip : {
+          tooltipRenderer : ({ record, column }) => record[column.field],
+        },
         dependencyEdit : true,
         // dependencies : {radius:10},
         rowReorder: false,
@@ -954,6 +945,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
                 endDate: {
                   weight: 100,
                 },
+                // colorField: true,
                 divider: false,
                 manuallyScheduledField : {
                   type     : 'checkbox',
@@ -1149,6 +1141,10 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
       }
       if (event.column.text == "Contractor") {
         this.taskRecordId = event.record.id;
+      }
+
+      if ((event.column.data.text == "Name") && (event.record.type == "Task") && (event.record.name != "Milestone Complete")) {
+        this.navigateToRecordViewPage(event.record.id);
       }
     });
 

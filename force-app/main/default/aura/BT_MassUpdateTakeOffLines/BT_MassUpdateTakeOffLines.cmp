@@ -46,7 +46,7 @@
     <aura:dependency resource="markup://force:navigateToRelatedList" type="EVENT" />
     <aura:dependency resource="markup://force:navigateToUrl" type="EVENT" />
     <aura:handler name="change" action="{!c.doInit}" value="{!v.pageReference}" />
-    <aura:handler event="lightning:tabFocused" action="{! c.refreshPage }" />
+    <!-- <aura:handler event="lightning:tabFocused" action="{! c.refreshPage }" /> -->
 
     <lightning:navigation aura:id="goToPrevious" />	
 
@@ -158,7 +158,7 @@
                     </h2>
                 </header>
                 <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
-                    <p>Are you sure you want to delete {!v.quoteLineName} ?</p>
+                    <center><p>Are you sure you want to delete {!v.quoteLineName} ?</p></center>
                 </div>
                 <footer class="slds-modal__footer">
                     <lightning:button variant="neutral" label="Cancel" title="Cancel" onclick="{! c.handleCancel }" />
@@ -175,12 +175,14 @@
                 <header class="slds-modal__header">
                     <lightning:buttonIcon iconName="utility:close" onclick="{!c.closeCancelModal}"
                         alternativeText="close" size="medium" variant="bare-inverse" class="slds-modal__close" />
-                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Cancel Changes
-                        Confirmation
-                    </h2>
+                    <center>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Cancel Changes
+                            Confirmation
+                        </h2>
+                    </center>
                 </header>
                 <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
-                    <p>Are you sure you want to Cancel?</p>
+                    <Center><p>Are you sure you want to Cancel?</p></Center>
                 </div>
                 <footer class="slds-modal__footer">
                     <lightning:button variant="neutral" label="No" title="No" onclick="{! c.closeCancelModal }" />

@@ -1,43 +1,64 @@
 ({
-    getTakeOffName: function (component, event, helper) {
-        var action = component.get("c.getName");
-        action.setParams({
-            recordId: component.get('v.recordId')
-        });
-        action.setCallback(this, function (response) {
-            component.set('v.takeoff', response.getReturnValue());
-            console.log('takeoff Name:::', response.getReturnValue());
-        })
-        $A.enqueueAction(action);
-    },
-    getTakeOffParentId: function (component, event, helper) {
-        var action = component.get("c.getParentId");
-        action.setParams({
-            recordId: component.get('v.recordId')
-        });
-        action.setCallback(this, function (response) {
-            component.set('v.parentId', response.getReturnValue());
-            console.log('parentId Id:::', response.getReturnValue());
-        })
-        $A.enqueueAction(action);
-    },
+    // getTakeOffName: function (component, event, helper) {
+    //     var action = component.get("c.getName");
+    //     action.setParams({
+    //         recordId: component.get('v.recordId')
+    //     });
+    //     action.setCallback(this, function (response) {
+    //         component.set('v.takeoff', response.getReturnValue());
+    //         console.log('takeoff Name:::', response.getReturnValue());
+    //     })
+    //     $A.enqueueAction(action);
+    // },
 
-    getTotalRecord: function (component, event, helper) {
+    // getTakeOffParentId: function (component, event, helper) {
+    //     var action = component.get("c.getParentId");
+    //     action.setParams({
+    //         recordId: component.get('v.recordId')
+    //     });
+    //     action.setCallback(this, function (response) {
+    //         component.set('v.parentId', response.getReturnValue());
+    //         console.log('parentId Id:::', response.getReturnValue());
+    //     })
+    //     $A.enqueueAction(action);
+    // },
+
+    // getTotalRecord: function (component, event, helper) {
+    //     if(component.get('v.recordId') != undefined){
+    //         var action = component.get("c.getCount");
+    //         action.setParams({
+    //             recordId: component.get('v.recordId'),
+    //         });
+    //         action.setCallback(this, function (response) {
+    //             if (response.getState() == 'SUCCESS' && response.getReturnValue()) {
+    //                 // debugger;
+    //                 component.set("v.TotalRecords", response.getReturnValue());
+    //                 console.log('Total record', response.getReturnValue());
+    //             }
+    //         })
+    //         $A.enqueueAction(action);
+    //     }
+       
+    // },
+
+    takeoffRelatedInfo: function (component, event, helper) {
+        console.log('in takeoffRelatedInfo');
         if(component.get('v.recordId') != undefined){
-            var action = component.get("c.getCount");
+            var action = component.get("c.getTakeoffInfo");
             action.setParams({
                 recordId: component.get('v.recordId'),
             });
             action.setCallback(this, function (response) {
-                if (response.getState() == 'SUCCESS' && response.getReturnValue()) {
-                    debugger;
-                    component.set("v.TotalRecords", response.getReturnValue());
-                    console.log('Total record', response.getReturnValue());
+                var result = response.getReturnValue();
+                if (result.status == 'SUCCESS') {
+                    // debugger;
+                    component.set("v.TotalRecords", result.count);
+                    component.set('v.parentId', result.parentId);
+                    component.set('v.takeoff', result.name);
                 }
             })
             $A.enqueueAction(action);
         }
-       
     },
 
     getTableFieldSet: function (component, event, helper) {
@@ -96,7 +117,7 @@
                     component.set("v.RecordEnd", (list.length + 3) * pageNumber);
                     component.set("v.TotalPages", Math.ceil(list.length / component.get('v.TotalRecords')));
                     component.set('v.isLoading', false);
-                    debugger;
+                    // debugger;
                     if (component.get('v.TotalRecords') < pageNumber * pageSize) {
                         component.set("v.isNextDisabled", true);
                     } else {
@@ -145,7 +166,7 @@
             }
         }*/
         component.set('v.listOfRecords', []); 
-        debugger;
+        // debugger;
         action.setParams({
             recordId: component.get('v.recordId'),
             updatedRecords: JSON.stringify(listOfRecords),

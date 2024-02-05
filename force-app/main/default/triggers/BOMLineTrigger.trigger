@@ -1,4 +1,4 @@
-trigger BOMLineTrigger on Select_Sheet__c (after insert,after update)
+trigger BOMLineTrigger on Select_Sheet__c (after insert,after update, after delete)
 {
     //Insert default for BOM cost adjustment table calculations
     if(Trigger.isAfter)
@@ -50,16 +50,24 @@ trigger BOMLineTrigger on Select_Sheet__c (after insert,after update)
             {
                 update bomToUpdate;
             }
+            BOMLineTriggerHelper.onAfterInsert(Trigger.new);
+            BOMLineTriggerHelper.updateStatusOnBOM(Trigger.new);
         }
     }
-  /*  if(Trigger.isAfter && Trigger.isUpdate){
-     system.debug('TakeOffLineTriggerHandler.isFirstTime'+TakeOffLineTriggerHandler.isFirstTime);
-        system.debug('TakeOffLineTriggerHandler.isFirstTime1'+TakeOffLineTriggerHandler.isFirstTime1);
-        if(TakeOffLineTriggerHandler.isFirstTime || TakeOffLineTriggerHandler.isFirstTime1 == true){
-            TakeOffLineTriggerHandler.isFirstTime = false;
-            TakeOffLineTriggerHandler.isFirstTime1 = false;
-            BOMLineTriggerHelper.afterUpdate(Trigger.oldMap, Trigger.newMap,Trigger.old, Trigger.new);
-        }
-      
-    }*/
+   if(Trigger.isAfter && Trigger.isUpdate){
+    //  system.debug('TakeOffLineTriggerHandler.isFirstTime'+TakeOffLineTriggerHandler.isFirstTime);
+    //     system.debug('TakeOffLineTriggerHandler.isFirstTime1'+TakeOffLineTriggerHandler.isFirstTime1);
+    //     if(TakeOffLineTriggerHandler.isFirstTime || TakeOffLineTriggerHandler.isFirstTime1 == true){
+    //         TakeOffLineTriggerHandler.isFirstTime = false;
+    //         TakeOffLineTriggerHandler.isFirstTime1 = false;
+    //         BOMLineTriggerHelper.afterUpdate(Trigger.oldMap, Trigger.newMap,Trigger.old, Trigger.new);
+    //     }
+        BOMLineTriggerHelper.onAfterUpdate(Trigger.new, Trigger.oldMap);
+        BOMLineTriggerHelper.updateStatusOnBOM(Trigger.new);
+    }
+
+    if(Trigger.isAfter && Trigger.isDelete){
+        BOMLineTriggerHelper.onAfterDelete(Trigger.old);
+        BOMLineTriggerHelper.updateStatusOnBOM(Trigger.old);
+    }
 }

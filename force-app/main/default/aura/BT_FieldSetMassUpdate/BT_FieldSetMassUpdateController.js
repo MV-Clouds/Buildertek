@@ -200,6 +200,8 @@
         var fieldName = event.getSource().get("v.name").split('-');
         var fieldLabel = fieldName[1];
         var inputField = event.getSource();
+        var ObjectName = component.get("v.ObjectName");
+        console.log('objcet : ', ObjectName ,' -- field : ', fieldLabel);
         // debugger;
         var selectedValue = event.getSource().get("v.value");
         var QuantityValue = component.get("v.QuantityValue");
@@ -227,7 +229,24 @@
                 inputField.setCustomValidity("");
             }
         }
-        component.set('v.record', record);
+        else if(fieldLabel == 'Name' && ObjectName == 'buildertek__Select_Sheet__c'){
+            if(selectedValue == null || selectedValue.trim() == '' ){
+                inputField.setCustomValidity(" Product Name Proposal is required to update records.");
+            }
+            else{
+                inputField.setCustomValidity("");
+            }
+        }
+        else if((fieldLabel == 'buildertek__Quantity__c' || fieldLabel == 'buildertek__BL_MARKUP__c' || fieldLabel == 'buildertek__BL_UNIT_COST__c' ) && ObjectName == 'buildertek__Select_Sheet__c'){
+                var compEvent = component.getEvent("changedValueEvent");
+                     compEvent.setParams({
+                        'changedValueByEnvent_Integer' : selectedValue,
+                        'changedFieldName' : fieldLabel,
+                        'index' : component.get("v.index"),
+                        'phaseIndex' : component.get("v.phaseIndex"),
+                    });  
+                compEvent.fire();
+        }
     },
     
     onPercentageChange: function (component, event, helper) {
@@ -239,6 +258,17 @@
         var record = component.get('v.record');
         record[fieldLabel] = selectedValue != undefined && selectedValue != '' && selectedValue != '' ? selectedValue.toFixed(2) : 0;
         component.set('v.record', record);
+
+        if(fieldLabel == 'buildertek__BL_MARKUP__c' && ObjectName == 'buildertek__Select_Sheet__c'){
+                var compEvent = component.getEvent("changedValueEvent");
+                     compEvent.setParams({
+                        'changedValueByEnvent_Integer' : selectedValue,
+                        'changedFieldName' : fieldLabel,
+                        'index' : component.get("v.index"),
+                        'phaseIndex' : component.get("v.phaseIndex"),
+                    });  
+                compEvent.fire();
+        }
     },
     
     onCheckBoxChange: function (component, event, helper) {

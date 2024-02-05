@@ -7,6 +7,7 @@
     <aura:attribute name="index" type="Integer" />
     <aura:attribute name="groupindex" type="Integer" />
     <aura:attribute name="phaseIndex" type="Integer" />
+    <aura:attribute name="phaseIndexValue" type="Integer" />
     <aura:attribute name="listOfTakeOffLines" type="Project_Takeoff_Lines__c[]" />
     <aura:attribute name="listOfToDoItems" type="To_Do_Items__c[]" />
     <aura:attribute name="listOfScheduleItems" type="Project_Task__c[]" />
@@ -16,6 +17,7 @@
     <aura:attribute name="_text_value" type="String" default="" />
 
     <aura:registerEvent name="onSelectEvt" type="c:BT_LookupEvent" />
+    <aura:registerEvent name="oClearRecordEvent" type="c:BT_LightningLookupEvent"/>
 
     <lightning:recordEditForm onload="{!c.setSelectedRecordId}" objectApiName="{!v.childObjectName}">
         
@@ -31,7 +33,7 @@
                 <aura:set attribute="else">
                     <div style = "padding-top: 0px !important; padding-bottom: 0px !important;">
                         <lightning:inputField aura:id="lookupField" fieldName="{!v.fieldName}" value="{!v.recordId}" 
-                                              onchange="{!c.fireOnSelectEvt}" class="slds-size--1-of-1" />  <!-- padding-bottom: 1.7rem !important; -->          
+                                              onchange="{!c.fireOnSelectEvt}" class="slds-size--1-of-1"  variant="label-hidden"/>  <!-- padding-bottom: 1.7rem !important; -->          
                     </div> 
                 </aura:set>
                 
