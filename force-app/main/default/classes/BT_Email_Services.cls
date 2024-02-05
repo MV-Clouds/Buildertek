@@ -87,7 +87,7 @@ global with sharing class BT_Email_Services implements Messaging.InboundEmailHan
                 String queryString;
                 String salesRepEmailId = '';
                 system.debug(objectAPI.toLowerCase());
-                if (objectAPI.toLowerCase() == 'buildertek__Quote__c'){
+                if (objectAPI.toLowerCase() == 'buildertek__quote__c'){
 
                     if(plainTextBody != null && plainTextBody.contains('Action:SavePDF;')){
                         pagereference pdf;
@@ -161,7 +161,7 @@ global with sharing class BT_Email_Services implements Messaging.InboundEmailHan
                     }
                 }
 
-                if (objectAPI.toLowerCase() == 'buildertek__RFQ_To_Vendor__c'){
+                if (objectAPI.toLowerCase() == 'buildertek__rfq_to_vendor__c'){
                     buildertek__RFQ_To_Vendor__c rfqtovendor;
                     if (Schema.sObjectType.buildertek__RFQ_to_vendor__c.fields.id.isAccessible() && Schema.sObjectType.buildertek__RFQ_To_Vendor__c.fields.buildertek__RFQ__c.isAccessible()){
                         rfqtovendor = [Select Id, buildertek__RFQ__c
@@ -215,7 +215,7 @@ global with sharing class BT_Email_Services implements Messaging.InboundEmailHan
 
                 }*/
                 // added by sai end
-                else if (objectAPI.toLowerCase() == 'buildertek__RFI_Response__c'){
+                else if (objectAPI.toLowerCase() == 'buildertek__rfi_response__c'){
                     queryString = 'select id,Name,buildertek__Responder__c,buildertek__Responder__r.Name,buildertek__Response__c,buildertek__Response_Date__c, '+
                                                               'buildertek__Answered__c,buildertek__RFI__c,CreatedById from buildertek__RFI_Response__c '+
                                                               'where Id =: relatedToId';
@@ -292,7 +292,7 @@ global with sharing class BT_Email_Services implements Messaging.InboundEmailHan
                     EmailMsg.TextBody = plainTextBody;
                     //EmailMsg.ToAddress = toAddresses != null?toAddresses[0]:null;
                     //EmailMsg.ToAddress = (String)obj.getSObject('Owner').get('Email');
-                    if (objectAPI.toLowerCase() == 'buildertek__RFI_Response__c'){
+                    if (objectAPI.toLowerCase() == 'buildertek__rfi_response__c'){
                         EmailMsg.ToAddress = toAddresses[0];
                     }else{
                         EmailMsg.ToAddress = (String)obj.getSObject('Owner').get('Email');
@@ -334,7 +334,7 @@ global with sharing class BT_Email_Services implements Messaging.InboundEmailHan
                     }
 
                     //EmailMsg.ToAddress = toAddresses != null?toAddresses[0]:null;
-                    if (objectAPI.toLowerCase() == 'buildertek__RFI_Response__c'){
+                    if (objectAPI.toLowerCase() == 'buildertek__rfi_response__c'){
                         EmailMsg.ToAddress = null;
                     }else{
                         EmailMsg.ToAddress = (String)obj.getSObject('Owner').get('Email');
@@ -361,14 +361,14 @@ global with sharing class BT_Email_Services implements Messaging.InboundEmailHan
                     EmailMessageRelation emr = new EmailMessageRelation();
                     emr = new EmailMessageRelation();
                     emr.emailMessageId = EmailMsg.id;
-                    if (objectAPI.toLowerCase() == 'buildertek__RFI_Response__c'){
+                    if (objectAPI.toLowerCase() == 'buildertek__rfi_response__c'){
                         emr.relationId = null;
                     }else{
                         system.debug('(String)obj.getSObject%%%%%%%%%%%%%%');
                         emr.relationId = String.valueOf(obj.get('OwnerId')); // user id / contact Id of the sender
                     }
                     emr.relationType = 'ToAddress';
-                    if (objectAPI.toLowerCase() == 'buildertek__RFI_Response__c'){
+                    if (objectAPI.toLowerCase() == 'buildertek__rfi_response__c'){
                         emr.relationAddress = toAddresses[0];
                     }else{
                         system.debug('(String)obj.getSObject'+(String)obj.getSObject('Owner').get('Email'));
@@ -378,7 +378,7 @@ global with sharing class BT_Email_Services implements Messaging.InboundEmailHan
                    insert emrs;
                 }
                 system.debug('objectAPI.toLowerCase()'+objectAPI.toLowerCase());
-                if (objectAPI.toLowerCase() == 'buildertek__Project__c'){
+                if (objectAPI.toLowerCase() == 'buildertek__project__c'){
                     buildertek__Project__c proRec = new buildertek__Project__c();
                     proRec = [Select Id,buildertek__Sender_Email_Response__c
                                  from buildertek__Project__c
@@ -404,8 +404,8 @@ global with sharing class BT_Email_Services implements Messaging.InboundEmailHan
                         }
                     }
                     List<Attachment> attachmetns = new List<Attachment>();
-                    List<ContentVersion> contentVersionToInsert = new List<ContentVersion>();
                     if (email != null && email.binaryAttachments != null){
+                        List<ContentVersion> contentVersionToInsert = new List<ContentVersion>();
                         for (Messaging.InboundEmail.BinaryAttachment bAttachment : email.binaryAttachments){
                             ContentVersion con= new contentversion();
                             con.ContentLocation = 'S';
@@ -480,8 +480,8 @@ global with sharing class BT_Email_Services implements Messaging.InboundEmailHan
                     }
                     system.debug('account');
                     List<Attachment> attachmetns = new List<Attachment>();
-                    List<ContentVersion> contentVersionToInsert = new List<ContentVersion>();
                     if (email != null && email.binaryAttachments != null){
+                        List<ContentVersion> contentVersionToInsert = new List<ContentVersion>();
                         for (Messaging.InboundEmail.BinaryAttachment bAttachment : email.binaryAttachments){
                             ContentVersion con= new contentversion();
                             con.ContentLocation = 'S';
@@ -533,7 +533,7 @@ global with sharing class BT_Email_Services implements Messaging.InboundEmailHan
                         insert attachmetns;
                     }
                 }
-                if (objectAPI.toLowerCase() == 'buildertek__Contract__c'){
+                if (objectAPI.toLowerCase() == 'buildertek__contract__c'){
                     buildertek__Contract__c accRec = new buildertek__Contract__c();
                     accRec = [Select Id,buildertek__Sender_Email_Response__c
                                  from buildertek__Contract__c
@@ -541,8 +541,8 @@ global with sharing class BT_Email_Services implements Messaging.InboundEmailHan
                     // system.debug(invoiceAr.buildertek__Sender_Email_Response__c);
                      List<Messaging.Emailfileattachment> fileAttachments = new List<Messaging.Emailfileattachment>();
                     List<Attachment> attachmetns = new List<Attachment>();
-                    List<ContentVersion> contentVersionToInsert = new List<ContentVersion>();
                     if (email != null && email.binaryAttachments != null){
+                        List<ContentVersion> contentVersionToInsert = new List<ContentVersion>();
                         for (Messaging.InboundEmail.BinaryAttachment bAttachment : email.binaryAttachments){
                             ContentVersion con= new contentversion();
                             con.ContentLocation = 'S';
@@ -818,7 +818,7 @@ global with sharing class BT_Email_Services implements Messaging.InboundEmailHan
                 }
 
                 try{
-                    if (objectAPI.toLowerCase() == 'buildertek__RFI__c'){
+                    if (objectAPI.toLowerCase() == 'buildertek__rfi__c'){
                         boolean isusingcommunities = false;
                         boolean isusingemail = false;
                           buildertek__RFI_Settings__c rfiSettings = new buildertek__RFI_Settings__c();
@@ -967,9 +967,9 @@ global with sharing class BT_Email_Services implements Messaging.InboundEmailHan
 
                             List<Attachment> attachmentList = new List<Attachment>();
                             List<Attachment> attachmetns = new List<Attachment>();
-                            List<ContentVersion> contentVersionToInsert = new List<ContentVersion>();
                             List<ContentDocumentLink> cdlList = new List<ContentDocumentLink>();
                             if (email.textAttachments != null){
+                                List<ContentVersion> contentVersionToInsert = new List<ContentVersion>();
                                 // Save attachments, if any
                                 for (Messaging.Inboundemail.TextAttachment tAttachment : email.textAttachments){
                                     system.debug('RFI');
@@ -1000,7 +1000,7 @@ global with sharing class BT_Email_Services implements Messaging.InboundEmailHan
                                 }
                             }
                             if (email.binaryAttachments != null){
-
+                                List<ContentVersion> contentVersionToInsert = new List<ContentVersion>();
                                 for (Messaging.Inboundemail.BinaryAttachment bAttachment : email.binaryAttachments){
                                     system.debug('RFIbAttachment');
                                     ContentVersion con= new contentversion();
@@ -1130,9 +1130,9 @@ global with sharing class BT_Email_Services implements Messaging.InboundEmailHan
 
                             List<Attachment> attachmentList = new List<Attachment>();
                             List<Attachment> attachmetns = new List<Attachment>();
-                            List<ContentVersion> contentVersionToInsert = new List<ContentVersion>();
                             List<ContentDocumentLink> cdlList = new List<ContentDocumentLink>();
                             if (email.textAttachments != null){
+                                List<ContentVersion> contentVersionToInsert = new List<ContentVersion>();
                                 // Save attachments, if any
                                 for (Messaging.Inboundemail.TextAttachment tAttachment : email.textAttachments){
                                     system.debug('RFI');
@@ -1163,7 +1163,7 @@ global with sharing class BT_Email_Services implements Messaging.InboundEmailHan
                                 }
                             }
                             if (email.binaryAttachments != null){
-
+                                List<ContentVersion> contentVersionToInsert = new List<ContentVersion>();
                                 for (Messaging.Inboundemail.BinaryAttachment bAttachment : email.binaryAttachments){
                                     system.debug('RFIbAttachment');
                                     ContentVersion con= new contentversion();
@@ -1213,9 +1213,9 @@ global with sharing class BT_Email_Services implements Messaging.InboundEmailHan
                             }
                             system.debug('sObj --> ' + rfi);
                             List<Attachment> attachmetns = new List<Attachment>();
-                            List<ContentVersion> contentVersionToInsert = new List<ContentVersion>();
                             List<ContentDocumentLink> cdlList = new List<ContentDocumentLink>();
                             if (email.textAttachments != null){
+                                List<ContentVersion> contentVersionToInsert = new List<ContentVersion>();
                                 // Save attachments, if any
                                 for (Messaging.Inboundemail.TextAttachment tAttachment : email.textAttachments){
                                     system.debug('RFI');
@@ -1251,7 +1251,7 @@ global with sharing class BT_Email_Services implements Messaging.InboundEmailHan
                                 }
                             }
                             if (email.binaryAttachments != null){
-
+                                List<ContentVersion> contentVersionToInsert = new List<ContentVersion>();
                                 for (Messaging.Inboundemail.BinaryAttachment bAttachment : email.binaryAttachments){
                                     system.debug('RFIbAttachment');
                                     /*Attachment attachment = new Attachment();
@@ -1300,12 +1300,12 @@ global with sharing class BT_Email_Services implements Messaging.InboundEmailHan
                             insert attachmentList;
                         }*/
                     }
-                } catch (Exception exp){
-
+                } catch (Exception e){
+                   System.debug('Error in Create_inoice_Payment_in_QB ..' + e.getMessage() + '\n' + e +'\n Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
                 }
 
                  try{
-                    if (objectAPI.toLowerCase() == 'buildertek__RFI_Response__c'){
+                    if (objectAPI.toLowerCase() == 'buildertek__rfi_response__c'){
                         system.debug('buildertek__RFI_Response__c');
                          boolean isusingcommunities = false;
                           buildertek__RFI_Settings__c rfiSettings = new buildertek__RFI_Settings__c();
@@ -1441,9 +1441,9 @@ global with sharing class BT_Email_Services implements Messaging.InboundEmailHan
 
                             List<Attachment> attachmentList = new List<Attachment>();
                             List<Attachment> attachmetns = new List<Attachment>();
-                            List<ContentVersion> contentVersionToInsert = new List<ContentVersion>();
                             List<ContentDocumentLink> cdlList = new List<ContentDocumentLink>();
                             if (email.textAttachments != null){
+                                List<ContentVersion> contentVersionToInsert = new List<ContentVersion>();
                                 // Save attachments, if any
                                 for (Messaging.Inboundemail.TextAttachment tAttachment : email.textAttachments){
                                     system.debug('RFI');
@@ -1474,7 +1474,7 @@ global with sharing class BT_Email_Services implements Messaging.InboundEmailHan
                                 }
                             }
                             if (email.binaryAttachments != null){
-
+                                List<ContentVersion> contentVersionToInsert = new List<ContentVersion>();
                                 for (Messaging.Inboundemail.BinaryAttachment bAttachment : email.binaryAttachments){
                                     system.debug('RFIbAttachment');
                                     ContentVersion con= new contentversion();
@@ -1516,16 +1516,16 @@ global with sharing class BT_Email_Services implements Messaging.InboundEmailHan
                         }else{
 
                             List<Attachment> attachmentList = new List<Attachment>();
-                            String RFIQuery = 'Select Id, Name, buildertek__Status__c from ' + objectAPI + ' where id =:relatedToId';
+                            String RFIQuery = 'Select Id, Name from ' + objectAPI + ' where id =:relatedToId';
                             sObject rfi;
                             if (Schema.sObjectType.buildertek__RFI__c.fields.Id.isAccessible() && Schema.sObjectType.buildertek__RFI__c.fields.Name.isAccessible()){
                                 rfi = database.query(RFIQuery);
                             }
                             system.debug('sObj --> ' + rfi);
                             List<Attachment> attachmetns = new List<Attachment>();
-                            List<ContentVersion> contentVersionToInsert = new List<ContentVersion>();
                             List<ContentDocumentLink> cdlList = new List<ContentDocumentLink>();
                             if (email.textAttachments != null){
+                                List<ContentVersion> contentVersionToInsert = new List<ContentVersion>();
                                 // Save attachments, if any
                                 for (Messaging.Inboundemail.TextAttachment tAttachment : email.textAttachments){
                                     system.debug('RFI');
@@ -1561,7 +1561,7 @@ global with sharing class BT_Email_Services implements Messaging.InboundEmailHan
                                 }
                             }
                             if (email.binaryAttachments != null){
-
+                                List<ContentVersion> contentVersionToInsert = new List<ContentVersion>();
                                 for (Messaging.Inboundemail.BinaryAttachment bAttachment : email.binaryAttachments){
                                     system.debug('RFIbAttachment');
                                     /*Attachment attachment = new Attachment();
@@ -1610,13 +1610,13 @@ global with sharing class BT_Email_Services implements Messaging.InboundEmailHan
                             insert attachmentList;
                         }*/
                     }
-                } catch (Exception exp){
-
+                } catch (Exception e){
+                    System.debug('Error in ..' + e.getMessage() + '\n' + e +'\n Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
                 }
 
 
                 try{
-                    if (objectAPI.toLowerCase() == 'buildertek__Warranty__c'){
+                    if (objectAPI.toLowerCase() == 'buildertek__warranty__c'){
                         buildertek__Warranty__c warRec = new buildertek__Warranty__c();
                         warRec = [Select Id,buildertek__Sender_Email_Response__c
                                      from buildertek__Warranty__c
@@ -1677,7 +1677,7 @@ global with sharing class BT_Email_Services implements Messaging.InboundEmailHan
 
                 try{
                     List<Attachment> attachmentList = new List<Attachment>();
-                    if (objectAPI.toLowerCase() == 'buildertek__Punch_List__c'){
+                    if (objectAPI.toLowerCase() == 'buildertek__punch_list__c'){
                         String punchListQuery = 'Select Id, Name, buildertek__Vendor_Contact__c,buildertek__Vendor_Contact__r.Email from ' + objectAPI + ' where id =:relatedToId';
                         sObject punchListObj;
                         /*if(Schema.sObjectType.buildertek__Punch_List__c.fields.Id.isAccessible()
