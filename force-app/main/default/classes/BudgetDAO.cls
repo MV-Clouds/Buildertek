@@ -900,7 +900,7 @@ return getBudgetGroupDetails(budgetId, groupId, 50, 50)[0];
         }
         soql = soql + ' FROM buildertek__Budget_Item__c';
 
-        soql = soql + ' WHERE buildertek__budget__c =: budgetId ORDER BY buildertek__Group__r.Name ASC limit ' + recordToDisply + ' OFFSET ' + offset;
+        soql = soql + ' WHERE buildertek__budget__c =: budgetId ORDER BY buildertek__Group__r.buildertek__Sorting_Id__c NULLS Last, buildertek__Group__r.Name,buildertek__Sort_Id__c ASC NULLS Last, Name ASC limit ' + recordToDisply + ' OFFSET ' + offset;
 
         List<buildertek__Budget_Item__c> budgetItemList;
 
@@ -944,11 +944,11 @@ return getBudgetGroupDetails(budgetId, groupId, 50, 50)[0];
 
         if (groupId != null){
 
-            budgetGroup = Database.query('Select Id, Name from buildertek__Budget_Line_Group__c where Id =: groupId ORDER BY Name ASC');
+            budgetGroup = Database.query('Select Id, Name,buildertek__Sorting_Id__c  from buildertek__Budget_Line_Group__c where Id =: groupId ORDER BY buildertek__Sorting_Id__c NULLS Last, Name ASC');
 
         } else{
 
-            budgetGroup = Database.query('Select Id, Name from buildertek__Budget_Line_Group__c where Id IN: groupIdSet ORDER BY Name ASC');
+            budgetGroup = Database.query('Select Id, Name,buildertek__Sorting_Id__c  from buildertek__Budget_Line_Group__c where Id IN: groupIdSet ORDER BY buildertek__Sorting_Id__c NULLS Last, Name ASC');
 
         }
 
@@ -1380,7 +1380,7 @@ insert s;*/
         for (string sumOfFields : currencyFields){
             queryFields += ', ' + sumOfFields.trim();
         }
-        myquery = 'select buildertek__Group__c ' + queryFields + ' from buildertek__Budget_Item__c where buildertek__Budget__c =: recordId Order by buildertek__Group__r.Name, Name ASC nulls first limit ' + recordToDisply + ' OFFSET ' + offset;
+        myquery = 'select buildertek__Group__c ' + queryFields + ' from buildertek__Budget_Item__c where buildertek__Budget__c =: recordId Order by buildertek__Group__r.buildertek__Sorting_Id__c NULLS Last,buildertek__Group__r.Name,buildertek__Sort_Id__c ASC NULLS Last, Name ASC limit ' + recordToDisply + ' OFFSET ' + offset;
       //  myquery = 'select buildertek__Group__c ' + queryFields + ' from buildertek__Budget_Item__c where buildertek__Budget__c =: recordId Order by buildertek__Group_Name__c DESC limit ' + recordToDisply + ' OFFSET ' + offset;
 
        // myquery = 'select buildertek__Cost_Code_Name__c ' + queryFields + ' from buildertek__Budget_Item__c where buildertek__Budget__c =: recordId Order by buildertek__Cost_Code_Name__c ASC limit ' + recordToDisply + ' OFFSET ' + offset;
@@ -1400,7 +1400,7 @@ insert s;*/
         myqueries = 'select buildertek__Group__c ' + aggregateFields + ' from buildertek__Budget_Item__c where Id IN: BudgetItemList Group By buildertek__Group__c';
         childObjGroup = database.query(myqueries);
 
-        string Childs = 'select Id, Name from buildertek__Budget_Line_Group__c where id IN: groupIds order by Name ASC';
+        string Childs = 'select Id, Name from buildertek__Budget_Line_Group__c where id IN: groupIds order by buildertek__Sorting_Id__c NULLS Last,Name ASC';
         List<buildertek__Budget_Line_Group__c> childObjGroups;
         childObjGroups = database.query(Childs);
 
@@ -1471,9 +1471,9 @@ insert s;*/
         String myqueries = '';
       string myquerie = '';
                 if(adminInterfaceNodeConfigurations.buildertek__Budget_Grouping_Data__c == 'Group By Category'){
-                    myqueries = 'select buildertek__Budget__c  ' + aggregateFields + ' from buildertek__Budget_Item__c where buildertek__Budget__c =: recordId ORDER BY buildertek__Group__r.buildertek__Sorting_Id__c ASC NULLS LAST,buildertek__Group__r.Name ASC, Name Asc limit ' + recordToDisply + ' OFFSET ' + offset;
+                    myqueries = 'select buildertek__Budget__c,buildertek__Group__r.buildertek__Sorting_Id__c  ' + aggregateFields + ' from buildertek__Budget_Item__c where buildertek__Budget__c =: recordId ORDER BY buildertek__Group__r.buildertek__Sorting_Id__c NULLS LAST,buildertek__Group__r.Name,buildertek__Sort_Id__c ASC NULLS Last, Name Asc limit ' + recordToDisply + ' OFFSET ' + offset;
                 }else{
-                    myqueries = 'select buildertek__Budget__c  ' + aggregateFields + ' from buildertek__Budget_Item__c where buildertek__Budget__c =: recordId ORDER BY buildertek__CostCodeDivision__c ASC NULLS LAST, Name Asc limit ' + recordToDisply + ' OFFSET ' + offset;
+                    myqueries = 'select Id,Name,buildertek__Budget__c ,buildertek__Group__r.buildertek__Sorting_Id__c ' + aggregateFields + ' from buildertek__Budget_Item__c where buildertek__Budget__c =: recordId ORDER BY buildertek__CostCodeDivision__c ASC NULLS LAST,buildertek__Sort_Id__c ASC NULLS Last, Name Asc limit ' + recordToDisply + ' OFFSET ' + offset;
                 }
                // myquerie = 'select buildertek__Budget__c  ' + aggregateFields + ' from buildertek__Budget_Item__c where buildertek__Budget__c =: recordId and buildertek__Group_Name__c = No Grouping Order By buildertek__Group_Name__c ASC limit ' + recordToDisply + ' OFFSET ' + offset;
 
