@@ -3251,6 +3251,7 @@ console.log(document.getElementsByClassName(className)[0]);
                 }
             } else if(component.get("v.firstGrouping")){
                 for (let i = 1; i <= group1.length; i++) {
+                    console.log("group1 values:",group1);
                     let spanGroupId = i;
                     helper.expandRecordsHelper(component, event, helper, spanGroupId);
                 }
