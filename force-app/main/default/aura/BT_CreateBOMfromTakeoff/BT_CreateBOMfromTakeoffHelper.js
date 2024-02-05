@@ -11,12 +11,12 @@
 
                 if(state === "SUCCESS"){
                     if(resultValue.returnState == 'success'){
+                        $A.get("e.force:closeQuickAction").fire();
                         component.find('notifLib').showNotice({
                             "variant": "success",
                             "header": "Success",
                             "message": "BOM Successfully Created.",
                             closeCallback: function() {
-                                $A.get('e.force:refreshView').fire();
                                 var event = $A.get('e.force:navigateToSObject' );
                                 event.setParams({
                                     'recordId' : resultValue.CreatedrecordId
