@@ -447,7 +447,7 @@ export default class importScheduleLine extends LightningElement {
                     } else if (result == 'Error') {
                         const toastEvent = new ShowToastEvent({
                             title: "Error",
-                            message: `There was an issue trying to import your file. Please review your file and try again. If the problem persists, please contact your administrator for assistance.`,
+                            message: `There was an issue trying to import your file. Please review your file and try again. If this problem persists, please contact your Administrator for assistance.`,
                             duration: "5000",
                             key: "info_alt",
                             variant: "error",
