@@ -187,7 +187,7 @@ public class createPOfromBOM_controller {
                 }
                 
                 List<buildertek__Project_Task__c> ScheduleItems = [SELECT Id, Name, buildertek__Schedule__c,buildertek__Contractor__c, buildertek__Cost_Code__c,buildertek__Phase__c, buildertek__Completion__c,buildertek__Start__c,buildertek__Finish__c
-                                                                    FROM buildertek__Project_Task__c WHERE buildertek__Schedule__c =: scheduleId AND buildertek__Cost_Code__c != null AND buildertek__Phase__c != null ORDER BY CreatedDate DESC];
+                                                                    FROM buildertek__Project_Task__c WHERE buildertek__Schedule__c =: scheduleId ORDER BY CreatedDate DESC];
                                                                                 
                 if(ScheduleItems.size() > 0){
                     List<buildertek__Project_Task__c> matchedSchItems = new List<buildertek__Project_Task__c>();
