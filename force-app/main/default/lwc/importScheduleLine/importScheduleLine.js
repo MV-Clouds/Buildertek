@@ -87,6 +87,7 @@ export default class importScheduleLine extends LightningElement {
             "Lag",
             "Cost Code",
             "Trade Type",
+            "Vendor",
         ];
         const columnDivider = ",";
         let csvStringResult = "";
@@ -125,7 +126,8 @@ export default class importScheduleLine extends LightningElement {
                 headers[8] !== "Notes" ||
                 headers[9] !== "Lag" ||
                 headers[10] !== "Cost Code" ||
-                headers[11] !== "Trade Type\r" 
+                headers[11] !== "Trade Type" ||
+                headers[12] !== "Vendor\r" 
             ) {
                 this.Spinner = false;
                 this.isErrorOccured = true;
@@ -445,7 +447,7 @@ export default class importScheduleLine extends LightningElement {
                     } else if (result == 'Error') {
                         const toastEvent = new ShowToastEvent({
                             title: "Error",
-                            message: `something went wrong`,
+                            message: `There was an issue trying to import your file. Please review your file and try again. If the problem persists, please contact your administrator for assistance.`,
                             duration: "5000",
                             key: "info_alt",
                             variant: "error",
