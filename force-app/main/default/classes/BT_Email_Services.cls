@@ -51,6 +51,10 @@ global with sharing class BT_Email_Services implements Messaging.InboundEmailHan
 
         } catch (exception ex){
             system.debug(ex);
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
         }
 
         try{
@@ -62,6 +66,10 @@ global with sharing class BT_Email_Services implements Messaging.InboundEmailHan
 
         } catch (exception ex){
             system.debug(ex);
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
         }
         string emailaddress;
         list<OrgWideEmailAddress> owea = new list<OrgWideEmailAddress>();
@@ -743,6 +751,10 @@ global with sharing class BT_Email_Services implements Messaging.InboundEmailHan
                     }
                 } catch (exception ex){
                     system.debug('----fail---' + ex);
+                    List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+                    if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                        BT_ExceptionHandler.Store_Exception(ex);
+                    }
                     throw ex;
                 }
 
@@ -813,8 +825,11 @@ global with sharing class BT_Email_Services implements Messaging.InboundEmailHan
                             insert attachmentList;
                         }
                     }
-                } catch (Exception exp){
-
+                } catch (Exception ex){
+                    List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+                    if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                        BT_ExceptionHandler.Store_Exception(ex);
+                    }
                 }
 
                 try{
@@ -1300,8 +1315,12 @@ global with sharing class BT_Email_Services implements Messaging.InboundEmailHan
                             insert attachmentList;
                         }*/
                     }
-                } catch (Exception e){
-                   System.debug('Error in Create_inoice_Payment_in_QB ..' + e.getMessage() + '\n' + e +'\n Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
+                } catch (Exception ex){
+                    List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+                    if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                        BT_ExceptionHandler.Store_Exception(ex);
+                    }
+                    System.debug('Error in Create_inoice_Payment_in_QB ..' + ex.getMessage() + '\n' + ex +'\n Exception line no : '+ ex.getLineNumber() +'--->'+ ex.getStackTraceString());
                 }
 
                  try{
@@ -1610,8 +1629,12 @@ global with sharing class BT_Email_Services implements Messaging.InboundEmailHan
                             insert attachmentList;
                         }*/
                     }
-                } catch (Exception e){
-                    System.debug('Error in ..' + e.getMessage() + '\n' + e +'\n Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
+                } catch (Exception ex){
+                    List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+                    if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                        BT_ExceptionHandler.Store_Exception(ex);
+                    }
+                    System.debug('Error in ..' + ex.getMessage() + '\n' + ex +'\n Exception line no : '+ ex.getLineNumber() +'--->'+ ex.getStackTraceString());
                 }
 
 
@@ -1670,8 +1693,11 @@ global with sharing class BT_Email_Services implements Messaging.InboundEmailHan
                             insert attachmentList;
                         }
                     }
-                } catch (Exception exp){
-
+                } catch (Exception ex){
+                    List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+                    if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                        BT_ExceptionHandler.Store_Exception(ex);
+                    }
                 }
 
 
@@ -1735,8 +1761,11 @@ global with sharing class BT_Email_Services implements Messaging.InboundEmailHan
                         }
 
                     }
-                } catch (Exception exp){
-
+                } catch (Exception ex){
+                    List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+                    if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                        BT_ExceptionHandler.Store_Exception(ex);
+                    }
                 }
                 result.success = true;
             }
