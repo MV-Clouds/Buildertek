@@ -6,7 +6,7 @@ public without sharing class BT_CreateBOMfromTakeoffController {
         try {
             buildertek__Project_Takeoff__c Takeoff = [SELECT Id, Name, buildertek__Name__c,buildertek__Project__c FROM buildertek__Project_Takeoff__c WHERE Id =: TakeoffId LIMIT 1];
 
-            list<buildertek__Project_Takeoff_Lines__c> takoffLineList = [SELECT ID, Name,buildertek__Project_Takeoff__c, buildertek__Product__c, buildertek__Price_Book__c,buildertek__Product__r.buildertek__Vendor__c, buildertek__Quantity__c, buildertek__Cost_Code__c, buildertek__Build_Phase__c,buildertek__Description__c, buildertek__Product__r.Name,buildertek__UOM_PL__c,buildertek__Vendor__c FROM buildertek__Project_Takeoff_Lines__c WHERE buildertek__Project_Takeoff__c =: TakeoffId];
+            list<buildertek__Project_Takeoff_Lines__c> takoffLineList = [SELECT ID, Name,buildertek__Project_Takeoff__c, buildertek__Product__c, buildertek__Price_Book__c,buildertek__Product__r.buildertek__Vendor__c, buildertek__Quantity__c, buildertek__Cost_Code__c, buildertek__Build_Phase__c,buildertek__Description__c, buildertek__Product__r.Name,buildertek__UOM_PL__c,buildertek__Vendor__c,buildertek__Categories__c,buildertek__Sort_Id__c FROM buildertek__Project_Takeoff_Lines__c WHERE buildertek__Project_Takeoff__c =: TakeoffId];
             if(takoffLineList.size() > 0){
 
                 buildertek__Project_Selection_Sheet_Takeoff__c BOMtoCreate = new buildertek__Project_Selection_Sheet_Takeoff__c();
@@ -50,7 +50,7 @@ public without sharing class BT_CreateBOMfromTakeoffController {
                         if(tkoffline.buildertek__Product__c == Entry_ProductId && tkoffline.buildertek__Price_Book__c == Entry_PricebookId){
                             system.debug('Matched Entry >> Product : ' + ProPric_Entry.get(Match_Key).Name +' Pricebook : '+ ProPric_Entry.get(Match_Key).Pricebook2.Name);
                             takeOfflineId_PricebookEntry.put(tkoffline.Id, ProPric_Entry.get(Match_Key));
-                            takeOfflineId_BOMlineNametoBe.put(tkoffline.Id, tkoffline.buildertek__Description__c);
+                            takeOfflineId_BOMlineNametoBe.put(tkoffline.Id, tkoffline.buildertek__Product__r.Name);
                         }
                         else{
                             System.debug('Not Entry Matched');
@@ -131,7 +131,9 @@ public without sharing class BT_CreateBOMfromTakeoffController {
                     BOMlineToCreate.buildertek__Build_Phase__c = tkoffline.buildertek__Build_Phase__c;
                     BOMlineToCreate.buildertek__Selection_Sheet_Takeoff__c = BOMtoCreate.Id;
                     BOMlineToCreate.buildertek__Takeoff_Line__c = tkoffline.Id;
-                    BOMlineToCreate.buildertek__UOM_Picklist__c = tkoffline.buildertek__UOM_PL__c;
+                    BOMlineToCreate.buildertek__UOM_Picklist__c = tkoffline.buildertek__UOM_PL__c;  
+                    BOMlineToCreate.buildertek__Sort_Id__c = tkoffline.buildertek__Sort_Id__c;
+                    BOMlineToCreate.buildertek__Category__c = tkoffline.buildertek__Categories__c;
 
                     BOMlinesToCreateList.add(BOMlineToCreate);
                 }
