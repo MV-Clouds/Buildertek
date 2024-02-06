@@ -159,8 +159,26 @@ public class MassUpdateTakeOffLines{
         try{
             if (String.isNotBlank(recordId)){
                 Integer offset = (pageNumber - 1) * pageSize;
-                List<String> fieldNames = (List<String>)JSON.deserialize(fieldNameJson, List<String>.class);
-                Set<String> setFieldNames = new Set<String>();
+
+                String Fieldset = getFieldSet();
+                List<FieldSetObject> FieldSetList = (List<FieldSetObject>) JSON.deserialize(Fieldset, List<FieldSetObject>.class);
+                List<String> setfieldNames = new List<String>();
+
+                for (Integer c = 0; c < FieldSetList.size(); c++) {
+                        setfieldNames.add(FieldSetList[c].name);
+                        if (FieldSetList[c].type == 'REFERENCE') {
+                            if (FieldSetList[c].name.indexOf('__c') == -1) {
+                                setfieldNames.add(FieldSetList[c].name.substring(0, FieldSetList[c].name.indexOf('Id')) + '.Name');
+                            } else {
+                                setfieldNames.add(FieldSetList[c].name.substring(0, FieldSetList[c].name.indexOf('__c')) + '__r.Name');
+                            }
+                        }
+                }
+                system.debug('setfieldNames : ' + setfieldNames);
+
+                List<String> fieldNames = setfieldNames;
+                // List<String> fieldNames = (List<String>)JSON.deserialize(fieldNameJson, List<String>.class);
+                // Set<String> setFieldNames = new Set<String>();
                 String query = 'SELECT ' + String.join(fieldNames, ',')+' FROM buildertek__Project_Takeoff_Lines__c WHERE buildertek__Project_Takeoff__c=: recordId';
                 if (String.isNotBlank(productType)){
                     productType = '%' + productType + '%';
@@ -178,7 +196,7 @@ public class MassUpdateTakeOffLines{
                     searchTradeType = '%' + searchTradeType + '%';
                     query += ' AND buildertek__Trade_Type__r.Name LIKE : searchTradeType';
                 }
-                query += ' ORDER BY Name ASC NULLS LAST';
+                query += ' ORDER BY Name DESC NULLS LAST';
                 query += ' LIMIT : pageSize OFFSET : offset';
 
                 for (sObject s : Database.query(query)){
@@ -186,8 +204,10 @@ public class MassUpdateTakeOffLines{
                 }
                 if (lstResult.size() > 0){
                     result = JSON.serialize(lstResult);
+                    system.debug('return takeoff lines : '+ lstResult.size());
                     return result;
                 }
+                return result;
             }
         } catch (Exception e){
             List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
@@ -229,11 +249,13 @@ public class MassUpdateTakeOffLines{
                 for (buildertek__Project_Takeoff_Lines__c item : items){
                     if (item.Id == null){
                         item.buildertek__Project_Takeoff__c = recordId;
+                        system.debug('id Null : ' + item);
                     }
                 }
                 if (items.size() > 0){
                     upsert items;
                 }
+                system.debug('item size : ' + items.size());
                 return 'Success';
                 //return getRecords(recordId, fieldSetName, pageNumber, pageSize, searchName, searchPlan, searchCategory, searchTradeType);
             }
@@ -284,5 +306,60 @@ public class MassUpdateTakeOffLines{
         }else{
             return null;
         }  
+    }
+
+    @AuraEnabled
+    public static Map<Id, Id> get_ProductPhase_BuildPhase(String takeOffId){
+        try {
+            List<buildertek__Quote_Line_Group__c> ProductPhase = [SELECT Id, Name FROM buildertek__Quote_Line_Group__c];
+            List<buildertek__Build_Phase__c> BuildPhases = [SELECT Id, Name FROM buildertek__Build_Phase__c];
+
+            // Query Build Phase where name == No Grouping to assing this build phase when name doesn't match...
+            List<buildertek__Build_Phase__c> NoGroping_BuildPhases = [SELECT Id, Name FROM buildertek__Build_Phase__c WHERE Name LIKE '%No Grouping%' LIMIT 1];
+            if(NoGroping_BuildPhases.size() == 0){
+                system.debug('new No Grouping created');
+                buildertek__Build_Phase__c NoGroping_BuildPhases_toCreate = new buildertek__Build_Phase__c(Name = 'No Grouping');
+                insert NoGroping_BuildPhases_toCreate;
+                NoGroping_BuildPhases = [SELECT Id, Name FROM buildertek__Build_Phase__c WHERE Id =: NoGroping_BuildPhases_toCreate.Id LIMIT 1];
+            }
+
+            Map<String, Id> ProPhaseName_PhaseId = new Map<String, Id>();
+            for(buildertek__Quote_Line_Group__c proPhase : ProductPhase){
+                ProPhaseName_PhaseId.put(proPhase.Name, proPhase.Id);
+            }
+            Map<String, Id> BuildPhaseName_PhaseId = new Map<String, Id>();
+            for(buildertek__Build_Phase__c BuildPhase : BuildPhases){
+                BuildPhaseName_PhaseId.put(BuildPhase.Name, BuildPhase.Id);
+            }
+
+            Map<Id, Id> ProductPhaseId_BuildPhaseId = new Map<Id, Id>();
+            for(String ProPhaseName : ProPhaseName_PhaseId.keySet()){
+                // assing No Grouping build phase when name doesn't match...
+                String BuildPhaseId = BuildPhaseName_PhaseId.get(ProPhaseName) != null ? BuildPhaseName_PhaseId.get(ProPhaseName) : NoGroping_BuildPhases[0].Id;
+                ProductPhaseId_BuildPhaseId.put(ProPhaseName_PhaseId.get(ProPhaseName), BuildPhaseId);
+            }
+            for(String BuildPhaseName : BuildPhaseName_PhaseId.keySet()){
+                // assing No Grouping build phase when name doesn't match...
+                String BuildPhaseId = BuildPhaseName_PhaseId.get(BuildPhaseName) != null ? BuildPhaseName_PhaseId.get(BuildPhaseName) : NoGroping_BuildPhases[0].Id;
+                ProductPhaseId_BuildPhaseId.put(ProPhaseName_PhaseId.get(BuildPhaseName), BuildPhaseId);
+            }
+
+            return ProductPhaseId_BuildPhaseId;
+        } catch (Exception e) {
+            System.debug('Error in getBOMlines ..' + e.getMessage() + '\n' + e +'\n Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
+
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
+            return null;
+        }
+    }
+
+    public class FieldSetObject {
+        public String label;
+        public String required;
+        public String type;
+        public String name;
     }
 }

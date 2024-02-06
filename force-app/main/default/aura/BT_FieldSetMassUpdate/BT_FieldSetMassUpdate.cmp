@@ -41,6 +41,8 @@
     
      <aura:registerEvent name="dataTableRow" type="c:BT_BudgetAddLineEvent"/>
      <aura:attribute name="fromcustomDataTable" type="Boolean" ></aura:attribute>
+
+    <aura:attribute name="rerender" type="boolean" />
      
      <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
 

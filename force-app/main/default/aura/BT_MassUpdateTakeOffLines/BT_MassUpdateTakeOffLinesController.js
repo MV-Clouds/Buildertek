@@ -1,10 +1,10 @@
 ({
     doInit: function (component, event, helper) {
         var pageRef = component.get("v.pageReference");
-        console.log('pageRef--',JSON.stringify(pageRef));
+        // console.log('pageRef--',JSON.stringify(pageRef));
         if (pageRef != undefined) {
             var state = pageRef.state; // state holds any query params	        
-            console.log('state = ' + JSON.stringify(state));
+            // console.log('state = ' + JSON.stringify(state));
             if (state != undefined && state.c__Id != undefined) {
                 component.set("v.recordId", state.c__Id);
             }
@@ -15,27 +15,22 @@
 
 
         component.set('v.isLoading', true);
-        var pageNumber = component.get("v.PageNumber");
-        var pageSize = component.get("v.pageSize");
-        var SearchProductType = component.find("SearchProductType").get("v.value");
-        var searchLocation = component.find("searchLocation").get("v.value");
-        var searchCategory = component.find("searchCategory").get("v.value");
-        var searchTradeType = component.find("searchTradeType").get("v.value");
-        helper.getTableFieldSet(component, event, helper);
-        console.log('recID--',component.get('v.recordId'));
 
+        // Optimized code for fast rendering...
+        helper.takeoffRelatedInfo(component, event, helper);
+        helper.helpergetProductPhase_BuildPhase(component, event, helper);
+        var pageNumber = component.get("v.PageNumber");
+            var pageSize = component.get("v.pageSize");
+            var SearchProductType = component.find("SearchProductType").get("v.value");
+            var searchLocation = component.find("searchLocation").get("v.value");
+            var searchCategory = component.find("searchCategory").get("v.value");
+            var searchTradeType = component.find("searchTradeType").get("v.value");
+        helper.getTableRows(component, event, helper, pageNumber, pageSize, SearchProductType, searchLocation, searchCategory, searchTradeType);
+        helper.getTableFieldSet(component, event, helper);
+        // console.log('recID--',component.get('v.recordId'));
+        
         window.setTimeout(
             $A.getCallback(function () {
-                // helper.getTotalRecord(component, event, helper);
-                // helper.getTakeOffName(component, event, helper);
-                // helper.getTakeOffParentId(component, event, helper);
-                helper.takeoffRelatedInfo(component, event, helper);
-                //window.setTimeout(
-                //$A.getCallback(function () {
-                helper.getTableRows(component, event, helper, pageNumber, pageSize, SearchProductType, searchLocation, searchCategory, searchTradeType);
-                //}), 100
-                //);
-                component.set('v.isLoading', false);
             }), 2000
         );
     },
@@ -45,7 +40,7 @@
         var workspaceAPI = component.find("workspace");
 
         workspaceAPI.getEnclosingTabId().then(function (tabId) {
-                console.log(tabId)
+                // console.log(tabId)
                 if (tabId == focusedTabId) {
                     setTimeout(function () {
                         location.reload()
@@ -69,11 +64,12 @@
         }
         list.unshift(obj);
         component.set('v.listOfRecords', list);
+        console.log('new raw added  : ', JSON.parse(JSON.stringify(list)));
     },
 
     closeScreen: function (component, event, helper) {
         var theBomId = component.get('v.bomId');
-        console.log('theBomId--',theBomId);
+        // console.log('theBomId--',theBomId);
         component.set('v.isCancelModalOpen', false);
         if(theBomId == null || theBomId == undefined)
         {
@@ -278,7 +274,7 @@
                 component.set("v.listOfSelectedTakeOffIds",recordIds);
             }
         }
-        console.log(recordIds);
+        // console.log(recordIds);
            
     },
     
@@ -316,7 +312,7 @@
                 selectedRfqIds.splice(index,1);
             }
         }
-        console.log(selectedRfqIds);
+        // console.log(selectedRfqIds);
         component.set("v.listOfSelectedTakeOffIds",selectedRfqIds);
       
         
@@ -370,6 +366,15 @@
                     });
                     toastEvent.fire();
                 }
+                else{
+                    var toastEvent = $A.get("e.force:showToast");
+                    toastEvent.setParams({
+                        "title": "Error!",
+                        "message": 'Something went wrong!',
+                        "type": 'error'
+                    });
+                    toastEvent.fire();
+                }
                 
                 $A.get('e.force:refreshView').fire();
             } 
@@ -383,6 +388,54 @@
 
     cancelDelete: function (component, event, helper) {
         component.set('v.isMassDeleteClick', false);
+    },
+
+    handleLookUpEvent: function(component, event, helper){
+        try {
+            
+            var selectedRecordId = event.getParam("selectedRecordId");
+            var index = event.getParam('index');
+            
+            if(event.getParam("fieldName") == 'buildertek__Price_Book__c'){
+            //   component.set("v.isLoading", true);
+              var listOfRecords = component.get("v.listOfRecords");
+              listOfRecords[index].buildertek__Price_Book__c = selectedRecordId[0];
+              component.set("v.rerender", !component.get("v.rerender"));
+              component.set("v.listOfRecords", listOfRecords);
+
+              var setProduct = false;   // Clear product...
+              helper.setProduct(component, event, helper, setProduct, index);
+            }
+        } catch (error) {
+            console.log(' error in handleLookUpEvent: ', error.stack);
+        }
+    },
+
+    clearSelectedHandler :  function(component, event, helper){
+        var index = event.getParam("index");
+        console.log('field : ', event.getParam("fieldName"));
+        if(event.getParam("fieldName") == 'buildertek__Price_Book__c' || event.getParam("fieldName") == undefined){ 
+            // undefiend when function call from "BT_LightningLookup" component...
+            // component.set("v.isLoading", true);
+
+            var setProduct = false;   // Clear product...
+            helper.setProduct(component, event, helper, setProduct, index);
+        }
+    },
+
+    ProductSelectHandler: function(component, event, helper){
+        component.set("v.isLoading", true);
+        var index = event.getParam("index");
+        var setProduct = true;
+        
+        // to avoid lag after set product...
+        window.setTimeout(
+            $A.getCallback(function () {
+              helper.setProduct(component, event, helper, setProduct, index);
+          }),
+          100
+        );
+
     },
     
 })

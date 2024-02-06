@@ -38,7 +38,8 @@
     
     <aura:attribute name="listOfSelectedTakeOffIds" type="List" default="[]"/>
      <aura:attribute name="isMassDeleteClick" type="Boolean" />
-    
+    <aura:attribute name="rerender" type="boolean" default="false"/>
+    <aura:attribute name="currectModifiedIndex" type="Integer"></aura:attribute>
 
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
     <lightning:overlayLibrary aura:id="overlayLib" />
@@ -48,7 +49,23 @@
     <aura:handler name="change" action="{!c.doInit}" value="{!v.pageReference}" />
     <!-- <aura:handler event="lightning:tabFocused" action="{! c.refreshPage }" /> -->
 
+    <aura:handler name="onSelectEvt" event="c:BT_LookupEvent" action="{!c.handleLookUpEvent}" />
+    <aura:handler name="oClearRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.clearSelectedHandler}" />
+    <aura:handler name="oSelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.ProductSelectHandler}" />
+
+    <aura:attribute name="ProductPhase_Vs_BuildPhase" type="Map" />
+
     <lightning:navigation aura:id="goToPrevious" />	
+
+    <aura:html tag="style">
+        .pricebookcls .slds-form-element__label{
+            display: none !important;
+        }
+
+        .buildertekBT_LightningLookup.mainDiv{
+            padding-top: 0% !important;
+        }
+    </aura:html>
 
     <lightning:card aura:id="lightCard" class="slds-card_boundary slds-page-header" title="Project TakeOffLines">
         <aura:set attribute="actions">
@@ -120,16 +137,37 @@
                     </thead>
                         <tbody>
                             <aura:iteration items="{!v.listOfRecords}" var="row" indexVar="index">
-                                <tr style="{!v.massUpdateEnable ? '':'height:35px; !important'}">
+                                <tr style="{!v.massUpdateEnable ? 'height: 4rem;':'height:35px; !important'}">
                                     <td>
                                         <lightning:input type="checkbox" aura:id="checkRFQ"  checked="{!row.isChecked}" name="{!row.Id}" onchange="{!c.selectRfq}"/>
                                     </td>
                                     <aura:iteration items="{!v.fieldSetValues}" var="field">
-                                        <td>
-                                            <c:BT_FieldSetMassUpdate record="{!row}" index="{!index}" field="{!field}"
-                                                isMassUpdateEnable="{!v.massUpdateEnable}"
-                                                childObjectName="buildertek__Project_Takeoff_Lines__c" />
-                                        </td>
+                                        <aura:if isTrue="{!field.name == 'buildertek__Price_Book__c'}">
+                                            <td class="pricebookcls" style = "max-width: 13rem; min-width: 13rem;">
+                                                <c:BT_LookupFields selectedRecordId="{!row.buildertek__Price_Book__c}" childObjectName="buildertek__Project_Takeoff_Lines__c" index="{!index}"
+                                                        fieldName="{!field.name}" record="{!row}"
+                                                        callingCmpName="BT_MassUpdateTakeOffLines"
+                                                        />
+                                            </td>
+                                        </aura:if>
+                                        <aura:if isTrue="{!field.name == 'buildertek__Product__c'}">
+                                            <td style = " max-width: 13rem; min-width: 13rem;">
+                                                <c:BT_LightningLookup objectAPIName="Product2" IconName="standard:product"
+                                                    selectedRecord="{!row.buildertek__Product__r}" aura:id="productId"
+                                                    parentId="{!row.buildertek__Price_Book__c}" prodctfamly="All Families" index="{!index}" />
+                                            </td>
+                                        </aura:if>
+                                        <aura:if isTrue="{!and(field.name != 'buildertek__Price_Book__c', field.name != 'buildertek__Product__c')}">
+                                            <!-- v.currectModifiedIndex & v.rerender used to Rerender FieldSetMass Update child Component -->
+                                            <!-- these attribue used to rerendr only perticualar index's field when condition match... -->
+                                            <aura:if isTrue="{!!AND(v.currectModifiedIndex == index, v.rerender == true)}" >
+                                                <td style = "max-width: 13rem; min-width: 13rem;">
+                                                    <c:BT_FieldSetMassUpdate record="{!row}" index="{!index}" field="{!field}"
+                                                        isMassUpdateEnable="{!v.massUpdateEnable}"
+                                                        childObjectName="buildertek__Project_Takeoff_Lines__c" />
+                                                </td>
+                                            </aura:if>
+                                        </aura:if>
                                     </aura:iteration>
                                     <aura:if isTrue="{!v.massUpdateEnable}">
                                         <td>
@@ -195,7 +233,17 @@
     </aura:if>
     <lightning:overlayLibrary aura:id="overlayLib" />
     <aura:if isTrue="{!v.isLoading}">
-        <lightning:spinner alternativeText="Loading" variant="brand" size="large" />
+        <!-- <lightning:spinner alternativeText="Loading" variant="brand" size="large" /> -->
+        <div aura:id="spinnerId" class="slds-spinner_container" style="position:fixed;">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                    <b>Processing, Please Wait</b>
+                </div>
+            </div>
+        </div>
     </aura:if>
     
     

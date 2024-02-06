@@ -8,7 +8,9 @@
     //   console.log({productfamily});
 
     // }
-     var action = component.get("c.getProductRecords");
+    // Set message to Loading... before during apex callout... Once response received change it accordingly...
+    component.set("v.Message", 'Loading...');
+    var action = component.get("c.getProductRecords");
      action.setStorable();
       // set param to method  
         action.setParams({
