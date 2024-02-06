@@ -118,19 +118,21 @@ public class createPOfromBOM_controller {
 
                                 
             List<buildertek__Select_Sheet__c> BOMlines = [SELECT Id, Name, buildertek__Selection_Sheet_Takeoff__c, buildertek__Vendor__c, buildertek__Vendor__r.Name, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.Name,
-                                                                  buildertek__Purchase_Order_Line__c, buildertek__Quantity__c, buildertek__Total_Sales_Price__c, buildertek__Total_Costs__c, buildertek__BL_UNIT_COST__c, buildertek__BT_Price_Book__c, buildertek__BT_Price_Book__r.Name, buildertek__Product__c, buildertek__Product__r.Name, buildertek__Cost_Code__c, buildertek__Build_Phase__c, buildertek__Build_Phase__r.Name
+                                                                  buildertek__Purchase_Order_Line__c, buildertek__Quantity__c, buildertek__Total_Sales_Price__c, buildertek__Total_Costs__c, buildertek__BL_UNIT_COST__c, buildertek__BT_Price_Book__c, buildertek__BT_Price_Book__r.Name, buildertek__Product__c, buildertek__Product__r.Name, buildertek__Cost_Code__c, buildertek__Build_Phase__c, buildertek__Build_Phase__r.Name, buildertek__Category__c
                                                           FROM buildertek__Select_Sheet__c 
                                                           WHERE Id IN : slectedLinesId];
 
             String VendorId;
             String CostCode;
             String Phase;
+            String Category;
             Boolean assign_flag = true;
             for(buildertek__Select_Sheet__c line : BOMlines){
                 VendorId = line.buildertek__Vendor__c;
-                if(line.buildertek__Cost_Code__c != null && line.buildertek__Build_Phase__c != null && assign_flag == true){
+                if(line.buildertek__Cost_Code__c != null && line.buildertek__Build_Phase__c != null &&line.buildertek__Category__c != null && assign_flag == true){
                     CostCode = line.buildertek__Cost_Code__c;
                     Phase = line.buildertek__Build_Phase__c;
+                    Category = line.buildertek__Category__c;
                     assign_flag = false;
                 }
             }
@@ -187,7 +189,7 @@ public class createPOfromBOM_controller {
                 }
                 
                 List<buildertek__Project_Task__c> ScheduleItems = [SELECT Id, Name, buildertek__Schedule__c,buildertek__Contractor__c, buildertek__Cost_Code__c,buildertek__Phase__c, buildertek__Completion__c,buildertek__Start__c,buildertek__Finish__c
-                                                                    FROM buildertek__Project_Task__c WHERE buildertek__Schedule__c =: scheduleId AND buildertek__Cost_Code__c != null AND buildertek__Phase__c != null ORDER BY CreatedDate DESC];
+                                                                    FROM buildertek__Project_Task__c WHERE buildertek__Schedule__c =: scheduleId ORDER BY CreatedDate DESC];
 
                                                                     
                 // for(buildertek__Select_Sheet__c BOMline: BOMlines){
@@ -209,7 +211,7 @@ public class createPOfromBOM_controller {
                         System.debug('Phase : ' + poPhaseName +' Vs '+ schItemPhaseName);
                         System.debug('Cost Code : ' + CreatedPOs.buildertek__Cost_Code__c  +' Vs '+ SchItem.buildertek__Cost_Code__c);
                         if( SchItem.buildertek__Contractor__c == CreatedPOs.buildertek__Vendor__c 
-                            && schItemPhaseName == poPhaseName && SchItem.buildertek__Cost_Code__c == CreatedPOs.buildertek__Cost_Code__c 
+                            && schItemPhaseName == poPhaseName && SchItem.buildertek__Cost_Code__c == CreatedPOs.buildertek__Cost_Code__c && SchItem.buildertek__BT_Category__c	 == Category
                             && matchedSchItems.size() == 0)
                         {
                             matchedSchItems.add(SchItem);
