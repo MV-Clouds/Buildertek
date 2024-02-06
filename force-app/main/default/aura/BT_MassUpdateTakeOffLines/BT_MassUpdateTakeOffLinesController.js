@@ -413,7 +413,7 @@
 
     clearSelectedHandler :  function(component, event, helper){
         var index = event.getParam("index");
-        console.log('field : ', event.getParam("fieldName"));
+        // console.log('field : ', event.getParam("fieldName"));
         if(event.getParam("fieldName") == 'buildertek__Price_Book__c' || event.getParam("fieldName") == undefined){ 
             // undefiend when function call from "BT_LightningLookup" component...
             // component.set("v.isLoading", true);

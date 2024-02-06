@@ -62,8 +62,8 @@
             display: none !important;
         }
 
-        .buildertekBT_LightningLookup.mainDiv{
-            padding-top: 0% !important;
+        .slds-form-element_stacked{
+            margin-bottom: 0px !important;
         }
     </aura:html>
 
@@ -143,7 +143,7 @@
                                     </td>
                                     <aura:iteration items="{!v.fieldSetValues}" var="field">
                                         <aura:if isTrue="{!field.name == 'buildertek__Price_Book__c'}">
-                                            <td class="pricebookcls" style = "max-width: 13rem; min-width: 13rem;">
+                                            <td class="pricebookcls" style = "max-width: 11rem; min-width: 11rem;">
                                                 <c:BT_LookupFields selectedRecordId="{!row.buildertek__Price_Book__c}" childObjectName="buildertek__Project_Takeoff_Lines__c" index="{!index}"
                                                         fieldName="{!field.name}" record="{!row}"
                                                         callingCmpName="BT_MassUpdateTakeOffLines"
@@ -161,11 +161,20 @@
                                             <!-- v.currectModifiedIndex & v.rerender used to Rerender FieldSetMass Update child Component -->
                                             <!-- these attribue used to rerendr only perticualar index's field when condition match... -->
                                             <aura:if isTrue="{!!AND(v.currectModifiedIndex == index, v.rerender == true)}" >
-                                                <td style = "max-width: 13rem; min-width: 13rem;">
-                                                    <c:BT_FieldSetMassUpdate record="{!row}" index="{!index}" field="{!field}"
-                                                        isMassUpdateEnable="{!v.massUpdateEnable}"
-                                                        childObjectName="buildertek__Project_Takeoff_Lines__c" />
-                                                </td>
+                                                <aura:if isTrue="{!OR(OR(field.type == 'DOUBLE', field.type == 'CURRENCY'), field.type == 'PERCENT')}">
+                                                    <td style = "max-width: 5rem; min-width: 5rem;">
+                                                        <c:BT_FieldSetMassUpdate record="{!row}" index="{!index}" field="{!field}"
+                                                            isMassUpdateEnable="{!v.massUpdateEnable}"
+                                                            childObjectName="buildertek__Project_Takeoff_Lines__c" />
+                                                    </td>
+                                                    <aura:set attribute="else">
+                                                        <td style = "max-width: 11rem; min-width: 11rem;">
+                                                            <c:BT_FieldSetMassUpdate record="{!row}" index="{!index}" field="{!field}"
+                                                                isMassUpdateEnable="{!v.massUpdateEnable}"
+                                                                childObjectName="buildertek__Project_Takeoff_Lines__c" />
+                                                        </td>
+                                                    </aura:set>
+                                                </aura:if>
                                             </aura:if>
                                         </aura:if>
                                     </aura:iteration>
