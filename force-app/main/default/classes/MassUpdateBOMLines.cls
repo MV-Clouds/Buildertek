@@ -133,7 +133,7 @@ public class MassUpdateBOMLines{
                 }
                 if (String.isNotBlank(searchCategory)){
                     searchCategory = '%' + searchCategory + '%';
-                    query += ' AND buildertek__Categories__r.Name LIKE : searchCategory';
+                    query += ' AND buildertek__Category__r.Name LIKE : searchCategory';
                 }
                 if (String.isNotBlank(searchTradeType)){
                     searchTradeType = '%' + searchTradeType + '%';
