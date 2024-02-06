@@ -7,7 +7,7 @@ public class RFIresponsesHandler {
     public static void insertrfiresponse(list<buildertek__RFI_Response__c> rfiresponselist){
         // Set<Id> rfiidSet = new Set<Id>();
         List<buildertek__RFI__c> updaterfilist = new List<buildertek__RFI__c>();
-        List<buildertek__RFI__c> rfiList = new List<buildertek__RFI__c>();
+        List<buildertek__RFI__c> rfiList = new List<buildertek__RFI__c>()
         Map<id,id> responserfimap = new Map<id,id>();
         Map<id,buildertek__RFI__c > maprfi= new Map<id,buildertek__RFI__c>();
         List<id> rfiid = new List<id>();
