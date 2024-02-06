@@ -2,6 +2,18 @@
 //Description : Create Purchase order From Change Order.
 public class CreatePOFromCO {
     @AuraEnabled
+    public static string getRecordType(String coId){
+        try {
+            String recordTypeName = null;
+            buildertek__Change_Order__c coRecord = [SELECT Id, RecordType.Name FROM buildertek__Change_Order__c WHERE Id = :coId LIMIT 1];
+            return coRecord.RecordType.Name;
+
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+
+    @AuraEnabled
 
     public Static ResponseBase CreatePOMethod(string COId){
         system.debug('----->Init<----');

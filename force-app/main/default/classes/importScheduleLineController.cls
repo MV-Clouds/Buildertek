@@ -53,6 +53,12 @@ public without sharing class importScheduleLineController {
             groupingMap.put(groupingRec.Name, groupingRec);
         }
 
+        List<Account> vendorList = [Select Id, Name from Account WHERE buildertek__BT_Account_Type__c = 'Vendor'];
+        Map<String, Account> vendorMap = new Map<String, Account>();
+        for (Account vendorRec : vendorList) {
+            vendorMap.put(vendorRec.Name, vendorRec);
+        }
+
         for (fieldWrapper wrapper : datalist){
             if (wrapper.Name != null && String.isNotBlank(wrapper.Name)){
                 buildertek__Project_Task__c schItem = new buildertek__Project_Task__c();
@@ -84,6 +90,10 @@ public without sharing class importScheduleLineController {
                 
                 if (wrapper.Phase3 != null && String.isNotBlank(wrapper.Phase3) && groupingMap.containsKey(wrapper.Phase3)) {
                     schItem.buildertek__BT_Phase3__c = groupingMap.get(wrapper.Phase3).Id;
+                }
+
+                if (wrapper.Vendor != null && String.isNotBlank(wrapper.Vendor) && vendorMap.containsKey(wrapper.Vendor)) {
+                    schItem.buildertek__Contractor__c = vendorMap.get(wrapper.Vendor).Id;
                 }
 
                 Date startDate = system.today();
@@ -240,6 +250,7 @@ public without sharing class importScheduleLineController {
         public String tradeType;
         public String Phase2;
         public String Phase3;
+        public String Vendor;
     }
 
 }

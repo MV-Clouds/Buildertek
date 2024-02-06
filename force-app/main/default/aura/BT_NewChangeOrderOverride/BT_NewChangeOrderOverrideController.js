@@ -1,9 +1,9 @@
 ({
     doInit: function (component, event, helper) {  
 
-        var recordTypeId = component.get( "v.pageReference" ).state.recordTypeId;  
-        component.set("v.RecordTypeId",recordTypeId);
-
+        // var recordTypeId = component.get( "v.pageReference" ).state.recordTypeId;  
+        // component.set("v.RecordTypeId",recordTypeId);
+        console.log('RecordTypeId', component.get("v.RecordTypeId"));
 
         // get Admin values, Does user want to create CO with or without CO lines and dispaly kayout according to it.
         var action = component.get("c.getadminvalues");
@@ -225,7 +225,25 @@
                     console.log('saveNnew: ' + saveNnew);
             
                     if(saveNnew){
-                        $A.get('e.force:refreshView').fire();
+                        // $A.get('e.force:refreshView').fire();
+                        let parentprojectId = component.get("v.parentprojectRecordId");
+                        var evt = $A.get("e.force:navigateToComponent");
+                        evt.setParams({
+                            componentDef: "c:ChangeOrderRecordType",
+                            componentAttributes: {
+                                projectId: parentprojectId
+                            }
+                        });
+
+                        evt.fire();
+                        var workspaceAPI = component.find("workspace");
+                        workspaceAPI.getFocusedTabInfo().then(function (response) {
+                            var focusedTabId = response.tabId;
+                            workspaceAPI.closeTab({ tabId: focusedTabId });
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });
                     }
                     else{
                         console.log('---Else---');
@@ -303,7 +321,24 @@
                     console.log('saveNnew: ' + saveNnew);
             
                     if(saveNnew){
-                        $A.get('e.force:refreshView').fire();
+                        // $A.get('e.force:refreshView').fire();
+                        let parentprojectId = component.get("v.parentprojectRecordId");
+                        var evt = $A.get("e.force:navigateToComponent");
+                        evt.setParams({
+                            componentDef: "c:ChangeOrderRecordType",
+                            componentAttributes: {
+                                projectId: parentprojectId
+                            }
+                        });
+                        evt.fire();
+                        var workspaceAPI = component.find("workspace");
+                        workspaceAPI.getFocusedTabInfo().then(function (response) {
+                            var focusedTabId = response.tabId;
+                            workspaceAPI.closeTab({ tabId: focusedTabId });
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });
                     }
                     else{
                         var navEvt = $A.get("e.force:navigateToSObject");

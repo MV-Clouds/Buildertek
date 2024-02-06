@@ -12,7 +12,7 @@
         <div class="slds-modal__content slds-p-around--large">
     <div class="slds-box slds-theme_default slds-box_small">
         <p>
-            <strong>Note: </strong> This import functionality will import Product, Price Book, Vendor, Product SKU, Product Code, Build Phase, Category (PL), Trade Type, Location, Quantity, UOM and Cost Code.
+            <strong>Note: </strong> This import functionality will import Product, Price Book, Vendor, Sort Id, Product SKU, Product Code, Build Phase, Category, Trade Type, Location, Quantity, UOM and Cost Code.
         </p>
     </div>
         </div>

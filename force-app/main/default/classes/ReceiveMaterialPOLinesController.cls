@@ -4,8 +4,7 @@ public with sharing class ReceiveMaterialPOLinesController {
     public static list<buildertek__Purchase_Order_Item__c> getProducts(String recordId)
     {
         //system.debug(recordId);
-        list<buildertek__Purchase_Order_Item__c> Products =[select id,Name,buildertek__Purchase_Order__c, buildertek__Product__r.Name,buildertek__Product__r.Id,buildertek__Product__c,buildertek__Quantity__c, buildertek__Quantity_Remaining__c
-        from buildertek__Purchase_Order_Item__c WHERE buildertek__Purchase_Order__c =:recordId];
+        list<buildertek__Purchase_Order_Item__c> Products =[select id,Name,buildertek__Purchase_Order__c, buildertek__Product__r.Name,buildertek__Product__r.Id,buildertek__Product__c,buildertek__Quantity__c, buildertek__Quantity_Remaining__c, buildertek__Quantity_Received__c from buildertek__Purchase_Order_Item__c WHERE buildertek__Purchase_Order__c =:recordId];
         system.debug(Products);
         return Products;
     }
@@ -38,31 +37,36 @@ public with sharing class ReceiveMaterialPOLinesController {
         //iterate over list and store the polineid in a list
         System.debug(newProductList);
         List<Id> polineIds = new List<Id>();
+        Map <Id, Integer> polineMap = new Map<Id, Integer>();
         for(RfqDataTableWrapper p: newProductList){
             polineIds.add(p.polineId);
             if(p.ContentDocumnetIdList != null){
                 POLinetoCdId.put(p.polineId, p.ContentDocumnetIdList);
             }
+            polineMap.put(p.polineId, p.quantity_recieved);
         }
         System.debug(POLinetoCdId);
         //System.debug(polineIds);
-        List<buildertek__Purchase_Order_Item__c> polineList = [Select Id , buildertek__Purchase_Order__c, buildertek__Product__c,buildertek__Item_Name__c,buildertek__Quantity_Received__c,buildertek__Product__r.buildertek__Available_Quantity__c,buildertek__Quantity_Remaining__c FROM buildertek__Purchase_Order_Item__c WHERE Id IN:polineIds];
+        List<buildertek__Purchase_Order_Item__c> polineList = [Select Id ,Name, buildertek__Purchase_Order__c, buildertek__Product__c,buildertek__Item_Name__c,buildertek__Quantity_Received__c,buildertek__Product__r.buildertek__Available_Quantity__c,buildertek__Quantity_Remaining__c FROM buildertek__Purchase_Order_Item__c WHERE Id IN:polineIds];
         System.debug(polineList);
         for(buildertek__Purchase_Order_Item__c poline: polineList){
-            if(newProductList[0].quantity_recieved != null){
-                if(poline.buildertek__Quantity_Remaining__c - newProductList[0].quantity_recieved >= 0){
+            if(polineMap.get(poline.Id) != null){
+                if(poline.buildertek__Quantity_Remaining__c - polineMap.get(poline.Id) >= 0){
                     if(poline.buildertek__Quantity_Received__c == null){
-                        poline.buildertek__Quantity_Received__c = newProductList[0].quantity_recieved;
+                        poline.buildertek__Quantity_Received__c = polineMap.get(poline.Id);
                         flag = true;
                     }
                     else if(poline.buildertek__Quantity_Received__c != null){
                         old_quantity_recieved = poline.buildertek__Quantity_Received__c;
-                        poline.buildertek__Quantity_Received__c = poline.buildertek__Quantity_Received__c + newProductList[0].quantity_recieved;
+                        poline.buildertek__Quantity_Received__c = poline.buildertek__Quantity_Received__c + polineMap.get(poline.Id);
                     }
                 }
             }else{
                 return false;
             }
+            System.debug('poline: ' + poline);
+            System.debug('poline.Name: ' + poline.Name);
+            System.debug('poline.buildertek__Quantity_Received__c: ' + poline.buildertek__Quantity_Received__c);
         }
         System.debug(polineList);
         update polineList;
