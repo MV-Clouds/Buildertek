@@ -354,87 +354,95 @@
                                         </aura:set>
                                     </aura:if>
                                 <aura:if isTrue="{!record.expanded}">
-                                    
-                                    <tr class="slds-text-heading--label slds-scrollable" style = "line-height:20px">
-                                        <th class="firstCol subHeader"> </th>
-                                        <th class="firstCol subHeader"> </th>
-                                        <!-- <th scope="col" class="subHeader" style="padding-left:30px;">
-                                            <ui:inputCheckbox aura:id="checkPOLines"  change="{!c.selectAllPOLines}" name = "{!index+'_'+groupIndex}" />		
-                                        </th> -->
-                                        <th class="subHeader">  </th> 
-                                        <th class="subHeader subData"> Name </th> 
-                                        <th class="subHeader subData"> Quantity </th> 
-                                        <th class="subHeader subData"> Unit Cost   </th> 
-                                        <th class="subHeader subData"> Tax Rate </th>
-                                        <th class="subHeader subData" colspan="2"> Total Cost </th> 
-                                    </tr>
-                                    
-                                    <aura:iteration items="{!record.poLinesWrapper}" var="item1" indexVar="inx">
-                                        <aura:if isTrue="{!item1.PORow}">
-                                            <tr class="slds-scrollable" style = "background:#fff ">
-                                                <td style="border-top: none;" class="firstCol"> </td>
-                                                <td style="border-top: none;" class="firstCol"> </td>
-                                                <td style="border-top: none;"> </td>
-                                                <td style="border-top: none;"> </td>
-                                                <td style="border-top: none;"> </td>
-                                                <td style="border-top: none;"> </td>
-                                                <td style="font-weight: 600; border-top: none;"> {!item1.coastType} </td>
-                                                <td role="gridcell" class="slds-truncate" title="{!item1.coastValue}" style="font-weight: 600; border-top: none;" >
-                                                    <lightning:formattedNumber value="{!item1.coastValue}" style="currency" currencyCode="{!v.orgCurr}" currencyDisplayAs="code"/>
-                                                </td>
-                                            </tr>
-                                            <aura:set attribute="else">
-
-                                                <tr class="slds-scrollable" style="background: #fcfcfc;">
-                                                    <td class="firstCol"></td>
-                                                    <td class="firstCol"></td>
-                                                    <td style = "padding-left : 30px;">
-                                                        <div class="slds-form-element">
-                                                            <div class="slds-form-element__control">
-                                                              <div class="slds-checkbox">
-                                                                <input aura:id="checkPOLine" type="checkbox" id="{!index+'-'+groupIndex+'-'+inx}" checked="{!item1.poLineCheck}" class="checkPOLineClass" name="{!rec.RecordId}" onchange="{!c.handleCheckPoLine}" />
-                                                                <label class="slds-checkbox__label" for="{!index+'-'+groupIndex+'-'+inx}">
-                                                                    <span class="slds-checkbox_faux"></span>
-                                                                    <span class="slds-form-element__label"></span>
-                                                                  </label>
-                                                              </div>
-                                                            </div>
-                                                        </div>
-                                                        <!-- <lightning:input aura:id="checkPOLine" type="checkbox" checked="{!item1.poLineCheck}" name="{!rec.RecordId}" onchange="{!c.handleCheckPoLine}"/> -->
+                                    <aura:if isTrue="{!record.poLinesWrapper[0]}">
+                                        <tr class="slds-text-heading--label slds-scrollable" style = "line-height:20px">
+                                            <th class="firstCol subHeader"> </th>
+                                            <th class="firstCol subHeader"> </th>
+                                            <!-- <th scope="col" class="subHeader" style="padding-left:30px;">
+                                                <ui:inputCheckbox aura:id="checkPOLines"  change="{!c.selectAllPOLines}" name = "{!index+'_'+groupIndex}" />		
+                                            </th> -->
+                                            <th class="subHeader">  </th> 
+                                            <th class="subHeader subData"> Name </th> 
+                                            <th class="subHeader subData"> Quantity </th> 
+                                            <th class="subHeader subData"> Unit Cost   </th> 
+                                            <th class="subHeader subData"> Tax Rate </th>
+                                            <th class="subHeader subData" colspan="2"> Total Cost </th> 
+                                        </tr>
+                                        
+                                        <aura:iteration items="{!record.poLinesWrapper}" var="item1" indexVar="inx">
+                                            <aura:if isTrue="{!item1.PORow}">
+                                                <tr class="slds-scrollable" style = "background:#fff ">
+                                                    <td style="border-top: none;" class="firstCol"> </td>
+                                                    <td style="border-top: none;" class="firstCol"> </td>
+                                                    <td style="border-top: none;"> </td>
+                                                    <td style="border-top: none;"> </td>
+                                                    <td style="border-top: none;"> </td>
+                                                    <td style="border-top: none;"> </td>
+                                                    <td style="font-weight: 600; border-top: none;"> {!item1.coastType} </td>
+                                                    <td role="gridcell" class="slds-truncate" title="{!item1.coastValue}" style="font-weight: 600; border-top: none;" >
+                                                        <lightning:formattedNumber value="{!item1.coastValue}" style="currency" currencyCode="{!v.orgCurr}" currencyDisplayAs="code"/>
                                                     </td>
-                                                    
-                                                    <td role="gridcell" class="slds-truncate subData" title="{!item1.Name}" style = "width: 30px;">
-                                                        <ui:outputURL value="{!'/one/one.app?#/sObject/'+ item1.RecordId + '/view'}" target="_blank" label="{!item1.Name}" /> 
-                                                    </td>
-                                                    
-                                                    <td role="gridcell" class="slds-truncate subData" title="{!item1.Quantity}" >
-                                                        {!item1.Quantity}
-                                                    </td>
-
-                                                    <td role="gridcell" class="slds-truncate subData" title="{!item1.UnitCost}" >
-                                                        <lightning:formattedNumber value="{!item1.UnitCost}" style="currency" currencyCode="{!v.orgCurr}" currencyDisplayAs="code"/>
-                                                    </td>
-                                                    
-                                                    <td role="gridcell" class="slds-truncate subData" title="{!item1.TaxRate}" >
-                                                        {!item1.TaxRate}
-                                                        <aura:if isTrue="{!not(empty(item1.TaxRate))}">
-                                                            %
-                                                        </aura:if>
-                                                    </td>
-                                                    
-                                                    <td role="gridcell" class="slds-truncate subData" title="{!item1.TotalCost}" colspan="2" >
-                                                        <lightning:formattedNumber value="{!item1.TotalCost}" style="currency" currencyCode="{!v.orgCurr}" currencyDisplayAs="code"/>
-                                                    </td>
-
-                                                     <!-- <td role="gridcell" class="slds-truncate subData" title="{!item1.ProductCode}" >
-                                                        {!item1.ProductCode}
-                                                    </td> -->
-                                                    
                                                 </tr>
-                                            </aura:set>
-                                        </aura:if>
-                                    </aura:iteration>
-                                    
+                                                <aura:set attribute="else">
+    
+                                                    <tr class="slds-scrollable" style="background: #fcfcfc;">
+                                                        <td class="firstCol"></td>
+                                                        <td class="firstCol"></td>
+                                                        <td style = "padding-left : 30px;">
+                                                            <div class="slds-form-element">
+                                                                <div class="slds-form-element__control">
+                                                                  <div class="slds-checkbox">
+                                                                    <input aura:id="checkPOLine" type="checkbox" id="{!index+'-'+groupIndex+'-'+inx}" checked="{!item1.poLineCheck}" class="checkPOLineClass" name="{!rec.RecordId}" onchange="{!c.handleCheckPoLine}" />
+                                                                    <label class="slds-checkbox__label" for="{!index+'-'+groupIndex+'-'+inx}">
+                                                                        <span class="slds-checkbox_faux"></span>
+                                                                        <span class="slds-form-element__label"></span>
+                                                                      </label>
+                                                                  </div>
+                                                                </div>
+                                                            </div>
+                                                            <!-- <lightning:input aura:id="checkPOLine" type="checkbox" checked="{!item1.poLineCheck}" name="{!rec.RecordId}" onchange="{!c.handleCheckPoLine}"/> -->
+                                                        </td>
+                                                        
+                                                        <td role="gridcell" class="slds-truncate subData" title="{!item1.Name}" style = "width: 30px;">
+                                                            <ui:outputURL value="{!'/one/one.app?#/sObject/'+ item1.RecordId + '/view'}" target="_blank" label="{!item1.Name}" /> 
+                                                        </td>
+                                                        
+                                                        <td role="gridcell" class="slds-truncate subData" title="{!item1.Quantity}" >
+                                                            {!item1.Quantity}
+                                                        </td>
+    
+                                                        <td role="gridcell" class="slds-truncate subData" title="{!item1.UnitCost}" >
+                                                            <lightning:formattedNumber value="{!item1.UnitCost}" style="currency" currencyCode="{!v.orgCurr}" currencyDisplayAs="code"/>
+                                                        </td>
+                                                        
+                                                        <td role="gridcell" class="slds-truncate subData" title="{!item1.TaxRate}" >
+                                                            {!item1.TaxRate}
+                                                            <aura:if isTrue="{!not(empty(item1.TaxRate))}">
+                                                                %
+                                                            </aura:if>
+                                                        </td>
+                                                        
+                                                        <td role="gridcell" class="slds-truncate subData" title="{!item1.TotalCost}" colspan="2" >
+                                                            <lightning:formattedNumber value="{!item1.TotalCost}" style="currency" currencyCode="{!v.orgCurr}" currencyDisplayAs="code"/>
+                                                        </td>
+    
+                                                         <!-- <td role="gridcell" class="slds-truncate subData" title="{!item1.ProductCode}" >
+                                                            {!item1.ProductCode}
+                                                        </td> -->
+                                                        
+                                                    </tr>
+                                                </aura:set>
+                                            </aura:if>
+                                        </aura:iteration>
+                                    <aura:set attribute="else">
+                                        <!-- <tr class="slds-text-heading-label slds-scrollable" style = "line-height:20px">
+                                            <th> NO PO lines available</th>
+                                        </tr> -->
+                                        <tr style = "line-height:20px">
+                                            <th colspan="9" style="text-align: center; font-weight: 600; font-family: system-ui; font-size: 14px;">This PO does not have any PO line</th>
+                                        </tr>
+                                    </aura:set>
+                                    </aura:if>     
                                 </aura:if>
                             </aura:iteration>
                         </aura:if>
