@@ -1,4 +1,4 @@
-<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader" controller="ReceiveMaterialPOLinesController" access="global" >
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,lightning:isUrlAddressable,flexipage:availableForRecordHome,force:hasRecordId,lightning:isUrlAddressable,forceCommunity:availableForAllPageTypes,forceCommunity:layout" controller="ReceiveMaterialPOLinesController" access="global" >
     <aura:attribute name="recordId" type="string" />
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
     <aura:attribute name="rfqRecordList" type="List" />
@@ -71,8 +71,10 @@
                     <tr>
                        
                         <td>
-                            <div class="truncate-text" title="{!item.Name}" >
-                                {!item.Name}
+                            <div class="truncate-text" title="{!item.Name}">
+                                <a href="{!'/'+item.Id}">
+                                    {!item.Name}
+                                </a>                                
                             </div>
                         </td>
                         <td>
