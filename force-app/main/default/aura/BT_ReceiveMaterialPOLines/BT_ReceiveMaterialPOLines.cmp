@@ -26,9 +26,8 @@
         <h1 class="slds-text-heading_medium slds-hyphenate" style="font-weight: bold;">Receive Purchase Order Material</h1>
     </div>
     <!-- <div class="slds-scrollable" style="height:26rem;width:100%">-->
-    <div class="slds-modal__content slds-p-around--large" >
-        
-        <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+        <div class="slds-modal__content slds-p-around--large" style="overflow-x: auto;">
+            <table class="slds-table slds-table_bordered slds-table_cell-buffer" style="min-width: 100%;">
             <thead>
                 <tr class="slds-text-heading--label">
                     <!--   <th class="slds-is-sortable" scope="col" width="5px">
@@ -51,6 +50,11 @@
                     </th>
                     <th scope="col">
                         <div class="slds-truncate" title="Quantity">
+                            Quantity Received
+                        </div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate" title="Quantity">
                             Quantity Remaining
                         </div>
                     </th>
@@ -67,12 +71,12 @@
                     <tr>
                        
                         <td>
-                            <div class="slds-truncate" title="{!item.Name}" >
+                            <div class="truncate-text" title="{!item.Name}" >
                                 {!item.Name}
                             </div>
                         </td>
                         <td>
-                            <div class="slds-truncate" title="{!item.buildertek__Product__r.Name}" >
+                            <div class="truncate-text" title="{!item.buildertek__Product__r.Name}">
                                 <aura:if isTrue="{!item.buildertek__Product__r.Id}">
                                     <a href="{!'/'+item.buildertek__Product__r.Id}">
                                         {!item.buildertek__Product__r.Name}
@@ -85,6 +89,19 @@
                             <aura:if isTrue="{!item.buildertek__Quantity__c != undefined}">
                                 <div class="slds-truncate" title="{!item.buildertek__Quantity__c}" >
                                     {!item.buildertek__Quantity__c}
+                                </div>
+                                <aura:set attribute="else">
+                                    <div class="slds-truncate" title="">
+                                        
+                                    </div>
+                                </aura:set>
+                            </aura:if>
+                            
+                        </td>
+                        <td>
+                            <aura:if isTrue="{!item.buildertek__Quantity_Received__c != undefined}">
+                                <div class="slds-truncate" title="{!item.buildertek__Quantity_Received__c}" >
+                                    {!item.buildertek__Quantity_Received__c}
                                 </div>
                                 <aura:set attribute="else">
                                     <div class="slds-truncate" title="">
