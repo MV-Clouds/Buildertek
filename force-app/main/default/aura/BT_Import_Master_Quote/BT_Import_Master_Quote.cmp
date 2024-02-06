@@ -26,15 +26,15 @@
     </div>
 
 	<aura:html tag="style">
-		.slds-form-element__label{
-			display: none;;
+		.lbl .slds-form-element__label{
+			display: none;
 		}
 	</aura:html>
 	
     <div class="slds-modal__content slds-p-around--large">
         <div class="slds slds-scope">
 			<lightning:layoutItem padding="around-small" size="12">
-				<lightning:input value="{!v.searchKeyword}" placeholder="Search By Quote Name..." name="searchField" onchange="{! c.onSearch }"/>
+				<lightning:input class="lbl" value="{!v.searchKeyword}" placeholder="Search By Quote Name..." name="searchField" onchange="{! c.onSearch }"/>
 			</lightning:layoutItem>
     		<table class="slds-table slds-table_bordered slds-table_fixed-layout" role="grid">
     		    <thead>

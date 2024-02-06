@@ -8,6 +8,9 @@
             </apex:inputcheckbox>
             <apex:inputcheckbox value="{!isShowFabricationTaxes}" label="Show Fabrication Taxes">
             </apex:inputcheckbox>
+            <apex:inputcheckbox value="{!isMatchBOMLineswithScheduleItems}" label="Match BOM Lines with Schedule Items">
+            </apex:inputcheckbox>
+            <apex:pageBlockSectionItem><span></span></apex:pageBlockSectionItem>
             <center>
             <apex:commandButton value="Save" id="onCreateChangeOrderonOverage" styleClass="slds-button slds-button_brand" action="{!onCreateChangeOrderonOverage}"></apex:commandButton>
             </center>

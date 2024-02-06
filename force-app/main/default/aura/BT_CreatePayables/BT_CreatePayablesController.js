@@ -1,14 +1,30 @@
 ({
-	doInit: function(component, event, helper) {
-        // Retrieve the Purchase Order record from the component
-        helper.init(component);
-        console.log('Init');
-        // var purchaseOrder = component.get("v.record.buildertek__Status__c");
-        // console.log(purchaseOrder);
-        // if (purchaseOrder === 'Paid') {
-        //     // Stop further execution and display a message (optional)
-        //     console.log('Purchase Order is already paid. Execution stopped.');
-        //     return;
-        // }
-    }
+    doInit: function (component, event, helper) {
+        var action = component.get("c.Checkifpaid");    
+        var recId = component.get("v.recordId");
+        console.log(recId);
+        action.setParams({
+            "recId":recId
+        });
+
+        action.setCallback(this, function (response) {
+            console.log(response.getState());
+            if (response.getState() === "SUCCESS") { // Use triple equals for strict comparison
+                console.log(response.getReturnValue()); // Use parentheses for method invocation
+
+                // Check for true with lowercase 't'
+                if (response.getReturnValue() === true) {
+                    $A.get("e.force:closeQuickAction").fire();
+                    helper.showErrorToast(component, event, helper);
+                    component.destroy();
+
+                } else {
+                    helper.createInvoice(component, event, helper);
+                }
+            } else {
+                alert('Something Went Wrong');
+            }
+        });
+        $A.enqueueAction(action);
+    },
 })

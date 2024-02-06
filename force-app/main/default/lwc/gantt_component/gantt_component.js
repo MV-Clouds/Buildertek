@@ -761,7 +761,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
         },
         {
           type: "widget",
-          text: "Contractor",
+          text: "Vendor",
           draggable: false,
           width: 180,
           widgets: [
@@ -945,6 +945,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
                 endDate: {
                   weight: 100,
                 },
+                // colorField: true,
                 divider: false,
                 manuallyScheduledField : {
                   type     : 'checkbox',

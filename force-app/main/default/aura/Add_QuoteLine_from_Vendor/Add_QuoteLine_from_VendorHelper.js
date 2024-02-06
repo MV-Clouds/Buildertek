@@ -131,6 +131,7 @@
             var quoteLineList = component.get("v.selectedRecords");
             console.log('quoteLineList => ',{quoteLineList});
             var selectedProducts = [];
+            var phaseValue= component.get('v.getPhase');
 
             //finding No Grouping from quoteLineGroupOptions and store it's Id in noGroupingId
             var noGroupingId = '';
@@ -150,7 +151,7 @@
                     'Name': element.Name,
                     'buildertek__Unit_Price__c': element.UnitPrice,
                     'buildertek__Cost_Code__c': element.CostCode,
-                    'buildertek__Grouping__c': element.Phase ? element.Phase : noGroupingId,
+                    'buildertek__Grouping__c': phaseValue,
                     'buildertek__Quantity__c': '1',
                     'buildertek__Additional_Discount__c': element.Discount ? element.Discount : 0,
                     'buildertek__Unit_Cost__c': element.UnitCost ? element.UnitCost : element.UnitPrice,

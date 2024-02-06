@@ -2,16 +2,19 @@ public class BOMSettingsController {
     
     public Boolean isUpdatethequantity{get;set;}
     public Boolean isShowFabricationTaxes{get;set;}
+    public Boolean isMatchBOMLineswithScheduleItems{get;set;}
     public BOMSettingsController (){
-        buildertek__Admin_Interface_Node_Configuration__c adminInterfaceNodeConfigurations = [Select Id,buildertek__Update_Quantity__c,buildertek__Show_Fabrication_taxes__c from buildertek__Admin_Interface_Node_Configuration__c WHERE Name=:'BOM Settings'];
+        buildertek__Admin_Interface_Node_Configuration__c adminInterfaceNodeConfigurations = [Select Id,buildertek__Update_Quantity__c,buildertek__Show_Fabrication_taxes__c, buildertek__Match_BOM_Lines_with_Schedule_Items__c from buildertek__Admin_Interface_Node_Configuration__c WHERE Name=:'BOM Settings'];
         isUpdatethequantity = adminInterfaceNodeConfigurations.buildertek__Update_Quantity__c;
         isShowFabricationTaxes = adminInterfaceNodeConfigurations.buildertek__Show_Fabrication_taxes__c != null ? adminInterfaceNodeConfigurations.buildertek__Show_Fabrication_taxes__c : false;
+        isMatchBOMLineswithScheduleItems = adminInterfaceNodeConfigurations.buildertek__Match_BOM_Lines_with_Schedule_Items__c != null ? adminInterfaceNodeConfigurations.buildertek__Match_BOM_Lines_with_Schedule_Items__c : false;
     }
     
     public void onCreateChangeOrderonOverage(){
         buildertek__Admin_Interface_Node_Configuration__c adminInterfaceNodeConfigurations = [Select Id,buildertek__Update_Quantity__c,buildertek__Show_Fabrication_taxes__c from buildertek__Admin_Interface_Node_Configuration__c WHERE Name=:'BOM Settings'];
         adminInterfaceNodeConfigurations.buildertek__Update_Quantity__c = isUpdatethequantity;
         adminInterfaceNodeConfigurations.buildertek__Show_Fabrication_taxes__c = isShowFabricationTaxes;
+        adminInterfaceNodeConfigurations.buildertek__Match_BOM_Lines_with_Schedule_Items__c = isMatchBOMLineswithScheduleItems;
         update adminInterfaceNodeConfigurations;
         ApexPages.addmessage(new ApexPages.message(ApexPages.severity.CONFIRM,'Updated Successfully'));
     } 
@@ -586,6 +589,10 @@ public class BOMSettingsController {
             upsert settingsrec;
             msg = 'saved';
         }catch(Exception e){
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
             system.debug('exception '+e.getMessage()); 
         }
         

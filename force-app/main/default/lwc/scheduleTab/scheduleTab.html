@@ -6,6 +6,10 @@
                     <lightning-combobox name="schedule" value={selectedScheduleId} options={SchedulesOptions}
                         onchange={handleScheduleChange} placeholder="Select Schedule"></lightning-combobox>
                 </div>
+                <div class="button">
+                    <lightning-button label="Go To Schedule" onclick={handleViewSchedule}
+                        variant="brand"></lightning-button>
+                </div>
             </div>
 
             <div class="scheduleContainer" if:true={callscheduleComponent}>

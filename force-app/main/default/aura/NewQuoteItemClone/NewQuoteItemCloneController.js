@@ -236,6 +236,9 @@
         console.log('askforFilter');
         var HaveCreateAccess = component.get("v.HaveCreateAccess");
             if(HaveCreateAccess){
+                var buttonValue = event.getSource().get("v.value");
+                    component.set('v.phaseName', buttonValue);
+                    console.log(component.get('v.phaseName'));
                 component.set('v.askforFilter', true);
             }
             else{
@@ -263,9 +266,9 @@
         console.log('selectedOptionValue', selectedOptionValue);
         if (selectedOptionValue == 'PriceBook') {
             
-            console.log(event.getSource().get('v.value'));
-            let phaseValue=event.getSource().get('v.value');
-            component.set('v.phaseName', phaseValue);
+            console.log(event.getSource());
+            // let phaseValue=event.getSource().get('v.value');
+            // component.set('v.phaseName', phaseValue);
             console.log(component.get('v.phaseName'));
             component.set('v.askforFilter', false);
             component.set('v.openProductBox', true); 
@@ -3248,6 +3251,7 @@ console.log(document.getElementsByClassName(className)[0]);
                 }
             } else if(component.get("v.firstGrouping")){
                 for (let i = 1; i <= group1.length; i++) {
+                    console.log("group1 values:",group1);
                     let spanGroupId = i;
                     helper.expandRecordsHelper(component, event, helper, spanGroupId);
                 }
