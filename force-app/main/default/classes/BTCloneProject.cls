@@ -1,8 +1,7 @@
 public with sharing class BTCloneProject {
-
     @AuraEnabled
     public static buildertek__Project__c getProjects(String projectId) {
-        buildertek__Project__c project = [SELECT Id, Name, buildertek__County__c, buildertek__County_Text__c from buildertek__Project__c where Id = :projectId];
+        buildertek__Project__c project = [SELECT Id, Name, buildertek__County__c, buildertek__County_Text__c,buildertek__Type__c,buildertek__Customer__c,buildertek__Customer_Contact__c, buildertek__Address__c from buildertek__Project__c where Id = :projectId];
         return project;
     }
 
@@ -11,7 +10,71 @@ public with sharing class BTCloneProject {
     }
 
 
-	// ================== TO Solve "TOO many SOQL : 101" =================
+	// ================== TO Solve "TOO many SOQL : 101", BUIL-3692 & BUIL-3883 =================
+
+
+    @AuraEnabled
+    public static string cloneChildObj(string clonedProjectId, string sourceProjectId, string objName){
+
+        try{
+            Set<String> sourceProjectIds = new Set<String>();
+            Map<String, String> sourceToProjectMap = new  Map<String, String>();
+
+            sourceProjectIds.add(sourceProjectId);
+            sourceToProjectMap.put(sourceProjectId, clonedProjectId);
+
+            string returnValue;
+
+                if(objName == 'Purchase Order') {
+                    returnValue = ProjectTriggerHandler.CloneAny2(objName, 'buildertek__Purchase_Order__c', 'buildertek__Purchase_Order_Item__c', sourceProjectIds, sourceToProjectMap);
+                }
+
+                if(objName == 'Schedule') {
+                    returnValue =  ProjectTriggerHandler.CloneAny2(objName, 'buildertek__Schedule__c', 'buildertek__Project_Task__c', sourceProjectIds, sourceToProjectMap);
+                }
+
+                if(objName == 'PunchList') {
+                    returnValue =  ProjectTriggerHandler.CloneAny2(objName, 'buildertek__Punch_List__c', 'buildertek__Punch_List_item__c', sourceProjectIds, sourceToProjectMap);
+                }
+
+                if(objName == 'Inspections') {
+                    returnValue = ProjectTriggerHandler.CloneAny2(objName, 'buildertek__Inspection__c', 'buildertek__Inspection_Line__c', sourceProjectIds, sourceToProjectMap);
+                }
+
+                if(objName == 'Warranty') {
+                    returnValue = ProjectTriggerHandler.CloneAny2(objName, 'buildertek__Warranty__c', 'buildertek__Warranty_Item__c', sourceProjectIds, sourceToProjectMap);
+                }
+
+                if(objName == 'Contract') {
+                    returnValue = ProjectTriggerHandler.CloneAny2(objName, 'buildertek__Contract__c', 'buildertek__Contract_Item__c', sourceProjectIds, sourceToProjectMap);
+                }
+
+                if(objName == 'Quote') {
+                    returnValue = ProjectTriggerHandler.CloneAny2(objName, 'buildertek__Quote__c', 'buildertek__Quote_Item__c', sourceProjectIds, sourceToProjectMap);
+                }
+
+                if(objName == 'Budget') {
+                    returnValue = ProjectTriggerHandler.CloneAny2(objName, 'buildertek__Budget__c', 'buildertek__Budget_Item__c', sourceProjectIds, sourceToProjectMap);
+                }
+
+                if(objName == 'Selection') {
+                    returnValue = ProjectTriggerHandler.CloneAny2(objName, 'buildertek__Selection__c', 'buildertek__Section__c', sourceProjectIds, sourceToProjectMap);
+                }
+
+                if(objName == 'Project Vendors') {
+                    returnValue = ProjectTriggerHandler.CloneAny2(objName, 'buildertek__Project_Vendors__c', '', sourceProjectIds, sourceToProjectMap);
+                }
+
+                return returnValue;
+            } catch (Exception e) {
+                System.debug('Error in cloneChildObj ..' + e.getMessage() + '\n' + e +'\n Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
+                return e.getMessage();
+            }
+    }
+
+
+
+
     @AuraEnabled
     public static string getFieldSet(){
         try {

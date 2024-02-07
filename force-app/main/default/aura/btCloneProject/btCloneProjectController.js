@@ -25,6 +25,8 @@
     handleClick:function(component, event, helper) {
         var itemsToclonned = component.get("v.value");
 		var projects = component.get("v.projects");
+		console.log('projects : ', JSON.parse(JSON.stringify(projects)));
+
 		var countyText;
 		if(projects[0].buildertek__County_Text__c != null){
 			countyText = projects[0].buildertek__County_Text__c;
@@ -35,25 +37,25 @@
             itemsToclonned = '';    
         }
         
-		var evt = $A.get("e.force:createRecord");
-	        evt.setParams({
-	            'entityApiName':'buildertek__Project__c',
-	            'defaultFieldValues': {
-	                'buildertek__Source_Project__c':itemsToclonned,
-					'buildertek__County_Text__c':countyText
-	            }
-	        });
-	        evt.fire();
+		// var evt = $A.get("e.force:createRecord");
+	    //     evt.setParams({
+	    //         'entityApiName':'buildertek__Project__c',
+	    //         'defaultFieldValues': {
+	    //             'buildertek__Source_Project__c':itemsToclonned,
+		// 			'buildertek__County_Text__c':countyText
+	    //         }
+	    //     });
+	    //     evt.fire();
 
-		// var evt = $A.get("e.force:navigateToComponent");
-        // evt.setParams({
-        //     componentDef : "c:btCloneProject_recCreatePage",
-        //     componentAttributes: {
-        //         Source_Project : itemsToclonned,
-		// 		County_Text : countyText
-        //     }
-        // });
-        // evt.fire();	
+		var evt = $A.get("e.force:navigateToComponent");
+        evt.setParams({
+            componentDef : "c:btCloneProject_recCreatePage",
+            componentAttributes: {
+                Source_Project : itemsToclonned,
+				projects : projects
+            }
+        });
+        evt.fire();	
 
 	},
 	closeModel: function(component, event, helper) { 
