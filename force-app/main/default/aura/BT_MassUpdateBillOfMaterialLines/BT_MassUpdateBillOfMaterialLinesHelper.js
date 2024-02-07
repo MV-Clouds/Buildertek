@@ -198,29 +198,38 @@
             var listOfRecords = component.get("v.listOfRecords");
             if(setProduct){
                 var product = event.getParam("recordByEvent");
+                var pricebookEntry = event.getParam("PricebookEntryrecordByEvent");
+                console.log("Price book Entries :-> " ,JSON.parse(JSON.stringify(pricebookEntry)));
                 if(product){
                     var ProductPhase_Vs_BuildPhase = component.get("v.ProductPhase_Vs_BuildPhase");
 
                     listOfRecords[index].buildertek__Product__r = product;
                     listOfRecords[index].buildertek__Product__c = product.Id;
                     listOfRecords[index].buildertek__Description__c = product.Name;
+                    listOfRecords[index].Name = product.Name;
                     listOfRecords[index].buildertek__Vendor__c = product.buildertek__Vendor__c;
                     listOfRecords[index].buildertek__Cost_Code__c = product.buildertek__Cost_Code__c;
                     listOfRecords[index].buildertek__Build_Phase__c = ProductPhase_Vs_BuildPhase[product.buildertek__Quote_Group__c] ? ProductPhase_Vs_BuildPhase[product.buildertek__Quote_Group__c] : null;
                     listOfRecords[index].buildertek__Quantity__c = 1;
                     listOfRecords[index].buildertek__Category__c = product.buildertek__Category__c;
-
+                    if(pricebookEntry.buildertek__Unit_Cost__c){
+                        listOfRecords[index].buildertek__BL_UNIT_COST__c = pricebookEntry.buildertek__Unit_Cost__c;
+                    }else{
+                        listOfRecords[index].buildertek__BL_UNIT_COST__c = 0;                    
+                    }
                 }
             }
             else {
                 listOfRecords[index].buildertek__Product__r = null;
                 listOfRecords[index].buildertek__Product__c = null;
                 listOfRecords[index].buildertek__Description__c = null;
+                listOfRecords[index].Name = null;
                 listOfRecords[index].buildertek__Vendor__c = null;
                 listOfRecords[index].buildertek__Cost_Code__c = null;
                 listOfRecords[index].buildertek__Build_Phase__c = null;
                 listOfRecords[index].buildertek__Quantity__c = 0;
                 listOfRecords[index].buildertek__Category__c = null;
+                listOfRecords[index].buildertek__BL_UNIT_COST__c = 0;
 
             }
             component.set("v.currectModifiedIndex", index);
