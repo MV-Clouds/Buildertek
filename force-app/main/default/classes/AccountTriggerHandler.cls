@@ -79,4 +79,32 @@ public with sharing class AccountTriggerHandler{
 
     public void OnAfterDelete(Account[] accountToDelete){
     }
+
+    public static void scheduleEmailDate(List<Account> accountList){
+        buildertek__Admin_Interface_Node_Configuration__c adminInterfaceNodeConfigurations = [SELECT Id, Name, buildertek__Days_pior_to_expiration__c, buildertek__Notify_on_Cert_Expiration__c FROM buildertek__Admin_Interface_Node_Configuration__c WHERE Name = 'Account Configuration' LIMIT 1];
+        
+        if (adminInterfaceNodeConfigurations != null && adminInterfaceNodeConfigurations.buildertek__Notify_on_Cert_Expiration__c) {
+            Integer daysToSubtract = adminInterfaceNodeConfigurations.buildertek__Days_pior_to_expiration__c.intValue();
+            
+            List<AccountExpirationEmailSender> AccountExpirationEmailSenders = new List<AccountExpirationEmailSender>();
+            
+            for (Account acc : accountList) {
+                if (acc.buildertek__Worker_s_Compensation_License_Expiration__c != null) {
+                    Date workerCompDate = acc.buildertek__Worker_s_Compensation_License_Expiration__c;
+                    Date workerCompDateMinusDate = workerCompDate.addDays(-daysToSubtract);
+                    AccountExpirationEmailSenders.add(new AccountExpirationEmailSender(new List<Account>{acc}, workerCompDateMinusDate));
+                }
+                if (acc.buildertek__General_Liability_License_Expiration__c != null) {
+                    Date generalLiabilityDate = acc.buildertek__General_Liability_License_Expiration__c;
+                    Date generalLiabilityMinusDate = generalLiabilityDate.addDays(-daysToSubtract);
+                    AccountExpirationEmailSenders.add(new AccountExpirationEmailSender(new List<Account>{acc}, generalLiabilityMinusDate));
+                }
+            }
+            
+            for (AccountExpirationEmailSender sender : AccountExpirationEmailSenders) {
+                System.schedule('EmailJob-' + Datetime.now().getTime(), sender.scheduleDate, sender);
+            }
+        }
+    }    
+    
 }
