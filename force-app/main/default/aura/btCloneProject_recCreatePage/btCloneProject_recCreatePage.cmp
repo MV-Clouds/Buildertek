@@ -1,0 +1,79 @@
+<aura:component controller="BTCloneProject" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global">
+
+
+<aura:handler name="init" value="{! this }" action="{! c.doInit }"/>
+<aura:attribute name="listOfFields" type="List" default="[]" />
+<aura:attribute name="Source_Project" type="String" />
+<aura:attribute name="County_Text" type="String" />
+<aura:attribute name="objsToCreateList" type="List" default="[]" />
+<aura:attribute name="recordId" type="Id" />
+<lightning:workspaceAPI aura:id="workspace" />
+
+        <aura:html tag="style">
+                .slds-modal__container.createCloneProject{
+                    min-width: 40% !important;
+                    width: 50% !important;
+                    max-width: 70% !important;
+                    padding-bottom: 0px !important;
+                }
+                .grid{
+                    display: grid;
+                    grid-template-columns: auto auto;
+                    padding: 10px;
+                    align-items: center;
+                    justify-items: start;
+                }
+                 .slds-size_1-of-2{
+                    width: 100%;
+                    margin: 0 1%;
+                    padding-right: 16px;
+                    margin-top: 0.5rem;
+                }
+                 .standard_field .slds-input{
+                    --slds-c-input-spacing-horizontal-start: 12px;
+                }
+
+                .slds-form-element__label{
+                    text-align: left !important;
+                    word-break: break-word !important;
+                }
+
+                .slds-form-element__control .slds-checkbox{
+                    float: left !important;
+                }
+
+                .slds-form-element_horizontal .slds-form-element__help{
+                    margin-left : 0px !important;
+                }
+        </aura:html>
+
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open" 
+                style="display: flex; justify-content: center; flex-direction: row; align-items: center;">
+            <div class="slds-modal__container createCloneProject">
+                <header class="slds-modal__header">
+                    <!-- <lightning:buttonIcon iconName="utility:close" onclick="{!c.closeModel}" alternativeText="close" variant="bare-inverse" class="slds-modal__close" /> -->
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New BT Project</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="max-height: 70vh !important; height: 70vh !important; min-height: 70vh !important;">
+                    <center>
+                        <lightning:recordEditForm recordId="" objectApiName="buildertek__Project__c" onsubmit="{!c.createCloneProject}">
+                            <div class="grid">
+                                <aura:iteration items="{!v.listOfFields}" var="field">
+                                    <div class="slds-col slds-size_1-of-2 standard_field">
+                                        <lightning:inputField fieldName="{!field.name}" aura:id="inputFields" required="{!field.required == 'true' ? true : false}"/>
+                                    </div>
+                                </aura:iteration>
+                            </div>
+                        </lightning:recordEditForm>
+                    </center>
+                </div>
+                <footer class="slds-modal__footer">
+                    <center>
+                        <lightning:button variant="neutral" label="Cancel" title="Cancel" onclick="{!c.closeModel}" />
+                        <lightning:button variant="brand" label="Save" title="Save" onclick="{!c.createCloneProject}" />
+                    </center>
+                </footer>
+            </div>
+        </section>
+
+</aura:component>

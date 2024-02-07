@@ -16,6 +16,7 @@
 			}
 		});
 		$A.enqueueAction(action);
+
 	},
 
 	handleChange : function(component, event, helper) {
@@ -43,6 +44,17 @@
 	            }
 	        });
 	        evt.fire();
+
+		// var evt = $A.get("e.force:navigateToComponent");
+        // evt.setParams({
+        //     componentDef : "c:btCloneProject_recCreatePage",
+        //     componentAttributes: {
+        //         Source_Project : itemsToclonned,
+		// 		County_Text : countyText
+        //     }
+        // });
+        // evt.fire();	
+
 	},
 	closeModel: function(component, event, helper) { 
         $A.get("e.force:closeQuickAction").fire();

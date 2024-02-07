@@ -17,6 +17,11 @@
 
     <ltng:require styles="{!$Resource.ModalPreviewCSS}" />
     <aura:html tag="style">
+        .slds-modal__container .createCloneProject{
+            min-width: 75% !important;
+            max-width: 100% !important;
+        }
+
         .slds-modal__container {
             width:50% !important;
             max-width: 50% !important;
@@ -33,6 +38,7 @@
             margin: 10px;
             border-radius: 5px;
         }
+        
     </aura:html>
 
     <div class="slds-modal__content ">
