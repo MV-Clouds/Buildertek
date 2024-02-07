@@ -1,0 +1,18 @@
+<apex:page controller="BT_AccountConfiguration" sidebar="false" lightningStylesheets="true" docType="html-5.0">
+    <apex:slds />
+    <apex:pageMessages />
+    <apex:form>
+        <apex:pageBlock mode="maindetail">
+            <apex:pageblocksection>
+                <apex:outputLabel for="notify">Notify on Cert Expiration?</apex:outputLabel>
+                <apex:inputCheckbox value="{!nofityOnCertExpiration}" id="notify" />
+
+                <apex:outputLabel for="duration">Cert Expiration Days:</apex:outputLabel>
+                <apex:input html-min="0" html-max="999" type="number" value="{!certExpirationDays}" id="duration" />
+
+                <apex:commandButton value="Save" id="updateAccountConfiguration" action="{!updateAccountConfiguration}" />
+            </apex:pageblocksection>
+        </apex:pageBlock>
+    </apex:form>
+
+</apex:page>
