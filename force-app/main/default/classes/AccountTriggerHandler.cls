@@ -57,11 +57,11 @@ public with sharing class AccountTriggerHandler{
         }
 
         if(updatedWorkCompAccountList.size() > 0){
-            scheduleEmailDate(updatedWorkCompAccountList, 'WorkerComp');
+            scheduleEmailDate(updatedWorkCompAccountList, 'Worker License Exp');
         }
 
         if(updatedLiabilityAccountList.size() > 0){
-            scheduleEmailDate(updatedLiabilityAccountList, 'GeneralLiability');
+            scheduleEmailDate(updatedLiabilityAccountList, 'Liability License Exp');
         }
     }
 
@@ -80,10 +80,10 @@ public with sharing class AccountTriggerHandler{
                 accountIds.add(acc.Id); 
             }
             
-            if ((oldAccountMap.get(acc.Id).buildertek__Worker_s_Compensation_License_Expiration__c != acc.buildertek__Worker_s_Compensation_License_Expiration__c) && acc.buildertek__Worker_s_Compensation_License_Expiration__c != null && acc.buildertek__Email_Address__c != null) {
+            if ((oldAccountMap.get(acc.Id).buildertek__Worker_s_Compensation_License_Expiration__c != acc.buildertek__Worker_s_Compensation_License_Expiration__c) && acc.buildertek__Worker_s_Compensation_License_Expiration__c != null || (acc.buildertek__Email_Address__c != null && oldAccountMap.get(acc.Id).buildertek__Email_Address__c != acc.buildertek__Email_Address__c)) {
                 updatedWorkCompAccountList.add(acc);
             }
-            if ((oldAccountMap.get(acc.Id).buildertek__General_Liability_License_Expiration__c != acc.buildertek__General_Liability_License_Expiration__c) && acc.buildertek__General_Liability_License_Expiration__c != null && acc.buildertek__Email_Address__c != null) {
+            if ((oldAccountMap.get(acc.Id).buildertek__General_Liability_License_Expiration__c != acc.buildertek__General_Liability_License_Expiration__c) && acc.buildertek__General_Liability_License_Expiration__c != null || (acc.buildertek__Email_Address__c != null && oldAccountMap.get(acc.Id).buildertek__Email_Address__c != acc.buildertek__Email_Address__c)) {
                 updatedLiabilityAccountList.add(acc);
             }
 
@@ -102,11 +102,11 @@ public with sharing class AccountTriggerHandler{
         ProjectTaskTriggerHandler.blnSkipTaskTrigger = false;
         ProjectTaskTriggerHandler.isFirstTime = false;
         if(updatedWorkCompAccountList.size() > 0){
-            scheduleEmailDate(updatedWorkCompAccountList, 'WorkerComp');
+            scheduleEmailDate(updatedWorkCompAccountList, 'Worker License Exp');
         }
         
         if (updatedLiabilityAccountList.size() > 0){
-            scheduleEmailDate(updatedLiabilityAccountList, 'GeneralLiability');
+            scheduleEmailDate(updatedLiabilityAccountList, 'Liability License Exp');
         }
     }
 
@@ -117,23 +117,23 @@ public with sharing class AccountTriggerHandler{
     }
     
     public static void scheduleEmailDate(List<Account> accountList, String licenseType) {
-        buildertek__Admin_Interface_Node_Configuration__c adminInterfaceNodeConfigurations = [SELECT Id, Name, buildertek__Days_pior_to_expiration__c, buildertek__Notify_on_Cert_Expiration__c FROM buildertek__Admin_Interface_Node_Configuration__c WHERE Name = 'Account Configuration' LIMIT 1];
+        List<buildertek__Admin_Interface_Node_Configuration__c> adminInterfaceNodeConfigurations = [SELECT Id, Name, buildertek__Days_pior_to_expiration__c, buildertek__Notify_on_Cert_Expiration__c FROM buildertek__Admin_Interface_Node_Configuration__c WHERE Name = 'Account Configuration' LIMIT 1];
     
-        if (adminInterfaceNodeConfigurations != null && adminInterfaceNodeConfigurations.buildertek__Notify_on_Cert_Expiration__c) {
-            Integer daysToSubtract = adminInterfaceNodeConfigurations.buildertek__Days_pior_to_expiration__c.intValue();
+        if (adminInterfaceNodeConfigurations.size() > 0 && adminInterfaceNodeConfigurations[0].buildertek__Notify_on_Cert_Expiration__c) {
+            Integer daysToSubtract = adminInterfaceNodeConfigurations[0].buildertek__Days_pior_to_expiration__c.intValue();
     
             for (Account acc : accountList) {
-                if (licenseType == 'WorkerComp') {
+                if (licenseType == 'Worker License Exp') {
                     Date workerCompDate = acc.buildertek__Worker_s_Compensation_License_Expiration__c;
                     Date workerCompDateMinusDate = workerCompDate.addDays(-daysToSubtract);
-                    String jobNameWorkerComp = 'EmailJob-WorkerComp-' + Date.today();                    
-                    System.schedule(jobNameWorkerComp,  '0 0 10 ' + workerCompDateMinusDate.day() + ' ' + workerCompDateMinusDate.month() + ' ? ' + workerCompDateMinusDate.year(), new AccountExpirationEmailSender(acc));
+                    String jobNameWorkerComp = 'EmailJob-Worker License Exp-' + Date.today();                    
+                    System.schedule(jobNameWorkerComp,  '0 0 10 ' + workerCompDateMinusDate.day() + ' ' + workerCompDateMinusDate.month() + ' ? ' + workerCompDateMinusDate.year(), new AccountExpirationEmailSender(acc, 'Worker License Exp'));
                 }
-                if (licenseType == 'GeneralLiability') {
+                if (licenseType == 'Liability License Exp') {
                     Date generalLiabilityDate = acc.buildertek__General_Liability_License_Expiration__c;
                     Date generalLiabilityMinusDate = generalLiabilityDate.addDays(-daysToSubtract);
-                    String jobNameGeneralLiability = 'EmailJob-GeneralLiability-' + Date.today();
-                    System.schedule(jobNameGeneralLiability,  '0 0 10 ' + generalLiabilityMinusDate.day() + ' ' + generalLiabilityMinusDate.month() + ' ? ' + generalLiabilityMinusDate.year(), new AccountExpirationEmailSender(acc));
+                    String jobNameGeneralLiability = 'EmailJob-Liability License Exp-' + Date.today();
+                    System.schedule(jobNameGeneralLiability,  '0 0 10 ' + generalLiabilityMinusDate.day() + ' ' + generalLiabilityMinusDate.month() + ' ? ' + generalLiabilityMinusDate.year(), new AccountExpirationEmailSender(acc, 'Liability License Exp'));
                 }
             }
         }
