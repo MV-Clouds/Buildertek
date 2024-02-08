@@ -2586,7 +2586,7 @@ public with sharing class QuoteDAO{
                     familyFilter = (prodctfamly == '--None--') ? 'AND toLabel(product2.family) = null' : 'AND toLabel(product2.family) = :prodctfamly';
                 }
 
-                String peQuery = 'SELECT id, Product2Id, product2.family FROM PricebookEntry WHERE pricebook2Id = :parentId ' + familyFilter;
+                String peQuery = 'SELECT id, Product2Id, product2.family,buildertek__Unit_Cost__c FROM PricebookEntry WHERE pricebook2Id = :parentId ' + familyFilter;
                 PElist = Database.query(peQuery);
 
                 for (pricebookEntry PE : PElist){
@@ -2601,7 +2601,7 @@ public with sharing class QuoteDAO{
             }else if(ObjectName == 'Product2' && (parentId == null || parentId == '')){
                 System.debug('inisde 2nd if');
      
-                 PElist = [select id, Product2Id, product2.family from pricebookEntry];   
+                 PElist = [select id, Product2Id, product2.family,buildertek__Unit_Cost__c from pricebookEntry];   
                  for (pricebookEntry PE : PElist){
                      ProdIds.add(PE.Product2Id);
                  } 
