@@ -242,7 +242,7 @@ public with sharing class ProjectTriggerHandler {
 
         // Added by Krunal
         try {
-            // projectCloneController(newProjects, newProjectsMap);
+            projectCloneController(newProjects, newProjectsMap);
         } catch (Exception e) {
             System.debug('Error Message => '+e.getMessage());
             System.debug('Error Line no => '+e.getLineNumber());

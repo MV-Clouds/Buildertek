@@ -57,6 +57,17 @@
         });
         evt.fire();	
 
+		// *** Use this component when We face "Too many SOQL Query" issue...
+		// var evt = $A.get("e.force:navigateToComponent");
+        // evt.setParams({
+        //     componentDef : "c:btCloneProject_recCreatePage2",
+        //     componentAttributes: {
+        //         Source_Project : itemsToclonned,
+		// 		projects : projects
+        //     }
+        // });
+        // evt.fire();	
+
 	},
 	closeModel: function(component, event, helper) { 
         $A.get("e.force:closeQuickAction").fire();

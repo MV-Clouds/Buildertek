@@ -19,6 +19,12 @@
 
 		  helper.getFieldSetHelper(component, event, helper);
       helper.setTabIconHelper(component, event, helper);
+      if(component.get("v.objsToCreateList").length > 0){
+        helper.helperCreateRollBackProject(component, event, helper);
+      }
+      else{
+        component.set("v.cloneFlag", true);
+      }
     },
 
     loadSuccess: function(component, event, helper){
@@ -94,9 +100,27 @@
         console.log('clone project Id : ', cloneProjectId);
 
         if(cloneProjectId){
+          var objsToCreateList = component.get('v.objsToCreateList');
+          console.log('objsToCreateList : ', objsToCreateList);
+  
+          if(objsToCreateList.length > 0){
+              for(var i in objsToCreateList){
+                var isLast = i == (objsToCreateList.length - 1) ? true : false;
+                helper.helperCloneChildObj(component, event, helper, cloneProjectId, objsToCreateList[i], isLast);
+              }
+          }
+          else{
+            component.set("v.isLoading", false);
+            helper.toastHelper(component, event, helper, 'Success', 'Project cloned successfully!', 'success', 3000);
+          }
+        }
+        else{
+          helper.toastHelper(component, event, helper, 'Error', 'error while cloning project', 'error', 3000);
+          component.set("v.isLoading", false);
           helper.closeModelHelper(component, event, helper, cloneProjectId);
         }
 
+        
       } catch (error) {
         console.log("error in handleSuccess : ", error.stack);
       }
