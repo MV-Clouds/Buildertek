@@ -629,7 +629,7 @@ timecard.adderror('You Need to close your last Time Card before you can create a
     public void updateAmountOnProject(Set<Id> ProjectIds) {
         try {
             Map<Id, AggregateResult> totalAmountMap = new Map<Id, AggregateResult>();
-            for (AggregateResult aggregatedResult : [SELECT buildertek__Project__c, SUM(buildertek__Daily_Expense__c) totalAmount FROM buildertek__Time_Cards__c WHERE buildertek__Project__c IN :ProjectIds GROUP BY buildertek__Project__c]){
+            for (AggregateResult aggregatedResult : [SELECT buildertek__Project__c, SUM(buildertek__Daily_Expense__c) totalAmount, SUM(buildertek__Hours_Worked__c) totalHour FROM buildertek__Time_Cards__c WHERE buildertek__Project__c IN :ProjectIds GROUP BY buildertek__Project__c]){
                 Id ExpenseId = (Id)aggregatedResult.get('buildertek__Project__c');
                 totalAmountMap.put(ExpenseId, aggregatedResult);
             }
@@ -640,13 +640,16 @@ timecard.adderror('You Need to close your last Time Card before you can create a
                 if(totalAmountMap.containsKey(projectId)) {
                     AggregateResult aggregatedResult = totalAmountMap.get(projectId);
                     Decimal totalAmount = (Decimal)aggregatedResult.get('totalAmount');
+                    Decimal totalHour = (Decimal)aggregatedResult.get('totalHour');
 
                     buildertek__Project__c expense = new buildertek__Project__c(Id = projectId);
                     expense.buildertek__Time_Card_Total__c = totalAmount;
+                    expense.buildertek__Total_Labor_Hours__c = totalHour;
                     projectToUpdate.add(expense);
                 } else {
                     buildertek__Project__c expense = new buildertek__Project__c(Id = projectId);
                     expense.buildertek__Time_Card_Total__c = 0;
+                    expense.buildertek__Total_Labor_Hours__c = 0;
                     projectToUpdate.add(expense);
                 }
             }
