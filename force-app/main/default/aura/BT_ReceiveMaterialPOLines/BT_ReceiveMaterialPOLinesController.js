@@ -1,5 +1,7 @@
 ({
     doInit : function(component, event, helper) {
+        var recordId = component.get("v.pageReference.state.buildertek__parentId");
+        component.set('v.recordId', recordId);
         var myPageRef = component.get("v.pageReference");
        // var pageSize = component.get("v.pageSize");
           var pageSize = component.get("v.pageSize");
