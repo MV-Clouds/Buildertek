@@ -4,7 +4,10 @@
                                                             {'label': 'Inspections', 'value': 'Inspections'},
                                                             {'label': 'Quote', 'value': 'Quote'},
                                                             {'label': 'Punch List', 'value': 'PunchList'},
-                                                            {'label': 'Project Vendors', 'value': 'Project Vendors'}, 
+                                                            {'label': 'Project Vendors', 'value': 'Project Vendors'},
+                                                            {'label': 'Schedule', 'value': 'Schedule'}, 
+                                                            {'label': 'Purchase Order', 'value': 'Purchase Order'},
+                                                            {'label': 'Contract', 'value': 'Contract'},
                                                             ]"/>
                                                             <!-- {'label': 'Contract', 'value': 'Contract'}, -->
                                                             <!-- {'label': 'Warranty', 'value': 'Warranty'}, -->

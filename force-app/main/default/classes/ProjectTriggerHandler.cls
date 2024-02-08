@@ -683,13 +683,13 @@ public with sharing class ProjectTriggerHandler {
 
         List<SObject> sobjListToClone = database.query(qryStr);
 
-        List<SObject> newSobjListToClone = database.query(qryStr);
-        for (SObject sObj : sobjListToClone) {
-            String oldProjectId = (objName == 'Project Vendors') ? String.valueOf(sObj.get('buildertek__BT_Project__c')) : String.valueOf(sObj.get('buildertek__Project__c'));
-            if (sourceObjectMap.get(oldProjectId).contains(objName)) {
-                newSobjListToClone.add(sObj);
-            }
-        }
+        // List<SObject> newSobjListToClone = database.query(qryStr);
+        // for (SObject sObj : sobjListToClone) {
+        //     String oldProjectId = (objName == 'Project Vendors') ? String.valueOf(sObj.get('buildertek__BT_Project__c')) : String.valueOf(sObj.get('buildertek__Project__c'));
+        //     if (sourceObjectMap.get(oldProjectId).contains(objName)) {
+        //         newSobjListToClone.add(sObj);
+        //     }
+        // }
 
         Map<String, SObject> cloneSObjList = new Map<String, SObject>();
         for (SObject sObj : sobjListToClone) {
@@ -821,167 +821,6 @@ public with sharing class ProjectTriggerHandler {
         }
 
     }
-
-    // To solve - TOO many SOQL query....
-    public static String CloneAny2(String objName, String objAPI, String childObjAPI, Set<String> sourceProjectIds, Map<String, String> sourceToProjectMap){
-        try {
-            
-            System.debug('CloneAny2 Method');
-            System.debug('objName ==> '+objName);
-
-    
-            // Set<String> sourceProjectIds = ProjectTriggerHandler.sourceProjectIdsSet;
-            // Map<String, String> sourceToProjectMap = ProjectTriggerHandler.sourceToProjectIdsMap;
-            // Map<String, List<String>> sourceObjectMap = ProjectTriggerHandler.sourceObjectsMap;
-            string qryStr = (objName == 'Project Vendors') ? prepareQuery(objAPI, 'buildertek__BT_Project__c', sourceProjectIds) : prepareQuery(objAPI, 'buildertek__Project__c', sourceProjectIds);
-    
-            List<SObject> sobjListToClone = database.query(qryStr);
-    
-            // List<SObject> newSobjListToClone = database.query(qryStr);
-            // for (SObject sObj : sobjListToClone) {
-            //     String oldProjectId = (objName == 'Project Vendors') ? String.valueOf(sObj.get('buildertek__BT_Project__c')) : String.valueOf(sObj.get('buildertek__Project__c'));
-            //     if (sourceObjectMap.get(oldProjectId).contains(objName)) {
-            //         newSobjListToClone.add(sObj);
-            //     }
-            // }
-    
-            Map<String, SObject> cloneSObjList = new Map<String, SObject>();
-            for (SObject sObj : sobjListToClone) {
-                String oldProjectId = (objName == 'Project Vendors') ? String.valueOf(sObj.get('buildertek__BT_Project__c')) : String.valueOf(sObj.get('buildertek__Project__c'));
-                SObject obj = sobj.clone(false, true);
-    
-                if (objName == 'Project Vendors') {
-                    obj.put('buildertek__BT_Project__c', sourceToProjectMap.get(oldProjectId));
-                } else {
-                    obj.put('buildertek__Project__c', sourceToProjectMap.get(oldProjectId));
-                }
-                cloneSObjList.put(sobj.Id, obj);
-            }
-    
-            if (objAPI == 'buildertek__Purchase_Order__c'){
-                for (SObject sObj : cloneSObjList.values()){
-                    sObj.put('buildertek__Status__c', 'Pending');
-                    sObj.put('buildertek__Budget__c', null);
-                    sObj.put('buildertek__Budget_Line__c', null);
-                }
-            }
-    
-            if (objAPI == 'buildertek__Warranty__c'){
-    
-                Map<String, SObject> warrantyMap = new Map<String, SObject>();
-                Map<String, String> parentMap = new Map<String, String>();
-    
-                for (SObject sObj : cloneSObjList.values()){
-                    parentMap.put(String.valueOf(sObj.Id), String.valueOf(sObj.get('buildertek__Warranty__c')));
-                    sObj.put('buildertek__Warranty__c', null);
-    
-                    SObject obj = sobj.clone(false, true);
-    
-                    warrantyMap.put(String.valueOf(sObj.Id), obj);
-                }
-                insert warrantyMap.values();
-    
-                Map<String, String> newParentMap = new Map<String, String>();
-                for (String oldRecId : parentMap.keySet()) {
-                    if (parentMap.get(oldRecId) != null) {
-                        String newRecId = warrantyMap.get(oldRecId).Id;
-                        String newParentRecId = warrantyMap.get(parentMap.get(oldRecId)).Id;
-                        newParentMap.put(newRecId, newParentRecId);
-                    }
-                }
-    
-                cloneSObjList = new Map<String, SObject>();
-                for (String warrantyId : warrantyMap.keySet()) {
-                    SObject warrantyVal = warrantyMap.get(warrantyId);
-                    warrantyVal.put('buildertek__Warranty__c', newParentMap.get(String.valueOf(warrantyVal.Id)));
-    
-                    cloneSObjList.put(warrantyId, warrantyVal);
-                }
-    
-                update cloneSObjList.values();
-    
-            } else {
-    
-                insert cloneSObjList.values();
-            }
-    
-            if (String.isNotBlank(childObjAPI)) {
-                String childQry = prepareQuery(childObjAPI, objAPI, cloneSObjList.keySet());
-                System.debug('childQry ==> '+childQry);
-                List<SObject> childSobjList = database.query(childQry);
-                System.debug('childSobjList ==> '+childSobjList);
-    
-                List<SObject> cloneChildRec= new List<SObject>();
-    
-                if (childObjAPI == 'buildertek__Project_Task__c') {
-    
-                    Map<String, String> predecessorMap = new Map<String, String>();
-                    Map<String, SObject> scheduleTaskMap = new Map<String, SObject>();
-    
-                    for (SObject sObj : childSobjList){
-                        predecessorMap.put(String.valueOf(sObj.Id), String.valueOf(sObj.get('buildertek__Dependency__c')));
-                        sObj.put('buildertek__Dependency__c', null);
-    
-                        String oldParentId = String.valueOf(sObj.get(objAPI));
-                        SObject obj = sobj.clone(false, true);
-                        obj.put(objAPI, cloneSObjList.get(oldParentId).Id);
-    
-                        scheduleTaskMap.put(String.valueOf(sObj.Id), obj);
-                    }
-    
-                    if (scheduleTaskMap.size() > 0) {
-                        insert scheduleTaskMap.values();
-    
-                        Map<String, String> newPredecessorMap = new Map<String, String>();
-                        for (String taskId : predecessorMap.keySet()) {
-                            if (predecessorMap.get(taskId) != null) {
-                                String newTaskId = scheduleTaskMap.get(taskId).Id;
-                                String newParentId = scheduleTaskMap.get(predecessorMap.get(taskId)).Id;
-                                newPredecessorMap.put(newTaskId, newParentId);
-                            }
-                        }
-    
-                        List<SObject> updateTaskList = new List<SObject>();
-                        for (SObject task : scheduleTaskMap.values()) {
-                            task.put('buildertek__Dependency__c', newPredecessorMap.get(String.valueOf(task.Id)));
-                            updateTaskList.add(task);
-                        }
-    
-                        if (updateTaskList.size() > 0) {
-                            update updateTaskList;
-                        }
-                    }
-    
-                } else {
-    
-                    for (SObject sobj : childSobjList){
-                        System.debug('sobj ==> '+sobj);
-                        String oldParentId = String.valueOf(sObj.get(objAPI));
-    
-                        SObject obj = sobj.clone(false, true);
-                        System.debug('objAPI ==> '+objAPI);
-                        System.debug('cloneSObjList.get(oldParentId)) ==> '+cloneSObjList.get(oldParentId));
-                        obj.put(objAPI, cloneSObjList.get(oldParentId).Id);
-    
-                        cloneChildRec.add(obj);
-                    }
-    
-                    System.debug('cloneChildRec ==> '+cloneChildRec);
-    
-                    if(cloneChildRec.size() > 0){
-                        insert cloneChildRec;
-                    }
-                }
-            }
-
-            return 'success';
-        } catch (Exception e) {
-            System.debug('Error in CloneAny2 ..' + e.getMessage() + '\n' + e +'\n Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
-            return e.getMessage();
-        }
-
-    }
-
 
     public static String prepareQuery(String sObjName, String fieldName, Set<String> recIdList){
 
