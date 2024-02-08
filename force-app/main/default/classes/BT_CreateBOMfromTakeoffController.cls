@@ -6,7 +6,7 @@ public without sharing class BT_CreateBOMfromTakeoffController {
         try {
             buildertek__Project_Takeoff__c Takeoff = [SELECT Id, Name, buildertek__Name__c,buildertek__Project__c FROM buildertek__Project_Takeoff__c WHERE Id =: TakeoffId LIMIT 1];
 
-            list<buildertek__Project_Takeoff_Lines__c> takoffLineList = [SELECT ID, Name,buildertek__Project_Takeoff__c, buildertek__Product__c, buildertek__Price_Book__c,buildertek__Product__r.buildertek__Vendor__c, buildertek__Quantity__c, buildertek__Cost_Code__c, buildertek__Build_Phase__c,buildertek__Description__c, buildertek__Product__r.Name,buildertek__UOM_PL__c,buildertek__Vendor__c,buildertek__Categories__c,buildertek__Sort_Id__c FROM buildertek__Project_Takeoff_Lines__c WHERE buildertek__Project_Takeoff__c =: TakeoffId];
+            list<buildertek__Project_Takeoff_Lines__c> takoffLineList = [SELECT ID, Name,buildertek__Project_Takeoff__c, buildertek__Product__c, buildertek__Price_Book__c,buildertek__Product__r.buildertek__Vendor__c, buildertek__Quantity__c, buildertek__Cost_Code__c, buildertek__Build_Phase__c,buildertek__Description__c, buildertek__Product__r.Name,buildertek__UOM_PL__c,buildertek__Vendor__c,buildertek__Categories__c,buildertek__Sort_Id__c	 FROM buildertek__Project_Takeoff_Lines__c WHERE buildertek__Project_Takeoff__c =: TakeoffId];
             if(takoffLineList.size() > 0){
 
                 buildertek__Project_Selection_Sheet_Takeoff__c BOMtoCreate = new buildertek__Project_Selection_Sheet_Takeoff__c();
@@ -26,8 +26,8 @@ public without sharing class BT_CreateBOMfromTakeoffController {
                 map<Id, PricebookEntry> ProductId_PriceBookEntry = new map<Id, PricebookEntry>();
                 map<Id, PricebookEntry> ProceBookId_PriceBookEntry = new map<Id, PricebookEntry>();
                 map<Id, PricebookEntry> PricebookEntry_Map = new map<Id, PricebookEntry>();
-                List<PricebookEntry> PriceBookEntries = [SELECT Id, Name , Product2Id,  buildertek__Unit_Cost__c, buildertek__Markup__c, Pricebook2Id, Pricebook2.Name, IsActive FROM PricebookEntry ORDER BY CreatedDate ASC];
-                // List<PricebookEntry> PriceBookEntries = [SELECT Id, Name , Product2Id,  buildertek__Unit_Cost__c, buildertek__Markup__c, Pricebook2Id,Pricebook2.Name, IsActive FROM PricebookEntry WHERE (Product2Id IN: ProdutIds OR Pricebook2Id IN: PriceBookId ) AND IsActive = true ORDER BY CreatedDate ASC];
+                // List<PricebookEntry> PriceBookEntries = [SELECT Id, Name, Product2Id, buildertek__Vendor__c, buildertek__Unit_Cost__c, buildertek__Markup__c, Pricebook2Id, Pricebook2.Name, IsActive FROM PricebookEntry ORDER BY CreatedDate ASC LIMIT 50000];
+                List<PricebookEntry> PriceBookEntries = [SELECT Id, Name, Product2Id, buildertek__Vendor__c, buildertek__Unit_Cost__c, buildertek__Markup__c, Pricebook2Id, Pricebook2.Name, IsActive FROM PricebookEntry WHERE Product2Id IN: ProdutIds AND IsActive = true ORDER BY CreatedDate ASC LIMIT 50000];
                 
                 map<String, PricebookEntry> ProPric_Entry = new map<String, PricebookEntry>();
                 if(PriceBookEntries.size() > 0){
@@ -126,7 +126,7 @@ public without sharing class BT_CreateBOMfromTakeoffController {
                     BOMlineToCreate.buildertek__BT_Price_Book__c = relatedPricebookEntry != null ? relatedPricebookEntry.Pricebook2Id : tkoffline.buildertek__Price_Book__c;
                     BOMlineToCreate.buildertek__BL_UNIT_COST__c	= relatedPricebookEntry != null ? relatedPricebookEntry.buildertek__Unit_Cost__c : null;
                     BOMlineToCreate.buildertek__BL_MARKUP__c = relatedPricebookEntry != null ? relatedPricebookEntry.buildertek__Markup__c : null;
-                    BOMlineToCreate.buildertek__Vendor__c = tkoffline.buildertek__Vendor__c;
+                    BOMlineToCreate.buildertek__Vendor__c = tkoffline.buildertek__Vendor__c != null ? tkoffline.buildertek__Vendor__c : (relatedPricebookEntry != null ? relatedPricebookEntry.buildertek__Vendor__c : null);
                     BOMlineToCreate.buildertek__Cost_Code__c = tkoffline.buildertek__Cost_Code__c;
                     BOMlineToCreate.buildertek__Build_Phase__c = tkoffline.buildertek__Build_Phase__c;
                     BOMlineToCreate.buildertek__Selection_Sheet_Takeoff__c = BOMtoCreate.Id;
