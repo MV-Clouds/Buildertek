@@ -351,7 +351,7 @@ public without sharing class ManageBOMlinesController {
        // String queryList = 'Select Id,Name,buildertek__Vendor__c,buildertek__Vendor__r.Name,buildertek__Quantity__c,buildertek__Purchase_Order__c,buildertek__Purchase_Order__r.Name,buildertek__Upgrade_Price__c,buildertek__Standard__c,buildertek__Location_Picklist__c,buildertek__Product_Type__c,buildertek__Product_Type__r.Name,buildertek__Category__c,buildertek__Category__r.Name,buildertek__Trade_Type__c,buildertek__Trade_Type__r.Name,buildertek__Build_Phase__c,buildertek__Build_Phase__r.Name,buildertek__Product__c,buildertek__Product__r.Name from buildertek__Select_Sheet__c';
         //queryList = query +  ' where (buildertek__Selection_Sheet_Takeoff__c =: recordId) ';
        // query += ' ORDER BY Name ';
-          query += ' ORDER BY buildertek__Takeoff_Line__c ASC ';
+          query += ' ORDER BY buildertek__Build_Phase__r.Name Nulls Last,buildertek__Product__r.Name ASC Nulls Last ';
         system.debug(query);
         List<SheetInner> sheetList = new List<SheetInner>();
        List<buildertek__Select_Sheet__c> recList = Database.query(query);

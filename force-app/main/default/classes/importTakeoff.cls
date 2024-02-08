@@ -3,7 +3,7 @@ public with sharing class importTakeoff {
     @AuraEnabled(Cacheable=true)
     public static List<buildertek__Project_Takeoff__c> fetchTakeoff (String searchKeyword){
         String search = '%' + searchKeyword + '%';
-        List<buildertek__Project_Takeoff__c> takeoffList = new List<buildertek__Project_Takeoff__c>([SELECT Id, Name, buildertek__Build_Phase__c, buildertek__Status__c, buildertek__Project__r.Name, buildertek__Name__c, buildertek__Number_of_TakeOff_Lines__c FROM buildertek__Project_Takeoff__c WHERE buildertek__Status__c = 'Approved' AND (Name LIKE :search OR buildertek__Name__c LIKE :search) ORDER BY Name DESC]);
+        List<buildertek__Project_Takeoff__c> takeoffList = new List<buildertek__Project_Takeoff__c>([SELECT Id, Name, buildertek__Build_Phase__c, buildertek__Status__c, buildertek__Project__r.Name, buildertek__Name__c, buildertek__Number_of_TakeOff_Lines__c FROM buildertek__Project_Takeoff__c WHERE buildertek__Status__c = 'Approved' AND (Name LIKE :search OR buildertek__Name__c LIKE :search) ORDER BY Name ASC]);
 
         return takeoffList;
     }

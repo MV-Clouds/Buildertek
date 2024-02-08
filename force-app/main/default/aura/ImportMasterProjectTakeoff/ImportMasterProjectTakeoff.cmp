@@ -26,7 +26,7 @@
 				<thead>
 					<tr class="slds-text-title_caps">
 						<th scope="col"
-							style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-left-radius:5px;vertical-align: top;line-height: 2;">
+							style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-left-radius:5px;vertical-align: middle;line-height: 2;width: 50px;">
 							<ui:inputCheckbox aura:id="checkContractors" change="{!c.selectAll}" />
 						</th>
 						<th

@@ -2585,7 +2585,7 @@ buildertek__Budget__c budgetCopy = Database.query(query);*/
         List<buildertek__Expense__c> ExpenseList = new List<buildertek__Expense__c>();
         ExpenseList = [SELECT Id, Name, buildertek__Project__c, buildertek__Description__c,buildertek__Budget_Line__c, buildertek__Vendor__c, buildertek__Vendor__r.Name, buildertek__Budget__c,
                             buildertek__Total_Expense__c FROM buildertek__Expense__c
-                            WHERE buildertek__Budget_Line__c = null AND buildertek__Budget__c = null AND buildertek__Project__c=: budgetRec.buildertek__Project__c ORDER BY Name DESC];
+                            WHERE buildertek__Budget_Line__c = null AND buildertek__Budget__c = null AND buildertek__Project__c=: budgetRec.buildertek__Project__c ORDER BY Name ASC];
         System.debug('ExpenseList======>>>>>>'+ExpenseList);
 
         return ExpenseList;
@@ -3076,7 +3076,7 @@ buildertek__Budget__c budgetCopy = Database.query(query);*/
     public static list<buildertek__Billings__c> getSalesInvoice(String budgetId){
         try {
             String ProjectId = [SELECT Id, Name, buildertek__Project__c FROM  buildertek__Budget__c WHERE Id =: budgetId].buildertek__Project__c;
-            list<buildertek__Billings__c> salesInvoiceList = [SELECT Id, Name, buildertek__Budget__r.Name, buildertek__Project__r.Name, buildertek__Project__c, buildertek__Terms__c, buildertek__Amount__c, buildertek__Total_Amount_Tax__c  FROM buildertek__Billings__c WHERE buildertek__Project__c =: ProjectId AND buildertek__Budget__c = null AND buildertek__BT_Budget_Line__c = null];
+            list<buildertek__Billings__c> salesInvoiceList = [SELECT Id, Name, buildertek__Budget__r.Name, buildertek__Project__r.Name, buildertek__Project__c, buildertek__Terms__c, buildertek__Amount__c, buildertek__Total_Amount_Tax__c  FROM buildertek__Billings__c WHERE buildertek__Project__c =: ProjectId AND buildertek__Budget__c = null AND buildertek__BT_Budget_Line__c = null ORDER BY Name ASC];
             return salesInvoiceList;
         } catch (Exception e) {
             System.debug('error in getSalesInvoice => ' + e.getMessage() + ' at line no : '+ e.getLineNumber() );
@@ -3159,7 +3159,7 @@ buildertek__Budget__c budgetCopy = Database.query(query);*/
 
         List<buildertek__Account_Payable__c> invoicePOList = new List<buildertek__Account_Payable__c>();
         invoicePOList = [SELECT Id, Name, buildertek__Project__c, buildertek__Description__c,buildertek__BT_Budget_Line__c, buildertek__Net_Amount__c, buildertek__Budget__c  FROM buildertek__Account_Payable__c
-                        WHERE buildertek__BT_Budget_Line__c = null AND buildertek__Budget__c = null AND buildertek__Project__c=: budgetRec.buildertek__Project__c ORDER BY Name DESC];
+                        WHERE buildertek__BT_Budget_Line__c = null AND buildertek__Budget__c = null AND buildertek__Project__c=: budgetRec.buildertek__Project__c ORDER BY Name ASC];
         
         System.debug('invoicePOList======>>>>>>'+invoicePOList);
 
