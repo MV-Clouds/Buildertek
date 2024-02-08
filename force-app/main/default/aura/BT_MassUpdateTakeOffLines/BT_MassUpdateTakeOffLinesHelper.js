@@ -333,6 +333,7 @@
                     listOfRecords[index].buildertek__Cost_Code__c = product.buildertek__Cost_Code__c;
                     listOfRecords[index].buildertek__Build_Phase__c = ProductPhase_Vs_BuildPhase[product.buildertek__Quote_Group__c] ? ProductPhase_Vs_BuildPhase[product.buildertek__Quote_Group__c] : null;
                     listOfRecords[index].buildertek__Quantity__c = 1;
+                    listOfRecords[index].buildertek__Categories__c = product.buildertek__Category__c;
 
                 }
               }
@@ -344,6 +345,7 @@
                 listOfRecords[index].buildertek__Cost_Code__c = null;
                 listOfRecords[index].buildertek__Build_Phase__c = null;
                 listOfRecords[index].buildertek__Quantity__c = 0;
+                listOfRecords[index].buildertek__Categories__c = null;
               }
 
 
