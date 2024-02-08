@@ -255,35 +255,148 @@ public without sharing class ContractTriggerHandler{
             
         }
       
-    public void updateProjectContractAmount(Contract__c[] newContracts){
-        SET<Id> projectIds = new SET<Id>();
+    // public void updateProjectContractAmount(Contract__c[] newContracts){
+    //     SET<Id> projectIds = new SET<Id>();
 
-        for (buildertek__Contract__c cont : newContracts){
-            projectIds.add(cont.buildertek__Project__c);
-        }
+    //     for (buildertek__Contract__c cont : newContracts){
+    //         projectIds.add(cont.buildertek__Project__c);
+    //     }
         
-        AggregateResult[] groupedResults=[SELECT buildertek__Project__c, SUM(buildertek__Contract_Amount__c)contractAmt FROM buildertek__Contract__c WHERE  buildertek__Project__c IN:projectIds AND buildertek__Status__c='Approved' AND  RecordType.Name='Prime Contract' GROUP BY buildertek__Project__c];
+    //     AggregateResult[] groupedResults=[SELECT buildertek__Project__c, SUM(buildertek__Contract_Amount__c)contractAmt FROM buildertek__Contract__c WHERE  buildertek__Project__c IN:projectIds AND buildertek__Status__c='Approved' AND  RecordType.Name='Prime Contract' GROUP BY buildertek__Project__c];
 
-        // Create a map to store the contractAmt values by project ID
-        Map<Id, Decimal> projectContractAmtMap = new Map<Id, Decimal>();
-        for (AggregateResult result : groupedResults) {
-            Id projectId = (Id)result.get('buildertek__Project__c');
-            Decimal contractAmt = (Decimal)result.get('contractAmt');
-            projectContractAmtMap.put(projectId, contractAmt);
+    //     // Create a map to store the contractAmt values by project ID
+    //     Map<Id, Decimal> projectContractAmtMap = new Map<Id, Decimal>();
+    //     for (AggregateResult result : groupedResults) {
+    //         Id projectId = (Id)result.get('buildertek__Project__c');
+    //         Decimal contractAmt = (Decimal)result.get('contractAmt');
+    //         projectContractAmtMap.put(projectId, contractAmt);
+    //     }
+
+    //     // Now you can access the contractAmt value for a specific project ID
+    //     List<buildertek__Project__c> projectList=[SELECT Id, buildertek__Contract_Amount__c From buildertek__Project__c WHERE Id IN: projectIds];
+    //     List<buildertek__Project__c> newProjectList= new List<buildertek__Project__c>();
+
+    //     for(buildertek__Project__c project:projectList){
+    //         project.buildertek__Contract_Amount__c=projectContractAmtMap.get(project.Id);
+    //         newProjectList.add(project);
+    //     }
+    //     if(newProjectList.size() > 0){
+    //         update newProjectList;
+    //     }
+
+    // }
+
+    public void onAfterInsertForProject(List<buildertek__Contract__c> newContractList) {
+        try {
+            Set<Id> ProjectIds = new Set<Id>();
+            for (buildertek__Contract__c contract : newContractList) {
+                if(contract.buildertek__Project__c != null) {
+                    ProjectIds.add(contract.buildertek__Project__c);
+                }
+            }
+            updateAmountOnProject(ProjectIds);
+        } catch (Exception ex) {
+            System.debug('Error: ' + ex.getMessage());
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
         }
-
-        // Now you can access the contractAmt value for a specific project ID
-        List<buildertek__Project__c> projectList=[SELECT Id, buildertek__Contract_Amount__c From buildertek__Project__c WHERE Id IN: projectIds];
-        List<buildertek__Project__c> newProjectList= new List<buildertek__Project__c>();
-
-        for(buildertek__Project__c project:projectList){
-            project.buildertek__Contract_Amount__c=projectContractAmtMap.get(project.Id);
-            newProjectList.add(project);
+    }
+    
+    public void onAfterUpdateForProject(List<buildertek__Contract__c> newContractList, Map<Id, buildertek__Contract__c> oldContractMap) {
+        try {
+            Set<Id> ProjectIds = new Set<Id>();
+    
+            for (buildertek__Contract__c contract : newContractList) {
+                buildertek__Contract__c oldContract = oldContractMap.get(contract.Id);
+    
+                if (contract.buildertek__Project__c != oldContract.buildertek__Project__c ||
+                    contract.buildertek__Contract_Amount__c != oldContract.buildertek__Contract_Amount__c ||
+                    contract.buildertek__Tax_Rate__c != oldContract.buildertek__Tax_Rate__c ||
+                    contract.buildertek__Discount_Amount__c != oldContract.buildertek__Discount_Amount__c ||
+                    contract.buildertek__Markup_Amount__c != oldContract.buildertek__Markup_Amount__c ||
+                    contract.buildertek__Markup__c != oldContract.buildertek__Markup__c ||
+                    contract.buildertek__Discount__c != oldContract.buildertek__Discount__c ||
+                    contract.buildertek__Status__c != oldContract.buildertek__Status__c ||
+                    contract.RecordTypeId != oldContract.RecordTypeId) {
+                        if(oldContract.buildertek__Project__c != null){
+                            ProjectIds.add(oldContract.buildertek__Project__c);
+                        }
+                        
+                        if(contract.buildertek__Project__c != null){
+                            ProjectIds.add(contract.buildertek__Project__c);
+                        }
+                }
+            }
+    
+            if (!ProjectIds.isEmpty()) {
+                updateAmountOnProject(ProjectIds);
+            }
+        } catch (Exception ex) {
+            System.debug('Error: ' + ex.getMessage());
+    
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            
+            if (!storeExcCustomSetting.isEmpty() && storeExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
         }
-        if(newProjectList.size() > 0){
-            update newProjectList;
-        }
+    }    
 
+    public void onAfterDeleteForProject(List<buildertek__Contract__c> oldContractList) {
+        try {
+            Set<Id> ProjectIds = new Set<Id>();
+            for (buildertek__Contract__c contract : oldContractList) {
+                if(contract.buildertek__Project__c != null){
+                    ProjectIds.add(contract.buildertek__Project__c);
+                }
+            }
+            updateAmountOnProject(ProjectIds);
+        } catch (Exception ex) {
+            System.debug('Error: ' + ex.getMessage());
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
+        }
+    }
+
+    public void updateAmountOnProject(Set<Id> ProjectIds) {
+        try {
+            Map<Id, AggregateResult> totalAmountMap = new Map<Id, AggregateResult>();
+            for (AggregateResult aggregatedResult : [SELECT buildertek__Project__c, SUM(buildertek__Contract_Amount_Tax_Discount_SH__c) totalTaxAmount FROM buildertek__Contract__c WHERE buildertek__Project__c IN :ProjectIds AND buildertek__Status__c = 'Approved' AND  RecordType.Name = 'Prime Contract' GROUP BY buildertek__Project__c]){
+                Id ProId = (Id)aggregatedResult.get('buildertek__Project__c');
+                totalAmountMap.put(ProId, aggregatedResult);
+            }
+            
+            List<buildertek__Project__c> projectToUpdate = new List<buildertek__Project__c>();
+            
+            for (Id ProjectId :ProjectIds) {
+                buildertek__Project__c project = new buildertek__Project__c(Id = ProjectId);
+                if(totalAmountMap.containsKey(ProjectId)) {
+                    AggregateResult aggregatedResult = totalAmountMap.get(ProjectId);
+                    Decimal totalTaxAmount = (Decimal)aggregatedResult.get('totalTaxAmount');
+
+                    project.buildertek__Contract_Amount__c = totalTaxAmount;
+                    projectToUpdate.add(project);
+                } else {
+                    project.buildertek__Contract_Amount__c = 0;
+                    projectToUpdate.add(project);
+                }
+            }
+            System.debug('projectToUpdate: ' + projectToUpdate);
+            if (!projectToUpdate.isEmpty()) {
+                update projectToUpdate;
+            }
+
+        } catch (Exception ex) {
+            System.debug('Error: ' + ex.getMessage());
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
+        }
     }
    
     
