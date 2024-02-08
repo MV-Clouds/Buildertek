@@ -1,20 +1,20 @@
 public class AccountExpirationEmailSender implements Schedulable {
-    private List<Account> accountList;
+    private static Id emailTemplateId = [SELECT Id FROM EmailTemplate WHERE Name = 'Worker License Exp' LIMIT 1].Id;
+    private static Id contactId = [SELECT Id, Email FROM Contact limit 1].Id;
+    private Account account;
 
-    public AccountExpirationEmailSender(List<Account> accounts) {
-        this.accountList = accounts;
+    public AccountExpirationEmailSender(Account acc) {
+        this.account = acc;
     }
 
     public void execute(SchedulableContext sc) {
         Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
-        email.setToAddresses(new List<String>{'karan.pa@mvclouds.com'});
-        email.setSubject('Notification');
-        email.setPlainTextBody('This is a notification email for the following accounts:\n');
-        
-        for(Account acc : accountList) {
-            email.setPlainTextBody(email.getPlainTextBody() + acc.Name + '\n');
+        if (account.buildertek__Email_Address__c != null) {
+            email.setToAddresses(new List<String>{account.buildertek__Email_Address__c});
+            email.setTemplateId(emailTemplateId);
+            email.setWhatId(account.Id);
+            email.setTargetObjectId(contactId);
+            Messaging.sendEmail(new List<Messaging.SingleEmailMessage>{email});
         }
-
-        Messaging.sendEmail(new List<Messaging.SingleEmailMessage>{email});
     }
 }
