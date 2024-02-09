@@ -111,6 +111,15 @@ public with sharing class AccountTriggerHandler{
     }
 
     public void OnBeforeDelete(Account[] accountToDelete, Map<ID, Account> accountMap){
+        Set<String> jobNames = new Set<String>();
+        for (Account acc : accountToDelete) {
+            jobNames.add('EmailJob-Worker License Exp-' + acc.Id);
+            jobNames.add('EmailJob-Liability License Exp-' + acc.Id);
+        }
+        List<CronTrigger> jobs = [SELECT Id FROM CronTrigger WHERE CronJobDetail.Name IN :jobNames];
+        for (CronTrigger job : jobs) {
+            System.abortJob(job.Id);
+        }
     }
 
     public void OnAfterDelete(Account[] accountToDelete){
