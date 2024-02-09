@@ -157,6 +157,9 @@ public with sharing class AccountTriggerHandler{
                 Date expirationDate = (licenseType == 'Worker License Exp') ? acc.buildertek__Worker_s_Compensation_License_Expiration__c : acc.buildertek__General_Liability_License_Expiration__c;
                 Date jobDate = expirationDate.addDays(-daysToSubtract);
                 String cronExp = '0 0 10 ' + jobDate.day() + ' ' + jobDate.month() + ' ? ' + jobDate.year();
+                if (jobDate < Date.today() || (jobDate == Date.today() && System.now().hour() > 10)) {
+                    continue;
+                }
                 System.schedule(jobName,  cronExp, new AccountExpirationEmailSender(acc, licenseType));
             }
         }
