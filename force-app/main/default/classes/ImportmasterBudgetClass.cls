@@ -37,7 +37,8 @@ public with sharing class ImportmasterBudgetClass {
                                         CurrencyIsoCode,
                                         Original_Budget__c
                                         FROM buildertek__Budget__c
-                                        WHERE buildertek__Type__c = 'Master'];
+                                        WHERE buildertek__Type__c = 'Master' ORDER BY Name
+                                        ASC LIMIT 50000];
 
               }
         for(buildertek__Budget__c bud : quotesList){
@@ -47,6 +48,7 @@ public with sharing class ImportmasterBudgetClass {
             MasterBudgetsClassRecord.currencyCode = bud.CurrencyIsoCode;
             MasterBudgetsClassList.add(MasterBudgetsClassRecord);
         }
+
         return  MasterBudgetsClassList;
     }
 

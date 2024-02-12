@@ -74,7 +74,7 @@ public with sharing class PO_From_Selection_Sheet {
                                                     buildertek__Question_Group__r.buildertek__Section__r.buildertek__Selection__r.buildertek__Project__c
                                                     FROM buildertek__Question__c WHERE buildertek__Question_Group__r.buildertek__Section__r.buildertek__Selection__c =: recordId AND 
                                                     buildertek__Selected__c = true AND buildertek__Manufacturer__c != null AND buildertek__Product__c != null AND buildertek__Purchase_Order__c = null
-                                                    ORDER BY buildertek__Manufacturer__c];
+                                                    ORDER BY buildertek__Manufacturer__r.Name];
 
         buildertek__Selection__c sheet = new buildertek__Selection__c();
         sheet = [Select Id,Name From buildertek__Selection__c where ID =: recordId];

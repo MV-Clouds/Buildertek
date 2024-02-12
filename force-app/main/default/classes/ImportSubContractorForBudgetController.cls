@@ -68,7 +68,7 @@ public class ImportSubContractorForBudgetController {
                           
                          
                           FROM buildertek__Contract__c
-                          WHERE buildertek__Type__c = 'Master' and   RecordType.Name = 'Sub Contract' and (buildertek__Contract_End_Date__c = null or buildertek__Contract_End_Date__c >=: myDate)];    
+                          WHERE buildertek__Type__c = 'Master' and   RecordType.Name = 'Sub Contract' and (buildertek__Contract_End_Date__c = null or buildertek__Contract_End_Date__c >=: myDate) ORDER BY Name ASC];    
                
            }
         for(buildertek__Contract__c bud : rfqList){
@@ -165,7 +165,7 @@ public class ImportSubContractorForBudgetController {
                     buildertek__Signed_Contract_Date__c
                     FROM buildertek__Contract__c
                     WHERE buildertek__Type__c = 'Master'
-                    and  buildertek__Cost_Code__r.Name LIKE :name ];
+                    and  buildertek__Cost_Code__r.Name LIKE :name ORDER BY Name ASC];
         
         for(buildertek__Contract__c bud : rfqLists){
             MasterBudgetsClass MasterBudgetsClassRecord = new MasterBudgetsClass(); 
@@ -192,7 +192,7 @@ public class ImportSubContractorForBudgetController {
                     buildertek__Signed_Contract_Date__c
                     FROM buildertek__Contract__c
                     WHERE buildertek__Type__c = 'Master'
-                    and  buildertek__Vendor__r.Name LIKE :name ];
+                    and  buildertek__Vendor__r.Name LIKE :name ORDER BY Name ASC];
         
         for(buildertek__Contract__c bud : rfqLists){
             MasterBudgetsClass MasterBudgetsClassRecord = new MasterBudgetsClass(); 
@@ -219,7 +219,7 @@ public class ImportSubContractorForBudgetController {
                     buildertek__Signed_Contract_Date__c
                     FROM buildertek__Contract__c
                     WHERE buildertek__Type__c = 'Master'
-                    and  buildertek__Community__r.Name LIKE :name ];
+                    and  buildertek__Community__r.Name LIKE :name ORDER BY Name ASC];
         
         for(buildertek__Contract__c bud : rfqLists){
             MasterBudgetsClass MasterBudgetsClassRecord = new MasterBudgetsClass(); 

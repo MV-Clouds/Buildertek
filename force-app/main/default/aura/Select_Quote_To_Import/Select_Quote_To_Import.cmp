@@ -125,18 +125,19 @@
     			</aura:iteration>
     		</tbody>
     	</table>
-    	<br/>
-        <lightning:buttonGroup >
-            <lightning:button label="Previous" disabled="{!v.startPage == 0}"  
-                              onclick="{!c.previous}" variant="brand"
-                              iconName='utility:back'/>
-            &nbsp; &nbsp; &nbsp;
-            <lightning:button label="Next" disabled="{!v.endPage >= v.totalRecords}" 
-                              onclick="{!c.next}" variant="brand"
-                              iconName='utility:forward' iconPosition='right'/>
-        </lightning:buttonGroup>
     </div>
     <div class="slds-modal__footer">
+		<div class="slds-button-group" style="float:left;">
+            <lightning:buttonGroup>
+                <lightning:button label="Previous" disabled="{!v.startPage == 0}"  
+                              onclick="{!c.previous}" variant="brand"
+                              iconName='utility:back'/>
+				&nbsp; &nbsp; &nbsp;
+				<lightning:button label="Next" disabled="{!v.endPage >= v.totalRecords}" 
+								onclick="{!c.next}" variant="brand"
+								iconName='utility:forward' iconPosition='right'/>
+            </lightning:buttonGroup>
+        </div>
     	<button class="slds-button slds-button--neutral" onclick="{!c.closeModel}" >Cancel</button>
     	<button class="slds-button slds-button--brand" onclick="{!c.importQuote}">Import Quote Lines</button>
     </div>

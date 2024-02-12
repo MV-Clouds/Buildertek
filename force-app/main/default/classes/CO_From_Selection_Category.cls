@@ -10,14 +10,14 @@ public with sharing class CO_From_Selection_Category {
                             buildertek__Question_Group__r.buildertek__Section__r.buildertek__Selection__r.buildertek__Project__c, 
                             buildertek__Question_Group__c, buildertek__Question_Group__r.Name FROM buildertek__Question__c
                             WHERE buildertek__Question_Group__r.buildertek__Section__c =: recordId AND buildertek__Upgrade__c = true 
-                            AND buildertek__Change_Order__c = null];
+                            AND buildertek__Change_Order__c = null ORDER BY buildertek__Question_Group__r.Name,Name ASC];
 
         } else {
             optionList = [SELECT Id, Name, buildertek__Upgrade__c, buildertek__Upgrade_Costs__c, buildertek__Change_Order__c, 
                             buildertek__Manufacturer__c, buildertek__Manufacturer__r.Name, buildertek__Quantity__c, buildertek__Cost__c, 
                             buildertek__Question_Group__r.buildertek__Section__r.buildertek__Selection__r.buildertek__Project__c,
                             buildertek__Question_Group__c, buildertek__Question_Group__r.Name FROM buildertek__Question__c 
-                            WHERE buildertek__Question_Group__r.buildertek__Section__c =: recordId AND buildertek__Change_Order__c = null];
+                            WHERE buildertek__Question_Group__r.buildertek__Section__c =: recordId AND buildertek__Change_Order__c = null ORDER BY buildertek__Question_Group__r.Name,Name ASC];
         }
 
         System.debug('optionList => '+optionList);
