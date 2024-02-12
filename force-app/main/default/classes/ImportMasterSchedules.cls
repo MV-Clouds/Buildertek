@@ -1,15 +1,16 @@
 public with sharing class ImportMasterSchedules{
    
     @AuraEnabled
-    public static object getMasterSchedule(String recordId){
+    public static object getMasterSchedule(String recordId, String searchKeyword){
         List<buildertek__Schedule__c> schedulesList;
+        String searchString = '%' + searchKeyword + '%';
         /* if (Schema.sObjectType.buildertek__Schedule__c.fields.Id.isAccessible() &&
          Schema.sObjectType.buildertek__Schedule__c.fields.Name.isAccessible() &&
          Schema.sObjectType.buildertek__Schedule__c.fields.buildertek__Description__c.isAccessible() &&
          Schema.sObjectType.buildertek__Schedule__c.fields.buildertek__Type__c.isAccessible() ){  */
         schedulesList = [SELECT Id, Name, buildertek__Description__c, buildertek__Type__c, buildertek__Community__c
                          FROM buildertek__Schedule__c
-                         WHERE buildertek__Type__c = 'Master' AND Id != :recordId];
+                         WHERE buildertek__Type__c = 'Master' AND Name LIKE:searchString AND ID != :recordId ORDER BY Name ASC];
         //}
         List<MasterScheduleClass> MasterScheduleClassList = new List<MasterScheduleClass>();
         for (buildertek__Schedule__c sch : schedulesList){

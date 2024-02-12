@@ -8,6 +8,10 @@
 
 
             var action = component.get("c.getMasterBudgets");
+            action.setParams({		
+                'recordId': component.get("v.recordId"),	
+                'searchKeyword' : ''
+            });
             action.setCallback(this, function(response){
                 console.log({response});
                 var state = response.getState();
@@ -255,4 +259,7 @@
         component.set("v.endPage",end);
         component.set('v.PaginationList', Paginationlist);
     },
+    onSearch: function (component, event, helper) {
+        helper.doSearchHelper(component, event, helper);
+   },
 })

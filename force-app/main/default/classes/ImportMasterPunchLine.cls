@@ -15,10 +15,11 @@ Change No.          Developer Name              Date                Description
 public with sharing class ImportMasterPunchLine {
     
     @AuraEnabled
-    public static List<buildertek__Punch_List__c> getMasterPL() {
+    public static List<buildertek__Punch_List__c> getMasterPL(String recordId, String searchKeyword) {
         List<buildertek__Punch_List__c> masterPLList = new List<buildertek__Punch_List__c>();
+        String searchString = '%' + searchKeyword + '%';
         try {
-            masterPLList = [SELECT Id, Name, buildertek__Description__c, buildertek__Project__c, buildertek__Project__r.Name, buildertek__Type__c FROM buildertek__Punch_List__c WHERE buildertek__Type__c = 'Master'];
+            masterPLList = [SELECT Id, Name, buildertek__Description__c, buildertek__Project__c, buildertek__Project__r.Name, buildertek__Type__c FROM buildertek__Punch_List__c WHERE buildertek__Type__c = 'Master' AND Name LIKE:searchString AND ID != :recordId ORDER BY Name ASC limit 50000];
 
             return masterPLList;
         } catch (Exception e) {

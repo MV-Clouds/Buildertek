@@ -1,12 +1,12 @@
 public with sharing class ImportMasterPurchaseOrderController {
 
     @AuraEnabled
-    public static object getMasterPO(){
+    public static object getMasterPO(String recordId, String searchKeyword){
         try {
             list<buildertek__Purchase_Order__c> masterPOList;
-
+            String searchString = '%' + searchKeyword + '%';
             masterPOList = [SELECT Id, Name, buildertek__Type__c, buildertek__PO_Total__c , buildertek__Description__c FROM buildertek__Purchase_Order__c 
-                                                WHERE buildertek__PO_Type__c = 'Master'
+                                                WHERE buildertek__PO_Type__c = 'Master' AND ID != :recordId AND Name LIKE:searchString
                                                 ORDER BY Name
                                                 ASC limit 50000]; 
                                                 

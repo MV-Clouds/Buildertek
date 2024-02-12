@@ -2,7 +2,7 @@
     <aura:attribute name="recordId" type="string" />
     <aura:attribute name="selectionList" type="List"/>
     <aura:attribute name="isAllSelected" type="Boolean" default="false"/>
-    <aura:attribute name="loading" type="Boolean" default="false"/>
+    <aura:attribute name="Spinner" type="Boolean" default="false"/>
     <aura:handler name="change" value="{!v.isAllSelected}" action="{!c.selectionChange}"/>
     
     <aura:attribute name="PaginationList" type="Object"/>
@@ -10,22 +10,32 @@
     <aura:attribute name="endPage" type="Integer"/>
     <aura:attribute name="totalRecords" type="Integer"/>
     <aura:attribute name="pageSize" type="Integer" default="10"/>
+    <aura:attribute name="searchKeyword" type="String" default="" />
+    <aura:attribute name="disableBtn" type="Boolean" default="false" />
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
     <lightning:overlayLibrary aura:id="overlayLib"/>
     <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/>
     <div class="slds-modal__header" style="font-size:17px;">
         Import Master Selection Sheet
     </div>
+    <aura:html tag="style">
+		.lbl .slds-form-element__label{
+			display: none;
+		}
+	</aura:html>
     <div class="slds-modal__content slds-p-around--large">
         <div class="slds slds-scope">
+            <lightning:layoutItem padding="around-small" size="12">
+				<lightning:input class="lbl" value="{!v.searchKeyword}" placeholder="Search By Purchase Order Name..." name="searchField" onchange="{! c.onSearch }"/>
+			</lightning:layoutItem>
             <table class="slds-table slds-table_bordered slds-table_fixed-layout" role="grid">
                 <thead>
                     <tr class="slds-text-title_caps"> 
-                        <th width="10%" scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-left-radius:5px;vertical-align: top;line-height: 2;">
-                            <ui:inputCheckbox aura:id="checkContractors" value="{!v.isAllSelected}"  name="{!v.isAllSelected}"  change="{!c.selectAll}" />		
+                        <th width="10%" scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;width: 30px;">
+                            <!-- <ui:inputCheckbox aura:id="checkContractors" value="{!v.isAllSelected}"  name="{!v.isAllSelected}"  change="{!c.selectAll}" />		 -->
                         </th>
                         <th width="40%" style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
-                            Title
+                            Name
                         </th>
                         <th width="25%" style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
                             Project
@@ -36,7 +46,7 @@
                     </tr>  
                 </thead>
                 <tbody>
-                    <aura:iteration items="{!v.selectionList}" var="rec">
+                    <aura:iteration items="{!v.PaginationList}" var="rec">
                         <tr class="slds-hint-parent">
                             <aura:if isTrue="{!rec.Id != null}">
                                 <td style="width: 30px;">
@@ -56,16 +66,6 @@
                     </aura:iteration>
                 </tbody>
             </table>
-            <br/>
-            <lightning:buttonGroup >
-                <lightning:button label="Previous" disabled="{!v.startPage == 0}"  
-                                  onclick="{!c.previous}" variant="brand"
-                                  iconName='utility:back'/>
-                &nbsp; &nbsp; &nbsp;
-                <lightning:button label="Next" disabled="{!v.endPage >= v.totalRecords}" 
-                                  onclick="{!c.next}" variant="brand"
-                                  iconName='utility:forward' iconPosition='right'/>
-            </lightning:buttonGroup>
         </div> 
         <aura:if isTrue="{!v.Spinner}">
             <div aura:id="spinnerId" class="slds-spinner_container">
@@ -81,12 +81,18 @@
         </aura:if>
     </div>
     <div class="slds-modal__footer">
+        <div class="slds-float_left">
+            <lightning:buttonGroup >
+                <lightning:button label="Previous" disabled="{!v.startPage == 0}"  
+                                  onclick="{!c.previous}" variant="brand"
+                                  iconName='utility:back'/>
+                &nbsp; &nbsp; &nbsp;
+                <lightning:button label="Next" disabled="{!v.endPage >= v.totalRecords}" 
+                                  onclick="{!c.next}" variant="brand"
+                                  iconName='utility:forward' iconPosition='right'/>
+            </lightning:buttonGroup>
+        </div>
         <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}" >Cancel</button>
         <button class="slds-button slds-button--brand" onclick="{!c.importSelections}">Import Master Selections</button>
-    </div>
-    <div class="loading_wheel">
-        <aura:if isTrue="{! v.loading }">
-            <lightning:spinner alternativeText="Loading" size="large" variant="brand"/>
-        </aura:if>
     </div>
 </aura:component>

@@ -26,5 +26,8 @@
 
 	handleCheck: function (component, event, helper) {
 		helper.handleCheck(component, event, helper);
-	}
+	},
+	onSearch: function (component, event, helper) {
+        helper.doSearchHelper(component, event, helper);
+   },
 })

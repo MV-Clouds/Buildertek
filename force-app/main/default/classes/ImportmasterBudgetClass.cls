@@ -1,7 +1,8 @@
 public with sharing class ImportmasterBudgetClass {
     @AuraEnabled
-    public static object getMasterBudgets(){
+    public static object getMasterBudgets(String recordId, String searchKeyword){
         list<buildertek__Master_Budget__c> masterBudgetList;
+        String searchString = '%' + searchKeyword + '%';
         If(Schema.sObjectType.buildertek__Master_Budget__c.fields.Name.isAccessible() &&
               Schema.sObjectType.buildertek__Master_Budget__c.fields.Id.isAccessible() &&
               Schema.sObjectType.buildertek__Master_Budget__c.fields.buildertek__Type__c.isAccessible() &&
@@ -10,8 +11,10 @@ public with sharing class ImportmasterBudgetClass {
                                             Name,
                                             buildertek__Type__c,
                                             Original_Budget__c,
+                                            buildertek__Project__r.Name,
                                             CurrencyIsoCode
                                             from buildertek__Master_Budget__c
+                                            WHERE Name LIKE:searchString AND ID != :recordId
                                             ORDER BY Name
                                             ASC limit 50000];
               }
@@ -37,7 +40,7 @@ public with sharing class ImportmasterBudgetClass {
                                         CurrencyIsoCode,
                                         Original_Budget__c
                                         FROM buildertek__Budget__c
-                                        WHERE buildertek__Type__c = 'Master'];
+                                        WHERE buildertek__Type__c = 'Master' AND Name LIKE:searchString AND ID != :recordId ORDER BY Name ASC];
 
               }
         for(buildertek__Budget__c bud : quotesList){
