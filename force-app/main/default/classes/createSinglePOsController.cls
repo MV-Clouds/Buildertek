@@ -6,7 +6,7 @@ public with sharing class createSinglePOsController {
         try {
             buildertek__Project_Selection_Sheet_Takeoff__c BOM = [SELECT Id, Name, buildertek__Name__c, buildertek__Takeoff__c, buildertek__Project__c FROM buildertek__Project_Selection_Sheet_Takeoff__c WHERE Id = :bomId];
 
-            List<buildertek__Select_Sheet__c> BOMLines = [SELECT Id, Name, buildertek__Selection_Sheet_Takeoff__c, buildertek__Vendor__c, buildertek__Vendor__r.Name, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.Name, buildertek__Purchase_Order_Line__c, buildertek__Quantity__c, buildertek__Total_Sales_Price__c, buildertek__Total_Costs__c, buildertek__BL_UNIT_COST__c, buildertek__BT_Price_Book__c, buildertek__BT_Price_Book__r.Name, buildertek__Product__c, buildertek__Product__r.Name, buildertek__Cost_Code__c, buildertek__Build_Phase__c FROM buildertek__Select_Sheet__c WHERE buildertek__Selection_Sheet_Takeoff__c = :bomId];
+            List<buildertek__Select_Sheet__c> BOMLines = [SELECT Id, Name, buildertek__Selection_Sheet_Takeoff__c, buildertek__Vendor__c, buildertek__Vendor__r.Name, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.Name, buildertek__Purchase_Order_Line__c, buildertek__Quantity__c, buildertek__Total_Sales_Price__c, buildertek__Total_Costs__c, buildertek__BL_UNIT_COST__c, buildertek__BT_Price_Book__c, buildertek__BT_Price_Book__r.Name, buildertek__Product__c, buildertek__Product__r.Name, buildertek__Cost_Code__c, buildertek__Build_Phase__c, buildertek__Category__c FROM buildertek__Select_Sheet__c WHERE buildertek__Selection_Sheet_Takeoff__c = :bomId];
             
             if (!BOMLines.isEmpty()) {
                 boolean AllBOMlinesAssigedWithPO =  true;
@@ -29,10 +29,11 @@ public with sharing class createSinglePOsController {
                 }
                 else if(AllBOMlinesAssigedWithPO == true){
                     returnValue.state = 'Error';
-                    returnValue.returnMessage = 'All PO lines are already assiged to PO.';
+                    returnValue.returnMessage = 'All BOM lines are already assiged to PO.';
                 } else {
                     List<buildertek__Purchase_Order__c> createPOList = new List<buildertek__Purchase_Order__c>();
                     Map<Id, buildertek__Purchase_Order__c> poMap = new Map<Id, buildertek__Purchase_Order__c>();
+                    Map<Id, String> VendorId_Category = new Map<Id, String>();
                     for (buildertek__Select_Sheet__c bomline : BOMLines) {
                         if (bomline.buildertek__Vendor__c != null && bomline.buildertek__Purchase_Order__c == null){
                             buildertek__Purchase_Order__c POtoCreate = new buildertek__Purchase_Order__c();
@@ -45,6 +46,8 @@ public with sharing class createSinglePOsController {
                             POtoCreate.buildertek__BT_Build_Phase__c = bomline.buildertek__Build_Phase__c;
                             createPOList.add(POtoCreate);
                             poMap.put(bomline.Id, POtoCreate);
+                            VendorId_Category.put(bomline.buildertek__Vendor__c, bomline.buildertek__Category__c);
+
                         }
                     }
                     
@@ -97,7 +100,7 @@ public with sharing class createSinglePOsController {
                                 scheduleId = scheduleList[0].Id;
                                 System.debug('matched schedule : ' + scheduleList[0].buildertek__Description__c);
                             }
-                            List<buildertek__Project_Task__c> ScheduleItems = [SELECT Id, Name, buildertek__Schedule__c,buildertek__Contractor__c, buildertek__Cost_Code__c,buildertek__Phase__c, buildertek__Completion__c,buildertek__Start__c,buildertek__Finish__c FROM buildertek__Project_Task__c WHERE buildertek__Schedule__c =: scheduleId ORDER BY CreatedDate DESC];
+                            List<buildertek__Project_Task__c> ScheduleItems = [SELECT Id, Name, buildertek__Schedule__c,buildertek__Contractor__c, buildertek__Cost_Code__c,buildertek__Phase__c, buildertek__Completion__c,buildertek__Start__c,buildertek__Finish__c, buildertek__BT_Category__c FROM buildertek__Project_Task__c WHERE buildertek__Schedule__c =: scheduleId ORDER BY CreatedDate DESC];
 
                             Map<Id, buildertek__Project_Task__c> PO_to_matchedSchItems = new Map<Id, buildertek__Project_Task__c>();
                             List<buildertek__Purchase_Order__c> poToUpdate = new List<buildertek__Purchase_Order__c>();
@@ -107,7 +110,9 @@ public with sharing class createSinglePOsController {
                                     for(buildertek__Project_Task__c SchItem : ScheduleItems){
                                         String schItemPhaseName = SchItem.buildertek__Phase__c != null ? SchItem.buildertek__Phase__c.toLowercase() : null;
                                         String poPhaseName = PO.buildertek__BT_Build_Phase__r.Name != null ? PO.buildertek__BT_Build_Phase__r.Name.toLowercase() : null;
-                                        if(SchItem.buildertek__Contractor__c == PO.buildertek__Vendor__c && schItemPhaseName == poPhaseName && SchItem.buildertek__Cost_Code__c == PO.buildertek__Cost_Code__c && !PO_to_matchedSchItems.containsKey(PO.Id)) {
+                                        String Category = VendorId_Category.containsKey(PO.buildertek__Vendor__c) ? VendorId_Category.get(PO.buildertek__Vendor__c) : null;
+
+                                        if(SchItem.buildertek__Contractor__c == PO.buildertek__Vendor__c && schItemPhaseName == poPhaseName && SchItem.buildertek__Cost_Code__c == PO.buildertek__Cost_Code__c && SchItem.buildertek__BT_Category__c == Category && !PO_to_matchedSchItems.containsKey(PO.Id)) {
                                             PO_to_matchedSchItems.put(PO.Id, SchItem);
                                             poToUpdate.add(PO);
                                         }
