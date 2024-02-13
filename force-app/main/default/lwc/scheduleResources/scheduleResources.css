@@ -1,0 +1,42 @@
+.custom-card {
+    background-color: #f7f7f8;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header-row {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 1rem;
+    background-color: #4a90e2;
+    color: #ffffff;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+.header-text {
+    margin: 0;
+}
+
+.data-row {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.data-row:nth-child(even) {
+    background-color: #f0f8ff;
+}
+
+.data-row:nth-child(odd) {
+    background-color: #ffffff;
+}
+
+.data-row:hover {
+    background-color: #ebf4fa;
+}
