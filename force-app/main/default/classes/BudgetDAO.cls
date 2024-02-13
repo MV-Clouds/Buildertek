@@ -3232,7 +3232,7 @@ buildertek__Budget__c budgetCopy = Database.query(query);*/
             }
         }
         String query = 'SELECT Id, '+apiString;
-        query += 'buildertek__Sub_Grouping__c, buildertek__Sub_Grouping__r.Name, buildertek__Group__c, buildertek__Group__r.Name ';
+        query += 'buildertek__Sub_Grouping__c, buildertek__Sub_Grouping__r.Name, buildertek__Group__c, buildertek__Group__r.Name, buildertek__Category__c, buildertek__Category__r.Name ';
         query += 'FROM buildertek__Budget_Item__c WHERE buildertek__Budget__c =\''+budgetId+'\''+' ORDER BY '+groupingList[0];
         if (groupingList.size() > 1) {
             query += ', '+groupingList[1];
