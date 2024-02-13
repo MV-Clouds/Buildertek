@@ -14,8 +14,8 @@ public with sharing class SyncVendorScheduleItem{
             String projectId = schedule.buildertek__Project__c;
 
             if (!String.isBlank(projectId)) {
-                wrapper.vendorList = [SELECT Id, Name, buildertek__Account__c, buildertek__Account__r.Name, buildertek__BT_Cost_Code__c, buildertek__BT_Grouping__c, buildertek__Trade_Type__c FROM buildertek__Project_Vendors__c WHERE buildertek__BT_Project__c =: projectId AND (buildertek__BT_Cost_Code__c != null OR buildertek__Trade_Type__c != null OR buildertek__BT_Grouping__c != null) LIMIT 1000];
-                wrapper.schedulItemList = [SELECT Id, Name, buildertek__Start__c, buildertek__Contractor__c, buildertek__Contractor__r.Name, buildertek__Finish__c, buildertek__Type__c, buildertek__Cost_Code__c, buildertek__Trade_Type__c, buildertek__BT_Grouping__c from buildertek__Project_task__c Where buildertek__Project__c =: projectId AND (buildertek__Cost_Code__c != null OR buildertek__Trade_Type__c != null OR buildertek__BT_Grouping__c != null) AND buildertek__Contractor__c = null AND buildertek__Type__c != 'Milestone'];
+                wrapper.vendorList = [SELECT Id, Name, buildertek__Account__c, buildertek__Account__r.Name, buildertek__BT_Cost_Code__c, buildertek__BT_Grouping__c, buildertek__Trade_Type__c FROM buildertek__Project_Vendors__c WHERE buildertek__BT_Project__c =: projectId AND (buildertek__BT_Cost_Code__c != null OR buildertek__Trade_Type__c != null OR buildertek__BT_Grouping__c != null) ORDER BY buildertek__Account__r.Name LIMIT 1000];
+                wrapper.schedulItemList = [SELECT Id, Name, buildertek__Start__c, buildertek__Contractor__c, buildertek__Contractor__r.Name, buildertek__Finish__c, buildertek__Type__c, buildertek__Cost_Code__c, buildertek__Trade_Type__c, buildertek__Vendor_Grouping__c from buildertek__Project_task__c Where buildertek__Project__c =: projectId AND (buildertek__Cost_Code__c != null OR buildertek__Trade_Type__c != null OR buildertek__Vendor_Grouping__c != null) AND buildertek__Contractor__c = null AND buildertek__Type__c != 'Milestone'];
                 wrapper.Message = 'success';
                 return wrapper;
             } else {

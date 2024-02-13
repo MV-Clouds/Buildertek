@@ -4,8 +4,8 @@
 
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
 
-    <aura:attribute name="vendorList" type="buildertek__Project_Vendors__c[]" />
-    <aura:attribute name="scheduleItemList" type="buildertek__Project_task__c[]" />
+    <aura:attribute name="vendorList" type="Project_Vendors__c[]" />
+    <aura:attribute name="scheduleItemList" type="Project_Task__c[]" />
 
     <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
     <c:BT_Spinner/>
