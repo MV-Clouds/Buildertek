@@ -1,33 +1,92 @@
-
 import { LightningElement, api, track } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import fetchScheduleData from '@salesforce/apex/scheduleResourceController.fetchScheduleData';
+import getScheduleData from "@salesforce/apex/GetProjectAndScheduleForGanttCmp.getScheduleData";
 
 export default class ScheduleResources extends LightningElement {
     @api recordId;
     @track isLoading = false;
     @track tableData = [];
+    @track isScheduleSelected = false;
+    @track scheduleWithoutProjectList = [];
+    @track projectOptions = [];
+    @track mapOfSchedulesOptionsByProject = {};
+    @track SchedulesOptions = [];
+    @track ProjectNameSet = [];
+    @track selectedProjectId;
+    @track selectedScheduleId;
+    @track selectedScheduleIdForJS;
 
     connectedCallback() {
-        this.scheduleData();
+        this.getScheduleList();
+    }
+
+    getScheduleList() {
+        getScheduleData()
+            .then((result) => {
+                console.log('result', result);
+                this.scheduleWithoutProjectList = result.scheduleWithoutProjectList;
+                this.mapOfSchedulesOptionsByProject = result.mapOfSchedulesByProject;
+                this.ProjectNameSet.push({ label: 'No Project', value: '' })
+                for (let key in this.mapOfSchedulesOptionsByProject) {
+                    this.ProjectNameSet.push({ label: this.mapOfSchedulesOptionsByProject[key][0].buildertek__Project__r.Name, value: this.mapOfSchedulesOptionsByProject[key][0].buildertek__Project__r.Id });
+                }
+                this.projectOptions = this.ProjectNameSet;
+                console.log('this.projectOptions', this.projectOptions);
+            })
+            .catch((error) => {
+                console.log('Error in getting schedule list', error);
+                this.dispatchEvent(
+                    new ShowToastEvent({
+                        title: "Error",
+                        message: error.message,
+                        variant: "error",
+                    })
+                );
+            });
+    }
+
+    handleChange(event) {
+        var scheduleWithoutProjectList = [];
+        this.callscheduleComponent = false;
+        if (event.target.name === 'project') {
+            this.selectedProjectId = event.detail.value;
+            this.isDisabled = true;
+        } else if (event.target.name === 'schedule') {
+            this.selectedScheduleIdForJS = event.detail.value;
+            this.selectedScheduleId = event.detail.value;
+            this.isDisabled = false;
+        }
+
+        if (this.selectedProjectId === '') {
+            this.scheduleWithoutProjectList.forEach(ele => {
+                scheduleWithoutProjectList.push({ label: ele.buildertek__Description__c, value: ele.Id });
+            });
+            this.SchedulesOptions = scheduleWithoutProjectList;
+        } else {
+            this.mapOfSchedulesOptionsByProject[this.selectedProjectId].forEach(ele => {
+                scheduleWithoutProjectList.push({ label: ele.buildertek__Description__c, value: ele.Id });
+            })
+            this.SchedulesOptions = scheduleWithoutProjectList;
+        }
     }
 
     scheduleData() {
         this.isLoading = true;
-        fetchScheduleData({ scheduleId: this.recordId })
+        fetchScheduleData({ scheduleId: this.selectedScheduleId ? this.selectedScheduleId : this.selectedScheduleIdForJS})
             .then((result) => {
                 if (result) {
                     console.log('schedule Data:', JSON.stringify(result));
                     this.tableData = result.scheduleList.map(task => {
                         return {
                             id: task.Id,
-                            project: task.buildertek__Schedule__r.buildertek__Project__r.Name,
+                            project: task.buildertek__Schedule__r.hasOwnProperty('buildertek__Project__r') ? task.buildertek__Schedule__r.buildertek__Project__r.Name : '',
                             schedule: task.buildertek__Schedule__r.buildertek__Description__c,
                             taskName: task.Name,
-                            internalVendor: task.buildertek__Internal_Resource__c ? this.findInternalResource(task.buildertek__Internal_Resource__c).Name : '',
-                            vendorResources1: task.buildertek__Vendor_Resource_1__c ? this.findContractorResource(task.buildertek__Vendor_Resource_1__c) : '',
-                            vendorResources2: task.buildertek__Vendor_Resource_2__c ? this.findContractorResource(task.buildertek__Vendor_Resource_2__c) : '',
-                            vendorResources3: task.buildertek__Vendor_Resource_3__c ? this.findContractorResource(task.buildertek__Vendor_Resource_3__c) : '',
+                            vendor: task.hasOwnProperty('buildertek__Contractor__r') ? task.buildertek__Contractor__r.Name : '',
+                            vendorResources1: task.hasOwnProperty('buildertek__Contractor_Resource_1__r') ? task.buildertek__Contractor_Resource_1__r.Name : '',
+                            vendorResources2: task.hasOwnProperty('buildertek__Contractor_Resource_2__r') ? task.buildertek__Contractor_Resource_2__r.Name : '',
+                            vendorResources3: task.hasOwnProperty('buildertek__Contractor_Resource_3__r') ? task.buildertek__Contractor_Resource_3__r.Name : '',
                             startDate: task.buildertek__Start__c,
                             endDate: task.buildertek__Finish_Date__c
                         };
@@ -43,13 +102,15 @@ export default class ScheduleResources extends LightningElement {
             });
     }
 
-    findInternalResource(internalResourceId) {
-        return this.result.internalResourcesList.find(resource => resource.Id === internalResourceId) || {};
-    }
-
-    findContractorResource(contractorResourceId) {
-        const contractorResource = this.result.contractorAndResourcesList.find(contractor => contractor.Id === contractorResourceId);
-        return contractorResource ? contractorResource.Name : '';
+    handleScheduleClick() {
+        if (this.selectedScheduleIdForJS) {
+            this.isScheduleSelected = true;
+            console.log('Project Id ==>', this.selectedProjectId);
+            console.log('Schedule Id ==>', this.selectedScheduleId);
+            this.scheduleData();
+        } else {
+            this.showToast('Error', 'Please select a schedule', 'error');
+        }
     }
 
     showToast(title, message, variant) {
