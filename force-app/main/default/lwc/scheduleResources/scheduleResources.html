@@ -1,21 +1,22 @@
 <template>
-    <lightning-card title="Manage Schedule Resources" icon-name="custom:custom14">
-        <div class="slds-p-around_x-small picklistcombo">
-            <div class="picklist">
-                <lightning-combobox name="project" value={selectedProjectId} options={projectOptions}
-                    onchange={handleChange} placeholder="Select Project"></lightning-combobox>
+    <div if:false={recordId}>
+        <lightning-card title="Manage Schedule Resources" icon-name="custom:custom14">
+            <div class="slds-p-around_x-small picklistcombo">
+                <div class="picklist">
+                    <lightning-combobox name="project" value={selectedProjectId} options={projectOptions}
+                        onchange={handleChange} placeholder="Select Project"></lightning-combobox>
+                </div>
+                <div class="picklist">
+                    <lightning-combobox name="schedule" value={selectedScheduleId} options={SchedulesOptions}
+                        onchange={handleChange} placeholder="Select Schedule"></lightning-combobox>
+                </div>
+                <div class="btnContainer">
+                    <lightning-button variant="brand" type="submit" label="Manage Schedule"
+                        onclick={handleScheduleClick} disabled={isDisabled}></lightning-button>
+                </div>
             </div>
-            <div class="picklist">
-                <lightning-combobox name="schedule" value={selectedScheduleId} options={SchedulesOptions}
-                    onchange={handleChange} placeholder="Select Schedule"></lightning-combobox>
-            </div>
-            <div class="btnContainer">
-                <lightning-button variant="brand" type="submit" label="Manage Schedule" onclick={handleScheduleClick}
-                    disabled={isDisabled}></lightning-button>
-            </div>
-        </div>
-    </lightning-card>
-
+        </lightning-card>
+    </div>
     <div if:true={isScheduleSelected}>
         <lightning-card class="custom-card">
             <div class="slds-p-around_medium">

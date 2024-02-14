@@ -18,7 +18,7 @@ export default class ScheduleResources extends LightningElement {
     @track selectedScheduleIdForJS;
 
     connectedCallback() {
-        this.getScheduleList();
+        this.recordId ? (this.scheduleData(), this.isScheduleSelected = true) : this.getScheduleList();
     }
 
     getScheduleList() {
@@ -36,13 +36,7 @@ export default class ScheduleResources extends LightningElement {
             })
             .catch((error) => {
                 console.log('Error in getting schedule list', error);
-                this.dispatchEvent(
-                    new ShowToastEvent({
-                        title: "Error",
-                        message: error.message,
-                        variant: "error",
-                    })
-                );
+                this.showToast('Error', 'Failed to retrieve the schedule list. Please try again later.', 'error');
             });
     }
 
@@ -73,7 +67,7 @@ export default class ScheduleResources extends LightningElement {
 
     scheduleData() {
         this.isLoading = true;
-        fetchScheduleData({ scheduleId: this.selectedScheduleId ? this.selectedScheduleId : this.selectedScheduleIdForJS})
+        fetchScheduleData({ scheduleId: this.recordId ? this.recordId : (this.selectedScheduleId ? this.selectedScheduleId : this.selectedScheduleIdForJS) })
             .then((result) => {
                 if (result) {
                     console.log('schedule Data:', JSON.stringify(result));
@@ -95,7 +89,7 @@ export default class ScheduleResources extends LightningElement {
             })
             .catch((error) => {
                 console.log('Error ==>', error);
-                this.showToast('Error', error, 'error');
+                this.showToast('Error', 'There was an error while retrieving the schedule data. Please contact the administrator to resolve this issue.', 'error');
             })
             .finally(() => {
                 this.isLoading = false;
