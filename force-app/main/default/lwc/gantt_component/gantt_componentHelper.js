@@ -339,7 +339,8 @@ function makeComboBoxDataForResourceData(listOfContractors, listOfUsers) {
 //* auther : Nishit Suthar
 //* Date : 24th Aug 2023
 //* this method is used to calculate business days between two dates for project schedule
-function calcBusinessDays(dDate1, dDate2) { // input given as Date objects
+function calcBusinessDays(dDate1, dDate2) {
+    debugger // input given as Date objects
     var iWeeks, iDateDiff, iAdjust = 0;
     if (dDate2 < dDate1) return -1; // error code if dates transposed
     var iWeekday1 = dDate1.getDay(); // day of week
@@ -504,7 +505,7 @@ function grpTaskOnPhase(records) {
         let duration;
         let classtype;
 
-        
+
         console.log('customtype:- ', customtype);
         let duprecordobj = {
             id: record.Id,
