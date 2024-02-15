@@ -1490,6 +1490,50 @@
                                                                             </span>
                                                                         </aura:if>
                                                                     </aura:if>
+
+                                                                    <!-- Ticket BUIL-3910 -->
+
+                                                                    <aura:if isTrue="{!col.fieldName == 'buildertek__Material_Budget__c'}">
+                                                                        <aura:if isTrue="{!group.totals.materialKey == 'buildertek__Material_Budget__c'}">
+                                                                            <span style="font-weight: bold;font-size: 0.78rem !important;">
+                                                                                <lightning:formattedNumber value="{!group.totals.material}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code" />
+                                                                            </span>
+                                                                        </aura:if>
+                                                                    </aura:if>
+
+                                                                    <aura:if isTrue="{!col.fieldName == 'buildertek__Labor_Budget__c'}">
+                                                                        <aura:if isTrue="{!group.totals.laborBudgetKey == 'buildertek__Labor_Budget__c'}">
+                                                                            <span style="font-weight: bold;font-size: 0.78rem !important;">
+                                                                                <lightning:formattedNumber value="{!group.totals.laborBudget}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code" />
+                                                                            </span>
+                                                                        </aura:if>
+                                                                    </aura:if>
+
+                                                                    <aura:if isTrue="{!col.fieldName == 'buildertek__Subcontractor_Budget__c'}">
+                                                                        <aura:if isTrue="{!group.totals.subcontractorKey == 'buildertek__Subcontractor_Budget__c'}">
+                                                                            <span style="font-weight: bold;font-size: 0.78rem !important;">
+                                                                                <lightning:formattedNumber value="{!group.totals.subcontractor}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code" />
+                                                                            </span>
+                                                                        </aura:if>
+                                                                    </aura:if>
+
+                                                                    <aura:if isTrue="{!col.fieldName == 'buildertek__Equipment_Budget__c'}">
+                                                                        <aura:if isTrue="{!group.totals.equipmentKey == 'buildertek__Equipment_Budget__c'}">
+                                                                            <span style="font-weight: bold;font-size: 0.78rem !important;">
+                                                                                <lightning:formattedNumber value="{!group.totals.equipment}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code" />
+                                                                            </span>
+                                                                        </aura:if>
+                                                                    </aura:if>
+
+                                                                    <aura:if isTrue="{!col.fieldName == 'buildertek__Misc_Budget__c'}">
+                                                                        <aura:if isTrue="{!group.totals.miscKey == 'buildertek__Misc_Budget__c'}">
+                                                                            <span style="font-weight: bold;font-size: 0.78rem !important;">
+                                                                                <lightning:formattedNumber value="{!group.totals.misc}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code" />
+                                                                            </span>
+                                                                        </aura:if>
+                                                                    </aura:if>
+
+                                                                    <!-- Ticket BUIL-3910 -->
                                                                     
                                                                 </td>
                                                             </aura:if>
