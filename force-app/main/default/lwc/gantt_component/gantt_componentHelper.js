@@ -62,7 +62,8 @@ function convertJSONtoApexData(data, taskData, dependenciesData, resourceData) {
     const phasedatamap = new Map();
     const contractordatamap = new Map();
     const markAsDonemap = new Map();
-
+    let lagDataMap = dependencyLagData(dependenciesData);
+    console.log('lagDataMap:- ', lagDataMap);
     if (data) {
         data.forEach(element => {
             console.log('element:- ', element._data);
@@ -119,6 +120,7 @@ function convertJSONtoApexData(data, taskData, dependenciesData, resourceData) {
                 updateData['buildertek__task_color__c'] = rowData[i]['eventColor']
                 updateData['buildertek__ConstraintDate__c'] = null
                 updateData['buildertek__ConstraintType__c'] = 'None'
+                updateData['buildertek__Lag__c'] = lagDataMap.get(rowData[i]['id']) || 0
 
                 if (rowData[i]['customtype']) {
                     updateData['buildertek__Type__c'] = rowData[i]['customtype']
@@ -196,6 +198,16 @@ function convertJSONtoApexData(data, taskData, dependenciesData, resourceData) {
             return dataToPassIntoApex;
         }
     }
+}
+
+function dependencyLagData(dependenciesData) {
+    const lagdatamap = new Map();
+    dependenciesData.forEach(({ to, lag }) => {
+        if (lag) {
+            lagdatamap.set(to, lag);
+        }
+    });
+    return lagdatamap;
 }
 
 function recordsTobeDeleted(oldListOfTaskRecords, newListOfTaskRecords) {
@@ -504,7 +516,7 @@ function grpTaskOnPhase(records) {
         let duration;
         let classtype;
 
-        
+
         console.log('customtype:- ', customtype);
         let duprecordobj = {
             id: record.Id,
