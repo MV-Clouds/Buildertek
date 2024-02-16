@@ -1,5 +1,7 @@
 import { LightningElement, api, track } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import { loadStyle } from 'lightning/platformResourceLoader';
+import myResource from '@salesforce/resourceUrl/ScheduleLWCCss';
 import fetchScheduleData from '@salesforce/apex/scheduleResourceController.fetchScheduleData';
 import getScheduleData from "@salesforce/apex/GetProjectAndScheduleForGanttCmp.getScheduleData";
 
@@ -16,11 +18,23 @@ export default class ScheduleResources extends LightningElement {
     @track selectedProjectId;
     @track selectedScheduleId;
     @track selectedScheduleIdForJS;
+    @track isEditEnabled = false;
+    @track selectedVendorId;
+    @track selectedVendorResources1;
+    @track selectedVendorResources2;
+    @track selectedVendorResources3;
+    @track vendorOptions = [];
+    @track vendorResourcesOptions = [];
+    @track scheduleDataWrapper = {};
+    @track vendorResourcesMap = {};
 
     connectedCallback() {
+        loadStyle(this, myResource)
+        // Calls scheduleData if recordId is provided, else calls getScheduleList
         this.recordId ? (this.scheduleData(), this.isScheduleSelected = true) : this.getScheduleList();
     }
 
+    //* Method to fetch the list of schedules
     getScheduleList() {
         getScheduleData()
             .then((result) => {
@@ -40,6 +54,7 @@ export default class ScheduleResources extends LightningElement {
             });
     }
 
+    //* Event handler for change in dropdown selection
     handleChange(event) {
         var scheduleWithoutProjectList = [];
         this.callscheduleComponent = false;
@@ -65,13 +80,16 @@ export default class ScheduleResources extends LightningElement {
         }
     }
 
+    //* Method to fetch schedule Item data
     scheduleData() {
         this.isLoading = true;
         fetchScheduleData({ scheduleId: this.recordId ? this.recordId : (this.selectedScheduleId ? this.selectedScheduleId : this.selectedScheduleIdForJS) })
             .then((result) => {
                 if (result) {
                     console.log('schedule Data:', JSON.stringify(result));
-                    this.tableData = result.scheduleList.map(task => {
+                    this.scheduleDataWrapper = result;
+                    console.log('scheduleDataWrapper:', this.scheduleDataWrapper);
+                    this.tableData = this.scheduleDataWrapper.scheduleList.map(task => {
                         return {
                             id: task.Id,
                             project: task.buildertek__Schedule__r.hasOwnProperty('buildertek__Project__r') ? task.buildertek__Schedule__r.buildertek__Project__r.Name : '',
@@ -86,6 +104,7 @@ export default class ScheduleResources extends LightningElement {
                         };
                     });
                 }
+                this.processScheduleDataWrapper();
             })
             .catch((error) => {
                 console.log('Error ==>', error);
@@ -96,6 +115,7 @@ export default class ScheduleResources extends LightningElement {
             });
     }
 
+    //* Method to handle click on schedule
     handleScheduleClick() {
         if (this.selectedScheduleIdForJS) {
             this.isScheduleSelected = true;
@@ -115,4 +135,51 @@ export default class ScheduleResources extends LightningElement {
         });
         this.dispatchEvent(toastEvent);
     }
+
+    // TODO - Implement the editResource methods
+    editResource(event) {
+        const recordId = event.currentTarget.dataset.id;
+        this.tableData = this.tableData.map(row => {
+            if (row.id === recordId) {
+                return { ...row, isEditing: true };
+            } else {
+                return { ...row, isEditing: false };
+            }
+        });
+    }
+
+    closeEditFields(event) {
+        this.tableData = this.tableData.map(row => {
+            return { ...row, isEditing: false };
+        });
+    }
+    
+
+    // TODO - Implement the saveResource methods
+    vendorChange() {
+        console.log('vendorChange');
+        this.vendorResourcesOptions = this.scheduleDataWrapper.vendorResourcesMap[this.selectedVendorId];
+    }
+
+    // TODO - Implement the vendorResourcesChange methods
+    vendorResourcesChange() {
+        console.log('vendorResourcesChange');
+    }
+
+    processScheduleDataWrapper() {
+        this.vendorOptions = this.scheduleDataWrapper.contractorAndResourcesList.map(ele => {
+            return { label: ele.Name, value: ele.Id };
+        });
+    
+        this.scheduleDataWrapper.internalResourcesList.forEach(resource => {
+            if (vendorResourcesMap.hasOwnProperty(resource.Vendor__c)) {
+                this.vendorResourcesMap[resource.Vendor__c].push({ label: resource.Name, value: resource.Id });
+            } else {
+                this.vendorResourcesMap[resource.Vendor__c] = [{ label: resource.Name, value: resource.Id }];
+            }
+        });
+    
+        this.vendorResourcesOptions = this.vendorResourcesMap;
+    }
+    
 }

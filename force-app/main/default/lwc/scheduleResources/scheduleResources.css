@@ -19,12 +19,6 @@
     z-index: 1;
 }
 
-/* .recordValues {
-    overflow-y: scroll;
-    overflow-x: hidden;
-    max-height: 65vh;
-} */
-
 .header-text {
     margin: 0;
 }
@@ -36,6 +30,7 @@
     padding: 0.5rem 1rem 0.5rem 1rem;
     border-radius: 0.25rem;
     margin-bottom: 0.5rem;
+    align-items: center;
 }
 
 .data-row:nth-child(even) {
@@ -58,14 +53,6 @@
     font-size: 20px;
 }
 
-.scheduleContainer {
-    margin: 1%;
-    border-radius: 5px;
-    box-shadow: 4px 4px 6px 2px rgba(0, 0, 0, 0.5);
-    overflow-y: hidden;
-    height: 43rem;
-}
-
 .picklistcombo {
     display: flex;
     width: 90%;
@@ -82,8 +69,9 @@
     margin: 16px 0 0 16px;
 }
 
-@media only screen and (max-height: 900px) {
-    .scheduleContainer {
-        height: 38rem !important;
-    }
+.icons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 15px 0 5px;
 }
