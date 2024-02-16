@@ -8,6 +8,7 @@ public with sharing class ImportMasterProjectTakeoff{
                                    WHERE buildertek__Type__c = 'Master' AND Name LIKE:searchString AND ID != :recordId ORDER BY Name ASC];
 
 
+
         List<MasterProjectTakeoffClass> MasterProjectTakeoffClassList = new List<MasterProjectTakeoffClass>();
         for (buildertek__Project_Takeoff__c masterptakeoff : masterProjecttakeofflst){
             MasterProjectTakeoffClass MasterProjectTakeoffClassRecord = new MasterProjectTakeoffClass();

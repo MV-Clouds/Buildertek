@@ -42,6 +42,7 @@ public with sharing class ImportmasterBudgetClass {
                                         FROM buildertek__Budget__c
                                         WHERE buildertek__Type__c = 'Master' AND Name LIKE:searchString AND ID != :recordId ORDER BY Name ASC];
 
+
               }
         for(buildertek__Budget__c bud : quotesList){
             MasterBudgetsClass MasterBudgetsClassRecord = new MasterBudgetsClass();
@@ -50,6 +51,7 @@ public with sharing class ImportmasterBudgetClass {
             MasterBudgetsClassRecord.currencyCode = bud.CurrencyIsoCode;
             MasterBudgetsClassList.add(MasterBudgetsClassRecord);
         }
+
         return  MasterBudgetsClassList;
     }
 

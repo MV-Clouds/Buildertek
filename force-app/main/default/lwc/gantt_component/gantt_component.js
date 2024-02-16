@@ -598,10 +598,11 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     assignmentRowData = formatedSchData["assignmentRowData"];
 
     let resourceData = makeComboBoxDataForResourceData(this.contractorAndResources, this.internalResources);
-    
+
     const project = new bryntum.gantt.ProjectModel({
       calendar: data.project.calendar,
       // startDate: data.project.startDate,
+      startDate: this.scheduleData.buildertek__Start_Date__c,
       // tasksData: data.tasks.rows,
       tasksData: tasks.rows,
       skipNonWorkingTimeWhenSchedulingManually: true,
@@ -744,9 +745,10 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           allowedUnits: "day",
           renderer: function (record) {
             if (record.record._data.type == "Project") {
-              let projectStartDate = new Date(record.record._data.startDate);
+              let projectStartDate = new Date(record.record.startDate);
               let projectEndDate = new Date(record.record.endDate);
               let projectDuration = calcBusinessDays(projectStartDate, projectEndDate);
+              console.log('projectDuration ',projectDuration);
               return projectDuration + ' days';
             }
             if (record.record._data.type == "Phase") {

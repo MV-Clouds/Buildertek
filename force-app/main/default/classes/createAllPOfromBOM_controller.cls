@@ -9,7 +9,7 @@ public class createAllPOfromBOM_controller {
                                                                   WHERE Id =: BOMiD];
 
             List<buildertek__Select_Sheet__c> BOMLines = [SELECT Id, Name, buildertek__Selection_Sheet_Takeoff__c, buildertek__Vendor__c, buildertek__Vendor__r.Name, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.Name,
-                                                          buildertek__Purchase_Order_Line__c, buildertek__Quantity__c, buildertek__Total_Sales_Price__c, buildertek__Total_Costs__c, buildertek__BL_UNIT_COST__c, buildertek__BT_Price_Book__c, buildertek__BT_Price_Book__r.Name, buildertek__Product__c, buildertek__Product__r.Name, buildertek__Cost_Code__c, buildertek__Build_Phase__c, buildertek__Build_Phase__r.Name
+                                                          buildertek__Purchase_Order_Line__c, buildertek__Quantity__c, buildertek__Total_Sales_Price__c, buildertek__Total_Costs__c, buildertek__BL_UNIT_COST__c, buildertek__BT_Price_Book__c, buildertek__BT_Price_Book__r.Name, buildertek__Product__c, buildertek__Product__r.Name, buildertek__Cost_Code__c, buildertek__Build_Phase__c, buildertek__Build_Phase__r.Name, buildertek__Category__c
                                                           FROM buildertek__Select_Sheet__c 
                                                           WHERE buildertek__Selection_Sheet_Takeoff__c =: BOMiD];
             if(BOMLines.size() > 0){
@@ -43,6 +43,7 @@ public class createAllPOfromBOM_controller {
                     Map<Id, Id> BOMlineId_VendorId = new Map<Id, Id>();
                     Map<Id, Id> VenodrId_CostCode = new Map<Id, Id>();
                     Map<Id, Id> VenodrId_Phase = new Map<Id, Id>();
+                    Map<Id, String> VenodrId_Category = new Map<Id, String>();
                     Set<String> vendorList = new Set<String>();
                     for(buildertek__Select_Sheet__c line : BOMLines){
                         if(line.buildertek__Vendor__c != null && line.buildertek__Purchase_Order__c == null){
@@ -51,15 +52,17 @@ public class createAllPOfromBOM_controller {
                             BOMlineId_VendorId.put(line.Id, line.buildertek__Vendor__c);
 
                             // Get Cost code and Phase value of First BOM Line which match condition for perticulart vendor....
-                            if(line.buildertek__Cost_Code__c != null && line.buildertek__Build_Phase__c != null && !VenodrId_CostCode.containsKey(line.buildertek__Vendor__c)){
+                            if(line.buildertek__Cost_Code__c != null && line.buildertek__Build_Phase__c != null && line.buildertek__Category__c != null && !VenodrId_CostCode.containsKey(line.buildertek__Vendor__c)){
                                 VenodrId_CostCode.put(line.buildertek__Vendor__c, line.buildertek__Cost_Code__c);
                                 VenodrId_Phase.put(line.buildertek__Vendor__c, line.buildertek__Build_Phase__c);
+                                VenodrId_Category.put(line.buildertek__Vendor__c, line.buildertek__Category__c);
                             }
                         }
                     }
 
                     system.debug('VenodrId_CostCode : ' + VenodrId_Phase);
                     system.debug('VenodrId_Phase : ' + VenodrId_Phase);
+                    system.debug('VenodrId_Category : ' + VenodrId_Category);
                     
                     List<buildertek__Purchase_Order__c> POsToCreate_List = new List<buildertek__Purchase_Order__c>();
                     List<Id> createdPOsIds = new List<Id>();
@@ -135,8 +138,8 @@ public class createAllPOfromBOM_controller {
                             scheduleId = scheduleList[0].Id;
                             System.debug('matched schedule : ' + scheduleList[0].buildertek__Description__c);
                         }
-                        List<buildertek__Project_Task__c> ScheduleItems = [SELECT Id, Name, buildertek__Schedule__c,buildertek__Contractor__c, buildertek__Cost_Code__c,buildertek__Phase__c, buildertek__Completion__c,buildertek__Start__c,buildertek__Finish__c
-                                                                            FROM buildertek__Project_Task__c WHERE buildertek__Schedule__c =: scheduleId ORDER BY CreatedDate DESC];
+                        List<buildertek__Project_Task__c> ScheduleItems = [SELECT Id, Name, buildertek__Schedule__c,buildertek__Contractor__c, buildertek__Cost_Code__c,buildertek__Phase__c, buildertek__Completion__c,buildertek__Start__c,buildertek__Finish__c, buildertek__BT_Category__c
+                                                                            FROM buildertek__Project_Task__c WHERE buildertek__Schedule__c =: scheduleId  ORDER BY CreatedDate DESC];
 
                         Map<Id, buildertek__Project_Task__c> PO_to_matchedSchItems = new Map<Id, buildertek__Project_Task__c>();
                         List<buildertek__Purchase_Order__c> poToUpdate = new List<buildertek__Purchase_Order__c>();
@@ -146,9 +149,9 @@ public class createAllPOfromBOM_controller {
                                     for(buildertek__Project_Task__c SchItem : ScheduleItems){
                                         String schItemPhaseName = SchItem.buildertek__Phase__c != null ? SchItem.buildertek__Phase__c.toLowercase() : null;
                                         String poPhaseName = PO.buildertek__BT_Build_Phase__r.Name != null ? PO.buildertek__BT_Build_Phase__r.Name.toLowercase() : null;
+                                        String Category = VenodrId_Category.containsKey(PO.buildertek__Vendor__c) ? VenodrId_Category.get(PO.buildertek__Vendor__c) : null;
                                         if( SchItem.buildertek__Contractor__c == PO.buildertek__Vendor__c 
-                                        && schItemPhaseName == poPhaseName && SchItem.buildertek__Cost_Code__c == PO.buildertek__Cost_Code__c 
-                                        && !PO_to_matchedSchItems.containsKey(PO.Id))
+                                        && schItemPhaseName == poPhaseName && SchItem.buildertek__Cost_Code__c == PO.buildertek__Cost_Code__c && SchItem.buildertek__BT_Category__c == Category && !PO_to_matchedSchItems.containsKey(PO.Id))
                                         {
                                             PO_to_matchedSchItems.put(PO.Id, SchItem);
                                             poToUpdate.add(PO);

@@ -85,7 +85,7 @@ public with sharing class createCO_selectionType {
         
         optionList = [SELECT Id, buildertek__Total_Sales_Price__c, buildertek__Markup__c, buildertek__Total_Cost__c, Name, buildertek__Manufacturer__c, buildertek__Manufacturer__r.Name, buildertek__Change_Order__c, buildertek__Total_Cost_Per_Unit__c , buildertek__Cost__c, 
                         buildertek__Quantity__c, buildertek__Upgrade_Costs__c, buildertek__Question_Group__r.buildertek__Section__r.buildertek__Selection__r.buildertek__Project__c 
-                        FROM buildertek__Question__c WHERE buildertek__Question_Group__c =:selectionTypeId and buildertek__Upgrade__c = true AND buildertek__Change_Order__c = null];
+                        FROM buildertek__Question__c WHERE buildertek__Question_Group__c =:selectionTypeId and buildertek__Upgrade__c = true AND buildertek__Change_Order__c = null ORDER BY Name ASC];
         
         return optionList;
     }
@@ -97,7 +97,7 @@ public with sharing class createCO_selectionType {
         
         optionList = [SELECT Id, buildertek__Total_Cost_Per_Unit__c, buildertek__Total_Cost__c, buildertek__Total_Sales_Price__c, buildertek__Markup__c, Name, buildertek__Manufacturer__c, buildertek__Manufacturer__r.Name, buildertek__Change_Order__c, buildertek__Cost__c, 
                         buildertek__Quantity__c, buildertek__Upgrade_Costs__c, buildertek__Question_Group__r.buildertek__Section__r.buildertek__Selection__r.buildertek__Project__c 
-                        FROM buildertek__Question__c WHERE buildertek__Question_Group__c =:selectionTypeId AND buildertek__Change_Order__c = null];
+                        FROM buildertek__Question__c WHERE buildertek__Question_Group__c =:selectionTypeId AND buildertek__Change_Order__c = null ORDER BY Name ASC];
         
         return optionList;
     }

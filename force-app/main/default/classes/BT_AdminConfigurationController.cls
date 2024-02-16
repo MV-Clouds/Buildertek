@@ -61,6 +61,10 @@ public with sharing class BT_AdminConfigurationController{
                 throw new BT_ApplicationException(System.Label.Page_Access_Error);
             }
         } catch(Exception e){
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
             isError = true;
             ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.FATAL, e.getMessage()));
             return;
@@ -461,6 +465,10 @@ public with sharing class BT_AdminConfigurationController{
             pg.setRedirect(true);
             return pg;
         } catch(Exception ex){
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
             Database.rollback(sp);
             ApexPages.Message errorMsg = new ApexPages.Message(ApexPages.Severity.FATAL, ex.getMessage());
             ApexPages.addMessage(errorMsg);
@@ -1030,6 +1038,15 @@ public with sharing class BT_AdminConfigurationController{
         scheduleChildConfiguration.Disable__c = false;
         firstLevelNodes.add(scheduleChildConfiguration);
 
+        Admin_Interface_Node_Configuration__c accountEmailConfiguration = new Admin_Interface_Node_Configuration__c();
+        accountEmailConfiguration.Name = 'Account Configuration';
+        accountEmailConfiguration.Disable__c = false;
+        accountEmailConfiguration.Index__c = 52;
+        accountEmailConfiguration.Icon_URL__c = '/resource/'+nameSpacePrefix+'SLDS/assets/icons/utility/settings_60.png';
+        accountEmailConfiguration.Open_New_Tab__c = false;
+        accountEmailConfiguration.Tab_Name__c = 'Account Configuration';
+        accountEmailConfiguration.Description__c = 'Configure Account Setting for sending expiration email.';
+        firstLevelNodes.add(accountEmailConfiguration);
 
         try {
             DMLManager.insertAsUser(firstLevelNodes);
@@ -1077,6 +1094,10 @@ public with sharing class BT_AdminConfigurationController{
              }
             
         } catch(Exception ex){
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
             ApexPages.Message errorMsg = new ApexPages.Message(ApexPages.Severity.FATAL, ex.getMessage());
             ApexPages.addMessage(errorMsg);
             System.debug('Error Message => '+ex.getMessage()); 

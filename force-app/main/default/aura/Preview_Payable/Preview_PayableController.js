@@ -26,12 +26,22 @@
         dbAction.setCallback(this, function (response) {
             var state = response.getState();
             if (state === "SUCCESS") {
-                component.set("v.templates", response.getReturnValue());
-                component.set("v.Spinner", false);
-            }
-        });
-        $A.enqueueAction(dbAction);   
-	},
+				var templates = response.getReturnValue();
+				if (templates.length === 1) {
+					component.set("v.selectedTemplate", templates[0].Id);
+					component.set("v.isTemplateSelected", true);
+				}
+				component.set("v.templates", templates);
+			} else {
+				console.error("Failed to retrieve templates");
+			}
+			component.set("v.Spinner", false);
+			if (component.get("v.templates").length === 1) {
+				helper.getTemplateBody(component, event, helper);
+			}
+		});
+		$A.enqueueAction(dbAction);
+	},	
 	
 	preiewEmailTemplate : function(component, event, helper) {
 	    var selectedTemplate = component.get("v.selectedTemplate");

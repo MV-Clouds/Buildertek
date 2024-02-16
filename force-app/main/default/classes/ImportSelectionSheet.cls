@@ -5,6 +5,7 @@ public class ImportSelectionSheet {
         List<buildertek__Selection__c> selections = [SELECT Id, Name, buildertek__Title__c, (Select id , name , buildertek__Total_Options__c  from buildertek__Sections__r) ,buildertek__Project__r.Name, buildertek__Visible_to_Customer__c, buildertek__Type__c FROM buildertek__Selection__c WHERE buildertek__Type__c =: 'Master' AND Name LIKE:searchString AND ID != :selectionId ORDER BY Name ASC];
         
         return selections;
+
     }
 
     @AuraEnabled

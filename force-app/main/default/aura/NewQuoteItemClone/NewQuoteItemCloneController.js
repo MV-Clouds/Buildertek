@@ -3174,6 +3174,7 @@ console.log(document.getElementsByClassName(className)[0]);
             {label: "Location Detail Reference 1", value:"buildertek__Location_Detail_Reference_1__c"},
             {label: "Service Category", value:"buildertek__BL_SERVICE_CATEGORY__c"},
             {label: "Product Family", value:"buildertek__Product_Family__c"},
+            {label: "Category", value:"buildertek__Category__c"},
         ]
         component.set("v.GroupingOptions", opts);
     },

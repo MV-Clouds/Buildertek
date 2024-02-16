@@ -1883,7 +1883,7 @@ Throws [Exceptions]:
             }
             //append that id of rfq should not be in rfqIds
             String rfqItemrecords = 'Select Id, Name, buildertek__RFQ_Details__c, buildertek__Status__c, buildertek__Vendor__r.Name, buildertek__Vendor_Quote__c,CurrencyIsoCode, buildertek__Project__c, buildertek__Project__r.Name from buildertek__RFQ__c'+
-                ' where buildertek__Added_to_Quote__c = null and (buildertek__project__c = null OR buildertek__project__c =\'' + projectId +'\') and buildertek__status__c =\'' +status+'\' and Id NOT IN :rfqIds ORDER BY Name';
+                ' where buildertek__Added_to_Quote__c = null and (buildertek__project__c = null OR buildertek__project__c =\'' + projectId +'\') and buildertek__status__c =\'' +status+'\' and Id NOT IN :rfqIds ORDER BY Name Asc';
             system.debug('rfqItemrecords'+rfqItemrecords);
             rfqlist = Database.query(rfqItemrecords);
             return rfqlist;
@@ -1891,7 +1891,7 @@ Throws [Exceptions]:
             // return [Select Id, Name,RFQ_Details__c,Status__c, Vendor__r.Name, Vendor_Quote__c from RFQ__c where project__c =:quote.Project__c and status__c = 'Awarded'];
             List<buildertek__RFQ__c> rfqlist1 = [Select Id, Name, buildertek__RFQ_Details__c, buildertek__Status__c, buildertek__Vendor__r.Name, buildertek__Vendor_Quote__c, buildertek__Project__c, buildertek__Project__r.Name
                     from buildertek__RFQ__c
-                    where buildertek__project__c = :quote.buildertek__Project__c and buildertek__status__c = 'Accepted' and ID NOT IN :rfqIds ORDER BY Name];
+                    where buildertek__project__c = :quote.buildertek__Project__c and buildertek__status__c = 'Accepted' and ID NOT IN :rfqIds ORDER BY Name Asc];
             return rfqlist1;
         }
     }
