@@ -247,6 +247,14 @@ export default base => class GanttToolbar extends base {
                                 ]
                             }
                         },
+                        {
+                            type     : 'button',
+                            text     : 'Import Master Schedule',
+                            color    : 'b-blue',
+                            ref      : 'importMasterSchedule',
+                            icon     : 'b-fa-file-import',
+                            onAction : 'up.onImportMasterSchedule',
+                        },
                         // {
                         //     type       : 'button',
                         //     color      : 'b-blue',
@@ -319,14 +327,6 @@ export default base => class GanttToolbar extends base {
                             ref      : 'editOriginalDate',
                             icon     : 'b-fa-file-export',
                             onAction : 'up.onEditOriginalDate'
-                        },
-                        {
-                            type     : 'button',
-                            text     : 'Import Master Schedule',
-                            color    : 'b-blue',
-                            ref      : 'importMasterSchedule',
-                            icon     : 'b-fa-file-import',
-                            onAction : 'up.onImportMasterSchedule'
                         },
                         // {
                         //     type       : 'button',
@@ -548,7 +548,6 @@ export default base => class GanttToolbar extends base {
             var taskEdit = this.gantt.taskStore;
             console.log('taskEdit ',{taskEdit});
             console.log('assignmentStore JSON ',JSON.parse(taskEdit.assignmentStore.json));
-            debugger
             let assignedResources = setResourceDataForApexData(JSON.parse(taskEdit.assignmentStore.json));
             console.log('assignedResources ',assignedResources);
             if (assignedResources == 'error') {

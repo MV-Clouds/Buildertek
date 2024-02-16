@@ -240,7 +240,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
         this.scheduleItemsDataList = response.lstOfSObjs;
         console.log('scheduleItemsDataList:- ', this.scheduleItemsDataList)
         console.log('scheduleItemsDataList:- ', this.scheduleItemsDataList.length)
-        debugger
         if(!this.shceduleItemsDataList){
           this.setorignaldates = true;
           console.log('orginaldates:- ',this.setorignaldates)

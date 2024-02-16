@@ -62,7 +62,8 @@ function convertJSONtoApexData(data, taskData, dependenciesData, resourceData) {
     const phasedatamap = new Map();
     const contractordatamap = new Map();
     const markAsDonemap = new Map();
-
+    let lagDataMap = dependencyLagData(dependenciesData);
+    console.log('lagDataMap:- ', lagDataMap);
     if (data) {
         data.forEach(element => {
             console.log('element:- ', element._data);
@@ -119,6 +120,7 @@ function convertJSONtoApexData(data, taskData, dependenciesData, resourceData) {
                 updateData['buildertek__task_color__c'] = rowData[i]['eventColor']
                 updateData['buildertek__ConstraintDate__c'] = null
                 updateData['buildertek__ConstraintType__c'] = 'None'
+                updateData['buildertek__Lag__c'] = lagDataMap.get(rowData[i]['id']) || 0
 
                 if (rowData[i]['customtype']) {
                     updateData['buildertek__Type__c'] = rowData[i]['customtype']
@@ -196,6 +198,16 @@ function convertJSONtoApexData(data, taskData, dependenciesData, resourceData) {
             return dataToPassIntoApex;
         }
     }
+}
+
+function dependencyLagData(dependenciesData) {
+    const lagdatamap = new Map();
+    dependenciesData.forEach(({ to, lag }) => {
+        if (lag && lag > 0) {
+            lagdatamap.set(to, lag);
+        }
+    });
+    return lagdatamap;
 }
 
 function recordsTobeDeleted(oldListOfTaskRecords, newListOfTaskRecords) {
@@ -339,8 +351,7 @@ function makeComboBoxDataForResourceData(listOfContractors, listOfUsers) {
 //* auther : Nishit Suthar
 //* Date : 24th Aug 2023
 //* this method is used to calculate business days between two dates for project schedule
-function calcBusinessDays(dDate1, dDate2) {
-    debugger // input given as Date objects
+function calcBusinessDays(dDate1, dDate2) { // input given as Date objects
     var iWeeks, iDateDiff, iAdjust = 0;
     if (dDate2 < dDate1) return -1; // error code if dates transposed
     var iWeekday1 = dDate1.getDay(); // day of week
