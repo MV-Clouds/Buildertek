@@ -9,8 +9,8 @@
     <aura:attribute name="endPage" type="Integer"/>
     <aura:attribute name="totalRecords" type="Integer"/>
     <aura:attribute name="pageSize" type="Integer" default="10"/>
-
-
+	<aura:attribute name="searchKeyword" type="String" default="" />
+    <aura:attribute name="disableBtn" type="Boolean" default="false" />
     <aura:attribute name="HaveCreateAccess" type="boolean" default="true"/>
 
     <!-- Attribute Declration For Pagination End-->
@@ -20,12 +20,20 @@
     <div class="slds-modal__header" style="font-size:17px;">
         Import Master Budgets
     </div>
+    <aura:html tag="style">
+		.lbl .slds-form-element__label{
+			display: none;
+		}
+	</aura:html>
     <div class="slds-modal__content slds-p-around--large">
         <div class="slds slds-scope">
+            <lightning:layoutItem padding="around-small" size="12">
+				<lightning:input class="lbl" value="{!v.searchKeyword}" placeholder="Search By Budget Name..." name="searchField" onchange="{! c.onSearch }"/>
+			</lightning:layoutItem>
     		<table class="slds-table slds-table_bordered slds-table_fixed-layout" role="grid">
     		    <thead>
     				<tr class="slds-text-title_caps">
-    					<th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-left-radius:5px;vertical-align: top;line-height: 2;width: 30px !important;">
+    					<th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: middle;line-height: 2;width: 30px !important;">
     				        <ui:inputCheckbox aura:id="checkContractors" change="{!c.selectAll}" />
     					</th>
     					<th  style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
@@ -87,8 +95,6 @@
     			    </aura:iteration>
     			</tbody>
     		</table>
-    		<br/>
-
         </div>
         <aura:if isTrue="{!v.Spinner}">
             <div aura:id="spinnerId" class="slds-spinner_container">
@@ -104,25 +110,20 @@
         </aura:if>
     </div>
     <div class="slds-modal__footer">
-        <div class="slds-clearfix">
-            <div class="slds-float_left">
-                <lightning:buttonGroup >
-                    <lightning:button label="Previous" disabled="{!v.startPage == 0}"
-                                      onclick="{!c.previous}" variant="brand"
-                                      iconName='utility:back' class="BorderRadius"/>
-                    &nbsp; &nbsp; &nbsp;
-                    <lightning:button label="Next" disabled="{!v.endPage >= v.totalRecords}"
-                                      onclick="{!c.next}" variant="brand"
-                                      iconName='utility:forward' iconPosition='right'  class="BorderRadius"/>
-                </lightning:buttonGroup>            </div>
-            <div class="slds-float_right">
-                <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}" >Cancel</button>
-                <button class="slds-button slds-button--brand" onclick="{!c.importBudget}">Import Master Budget</button>            </div>
+        <div class="slds-button-group" style="float:left;">
+            <lightning:buttonGroup >
+                <lightning:button label="Previous" disabled="{!or(v.startPage == 0, v.disableBtn)}"
+                                  onclick="{!c.previous}" variant="brand"
+                                  iconName='utility:back'/>
+                &nbsp; &nbsp; &nbsp;
+                <lightning:button label="Next" disabled="{!or(v.endPage >= v.totalRecords, v.disableBtn)}"
+                                  onclick="{!c.next}" variant="brand"
+                                  iconName='utility:forward' iconPosition='right'/>
+            </lightning:buttonGroup>
         </div>
-
+        <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}" >Cancel</button>
+        <button class="slds-button slds-button--brand" onclick="{!c.importBudget}">Import Master Budget</button>
+    </div>
         <lightning:notificationsLibrary aura:id="notifLib" />
         <lightning:overlayLibrary aura:id="overlayLib" />
-
-
-    </div>
 </aura:component>

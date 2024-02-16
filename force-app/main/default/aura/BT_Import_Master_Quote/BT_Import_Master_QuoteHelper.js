@@ -6,7 +6,8 @@
         var searchKeyword = component.get('v.searchKeyword');
         
         var action = component.get("c.getMasterQuotes");
-        action.setParams({			
+        action.setParams({		
+            'recordId': component.get("v.recordId"),	
             'searchKeyword' : searchKeyword
         });
 		action.setCallback(this, function(response){

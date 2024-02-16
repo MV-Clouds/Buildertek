@@ -17,7 +17,8 @@
     <aura:attribute name="endPage" type="Integer" />
     <aura:attribute name="totalRecords" type="Integer" />
     <aura:attribute name="pageSize" type="Integer" default="10" />
-
+    <aura:attribute name="searchKeyword" type="String" default="" />
+    <aura:attribute name="disableBtn" type="Boolean" default="false" />
     <!-- Attribute Declration For Pagination End-->
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
 
@@ -28,7 +29,11 @@
     <div class="slds-modal__header mdl-hdr-txt">
         Import Master Punch List
     </div>
-
+    <aura:html tag="style">
+		.lbl .slds-form-element__label{
+			display: none;
+		}
+	</aura:html>
     <!-- Modal Body -->
     <div class="slds-modal__content slds-p-around--large">
         <!-- spinner start -->
@@ -46,15 +51,21 @@
         </aura:if>
         <!-- spinner End -->
         <div class="slds slds-scope">
+            <lightning:layoutItem padding="around-small" size="12">
+				<lightning:input class="lbl" value="{!v.searchKeyword}" placeholder="Search By Inspection Name..." name="searchField" onchange="{! c.onSearch }"/>
+			</lightning:layoutItem>
             <table class="slds-table slds-table_bordered slds-table_fixed-layout" role="grid">
                 <thead>
                     <tr class="slds-text-title_caps">
-                        <th scope="col" class="top-row-hdr top-row-sa-col">
+                        <th scope="col" class="top-row-hdr top-row-sa-col" style="width: 50px;">
                             <!-- <ui:inputCheckbox aura:id="checkContractors" change="{!c.selectAll}" />		 -->
                             <!-- <ui:inputCheckbox aura:id="selectAllCheckBox" value="{!allcheckVal}"
                                 change="{!c.selectAll}" /> -->
                             <ui:inputCheckbox aura:id="selectAllCheckBox" value="{!v.allcheckVal}"
                                 change="{!c.selectAll}" />
+                        </th>
+                        <th class="top-row-hdr">
+                            Name
                         </th>
                         <th class="top-row-hdr">
                             Description
@@ -74,6 +85,9 @@
                                 <ui:inputCheckbox text="{!rec.Id}" value="{!rec.checkVal}" change="{!c.handleCheck}" />
                             </td>
                             <td role="gridcell">
+                                <ui:outputText value="{!rec.Name}" />
+                            </td>
+                            <td role="gridcell">
                                 <ui:outputText value="{!rec.buildertek__Description__c}" />
                             </td>
                             <td role="gridcell">
@@ -86,26 +100,22 @@
                     </aura:iteration>
                 </tbody>
             </table>
-            <br />
-            <lightning:buttonGroup>
-                <lightning:button label="Previous" disabled="{!v.startPage == 0}" onclick="{!c.previous}"
-                    variant="brand" iconName='utility:back' />
-                &nbsp; &nbsp; &nbsp;
-                <lightning:button label="Next" disabled="{!v.endPage >= v.totalRecords}" onclick="{!c.next}"
-                    variant="brand" iconName='utility:forward' iconPosition='right' />
-            </lightning:buttonGroup>
         </div>
     </div>
 
-
-
-
-    <!-- Modal Footer -->
     <div class="slds-modal__footer">
-        <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}">Cancel</button>
+        <div class="slds-button-group" style="float:left;">
+            <lightning:buttonGroup >
+                <lightning:button label="Previous" disabled="{!or(v.startPage == 0, v.disableBtn)}"
+                                  onclick="{!c.previous}" variant="brand"
+                                  iconName='utility:back'/>
+                &nbsp; &nbsp; &nbsp;
+                <lightning:button label="Next" disabled="{!or(v.endPage >= v.totalRecords, v.disableBtn)}"
+                                  onclick="{!c.next}" variant="brand"
+                                  iconName='utility:forward' iconPosition='right'/>
+            </lightning:buttonGroup>
+        </div>
+        <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}" >Cancel</button>
         <button class="slds-button slds-button--brand" onclick="{!c.importMasterPL}">Import Master PL</button>
     </div>
-
-    <!-- Import Master Punch Line Modal End -->
-
 </aura:component>
