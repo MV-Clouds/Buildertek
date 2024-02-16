@@ -48,6 +48,7 @@
                 helper.showSuccessToast(component, event, helper, "Success!", 'Successfully added Rfq Line');
                 $A.get("e.force:closeQuickAction").fire();
                 // setTimeout(function() { location.reload(); }, 1000);
+                component.get("v.onCancel")();
                 component.set("v.Spinner", false);
                 component.set("v.showMessage", false);
 

@@ -26,7 +26,7 @@ public class ImportmasterInspectionClassTest {
         List<String> selectedIds = new List<String>();
         selectedIds.add(insp.Id);
 
-        ImportmasterInspectionClass.getMasterInspection();
+        ImportmasterInspectionClass.getMasterInspection(insp.Id,'');
         ImportmasterInspectionClass.importMasterInspectionLines(selectedIds,insp.Id);
 
 
