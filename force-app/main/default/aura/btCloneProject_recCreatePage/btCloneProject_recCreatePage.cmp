@@ -1,0 +1,170 @@
+<aura:component controller="BTCloneProject" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global">
+
+
+<aura:handler name="init" value="{! this }" action="{! c.doInit }"/>
+<aura:attribute name="listOfFields" type="List" default="[]" />
+<aura:attribute name="projects" type="List" default=""/>
+<aura:attribute name="Source_Project" type="String" />
+<aura:attribute name="County_Text" type="String" />
+<aura:attribute name="objsToCreateList" type="List" default="[]" />
+<aura:attribute name="recordId" type="Id" />
+<aura:attribute name="isLoading" type="Boolean" default="true" />
+
+<aura:attribute name="isError" type="Boolean" default="false" />
+<aura:attribute name="isErrorModal" type="Boolean" default="false" />
+<aura:attribute name="errorMessages" type="List"  default="[]"/>
+
+
+<aura:attribute name="fields" type="object" />
+<lightning:workspaceAPI aura:id="workspace" />
+
+        <aura:html tag="style">
+                .slds-modal.createCloneProject{
+                    position: absolute !important;
+                    z-index: 0 !important;
+                }
+                
+                .grid{
+                    display: grid;
+                    grid-template-columns: auto auto;
+                    padding: 10px;
+                    align-items: center;
+                    justify-items: start;
+                }
+                 .slds-size_1-of-2{
+                    width: 100%;
+                    margin: 0 1%;
+                    padding-right: 16px;
+                    margin-top: 0.5rem;
+                }
+                 .standard_field .slds-input{
+                    --slds-c-input-spacing-horizontal-start: 12px;
+                }
+                .standard_field .input-text{
+                    display: flex;
+                    flex-wrap: nowrap;
+                    align-items: center;
+                }
+                .standard_field .slds-listbox__option{
+                    text-align: left;
+                }
+
+                .errorIcon lightning-primitive-icon{
+                    display: flex;
+                    align-items: center;
+                }
+
+                .createCloneProject .slds-form-element__label{
+                    text-align: left !important;
+                    word-break: break-word !important;
+                }
+
+                .createCloneProject .slds-form-element__control .slds-checkbox{
+                    float: left !important;
+                }
+
+                .createCloneProject .slds-form-element_horizontal .slds-form-element__help{
+                    <!-- margin-left : 0px !important; -->
+                }
+
+                .slds-modal__container.createCloneProject{
+                    min-width: 40% !important;
+                    width: 50% !important;
+                    max-width: 90% !important;
+                }
+                @media only screen and (max-width: 1710px) and (min-width: 1500px){
+                    .slds-modal__container.createCloneProject{
+                        width: 55% !important;
+                    }
+                }
+                @media only screen and (max-width: 1500px) and (min-width: 1290px){
+                    .slds-modal__container.createCloneProject{
+                        width: 70% !important;
+                    }
+                }
+                @media only screen and (max-width: 1290px){
+                    .slds-modal__container.createCloneProject{
+                        width: 90% !important;
+                    }
+                }
+               
+               
+        </aura:html>
+
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open createCloneProject"  
+        style="display: flex; justify-content: center; flex-direction: row; align-items: center;">
+        <div class="slds-modal__container createCloneProject">
+                <lightning:recordEditForm aura:id="recordEditForm" recordId="" objectApiName="buildertek__Project__c" onsubmit="{!c.createCloneProject}" onsuccess="{!c.handleSuccess}" onload="{!c.loadSuccess}" onerror="{!c.handleError}">
+                <header class="slds-modal__header">
+                    <!-- <lightning:buttonIcon iconName="utility:close" onclick="{!c.closeModel}" alternativeText="close" variant="bare-inverse" class="slds-modal__close" /> -->
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New BT Project</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="max-height: 70vh !important; height: 70vh !important; min-height: 70vh !important;">
+                    <div lwc-6ct7qgg1o86="" class="form-legend-desktop" style="text-align: right; margin-right: 2rem;"><abbr lwc-6ct7qgg1o86="" class="slds-required">*</abbr> = Required Information</div>
+                    <center>
+                            <div class="grid">
+                                <aura:iteration items="{!v.listOfFields}" var="field">
+                                    <div class="slds-col slds-size_1-of-2 standard_field">
+                                        <lightning:inputField fieldName="{!field.name}" aura:id="inputFields" value="{!field.value}" required="{!field.required == 'true' ? true : false}"/>
+                                    </div>
+                                </aura:iteration>
+                            </div>
+                    </center>
+                        
+                        <aura:if isTrue="{!v.isLoading}">
+                            <div aura:id="spinnerId" class="slds-spinner_container">
+                                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                                    <span class="slds-assistive-text">Loading</span>
+                                    <div class="slds-spinner__dot-a"></div>
+                                    <div class="slds-spinner__dot-b"></div>
+                                    <div class="custom-loading-text">
+                                        <br/>
+                                        <br/>
+                                        <b>Loading...</b>
+                                    </div>
+                                </div>
+                            </div>
+                        </aura:if>            
+                        
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <center>
+                            <aura:if isTrue="{!v.isError}">
+                                <span class="errorOuter">
+                                    <lightning:buttonIcon class="errorMainIcon" iconName="utility:error"  variant="bare" alternativeText="Error!" title="Error" size="large" onclick="{!c.handleErrorModal}"/>
+                                    <aura:if isTrue="{!v.isErrorModal}">
+                                        <div class="errorContainer">
+                                            <div class="errorHader">
+                                                <div class="errorIcon">
+                                                    <lightning:buttonIcon iconName="utility:error" variant="bare" size="large" title="Error" alternativeText="Error!" />
+                                                </div>
+                                                <div class="errorTitle slds-media__body ">
+                                                    <h1 class="slds-truncate slds-text-heading_medium"> We hit a snag. </h1>
+                                                </div>
+                                                <div class="errorClosebtn">
+                                                    <lightning:buttonIcon iconName="utility:close"  size="small"  variant="bare" onclick="{!c.handleErrorModal}" alternativeText="close" title="close" />
+                                                </div>
+                                            </div>
+                                            <div class="errorBody">
+                                                <div class="errorDetail"> Review the errors on this page. </div>
+                                                <div class="errorMessage">
+                                                    <ul style="padding-inline: 1rem; list-style-type: disc;">
+                                                        <aura:iteration items="{!v.errorMessages}" var="error">
+                                                            <li>{!error}</li>
+                                                        </aura:iteration>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            <div class="errorTriangle"></div>
+                                        </div>
+                                    </aura:if>
+                                </span>
+                            </aura:if>
+                            <lightning:button variant="neutral" label="Cancel" title="Cancel" onclick="{!c.closeModel}" />
+                            <lightning:button variant="brand" type="submit" label="Save" title="Save" />
+                        </center>
+                    </footer>
+                </lightning:recordEditForm>
+                </div>
+            </section>
+    </aura:component>

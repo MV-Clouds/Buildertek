@@ -1,0 +1,93 @@
+.THIS .custom-loading-text {
+    transform: rotate(-90deg);
+    position: absolute;
+    top: 0.5rem;
+    left: 0;
+    white-space: nowrap;
+    font-size: 20px;
+    background: wheat;
+    width: 100%;
+    height: 100%;
+}
+
+.THIS .errorOuter{
+    position: relative;
+    margin-inline: 8px;
+}
+
+.THIS .errorContainer{
+    position: absolute;
+    width: 20rem;
+    /* min-height: 10rem; */
+    height: fit-content;
+    /* max-height: 60vh; */
+    top: 0;
+    left: 0;
+    transform: translate(-50%, calc(-100% - 1.25rem));
+    z-index: 10;
+    border: 1px solid #c9c9c9;
+    border-radius: 4px;
+}
+.THIS .errorTriangle{
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 18px 16px 0 16px;
+    border-color: white transparent transparent transparent;
+    position: absolute;
+    left: 48.5%;
+    top: 98%;
+
+}
+.THIS .errorMainIcon .slds-button__icon{
+    --slds-c-icon-color-foreground-default : #ba0516 !important;
+    fill: #ba0516 !important;
+}
+
+.THIS .errorHader{
+    padding: 1rem;
+    height: 3rem;
+    background: #8f030e;
+    display: flex; 
+    justify-content: space-around; 
+    align-items: center;
+    /* border: 1px solid #c9c9c9; */
+    border-radius: 4px 4px 0px 0px;
+}
+.THIS .errorTitle{
+    text-align: left;
+    padding-left: 8px;
+    color: white;
+}
+.THIS .errorIcon{
+    --slds-c-icon-color-foreground-default : white !important;
+}
+.THIS .errorClosebtn .slds-button__icon{
+    --slds-c-icon-color-foreground-default : white !important;
+    fill: white !important;
+}
+
+.THIS .errorBody{
+    padding: 1rem;
+    background: white;
+    overflow-x: hidden;
+    overflow-y: auto;
+    min-height: 4rem;
+    height: fit-content;
+    max-height: 60vh;
+    /* border: 1px solid #c9c9c9; */
+    border-radius: 0px 0px 4px 4px;
+}
+.THIS .errorDetail{
+    text-align: left;
+    font-weight: bold;
+}
+.THIS .errorMessage{
+    margin-top: 6px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    text-align: left;
+
+}
