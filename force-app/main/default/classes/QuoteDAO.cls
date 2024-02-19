@@ -2418,13 +2418,25 @@ public with sharing class QuoteDAO{
         priceWrap.priceWrapList = new List<pricebook2>();
         List<pricebook2> PriceList = [SELECT Id, Name FROM pricebook2 ORDER BY Name ASC ];
         priceWrap.priceWrapList=PriceList;
-        if(recordId != null){
-            buildertek__Quote__c quoteRecord = [Select Id, Name , buildertek__Project__c , buildertek__Project__r.buildertek__Price_Book__c , buildertek__Project__r.buildertek__Price_Book__r.Name From buildertek__Quote__c  WHERE Id = :recordId];
-            if(quoteRecord.buildertek__Project__c != null && quoteRecord.buildertek__Project__r.buildertek__Price_Book__c !=null){
-                pricebook2 selectedPriceList = [SELECT Id, Name FROM pricebook2 where Id=:quoteRecord.buildertek__Project__r.buildertek__Price_Book__c LIMIT 1];
-                priceWrap.defaultValue= selectedPriceList;
+        
+        if(PriceList.size() > 0){
+            if(recordId != null){
+                buildertek__Quote__c quoteRecord = [Select Id, Name , buildertek__Project__c , buildertek__Project__r.buildertek__Price_Book__c , buildertek__Project__r.buildertek__Price_Book__r.Name From buildertek__Quote__c  WHERE Id = :recordId];
+                if(quoteRecord.buildertek__Project__c != null && quoteRecord.buildertek__Project__r.buildertek__Price_Book__c !=null){
+                    pricebook2 selectedPriceList = [SELECT Id, Name FROM pricebook2 where Id=:quoteRecord.buildertek__Project__r.buildertek__Price_Book__c LIMIT 1];
+                    if(selectedPriceList != null){
+                        priceWrap.defaultValue= selectedPriceList;
+                    }
+                    else{
+                        priceWrap.defaultValue = PriceList[0];
+                    }
+                }
+                else{
+                    priceWrap.defaultValue = PriceList[0];
+                }
             }
         }
+
         priceWrapper.add(priceWrap);
         return priceWrapper;
     }

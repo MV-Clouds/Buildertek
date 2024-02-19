@@ -130,7 +130,7 @@
                         });
                     });
                     console.log(component.get('v.getPhase') , 'getPhase::::::;');
-                    if(component.get('v.getPhase') != undefined){
+                    if(component.get('v.getPhase') != undefined && component.get('v.getPhase') != ''){
                         var quotelineGroupOptions = component.get("v.quoteLineGroupOptions");
                         console.log('quoteLineGroupOptions ==>', component.get("v.quoteLineGroupOptions"));
                         var name = '';
@@ -149,12 +149,21 @@
                         if(productFamily != ''){
                             console.log('inside if');
                             component.set("v.sProductFamily", productFamily);
+                            helper.changeProductFamilyHelper(component, event, helper , priceBookId, productFamily);
                         }
+                        else{
+                            component.set('v.Spinner', false);
+                        }
+                    }
+                    else{
+                        component.set('v.Spinner', false);
                     }
                     console.log('productFamilyList ==> ',{productFamilyList});
                     component.set("v.productFamilyOptions", productFamilyList);
                 }
-                component.set('v.Spinner', false);
+                else{
+                    component.set('v.Spinner', false);
+                }
             });
             $A.enqueueAction(action);
         } else {
