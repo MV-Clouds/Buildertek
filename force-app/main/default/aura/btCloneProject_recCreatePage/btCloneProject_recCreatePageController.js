@@ -3,7 +3,7 @@
     doInit : function(component, event, helper) {
 
       var projects = component.get("v.projects");
-      console.log('projects : ', JSON.parse(JSON.stringify(projects)));
+      // console.log('projects : ', JSON.parse(JSON.stringify(projects)));
       console.log('Source_Project : ', component.get("v.Source_Project"));
 
       var Source_Project = component.get("v.Source_Project");
@@ -17,8 +17,8 @@
       }
 
 
-		  helper.getFieldSetHelper(component, event, helper);
-      helper.setTabIconHelper(component, event, helper);
+		  helper.getFieldSet_Helper(component, event, helper);
+      helper.setTabIcon_Helper(component, event, helper);
     },
 
     loadSuccess: function(component, event, helper){
@@ -28,7 +28,6 @@
 
     handleError: function(component, event, helper){
       try {
-        component.set("v.isErrorModal", true);
         console.log('error in recordedit from output: ', JSON.parse(JSON.stringify(event.getParam("output"))));
         console.log('error in recordedit from message : ', JSON.parse(JSON.stringify(event.getParam("message"))));
         var errorOutput = JSON.parse(JSON.stringify(event.getParam("output")));
@@ -45,22 +44,23 @@
           }
           // If got error message form field filter validation
           else if(Object.keys(errorOutput.fieldErrors).length > 0){
-            var fieldError = errorOutput.fieldErrors;
-            if(fieldError.Id.length > 0){
-              var errorDetail = fieldError.Id;
-              for(var i in errorDetail){
-                errorMessages.push(errorDetail[i].message);
+            var fieldList = Object.keys(errorOutput.fieldErrors);
+            for(var field of fieldList){
+              var fieldErrList = errorOutput.fieldErrors[field];
+              for(var j in fieldErrList){
+                errorMessages.push(fieldErrList[j].message + `\nError on field:  ${field}`);
               }
             }
           }
           else{
             errorMessages.push(event.getParam("message"));
           }
-          component.set("v.isError", true);
           component.set("v.errorMessages", errorMessages);
+          component.set("v.isError", true);
+          helper.handleErrorModal_Helper(component, event, helper, true);
         }
         else{
-          helper.toastHelper(component, event, helper, 'Error', 'Error while loading record create page.', 'error', 3000);
+          helper.toast_Helper(component, event, helper, 'Error', 'Error while loading record create page.', 'error', 3000);
         }
         component.set("v.isLoading", false);
       } catch (error) {
@@ -72,7 +72,7 @@
     createCloneProject : function(component, event, helper){
       try {
         event.preventDefault();
-        helper.helperCreateCloneProject(component, event, helper);
+        helper.CreateCloneProject_Helper(component, event, helper);
         
       } catch (error) {
         console.log("error in createCloneProject : ", error.stack);
@@ -94,7 +94,7 @@
         console.log('clone project Id : ', cloneProjectId);
 
         if(cloneProjectId){
-          helper.closeModelHelper(component, event, helper, cloneProjectId);
+          helper.closeModel_Helper(component, event, helper, cloneProjectId);
         }
 
       } catch (error) {
@@ -104,12 +104,12 @@
     },
 
     closeModel : function(component, event, helper){
-      helper.closeModelHelper(component, event, helper, component.get("v.recordId"));
+      helper.closeModel_Helper(component, event, helper, component.get("v.recordId"));
     },
 
     handleErrorModal: function(component, event, helper){
       try {
-        component.set("v.isErrorModal", !component.get("v.isErrorModal"));
+        helper.handleErrorModal_Helper(component, event, helper, !component.get("v.isErrorModal"));
       } catch (error) {
         console.log('error in handleErrorModal : ', error.stack);
         

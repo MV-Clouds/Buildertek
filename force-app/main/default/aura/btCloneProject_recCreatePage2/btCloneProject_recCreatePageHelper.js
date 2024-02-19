@@ -49,30 +49,39 @@
       //        again check this process...
        
         if(component.get("v.cloneFlag") == true){
-          if(component.get("v.errorMessages").length > 0){
-            component.set("v.isLoading", true);
-            window.setTimeout(function () {
-              component.set("v.isError", true);
-              component.set("v.isErrorModal", true);
-              component.set("v.isLoading", false);
-            }, 500)
+            if(component.get("v.errorMessages").length > 0){
+              component.set("v.isLoading", true);
+              window.setTimeout(function () {
+                component.set("v.isError", true);
+                component.set("v.isErrorModal", true);
+                component.set("v.isLoading", false);
+              }, 500)
           }
           else{
-            var fields = event.getParam("fields");
-            // fields['buildertek__Source_Project__c'] = component.get("v.Source_Project");
-            console.log('fields', JSON.parse(JSON.stringify(fields)));
-  
-            component.set("v.isLoading", true);
-            component.set("v.isError", false);
-            component.set("v.isErrorModal", false);
-            component.find('recordEditForm').submit(fields);
+              var fields = event.getParam("fields");
+              // fields['buildertek__Source_Project__c'] = component.get("v.Source_Project");
+              console.log('fields', JSON.parse(JSON.stringify(fields)));
+    
+              component.set("v.isLoading", true);
+              component.set("v.isError", false);
+              component.set("v.isErrorModal", false);
+              component.find('recordEditForm').submit(fields);
+            
           }
         }       
          else{
-          component.set("v.isLoading", true);
-          window.setTimeout(function () {
-            helper.helperCreateCloneProject(component, event, helper);
-          }, 2000)
+          if(component.get("v.noOfcloneFlag") < 5){
+            component.set("v.noOfcloneFlag", (component.get("v.noOfcloneFlag") + 1));
+            component.set("v.isLoading", true);
+            window.setTimeout(function () {
+              helper.helperCreateCloneProject(component, event, helper);
+            }, 2000)
+          }
+          else{
+            // if, after hit save button and its after 10 sec rollback method still in progress the show belowd error...
+            helper.toastHelper(component, event, helper, 'Error', 'Process taking too long. Please try again!', 'error', 5000);
+            component.set("v.isLoading", false);
+          }
           
         }
     },
@@ -184,10 +193,18 @@
             var result = response.getReturnValue();
             console.log('reult of createRollBackProject : ', result);
             if(result != null){
-              var objsToCreateList = component.get('v.objsToCreateList');
-              for(var i in objsToCreateList){
-                var isLast = i == (objsToCreateList.length - 1) ? true : false;
-                helper.checkCloneChildRollBack(component, event, helper, result, objsToCreateList[i], isLast);
+              try {
+                var objsToCreateList = component.get('v.objsToCreateList');
+                console.log('objsToCreateList : ', objsToCreateList);
+                for(var i in objsToCreateList){
+                  var isLast = i == (objsToCreateList.length - 1) ? true : false;
+                  helper.checkCloneChildRollBack(component, event, helper, result, objsToCreateList[i], isLast);
+                }
+              } catch (error) {
+                // why we have use tryCatch here....
+                // when you got any error after create project...then immediately delete it....
+                component.set("v.cloneFlag", true);
+                helper.deleteRollbackProject(component, event, helper, result);
               }
             }
             else{
@@ -207,29 +224,35 @@
       // if yes... exception message will edded in list and will dispay on UI on save button click
       // else.. it will set "cloneFlag" to "True" for further process...
       checkCloneChildRollBack: function(component, event, helper, rollBackProjectId, childObj, isLast){
-        var action = component.get("c.cloneChildObj")
-        action.setParams({
-          clonedProjectId : rollBackProjectId,
-          sourceProjectId : component.get("v.recordId"),
-          objName : childObj,
-          roll_back : true,
-        });
-        action.setCallback(this, function(response){
-            var result = response.getReturnValue();
-            console.log(childObj ," --roll back result-- ", result);
-            var errorMessages = component.get("v.errorMessages");
-            if(result != 'success'){
-              errorMessages.push(childObj+': '+ result);
-            }
-            if(errorMessages.length > 0){
-              component.set("v.errorMessages", errorMessages);
-            }
-            if(isLast){
-              helper.deleteRollbackProject(component, event, helper, rollBackProjectId);
-              component.set("v.cloneFlag", true);
-            }
-        });
-		    $A.enqueueAction(action);
+        try {
+          var action = component.get("c.cloneChildObj")
+          action.setParams({
+            clonedProjectId : rollBackProjectId,
+            sourceProjectId : component.get("v.recordId"),
+            objName : childObj,
+            roll_back : true,
+          });
+          action.setCallback(this, function(response){
+              var result = response.getReturnValue();
+              console.log(childObj ," --roll back result-- ", result);
+              var errorMessages = component.get("v.errorMessages");
+              if(result != 'success'){
+                errorMessages.push(childObj+': '+ result);
+              }
+              if(errorMessages.length > 0){
+                component.set("v.errorMessages", errorMessages);
+              }
+              if(isLast){
+                component.set("v.cloneFlag", true);
+                helper.deleteRollbackProject(component, event, helper, rollBackProjectId);
+              }
+          });
+          $A.enqueueAction(action);
+        } catch (error) {
+          console.log('errror in checkCloneChildRollBack : ', error.stack);
+          component.set("v.cloneFlag", true);
+          helper.deleteRollbackProject(component, event, helper, rollBackProjectId);
+        }
       },
 
       // This method used delete craete project(Roll Back Project) for purposed of child object exception checking...

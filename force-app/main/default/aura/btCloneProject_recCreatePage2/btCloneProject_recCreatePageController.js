@@ -2,11 +2,26 @@
   // ================== TO Solve "TOO many SOQL : 101" =================
     doInit : function(component, event, helper) {
 
-      var projects = component.get("v.projects");
-      console.log('projects : ', JSON.parse(JSON.stringify(projects)));
-      console.log('Source_Project : ', component.get("v.Source_Project"));
+      component.get("v.projects", projects);
+      // var projects = component.get("v.projects");
+      var projects = [
+        {
+            "Id": "a1Q1K000004OIswUAG",
+            "Name": "The Villa at Grand Station",
+            "buildertek__County__c": "Bronx",
+            "buildertek__Type__c": "Standard",
+            "buildertek__Customer__c": "0011K00002fVW68QAG",
+            "buildertek__Customer_Contact__c": "0031K00003KooaEQAR",
+            "buildertek__Address__c": "111 Main ST"
+        }
+    ];
+    component.set("v.projects", projects);
 
-      var Source_Project = component.get("v.Source_Project");
+      console.log('projects : ', JSON.parse(JSON.stringify(projects)));
+      
+      // var Source_Project = component.get("v.Source_Project");
+      var Source_Project = 'a1Q1K000004OIswUAG~Budget,Inspections,Quote,Punch List,Project Vendors,Contract,Warranty,Purchase Order,Selection,Schedule';
+      console.log('Source_Project : ', Source_Project);
       if(Source_Project){
         var sourceProjectId = Source_Project.split('~')[0];
         component.set("v.recordId", sourceProjectId)

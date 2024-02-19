@@ -1,7 +1,7 @@
 ({
    	// ================== TO Solve "TOO many SOQL : 101" =================
     
-       getFieldSetHelper: function(component, event, helper){
+       getFieldSet_Helper: function(component, event, helper){
         try {
 
             var action = component.get("c.getFieldSet");
@@ -24,42 +24,62 @@
                   component.set("v.listOfFields", listOfFields);
                 }
                 else{
-                  helper.toastHelper(component, event, helper, 'Error', 'error while retriving data', 'error', 3000);
+                  helper.toast_Helper(component, event, helper, 'Error', 'error while retriving data', 'error', 3000);
                   component.set("v.isLoading", false);
                 }
             });
 		    $A.enqueueAction(action);
             
         } catch (error) {
-            console.log('error in getFieldSetHelper : ' , error.stack);
+            console.log('error in getFieldSet_Helper : ' , error.stack);
             
         }
     },
 
-    helperCreateCloneProject: function(component, event, helper){
+    CreateCloneProject_Helper: function(component, event, helper){
+        component.set("v.isError", false);
+        helper.handleErrorModal_Helper(component, event, helper, false);
+        component.set("v.isLoading", false);
 
-        if(component.get("v.errorMessages").length > 0){
-          component.set("v.isLoading", true);
-          window.setTimeout(function () {
-            component.set("v.isError", true);
-            component.set("v.isErrorModal", true);
-            component.set("v.isLoading", false);
-          }, 500)
-        }
-        else{
-          var fields = event.getParam("fields");
-          fields['buildertek__Source_Project__c'] = component.get("v.Source_Project");
-          console.log('fields', JSON.parse(JSON.stringify(fields)));
+        var fields = event.getParam("fields");
+        fields['buildertek__Source_Project__c'] = component.get("v.Source_Project");
+        // console.log('fields', JSON.parse(JSON.stringify(fields)));
 
-          component.set("v.isLoading", true);
-          component.set("v.isError", false);
-          component.set("v.isErrorModal", false);
-          component.find('recordEditForm').submit(fields);
-        }
-
+        component.set("v.isLoading", true);
+        component.find('recordEditForm').submit(fields);
     },
 
-    setTabIconHelper: function(component, event, helper){
+    handleErrorModal_Helper : function(component, event, helper, isErrorModal){
+      try {
+        if(isErrorModal == false){
+          var errorContainer = document.getElementsByClassName("errorContainer");
+          if(errorContainer.length > 0){
+            errorContainer[0].classList.remove("fadeIn");
+            window.setTimeout( function() {
+              component.set("v.isErrorModal", false);
+            }, 100);
+          }
+          else{
+            component.set("v.isErrorModal", false);
+          }
+        }
+        else if(isErrorModal == true){
+          component.set("v.isErrorModal", true);
+
+          window.setTimeout(function(){
+            var errorContainer = document.getElementsByClassName("errorContainer");
+            if(errorContainer.length > 0){
+              errorContainer[0].classList.add("fadeIn");
+            }
+          },100);
+        }
+      } catch (error) {
+        console.log('error in handleErrorModal_Helper : ', error.stack);
+        
+      }
+    },
+
+    setTabIcon_Helper: function(component, event, helper){
         try {
             window.setTimeout(function () {
                 var workspaceAPI = component.find("workspace");
@@ -83,12 +103,12 @@
               }, 1000);
             
         } catch (error) {
-            console.log('error in setTabIconHelper : ', error.stack);
+            console.log('error in setTabIcon_Helper : ', error.stack);
             
         }
     },
 
-    closeModelHelper: function (component, event, helper, recordId) {
+    closeModel_Helper: function (component, event, helper, recordId) {
   
         var navEvt = $A.get("e.force:navigateToSObject");
         navEvt.setParams({
@@ -111,7 +131,7 @@
               });
       },
 
-      toastHelper: function(component, event, helper, Title, Message, Type, Duration){
+      toast_Helper: function(component, event, helper, Title, Message, Type, Duration){
         var toast = $A.get("e.force:showToast");
               toast.setParams({
                   title: Title,

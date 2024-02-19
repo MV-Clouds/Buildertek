@@ -23,11 +23,7 @@
                     position: absolute !important;
                     z-index: 0 !important;
                 }
-                .slds-modal__container.createCloneProject{
-                    min-width: 40% !important;
-                    width: 50% !important;
-                    max-width: 70% !important;
-                }
+                
                 .grid{
                     display: grid;
                     grid-template-columns: auto auto;
@@ -44,6 +40,19 @@
                  .standard_field .slds-input{
                     --slds-c-input-spacing-horizontal-start: 12px;
                 }
+                .standard_field .input-text{
+                    display: flex;
+                    flex-wrap: nowrap;
+                    align-items: center;
+                }
+                .standard_field .slds-listbox__option{
+                    text-align: left;
+                }
+
+                .errorIcon lightning-primitive-icon{
+                    display: flex;
+                    align-items: center;
+                }
 
                 .createCloneProject .slds-form-element__label{
                     text-align: left !important;
@@ -55,8 +64,30 @@
                 }
 
                 .createCloneProject .slds-form-element_horizontal .slds-form-element__help{
-                    margin-left : 0px !important;
+                    <!-- margin-left : 0px !important; -->
                 }
+
+                .slds-modal__container.createCloneProject{
+                    min-width: 40% !important;
+                    width: 50% !important;
+                    max-width: 90% !important;
+                }
+                @media only screen and (max-width: 1710px) and (min-width: 1500px){
+                    .slds-modal__container.createCloneProject{
+                        width: 55% !important;
+                    }
+                }
+                @media only screen and (max-width: 1500px) and (min-width: 1290px){
+                    .slds-modal__container.createCloneProject{
+                        width: 70% !important;
+                    }
+                }
+                @media only screen and (max-width: 1290px){
+                    .slds-modal__container.createCloneProject{
+                        width: 90% !important;
+                    }
+                }
+               
                
         </aura:html>
 
@@ -78,7 +109,7 @@
                                     </div>
                                 </aura:iteration>
                             </div>
-                        </center>
+                    </center>
                         
                         <aura:if isTrue="{!v.isLoading}">
                             <div aura:id="spinnerId" class="slds-spinner_container">
@@ -97,21 +128,21 @@
                         
                     </div>
                     <footer class="slds-modal__footer">
-                        <center style="display: flex; justify-content: center; align-items: center;">
+                        <center>
                             <aura:if isTrue="{!v.isError}">
-                                <div class="errorOuter">
+                                <span class="errorOuter">
                                     <lightning:buttonIcon class="errorMainIcon" iconName="utility:error"  variant="bare" alternativeText="Error!" title="Error" size="large" onclick="{!c.handleErrorModal}"/>
                                     <aura:if isTrue="{!v.isErrorModal}">
                                         <div class="errorContainer">
                                             <div class="errorHader">
                                                 <div class="errorIcon">
-                                                    <lightning:icon class="errorHeaderIcon" iconName="utility:error" alternativeText="Error!" title="Error" size="x-small"/>
+                                                    <lightning:buttonIcon iconName="utility:error" variant="bare" size="large" title="Error" alternativeText="Error!" />
                                                 </div>
                                                 <div class="errorTitle slds-media__body ">
                                                     <h1 class="slds-truncate slds-text-heading_medium"> We hit a snag. </h1>
                                                 </div>
                                                 <div class="errorClosebtn">
-                                                    <lightning:buttonIcon iconName="utility:close"  size="small"  variant="bare" alternativeText="close" title="close" onclick="{!c.handleErrorModal}" />
+                                                    <lightning:buttonIcon iconName="utility:close"  size="small"  variant="bare" onclick="{!c.handleErrorModal}" alternativeText="close" title="close" />
                                                 </div>
                                             </div>
                                             <div class="errorBody">
@@ -127,7 +158,7 @@
                                             <div class="errorTriangle"></div>
                                         </div>
                                     </aura:if>
-                                </div>
+                                </span>
                             </aura:if>
                             <lightning:button variant="neutral" label="Cancel" title="Cancel" onclick="{!c.closeModel}" />
                             <lightning:button variant="brand" type="submit" label="Save" title="Save" />
