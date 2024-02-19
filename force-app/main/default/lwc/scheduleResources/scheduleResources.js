@@ -3,6 +3,7 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { loadStyle } from 'lightning/platformResourceLoader';
 import myResource from '@salesforce/resourceUrl/ScheduleLWCCss';
 import fetchScheduleData from '@salesforce/apex/scheduleResourceController.fetchScheduleData';
+import updateResource from '@salesforce/apex/scheduleResourceController.updateScheduleItemResources';
 import getScheduleData from "@salesforce/apex/GetProjectAndScheduleForGanttCmp.getScheduleData";
 
 export default class ScheduleResources extends LightningElement {
@@ -18,11 +19,11 @@ export default class ScheduleResources extends LightningElement {
     @track selectedProjectId;
     @track selectedScheduleId;
     @track selectedScheduleIdForJS;
-    @track isEditEnabled = false;
+    @track editRecordId;
     @track selectedVendorId;
-    @track selectedVendorResources1;
-    @track selectedVendorResources2;
-    @track selectedVendorResources3;
+    @track selectedVendorResources1 = '';
+    @track selectedVendorResources2 = '';
+    @track selectedVendorResources3 = '';
     @track vendorOptions = [];
     @track vendorResourcesOptions = [];
     @track scheduleDataWrapper = {};
@@ -136,50 +137,139 @@ export default class ScheduleResources extends LightningElement {
         this.dispatchEvent(toastEvent);
     }
 
-    // TODO - Implement the editResource methods
+    // * Method to handle click on edit button
     editResource(event) {
-        const recordId = event.currentTarget.dataset.id;
-        this.tableData = this.tableData.map(row => {
-            if (row.id === recordId) {
-                return { ...row, isEditing: true };
-            } else {
-                return { ...row, isEditing: false };
+        this.editRecordId = event.currentTarget.dataset.id;
+        let currentVendorId = event.currentTarget.dataset.vendorid;
+        // Enable the edit mode for the selected record and disable for others
+        this.tableData = this.tableData.map(row => ({
+            ...row,
+            isEditing: row.id === this.editRecordId
+        }));
+
+        const selectedRecord = this.tableData.find(row => row.id === this.editRecordId);
+        if (selectedRecord.isEditing) {
+            this.selectedVendorId = currentVendorId ? this.vendorOptions.find(option => option.label === selectedRecord.vendor)?.value : '';
+
+            if (this.selectedVendorId) {
+                this.vendorResourcesOptions = [{ label: 'None', value: '' }];
+                if (this.vendorResourcesMap[this.selectedVendorId]) {
+                    this.vendorResourcesOptions = this.vendorResourcesOptions.concat(
+                        this.vendorResourcesMap[this.selectedVendorId].map(ele => ({
+                            label: ele.label,
+                            value: ele.value
+                        }))
+                    );
+                }
             }
-        });
+
+            // Set the selected values for the vendor and vendor resources
+            selectedRecord.selectedVendorId = this.selectedVendorId;
+
+            ['1', '2', '3'].forEach(index => {
+                const fieldName = `vendorResources${index}`;
+                const fieldValue = selectedRecord[fieldName];
+                selectedRecord[`selectedVendorResources${index}`] = fieldValue ? this.vendorResourcesOptions.find(option => option.label === fieldValue)?.value : '';
+            });
+        }
+
+        console.log(`Selected Vendor Id: ${this.selectedVendorId}, Selected Vendor Resources 1: ${selectedRecord.selectedVendorResources1}, Selected Vendor Resources 2: ${selectedRecord.selectedVendorResources2}, Selected Vendor Resources 3: ${selectedRecord.selectedVendorResources3}`);
     }
 
-    closeEditFields(event) {
+    closeEditFields() {
         this.tableData = this.tableData.map(row => {
             return { ...row, isEditing: false };
         });
     }
-    
 
-    // TODO - Implement the saveResource methods
-    vendorChange() {
-        console.log('vendorChange');
-        this.vendorResourcesOptions = this.scheduleDataWrapper.vendorResourcesMap[this.selectedVendorId];
+    // * Method to handle vendor change
+    vendorChange(event) {
+        this.selectedVendorId = event.target.value;
+        console.log('Selected Vendor:', this.selectedVendorId);
+
+        if (this.selectedVendorId) {
+            this.vendorResourcesOptions = [{ label: 'None', value: '' }];
+            if (this.vendorResourcesMap[this.selectedVendorId]) {
+                this.vendorResourcesOptions = this.vendorResourcesOptions.concat(
+                    this.vendorResourcesMap[this.selectedVendorId].map(ele => ({
+                        label: ele.label,
+                        value: ele.value
+                    }))
+                );
+            }
+        } else {
+            this.selectedVendorResources1 = '';
+            this.selectedVendorResources2 = '';
+            this.selectedVendorResources3 = '';
+        }
+
+        console.log('vendorResourcesOptions:', this.vendorResourcesOptions);
     }
 
     // TODO - Implement the vendorResourcesChange methods
-    vendorResourcesChange() {
-        console.log('vendorResourcesChange');
+    vendorResourcesChange(event) {
+        console.log('Selected Vendor Resources', event.target.value);
+        const fieldName = event.target.dataset.field;
+
+        if (fieldName === 'selectedVendorResources1') {
+            this.selectedVendorResources1 = event.target.value;
+        } else if (fieldName === 'selectedVendorResources2') {
+            this.selectedVendorResources2 = event.target.value;
+        } else if (fieldName === 'selectedVendorResources3') {
+            this.selectedVendorResources3 = event.target.value;
+        }
     }
 
+    // * Create map of vendor and its resources 
     processScheduleDataWrapper() {
-        this.vendorOptions = this.scheduleDataWrapper.contractorAndResourcesList.map(ele => {
-            return { label: ele.Name, value: ele.Id };
-        });
-    
-        this.scheduleDataWrapper.internalResourcesList.forEach(resource => {
-            if (vendorResourcesMap.hasOwnProperty(resource.Vendor__c)) {
-                this.vendorResourcesMap[resource.Vendor__c].push({ label: resource.Name, value: resource.Id });
-            } else {
-                this.vendorResourcesMap[resource.Vendor__c] = [{ label: resource.Name, value: resource.Id }];
-            }
-        });
-    
-        this.vendorResourcesOptions = this.vendorResourcesMap;
+        this.vendorOptions = this.scheduleDataWrapper.contractorAndResourcesList ?
+            this.scheduleDataWrapper.contractorAndResourcesList.map(ele => ({
+                label: ele.Name,
+                value: ele.Id
+            })) : [];
+        console.log('vendorOptions:', JSON.parse(JSON.stringify(this.vendorOptions)));
+
+        if (this.scheduleDataWrapper.contractorAndResourcesList) {
+            this.scheduleDataWrapper.contractorAndResourcesList.forEach(vendor => {
+                const vendorId = vendor.Id;
+                const resources = [];
+                if (vendor.Contacts) {
+                    vendor.Contacts.forEach(resource => {
+                        resources.push({ label: resource.Name, value: resource.Id });
+                    });
+                }
+                this.vendorResourcesMap[vendorId] = resources;
+            });
+        }
+        console.log('vendorResourcesMap:', JSON.parse(JSON.stringify(this.vendorResourcesMap)));
+    }
+
+    // * Method to handle save button click
+    saveResource() {
+        this.isLoading = true;
+        const updatedRecord = {
+            Id: this.editRecordId,
+            buildertek__Contractor__c: this.selectedVendorId,
+            buildertek__Contractor_Resource_1__c: this.selectedVendorResources1,
+            buildertek__Contractor_Resource_2__c: this.selectedVendorResources2,
+            buildertek__Contractor_Resource_3__c: this.selectedVendorResources3
+        };
+        console.log('Updated Record:', updatedRecord);
+        updateResource({ scheduleItem: updatedRecord })
+            .then((result) => {
+                console.log('Result:', result);
+                this.showToast('Success', 'Record updated successfully', 'success');
+                this.tableData = this.tableData.map(row => {
+                    return { ...row, isEditing: false };
+                });
+            })
+            .catch((error) => {
+                console.log('Error:', error);
+                this.showToast('Error', 'There was an error while updating the record. Please contact the administrator to resolve this issue.', 'error');
+            })
+            .finally(() => {
+                this.isLoading = false;
+            });
     }
     
 }

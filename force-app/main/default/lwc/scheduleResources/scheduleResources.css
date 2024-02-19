@@ -75,3 +75,7 @@
     align-items: center;
     margin: 0 15px 0 5px;
 }
+
+.fixed-width-dropdown {
+    width: 200px;
+}

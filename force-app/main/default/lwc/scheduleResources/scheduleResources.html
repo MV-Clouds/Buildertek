@@ -56,22 +56,25 @@
                                 <div class="slds-col comboHideLabel">
                                     <lightning-combobox name="vendor" value={row.selectedVendorId}
                                         options={vendorOptions} onchange={vendorChange}
-                                        placeholder="Select Vendor"></lightning-combobox>
+                                        placeholder="Select Vendor" class="fixed-width-dropdown"></lightning-combobox>
                                 </div>
                                 <div class="slds-col comboHideLabel">
                                     <lightning-combobox name="vendor" value={row.selectedVendorResources1}
-                                        options={vendorResourcesOptions} onchange={vendorResourcesChange}
-                                        placeholder="Select Vendor Resources"></lightning-combobox>
+                                        data-field="selectedVendorResources1" options={vendorResourcesOptions}
+                                        onchange={vendorResourcesChange}
+                                        placeholder="Select Vendor Resources" class="fixed-width-dropdown"></lightning-combobox>
                                 </div>
                                 <div class="slds-col comboHideLabel">
                                     <lightning-combobox name="vendor" value={row.selectedVendorResources2}
-                                        options={vendorResourcesOptions} onchange={vendorResourcesChange}
-                                        placeholder="Select Vendor Resources"></lightning-combobox>
+                                        data-field="selectedVendorResources2" options={vendorResourcesOptions}
+                                        onchange={vendorResourcesChange}
+                                        placeholder="Select Vendor Resources" class="fixed-width-dropdown"></lightning-combobox>
                                 </div>
                                 <div class="slds-col comboHideLabel">
                                     <lightning-combobox name="vendor" value={row.selectedVendorResources3}
-                                        options={vendorResourcesOptions} onchange={vendorResourcesChange}
-                                        placeholder="Select Vendor Resources"></lightning-combobox>
+                                        data-field="selectedVendorResources3" options={vendorResourcesOptions}
+                                        onchange={vendorResourcesChange}
+                                        placeholder="Select Vendor Resources" class="fixed-width-dropdown"></lightning-combobox>
                                 </div>
                                 <div class="slds-col">
                                     <p class="record-value">{row.startDate}</p>
@@ -79,7 +82,7 @@
                                 <div class="slds-col">
                                     <p class="record-value">{row.endDate}</p>
                                 </div>
-                                <div class="icons"> 
+                                <div class="icons">
                                     <lightning-icon icon-name='utility:save' alternative-text='save' size='x-small'
                                         title='save' onclick={saveResource} data-id={row.id}></lightning-icon>
                                     <lightning-icon icon-name='utility:close' alternative-text='close' size='x-small'
@@ -110,7 +113,7 @@
                                 </div>
                                 <div class="slds-col">
                                     <lightning-icon icon-name='utility:edit' alternative-text='edit' size='xx-small'
-                                        title='edit' onclick={editResource} data-id={row.id}></lightning-icon>
+                                        title='edit' onclick={editResource} data-id={row.id} data-vendorid={row.vendor}></lightning-icon>
                                 </div>
                             </template>
                         </div>

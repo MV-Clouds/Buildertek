@@ -10,6 +10,27 @@ public with sharing class scheduleResourceController {
         return wrapper;
     }
     
+    @AuraEnabled
+    public static String updateScheduleItemResources(buildertek__Project_Task__c scheduleItem){
+        try {
+            System.debug('scheduleItem: ' + scheduleItem);
+            buildertek__Project_Task__c scheduleItemToUpdate = new buildertek__Project_Task__c(Id = scheduleItem.Id);
+            scheduleItemToUpdate.buildertek__Contractor__c = scheduleItem.buildertek__Contractor__c;
+            scheduleItemToUpdate.buildertek__Contractor_Resource_1__c = scheduleItem.buildertek__Contractor_Resource_1__c;
+            scheduleItemToUpdate.buildertek__Contractor_Resource_2__c = scheduleItem.buildertek__Contractor_Resource_2__c;
+            scheduleItemToUpdate.buildertek__Contractor_Resource_3__c = scheduleItem.buildertek__Contractor_Resource_3__c;
+            update scheduleItemToUpdate;
+            return 'Success';
+        } catch (Exception ex) {
+            System.debug('Error: ' + ex.getMessage());
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
+            return 'Error';
+        }
+    }
+
     public class ScheduleDataWrapper {
         @AuraEnabled public List<buildertek__Project_Task__c> scheduleList;
         @AuraEnabled public List<User> internalResourcesList;
