@@ -36,7 +36,7 @@ public class ImportmasterBudgetClassTest {
         List<String> masterbudgetid = new List<String>();
         masterbudgetid.add(masterid);
         
-        ImportmasterBudgetClass.getMasterBudgets();
+        ImportmasterBudgetClass.getMasterBudgets(mb.Id,'');
         ImportmasterBudgetClass.importMasterBudgetLines(masterbudgetid,Id.valueOf(bi.id));
         
         System.assertEquals('Test','Test');

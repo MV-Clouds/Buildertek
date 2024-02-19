@@ -29,7 +29,7 @@ public class ImportMasterProjectTakeoffTest {
         ApexPages.StandardController sc = new ApexPages.StandardController(tc);
         //ImportMasterSchedules impsch = new ImportMasterSchedules(sc);
         ImportMasterProjectTakeoff.MasterProjectTakeoffClass impmaster = new ImportMasterProjectTakeoff.MasterProjectTakeoffClass();
-        ImportMasterProjectTakeoff.getMasterProjectTakeoff(tc.Id);
+        ImportMasterProjectTakeoff.getMasterProjectTakeoff(tc.Id,'Test line');
         ImportMasterProjectTakeoff.importMasterProjecttakeoffLines(tcIds, tc.Id);
         System.assertEquals('Test','Test');
         
