@@ -2482,20 +2482,20 @@ public with sharing class QuoteDAO{
             products.add(aProduct);
         }
 
-        List<PriceBookEntry> pEntries2 = [SELECT Id,Product2Id, toLabel(Product2.Family), 
-                                            Product2.IsActive, Pricebook2.Name  //----
-                                            FROM PricebookEntry WHERE Pricebook2Id=:pbookId AND Product2.Family != null AND IsActive = True 
-                                            ORDER BY Product2.Family ASC NULLS LAST, Product2.Name ASC NULLS LAST LIMIT 50000];
-        Set<String> ProductfamilySet = new Set<String>();
-        for(PriceBookEntry PE : pEntries2){
-            if(PE.Product2.Family != null){
-                ProductfamilySet.add(PE.Product2.Family);
-            }
-        }
-        productWrapper aProduct = new productWrapper();
-        aProduct.Id = null;
-        aProduct.ProductFamilySet = new List<String>(ProductfamilySet);
-        products.add(aProduct);
+        // List<PriceBookEntry> pEntries2 = [SELECT Id,Product2Id, toLabel(Product2.Family), 
+        //                                     Product2.IsActive, Pricebook2.Name  //----
+        //                                     FROM PricebookEntry WHERE Pricebook2Id=:pbookId AND Product2.Family != null AND IsActive = True 
+        //                                     ORDER BY Product2.Family ASC NULLS LAST, Product2.Name ASC NULLS LAST LIMIT 50000];
+        // Set<String> ProductfamilySet = new Set<String>();
+        // for(PriceBookEntry PE : pEntries2){
+        //     if(PE.Product2.Family != null){
+        //         ProductfamilySet.add(PE.Product2.Family);
+        //     }
+        // }
+        // productWrapper aProduct = new productWrapper();
+        // aProduct.Id = null;
+        // aProduct.ProductFamilySet = new List<String>(ProductfamilySet);
+        // products.add(aProduct);
 
         return products;
     }
@@ -2503,10 +2503,19 @@ public with sharing class QuoteDAO{
     public static List<productWrapper> getProductsthroughProductFamily(string pbookId, string pfId) {
 
 
-        List<PriceBookEntry> pEntries = [SELECT Id,Product2Id, Product2.buildertek__Quote_Group__c , Product2.Name, Product2.ProductCode, Product2.buildertek__Vendor__r.Name ,Product2.buildertek__Cost_Code__r.Name, Product2.Description, toLabel(Product2.Family), 
-                                            Product2.IsActive,buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Discount__c, Pricebook2.Name, UnitPrice, Product2.QuantityUnitOfMeasure  //----
-                                            FROM PricebookEntry WHERE Pricebook2Id=:pbookId AND IsActive = True AND toLabel(Product2.Family)=:pfId
-                                            ORDER BY Product2.Family ASC NULLS LAST, Product2.Name ASC NULLS LAST LIMIT 1000];
+        List<PriceBookEntry> pEntries = new List<PriceBookEntry>();
+        if(pfId != '' && pfId != null ){
+            pEntries = [SELECT Id,Product2Id, Product2.buildertek__Quote_Group__c , Product2.Name, Product2.ProductCode, Product2.buildertek__Vendor__r.Name ,Product2.buildertek__Cost_Code__r.Name, Product2.Description, toLabel(Product2.Family), 
+                                                Product2.IsActive,buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Discount__c, Pricebook2.Name, UnitPrice, Product2.QuantityUnitOfMeasure  //----
+                                                FROM PricebookEntry WHERE Pricebook2Id=:pbookId AND IsActive = True AND toLabel(Product2.Family)=:pfId
+                                                ORDER BY Product2.Family ASC NULLS LAST, Product2.Name ASC NULLS LAST LIMIT 1000];
+        }
+        else{
+            pEntries = [SELECT Id,Product2Id, Product2.buildertek__Quote_Group__c , Product2.Name, Product2.ProductCode, Product2.buildertek__Vendor__r.Name ,Product2.buildertek__Cost_Code__r.Name, Product2.Description, toLabel(Product2.Family), 
+                                                Product2.IsActive,buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Discount__c, Pricebook2.Name, UnitPrice, Product2.QuantityUnitOfMeasure  //----
+                                                FROM PricebookEntry WHERE Pricebook2Id=:pbookId AND IsActive = True
+                                                ORDER BY Product2.Family ASC NULLS LAST, Product2.Name ASC NULLS LAST LIMIT 1000];
+        }
 
         List<productWrapper> products = new List<productWrapper>();
         for (PriceBookEntry pEntry: pEntries) {
@@ -2960,5 +2969,29 @@ public with sharing class QuoteDAO{
         }
         System.debug(products);
         return products;
+    }
+
+    @AuraEnabled
+    public static List<String> getProductFamily(String pbookId){
+        try {
+
+            List<PriceBookEntry> pEntries2 = [SELECT Id,Product2Id, toLabel(Product2.Family), 
+                                            Product2.IsActive, Pricebook2.Name  //----
+                                            FROM PricebookEntry WHERE Pricebook2Id=:pbookId AND Product2.Family != null AND IsActive = True 
+                                            ORDER BY Product2.Family ASC NULLS LAST, Product2.Name ASC NULLS LAST LIMIT 50000];
+
+            Set<String> ProductfamilySet = new Set<String>();
+            for(PriceBookEntry PE : pEntries2){
+                if(PE.Product2.Family != null){
+                    ProductfamilySet.add(PE.Product2.Family);
+                }
+            }
+
+            return new List<String>(ProductfamilySet);
+            
+        } catch (Exception e) {
+            System.debug('Exception in getProductFamily : '+ e.getMessage());
+            return null;
+        }
     }
 }

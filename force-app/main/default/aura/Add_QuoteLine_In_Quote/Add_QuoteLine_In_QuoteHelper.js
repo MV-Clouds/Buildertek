@@ -17,21 +17,23 @@
                 result[0].priceWrapList.forEach(function(element){
                     if(projectHavePricebook.Id !== element.Id){
                         pricebookOptions.push({ key: element.Name, value: element.Id });
-                    }else{
-                        pricebookOptions.push({ key: "None", value: "" });
                     }
+                    // else{
+                    //     pricebookOptions.push({ key: "None", value: "" });
+                    // }
                 });
                 component.set('v.selectedPricebookId' , projectHavePricebook.Id);
 
             }else{
-                pricebookOptions.push({ key: "None", value: "" });
+                // pricebookOptions.push({ key: "None", value: "" });
                 result[0].priceWrapList.forEach(function(element){
                     pricebookOptions.push({ key: element.Name, value: element.Id });
                 });
             }
             if(component.get('v.selectedPricebookId')!= undefined){
                 var selectedPricebook = component.find("selectedPricebook").get("v.value");
-                helper.changePricebookHelper(component, event, helper , selectedPricebook);
+                // helper.changePricebookHelper(component, event, helper , selectedPricebook);
+                helper.getProductFamily(component, event, helper , selectedPricebook);
             }else{
                  component.set('v.Spinner', false);    
             }
@@ -65,6 +67,20 @@
         $A.enqueueAction(action1);      
     }, 
 
+    getProductFamily : function(component, event, helper , priceBookId){
+        component.set('v.Spinner', true);
+        var action = component.get("c.getProductFamily");
+        action.setParams({
+            "pbookId": priceBookId 
+        });
+        action.setCallback(this, function(response) {
+            var result = response.getReturnValue();
+            component.set("v.productFamilySet", JSON.parse(JSON.stringify(result)));
+            helper.changePricebookHelper(component, event, helper , priceBookId);
+        });
+        $A.enqueueAction(action);      
+    },
+
     changePricebookHelper : function(component, event, helper , priceBookId){
         // component.find("selectAll").set("v.checked", false);
         component.set('v.Spinner', true);
@@ -84,13 +100,15 @@
                 if (response.getState() == "SUCCESS" && rows != null) {
                     console.log('quoteLineList ==> ',{rows});
 
-                    var productFamilySet = new Set();
-                    rows.forEach(ele => {
-                        if(ele.Id == null){
-                            console.log('Product Familys : ', ele.ProductFamilySet);
-                            productFamilySet = ele.ProductFamilySet;
-                        }
-                    })
+                    var productFamilySet = component.get("v.productFamilySet")
+                    console.log(' productFamilySet : ',productFamilySet);
+                    // var productFamilySet = new Set();
+                    // rows.forEach(ele => {
+                    //     if(ele.Id == null){
+                    //         console.log('Product Familys : ', ele.ProductFamilySet);
+                    //         productFamilySet = ele.ProductFamilySet;
+                    //     }
+                    // })
                     // component.set("v.quoteLineList", rows);
                     // component.set("v.tableDataList", rows);
                     //---------------------------------------------------------------------------
@@ -114,6 +132,7 @@
 
                     // Combine selectedRows and remainingRows while maintaining selected order
                     var updatedRows = selectedRecords.concat(remainingRows);
+                    console.log('updatedRows pricebook : ', {updatedRows});
 
                     component.set("v.quoteLineList", updatedRows);
                     component.set("v.tableDataList", updatedRows);
@@ -191,7 +210,7 @@
         let sProductFamily = component.get("v.sProductFamily");
         let sVendorName = component.get("v.sVendorName");
         console.log('sProductFamily=====>',sProductFamily);
-        if (priceBookId != '' && productFamilyId != '') {
+        if (priceBookId != '') {
             
             var action = component.get("c.getProductsthroughProductFamily");
             action.setParams({
@@ -225,6 +244,7 @@
 
                     // Combine selectedRows and remainingRows while maintaining selected order
                     var updatedRows = selectedRecords.concat(remainingRows);
+                    console.log('updatedRows : ', {updatedRows});
 
                     component.set("v.quoteLineList", updatedRows);
                     component.set("v.tableDataList", updatedRows);
@@ -238,7 +258,9 @@
             component.set("v.tableDataList", []);
             if(component.get('v.selectedPricebookId')!= undefined){
                 var selectedPricebook = component.find("selectedPricebook").get("v.value");
-                helper.changePricebookHelper(component, event, helper , selectedPricebook);
+                // helper.changePricebookHelper(component, event, helper , selectedPricebook);
+                helper.getProductFamily(component, event, helper , selectedPricebook);
+
             }
         }
     },
@@ -358,7 +380,9 @@
             }
             else if (sProductName == '' && sProductFamily == '') {
                 var selectedPricebook = component.find("selectedPricebook").get("v.value");
-                helper.changePricebookHelper(component, event, helper , selectedPricebook);
+                // helper.changePricebookHelper(component, event, helper , selectedPricebook);
+                helper.getProductFamily(component, event, helper , selectedPricebook);
+
             }
         }
     }, 
@@ -392,7 +416,7 @@
                     'buildertek__Unit_Price__c': element.UnitPrice,
                     'buildertek__Cost_Code__c': element.CostCode,
                     // 'buildertek__Grouping__c': phaseValue,
-                    'buildertek__Grouping__c': QuoteLinePhase ? QuoteLinePhase.value : null,
+                    'buildertek__Grouping__c': QuoteLinePhase ? QuoteLinePhase.value : noGroupingId,
                     'buildertek__Quantity__c': '1',
                     'buildertek__Additional_Discount__c': element.Discount ? element.Discount : 0,
                     'buildertek__Unit_Cost__c': element.UnitCost ? element.UnitCost : element.UnitPrice,
