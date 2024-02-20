@@ -140,6 +140,14 @@ public with sharing class QuoteDAO{
                 ProdIds.add(PE.Product2Id);
             }
         }
+
+        // BUIL-3925
+        Map<String, Boolean> Family_IsActive = new Map<String, Boolean>();
+        for( Schema.PicklistEntry pickListVal : product2.Family.getDescribe().getPicklistValues()){
+            Family_IsActive.put(pickListVal.getLabel(), pickListVal.isActive());
+            system.debug('pickListVal : ' + pickListVal);
+        }
+
         //list<Product2> productfamlylst = [select id, Name,family from Product2 where Id IN :ProdIds AND family != null order by family];
         List<AggregateResult> productfamlylst = [SELECT toLabel(Family) familyLabel
                                                  FROM Product2
@@ -155,7 +163,9 @@ public with sharing class QuoteDAO{
             List<String> sortedProductFamilies = new List<String>();
     
             for (AggregateResult agg : productfamlylst) {
-                sortedProductFamilies.add(String.valueOf(agg.get('familyLabel')));
+                if(Family_IsActive.get(String.valueOf(agg.get('familyLabel'))) == true){ // BUIL-3925....
+                    sortedProductFamilies.add(String.valueOf(agg.get('familyLabel')));
+                }
             }
             
             sortedProductFamilies.sort();
@@ -2472,6 +2482,21 @@ public with sharing class QuoteDAO{
             products.add(aProduct);
         }
 
+        List<PriceBookEntry> pEntries2 = [SELECT Id,Product2Id, toLabel(Product2.Family), 
+                                            Product2.IsActive, Pricebook2.Name  //----
+                                            FROM PricebookEntry WHERE Pricebook2Id=:pbookId AND Product2.Family != null AND IsActive = True 
+                                            ORDER BY Product2.Family ASC NULLS LAST, Product2.Name ASC NULLS LAST LIMIT 50000];
+        Set<String> ProductfamilySet = new Set<String>();
+        for(PriceBookEntry PE : pEntries2){
+            if(PE.Product2.Family != null){
+                ProductfamilySet.add(PE.Product2.Family);
+            }
+        }
+        productWrapper aProduct = new productWrapper();
+        aProduct.Id = null;
+        aProduct.ProductFamilySet = new List<String>(ProductfamilySet);
+        products.add(aProduct);
+
         return products;
     }
     @AuraEnabled
@@ -2574,6 +2599,9 @@ public with sharing class QuoteDAO{
 
         @AuraEnabled
         public String PriceBookEntryId;
+
+        @AuraEnabled 
+        public List<String> ProductFamilySet;
     }
 
     @AuraEnabled

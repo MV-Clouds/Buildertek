@@ -83,6 +83,14 @@
                 var rows = response.getReturnValue();
                 if (response.getState() == "SUCCESS" && rows != null) {
                     console.log('quoteLineList ==> ',{rows});
+
+                    var productFamilySet = new Set();
+                    rows.forEach(ele => {
+                        if(ele.Id == null){
+                            console.log('Product Familys : ', ele.ProductFamilySet);
+                            productFamilySet = ele.ProductFamilySet;
+                        }
+                    })
                     // component.set("v.quoteLineList", rows);
                     // component.set("v.tableDataList", rows);
                     //---------------------------------------------------------------------------
@@ -112,12 +120,13 @@
 
 
                     //--------------------------------------------------------------------------
-                    var productFamilySet = new Set();
-                    rows.forEach(element => {
-                        if (element.Family != undefined && element.Family != '') {
-                            productFamilySet.add(element.Family);
-                        }
-                    });
+                    // var productFamilySet = new Set();
+                    // rows.forEach(element => {
+                    //     if (element.Family != undefined && element.Family != '') {
+                    //         productFamilySet.add(element.Family);
+                    //     }
+                    // });
+
                     var productFamilyList = [];
                     productFamilyList.push({
                         key: '-- All Product Family --',
@@ -372,6 +381,8 @@
         });
         quoteLineList.forEach(element => {
             console.log(phaseValue);
+            var QuoteLinePhase = quoteLineGroupOptions.find(ele => ele.key == element.Family);
+            console.log('Phase : ', quoteLineGroupOptions.find(ele => ele.key == element.Family));
             console.log(phaseValue!= undefined);
             if(element.Selected){
                 console.log("ELEMENT----->" , element.CostCode);
@@ -380,7 +391,8 @@
                     'Name': element.Name,
                     'buildertek__Unit_Price__c': element.UnitPrice,
                     'buildertek__Cost_Code__c': element.CostCode,
-                    'buildertek__Grouping__c': phaseValue,
+                    // 'buildertek__Grouping__c': phaseValue,
+                    'buildertek__Grouping__c': QuoteLinePhase ? QuoteLinePhase.value : null,
                     'buildertek__Quantity__c': '1',
                     'buildertek__Additional_Discount__c': element.Discount ? element.Discount : 0,
                     'buildertek__Unit_Cost__c': element.UnitCost ? element.UnitCost : element.UnitPrice,
