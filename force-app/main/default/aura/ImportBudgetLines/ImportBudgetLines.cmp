@@ -70,7 +70,7 @@
 
         <!-- <div aura:id="uploading" class="notUploading">
             <div class="demo-only" style="height: 6rem;z-index:9998;">
-                <div role="status" class="slds-spinner slds-spinner--large slds-spinner--brand">
+                <div role="status" class="slds-spinner slds-spinnerlarge slds-spinnerbrand">
                     <span class="slds-assistive-text">Loading</span>
                     <div class="slds-spinner__dot-a"></div>
                     <div class="slds-spinner__dot-b"></div>
@@ -88,9 +88,12 @@
                     <span class="slds-assistive-text">Loading</span>
                     <div class="slds-spinner__dot-a"></div>
                     <div class="slds-spinner__dot-b"></div>
+                    <!--  <div class="custom-loading-text">
+                        <b>Processing, Please Wait</b>
+                    </div> -->
                 </div>
             </div>
-        </aura:if>
+            </aura:if>
     </div>
          <div class="slds-modal__footer">
         <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}">Cancel</button>

@@ -175,7 +175,7 @@
         mode: "sticky",
         message: "Please select file to import",
         type: "error",
-        duration: "10000",
+        duration: "5000",
         mode: "dismissible",
       });
       toastEvent.fire();
@@ -217,6 +217,7 @@
 //alert(state);
       if (state === "SUCCESS") {
          // alert("haii");
+
         var result = response.getReturnValue();
         console.log("result ", result);
         if (result.isSuccess) {
