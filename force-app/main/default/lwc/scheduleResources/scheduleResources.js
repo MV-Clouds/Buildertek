@@ -505,8 +505,10 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
 
     // * Method to navigate to the vendor resource page
     viewVendorResource(event) {
-        const viewResource = event.currentTarget.dataset.id;
+        const viewResource = event.currentTarget.dataset.vendorid;
         const fieldName = event.currentTarget.dataset.name;
+        // debugger
+        console.log(`View Resource: ${viewResource}, Field Name: ${fieldName}`);
         const state = {
             c__fieldName: fieldName,
             c__scheduleId: this.recordId || this.selectedScheduleId || this.selectedScheduleIdForJS,
@@ -517,13 +519,15 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
         } else {
             state.c__vendorId = viewResource || '';
         }
-
+        console.log('state', state);
         this[NavigationMixin.Navigate]({
             type: 'standard__component',
             attributes: {
                 componentName: 'c__scheduleResourceAssign',
             },
-            state,
+            state : {
+                c__scheduleId : this.recordId || this.selectedScheduleId || this.selectedScheduleIdForJS
+            },
         });
     }
 }

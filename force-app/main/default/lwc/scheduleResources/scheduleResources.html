@@ -1,5 +1,5 @@
 <template>
-    
+
     <!-- Project and schedule selection component -->
     <div if:false={recordId}>
         <lightning-card title="Manage Schedule Resources" icon-name="custom:custom14">
@@ -19,7 +19,7 @@
             </div>
         </lightning-card>
     </div>
-    
+
     <!-- Schedule Item Datatable -->
     <div if:true={isScheduleSelected}>
         <lightning-card class="custom-card">
@@ -116,19 +116,20 @@
                                     <p class="record-value">{row.internalResource}</p>
                                 </div>
                                 <div class="slds-col slds-truncate link">
-                                    <p class="record-value" data-id={row.vendor} data-name="vendor">{row.vendor}</p>
+                                    <p class="record-value" data-vendorid={row.vendorId} data-name="vendor"
+                                        onclick={viewVendorResource}>{row.vendor}</p>
                                 </div>
                                 <div class="slds-col slds-truncate link">
-                                    <p class="record-value" data-id={row.vendorResource1} data-name="resource"
+                                    <p class="record-value" data-vendorid={row.vendorResources1Id} data-name="resource"
                                         onclick={viewVendorResource}>{row.vendorResources1}</p>
                                 </div>
                                 <div class="slds-col slds-truncate link">
-                                    <p class="record-value" data-id={row.vendorResource2} data-name="resource"
+                                    <p class="record-value" data-vendorid={row.vendorResources2Id} data-name="resource"
                                         onclick={viewVendorResource}>
                                         {row.vendorResources2}</p>
                                 </div>
                                 <div class="slds-col slds-truncate link">
-                                    <p class="record-value" data-id={row.vendorResource3} data-name="resource"
+                                    <p class="record-value" data-vendorid={row.vendorResources3Id} data-name="resource"
                                         onclick={viewVendorResource}>
                                         {row.vendorResources3}</p>
                                 </div>
