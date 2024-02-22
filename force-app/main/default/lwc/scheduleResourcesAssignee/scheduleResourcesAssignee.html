@@ -1,0 +1,56 @@
+<template>
+    <lightning-card class="custom-card">
+        <div class="slds-p-around_medium">
+            <div class="slds-grid slds-gutters header-row">
+                <div class="slds-col">
+                    <p class="header-text">Resource Name</p>
+                </div>
+                <div class="slds-col">
+                    <p class="header-text">Project</p>
+                </div>
+                <div class="slds-col">
+                    <p class="header-text">Schedule Item Name</p>
+                </div>
+                <div class="slds-col">
+                    <p class="header-text">Dependency</p>
+                </div>
+                <div class="slds-col">
+                    <p class="header-text">Start date</p>
+                </div>
+                <div class="slds-col">
+                    <p class="header-text">Finish Date</p>
+                </div>
+                <div class="slds-col">
+                    <p class="header-text">Notes</p>
+                </div>
+            </div>
+            <div class="recordValues">
+                <template for:each={scheduleDataWrapper} for:item="row">
+                    <div key={row.id} class="slds-grid slds-gutters data-row">
+                        <div class="slds-col slds-truncate">
+                            <p class="record-value">{row.buildertek__Contractor__r.Name}</p>
+                        </div>
+                        <div class="slds-col slds-truncate">
+                            <p class="record-value">{row.buildertek__Schedule__r.buildertek__Project__r.Name}</p>
+                        </div>
+                        <div class="slds-col slds-truncate">
+                            <p class="record-value">{row.Name}</p>
+                        </div>
+                        <div class="slds-col slds-truncate">
+                            <p class="record-value">{row.buildertek__Dependency__r.Name}</p>
+                        </div>
+                        <div class="slds-col slds-truncate">
+                            <p class="record-value">{row.buildertek__Start__c}</p>
+                        </div>
+                        <div class="slds-col slds-truncate">
+                            <p class="record-value">{row.buildertek__Finish_Date__c}</p>
+                        </div>
+                        <div class="slds-col slds-truncate">
+                            <p class="record-value">{row.buildertek__Notes__c}</p>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </lightning-card>
+</template>
