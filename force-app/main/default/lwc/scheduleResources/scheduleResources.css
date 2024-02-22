@@ -6,8 +6,8 @@
 
 .header-row {
     display: grid;
-    grid-template-columns: repeat(5, 1fr) 0.5fr 0.5fr 0.25fr;
-    gap: 1rem;
+    grid-template-columns: 1fr 0.5fr 0.5fr repeat(5, 1fr) 0.25fr;
+    gap: 0.5rem;
     background-color: #4a90e2;
     color: #ffffff;
     padding: 1rem;
@@ -25,8 +25,8 @@
 
 .data-row {
     display: grid;
-    grid-template-columns: repeat(5, 1fr) 0.5fr 0.5fr 0.25fr;
-    gap: 1rem;
+    grid-template-columns: 1fr 0.5fr 0.5fr repeat(5, 1fr) 0.25fr;
+    gap: 0.5rem;
     padding: 0.5rem 1rem 0.5rem 1rem;
     border-radius: 0.25rem;
     margin-bottom: 0.5rem;
@@ -78,4 +78,10 @@
 
 .fixed-width-dropdown {
     width: 200px;
+}
+
+.link{
+    color: #4a90e2;
+    text-decoration: underline;
+    cursor: pointer;
 }
