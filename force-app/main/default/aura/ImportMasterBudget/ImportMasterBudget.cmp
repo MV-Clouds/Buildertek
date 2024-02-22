@@ -16,14 +16,39 @@
     <!-- Attribute Declration For Pagination End-->
 
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
-    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/>
     <div class="slds-modal__header" style="font-size:17px;">
         Import Master Budgets
     </div>
+
+    <!-- <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/> -->
+     <!-- *** if we use static_resource for css, it also override other standard component's css. So please use aura:html for css *** -->
     <aura:html tag="style">
 		.lbl .slds-form-element__label{
 			display: none;
 		}
+        .slds-modal__container {
+            max-width: 52rem !important;
+            width: 52% !important;
+        }
+        .cuf-content {
+            padding: 0 0rem !important;
+        }
+        .slds-p-around--medium {
+            padding: 0rem !important;
+        }
+        .slds-modal__content {
+            height: unset !important;
+            max-height: unset !important;
+            box-shadow: none !important;
+        }
+        .slds-modal__container {
+            max-width: 72rem !important;
+            width: 72% !important;
+        }
+        .scrollable {
+            height: 400px;
+            overflow-y: auto;
+        }
 	</aura:html>
     <div class="slds-modal__content slds-p-around--large">
         <div class="slds slds-scope">

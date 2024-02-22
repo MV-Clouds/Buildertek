@@ -7,7 +7,35 @@
     <aura:attribute name="selectedRFQS" type="List" />
     <aura:attribute name="saveCallback" type="object" />
     <aura:attribute name="cancelCallback" type="object"/>
-    <ltng:require styles="{!$Resource.ModalPreviewWidth85}"/> 
+    <!-- <ltng:require styles="{!$Resource.ModalPreviewWidth85}"/>  -->
+	<!-- *** if we use static_resource for css, it also override other standard component's css. So please use aura:html for css *** -->
+	<aura:html tag="style">
+		.slds-modal__container{
+			max-width: 85% !important;
+			width:90% !important;
+		 }
+		 .cuf-content {
+		 padding: 0 0rem !important;
+		 }
+		 .slds-p-around--medium {
+		 padding: 0rem !important;
+		 }
+		 .slds-modal__content {
+			 height: unset !important;
+			 max-height: unset !important;
+			 box-shadow: none !important;
+		 } 
+		 .slds-modal__container{
+			max-width: 85% !important;
+			width: 90% !important;
+		 
+		 }
+		 .scrollable {
+			 height: 400px; 
+			 overflow-y:auto; 
+		 }
+	</aura:html>
+
     
     <aura:attribute name="isShowQuoteDetails" type="Boolean" default="false"/>    
     <aura:attribute name="columns" type="List"/>    

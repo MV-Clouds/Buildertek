@@ -33,11 +33,23 @@
     <force:recordData aura:id="forceRecordCmp" recordId="{!v.recordId}" fields="Name, buildertek__Primary__c , buildertek__Project__r.Name, buildertek__Primary_Contact__c, buildertek__Auto_Number__c, buildertek__Quote_Amount__c" targetRecord="{!v.record}" targetFields="{!v.quote}"
         targetError="{!v.error}" />
 
-    <ltng:require styles="{!$Resource.ModalPreviewCSS}" />
+    <!-- <ltng:require styles="{!$Resource.ModalPreviewCSS}" /> -->
 
     <aura:html tag="style">
-        .slds-modal__container { width:80% !important; max-width: 80% !important; overflow: hidden !important; } .slds-modal__content { overflow: hidden !important; } .slds-modal__close{ display:block !important; }
+        .slds-modal__close{ display:block !important; }
 
+        .slds-modal__content {
+            overflow: hidden !important;
+            height: unset !important;
+            max-height: unset !important;
+        }
+        
+        .slds-modal__container {
+            width:80% !important;
+            max-width: 60rem !important;
+            width: 70% !important;
+            overflow: hidden !important;
+        }
 
     </aura:html>
 
