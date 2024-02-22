@@ -34,6 +34,8 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
             taskDependencyData.push(dependencyRow)
         }
 
+        console.log('counter',i);
+        console.log('taskListForPhase[i] ',taskListForPhase[i]);
         assignmentRowData.push.apply(assignmentRowData, createAssignmentData(taskListForPhase[i], i)); //adds all the assignment data to the main list.
     }
 
@@ -415,50 +417,61 @@ function mergeArrays(taskData, assignedResources) {
 //* This method is used to create task Assignment Data for each task
 
 function createAssignmentData(taskListForPhase, i) {
-
-    var assignmentRow = {}
+    let temp = taskListForPhase;
+    console.log('taskListForPhase ',JSON.parse(JSON.stringify(temp)));
+    debugger
+    let assignmentRowCon1 = {}
+    let assignmentRowCon2 = {}
+    let assignmentRowCon3 = {}
+    let assignmentRowIn1 = {}
+    let assignmentRowIn2 = {}
+    let assignmentRowIn3 = {}
     var assignmentRowDataChild = [];
     if (!taskListForPhase.buildertek__Milestone__c && taskListForPhase.buildertek__Contractor_Resource_1__c) {
-        assignmentRow['id'] = taskListForPhase.Id + '_' + taskListForPhase.buildertek__Contractor_Resource_1__c + '__index' + i + 'ContractorResource_Name' + taskListForPhase.buildertek__Contractor_Resource_1__r.Name;
-        assignmentRow['event'] = taskListForPhase.Id
-        assignmentRow['resource'] = taskListForPhase.buildertek__Contractor_Resource_1__c;
-        assignmentRowDataChild.push(assignmentRow)
+        assignmentRowCon1['id'] = taskListForPhase.Id + '_' + taskListForPhase.buildertek__Contractor_Resource_1__c + '__index' + i + 'ContractorResource_Name' + taskListForPhase.buildertek__Contractor_Resource_1__r.Name;
+        assignmentRowCon1['event'] = taskListForPhase.Id
+        assignmentRowCon1['resource'] = taskListForPhase.buildertek__Contractor_Resource_1__c;
+        assignmentRowDataChild.push(assignmentRowCon1)
     }
     if (!taskListForPhase.buildertek__Milestone__c && taskListForPhase.buildertek__Contractor_Resource_2__c) {
-        assignmentRow['id'] = taskListForPhase.Id + '_' + taskListForPhase.buildertek__Contractor_Resource_2__c + '__index' + i + 'ContractorResource_Name' + taskListForPhase.buildertek__Contractor_Resource_2__r.Name;
-        assignmentRow['event'] = taskListForPhase.Id
-        assignmentRow['resource'] = taskListForPhase.buildertek__Contractor_Resource_2__c;
-        assignmentRowDataChild.push(assignmentRow)
+        assignmentRowCon2['id'] = taskListForPhase.Id + '_' + taskListForPhase.buildertek__Contractor_Resource_2__c + '__index' + i + 'ContractorResource_Name' + taskListForPhase.buildertek__Contractor_Resource_2__r.Name;
+        assignmentRowCon2['event'] = taskListForPhase.Id
+        assignmentRowCon2['resource'] = taskListForPhase.buildertek__Contractor_Resource_2__c;
+        assignmentRowDataChild.push(assignmentRowCon2)
     }
 
     if (!taskListForPhase.buildertek__Milestone__c && taskListForPhase.buildertek__Contractor_Resource_3__c) {
-        assignmentRow['id'] = taskListForPhase.Id + '_' + taskListForPhase.buildertek__Contractor_Resource_3__c + '__index' + i + 'ContractorResource_Name' + taskListForPhase.buildertek__Contractor_Resource_3__r.Name;
-        assignmentRow['event'] = taskListForPhase.Id
-        assignmentRow['resource'] = taskListForPhase.buildertek__Contractor_Resource_3__c;
-        assignmentRowDataChild.push(assignmentRow)
+        assignmentRowCon3['id'] = taskListForPhase.Id + '_' + taskListForPhase.buildertek__Contractor_Resource_3__c + '__index' + i + 'ContractorResource_Name' + taskListForPhase.buildertek__Contractor_Resource_3__r.Name;
+        assignmentRowCon3['event'] = taskListForPhase.Id
+        assignmentRowCon3['resource'] = taskListForPhase.buildertek__Contractor_Resource_3__c;
+        assignmentRowDataChild.push(assignmentRowCon3)
     }
 
     if (!taskListForPhase.buildertek__Milestone__c && taskListForPhase.buildertek__Internal_Resource_1__c) {
-        assignmentRow['id'] = taskListForPhase.Id + '_' + taskListForPhase.buildertek__Internal_Resource_1__c + '__index' + i + 'ContractorResource_Name' + taskListForPhase.buildertek__Internal_Resource_1__r.Name;
-        assignmentRow['event'] = taskListForPhase.Id
-        assignmentRow['resource'] = taskListForPhase.buildertek__Internal_Resource_1__c;
-        assignmentRowDataChild.push(assignmentRow)
+        assignmentRowIn1['id'] = taskListForPhase.Id + '_' + taskListForPhase.buildertek__Internal_Resource_1__c + '__index' + i + 'ContractorResource_Name' + taskListForPhase.buildertek__Internal_Resource_1__r.Name;
+        assignmentRowIn1['event'] = taskListForPhase.Id
+        assignmentRowIn1['resource'] = taskListForPhase.buildertek__Internal_Resource_1__c;
+        console.log('assignmentRow cont 1 ',JSON.parse(JSON.stringify(assignmentRowIn1)));
+        assignmentRowDataChild.push(assignmentRowIn1)
     }
-
+    
     if (!taskListForPhase.buildertek__Milestone__c && taskListForPhase.buildertek__Internal_Resource_3__c) {
-        assignmentRow['id'] = taskListForPhase.Id + '_' + taskListForPhase.buildertek__Internal_Resource_3__c + '__index' + i + 'ContractorResource_Name' + taskListForPhase.buildertek__Internal_Resource_3__r.Name;
-        assignmentRow['event'] = taskListForPhase.Id
-        assignmentRow['resource'] = taskListForPhase.buildertek__Internal_Resource_3__c;
-        assignmentRowDataChild.push(assignmentRow)
+        assignmentRowIn2['id'] = taskListForPhase.Id + '_' + taskListForPhase.buildertek__Internal_Resource_3__c + '__index' + i + 'ContractorResource_Name' + taskListForPhase.buildertek__Internal_Resource_3__r.Name;
+        assignmentRowIn2['event'] = taskListForPhase.Id
+        assignmentRowIn2['resource'] = taskListForPhase.buildertek__Internal_Resource_3__c;
+        console.log('assignmentRow cont 2 ',JSON.parse(JSON.stringify(assignmentRowIn2)));
+        assignmentRowDataChild.push(assignmentRowIn2)
     }
-
+    
     if (!taskListForPhase.buildertek__Milestone__c && taskListForPhase.buildertek__Internal_Resource_4__c) {
-        assignmentRow['id'] = taskListForPhase.Id + '_' + taskListForPhase.buildertek__Internal_Resource_4__c + '__index' + i + 'ContractorResource_Name' + taskListForPhase.buildertek__Internal_Resource_4__r.Name;
-        assignmentRow['event'] = taskListForPhase.Id
-        assignmentRow['resource'] = taskListForPhase.buildertek__Internal_Resource_4__c;
-        assignmentRowDataChild.push(assignmentRow)
+        assignmentRowIn3['id'] = taskListForPhase.Id + '_' + taskListForPhase.buildertek__Internal_Resource_4__c + '__index' + i + 'ContractorResource_Name' + taskListForPhase.buildertek__Internal_Resource_4__r.Name;
+        assignmentRowIn3['event'] = taskListForPhase.Id
+        assignmentRowIn3['resource'] = taskListForPhase.buildertek__Internal_Resource_4__c;
+        console.log('assignmentRow cont 3 ',JSON.parse(JSON.stringify(assignmentRowIn3)));
+        assignmentRowDataChild.push(assignmentRowIn3)
     }
 
+    console.log('assignmentRowDataChild ',assignmentRowDataChild);
     return assignmentRowDataChild;
 }
 

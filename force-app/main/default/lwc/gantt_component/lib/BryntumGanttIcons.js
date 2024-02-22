@@ -4,7 +4,7 @@ function populateIcons(record) {
         if (record.row._allCells.length) {
             if (
                 record.record._data.type == "Project" &&
-                record.row._allCells[3].innerHTML
+                record.row._allCells[5].innerHTML
             ) {
                 var iconElement = `<span class="slds-icon_container slds-icon-custom-custom70" >
                                             <svg aria-hidden="true" class="slds-icon slds-icon-text-default" style="fill: white !important;height:1.3rem;width:1.3rem;">
@@ -12,20 +12,20 @@ function populateIcons(record) {
                                                 </use>
                                             </svg>
                                         </span>`;
-                if (record.row._allCells[3].children[0]) {
+                if (record.row._allCells[5].children[0]) {
                     if (
-                        record.row._allCells[3].children[0].innerHTML.indexOf(
+                        record.row._allCells[5].children[0].innerHTML.indexOf(
                             "custom70"
                         ) == -1
                     ) {
-                        record.row._allCells[3].children[0].innerHTML =
-                            iconElement + record.row._allCells[3].children[0].innerHTML;
+                        record.row._allCells[5].children[0].innerHTML =
+                            iconElement + record.row._allCells[5].children[0].innerHTML;
                     }
                 }
             }
             if (
                 record.record._data.type == "Phase" &&
-                record.row._allCells[3].innerHTML
+                record.row._allCells[5].innerHTML
             ) {
                 var iconElement = `<span class="slds-icon_container slds-icon-custom-custom62" >
                 <svg aria-hidden="true" class="slds-icon slds-icon-text-default" style="fill: white !important;height:1.3rem;width:1.3rem;">
@@ -33,29 +33,29 @@ function populateIcons(record) {
                 </use>
             </svg>
                                         </span>`;
-                if (record.row._allCells[3].children[0]) {
+                if (record.row._allCells[5].children[0]) {
                     if (
-                        record.row._allCells[3].children[0].innerHTML.indexOf(
+                        record.row._allCells[5].children[0].innerHTML.indexOf(
                             "slds-icon-custom-custom62"
                         ) == -1
                     ) {
-                        record.row._allCells[3].children[0].innerHTML =
-                            iconElement + record.row._allCells[3].children[0].innerHTML;
+                        record.row._allCells[5].children[0].innerHTML =
+                            iconElement + record.row._allCells[5].children[0].innerHTML;
                     }
                 }
             }
             if (
                 record.record._data.type == "Task" &&
-                record.row._allCells[3].innerHTML
+                record.row._allCells[5].innerHTML
             ) {
                 if (
                     record.record._data.iconCls == "b-fa b-fa-arrow-left indentTrue" &&
-                    record.row._allCells[3].children[0].classList.contains(
+                    record.row._allCells[5].children[0].classList.contains(
                         "indentCellTrue"
                     ) == false
                 ) {
-                    if (record.row._allCells[3].children[0]) {
-                        record.row._allCells[3].children[0].classList.add(
+                    if (record.row._allCells[5].children[0]) {
+                        record.row._allCells[5].children[0].classList.add(
                             "indentCellTrue"
                         );
                     }
@@ -69,14 +69,14 @@ function populateIcons(record) {
                                                         </use>
                                                     </svg>
                                                 </span>`;
-                        if (record.row._allCells[3].children[0]) {
+                        if (record.row._allCells[5].children[0]) {
                             if (
-                                record.row._allCells[3].children[0].innerHTML.indexOf(
+                                record.row._allCells[5].children[0].innerHTML.indexOf(
                                     "slds-icon-utility-multi_select_checkbox"
                                 ) == -1
                             ) {
-                                record.row._allCells[3].children[0].innerHTML =
-                                    iconElement + record.row._allCells[3].children[0].innerHTML;
+                                record.row._allCells[5].children[0].innerHTML =
+                                    iconElement + record.row._allCells[5].children[0].innerHTML;
                             }
                         }
                     } else {
@@ -90,14 +90,14 @@ function populateIcons(record) {
                                                         l13.2-13.2c0.6-0.6,1.5-0.6,2.1,0l2.1,2.1C56.8,49.5,56.8,50.5,56.3,51z"/>
                                                     </svg>
                                                 </span>`;
-                        if (record.row._allCells[3].children[0]) {
+                        if (record.row._allCells[5].children[0]) {
                             if (
-                                record.row._allCells[3].children[0].innerHTML.indexOf(
+                                record.row._allCells[5].children[0].innerHTML.indexOf(
                                     "slds-icon-utility-multi_select_checkbox"
                                 ) == -1
                             ) {
-                                record.row._allCells[3].children[0].innerHTML =
-                                    iconElement + record.row._allCells[3].children[0].innerHTML;
+                                record.row._allCells[5].children[0].innerHTML =
+                                    iconElement + record.row._allCells[5].children[0].innerHTML;
                             }
                         }
                     }
@@ -114,14 +114,14 @@ function populateIcons(record) {
                                                         </use>
                                                     </svg>
                                                 </span>`;
-                        if (record.row._allCells[3].children[0]) {
+                        if (record.row._allCells[5].children[0]) {
                             if (
-                                record.row._allCells[3].children[0].innerHTML.indexOf(
+                                record.row._allCells[5].children[0].innerHTML.indexOf(
                                     "slds-icon-custom-custom8"
                                 ) == -1
                             ) {
-                                record.row._allCells[3].children[0].innerHTML =
-                                    iconElement + record.row._allCells[3].children[0].innerHTML;
+                                record.row._allCells[5].children[0].innerHTML =
+                                    iconElement + record.row._allCells[5].children[0].innerHTML;
                             }
                         }
                     } else {
@@ -131,14 +131,14 @@ function populateIcons(record) {
                         </use>
                     </svg>
                                                 </span>`;
-                        if (record.row._allCells[3].children[0]) {
+                        if (record.row._allCells[5].children[0]) {
                             if (
-                                record.row._allCells[3].children[0].innerHTML.indexOf(
+                                record.row._allCells[5].children[0].innerHTML.indexOf(
                                     "slds-icon-custom-custom83"
                                 ) == -1
                             ) {
-                                record.row._allCells[3].children[0].innerHTML =
-                                    iconElement + record.row._allCells[3].children[0].innerHTML;
+                                record.row._allCells[5].children[0].innerHTML =
+                                    iconElement + record.row._allCells[5].children[0].innerHTML;
                             }
                         }
                     }

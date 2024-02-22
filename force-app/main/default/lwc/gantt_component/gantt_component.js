@@ -596,6 +596,8 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     taskDependencyData = formatedSchData["taskDependencyData"];
     resourceRowData = formatedSchData["resourceRowData"];
     assignmentRowData = formatedSchData["assignmentRowData"];
+    console.log('assignmentRowData ',assignmentRowData);
+    debugger
 
     let resourceData = makeComboBoxDataForResourceData(this.contractorAndResources, this.internalResources);
 
@@ -667,17 +669,61 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           ],
         },
         {
+          type: "action",
+          text: "",
+          width: 15,
+          actions: [
+            {
+              cls: "b-fa b-fa-arrow-up-from-bracket",
+              onClick: ({ record }) => {
+                if (record.type == "Task" && record.name != "Milestone Complete") {
+                  this.navigateToRecordViewPage(record._data.id);
+                }
+              },
+              renderer: ({ action, record }) => {
+                if (record.type == "Task" && record.name != "Milestone Complete") {                
+                  return `<i class="b-action-item ${action.cls}"></i>`;
+                } else {
+                  return `<i class="b-action-item ${action.cls}" style="display:none;"></i>`;
+                }
+              },
+            },
+          ],
+        },
+        {
+          type: "action",
+          text: "",
+          width: 15,
+          actions: [
+            {
+              cls: "b-fa b-fa-pen",
+              onClick: ({ record }) => {
+                if (record.type == "Task" && record.name != "Milestone Complete") {
+                  gantt.editTask(record);
+                }
+              },
+              renderer: ({ action, record }) => {
+                if (record.type == "Task" && record.name != "Milestone Complete") {                
+                  return `<i class="b-action-item ${action.cls}"></i>`;
+                } else {
+                  return `<i class="b-action-item ${action.cls}" style="display:none;"></i>`;
+                }
+              },
+            },
+          ],
+        },
+        {
           type: "percentdone",
-          draggable: false,
           showCircle: true,
           width: 50,
           text: "% Done",
+          editor: true,
         },
         {
           type: "name",
           draggable: false,
           width: 250,
-          editor: false,
+          editor: true,
           renderer: (record) => {
             populateIcons(record);
             if (record.record._data.type == "Phase") {
@@ -700,9 +746,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
               record.record.readOnly = true;
               return record.record.name;
             } else {
-              if (record.record.type == "Task" && record.record.name != "Milestone Complete") {
-                record.cellElement.style.cursor = "pointer";
-              }
               return record.value;
             }
           },
@@ -803,6 +846,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           width : 120,
           showAvatars : true,
           draggable : false,
+          cellCls: 'custom-cell b-icon b-icon-picker',
           editor      : {
             picker : {
               height   : 350,
@@ -1052,6 +1096,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
         editorContext.editorContext.editor.inputField.picker.onShow = ({source}) => {
           source.store.filter(record => (record.resource.type == 'Internal Resources' || record.resource.contractorId == contractorId));
         };
+        // editorContext.editorContext.editor.inputField.store.filter(record => (record.resource.type == 'Internal Resources') || record.resource.contractorId == contractorId);
       }
     });
 
@@ -1145,9 +1190,9 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
         this.taskRecordId = event.record.id;
       }
 
-      if ((event.column.data.text == "Name") && (event.record.type == "Task") && (event.record.name != "Milestone Complete")) {
-        this.navigateToRecordViewPage(event.record.id);
-      }
+    //   if ((event.column.data.text == "Name") && (event.record.type == "Task") && (event.record.name != "Milestone Complete")) {
+    //     this.navigateToRecordViewPage(event.record.id);
+    //   }
     });
 
     gantt.on("expandnode", (source) => {
