@@ -13,7 +13,8 @@
     var selected = [];
     component.set("v.selectedRecords", selected);
     var selectedPricebook = component.find("selectedPricebook").get("v.value");
-    helper.changePricebookHelper(component, event, helper , selectedPricebook);
+    // helper.changePricebookHelper(component, event, helper , selectedPricebook);
+    helper.getProductFamily(component, event, helper , selectedPricebook);
    },
    changeProductFamily: function(component, event, helper) {
     var selectedPricebook = component.find("selectedPricebook").get("v.value");

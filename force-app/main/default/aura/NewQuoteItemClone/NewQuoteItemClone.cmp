@@ -703,7 +703,7 @@
                                                 <div class="slds-truncate" title="Description">Description</div>
                                             </th>
                                             <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white;  ">
-                                                <div class="slds-truncate" title="Grouping">Grouping</div>
+                                                <div class="slds-truncate" title="Grouping">Phase</div>
                                             </th>
                                             <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; ">
                                                 <div class="slds-truncate" title="note">Notes</div>
@@ -1563,7 +1563,7 @@
                                                         </td>
                                                         <aura:iteration items="{!quoteItem.FieldDataList}" var="fildData">
                                                             <td>
-                                                                <aura:if isTrue="{! (fildData.fieldType == 'number' || fildData.fieldType == 'currency' || fildData.fieldName == 'Name' || fildData.fieldName == 'buildertek__Markup__c'
+                                                                <aura:if isTrue="{! (fildData.fieldType == 'number' || fildData.fieldType == 'currency' || fildData.fieldName == 'Name' || fildData.fieldName == 'buildertek__Markup__c' || fildData.fieldType == 'reference'
                                                                                     || fildData.fieldName == 'buildertek__Margin__c' || fildData.fieldName == 'buildertek__Additional_Discount__c' || fildData.fieldName == 'buildertek__Profit_Margin__c' )}">
 
                                                                     <aura:if isTrue="{!fildData.fieldName == 'Name'}">
@@ -1597,6 +1597,10 @@
                                                                                 <lightning:formattedNumber value="0" style="percent" maximumFractionDigits="2" />
                                                                             </aura:set>
                                                                         </aura:if>
+                                                                    </aura:if>
+
+                                                                    <aura:if isTrue="{!fildData.fieldType == 'reference'}">
+                                                                        <ui:outputURL value="{!'/one/one.app?#/sObject/'+ fildData.fieldValue + '/view'}" target="_blank" label="{!fildData.refrenceValue}" />
                                                                     </aura:if>
 
                                                                     <aura:set attribute="else">
@@ -1732,7 +1736,7 @@
                                                             </td>
                                                             <aura:iteration items="{!quoteItem.FieldDataList}" var="fildData">
                                                                 <td>
-                                                                    <aura:if isTrue="{! (fildData.fieldType == 'number' || fildData.fieldType == 'currency' || fildData.fieldName == 'Name' || fildData.fieldName == 'buildertek__Markup__c'
+                                                                    <aura:if isTrue="{! (fildData.fieldType == 'number' || fildData.fieldType == 'currency' || fildData.fieldName == 'Name' || fildData.fieldName == 'buildertek__Markup__c' || fildData.fieldType == 'reference'
                                                                                         || fildData.fieldName == 'buildertek__Margin__c' || fildData.fieldName == 'buildertek__Additional_Discount__c' || fildData.fieldName == 'buildertek__Profit_Margin__c' )}">
 
                                                                         <aura:if isTrue="{!fildData.fieldName == 'Name'}">
@@ -1768,6 +1772,10 @@
                                                                                     <lightning:formattedNumber value="0" style="percent" maximumFractionDigits="2" />
                                                                                 </aura:set>
                                                                             </aura:if>
+                                                                        </aura:if>
+
+                                                                        <aura:if isTrue="{!fildData.fieldType == 'reference'}">
+                                                                            <ui:outputURL value="{!'/one/one.app?#/sObject/'+ fildData.fieldValue + '/view'}" target="_blank" label="{!fildData.refrenceValue}" />
                                                                         </aura:if>
 
                                                                         <aura:set attribute="else">
@@ -1933,7 +1941,7 @@
                                                                 </td>
                                                                 <aura:iteration items="{!quoteItem.FieldDataList}" var="fildData">
                                                                     <td>
-                                                                        <aura:if isTrue="{! (fildData.fieldType == 'number' || fildData.fieldType == 'currency' || fildData.fieldName == 'Name' || fildData.fieldName == 'buildertek__Markup__c'
+                                                                        <aura:if isTrue="{! (fildData.fieldType == 'number' || fildData.fieldType == 'currency' || fildData.fieldName == 'Name' || fildData.fieldName == 'buildertek__Markup__c' || fildData.fieldType == 'reference'
                                                                                             || fildData.fieldName == 'buildertek__Margin__c' || fildData.fieldName == 'buildertek__Additional_Discount__c' || fildData.fieldName == 'buildertek__Profit_Margin__c' )}">
 
                                                                             <aura:if isTrue="{!fildData.fieldName == 'Name'}">
@@ -1967,6 +1975,10 @@
                                                                                         <lightning:formattedNumber value="0" style="percent" maximumFractionDigits="2" />
                                                                                     </aura:set>
                                                                                 </aura:if>
+                                                                            </aura:if>
+
+                                                                            <aura:if isTrue="{!fildData.fieldType == 'reference'}">
+                                                                                <ui:outputURL value="{!'/one/one.app?#/sObject/'+ fildData.fieldValue + '/view'}" target="_blank" label="{!fildData.refrenceValue}" />
                                                                             </aura:if>
 
                                                                             <aura:set attribute="else">
@@ -2169,7 +2181,7 @@
                                                                     </td>
                                                                     <aura:iteration items="{!quoteItem.FieldDataList}" var="fildData">
                                                                         <td>
-                                                                            <aura:if isTrue="{! (fildData.fieldType == 'number' || fildData.fieldType == 'currency' || fildData.fieldName == 'Name' || fildData.fieldName == 'buildertek__Markup__c'
+                                                                            <aura:if isTrue="{! (fildData.fieldType == 'number' || fildData.fieldType == 'currency' || fildData.fieldName == 'Name' || fildData.fieldName == 'buildertek__Markup__c' || fildData.fieldType == 'reference'
                                                                                                 || fildData.fieldName == 'buildertek__Margin__c' || fildData.fieldName == 'buildertek__Additional_Discount__c' || fildData.fieldName == 'buildertek__Profit_Margin__c' )}">
 
                                                                                 <aura:if isTrue="{!fildData.fieldName == 'Name'}">
@@ -2204,6 +2216,10 @@
                                                                                             <lightning:formattedNumber value="0" style="percent" maximumFractionDigits="2" />
                                                                                         </aura:set>
                                                                                     </aura:if>
+                                                                                </aura:if>
+
+                                                                                <aura:if isTrue="{!fildData.fieldType == 'reference'}">
+                                                                                    <ui:outputURL value="{!'/one/one.app?#/sObject/'+ fildData.fieldValue + '/view'}" target="_blank" label="{!fildData.refrenceValue}" />
                                                                                 </aura:if>
 
                                                                                 <aura:set attribute="else">

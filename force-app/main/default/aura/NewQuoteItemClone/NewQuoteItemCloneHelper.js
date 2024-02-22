@@ -1154,129 +1154,143 @@
     // *** BOM Grouping ***
 
     getQuoteGrouping : function(component, event, helper) {
-        console.log('*** getQuoteGrouping Method ***');
-        $A.get("e.c:BT_SpinnerEvent").setParams({
-            "action": "SHOW"
-        }).fire();
-        var page = component.get("v.page") || 1
-        var groupFieldList = component.get("v.groupFieldList");
-        if (groupFieldList[3] != undefined) {
-            component.set("v.forthGrouping", true);
-        } else if (groupFieldList[2] != undefined) {
-            component.set("v.thirdGrouping", true);
-        } else if (groupFieldList[1] != undefined) {
-            component.set("v.secondGrouping", true);
-        } else if(groupFieldList[0] != undefined){
-            component.set("v.firstGrouping", true);
-        }
-        var action = component.get("c.getQuoteData");
-        action.setParams({
-            quoteId: component.get("v.recordId"),
-            pageNumber: page,   // It's for future use, currnetly it's not in used
-            recordToDisply: 50, // It's for future use, currnetly it's not in used
-            groupingList: groupFieldList
-        });
-        action.setCallback(this, function(response) {
-            var state = response.getState();
-            if (state === "SUCCESS") {
-                console.log('getting result ', response.getReturnValue());                
-                var quoteLineWrapper = response.getReturnValue();
-                var quoteLineList = quoteLineWrapper.quoteLineList;
-                component.set("v.totalColumn", quoteLineWrapper.columns.length);
-                if (quoteLineList.length > 0) {
-                    component.set("v.TotalRecordCount", quoteLineList.length);
-                    var columns = quoteLineWrapper.columns;
-                    quoteLineList.forEach(element => {
-                        var quoteLineFieldData = []
-                        columns.forEach(ele => {
-                            if (ele.type == 'currency' && element[ele.fieldName] == undefined) {
-                                element[ele.fieldName] = 0;
-                            }
-                            var fieldData = {fieldName: ele.fieldName, fieldType: ele.type, fieldValue: element[ele.fieldName]};
-                            quoteLineFieldData.push(fieldData);
-                        });
-                        element.FieldDataList = quoteLineFieldData;
-                        if (element.buildertek__Build_Phase__c != undefined) {
-                            element.buildertek__Build_Phase__c = element.buildertek__Build_Phase__r.Name;
-                        }
-                        if (element.buildertek__Sub_Group__c != undefined) {
-                            element.buildertek__Sub_Group__c = element.buildertek__Sub_Group__r.Name;
-                        }
-                        if (element.buildertek__Grouping__c != undefined) {
-                            element.buildertek__Grouping__c = element.buildertek__Grouping__r.Name;
-                        }
-                        if (element.buildertek__Category__c != undefined) {
-                            element.buildertek__Category__c = element.buildertek__Category__r.Name;
-                        }
-                    });
-                    var group1Wrapper = [];
-                    var group1Value = quoteLineList[0][groupFieldList[0]];
-                    var quoteLines1 = [];
-                    let totalObj = {};
-                    columns.forEach(ele => {
-                        totalObj[ele.fieldName] = 0;
-                    });
-                    quoteLineList.forEach((element, index) => {
-                        if (group1Value == element[groupFieldList[0]]) {
-                            totalObj = helper.countTotal(component, helper, totalObj, element);
-                            quoteLines1.push(element);
-                            if (quoteLineList.length == index+1) {
-                                if (groupFieldList[1] != undefined) {
-                                    quoteLines1 = helper.addSecondGrouping(component, helper, quoteLines1, groupFieldList, columns);
-                                }
-                                totalObj = helper.createTotalWrapper(component, helper, totalObj, columns);
-                                var wrapperData = {groupIndex: group1Wrapper.length+1, groupName : group1Value, quoteLineList: quoteLines1, fieldTotals: totalObj};
-                                group1Wrapper.push(wrapperData);
-                            }
-                        } else{
-                            if (groupFieldList[1] != undefined){
-                                quoteLines1 = helper.addSecondGrouping(component, helper, quoteLines1, groupFieldList, columns);
-                            }
-                            totalObj = helper.createTotalWrapper(component, helper, totalObj, columns);
-                            var wrapperData = {groupIndex: group1Wrapper.length+1, groupName : group1Value, quoteLineList: quoteLines1, fieldTotals: totalObj};
-                            group1Wrapper.push(wrapperData);
-
-                            totalObj = {};
+        try {
+            
+            console.log('*** getQuoteGrouping Method ***');
+            $A.get("e.c:BT_SpinnerEvent").setParams({
+                "action": "SHOW"
+            }).fire();
+            var page = component.get("v.page") || 1
+            var groupFieldList = component.get("v.groupFieldList");
+            if (groupFieldList[3] != undefined) {
+                component.set("v.forthGrouping", true);
+            } else if (groupFieldList[2] != undefined) {
+                component.set("v.thirdGrouping", true);
+            } else if (groupFieldList[1] != undefined) {
+                component.set("v.secondGrouping", true);
+            } else if(groupFieldList[0] != undefined){
+                component.set("v.firstGrouping", true);
+            }
+            var action = component.get("c.getQuoteData");
+            action.setParams({
+                quoteId: component.get("v.recordId"),
+                pageNumber: page,   // It's for future use, currnetly it's not in used
+                recordToDisply: 50, // It's for future use, currnetly it's not in used
+                groupingList: groupFieldList
+            });
+            action.setCallback(this, function(response) {
+                var state = response.getState();
+                if (state === "SUCCESS") {
+                    console.log('getting result ', response.getReturnValue());                
+                    var quoteLineWrapper = response.getReturnValue();
+                    var quoteLineList = quoteLineWrapper.quoteLineList;
+                    component.set("v.totalColumn", quoteLineWrapper.columns.length);
+                    if (quoteLineList.length > 0) {
+                        component.set("v.TotalRecordCount", quoteLineList.length);
+                        var columns = quoteLineWrapper.columns;
+                        quoteLineList.forEach(element => {
+                            var quoteLineFieldData = []
                             columns.forEach(ele => {
-                                totalObj[ele.fieldName] = 0;
+                                if (ele.type == 'currency' && element[ele.fieldName] == undefined) {
+                                    element[ele.fieldName] = 0;
+                                }
+
+                                // BUIL-3924
+                                var refrenceValue = '';
+                                if(ele.fieldName == 'buildertek__Cost_Code__c'){
+                                    refrenceValue = element.buildertek__Cost_Code__c ? element.buildertek__Cost_Code__r.Name : '';
+                                }
+                                // ----
+                                
+                                var fieldData = {fieldName: ele.fieldName, fieldType: ele.type, fieldValue: element[ele.fieldName], refrenceValue: refrenceValue};
+                                quoteLineFieldData.push(fieldData);
                             });
-                            totalObj = helper.countTotal(component, helper, totalObj, element);
-
-                            quoteLines1 = [];
-                            group1Value = element[groupFieldList[0]];
-                            quoteLines1.push(element);
-
-                            if (quoteLineList.length == index+1) {
-                                if (groupFieldList[1] != undefined) {
+                            element.FieldDataList = quoteLineFieldData;
+                            if (element.buildertek__Build_Phase__c != undefined) {
+                                element.buildertek__Build_Phase__c = element.buildertek__Build_Phase__r.Name;
+                            }
+                            if (element.buildertek__Sub_Group__c != undefined) {
+                                element.buildertek__Sub_Group__c = element.buildertek__Sub_Group__r.Name;
+                            }
+                            if (element.buildertek__Grouping__c != undefined) {
+                                element.buildertek__Grouping__c = element.buildertek__Grouping__r.Name;
+                            }
+                            if (element.buildertek__Category__c != undefined) {
+                                element.buildertek__Category__c = element.buildertek__Category__r.Name;
+                            }
+                        });
+                        var group1Wrapper = [];
+                        var group1Value = quoteLineList[0][groupFieldList[0]];
+                        var quoteLines1 = [];
+                        let totalObj = {};
+                        columns.forEach(ele => {
+                            totalObj[ele.fieldName] = 0;
+                        });
+                        quoteLineList.forEach((element, index) => {
+                            if (group1Value == element[groupFieldList[0]]) {
+                                totalObj = helper.countTotal(component, helper, totalObj, element);
+                                quoteLines1.push(element);
+                                if (quoteLineList.length == index+1) {
+                                    if (groupFieldList[1] != undefined) {
+                                        quoteLines1 = helper.addSecondGrouping(component, helper, quoteLines1, groupFieldList, columns);
+                                    }
+                                    totalObj = helper.createTotalWrapper(component, helper, totalObj, columns);
+                                    var wrapperData = {groupIndex: group1Wrapper.length+1, groupName : group1Value, quoteLineList: quoteLines1, fieldTotals: totalObj};
+                                    group1Wrapper.push(wrapperData);
+                                }
+                            } else{
+                                if (groupFieldList[1] != undefined){
                                     quoteLines1 = helper.addSecondGrouping(component, helper, quoteLines1, groupFieldList, columns);
                                 }
                                 totalObj = helper.createTotalWrapper(component, helper, totalObj, columns);
                                 var wrapperData = {groupIndex: group1Wrapper.length+1, groupName : group1Value, quoteLineList: quoteLines1, fieldTotals: totalObj};
                                 group1Wrapper.push(wrapperData);
+    
+                                totalObj = {};
+                                columns.forEach(ele => {
+                                    totalObj[ele.fieldName] = 0;
+                                });
+                                totalObj = helper.countTotal(component, helper, totalObj, element);
+    
+                                quoteLines1 = [];
+                                group1Value = element[groupFieldList[0]];
+                                quoteLines1.push(element);
+    
+                                if (quoteLineList.length == index+1) {
+                                    if (groupFieldList[1] != undefined) {
+                                        quoteLines1 = helper.addSecondGrouping(component, helper, quoteLines1, groupFieldList, columns);
+                                    }
+                                    totalObj = helper.createTotalWrapper(component, helper, totalObj, columns);
+                                    var wrapperData = {groupIndex: group1Wrapper.length+1, groupName : group1Value, quoteLineList: quoteLines1, fieldTotals: totalObj};
+                                    group1Wrapper.push(wrapperData);
+                                }
                             }
-                        }
-                    });
-                    quoteLineWrapper.groupWrapper = group1Wrapper;
-                    console.log('*** Quote Wrapper Data ***');
-                    console.log('Quote Wrapper Data => ',{ quoteLineWrapper });
-                    component.set("v.QuoteLineWrapper", quoteLineWrapper);
+                        });
+                        quoteLineWrapper.groupWrapper = group1Wrapper;
+                        console.log('*** Quote Wrapper Data ***');
+                        console.log('Quote Wrapper Data => ',{ quoteLineWrapper });
+                        component.set("v.QuoteLineWrapper", quoteLineWrapper);
+                        $A.get("e.c:BT_SpinnerEvent").setParams({
+                            "action": "HIDE"
+                        }).fire();
+                    }else{
+                        $A.get("e.c:BT_SpinnerEvent").setParams({
+                            "action": "HIDE"
+                        }).fire();
+                    }
+                } else{
+                    var error = response.getError();
+                    console.log('Error => ',{error});
                     $A.get("e.c:BT_SpinnerEvent").setParams({
                         "action": "HIDE"
                     }).fire();
-                }else{
-                    $A.get("e.c:BT_SpinnerEvent").setParams({
-                        "action": "HIDE"
-                    }).fire();
-                }
-            } else{
-                var error = response.getError();
-                console.log('Error => ',{error});
-                $A.get("e.c:BT_SpinnerEvent").setParams({
-                    "action": "HIDE"
-                }).fire();
-            }                
-        });
-        $A.enqueueAction(action);
+                }                
+            });
+            $A.enqueueAction(action);
+        } catch (error) {
+            console.log('error in getQuoteGrouping : ', error.stack);
+            
+        }
     }, 
 
     addSecondGrouping : function(component, helper, quoteLines1, groupFieldList, columns){
