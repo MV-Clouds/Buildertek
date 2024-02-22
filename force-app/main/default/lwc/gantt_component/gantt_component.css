@@ -98,3 +98,13 @@
     cursor: pointer;
     display: none;
 }
+.custom-cell {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-flow: row-reverse;
+}
+
+.b-icon-picker{
+    color:darkgray;
+}

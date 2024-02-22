@@ -247,6 +247,14 @@ export default base => class GanttToolbar extends base {
                                 ]
                             }
                         },
+                        {
+                            type     : 'button',
+                            text     : 'Import Master Schedule',
+                            color    : 'b-blue',
+                            ref      : 'importMasterSchedule',
+                            icon     : 'b-fa-file-import',
+                            onAction : 'up.onImportMasterSchedule'
+                        },
                         // {
                         //     type       : 'button',
                         //     color      : 'b-blue',
@@ -319,14 +327,6 @@ export default base => class GanttToolbar extends base {
                             ref      : 'editOriginalDate',
                             icon     : 'b-fa-file-export',
                             onAction : 'up.onEditOriginalDate'
-                        },
-                        {
-                            type     : 'button',
-                            text     : 'Import Master Schedule',
-                            color    : 'b-blue',
-                            ref      : 'importMasterSchedule',
-                            icon     : 'b-fa-file-import',
-                            onAction : 'up.onImportMasterSchedule'
                         },
                         // {
                         //     type       : 'button',
