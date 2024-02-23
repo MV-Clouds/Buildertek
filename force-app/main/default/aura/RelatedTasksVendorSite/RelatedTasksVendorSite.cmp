@@ -1,0 +1,79 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global" Controller="VendorSite">
+
+    <aura:attribute name="AccountId" type="String" />
+    <aura:attribute name="tasks" type="buildertek__Project_Task__c[]" />
+    <aura:attribute name="taskCount" type="Integer" default="1" />
+
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+        <thead>
+            <tr class="slds-line-height_reset">
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="Schedule">Schedule</div>
+                </th>
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="Project">Project</div>
+                </th>
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="Task Name">Task Name</div>
+                </th>
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="Status">Status</div>
+                </th>
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="Anticipated Start Date">Anticipated Start Date</div>
+                </th>
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="Anticipated End Date">Anticipated End Date</div>
+                </th>
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="Completion %">Completion %</div>
+                </th> 
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="Vendor">Vendor</div>
+                </th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            <aura:iteration items="{!v.tasks}" var="task">
+                <tr class="slds-hint-parent">
+                    <th data-label="Schedule" scope="row">
+                        <!-- <div class="slds-truncate" title="{!task.buildertek__Schedule__r.Name}">{!task.buildertek__Schedule__r.Name}</div> -->
+                        <a href="{!'/vendor/s/schedule/'+task.buildertek__Schedule__c}">{!task.buildertek__Schedule__r.Name}</a>
+                    </th>
+                    <td data-label="Project">
+                        <!-- <div class="slds-truncate" title="{!task.buildertek__Project__r.Name}">{!task.buildertek__Project__r.Name}</div> -->
+                        <a href="{!'/vendor/s/project/'+task.buildertek__Project__c}">{!task.buildertek__Project__r.Name}</a>
+                    </td>
+                    <th data-label="Task Name" scope="row">
+                        <!-- <div class="slds-truncate" title="{!task.Name}">{!task.Name}</div> -->
+                        <a href="{!'/vendor/s/project-task/'+task.Id}">{!task.Name}</a>
+                    </th>
+                    <td data-label="Status">
+                        <div class="slds-truncate" title="{!task.buildertek__Status__c}">{!task.buildertek__Status__c}</div>
+                    </td>
+                    <td data-label="Anticipated Start Date">
+                        <div class="slds-truncate" title="{!task.buildertek__Anticipated_Start_Date__c}">{!task.buildertek__Expected_Start_Date__c}</div>
+                    </td>
+                    <td data-label="Anticipated End Date">
+                        <div class="slds-truncate" title="{!task.buildertek__Anticipated_End_Date__c}">{!task.buildertek__Expected_End_Date__c}</div>
+                    </td>
+                    <td data-label="Completion %">
+                        <div class="slds-truncate" title="{!task.buildertek__Completion_Percentage__c}">{!task.buildertek__Completion__c}</div>
+                    </td>
+                    <td data-label="Vendor">
+                        <!-- <div class="slds-truncate" title="{!task.buildertek__Contractor__r.Name}">{!task.buildertek__Contractor__r.Name}</div> -->
+                        <a href="{!'/vendor/s/account/'+task.buildertek__Contractor__c}">{!task.buildertek__Contractor__r.Name}</a>
+                    </td>
+                    
+                </tr>
+            </aura:iteration>
+        </tbody>
+    </table>
+
+
+
+</aura:component>	
