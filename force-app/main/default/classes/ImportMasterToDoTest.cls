@@ -24,7 +24,7 @@ public class ImportMasterToDoTest {
           List<String> selectedIds = new List<String>();
         selectedIds.add(TodoList[0].Id);
      
- ImportMasterToDo.getAllMaseterRecords(TodoList[0].Id);
+ ImportMasterToDo.getAllMasterRecords(TodoList[0].Id,'');
       ImportMasterToDo.importToDoRecords(TodoList[0].Id,selectedIds);
         system.assertEquals('test', 'test');
 }
