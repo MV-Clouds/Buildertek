@@ -1,56 +1,69 @@
 <template>
+    <div class="titleSection">
+        <lightning-button label="back" title="back" onclick={handleBack} icon-name="utility:back" icon-position="left" class="slds-m-right_large" ></lightning-button>
+    </div>
     <lightning-card class="custom-card">
-        <div class="slds-p-around_medium">
-            <div class="slds-grid slds-gutters header-row">
-                <div class="slds-col">
-                    <p class="header-text">Resource Name</p>
+        <template for:each={resourceList} for:item="row">
+            <div class="slds-p-around_medium" key={resource}>
+                <div class="groupheader">
+                    <div class="groupText">
+                        <h1>{row.resource.Name}</h1>
+                    </div>
                 </div>
-                <div class="slds-col">
-                    <p class="header-text">Project</p>
-                </div>
-                <div class="slds-col">
-                    <p class="header-text">Schedule Item Name</p>
-                </div>
-                <div class="slds-col">
-                    <p class="header-text">Dependency</p>
-                </div>
-                <div class="slds-col">
-                    <p class="header-text">Start date</p>
-                </div>
-                <div class="slds-col">
-                    <p class="header-text">Finish Date</p>
-                </div>
-                <div class="slds-col">
-                    <p class="header-text">Notes</p>
-                </div>
-            </div>
-            <div class="recordValues">
-                <template for:each={scheduleDataWrapper} for:item="row">
-                    <div key={row.id} class="slds-grid slds-gutters data-row">
-                        <div class="slds-col slds-truncate">
-                            <p class="record-value">{row.buildertek__Contractor__r.Name}</p>
+                <template lwc:if={row.isTaskAssigned} >
+                    <div class="slds-grid slds-gutters header-row">
+                        <div class="slds-col">
+                            <p class="header-text">Project</p>
                         </div>
-                        <div class="slds-col slds-truncate">
-                            <p class="record-value">{row.buildertek__Schedule__r.buildertek__Project__r.Name}</p>
+                        <div class="slds-col">
+                            <p class="header-text">Schedule Item Name</p>
                         </div>
-                        <div class="slds-col slds-truncate">
-                            <p class="record-value">{row.Name}</p>
+                        <div class="slds-col">
+                            <p class="header-text">Dependency</p>
                         </div>
-                        <div class="slds-col slds-truncate">
-                            <p class="record-value">{row.buildertek__Dependency__r.Name}</p>
+                        <div class="slds-col">
+                            <p class="header-text">Start date</p>
                         </div>
-                        <div class="slds-col slds-truncate">
-                            <p class="record-value">{row.buildertek__Start__c}</p>
+                        <div class="slds-col">
+                            <p class="header-text">Finish Date</p>
                         </div>
-                        <div class="slds-col slds-truncate">
-                            <p class="record-value">{row.buildertek__Finish_Date__c}</p>
+                        <div class="slds-col">
+                            <p class="header-text">Notes</p>
                         </div>
-                        <div class="slds-col slds-truncate">
-                            <p class="record-value">{row.buildertek__Notes__c}</p>
-                        </div>
+                    </div>
+                    <div class="recordValues">
+                        <template for:each={row.taskList} for:item="task">
+                            <div key={task.id} class="slds-grid slds-gutters data-row">
+                                <div class="slds-col slds-truncate">
+                                    <p class="record-value">{task.buildertek__Schedule__r.buildertek__Project__r.Name}</p>
+                                </div>
+                                <div class="slds-col slds-truncate">
+                                    <p class="record-value">{task.Name}</p>
+                                </div>
+                                <div class="slds-col slds-truncate">
+                                    <p class="record-value">{task.DependancyName}</p>
+                                </div>
+                                <div class="slds-col slds-truncate">
+                                    <p class="record-value">{task.buildertek__Start__c}</p>
+                                </div>
+                                <div class="slds-col slds-truncate">
+                                    <p class="record-value">{task.buildertek__Finish_Date__c}</p>
+                                </div>
+                                <div class="slds-col slds-truncate">
+                                    <p class="record-value">{task.buildertek__Notes__c}</p>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+                <template lwc:else>
+                    <div class="noTaskInfo">
+                        <h2>No task assigned to {row.resource.Name}</h2>
                     </div>
                 </template>
             </div>
-        </div>
+        </template>
     </lightning-card>
+
+    <!-- <div>{vendorId}{scheduleId}{vendorResourceId}</div> -->
 </template>
