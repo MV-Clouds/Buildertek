@@ -322,7 +322,7 @@ export default base => class GanttToolbar extends base {
                         },
                         {
                             type     : 'button',
-                            text     : 'Set Original Dates',
+                            text     : 'Set Baseline Dates',
                             color    : 'b-blue',
                             ref      : 'editOriginalDate',
                             icon     : 'b-fa-file-export',
