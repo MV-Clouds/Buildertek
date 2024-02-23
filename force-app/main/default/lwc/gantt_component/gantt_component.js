@@ -749,27 +749,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
               return record.value;
             }
           },
-
-        },
-        {
-          type: "predecessor",
-          draggable: false,
-          width: 180,
-          editor: false,
-          renderer: (record) => {
-            populateIcons(record);
-            if (record.record._data.type == "Project") {
-              return "";
-            }
-            if (record.record._data.type == "Phase") {
-              return "";
-            }
-            if (record.record._data.name == "Milestone Complete") {
-              return "";
-            } else {
-              return record.record._data.predecessorName;
-            }
-          },
         },
         {
           type: "startdate",
@@ -803,6 +782,26 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
               return record.record._data.duration+' days';
             }
           }
+        },
+        {
+          type: "predecessor",
+          draggable: false,
+          width: 180,
+          editor: false,
+          renderer: (record) => {
+            populateIcons(record);
+            if (record.record._data.type == "Project") {
+              return "";
+            }
+            if (record.record._data.type == "Phase") {
+              return "";
+            }
+            if (record.record._data.name == "Milestone Complete") {
+              return "";
+            } else {
+              return record.record._data.predecessorName;
+            }
+          },
         },
         {
           type: "widget",
