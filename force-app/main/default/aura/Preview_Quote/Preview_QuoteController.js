@@ -10,9 +10,11 @@
             var state = response.getState();
             if (state === "SUCCESS") {
                 var templates = response.getReturnValue();
+                console.log('templates : ', {templates});
                 if (templates.length === 1) {
                     component.set("v.selectedTemplate", templates[0].Id);
                     component.set("v.isTemplateSelected", true);
+                    $A.enqueueAction(component.get('c.preiewEmailTemplate'));
                 }
                 component.set("v.templates", templates);
                 component.set("v.Spinner", false);
