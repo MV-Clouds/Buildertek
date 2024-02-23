@@ -1,6 +1,6 @@
 ({
     getTemplateBody: function(component, event, helper) {
-       
+        component.set("v.Spinner", true);
         var recordId = component.get("v.recordId");
         var action = component.get("c.getQuoteLines");
         action.setParams({
@@ -15,9 +15,6 @@
                 console.log({ result });
                 component.set("v.quoteLines", result);
                 component.set("v.Spinner", false);
-
-
-               
             }
         });
         $A.enqueueAction(action);
