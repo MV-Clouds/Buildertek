@@ -26,7 +26,7 @@ public with sharing class BT_FileSharingControllerTest {
         BT_FileSharingController con = new BT_FileSharingController(objStandardController);
         System.assertEquals(con.fileAccessControls.size(), 1);
         
-        User granteeUser = BT_TestUtils.createUser('sam','thoriyas@gmail.com','thoriyas@demo.com');
+        User granteeUser = BT_TestUtils.createUser('build','buildertek@mvclouds.com','buildertek@demo.com');
         con.addFileAccessControls();
         con.leftSelectedGrantees = new List<String>{granteeUser.Id};
 		con.movingGranteesToRight();
