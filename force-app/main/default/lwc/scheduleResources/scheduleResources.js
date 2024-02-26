@@ -4,6 +4,7 @@ import { NavigationMixin } from 'lightning/navigation';
 import { loadStyle } from 'lightning/platformResourceLoader';
 import myResource from '@salesforce/resourceUrl/ScheduleLWCCss';
 import fetchScheduleData from '@salesforce/apex/scheduleResourceController.fetchScheduleData';
+import checkConflict from "@salesforce/apex/scheduleResourceController.checkForConflictingSchedules";
 import updateResource from '@salesforce/apex/scheduleResourceController.updateScheduleItemResources';
 import getScheduleData from "@salesforce/apex/GetProjectAndScheduleForGanttCmp.getScheduleData";
 
@@ -34,6 +35,7 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
     @track vendorResourceConflictJSON = {};
     @track isConflict = false;
     @track conflictingSchedules = [];
+    @track intialConflictList = [];
 
     connectedCallback() {
         loadStyle(this, myResource)
@@ -99,6 +101,7 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
                 if (result) {
                     console.log('schedule Data:', JSON.stringify(result));
                     this.scheduleDataWrapper = result;
+                    this.intialConflictList = this.scheduleDataWrapper.conflictingSchedulesList;
                     // console.log('scheduleDataWrapper:', this.scheduleDataWrapper);
                     this.tableData = this.scheduleDataWrapper.scheduleList.map(task => {
                         return {
@@ -110,11 +113,11 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
                             vendor: task.hasOwnProperty('buildertek__Contractor__r') ? task.buildertek__Contractor__r.Name : '',
                             vendorId: task.hasOwnProperty('buildertek__Contractor__r') ? task.buildertek__Contractor__r.Id : '',
                             vendorResources1: task.hasOwnProperty('buildertek__Contractor_Resource_1__r') ? task.buildertek__Contractor_Resource_1__r.Name : '',
-                            vendorResources1Id: task.hasOwnProperty('buildertek__Contractor_Resource_1__r') ? task.buildertek__Contractor_Resource_1__c : '',
+                            vendorResources1Id: task.hasOwnProperty('buildertek__Contractor_Resource_1__r') ? task.buildertek__Contractor_Resource_1__r.Id : '',
                             vendorResources2: task.hasOwnProperty('buildertek__Contractor_Resource_2__r') ? task.buildertek__Contractor_Resource_2__r.Name : '',
-                            vendorResources2Id: task.hasOwnProperty('buildertek__Contractor_Resource_2__r') ? task.buildertek__Contractor_Resource_2__c : '',
+                            vendorResources2Id: task.hasOwnProperty('buildertek__Contractor_Resource_2__r') ? task.buildertek__Contractor_Resource_2__r.Id : '',
                             vendorResources3: task.hasOwnProperty('buildertek__Contractor_Resource_3__r') ? task.buildertek__Contractor_Resource_3__r.Name : '',
-                            vendorResources3Id: task.hasOwnProperty('buildertek__Contractor_Resource_3__r') ? task.buildertek__Contractor_Resource_3__c : '',
+                            vendorResources3Id: task.hasOwnProperty('buildertek__Contractor_Resource_3__r') ? task.buildertek__Contractor_Resource_3__r.Id : '',
                             startDate: task.buildertek__Start__c,
                             endDate: task.buildertek__Finish_Date__c
                         };
@@ -279,7 +282,7 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
             const vendorId = contractorAndResource.Id;
             this.vendorResourceConflictJSON[vendorId] = {};
 
-            for (const schedule of this.scheduleDataWrapper.scheduleList) {
+            for (const schedule of this.scheduleDataWrapper.conflictingSchedulesList) {
                 const resourceId1 = schedule.buildertek__Contractor_Resource_1__c;
                 const resourceId2 = schedule.buildertek__Contractor_Resource_2__c;
                 const resourceId3 = schedule.buildertek__Contractor_Resource_3__c;
@@ -401,13 +404,25 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
                         (endDate >= selectedStartDate && endDate <= selectedEndDate)
                     ) {
                         // Push conflicting schedule details
-                        const conflictingSchedule = this.tableData.find(row => row.id === scheduleId);
+                        // const conflictingSchedule = this.tableData.find(row => row.id === scheduleId);
+                        // if (conflictingSchedule) {
+                        //     this.conflictingSchedules.push({
+                        //         id: conflictingSchedule.id,
+                        //         taskName: conflictingSchedule.taskName,
+                        //         startDate: conflictingSchedule.startDate,
+                        //         endDate: conflictingSchedule.endDate
+                        //     });
+                        // }
+                        // console.log('Conflicting Schedule:', JSON.parse(JSON.stringify(conflictingSchedule)));
+                        const conflictingSchedule = this.intialConflictList.find(row => row.Id === scheduleId);
                         if (conflictingSchedule) {
                             this.conflictingSchedules.push({
-                                id: conflictingSchedule.id,
-                                taskName: conflictingSchedule.taskName,
-                                startDate: conflictingSchedule.startDate,
-                                endDate: conflictingSchedule.endDate
+                                id: conflictingSchedule.Id,
+                                taskName: conflictingSchedule.Name,
+                                startDate: conflictingSchedule.buildertek__Start__c,
+                                endDate: conflictingSchedule.buildertek__Finish_Date__c,
+                                scheduleName: conflictingSchedule.buildertek__Schedule__r.buildertek__Description__c,
+                                projectName: conflictingSchedule.buildertek__Schedule__r.hasOwnProperty('buildertek__Project__r') ? conflictingSchedule.buildertek__Schedule__r.buildertek__Project__r.Name : ''
                             });
                         }
                         console.log('Conflicting Schedule:', JSON.parse(JSON.stringify(conflictingSchedule)));
@@ -438,19 +453,27 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
     // * Redirect to the current schedule
     handleFixConflict() {
         this.isConflict = false;
-        let isSubTab = this.selectedScheduleId ? this.selectedScheduleId : this.selectedScheduleIdForJS;
-        if (isSubTab) {
-            this[NavigationMixin.Navigate]({
-                type: 'standard__recordPage',
-                attributes: {
-                    recordId: isSubTab,
-                    objectApiName: 'buildertek__Schedule__c',
-                    actionName: 'view'
-                },
-            });
-        } else {
-            window.location.reload();
-        }
+        // let isSubTab = this.selectedScheduleId ? this.selectedScheduleId : this.selectedScheduleIdForJS;
+        // if (isSubTab) {
+        // this[NavigationMixin.Navigate]({
+        //     type: 'standard__recordPage',
+        //     attributes: {
+        //         recordId: isSubTab,
+        //         objectApiName: 'buildertek__Schedule__c',
+        //         actionName: 'view'
+        //     },
+        // });
+        // } else {
+        //     window.location.reload();
+        // }
+        this[NavigationMixin.Navigate]({
+            type: 'standard__recordPage',
+            attributes: {
+                recordId: even.currentTarget.dataset.id,
+                objectApiName: 'buildertek__Schedule__c',
+                actionName: 'view'
+            },
+        });
     }
 
     //* Method to update the resource on the schedule item
@@ -525,9 +548,7 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
             attributes: {
                 componentName: 'c__scheduleResourceAssign',
             },
-            state : {
-                c__scheduleId : this.recordId || this.selectedScheduleId || this.selectedScheduleIdForJS
-            },
+            state: state
         });
     }
 }

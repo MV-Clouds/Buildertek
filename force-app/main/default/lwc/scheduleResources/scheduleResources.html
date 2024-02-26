@@ -166,17 +166,27 @@
                         <table class="slds-table slds-table_bordered slds-table_cell-buffer">
                             <thead>
                                 <tr class="slds-text-heading_label">
+                                    <th scope="col">Project</th>
+                                    <th scope="col">Schedule</th>
                                     <th scope="col">Task Name</th>
                                     <th scope="col">Start Date</th>
                                     <th scope="col">End Date</th>
+                                    <th scope="col"></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <template for:each={conflictingSchedules} for:item="schedule">
                                     <tr key={schedule.id}>
+                                        <td data-label="Project">{schedule.projectName}</td>
+                                        <td data-label="Schedule">{schedule.scheduleName}</td>
                                         <td data-label="Task Name">{schedule.taskName}</td>
                                         <td data-label="Start Date">{schedule.startDate}</td>
                                         <td data-label="End Date">{schedule.endDate}</td>
+                                        <td data-label="Action">
+                                            <lightning-icon icon-name="utility:open" alternative-text="Redirect"
+                                                size="xx-small" title="Redirect" data-id={schedule.id}
+                                                onclick={handleRedirect}></lightning-icon>
+                                        </td>
                                     </tr>
                                 </template>
                             </tbody>
@@ -189,7 +199,7 @@
                 <footer class="slds-modal__footer">
                     <button class="slds-button slds-button_neutral" onclick={handleAcceptConflict}>Accept
                         Conflict</button>
-                    <button class="slds-button slds-button_brand" onclick={handleFixConflict}>Fix Conflict</button>
+                    <!-- <button class="slds-button slds-button_brand" onclick={handleFixConflict}>Fix Conflict</button> -->
                 </footer>
             </div>
         </section>
