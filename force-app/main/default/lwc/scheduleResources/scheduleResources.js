@@ -349,9 +349,7 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
             // Show the conflict popup
             this.isConflict = true;
         }
-        this.isLoading = false;
     }
-
 
     //* Function to search for schedules
     findSchedules(data, vendorId, resourceId) {
@@ -404,16 +402,6 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
                         (endDate >= selectedStartDate && endDate <= selectedEndDate)
                     ) {
                         // Push conflicting schedule details
-                        // const conflictingSchedule = this.tableData.find(row => row.id === scheduleId);
-                        // if (conflictingSchedule) {
-                        //     this.conflictingSchedules.push({
-                        //         id: conflictingSchedule.id,
-                        //         taskName: conflictingSchedule.taskName,
-                        //         startDate: conflictingSchedule.startDate,
-                        //         endDate: conflictingSchedule.endDate
-                        //     });
-                        // }
-                        // console.log('Conflicting Schedule:', JSON.parse(JSON.stringify(conflictingSchedule)));
                         const conflictingSchedule = this.intialConflictList.find(row => row.Id === scheduleId);
                         if (conflictingSchedule) {
                             this.conflictingSchedules.push({
@@ -422,7 +410,8 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
                                 startDate: conflictingSchedule.buildertek__Start__c,
                                 endDate: conflictingSchedule.buildertek__Finish_Date__c,
                                 scheduleName: conflictingSchedule.buildertek__Schedule__r.buildertek__Description__c,
-                                projectName: conflictingSchedule.buildertek__Schedule__r.hasOwnProperty('buildertek__Project__r') ? conflictingSchedule.buildertek__Schedule__r.buildertek__Project__r.Name : ''
+                                projectName: conflictingSchedule.buildertek__Schedule__r.hasOwnProperty('buildertek__Project__r') ? conflictingSchedule.buildertek__Schedule__r.buildertek__Project__r.Name : '',
+                                scheduleId: conflictingSchedule.buildertek__Schedule__c
                             });
                         }
                         console.log('Conflicting Schedule:', JSON.parse(JSON.stringify(conflictingSchedule)));
@@ -447,33 +436,35 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
     // * Method to Accept conflict and update the resource
     handleAcceptConflict() {
         this.isConflict = false;
+        // Update the conflictingSchedules list based on the accepted changes
+        this.conflictingSchedules = this.conflictingSchedules.map(conflict => {
+            return {
+                ...conflict,
+                vendor: this.vendorOptions.find(option => option.value === this.selectedVendorId)?.label,
+                vendorResources1: this.selectedVendorResources1 !== '' ? this.vendorResourcesOptions.find(option => option.value === this.selectedVendorResources1)?.label : '',
+                vendorResources2: this.selectedVendorResources2 !== '' ? this.vendorResourcesOptions.find(option => option.value === this.selectedVendorResources2)?.label : '',
+                vendorResources3: this.selectedVendorResources3 !== '' ? this.vendorResourcesOptions.find(option => option.value === this.selectedVendorResources3)?.label : '',
+                internalResource: this.internalResourcesOption.find(option => option.value === this.selectedInternalResourceId)?.label
+            };
+        });
+
+        // Call the updateResourceOnScheduleItem method to persist the changes
         this.updateResourceOnScheduleItem();
     }
 
     // * Redirect to the current schedule
-    handleFixConflict() {
+    handleFixConflict(event) {
         this.isConflict = false;
-        // let isSubTab = this.selectedScheduleId ? this.selectedScheduleId : this.selectedScheduleIdForJS;
-        // if (isSubTab) {
-        // this[NavigationMixin.Navigate]({
-        //     type: 'standard__recordPage',
-        //     attributes: {
-        //         recordId: isSubTab,
-        //         objectApiName: 'buildertek__Schedule__c',
-        //         actionName: 'view'
-        //     },
-        // });
-        // } else {
-        //     window.location.reload();
-        // }
+        let scheduleId = event.currentTarget.dataset.id;
         this[NavigationMixin.Navigate]({
             type: 'standard__recordPage',
             attributes: {
-                recordId: even.currentTarget.dataset.id,
+                recordId: scheduleId,
                 objectApiName: 'buildertek__Schedule__c',
                 actionName: 'view'
             },
         });
+        this.closeEditFields();
     }
 
     //* Method to update the resource on the schedule item
