@@ -194,9 +194,9 @@ vendorUserMap.put(usr.AccountId,usr);
                                 email.setWhatId(vendorRec.Id);
                                 email.setTargetObjectId(conRec.Id);
                                 email.setSaveAsActivity(true);
-                                if (owea.size() > 0 ) {
-                                    email.setOrgWideEmailAddressId(owea.get(0).Id);
-                                }
+                                // if (owea.size() > 0 ) {
+                                //     email.setOrgWideEmailAddressId(owea.get(0).Id);
+                                // }
                                 msgList.add(email);
                             }
                             duplicateid +=  conRec.Id;
