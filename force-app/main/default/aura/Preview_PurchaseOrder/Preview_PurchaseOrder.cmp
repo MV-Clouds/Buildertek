@@ -54,7 +54,7 @@
         fields="buildertek__Project__r.Name, buildertek__Auto_Number__c, buildertek__PO_Total__c, buildertek__PO_Amount__c, buildertek__Tax__c, buildertek__PO_Total__c"
         targetRecord="{!v.record}" targetFields="{!v.purchaseOrder}" targetError="{!v.error}" />
 
-    <ltng:require styles="{!$Resource.ModalPreviewCSS}" />
+    <!-- <ltng:require styles="{!$Resource.ModalPreviewCSS}" /> -->
     <aura:html tag="style">
         .slds-modal__container {
         width:80% !important;
@@ -63,7 +63,9 @@
 
         }
         .slds-modal__content {
-        overflow: hidden !important;
+            overflow: hidden !important;
+            height: unset !important;
+            max-height: unset !important;
         }
         .slds-modal__close{
         display:block !important;
