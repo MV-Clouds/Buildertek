@@ -11,7 +11,7 @@
     <aura:attribute name="templates" type="List" default="[]" />
     <aura:attribute name="selectedTemplate" type="String" default="" />
     <aura:attribute name="templatefolderName" type="String" />
-    <!-- <aura:attribute name="isTemplateSelected" type="Boolean" default="false" /> -->
+    <aura:attribute name="isTemplateSelected" type="Boolean" default="false" />
     <aura:attribute name="selectedToContact" type="sObject[]" default="[]" />
     <aura:attribute name="selectedCcContact" type="sObject[]" default="[]" />
     <aura:method name="acceptandSendMethod" action="{!c.acceptandSendMethodCall}" access="public" />
@@ -51,6 +51,19 @@
                                  </div>
                              </div>
                          </aura:if>
+                         <aura:if isTrue="{!!v.isTemplateSelected}">
+                            <aura:html tag="style">
+                                .slds-modal__container { width:70% !important; max-width: 70% !important; height: 320px !important; top:20% !important; } .slds-modal__content { padding: 0 0rem !important; height:97% !important; max-height:97% !important; } .cuf-content { padding: 0
+                                0rem !important; } .slds-p-around--medium { padding: 0rem !important; }
+                            </aura:html>
+                            <lightning:select name="templates" label="Select Template" aura:id="template" value="{!v.selectedTemplate}" onchange="{!c.preiewEmailTemplate}">
+                                <option text="None" value="--None--" />
+                                <aura:iteration items="{!v.templates}" var="temp">
+                                    <option text="{!temp.Name}" value="{!temp.Id}" />
+                                </aura:iteration>
+                            </lightning:select>
+                        </aura:if>
+                        <aura:if isTrue="{!v.isTemplateSelected}">
                              <aura:html tag="style">
                                  .slds-modal__container { width:70% !important; max-width: 70% !important; height: 99% !important; } .slds-modal__content { padding: 0 0rem !important; height:97% !important; max-height:97% !important; } .cuf-content { padding: 0 0rem !important; } .slds-p-around--medium
                                  { padding: 0rem !important; }
@@ -60,12 +73,15 @@
                                  <aura:unescapedHtml value="{!v.quoteLines}" />
                              </p>  
                              <br />
+                        </aura:if>     
                      </div>
                  </div>
              </div>
              <footer role="contentinfo" class="slds-docked-form-footer fixedFooter" style="display:block;text-align:right;padding-right:5px;">
-                  <button class="slds-button slds-button--brand" onclick="{!c.downloadFile}">Download</button>
-                 <button class="slds-button slds-button--neutral sldsbutton" onclick="{!c.closeModel}">Cancel</button>
+                <aura:if isTrue="{!v.isTemplateSelected}">
+                    <button class="slds-button slds-button--brand" onclick="{!c.downloadFile}">Download</button>
+                </aura:if>
+                <button class="slds-button slds-button--neutral sldsbutton" onclick="{!c.closeModel}">Close</button>
              </footer>
          </div>
      </div>
