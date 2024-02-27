@@ -57,10 +57,11 @@ public class createPOfromBOM_controller {
 						result += ',';
 					}
 					String jsonPart = '{';
-					jsonPart += '"label":"' + f.getLabel()+'",';
+					jsonPart += '"label":"' +( String.valueOf(f.getFieldPath()) == 'Name' ? 'BOM Line' : f.getLabel() )+'",'; // changes for BUIL-3953, to change field label...
 					jsonPart += '"required":"' + (f.getDBRequired() || f.getRequired())+'",';
 					jsonPart += '"type":"' + (f.getType())+'",';
 					jsonPart += '"name":"' + f.getFieldPath()+'"';
+                    
 					if (String.valueOf(f.getType()) == 'PICKLIST'){
 						pickListValuesList = getDropDown(ObjectName, String.valueOf(f.getFieldPath()));
 						jsonPart += ',"pickListValuesList":' + JSON.serialize(pickListValuesList);
