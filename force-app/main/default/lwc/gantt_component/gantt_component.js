@@ -597,7 +597,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     resourceRowData = formatedSchData["resourceRowData"];
     assignmentRowData = formatedSchData["assignmentRowData"];
     console.log('assignmentRowData ',assignmentRowData);
-    debugger
+    // debugger
 
     let resourceData = makeComboBoxDataForResourceData(this.contractorAndResources, this.internalResources);
 
@@ -1092,6 +1092,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     gantt.on('startCellEdit', (editorContext) => {
       if ( editorContext.editorContext.column.type == 'resourceassignment' ) {
         let contractorId = editorContext.editorContext.record._data.contractorId;
+        console.log('contractorId ',contractorId);
         editorContext.editorContext.editor.inputField.picker.onShow = ({source}) => {
           source.store.filter(record => (record.resource.type == 'Internal Resources' || record.resource.contractorId == contractorId));
         };
@@ -1305,7 +1306,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           response,
         });
         console.log("response ", response);
-        debugger;
+        // debugger;
         if (response == "Success") {
           that.dispatchEvent(
             new ShowToastEvent({
