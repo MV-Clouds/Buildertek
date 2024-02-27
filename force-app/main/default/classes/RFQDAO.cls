@@ -2086,7 +2086,7 @@ Throws [Exceptions]:
     }
 
     @AuraEnabled
-    public static Object getmasterRFQItems(){
+    public static Object getmasterRFQItems(String searchString){
         List<MasterRFQItemsClass> rfqClassList = new List<MasterRFQItemsClass>();
         List<buildertek__RFQ_Item__c> rfqItemList;
         /*if (Schema.sObjectType.buildertek__RFQ_Item__c.fields.Id.isAccessible() &&
@@ -2096,15 +2096,25 @@ Schema.sObjectType.buildertek__RFQ_Item__c.fields.buildertek__Trade_Type__c.isAc
 && Schema.sObjectType.buildertek__RFQ_Item__c.fields.buildertek__Unit_Price__c.isAccessible()
 && Schema.sObjectType.buildertek__RFQ_Item__c.fields.buildertek__Description__c.isAccessible()
 && Schema.sObjectType.buildertek__Trade_Type__c.fields.Name.isAccessible()){*/
-        if(UserInfo.isMultiCurrencyOrganization()){
-            string rfqItemrecords = 'SELECT Id, Name,CurrencyIsoCode, buildertek__Product__c, buildertek__Trade_Type__c, buildertek__Trade_Type__r.Name, buildertek__Quantity__c, buildertek__Unit_Price__c,buildertek__Description__c '+
-                'FROM buildertek__RFQ_Item__c WHERE buildertek__Master_Item__c = true';
-            rfqItemList = Database.query(rfqItemrecords);
-        }else{
-            rfqItemList = [SELECT Id, Name, buildertek__Product__c, buildertek__Trade_Type__c, buildertek__Trade_Type__r.Name, buildertek__Quantity__c, buildertek__Unit_Price__c,buildertek__Description__c
-                           FROM buildertek__RFQ_Item__c
-                           WHERE buildertek__Master_Item__c = true];
-        }
+        if(UserInfo.isMultiCurrencyOrganization()){ 
+    string rfqItemrecords = 'SELECT Id, Name,CurrencyIsoCode, buildertek__Product__c, buildertek__Trade_Type__c, buildertek__Trade_Type__r.Name, buildertek__Quantity__c, buildertek__Unit_Price__c,buildertek__Description__c '+
+        'FROM buildertek__RFQ_Item__c WHERE buildertek__Master_Item__c = true';
+    if(String.isNotBlank(searchString)){
+        rfqItemrecords += ' AND (Name LIKE \'%' + searchString + '%\')';
+    }
+    rfqItemList = Database.query(rfqItemrecords);
+}else{
+    if(String.isNotBlank(searchString)){
+        rfqItemList = [SELECT Id, Name, buildertek__Product__c, buildertek__Trade_Type__c, buildertek__Trade_Type__r.Name, buildertek__Quantity__c, buildertek__Unit_Price__c,buildertek__Description__c
+                       FROM buildertek__RFQ_Item__c
+                       WHERE buildertek__Master_Item__c = true AND Name LIKE :'%' + searchString + '%'];
+    } else {
+        rfqItemList = [SELECT Id, Name, buildertek__Product__c, buildertek__Trade_Type__c, buildertek__Trade_Type__r.Name, buildertek__Quantity__c, buildertek__Unit_Price__c,buildertek__Description__c
+                       FROM buildertek__RFQ_Item__c
+                       WHERE buildertek__Master_Item__c = true];
+    }
+}
+
         //}
 
         if (rfqItemList.size() > 0){

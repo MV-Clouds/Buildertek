@@ -8,7 +8,31 @@
     <aura:attribute name="currencycode" type="String"/>
     <aura:handler name="init" value="{!this}" action="{!c.init}" />
     <aura:attribute name="selectedobjInfo" type="list"   /> 
+    <aura:attribute name="maxLength" type="Integer" default="20" />
     <aura:attribute name="Spinner" type="boolean" default="false"/>
+
+    <aura:attribute name="PageNumber" type="integer" default="1" />
+    <aura:attribute name="TotalPages" type="integer" default="0" />
+    <aura:attribute name="TotalRecords" type="integer" default="0" />
+    <aura:attribute name="RecordStart" type="integer" default="0" />
+    <aura:attribute name="RecordEnd" type="integer" default="0" />
+
+
+    <aura:attribute name="startPage" type="Integer" default="0"/>
+    <aura:attribute name="endPage" type="Integer" default="0"/>
+    <aura:attribute name="pageSize" type="integer" default="10" />
+    <aura:attribute name="PaginationList" type="list"/> 
+    <aura:attribute name="totalRecordsCount" type="Integer" default="0"/>
+    <aura:attribute name="currentPage" type="integer" default="1"/>
+    <aura:attribute name="allSelectedIds" type="List" default="[]" />
+
+    <!-- <aura:attribute name="searchString" type="String" /> -->
+
+    <div class="slds-p-around_medium">
+        <lightning:input type="search" placeholder="Search RFQ Items..." onchange="{!c.handleSearch}" />
+    </div>
+    
+
    <aura:if isTrue="{!v.Spinner}">
     		<div aura:id="spinnerId" class="slds-spinner_container">
     		   <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
@@ -25,39 +49,41 @@
 <!--<div class="slds-scrollable_x" style="width:69rem">-->
 <!--<div class="slds-scrollable_x" style="height:5rem;width:100rem">-->
 
-
+    
     <div aura:id="coContainer" class="c-container slds-scrollable_x">
         
-
+        
     	<table class="slds-table slds-table_bordered slds-table_cell-buffer " style="border:1px solid rgb(216, 237, 255); border-radius:5px;">
     		<thead>
+                <aura:if isTrue="{! (v.objInfo != null)}"> 
     			<tr class="slds-text-title_caps"  >
-    				<th scope="col" style="background-color:grey; color:white; border-top-left-radius:5px;vertical-align: top;">
-    					<div class="slds-truncate" title="Product">Check All</div>
+    				<th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-left-radius:5px;vertical-align: top;">
+    					<div class="slds-truncate" title="Product"></div>
                         <!-- <lightning:input type="checkbox" aura:id="headCheckRFQ" checked="false" onchange="{!c.selectAllRfq}"/> -->
     					<ui:inputCheckbox aura:id="checkContractors"  change="{!c.selectAll}"/>
     				</th>
-    				<th style="background-color:grey; color:white;vertical-align: top;">
+    				<th style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top; width: 40%">
     					 <div class="slds-truncate" title="Quote Line">RFQ Item</div>
     				</th>
     				<!--<th style="background-color:grey; color:white;vertical-align: top;">
     					 <div class="slds-truncate" title="Quote Line">Trade Type</div>
     				</th>-->
-                    <th style="background-color:grey; color:white;vertical-align: top;">
+                    <th style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;">
     					 <div class="slds-truncate" title="Quote Line">Description</div>
     				</th>
-                    <th style="background-color:grey; color:white;vertical-align: top;">
+                    <th style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;">
     					 <div class="slds-truncate" title="Quote Line">Quantity</div>
     				</th>
-                    <th style="background-color:grey; color:white;vertical-align: top;">
+                    <th style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;">
     					 <div class="slds-truncate" title="Quote Line">Unit Price</div>
     				</th>
     			</tr>
+                </aura:if>
     		</thead>
             
     		<tbody>
                 <aura:if isTrue="{! (v.objInfo != null)}"> 
-                    <aura:iteration items="{!v.objInfo}" var="obj">
+                    <aura:iteration items="{!v.PaginationList}" var="obj">
                         <tr>
                             <td>
                                  <!-- <lightning:input type="checkbox" aura:id="checkRFQ"  checked="{!obj.isChecked}" name="{!obj.Id}" onchange="{!c.selectRfq}"   />-->
@@ -65,7 +91,7 @@
                             </td>
                             <td>
                                   <div style="white-space: pre-wrap;">
-                                <ui:outputtext value="{!obj.MasterRFQItem.Name}" />
+                                <ui:outputtext value="{!obj.MasterRFQItem.truncatedName}" />
                                 </div>
                             </td>
                            <!-- <td>
@@ -95,18 +121,26 @@
                     </aura:iteration>
                 </aura:if> 
                 <aura:if isTrue="{! (v.objInfo == null)}"> 
-    				  <h1 style="font-size:18px"> &nbsp;No Records to Display</h1>
+                    <div class="slds-m-vertical_medium slds-p-horizontal_medium" style="display: flex;justify-content: center;">
+                        <p class="slds-text-heading_medium" style="margin-block: 20px;">No Records Found</p>
+                    </div>
     			 </aura:if> 
     		</tbody>
     	</table>
         </div>
- 
-    <div class="slds-hide">
+    
+        <div class="slds-modal__footer">
+            <lightning:button disabled="{!v.startPage == 0}"  name="previous" variant="brand" aura:id="prevPage" label="Prev" onclick="{!c.navigation}"  class="slds-float_left"/>
+            <lightning:button disabled="{!(v.endPage + 1) >= v.totalRecordsCount}" aura:id="nextPage" variant="brand" name="next"  label="Next" onclick="{!c.navigation}" class="slds-float_left"/>
+            <button class="slds-button slds-button_neutral" onclick="{!c.doCancel}">Cancel</button>
+    		<button class="slds-button slds-button_brand" onclick="{!c.doSave}">Import</button>
+        </div>
+    <!-- <div class="slds-hide">
         <div aura:id="footer">
     		<button class="slds-button slds-button_neutral" onclick="{!c.doCancel}">Cancel</button>
     		<button class="slds-button slds-button_brand" onclick="{!c.doSave}">Import</button>
     	</div>
-    </div>	
+    </div>	 -->
     <aura:if isTrue="{!v.Spinner}">
         <div aura:id="spinnerId" class="slds-spinner_container">
            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
