@@ -1,66 +1,85 @@
 <template>
     <div class="titleSection">
+        <div style="margin-left: 1rem;">
+            <span class="vendorTitle">Vendor</span>
+            <h2 class="slds-card__header-title">
+                <span onclick={redirectTOsobject} data-objname="Account" data-id={vendor.Id} title="Vendor Name" style="color:#0176d3;cursor:pointer; font-size: 1rem;"><!-- #0176d3 -->
+                    {vendor.Name}
+                </span>
+            </h2>
+        </div>
+        <div class="mainTitle">Review Resources Schedule</div>
         <lightning-button label="back" title="back" onclick={handleBack} icon-name="utility:back" icon-position="left" class="slds-m-right_large" ></lightning-button>
     </div>
     <lightning-card class="custom-card">
-        <template for:each={resourceList} for:item="row">
-            <div class="slds-p-around_medium" key={resource}>
-                <div class="groupheader">
-                    <div class="groupText">
-                        <h1>{row.resource.Name}</h1>
-                    </div>
-                </div>
-                <template lwc:if={row.isTaskAssigned} >
-                    <div class="slds-grid slds-gutters header-row">
-                        <div class="slds-col">
-                            <p class="header-text">Project</p>
-                        </div>
-                        <div class="slds-col">
-                            <p class="header-text">Schedule Item Name</p>
-                        </div>
-                        <div class="slds-col">
-                            <p class="header-text">Dependency</p>
-                        </div>
-                        <div class="slds-col">
-                            <p class="header-text">Start date</p>
-                        </div>
-                        <div class="slds-col">
-                            <p class="header-text">Finish Date</p>
-                        </div>
-                        <div class="slds-col">
-                            <p class="header-text">Notes</p>
+        <template lwc:if={IsTaskAvailable}>
+            <template for:each={resourceList} for:item="row">
+                <div class="slds-p-around_medium" key={resource}>
+                    <div class="groupheader">
+                        <div class="groupText" onclick={redirectTOsobject} data-id={row.resource.Id} data-objname="Contact">
+                            <h1>{row.resource.Name}</h1>
                         </div>
                     </div>
-                    <div class="recordValues">
-                        <template for:each={row.taskList} for:item="task">
-                            <div key={task.id} class="slds-grid slds-gutters data-row">
-                                <div class="slds-col slds-truncate">
-                                    <p class="record-value">{task.buildertek__Schedule__r.buildertek__Project__r.Name}</p>
-                                </div>
-                                <div class="slds-col slds-truncate">
-                                    <p class="record-value">{task.Name}</p>
-                                </div>
-                                <div class="slds-col slds-truncate">
-                                    <p class="record-value">{task.DependancyName}</p>
-                                </div>
-                                <div class="slds-col slds-truncate">
-                                    <p class="record-value">{task.buildertek__Start__c}</p>
-                                </div>
-                                <div class="slds-col slds-truncate">
-                                    <p class="record-value">{task.buildertek__Finish_Date__c}</p>
-                                </div>
-                                <div class="slds-col slds-truncate">
-                                    <p class="record-value">{task.buildertek__Notes__c}</p>
-                                </div>
+                    <template lwc:if={row.isTaskAssigned} >
+                        <div class="slds-grid slds-gutters header-row">
+                            <div class="slds-col">
+                                <p class="header-text">Project</p>
                             </div>
-                        </template>
-                    </div>
-                </template>
-                <template lwc:else>
-                    <div class="noTaskInfo">
-                        <h2>No task assigned to {row.resource.Name}</h2>
-                    </div>
-                </template>
+                            <div class="slds-col">
+                                <p class="header-text">Schedule Item Name</p>
+                            </div>
+                            <div class="slds-col">
+                                <p class="header-text">Dependency</p>
+                            </div>
+                            <div class="slds-col">
+                                <p class="header-text">Start date</p>
+                            </div>
+                            <div class="slds-col">
+                                <p class="header-text">Finish Date</p>
+                            </div>
+                            <div class="slds-col">
+                                <p class="header-text">Notes</p>
+                            </div>
+                        </div>
+                        <div class="recordValues">
+                            <template for:each={row.taskList} for:item="task">
+                                <div key={task.id} class="slds-grid slds-gutters data-row">
+                                    <div class="slds-col slds-truncate link" data-id={task.buildertek__Schedule__r.buildertek__Project__c} data-objname="buildertek__Project__c" onclick={redirectTOsobject} >
+                                        <p class="record-value">{task.buildertek__Schedule__r.buildertek__Project__r.Name}</p>
+                                    </div>
+                                    <div class="slds-col slds-truncate link" data-id={task.buildertek__Schedule__r.Id} data-objname="buildertek__Schedule__c" onclick={redirectTOsobject}>
+                                        <p class="record-value">{task.buildertek__Schedule__r.Name}</p>
+                                    </div>
+                                    <div class="slds-col slds-truncate link" data-id={task.Id} data-objname="buildertek__Project_Task__c" onclick={redirectTOsobject}>
+                                        <p class="record-value">{task.Name}</p>
+                                    </div>
+                                    <div class="slds-col slds-truncate">
+                                        <p class="record-value">{task.DependancyName}</p>
+                                    </div>
+                                    <div class="slds-col slds-truncate">
+                                        <p class="record-value">{task.buildertek__Start__c}</p>
+                                    </div>
+                                    <div class="slds-col slds-truncate">
+                                        <p class="record-value">{task.buildertek__Finish_Date__c}</p>
+                                    </div>
+                                    <div class="slds-col slds-truncate">
+                                        <p class="record-value">{task.buildertek__Notes__c}</p>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+                    <template lwc:else>
+                        <div class="noTaskInfo">
+                            <h2>No task assigned to {row.resource.Name}</h2>
+                        </div>
+                    </template>
+                </div>
+            </template>
+        </template>
+        <template lwc:else>
+            <div class="noTaskInfo">
+                <h2>{customeMessge}</h2>
             </div>
         </template>
     </lightning-card>

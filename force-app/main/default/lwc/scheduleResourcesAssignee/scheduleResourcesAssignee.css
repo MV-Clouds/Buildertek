@@ -10,7 +10,20 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: space-between;
+}
+
+.vendorTitle{
+    color: #6b6d70; 
+    /* margin-left: 1rem;  */
+    font-size : 1rem
+}
+
+.mainTitle{
+    font-size: 1.5rem;
+    font-weight: bold;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #3977bf;
 }
 
 .custom-card {
@@ -36,6 +49,11 @@
     font-size: 20px;
     font-family: 'DM Sans';
     color: white;
+
+    &:hover{
+        cursor: pointer;
+        color: rgb(3 67 146);
+    }
 }
 
 .header-row {
@@ -127,4 +145,10 @@
     vertical-align:  middle;
     font-size: 16px;
     color: black;
+}
+
+.link{
+    color: #4a90e2;
+    text-decoration: underline;
+    cursor: pointer;
 }
