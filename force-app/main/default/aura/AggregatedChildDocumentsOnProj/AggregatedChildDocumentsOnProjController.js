@@ -15,7 +15,7 @@
                 actionName: "view"
             }
         };
-        navService.(pageReference);
+        navService.navigate(pageReference);
     },
     handleObjectChange:function(component, event, helper) {
         helper.loadRecords(component, event, helper );         
