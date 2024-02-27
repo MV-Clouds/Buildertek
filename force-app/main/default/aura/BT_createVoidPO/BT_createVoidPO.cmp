@@ -1,42 +1,14 @@
-<aura:component  implements="force:appHostable,flexipage:availableForAllPageTypes,force:hasSObjectName, flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable" access="global"
+<aura:component  implements="force:appHostable,flexipage:availableForAllPageTypes,force:hasSObjectName,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable" access="global"
                 controller="createVoidPOController" >
 
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
-    <lightning:workspaceAPI aura:id="workspace" />
 
-    <aura:attribute name="parentTabId" type="String" />
+    <center>
+        <img alt="Creating all po's." src="{!$Resource.gearsloading}" style="height:150px !important;" />
+        <br />
+        <div style="margin-block: 10px;">
+            <p>Please don't leave this page until PO's are created.</p>
+        </div>
+    </center>
 
-    <aura:attribute name="createVoidPoFlag" type="Boolean" default="false"/>
-
-    <aura:html tag="style">
-        .quick-actions-panel .slds-modal__content{
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            align-items: center;
-        }
-    </aura:html>
-
-    <aura:if isTrue="{!v.createVoidPoFlag}">
-        <center>
-            <img alt="Creating all po's." src="{!$Resource.gearsloading}" style="height:150px !important;" />
-            <br />
-            <div style="margin-block: 10px;">
-                <p>Please don't leave this page until PO's are created.</p>
-            </div>
-        </center>
-        <aura:set attribute="else">
-                <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; vertical-align: middle;">
-                    <p style="font-size: 1rem; font-family: sans-serif; margin-bottom: 1rem;"> 
-                        Click Continue to <b>Create Void PO</b>
-                    </p>
-                    <div style="display: flex; gap:0.5rem;">
-                        <lightning:button label="Cancel" onclick="{!c.handleCancel}" iconName="utility:close" iconPosition="left"></lightning:button>
-                        <lightning:button label="Continue" onclick="{!c.handleCreateVoidPO}" variant="brand" iconName="utility:chevronright" iconPosition="right"></lightning:button>
-                    </div>
-                </div>
-        </aura:set>
-    </aura:if>
-
-
-</aura:component>	
+</aura:component>
