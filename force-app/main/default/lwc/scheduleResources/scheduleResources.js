@@ -421,6 +421,8 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
         }
 
         if (this.conflictingSchedules.length > 0) {
+            const selectedRecord = this.tableData.find(row => row.id === this.editRecordId);
+            this.conflictingSchedules.unshift({ id: selectedRecord.id, taskName: selectedRecord.taskName, startDate: selectedRecord.startDate, endDate: selectedRecord.endDate, scheduleName: selectedRecord.schedule, projectName: selectedRecord.project, scheduleId: this.recordId ? this.recordId : (this.selectedScheduleId ? this.selectedScheduleId : this.selectedScheduleIdForJS)});
             console.log('Conflicting schedules:', this.conflictingSchedules);
             return this.conflictingSchedules;
         } else {
@@ -430,7 +432,11 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
     }
 
     handleCloseModal() {
+        this.isLoading = false;
         this.isConflict = false;
+        this.tableData = this.tableData.map(row => {
+            return { ...row, isEditing: false };
+        });
     }
 
     // * Method to Accept conflict and update the resource
