@@ -333,10 +333,7 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
     saveResource() {
         this.isLoading = true;
         // Check if the selected resources are different
-        if ((this.selectedVendorResources1 === this.selectedVendorResources2 ||
-            this.selectedVendorResources1 === this.selectedVendorResources3 ||
-            this.selectedVendorResources2 === this.selectedVendorResources3) &&
-            (this.selectedVendorResources1 !== '' && this.selectedVendorResources2 !== '' && this.selectedVendorResources3 !== '')) {
+        if ((this.selectedVendorResources1 !== undefined && this.selectedVendorResources2 !== undefined && this.selectedVendorResources3 !== undefined) && ((this.selectedVendorResources1 !== this.selectedVendorResources2 && this.selectedVendorResources1 !== this.selectedVendorResources3 && this.selectedVendorResources2 !== this.selectedVendorResources3) && (this.selectedVendorResources1 !== '' && this.selectedVendorResources2 !== '' && this.selectedVendorResources3 !== ''))) {
             this.showToast('Warning', 'Please select different resources for the vendor', 'warning');
             this.isLoading = false;
             return;
@@ -422,7 +419,7 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
 
         if (this.conflictingSchedules.length > 0) {
             const selectedRecord = this.tableData.find(row => row.id === this.editRecordId);
-            this.conflictingSchedules.unshift({ id: selectedRecord.id, taskName: selectedRecord.taskName, startDate: selectedRecord.startDate, endDate: selectedRecord.endDate, scheduleName: selectedRecord.schedule, projectName: selectedRecord.project, scheduleId: this.recordId ? this.recordId : (this.selectedScheduleId ? this.selectedScheduleId : this.selectedScheduleIdForJS)});
+            this.conflictingSchedules.unshift({ id: selectedRecord.id, taskName: selectedRecord.taskName, startDate: selectedRecord.startDate, endDate: selectedRecord.endDate, scheduleName: selectedRecord.schedule, projectName: selectedRecord.project, scheduleId: this.recordId ? this.recordId : (this.selectedScheduleId ? this.selectedScheduleId : this.selectedScheduleIdForJS) });
             console.log('Conflicting schedules:', this.conflictingSchedules);
             return this.conflictingSchedules;
         } else {
@@ -506,9 +503,13 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
                 this.tableData = this.tableData.map(row => {
                     return row.id === this.editRecordId ? {
                         ...row,
+                        vendorId: this.selectedVendorId,
                         vendor: this.vendorOptions.find(option => option.value === this.selectedVendorId)?.label,
+                        vendorResources1Id: this.selectedVendorResources1,
                         vendorResources1: this.selectedVendorResources1 !== '' ? this.vendorResourcesOptions.find(option => option.value === this.selectedVendorResources1)?.label : '',
+                        vendorResources2Id: this.selectedVendorResources2,
                         vendorResources2: this.selectedVendorResources2 !== '' ? this.vendorResourcesOptions.find(option => option.value === this.selectedVendorResources2)?.label : '',
+                        vendorResources3Id: this.selectedVendorResources3,
                         vendorResources3: this.selectedVendorResources3 !== '' ? this.vendorResourcesOptions.find(option => option.value === this.selectedVendorResources3)?.label : '',
                         internalResource: this.internalResourcesOption.find(option => option.value === this.selectedInternalResourceId)?.label
                     } : row;
