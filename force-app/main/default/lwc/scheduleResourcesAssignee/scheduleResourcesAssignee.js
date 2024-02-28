@@ -54,7 +54,7 @@ export default class ScheduleResourcesAssignee extends NavigationMixin(Lightning
                                     task.DependancyName = task.hasOwnProperty('buildertek__Dependency__r') ? task.buildertek__Dependency__r.Name : '--';
                                 })
                             })
-                            resourceListRaw = this.customeSorting(resourceListRaw);
+                            resourceListRaw = this.customSorting(resourceListRaw);
                             this.resourceList = resourceListRaw;
                             this.vendor = result.vendor ? result.vendor : {Id: '', Name : '---'};
 
@@ -116,16 +116,16 @@ export default class ScheduleResourcesAssignee extends NavigationMixin(Lightning
         }
     }
 
-    customeSorting(resourceListRaw){
+    customSorting(resourceListRaw){
         try {
             resourceListRaw.forEach(ele => {
                 ele.taskList.sort((a, b) => {
                     const Project_A = a.buildertek__Schedule__r.buildertek__Project__c ? (a.buildertek__Schedule__r.buildertek__Project__r.Name).toUpperCase() : '';
-                    const Project_B = b.buildertek__Schedule__r.buildertek__Project__c ? (a.buildertek__Schedule__r.buildertek__Project__r.Name).toUpperCase() : '';
+                    const Project_B = b.buildertek__Schedule__r.buildertek__Project__c ? (b.buildertek__Schedule__r.buildertek__Project__r.Name).toUpperCase() : '';
                     if(Project_A < Project_B){
                         return -1;
                     }
-                    if(Project_A < Project_B){
+                    if(Project_A > Project_B){
                         return 1;
                     }
                     if(Project_A == Project_B){
@@ -187,7 +187,7 @@ export default class ScheduleResourcesAssignee extends NavigationMixin(Lightning
             return resourceListRaw;
             
         } catch (error) {
-            console.log('error in customeSorting : ',error.stack);
+            console.log('error in customSorting : ',error.stack);
             
         }
     }
