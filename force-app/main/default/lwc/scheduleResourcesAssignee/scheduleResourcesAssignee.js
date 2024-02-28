@@ -129,8 +129,8 @@ export default class ScheduleResourcesAssignee extends NavigationMixin(Lightning
                         return 1;
                     }
                     if(Project_A == Project_B){
-                        const Schduel_A = (a.buildertek__Schedule__r.Name).toUpperCase();
-                        const Schduel_B = (b.buildertek__Schedule__r.Name).toUpperCase();
+                        const Schduel_A = (a.buildertek__Schedule__r.buildertek__Description__c).toUpperCase();
+                        const Schduel_B = (b.buildertek__Schedule__r.buildertek__Description__c).toUpperCase();
                         if(Schduel_A < Schduel_B){
                             return -1;
                         }

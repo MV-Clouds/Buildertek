@@ -42,17 +42,18 @@ public class scheduleAssignResources {
             for(Contact con : resourceListWithTaks){
                 resouceDataWrapper resouceData = new resouceDataWrapper();
 
-                List<buildertek__Project_Task__c> taskList = new List<buildertek__Project_Task__c>();
+                Set<buildertek__Project_Task__c> taskSet = new Set<buildertek__Project_Task__c>();
                 for(buildertek__Project_Task__c task : con.buildertek__BT_Schedule_Items5__r){    // For Vendor Resouce 1;
-                    taskList.add(task);
+                    taskSet.add(task);
                 }
                 for(buildertek__Project_Task__c task : con.buildertek__BT_Schedule_Items3__r){    // For Vendor Resouce 2;
-                    taskList.add(task);
+                    taskSet.add(task);
                 }
                 for(buildertek__Project_Task__c task : con.buildertek__BT_Schedule_Items4__r){    // For Vendor Resouce 23;
-                    taskList.add(task);
+                    taskSet.add(task);
                 }
 
+                List<buildertek__Project_Task__c> taskList = new List<buildertek__Project_Task__c>(taskSet);
                 resouceData.resource = con;
                 resouceData.taskList = taskList;
                 resourceDataList.add(resouceData);
