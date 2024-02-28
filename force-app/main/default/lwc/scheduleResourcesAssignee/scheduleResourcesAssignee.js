@@ -54,6 +54,7 @@ export default class ScheduleResourcesAssignee extends NavigationMixin(Lightning
                                     task.DependancyName = task.hasOwnProperty('buildertek__Dependency__r') ? task.buildertek__Dependency__r.Name : '--';
                                 })
                             })
+                            resourceListRaw = this.customeSorting(resourceListRaw);
                             this.resourceList = resourceListRaw;
                             this.vendor = result.vendor ? result.vendor : {Id: '', Name : '---'};
 
@@ -111,6 +112,82 @@ export default class ScheduleResourcesAssignee extends NavigationMixin(Lightning
             });
         } catch (error) {
             console.log('error in redirectTOsobject : ', error.stack);
+            
+        }
+    }
+
+    customeSorting(resourceListRaw){
+        try {
+            resourceListRaw.forEach(ele => {
+                ele.taskList.sort((a, b) => {
+                    const Project_A = a.buildertek__Schedule__r.buildertek__Project__c ? (a.buildertek__Schedule__r.buildertek__Project__r.Name).toUpperCase() : '';
+                    const Project_B = b.buildertek__Schedule__r.buildertek__Project__c ? (a.buildertek__Schedule__r.buildertek__Project__r.Name).toUpperCase() : '';
+                    if(Project_A < Project_B){
+                        return -1;
+                    }
+                    if(Project_A < Project_B){
+                        return 1;
+                    }
+                    if(Project_A == Project_B){
+                        const Schduel_A = (a.buildertek__Schedule__r.Name).toUpperCase();
+                        const Schduel_B = (b.buildertek__Schedule__r.Name).toUpperCase();
+                        if(Schduel_A < Schduel_B){
+                            return -1;
+                        }
+                        if(Schduel_A > Schduel_B){
+                            return 1;
+                        }
+                        if(Schduel_A == Schduel_B){
+                            const taskName_A = a.Name;
+                            const taskName_B = b.Name;
+                            if(taskName_A < taskName_B){
+                                return -1
+                            }
+                            if(taskName_A > taskName_B){
+                                return 1;
+                            }
+                            if(taskName_A == taskName_B){
+                                const dependancy_A = a.buildertek__Dependency__c ? (a.buildertek__Dependency__r.Name).toUpperCase() : '';
+                                const dependancy_B = b.buildertek__Dependency__c ? (b.buildertek__Dependency__r.Name).toUpperCase() : '';
+                                console.log("dependancy_A : ", dependancy_A);
+                                if(dependancy_A < dependancy_B){
+                                    return -1;
+                                }
+                                if(dependancy_A > dependancy_B){
+                                    return 1;
+                                }
+                                if(dependancy_A == dependancy_B){
+                                    const startDate_A = a.buildertek__Start__c;
+                                    const startDate_B = b.buildertek__Start__c;
+                                    if(startDate_A < startDate_B){
+                                        return -1;
+                                    }
+                                    if(startDate_A > startDate_B){
+                                        return 1;
+                                    }
+                                    if(startDate_A == startDate_B){
+                                        const endDate_A = a.buildertek__Finish_Date__c;
+                                        const endDate_B = b.buildertek__Finish_Date__c;
+                                        if(startDate_A < startDate_B){
+                                            return -1;
+                                        }
+                                        if(startDate_A > startDate_B){
+                                            return 1;
+                                        }
+                                        if(endDate_A == endDate_B){
+                                            return 0;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                })
+            });
+            return resourceListRaw;
+            
+        } catch (error) {
+            console.log('error in customeSorting : ',error.stack);
             
         }
     }
