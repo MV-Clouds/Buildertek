@@ -62,13 +62,13 @@
                         <!-- <lightning:input type="checkbox" aura:id="headCheckRFQ" checked="false" onchange="{!c.selectAllRfq}"/> -->
     					<ui:inputCheckbox aura:id="checkContractors"  change="{!c.selectAll}"/>
     				</th>
-    				<th style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top; width: 40%">
+    				<th style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top; width: 30%">
     					 <div class="slds-truncate" title="Quote Line">RFQ Item</div>
     				</th>
     				<!--<th style="background-color:grey; color:white;vertical-align: top;">
     					 <div class="slds-truncate" title="Quote Line">Trade Type</div>
     				</th>-->
-                    <th style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;">
+                    <th style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top; width: 40%">
     					 <div class="slds-truncate" title="Quote Line">Description</div>
     				</th>
                     <th style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;">
@@ -100,7 +100,7 @@
                             <td>
                                   <div style="white-space: pre-wrap;">
 
-                                <ui:outputtext value="{!obj.MasterRFQItem.buildertek__Description__c}" />
+                                <ui:outputtext value="{!obj.MasterRFQItem.truncateddes}" />
                                 </div>
                             </td>
                             <td>

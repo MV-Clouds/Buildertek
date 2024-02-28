@@ -34,6 +34,25 @@
                 if(result != null){
                     if(result.length > 2){
                         result = JSON.parse(result);
+                        var maxLength = 40;
+                        result.forEach(function(item){       
+                            if(item.MasterRFQItem.Name != null){
+                                if (item.MasterRFQItem.Name.length > maxLength) {
+                                    console.log('is it working');
+                                    item.MasterRFQItem.truncatedName = item.MasterRFQItem.Name.substring(0, maxLength - 3) + "...";
+                                } else {
+                                    item.MasterRFQItem.truncatedName = item.MasterRFQItem.Name;
+                                }
+                            }
+                            if(item.MasterRFQItem.buildertek__Description__c != null){
+                                if (item.MasterRFQItem.buildertek__Description__c.length > (maxLength + 20)) {
+                                    console.log('is it working');
+                                    item.MasterRFQItem.truncateddes = item.MasterRFQItem.buildertek__Description__c.substring(0, maxLength + 17) + "...";
+                                } else {
+                                    item.MasterRFQItem.truncateddes = item.MasterRFQItem.buildertek__Description__c;
+                                }
+                            }
+                        })
                         component.set("v.objInfo",result);
                         console.log('check 1');
                         var pageSize = component.get("v.pageSize");
@@ -53,15 +72,7 @@
                                 PaginationLst.push(result[i]);    
                             } 
                         }
-                        var maxLength = '35';
-                        PaginationLst.forEach(function(item){         
-                            if (item.MasterRFQItem.Name.length > maxLength) {
-                                console.log('is it working');
-                                item.MasterRFQItem.truncatedName = item.MasterRFQItem.Name.substring(0, maxLength - 3) + "...";
-                            } else {
-                                item.MasterRFQItem.truncatedName = item.MasterRFQItem.Name;
-                            }
-                        })
+                        
                         component.set('v.PaginationList', PaginationLst);
                         }
                         else{
