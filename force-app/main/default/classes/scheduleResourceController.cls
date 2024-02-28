@@ -4,7 +4,7 @@ public with sharing class scheduleResourceController {
         ScheduleDataWrapper wrapper = new ScheduleDataWrapper();
         
         try {
-            wrapper.scheduleList = [SELECT Id, Name, buildertek__Schedule__c, buildertek__Schedule__r.Name, buildertek__Schedule__r.buildertek__Description__c, buildertek__Schedule__r.buildertek__Project__r.Name, buildertek__Contractor__c, buildertek__Contractor__r.Name, buildertek__Contractor_Resource_1__c,buildertek__Contractor_Resource_1__r.Name,buildertek__Contractor_Resource_2__c,buildertek__Contractor_Resource_2__r.Name, buildertek__Contractor_Resource_3__c,buildertek__Contractor_Resource_3__r.Name, buildertek__Start__c, buildertek__Finish_Date__c, buildertek__Schedule__r.buildertek__Start_Date__c, buildertek__Schedule__r.buildertek__End_Date__c FROM buildertek__Project_Task__c WHERE buildertek__Schedule__c = :scheduleId AND buildertek__Type__c = 'Task' ORDER BY Name ASC LIMIT 10000];
+            wrapper.scheduleList = [SELECT Id, Name, buildertek__Schedule__c, buildertek__Schedule__r.Name, buildertek__Schedule__r.buildertek__Description__c, buildertek__Schedule__r.buildertek__Project__r.Name, buildertek__Contractor__c, buildertek__Contractor__r.Name, buildertek__Contractor_Resource_1__c,buildertek__Contractor_Resource_1__r.Name,buildertek__Contractor_Resource_2__c,buildertek__Contractor_Resource_2__r.Name, buildertek__Contractor_Resource_3__c,buildertek__Contractor_Resource_3__r.Name, buildertek__Start__c, buildertek__Finish__c, buildertek__Schedule__r.buildertek__Start_Date__c, buildertek__Schedule__r.buildertek__End_Date__c FROM buildertek__Project_Task__c WHERE buildertek__Schedule__c = :scheduleId AND buildertek__Type__c = 'Task' ORDER BY Name ASC LIMIT 10000];
 
             Date scheduleStartDate = wrapper.scheduleList[0].buildertek__Schedule__r.buildertek__Start_Date__c;
             Date scheduleEndDate = wrapper.scheduleList[0].buildertek__Schedule__r.buildertek__End_Date__c;
@@ -13,7 +13,7 @@ public with sharing class scheduleResourceController {
             
             wrapper.contractorAndResourcesList = [SELECT Id, Name, (SELECT Id, Name, LastName, FirstName FROM Contacts) FROM Account WHERE buildertek__BT_Account_Type__c = 'Vendor' ORDER BY Name ASC];
             
-            wrapper.conflictingSchedulesList = [SELECT Id, Name, buildertek__Schedule__c, buildertek__Start__c, buildertek__Finish_Date__c, buildertek__Schedule__r.buildertek__Project__r.Name, buildertek__Schedule__r.buildertek__Description__c, buildertek__Contractor__c, buildertek__Contractor__r.Name, buildertek__Contractor_Resource_1__c,buildertek__Contractor_Resource_1__r.Name,buildertek__Contractor_Resource_2__c,buildertek__Contractor_Resource_2__r.Name, buildertek__Contractor_Resource_3__c,buildertek__Contractor_Resource_3__r.Name FROM buildertek__Project_Task__c WHERE buildertek__Type__c = 'Task' AND (buildertek__Start__c <= :scheduleEndDate AND buildertek__Finish_Date__c >= :scheduleStartDate) AND buildertek__Schedule__r.buildertek__Active__c = TRUE AND buildertek__Schedule__c != :scheduleId];
+            wrapper.conflictingSchedulesList = [SELECT Id, Name, buildertek__Schedule__c, buildertek__Start__c, buildertek__Finish__c, buildertek__Schedule__r.buildertek__Project__r.Name, buildertek__Schedule__r.buildertek__Description__c, buildertek__Contractor__c, buildertek__Contractor__r.Name, buildertek__Contractor_Resource_1__c,buildertek__Contractor_Resource_1__r.Name,buildertek__Contractor_Resource_2__c,buildertek__Contractor_Resource_2__r.Name, buildertek__Contractor_Resource_3__c,buildertek__Contractor_Resource_3__r.Name FROM buildertek__Project_Task__c WHERE buildertek__Type__c = 'Task' AND (buildertek__Start__c <= :scheduleEndDate AND buildertek__Finish__c >= :scheduleStartDate) AND buildertek__Schedule__r.buildertek__Active__c = TRUE AND buildertek__Schedule__c != :scheduleId];
 
             return wrapper;
 
@@ -50,7 +50,7 @@ public with sharing class scheduleResourceController {
     @AuraEnabled
     public static List<buildertek__Project_Task__c> checkForConflictingSchedules(Date startDate, Date endDate) {
         try {
-            List<buildertek__Project_Task__c> conflictingSchedules = [SELECT Id, Name, buildertek__Start__c, buildertek__Finish_Date__c, buildertek__Schedule__r.buildertek__Project__r.Name, buildertek__Schedule__r.buildertek__Description__c FROM buildertek__Project_Task__c WHERE buildertek__Type__c = 'Task' AND (buildertek__Start__c <= :endDate AND buildertek__Finish_Date__c >= :startDate) AND buildertek__Schedule__r.buildertek__Active__c = TRUE];
+            List<buildertek__Project_Task__c> conflictingSchedules = [SELECT Id, Name, buildertek__Start__c, buildertek__Finish__c, buildertek__Schedule__r.buildertek__Project__r.Name, buildertek__Schedule__r.buildertek__Description__c FROM buildertek__Project_Task__c WHERE buildertek__Type__c = 'Task' AND (buildertek__Start__c <= :endDate AND buildertek__Finish__c >= :startDate) AND buildertek__Schedule__r.buildertek__Active__c = TRUE];
 
             return conflictingSchedules;
         } catch (Exception ex) {

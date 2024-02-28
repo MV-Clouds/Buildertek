@@ -119,7 +119,7 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
                             vendorResources3: task.hasOwnProperty('buildertek__Contractor_Resource_3__r') ? task.buildertek__Contractor_Resource_3__r.Name : '',
                             vendorResources3Id: task.hasOwnProperty('buildertek__Contractor_Resource_3__r') ? task.buildertek__Contractor_Resource_3__r.Id : '',
                             startDate: task.buildertek__Start__c,
-                            endDate: task.buildertek__Finish_Date__c
+                            endDate: task.buildertek__Finish__c
                         };
                     });
                     // console.log('tableData:', JSON.parse(JSON.stringify(this.tableData)));
@@ -294,7 +294,7 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
                         }
                         this.vendorResourceConflictJSON[vendorId][resourceId1][schedule.Id] = {
                             StartDate: schedule.buildertek__Start__c,
-                            EndDate: schedule.buildertek__Finish_Date__c
+                            EndDate: schedule.buildertek__Finish__c
                         };
                     }
 
@@ -304,7 +304,7 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
                         }
                         this.vendorResourceConflictJSON[vendorId][resourceId2][schedule.Id] = {
                             StartDate: schedule.buildertek__Start__c,
-                            EndDate: schedule.buildertek__Finish_Date__c
+                            EndDate: schedule.buildertek__Finish__c
                         };
                     }
 
@@ -314,7 +314,7 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
                         }
                         this.vendorResourceConflictJSON[vendorId][resourceId3][schedule.Id] = {
                             StartDate: schedule.buildertek__Start__c,
-                            EndDate: schedule.buildertek__Finish_Date__c
+                            EndDate: schedule.buildertek__Finish__c
                         };
                     }
                 }
@@ -333,7 +333,7 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
     saveResource() {
         this.isLoading = true;
         // Check if the selected resources are different
-        if ((this.selectedVendorResources1 !== undefined && this.selectedVendorResources2 !== undefined && this.selectedVendorResources3 !== undefined) && ((this.selectedVendorResources1 !== this.selectedVendorResources2 && this.selectedVendorResources1 !== this.selectedVendorResources3 && this.selectedVendorResources2 !== this.selectedVendorResources3) && (this.selectedVendorResources1 !== '' && this.selectedVendorResources2 !== '' && this.selectedVendorResources3 !== ''))) {
+        if (!this.areResourcesDifferent(this.selectedVendorResources1, this.selectedVendorResources2, this.selectedVendorResources3)) {
             this.showToast('Warning', 'Please select different resources for the vendor', 'warning');
             this.isLoading = false;
             return;
@@ -345,6 +345,28 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
         } else {
             // Show the conflict popup
             this.isConflict = true;
+        }
+    }
+
+    //* Method to check if the selected resources are different
+    areResourcesDifferent(resource1, resource2, resource3) {
+        resource1 = resource1 === "" ? null : resource1;
+        resource2 = resource2 === "" ? null : resource2;
+        resource3 = resource3 === "" ? null : resource3;
+
+        if (resource1 === null && resource2 === null && resource3 === null) {
+            return true;
+        }
+
+        if (
+            (resource1 !== resource2 && resource1 !== resource3 && resource2 !== resource3) ||
+            (resource1 === null && resource2 !== resource3) ||
+            (resource2 === null && resource1 !== resource3) ||
+            (resource3 === null && resource1 !== resource2)
+        ) {
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -405,7 +427,7 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
                                 id: conflictingSchedule.Id,
                                 taskName: conflictingSchedule.Name,
                                 startDate: conflictingSchedule.buildertek__Start__c,
-                                endDate: conflictingSchedule.buildertek__Finish_Date__c,
+                                endDate: conflictingSchedule.buildertek__Finish__c,
                                 scheduleName: conflictingSchedule.buildertek__Schedule__r.buildertek__Description__c,
                                 projectName: conflictingSchedule.buildertek__Schedule__r.hasOwnProperty('buildertek__Project__r') ? conflictingSchedule.buildertek__Schedule__r.buildertek__Project__r.Name : '',
                                 scheduleId: conflictingSchedule.buildertek__Schedule__c
