@@ -30,15 +30,21 @@
             var state = response.getState();
             console.log(state);
             if (state === "SUCCESS") {
+                component.set("v.startPage",0);
+                component.set("v.endPage",0);
+                component.set("v.disableBtn")
+
                 var result = response.getReturnValue();
+                console.log("this is result"+result);
                 if(result != null){
+                    // console.log("this is result length"+result.length());
+                    // console.log("this is result length"+result.length);
                     if(result.length > 2){
                         result = JSON.parse(result);
                         var maxLength = 40;
                         result.forEach(function(item){       
                             if(item.MasterRFQItem.Name != null){
                                 if (item.MasterRFQItem.Name.length > maxLength) {
-                                    console.log('is it working');
                                     item.MasterRFQItem.truncatedName = item.MasterRFQItem.Name.substring(0, maxLength - 3) + "...";
                                 } else {
                                     item.MasterRFQItem.truncatedName = item.MasterRFQItem.Name;
@@ -46,7 +52,6 @@
                             }
                             if(item.MasterRFQItem.buildertek__Description__c != null){
                                 if (item.MasterRFQItem.buildertek__Description__c.length > (maxLength + 20)) {
-                                    console.log('is it working');
                                     item.MasterRFQItem.truncateddes = item.MasterRFQItem.buildertek__Description__c.substring(0, maxLength + 17) + "...";
                                 } else {
                                     item.MasterRFQItem.truncateddes = item.MasterRFQItem.buildertek__Description__c;
@@ -54,17 +59,12 @@
                             }
                         })
                         component.set("v.objInfo",result);
-                        console.log('check 1');
                         var pageSize = component.get("v.pageSize");
-                        console.log('start 1');
                         var totalRecordsList = result;
                         var totalLength = totalRecordsList.length ;
-                        console.log('start 2');
                         component.set("v.totalRecordsCount", totalLength);
                         component.set("v.startPage",0);
-                        console.log('start 3');
                         component.set("v.endPage",pageSize-1);
-                        console.log('check 2');
 
                         var PaginationLst = [];
                         for(var i=0; i < pageSize; i++){
@@ -80,7 +80,7 @@
                         }
                 }
                 component.set("v.Spinner",false);
-
+                this.updateCheckboxValues(component);
                 
             }
             
@@ -89,27 +89,31 @@
 	},
     
     importRFQItems: function(component, event, helper){
-        component.set("v.Spinner", true);
+        try {
+            component.set("v.Spinner", true);
         var Records = component.get("v.mainObjectId");
 	    var rfqItems = component.get("v.objInfo");
-	    var SubOptions = [];
+        var checkedRecordIds = component.get("v.checkedRecordIds");
+	    // var SubOptions = [];
        // alert(SubOptions);
         if(rfqItems != null){
-	    for(var i=0 ; i < rfqItems.length;i++){
-         // alert(rfqItems[i].SubmittalCheck );
-	        if(rfqItems[i].SubmittalCheck == true){
-	            SubOptions.push(rfqItems[i].MasterRFQItem.Id);
-	        }
-	    }
-	    if(SubOptions.length > 0){
-	        component.set("v.selectedobjInfo",SubOptions);
-            console.log(SubOptions);
+	    // for(var i=0 ; i < rfqItems.length;i++){
+        //  // alert(rfqItems[i].SubmittalCheck );
+	    //     if(rfqItems[i].SubmittalCheck == true){
+	    //         SubOptions.push(rfqItems[i].MasterRFQItem.Id);
+	    //     }
+	    // }
+	    if(checkedRecordIds.length > 0){
+	        // component.set("v.selectedobjInfo",SubOptions);
+            // console.log(SubOptions);
             console.log(Records);
 	        var action = component.get("c.importRFQItems");
-            action.setParams({Id : SubOptions, RFQId : Records})
+            action.setParams({Id : checkedRecordIds, RFQId : Records})
             action.setCallback(this, function(response) {
                 var state = response.getState();
+                console.log({state});
                 var result = response.getReturnValue();
+                console.log({result});
                 if (state === "SUCCESS") {
                     component.set("v.Spinner", false);
                     component.get("v.onSuccess")();  
@@ -144,6 +148,10 @@
             toastEvent.fire();
             
         }
+        } catch (error) {
+            console.log({error});
+        }
+        
 	},
     next : function(component,event,sObjectList,end,start,pageSize){
         var Paginationlist = [];
@@ -156,22 +164,14 @@
         }
         start = start + counter;
         end = end + counter;
+        // this.updateCheckboxValues(component);
         component.set("v.startPage",start);
         component.set("v.endPage",end);
         component.set('v.PaginationList', Paginationlist);
+        this.updateCheckboxValues(component);
 
-        const allActive = Paginationlist.every(function(obj) {
-            return obj.isChecked === true;
-         });
-         if(allActive){
-            component.find("selectAllRFQ").set("v.value", true);
 
-        }else{
-           component.find("selectAllRFQ").set("v.value", false);
-
-        }
          
-
       
     },
     previous : function(component,event,sObjectList,end,start,pageSize){
@@ -191,17 +191,11 @@
         component.set("v.startPage",start);
         component.set("v.endPage",end);
         component.set('v.PaginationList', Paginationlist);
-        const allActive = Paginationlist.every(function(obj) {
-            return obj.isChecked === true;
-         });
-         if(allActive){
-            component.find("selectAllRFQ").set("v.value", true);
-
-        }else{
-           component.find("selectAllRFQ").set("v.value", false);
-
-        }
+        this.updateCheckboxValues(component);
+        
+        
     },
+
     updatePagination: function(component, filteredList) {
         var pageSize = component.get("v.pageSize");
         var totalRecordsCount = filteredList.length;
@@ -227,5 +221,36 @@
             PaginationList.push(filteredList[i]);
         }
         component.set("v.PaginationList", PaginationList);
+    },
+
+    updateCheckboxValues: function (component) {
+        var PaginationList = component.get("v.PaginationList");
+        var checkedRecordIds = component.get("v.checkedRecordIds");
+    
+        // Iterate through PaginationList and update checkbox values
+        PaginationList.forEach(function (record) {
+            // Get the record ID for the checkbox
+            var recordId = record.MasterRFQItem.Id;
+    
+            // Get the checkbox by name attribute
+            var checkboxes = component.find("checkInspection");
+    
+            // If there are multiple checkboxes, component.find() returns an array
+            if (Array.isArray(checkboxes)) {
+                // Loop through the array of checkboxes
+                checkboxes.forEach(function (checkbox) {
+                    if (checkbox.get("v.text") === recordId) {
+                        // Update the checkbox value based on checkedRecordIds
+                        checkbox.set("v.value", checkedRecordIds.includes(recordId));
+                    }
+                });
+            } else {
+                // If there's only one checkbox
+                if (checkboxes.get("v.text") === recordId) {
+                    // Update the checkbox value based on checkedRecordIds
+                    checkboxes.set("v.value", checkedRecordIds.includes(recordId));
+                }
+            }
+        });
     },
 })
