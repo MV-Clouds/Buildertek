@@ -32,14 +32,16 @@
             if (state === "SUCCESS") {
                 component.set("v.startPage",0);
                 component.set("v.endPage",0);
-                component.set("v.disableBtn")
-
+                console.log('1');
                 var result = response.getReturnValue();
                 console.log("this is result"+result);
                 if(result != null){
+                    component.set("v.disableBtn", false);
+                    console.log('2');
                     // console.log("this is result length"+result.length());
                     // console.log("this is result length"+result.length);
                     if(result.length > 2){
+                        console.log('3');
                         result = JSON.parse(result);
                         var maxLength = 40;
                         result.forEach(function(item){       
@@ -77,7 +79,14 @@
                         }
                         else{
                             component.set("v.objInfo",null);
+                            component.set("v.startPage",0);
+                            component.set("v.endPage",0);
+                            component.set("v.disableBtn", true);
+
                         }
+                }
+                else{
+                    console.log('4');
                 }
                 component.set("v.Spinner",false);
                 this.updateCheckboxValues(component);
