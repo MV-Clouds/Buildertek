@@ -86,6 +86,15 @@
     cursor: pointer;
 }
 
+.redirectIcon {
+    cursor: pointer;
+}
+
+.closeIcon {
+    cursor: pointer;
+    --slds-c-icon-color-foreground-default : white !important;
+}
+
 @media only screen and (min-width: 1024px) {
     .custom-card {
         width: 50%;

@@ -153,7 +153,7 @@
             aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open slds-modal_small">
             <div class="slds-modal__container">
                 <header class="slds-modal__header slds-theme_header slds-theme_shade">
-                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse closeIcon"
                         title="Close" onclick={handleCloseModal}>
                         <lightning-icon icon-name="utility:close" alternative-text="Close"
                             size="small"></lightning-icon>
@@ -185,7 +185,7 @@
                                         <td data-label="Action">
                                             <lightning-icon icon-name="utility:open" alternative-text="Redirect"
                                                 size="xx-small" title="Redirect" data-id={scheduleItem.scheduleId}
-                                                onclick={handleFixConflict}></lightning-icon>
+                                                onclick={handleFixConflict} class="redirectIcon"></lightning-icon>
                                         </td>
                                     </tr>
                                 </template>
