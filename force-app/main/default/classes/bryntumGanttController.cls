@@ -225,7 +225,7 @@ public with sharing class bryntumGanttController {
 
         return [select id, Name, buildertek__Type__c, buildertek__Total_Duration__c, buildertek__Description__c
         from buildertek__Schedule__c
-        where buildertek__Type__c LIKE '%Master%'];
+        where buildertek__Type__c LIKE '%Master%' order by Name];
     }
 
     @AuraEnabled
