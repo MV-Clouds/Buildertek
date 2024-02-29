@@ -108,10 +108,24 @@
                 $('#mycalendar').empty();
                 var monthNamesList = component.get("v.monthnames");
                 if(currentDate.getMonth() ==  viewDate.getMonth() && currentDate.getFullYear() == viewDate.getFullYear()){
-                    $('#mycalendar').append('<div class="weekly-header" style="display:none;"><div class="weekly-header-title"><a class="monthly-weekly-header-title-date"  style="pointer-events: none;" href="#" onclick="(function(event){event.preventDefault();return false;})();return false;">'+monthNamesList[currentDate.getMonth()]+'&nbsp;'+currentDate.getFullYear()+'</a><a class="weekly-header-title-date"  href="#" onclick="(function(event){event.preventDefault();return false;})();return false;">Week 1-7</a></div><a class="weekly-prev"  href="javascript:void(0);" onclick="(function(event){event.preventDefault();return false;})();return false;"></a><a class="weekly-next"  href="javascript:void(0);" onclick="(function(event){event.preventDefault();return false;})();return false;"></a></div>')
+                    $('#mycalendar').append(`<div class="weekly-header" style="display:none;">
+                                                <div class="weekly-header-title">
+                                                    <a class="monthly-weekly-header-title-date"  style="pointer-events: none;" href="#" onclick="(function(event){event.preventDefault();return false;})();return false;">${monthNamesList[currentDate.getMonth()]}&nbsp;${currentDate.getFullYear()}</a>
+                                                    <a class="weekly-header-title-date"  href="#" onclick="(function(event){event.preventDefault();return false;})();return false;">Week 1-7</a></div><a class="weekly-prev"  href="javascript:void(0);" onclick="(function(event){event.preventDefault();return false;})();return false;"></a>
+                                                    <a class="daily-header-title-datee" id="datepickerAnchor" style="position: relative !important;" onclick="(function(event){event.preventDefault();return false;})();return false;">Select Date </a>
+                                                    <a class="weekly-next"  href="javascript:void(0);" onclick="(function(event){event.preventDefault();return false;})();return false;"></a>
+                                                </div>`)
                 }else{
                     // for today reset button
-                    $('#mycalendar').append('<div class="weekly-header" style="display:none;"><div class="weekly-header-title"><a class="monthly-weekly-header-title-date"  style="pointer-events: none;" href="#" onclick="(function(event){event.preventDefault();return false;})();return false;">'+monthNamesList[viewDate.getMonth()]+'&nbsp;'+viewDate.getFullYear()+'</a><a class="weekly-header-title-date"  href="#" onclick="(function(event){event.preventDefault();return false;})();return false;">Week 1-7</a><a class="monthly-reset"  href="#" onclick="(function(event){event.preventDefault();return false;})();return false;"></a></div><a class="weekly-prev"  href="javascript:void(0);" onclick="(function(event){event.preventDefault();return false;})();return false;"></a><a class="weekly-next"  href="javascript:void(0);" onclick="(function(event){event.preventDefault();return false;})();return false;"></a></div>')
+                    $('#mycalendar').append(`<div class="weekly-header" style="display:none;">
+                                                <div class="weekly-header-title">
+                                                    <a class="monthly-weekly-header-title-date"  style="pointer-events: none;" href="#" onclick="(function(event){event.preventDefault();return false;})();return false;">${monthNamesList[viewDate.getMonth()]}&nbsp;${viewDate.getFullYear()}</a>
+                                                    <a class="weekly-header-title-date"  href="#" onclick="(function(event){event.preventDefault();return false;})();return false;">Week 1-7</a>
+                                                    <a class="daily-header-title-datee" id="datepickerAnchor" style="position: relative !important;" onclick="(function(event){event.preventDefault();return false;})();return false;">Select Date </a>
+                                                    <a class="monthly-reset"  href="#" onclick="(function(event){event.preventDefault();return false;})();return false;"></a>
+                                                </div>
+                                                    <a class="weekly-prev"  href="javascript:void(0);" onclick="(function(event){event.preventDefault();return false;})();return false;"></a><a class="weekly-next"  href="javascript:void(0);" onclick="(function(event){event.preventDefault();return false;})();return false;"></a>
+                                            </div>`)
                 }
 
                 if( $('#mycalendar').length){
@@ -182,7 +196,8 @@
         newFromstr = $A.localizationService.formatDate(newfromdate, "yyyy-MM-dd");
         newTostr = $A.localizationService.formatDate(newtodate, "yyyy-MM-dd")
 
-        console.log('currentWeekDates 4 ========> ');
+        console.log('currentWeekDates from ========> ' ,newFromstr);
+        console.log('currentWeekDates to ========> ',newTostr);
         //alert(JSON.stringify(component.get("v.selectedTradetype")));
         //alert(fromdateStr+'<-------from-----todate---->'+todateStr);
         actionCal.setParams({
@@ -289,10 +304,27 @@
                         $('#mycalendar').empty();
                         var monthNamesList = component.get("v.monthnames");
                         if(currentDate.getMonth() ==  viewDate.getMonth() && currentDate.getFullYear() == viewDate.getFullYear()){
-                            $('#mycalendar').append('<div class="weekly-header" style="display:none;"><div class="weekly-header-title"><a class="monthly-weekly-header-title-date" style="pointer-events: none;"  href="#" onclick="(function(event){event.preventDefault();return false;})();return false;">'+monthNamesList[currentDate.getMonth()]+'&nbsp;'+currentDate.getFullYear()+'</a><a class="weekly-header-title-date"  href="#" onclick="(function(event){event.preventDefault();return false;})();return false;">Week 1-7</a></div><a class="weekly-prev" href="javascript:void(0);" onclick="(function(event){event.preventDefault();return false;})();return false;"></a><a class="weekly-next" href="javascript:void(0);" onclick="(function(event){event.preventDefault();return false;})();return false;"></a></div>')
+                            $('#mycalendar').append(`<div class="weekly-header" style="display:none;">
+                                                        <div class="weekly-header-title">
+                                                            <a class="monthly-weekly-header-title-date" style="pointer-events: none;"  href="#" onclick="(function(event){event.preventDefault();return false;})();return false;">${monthNamesList[currentDate.getMonth()]}&nbsp;${currentDate.getFullYear()}</a>
+                                                            <a class="weekly-header-title-date"  href="#" onclick="(function(event){event.preventDefault();return false;})();return false;">Week 1-7</a>
+                                                            <a class="daily-header-title-datee" id="datepickerAnchor" style="position: relative !important;" onclick="(function(event){event.preventDefault();return false;})();return false;">Select Date </a>
+                                                        </div>
+                                                            <a class="weekly-prev" href="javascript:void(0);" onclick="(function(event){event.preventDefault();return false;})();return false;"></a>
+                                                            <a class="weekly-next" href="javascript:void(0);" onclick="(function(event){event.preventDefault();return false;})();return false;"></a>
+                                                    </div>`)
                         }else{
                             // for today reset button
-                            $('#mycalendar').append('<div class="weekly-header" style="display:none;"><div class="weekly-header-title"><a class="monthly-weekly-header-title-date"   style="pointer-events: none;" href="#" onclick="(function(event){event.preventDefault();return false;})();return false;">'+monthNamesList[viewDate.getMonth()]+'&nbsp;'+viewDate.getFullYear()+'</a><a class="weekly-header-title-date"  href="#" onclick="(function(event){event.preventDefault();return false;})();return false;">Week 1-7</a><a class="monthly-reset"  href="#" onclick="(function(event){event.preventDefault();return false;})();return false;"></a></div><a class="weekly-prev" href="javascript:void(0);" onclick="(function(event){event.preventDefault();return false;})();return false;"></a><a class="weekly-next" href="javascript:void(0);" onclick="(function(event){event.preventDefault();return false;})();return false;"></a></div>')
+                            $('#mycalendar').append(`<div class="weekly-header" style="display:none;">
+                                                        <div class="weekly-header-title">
+                                                            <a class="monthly-weekly-header-title-date"   style="pointer-events: none;" href="#" onclick="(function(event){event.preventDefault();return false;})();return false;">${monthNamesList[viewDate.getMonth()]}&nbsp;${viewDate.getFullYear()}</a>
+                                                            <a class="weekly-header-title-date"  href="#" onclick="(function(event){event.preventDefault();return false;})();return false;">Week 1-7</a>
+                                                            <a class="daily-header-title-datee" id="datepickerAnchor" style="position: relative !important;" onclick="(function(event){event.preventDefault();return false;})();return false;">Select Date </a>
+                                                            <a class="monthly-reset"  href="#" onclick="(function(event){event.preventDefault();return false;})();return false;"></a>
+                                                        </div>
+                                                            <a class="weekly-prev" href="javascript:void(0);" onclick="(function(event){event.preventDefault();return false;})();return false;"></a>
+                                                            <a class="weekly-next" href="javascript:void(0);" onclick="(function(event){event.preventDefault();return false;})();return false;"></a>
+                                                    </div>`)
                         }
 
 
@@ -518,5 +550,52 @@
                 console.log(document.getElementById('mycalendar'));
             });
         }
+    },
+    
+    handleSaveDates: function(component, event, helper) {
+        var startDate = component.get("v.startDt");
+        console.log('selected stard date : ', startDate);
+        var startDateObj = new Date(startDate);
+        console.log(typeof(startDateObj));
+        if(startDate != null){
+            document.getElementById('profileBgSymbol').className = "profile_name me-3 prof_bg2";
+            document.getElementById('resourceInitials').innerText = 'R';
+            document.getElementById('selectedContractResource').innerText = 'Resource';
+            document.getElementById('selectedContractResourceTradeType').innerText = 'Trade Type';
+            
+            // document.getElementById('mycalendar').style.display = 'block';
+            /*hide day view div*/
+            // document.getElementById('mycalendar2').style.display = 'none';
+            // document.getElementsByClassName('daily-header')[0].style.display = 'none';
+            
+            component.set("v.showSpinner", true);
+            component.set("v.newContractResource","");
+            if(component.get("v.recordId") != '' && component.get("v.recordId") != undefined && component.get("v.recordId") != null){
+                component.set("v.newSelectedProjectId",component.get("v.newSelectedProjectIdClone"));
+            }else{
+                component.set("v.newSelectedProjectId",""); 
+            }
+            component.set("v.selectedContractResourceIndex",-1);
+            var Datevalue =  startDateObj;
+
+            component.set("v.dateval",Datevalue);
+            component.set("v.datevalString",Datevalue.toLocaleDateString());
+            component.set("v.todayDateHeader",Datevalue.toDateString());
+            console.log("Datevalue.toDateString() :--->" , Datevalue.toDateString());
+            component.set("v.todayDate",Datevalue.toLocaleDateString());
+            component.set("v.SelectedDate" ,startDate);
+            helper.getTasksByProjects(component,helper, Datevalue);
+            // helper.currentWeekClones(component, event, helper);
+
+        }else{
+            var toastEvent = $A.get("e.force:showToast");
+            toastEvent.setParams({
+                "title": "Error!",
+                "type": "error",
+                "message": "Start date cannot be empty."  
+            });
+            toastEvent.fire();
+        }
+
     },
 })

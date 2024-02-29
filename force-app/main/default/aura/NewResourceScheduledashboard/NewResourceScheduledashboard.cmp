@@ -11,9 +11,18 @@
                           $Resource.ResourceScheduleTabContent + '/ResourceScheduleTab/Fontawesome/css/all.min.css',
                           $Resource.ResourceScheduleTabContent + '/ResourceScheduleTab/custom.css', 
                           $Resource.ResourceScheduleTabContent + '/ResourceScheduleTab/monthly.css',
-                          $Resource.ResourceScheduleTabContent + '/ResourceScheduleTab/sidebars.css')}"  /> 
+                          $Resource.ResourceScheduleTabContent + '/ResourceScheduleTab/sidebars.css',
+                          $Resource.Jquery + '/jquery/css/ui-smoothness/jquer-datePicker.css')}"  /> 
     
     <!-- by sai --> 
+    <ltng:require scripts="{!join(',', 
+                           $Resource.Jquery + '/jquery/lightning/js/jquery-3.7.1.min.js',
+                           $Resource.Jquery + '/jquery/lightning/js/jquery-ui-1.12.1.min.js')}"
+                           afterScriptsLoaded="{!c.handleAfterLoadscript}"/>
+    <aura:attribute name="isDatePickerLoaded" type="Boolean" default="false" />
+    <aura:attribute name="isDisplayDatePicker" type="Boolean" default="false" />
+    <aura:attribute name="SelectedDate" type="String" />
+
     <lightning:workspaceAPI aura:id="workspace" />
     <aura:handler event="aura:locationChange" action="{!c.destoryCmp}"/>
    
@@ -53,7 +62,8 @@
     <aura:attribute name="dateEventList" type="List" />
     <aura:attribute name="conflictEventList" type="List" />
     <aura:attribute name="standardEventList" type="List" />
-    
+    <aura:attribute name="startDt" type="Date" />
+    <aura:attribute name="endDt" type="Date" />    
     <!-- search -->
     
     <aura:attribute name="searchProjectFilter" type="String" default="" />
@@ -160,6 +170,9 @@
     </aura:method>
     
     <aura:method name="conflictData" action="{!c.setConflictData}" description="" >
+    </aura:method>
+
+    <aura:method name="openDatePickerMethod" action="{!c.openDatePicker}" description="">
     </aura:method>
     
      <aura:method name="monthlyFunMethod" action="{!c.getmonthlyfunc}">
@@ -312,9 +325,13 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- <div style="display: flex;justify-content: flex-end;align-items: flex-end;">
+                            <a class="daily-header-title-datee" id="datepickerAnchor"onclick="{!c.openDatePicker}" href="javascript:void(0);">Select Date</a> -->
+                        <!-- </div> -->
                         
                         <div class="row" style="overflow-y : scroll; height: 80%;">
                             <div class="col-12">
+                                <!-- Month View -->
                                 <div class="monthly" id="mycalendar">
                                     
                                 </div>
@@ -324,19 +341,27 @@
                                 <!-- day view -->
                                 <div class="monthly" id="mycalendar2" style="display:none;padding:5px;">
                                     
-                                    <div class="daily-header" style="display:none;">
+                                    <div class="daily-header">
                                         <div class="daily-header-title">
-                                            <!-- <a class="monthly-weekly-daily-header-title-date" href="#"></a> -->
                                             <a class="daily-header-title-date" href="javascript:void(0);">{!v.todayDateHeader}</a>
-                                           
-                                            
+                                            <a class="daily-header-title-datee" id="datepickerAnchor" style="position: relative !important;" onclick="{!c.openDatePicker}" href="javascript:void(0);">Select Date
+                                                <!-- <div id="datepickerPlaceholder" class="datePickerDiv"></div> -->
+                                            </a>
                                             <aura:if isTrue="{!v.currentDateValString != v.todayDate}">
-                                            	<a class="monthly-day-reset" href="javascript:void(0);" onclick="{!c.dayReset}"></a>
+                                                <a class="monthly-day-reset" href="javascript:void(0);" onclick="{!c.dayReset}"></a>
                                             </aura:if>
-                                            
                                         </div>
+
                                         <a class="daily-prev" href="javascript:void(0);" onclick="{!c.prevDayDate}"></a>
                                         <a class="daily-next" href="javascript:void(0);" onclick="{!c.nextDayDate}"></a>
+                                    </div>
+                                    <div id="datepickerPlaceholder" class="datePickerDiv">
+                                        <aura:if isTrue="{!v.isDisplayDatePicker}">
+                                            <div class="datePicker">
+                                                <lightning:input id="lightingDatePicker" class="lightning_datePicker" type="date" name="input2" variant="label-hidden" placeholder="Select date" value="{!v.SelectedDate}" onchange="{!c.handleDateChanged}">
+                                                </lightning:input>
+                                            </div>
+                                        </aura:if>
                                     </div>
                                     <aura:if isTrue="{!v.dateEventList.length > 0}" >
                                         <aura:iteration items="{!v.dateEventList}" var="eventItem" indexVar="" >
@@ -463,6 +488,7 @@
                                     </div> -->
                                     
                                 </div>
+
                             </div>	
                         </div>
                     </div>

@@ -890,6 +890,12 @@
 	color: #545454!important;
 	cursor: default;
 }                                                                   
+.THIS .daily-header-title-datee, .THIS .daily-header-title-datee:hover{
+	background: #fff!important;
+	border: 1px solid #ccc!important;
+	color: #545454!important;
+	cursor: pointer;
+}                                                                   
                                                                     
 /* wrapper for left/right buttons to make the clickable area bigger */
 .THIS .weekly-prev,
@@ -1142,4 +1148,22 @@ html {
     left: 1rem;
     white-space: nowrap;
     font-size: 20px;
+}
+.THIS .date-input {
+    width: 150px; /* Adjust width as needed */
+    margin-right: 10px; /* Adjust margin as needed */
+}
+.THIS #datepickerPlaceholder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+}
+
+.THIS .datePickerDiv{
+    /* position: absolute;
+    top: 120%;
+    left: 0px; */
+
+    position: relative;
 }

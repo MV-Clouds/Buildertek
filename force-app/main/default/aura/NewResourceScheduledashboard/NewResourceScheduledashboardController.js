@@ -11,6 +11,7 @@
         var now = new Date();
         component.set("v.isFirst",true);
         var Datevalue = new Date(today.getFullYear(), today.getMonth(), 1);
+        let todayDateVal = new Date(today.getFullYear(), today.getMonth(), today.getDate())
         component.set("v.headerDate", $A.localizationService.formatDate(now, 'dd/MMMM/yyyy'));
         var url = location.href;
         var baseURL = url.substring(0, url.indexOf('--', 0));
@@ -19,13 +20,18 @@
         component.set("v.currentDateValString",now.toLocaleDateString());
         component.set("v.todayDate",Datevalue.toLocaleDateString());
         component.set("v.datevalString",Datevalue.toLocaleDateString());
-        component.set("v.todayDateHeader",Datevalue.toDateString());
-        component.set("v.dateval",Datevalue);
+        component.set("v.todayDateHeader",now.toDateString());
+        component.set("v.dateval",todayDateVal);
+
+        var SelectedDate = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;
+        console.log('SelectedDate : ', SelectedDate);
+        component.set("v.SelectedDate", SelectedDate);
+
         //helper.currentWeekDates(component,helper, Datevalue);
        // helper.currentMonthsDates(component, Datevalue);
         //helper.getprojectTaskscontacts(component,helper);
         
-        
+        console.log("DateValue :--->" , now.toDateString());
         
         
         
@@ -582,17 +588,23 @@
         
         console.log("MonthSatrtDate");
         
-        var currentDateValue = new Date(component.get("v.dateval"));
+        var currentDateValue1 = new Date(component.get("v.dateval"));
+        var currentDateValue = new Date(currentDateValue1.getFullYear(),currentDateValue1.getMonth(),1);
         var actualDateValue = new Date();
         var todayDateHeader = component.get('v.todayDateHeader');
-        
-        if(actualDateValue.getFullYear() == currentDateValue.getFullYear() && actualDateValue.getMonth() == currentDateValue.getMonth()){
+        console.log("date 1--> "+actualDateValue);
+
+        if(actualDateValue.getFullYear() == currentDateValue.getFullYear() && actualDateValue.getMonth() == currentDateValue.getMonth() && actualDateValue.getDate() == currentDateValue.getDate()){
+            console.log("date 2--> "+actualDateValue);
+
             todayDateHeader = actualDateValue.toDateString();
+            console.log("date 3--> "+actualDateValue);
+
         }
         
         
         //todayDateHeader = component.get('v.todayDateHeader');
-         console.log("date--> "+todayDateHeader);
+         console.log("date 4--> "+todayDateHeader);
         var today = new Date(Date.parse(todayDateHeader));
         var newtodate = new Date(Date.parse(todayDateHeader)).setHours(0,0,0,0);
         var newfromdate;
@@ -672,7 +684,7 @@
             //
            
             component.reloadCurrentWeekCalendar();
-            
+            console.log('component.get(todayDateHeader) ::--->' , component.get('v.todayDateHeader'));
         }
         event.stopPropagation();
      },
@@ -813,6 +825,7 @@
         component.set("v.dateval",Datevalue);
         component.set("v.datevalString",Datevalue.toLocaleDateString());
         component.set("v.todayDateHeader",Datevalue.toDateString());
+        console.log('Datevalue.toDateString() :---->' ,Datevalue.toDateString());
         component.set("v.todayDate",Datevalue.toLocaleDateString());
         //helper.currentWeekDates(component,helper, component.get("v.dateval"));
         helper.getTasksByProjects(component,helper, component.get("v.dateval"));
@@ -820,6 +833,7 @@
 
 	previousWeek: function (component, event, helper) {
         var currentDateValue = new Date(component.get("v.dateval"));
+        console.log('currentDateValue :---->' , currentDateValue);
         var currentMonthLastDate ;//  new Date(currentDateValue.getFullYear(),currentDateValue.getMonth()+1,0);
         if(currentDateValue.getMonth() == 11){
             currentMonthLastDate = new Date(currentDateValue.getFullYear()+1, 0, 0);
@@ -938,6 +952,7 @@
 
     currentWeek: function (component, event, helper) {
         var currentDateValue = new Date(component.get("v.dateval"));
+        console.log("MINIMIZE :--->" , currentDateValue);
         var actualDateValue = new Date();
         
         var currentMonthLastDate ;//  new Date(currentDateValue.getFullYear(),currentDateValue.getMonth()+1,0);
@@ -1000,6 +1015,7 @@
     
     currentWeekClone: function(component, event, helper){
         var currentDateValue = new Date(component.get("v.dateval"));
+        console.log("Hi 1" , currentDateValue);
         var actualDateValue = new Date();
         
         var currentMonthLastDate ;//  new Date(currentDateValue.getFullYear(),currentDateValue.getMonth()+1,0);
@@ -1010,9 +1026,11 @@
         }
         
         var currentWeekIndex = 0;
-        
+        console.log("test 1" ,actualDateValue + "curValue :-->  " + currentDateValue + "curWeekValue :-->  " + currentWeekIndex);
+
         //if actual today date is not same as date value in code (ex: present month is jun and user clicks prev btn and changed to week view then resetting to start week)
-        if(actualDateValue.getFullYear() == currentDateValue.getFullYear() && actualDateValue.getMonth() == currentDateValue.getMonth()){
+        if(actualDateValue.getFullYear() == currentDateValue.getFullYear() && actualDateValue.getMonth() == currentDateValue.getMonth() && actualDateValue.getDate() == currentDateValue.getDate()){
+            console.log("test 1" ,actualDateValue , currentWeekIndex);
            /* var days = ['Sunday','Monday','Tuesday','Wednesday',
                         'Thursday','Friday','Saturday'],
                 prefixes = ['First', 'Second', 'Third', 'Fourth', 'Fifth'];
@@ -1020,21 +1038,52 @@
             return prefixes[Math.ceil(date.getDate() / 7) - 1] + ' ' + days[date.getDay()];*/
 			
             if(actualDateValue.getDate()%7 == 0){
+                console.log("test 2");
                 currentWeekIndex = (actualDateValue.getDate()/7); //-1;
                 if(new Date(actualDateValue.getFullYear(),actualDateValue.getMonth(),1).getDay() == 0){
+                    console.log("test 3");
                     currentWeekIndex =  (actualDateValue.getDate()/7) - 1;
                 }
+                console.log("test 111" ,actualDateValue , currentWeekIndex);
+
             }else{
-                currentWeekIndex = Math.floor(actualDateValue.getDate()/7);
+                let tempWeekIndex = 0;
+                tempWeekIndex = Math.floor(currentDateValue.getDate()/7);
+                if (tempWeekIndex !=0) {
+                    currentWeekIndex = Math.ceil(currentDateValue.getDate()/7);    
+                } else {
+                    currentWeekIndex = tempWeekIndex;     
+                }
+                console.log("test 112" ,actualDateValue.getDate()/7 , currentWeekIndex);
+
             }
             
         }else{
-            currentWeekIndex = 0;
+            if(actualDateValue.getDate()%7 == 0){
+                console.log("test 02");
+                currentWeekIndex = (actualDateValue.getDate()/7); //-1;
+                if(new Date(actualDateValue.getFullYear(),actualDateValue.getMonth(),1).getDay() == 0){
+                    console.log("test 03");
+                    currentWeekIndex =  (actualDateValue.getDate()/7) - 1;
+                }
+                console.log("test 1110" ,actualDateValue , currentWeekIndex);
+
+            }else {
+                let firstDayOfMonth = new Date(currentDateValue.getFullYear(), currentDateValue.getMonth(), 1);
+                let dayOfMonth = currentDateValue.getDate();
+            
+                // Calculate the week index based on the selected date
+                currentWeekIndex = Math.ceil((dayOfMonth + firstDayOfMonth.getDay()) / 7) - 1;
+            
+                console.log("Week index:", currentWeekIndex);
+            }
+            
         }
         
         
         var weekDivs = document.getElementsByClassName('monthly-week');
         var weekDaysLength;
+        console.log(document);
         console.log(weekDivs);
         var weekStartDate;
         var weekEndDate;
@@ -1043,76 +1092,147 @@
         var weekEndText;
         
         if(currentWeekIndex == 0){
+            console.log("test 4");
             weekStartDate = 1;
             if(weekDivs.length){
+                console.log("test 5");
                 weekDaysLength = weekDivs[currentWeekIndex].children.length;
             }
-            
+            console.log("weekDaysLength :----->" ,weekDaysLength);
             for(var i=0;i<weekDaysLength;i++){
                 if(weekDivs[currentWeekIndex].children[i].className.split('dateV')[1] != undefined && !weekDivs[currentWeekIndex].children[i].classList.contains('monthly-day-blank')){
+                    console.log("test 6" ,weekDivs[currentWeekIndex].children[i].getElementsByClassName('monthly-day-number')[0]);
                     weekEndDate = weekDivs[currentWeekIndex].children[i].getElementsByClassName('monthly-day-number')[0].innerText;
                 }
             }
-            
+            console.log("weekEndDate :--->" ,weekEndDate);
+            console.log("weekStartDate :--->" ,weekStartDate);
+            console.log("currentDateValue :--->" ,currentDateValue);
             weekEndText = weekEndDate
             
             if(Number(weekStartDate) == 1){
+                console.log("test 7");
                 if(currentDateValue.getMonth() == 0){
+                    console.log("test 8");
                     weekStartText = new Date(currentDateValue.getFullYear(),0,currentDateValue.getDate()-currentDateValue.getDay()).getDate();
                 }else{
                     weekStartText = new Date(currentDateValue.getFullYear(),currentDateValue.getMonth(),currentDateValue.getDate()-currentDateValue.getDay()).getDate();
                 }
+                console.log("weekStartText :--->" ,weekStartText);
                 
                 
                 var eventList = component.get("v.eventList");
                 var weekFullDate = new Date(currentDateValue.getFullYear(),currentDateValue.getMonth(),currentDateValue.getDate()-currentDateValue.getDay())
+                console.log('weekFullDate :---->' ,weekFullDate);
                 var pastEle = document.getElementsByClassName('calendarPast');
                 if(pastEle.length){
+                    console.log("test 9");
                     document.querySelectorAll('.calendarPast').forEach(function(a){
                         a.remove()
                     });
                 }
                 var pastMonthDates = [];
-                for(var i=currentDateValue.getDay()-1;i>=0;i--){
-                    var markupListEvent = ''
-                    var dayName = component.get("v.dayNames");
-                    if(currentDateValue.getMonth() == 0){
-                        weekFullDate = new Date(currentDateValue.getFullYear(),0,currentDateValue.getDate()+i-currentDateValue.getDay())
-                    }else{
-                        weekFullDate = new Date(currentDateValue.getFullYear(),currentDateValue.getMonth(),currentDateValue.getDate()+i-currentDateValue.getDay())
-                    }
-                    var ele = document.getElementById('mycalendarPast'+Number(weekStartText+i));
-                    if(!ele){
-                        var div = document.createElement("DIV");   
-                        div.setAttribute('data-number','past'+Number(weekStartText+i)); 
-                        div.setAttribute('class','monthly-list-item item-has-event calendarPast');
-                        div.setAttribute('id','mycalendarPast'+Number(weekStartText+i));
+                var pastMonthDatesTemp = [];
+                console.log("pastMonthDates curr :---->" ,currentDateValue.getDay());
+                // for(var i=currentDateValue.getDay()-1;i>=0;i--){
+                //     var markupListEvent = ''
+                //     var dayName = component.get("v.dayNames");
+                //     if(currentDateValue.getMonth() == 0){
+                //         console.log("test 10" ,currentDateValue);
+                //         weekFullDate = new Date(currentDateValue.getFullYear(),0,currentDateValue.getDate()+i-currentDateValue.getDay())
+                //     }else{
+                //         weekFullDate = new Date(currentDateValue.getFullYear(),currentDateValue.getMonth(),currentDateValue.getDate()+i-currentDateValue.getDay())
+                //         console.log('weekFullDate 2 :---->' ,weekFullDate);
+                //         console.log('currentDateValue.getDay() 2 :---->' ,currentDateValue.getDay());
+                //         console.log('weekFullDate 2 :---->' ,currentDateValue.getFullYear());
+                //         console.log('weekFullDate 2 :---->' ,currentDateValue.getMonth());
+                //         console.log('weekFullDate 2 :---->' ,currentDateValue.getDate() + '---' +  i);
+                //         console.log('weekFullDate 2 :---->' ,currentDateValue.getDate()+i-currentDateValue.getDay());
+                //     }
+                //     console.log("weekStartText 1:--->" ,weekStartText + '----' + i);
+                //     var ele = document.getElementById('mycalendarPast'+Number(weekStartText+i));
+                //     if(!ele){
+                //         console.log("test 11",ele);
+                //         var div = document.createElement("DIV");   
+                //         div.setAttribute('data-number','past'+Number(weekStartText+i)); 
+                //         div.setAttribute('class','monthly-list-item item-has-event calendarPast');
+                //         div.setAttribute('id','mycalendarPast'+Number(weekStartText+i));
+                //         var div2 = document.createElement("DIV");
+                //         div2.setAttribute('class','monthly-event-list-date');
+                //         div2.innerHTML = '<div class="monthly-event-list-date">'+dayName[weekFullDate.getDay()].substring(0,3)+'<br>'+Number(weekStartText+i)+'</br></div>';
+                //         div2.innerHTML += '<div class="noeventCls" style="padding:0.4em 1em;display:block;margin-bottom:0.5em;">No Events</div>'
+                //         div.innerHTML = div2.innerHTML
+                //         //div.innerHTML += markupListEvent;
+                //         console.log(document.getElementById('mycalendar').getElementsByClassName('monthly-event-list')[0]);
+                //         $('#mycalendar .monthly-event-list').prepend(div);
+                //         pastMonthDatesTemp.push(Number(weekStartText+i));
+                //         //document.getElementById('mycalendar').getElementsByClassName('monthly-event-list')[0].insertAdjacentHTML('afterbegin',div)
+                //     }
+                // }
+                    // Calculate the last day of the previous month (January)
+                    var lastDayOfPreviousMonth = new Date(currentDateValue.getFullYear(), currentDateValue.getMonth(), 0).getDate();
+                    var firstDayOfCurrentMonth = new Date(currentDateValue.getFullYear(), currentDateValue.getMonth(), 1).getDay();
+                    var noOfDaysToRemove = currentDateValue.getDay() - firstDayOfCurrentMonth;
+                    console.log('firstDayOfCurrentMonth :---->' , firstDayOfCurrentMonth);
+                    // Loop to display the past month dates
+                    for (var i = lastDayOfPreviousMonth; i > lastDayOfPreviousMonth - firstDayOfCurrentMonth; i--) {
+                        var markupListEvent = '';
+                        var dayName = component.get("v.dayNames");
+
+                        // Create the date object for the past month date
+                        var pastMonthDate = new Date(currentDateValue.getFullYear(), currentDateValue.getMonth() - 1, i);
+
+                        // Create and append the cell for the past month date
+                        var div = document.createElement("DIV");
+                        div.setAttribute('data-number', 'past' + i);
+                        div.setAttribute('class', 'monthly-list-item item-has-event calendarPast');
+                        div.setAttribute('id', 'mycalendarPast' + i);
                         var div2 = document.createElement("DIV");
-                        div2.setAttribute('class','monthly-event-list-date');
-                        div2.innerHTML = '<div class="monthly-event-list-date">'+dayName[weekFullDate.getDay()].substring(0,3)+'<br>'+Number(weekStartText+i)+'</br></div>';
-                        div2.innerHTML += '<div class="noeventCls" style="padding:0.4em 1em;display:block;margin-bottom:0.5em;">No Events</div>'
-                        div.innerHTML = div2.innerHTML
-                        //div.innerHTML += markupListEvent;
-                        console.log(document.getElementById('mycalendar').getElementsByClassName('monthly-event-list')[0]);
+                        div2.setAttribute('class', 'monthly-event-list-date');
+                        div2.innerHTML = '<div class="monthly-event-list-date">' + dayName[pastMonthDate.getDay()].substring(0, 3) + '<br>' + i + '</br></div>';
+                        div2.innerHTML += '<div class="noeventCls" style="padding:0.4em 1em;display:block;margin-bottom:0.5em;">No Events</div>';
+                        div.innerHTML = div2.innerHTML;
+                        
                         $('#mycalendar .monthly-event-list').prepend(div);
-                        pastMonthDates.push(Number(weekStartText+i));
-                        //document.getElementById('mycalendar').getElementsByClassName('monthly-event-list')[0].insertAdjacentHTML('afterbegin',div)
+                        pastMonthDatesTemp.push(i);
                     }
-                }
+                pastMonthDates = pastMonthDatesTemp;
+                console.log('pastMonthDates :--->' ,pastMonthDates);
+                var lastDayOfPastMonth = new Date(currentDateValue.getFullYear(), currentDateValue.getMonth(), 0).getDate();
+
+                    // Loop through pastMonthDates array and remove extra values
+                    for (var i = pastMonthDates.length - 1; i >= 0; i--) {
+                        var pastDate = pastMonthDates[i];
+                        if (pastDate > lastDayOfPastMonth) {
+                            // Remove the extra date from the array
+                            pastMonthDates.splice(i, 1);
+                        }
+                    }
+
+                console.log('pastMonthDates after removing extras:', pastMonthDates ,pastMonthDates.length);
                 for(var i = 0 ;i<eventList.length;i++){
                     var eve = eventList[i];
                     if(new Date(Date.parse(eve['startdate'])).setHours(0,0,0,0) < new Date(currentDateValue.getFullYear(),currentDateValue.getMonth(),Number(weekStartDate)).setHours(0,0,0,0).valueOf()){
+                        console.log("test 12" ,eventList[i]);
                         //var markupListEvent = '<a title="'+eve.title+'" style="background:#99CCCC" data-eventid="'+eve.Id+'" class="listed-event" href="/lightning/r/buildertek__Project_Task__c/'+eve.Id+'/view">'+eve.title+'</a>'
                         var markupListEvent = '<a title="'+eve.title+'" style="background:'+eve.colorName+'" data-eventid="'+eve.Id+'" class="listed-event" href="/lightning/r/buildertek__Project_Task__c/'+eve.Id+'/view">'+eve.title+'</a>'
                         var dayName = component.get("v.dayNames");
                         for(var j=pastMonthDates.length-1;j>=0;j--){
                             var endDate = new Date(Date.parse(eve['enddate'])).setHours(0,0,0,0);
                             var startDate = new Date(Date.parse(eve['startdate'])).setHours(0,0,0,0);
+                            console.log('endDate :--->' , endDate );
+                            console.log('startDate :---> ',startDate);
+                            console.log('startDate condition 1:---> ',endDate >= new Date(currentDateValue.getFullYear(),currentDateValue.getMonth()-1,Number(pastMonthDates[j])).setHours(0,0,0,0).valueOf());
+                            console.log('startDate condition 2:---> ',startDate <= new Date(currentDateValue.getFullYear(),currentDateValue.getMonth()-1,Number(pastMonthDates[j])).setHours(0,0,0,0).valueOf());
+                            
                             if(endDate >= new Date(currentDateValue.getFullYear(),currentDateValue.getMonth()-1,Number(pastMonthDates[j])).setHours(0,0,0,0).valueOf() && startDate <= new Date(currentDateValue.getFullYear(),currentDateValue.getMonth()-1,Number(pastMonthDates[j])).setHours(0,0,0,0).valueOf()){
+                                console.log("test 13");
                                 var startdt = pastMonthDates[j];
+                                console.log('startdt :--->' ,startdt);
                                 var startDateFormat = new Date(currentDateValue.getFullYear(),currentDateValue.getMonth()-1,Number(pastMonthDates[j]))
                                 var ele = document.getElementById('mycalendarPast'+startdt);
                                 if(!ele){
+                                    console.log("test 14");
                                     var div = document.createElement("DIV");   
                                     div.setAttribute('data-number','past'+startdt); 
                                     div.setAttribute('class','monthly-list-item item-has-event calendarPast');
@@ -1145,8 +1265,11 @@
             
         }else{
             if(currentWeekIndex >= 0){
+                console.log("test 15");
                 if(weekDivs.length){
+                    console.log("test 16");
                     weekDaysLength = weekDivs[currentWeekIndex].children.length;
+                    console.log('weekDaysLength :--->' ,weekDaysLength);
                 }
                 //weekStartDate = weekDivs[currentWeekIndex].children[0].className.split('dateV')
                 weekStartDate = weekDivs[currentWeekIndex].children[0].getElementsByClassName('monthly-day-number')[0].innerText;
@@ -1156,20 +1279,24 @@
                         break;
                     }
                 }*/
+                console.log('weekStartDate s1:--->' ,weekStartDate);
                 
                 weekStartText = weekStartDate
                // weekEndDate = weekDivs[currentWeekIndex].children[weekDaysLength-1].getElementsByClassName('monthly-day-number')[0].innerText;
                 for(var i=0;i<weekDaysLength;i++){
                     if(weekDivs[currentWeekIndex].children[i].className.split('dateV')[1] != undefined && !weekDivs[currentWeekIndex].children[i].classList.contains('monthly-day-blank')){
+                        console.log("test 17");
                         weekEndDate = weekDivs[currentWeekIndex].children[i].getElementsByClassName('monthly-day-number')[0].innerText;
                     }
                 }
                 weekEndText = weekEndDate;
+                console.log('weekEndDate s1 -->', weekEndDate);
             }
             
         }
         
         if(currentMonthLastDate.getDate() == Number(weekEndDate)){
+            console.log("test 18");
             weekEndText = new Date(currentDateValue.getFullYear(),currentDateValue.getMonth(),Number(weekStartDate)+6).getDate();
            
             
@@ -1177,6 +1304,7 @@
             var weekFullDate ;//= new Date(currentDateValue.getFullYear(),currentDateValue.getMonth(),currentDateValue.getDate()-currentDateValue.getDay())
             var pastEle = document.getElementsByClassName('calendarPast');
             if(pastEle.length){
+                console.log("test 19");
                 document.querySelectorAll('.calendarPast').forEach(function(a){
                     a.remove()
                 });
@@ -1187,12 +1315,14 @@
                 var markupListEvent = ''
                 var dayName = component.get("v.dayNames");
                 if(currentMonthLastDate.getMonth() == 11){
+                    console.log("test 20");
                     weekFullDate = new Date(currentMonthLastDate.getFullYear()+1,0,i)//6-currentMonthLastDate.getDay()
                 }else{
                     weekFullDate = new Date(currentMonthLastDate.getFullYear(),currentMonthLastDate.getMonth()+1,i)//6-currentMonthLastDate.getDay()
                 }
                 var ele = document.getElementById('mycalendarPast'+i);
                 if(!ele){
+                    console.log("test 21");
                     var div = document.createElement("DIV");   
                     div.setAttribute('data-number','past'+i); 
                     div.setAttribute('class','monthly-list-item item-has-event calendarPast');
@@ -1212,17 +1342,20 @@
             for(var i = 0 ;i<eventList.length;i++){
                 var eve = eventList[i];
                 if(new Date(Date.parse(eve['startdate'])).setHours(0,0,0,0) <= new Date(currentMonthLastDate.getFullYear(),currentMonthLastDate.getMonth(),Number(weekEndDate)).setHours(0,0,0,0).valueOf() && new Date(Date.parse(eve['enddate'])).setHours(0,0,0,0) > new Date(currentMonthLastDate.getFullYear(),currentMonthLastDate.getMonth(),Number(weekEndDate)).setHours(0,0,0,0).valueOf()){
-                   //var markupListEvent = '<a title="'+eve.title+'" style="background:#99CCCC" data-eventid="'+eve.Id+'" class="listed-event" href="/lightning/r/buildertek__Project_Task__c/'+eve.Id+'/view">'+eve.title+'</a>'
+                    console.log("test 22");
+                    //var markupListEvent = '<a title="'+eve.title+'" style="background:#99CCCC" data-eventid="'+eve.Id+'" class="listed-event" href="/lightning/r/buildertek__Project_Task__c/'+eve.Id+'/view">'+eve.title+'</a>'
                     var markupListEvent = '<a title="'+eve.title+'" style="background:'+eve.colorName+'" data-eventid="'+eve.Id+'" class="listed-event" href="/lightning/r/buildertek__Project_Task__c/'+eve.Id+'/view">'+eve.title+'</a>'
                     var dayName = component.get("v.dayNames");
                     for(var j=0;j<futureMonthDates.length;j++){
                         var endDate = new Date(Date.parse(eve['enddate'])).setHours(0,0,0,0);
                         var startDate = new Date(Date.parse(eve['startdate'])).setHours(0,0,0,0);
                         if(endDate >= new Date(currentMonthLastDate.getFullYear(),currentMonthLastDate.getMonth()+1,Number(futureMonthDates[j])).setHours(0,0,0,0).valueOf() && startDate <= new Date(currentDateValue.getFullYear(),currentDateValue.getMonth()+1,Number(futureMonthDates[j])).setHours(0,0,0,0).valueOf()){
+                            console.log("test 23");
                             var startdt = futureMonthDates[j];
                             var startDateFormat = new Date(currentDateValue.getFullYear(),currentDateValue.getMonth()+1,Number(futureMonthDates[j]))
                             var ele = document.getElementById('mycalendarPast'+startdt);
                             if(!ele){
+                                console.log("test 24");
                                 var div = document.createElement("DIV");   
                                 div.setAttribute('data-number','past'+startdt); 
                                 div.setAttribute('class','monthly-list-item item-has-event calendarPast');
@@ -1240,6 +1373,7 @@
                             }else{
                                 var innerhtmlContent = document.getElementById('mycalendarPast'+futureMonthDates[j])
                                 if(innerhtmlContent.lastChild.innerText == 'No Events' && innerhtmlContent.getElementsByClassName('noeventCls').length){
+                                    console.log("test 25");
                                     innerhtmlContent.lastChild.remove()
                                 }
                                 innerhtmlContent.innerHTML += markupListEvent;
@@ -1262,21 +1396,28 @@
         }
         $('.monthly-list-item').css("display","none");
         var selectedWeekDIvs;
+        console.log('selectedWeekDIvs 1:---->' , weekStartDate);
         var WeekeaderTitle = document.getElementsByClassName('weekly-header-title-date');
         //selectedWeekDIvs = evetListEle.slice(Number(weekStartDate)-1,Number(weekEndDate));
         if(Number(weekStartDate) == 1){
-            selectedWeekDIvs = evetListEle.slice(Number(weekStartDate)-1,Number(weekEndDate)+currentDateValue.getDay());
+            var firstDayOfCurrentMonth = new Date(currentDateValue.getFullYear(), currentDateValue.getMonth(), 1).getDay();
+            selectedWeekDIvs = evetListEle.slice(Number(weekStartDate)-1,Number(weekEndDate)+firstDayOfCurrentMonth);
+            console.log('Hi 1 :-->' , selectedWeekDIvs);
         }else{
             selectedWeekDIvs = evetListEle.slice(Number(weekStartDate)-1,Number(weekEndDate));
+            console.log('Hi 2 :---->' ,selectedWeekDIvs);
         }
         if(Number(weekEndDate) == currentMonthLastDate.getDate()){
+            console.log('Hi 3');
             selectedWeekDIvs = evetListEle.slice(Number(weekStartDate)-1,Number(weekEndDate)+6-currentMonthLastDate.getDay());
         }
         console.log(selectedWeekDIvs);
         for(var i=0; i<selectedWeekDIvs.length;i++){
+            console.log('Hi 4');
             selectedWeekDIvs[i].style.display = "block";
         }
         if(WeekeaderTitle.length){
+            console.log('Hi 5');
             WeekeaderTitle[0].innerText = 'Week '+weekStartText+'-'+weekEndText; //currentDateValue.getMonth()
         }
         
@@ -1657,7 +1798,6 @@
     nextDayDate: function (component, event, helper) {
         
         console.log("NextDate");
-        console.log("date--> "+todayDateHeader);
         var todayDateHeader = component.get('v.todayDateHeader');
         var today = new Date(Date.parse(todayDateHeader));
         var newfromdate = Date.parse(todayDateHeader);
@@ -1738,6 +1878,11 @@
         console.log('currentDateEventList--> ',currentDateEventList);
         component.set('v.todayDateHeader',new Date(newtodate).toDateString());
         component.set("v.todayDate",new Date(newtodate).toLocaleDateString());
+        component.set("v.dateval" ,new Date() );
+        // $(document).ready(function() {
+        //     $("#datepickerPlaceholder").datepicker();
+        //     $("#datepickerPlaceholder").datepicker("setDate", new Date());
+        // });
         event.stopPropagation(); 
     },
     
@@ -1746,6 +1891,8 @@
         var prevBtn = document.getElementsByClassName('monthly-prev');
         var nextBtn = document.getElementsByClassName('monthly-next');
         var todayEle = document.getElementsByClassName('monthly-reset');
+
+        var selectDateEle = document.getElementsByClassName('daily-header-title-datee');
         
         var weekPrevBtn = document.getElementsByClassName('weekly-prev');
         var weekNextBtn = document.getElementsByClassName('weekly-next');
@@ -1761,6 +1908,8 @@
             prevBtn[0].removeEventListener("click",callBack1);
             nextBtn[0].removeEventListener("click",callBack2);
             
+            selectDateEle[0].removeEventListener("click", callBack6);
+
             weekPrevBtn[0].removeEventListener("click",callBack4);
 			weekNextBtn[0].removeEventListener("click",callBack5);
             
@@ -1778,6 +1927,8 @@
             }
             nextBtn[0].removeEventListener("click",callBack2);
             prevBtn[0].removeEventListener("click",callBack1);
+
+            selectDateEle[0].removeEventListener("click", callBack6);
             
             weekPrevBtn[0].removeEventListener("click",callBack4);
 			weekNextBtn[0].removeEventListener("click",callBack5);
@@ -1797,6 +1948,8 @@
             }
             nextBtn[0].removeEventListener("click",callBack2);
             prevBtn[0].removeEventListener("click",callBack1);
+
+            selectDateEle[0].removeEventListener("click", callBack6);
             
             weekPrevBtn[0].removeEventListener("click",callBack4);
 			weekNextBtn[0].removeEventListener("click",callBack5);
@@ -1817,6 +1970,8 @@
             }
             prevBtn[0].removeEventListener("click",callBack1);
             nextBtn[0].removeEventListener("click",callBack2);
+
+            selectDateEle[0].removeEventListener("click", callBack6);
             
             weekPrevBtn[0].removeEventListener("click",callBack4);
             weekNextBtn[0].removeEventListener("click",callBack5);*/
@@ -1848,6 +2003,28 @@
             document.body.click();
             
         }
+
+        var callBack6 = function(eve){
+            console.log('callback 6', eve);
+
+            if(todayEle.length){
+                for(var viewIndex=0; viewIndex< todayEle.length;viewIndex++){
+                    todayEle[viewIndex].removeEventListener("click",callBack3);
+                }
+                //todayEle[0].removeEventListener("click",callBack3);
+            }
+            prevBtn[0].removeEventListener("click",callBack1);
+            nextBtn[0].removeEventListener("click",callBack2);
+            
+            selectDateEle[0].removeEventListener("click", callBack6);
+
+            weekPrevBtn[0].removeEventListener("click",callBack4);
+			weekNextBtn[0].removeEventListener("click",callBack5);
+            
+            component.reloadPrevCalendar("");
+            component.openDatePickerMethod();
+            document.body.click();
+        }
         
         if(prevBtn.length){
             prevBtn[0].addEventListener("click",callBack1);
@@ -1869,6 +2046,10 @@
         if(weekNextBtn.length){
             weekNextBtn[0].addEventListener("click",callBack5);
         } 
+
+        if(selectDateEle.length){
+            selectDateEle[0].addEventListener("click",callBack6)
+        }
         
     },
     
@@ -2433,6 +2614,74 @@
                 elements[i].style.backgroundColor = randomColor();
             }
         });*/
+    openDatePicker: function(component, event, helper) {
+    console.log("HIiiiiiiiiiii");
+
+        if(!component.get("v.isDatePickerLoaded")){
+            console.log('Initialize the date picker');
+            // Initialize the date picker
+            $('#datepickerPlaceholder').datepicker({
+            changeMonth: true,
+            changeYear: true,
+            showOn: 'button',
+            buttonImageOnly: true,
+            buttonImage: 'images/calendar.gif',
+            dateFormat: 'yy-MM-dd',
+            yearRange: '-20:+20',
+            showAnim: 'fold',
+                onSelect: function(dateText, inst) {
+                    // Handle the selected date
+                    console.log('Selected date:', dateText);
+                    component.set("v.startDt" ,dateText);
+                    $('#datepickerPlaceholder').hide();
+                    helper.handleSaveDates(component,event,helper);
+                }
+            });
     
-    
+        //     // Hide the date picker initially
+            $('#datepickerPlaceholder').hide();
+
+            component.set("v.isDatePickerLoaded", true);
+        }
+
+        // Toggle the visibility of the date picker
+        console.log('is date picker visible :  ', $('#datepickerPlaceholder').is(":visible"));
+        $('#datepickerPlaceholder').toggle();
+
+        // component.set("v.isDisplayDatePicker", !component.get("v.isDisplayDatePicker"));
+        // console.log('isDisplayDatePicker', component.get("v.isDisplayDatePicker"));
+        // component.set("v.SelectedDate" ,component.get("v.SelectedDate"));
+
+        // setTimeout(function(){
+        //     var datePIckerDiv = document.querySelector('.datePicker');
+        //     console.log('datePIckerDiv : ', datePIckerDiv);
+        //     var slds = datePIckerDiv.getElementsByClassName('slds-dropdown-trigger');
+        //     console.log('slds : ', slds);
+        //     slds.forEach(ele => {
+        //         ele.classList.add('slds-is-open');
+        //     })
+        // }, 1000)
+        
+    },
+
+    handleDateChanged: function(component, event, helper){
+        try {
+            console.log('datePicker handleDateChanged ');
+            var dateText = event.getSource().get('v.value');
+            console.log('Selected date:', dateText);
+            component.set("v.startDt" ,dateText);
+            helper.handleSaveDates(component,event,helper);
+        } catch (error) {
+            console.log('error in handleDateChanged : ', error.stack);
+            
+        }
+
+    },
+        handleAfterLoadscript: function(component, event, helper) {
+        console.log("HIiiiiiiiiiii      1234256");
+
+        
+        }
+                
+        
 })
