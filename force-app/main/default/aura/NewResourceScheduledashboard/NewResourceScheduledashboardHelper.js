@@ -114,7 +114,10 @@
                                                     <a class="weekly-header-title-date"  href="#" onclick="(function(event){event.preventDefault();return false;})();return false;">Week 1-7</a></div><a class="weekly-prev"  href="javascript:void(0);" onclick="(function(event){event.preventDefault();return false;})();return false;"></a>
                                                     <a class="daily-header-title-datee" id="datepickerAnchor" style="position: relative !important;" onclick="(function(event){event.preventDefault();return false;})();return false;">Select Date </a>
                                                     <a class="weekly-next"  href="javascript:void(0);" onclick="(function(event){event.preventDefault();return false;})();return false;"></a>
-                                                </div>`)
+                                                </div>
+                                                <div id="datepickerPlaceholder" class="datePickerDiv">`);
+                    // $('#mycalendar').append('<div class="weekly-header" style="display:none;"><div class="weekly-header-title"><a class="monthly-weekly-header-title-date"  style="pointer-events: none;" href="#" onclick="(function(event){event.preventDefault();return false;})();return false;">'+monthNamesList[currentDate.getMonth()]+'&nbsp;'+currentDate.getFullYear()+'</a><a class="weekly-header-title-date"  href="#" onclick="(function(event){event.preventDefault();return false;})();return false;">Week 1-7</a></div><a class="weekly-prev"  href="javascript:void(0);" onclick="(function(event){event.preventDefault();return false;})();return false;"></a><a class="weekly-next"  href="javascript:void(0);" onclick="(function(event){event.preventDefault();return false;})();return false;"></a></div>')
+
                 }else{
                     // for today reset button
                     $('#mycalendar').append(`<div class="weekly-header" style="display:none;">
@@ -125,7 +128,11 @@
                                                     <a class="monthly-reset"  href="#" onclick="(function(event){event.preventDefault();return false;})();return false;"></a>
                                                 </div>
                                                     <a class="weekly-prev"  href="javascript:void(0);" onclick="(function(event){event.preventDefault();return false;})();return false;"></a><a class="weekly-next"  href="javascript:void(0);" onclick="(function(event){event.preventDefault();return false;})();return false;"></a>
-                                            </div>`)
+                                            </div>
+                                            <div id="datepickerPlaceholder" class="datePickerDiv">`)
+
+                    // $('#mycalendar').append('<div class="weekly-header" style="display:none;"><div class="weekly-header-title"><a class="monthly-weekly-header-title-date"  style="pointer-events: none;" href="#" onclick="(function(event){event.preventDefault();return false;})();return false;">'+monthNamesList[viewDate.getMonth()]+'&nbsp;'+viewDate.getFullYear()+'</a><a class="weekly-header-title-date"  href="#" onclick="(function(event){event.preventDefault();return false;})();return false;">Week 1-7</a><a class="monthly-reset"  href="#" onclick="(function(event){event.preventDefault();return false;})();return false;"></a></div><a class="weekly-prev"  href="javascript:void(0);" onclick="(function(event){event.preventDefault();return false;})();return false;"></a><a class="weekly-next"  href="javascript:void(0);" onclick="(function(event){event.preventDefault();return false;})();return false;"></a></div>')
+
                 }
 
                 if( $('#mycalendar').length){
@@ -312,7 +319,11 @@
                                                         </div>
                                                             <a class="weekly-prev" href="javascript:void(0);" onclick="(function(event){event.preventDefault();return false;})();return false;"></a>
                                                             <a class="weekly-next" href="javascript:void(0);" onclick="(function(event){event.preventDefault();return false;})();return false;"></a>
-                                                    </div>`)
+                                                    </div>
+                                                    <div id="datepickerPlaceholder" class="datePickerDiv">`)
+
+                            // $('#mycalendar').append('<div class="weekly-header" style="display:none;"><div class="weekly-header-title"><a class="monthly-weekly-header-title-date" style="pointer-events: none;"  href="#" onclick="(function(event){event.preventDefault();return false;})();return false;">'+monthNamesList[currentDate.getMonth()]+'&nbsp;'+currentDate.getFullYear()+'</a><a class="weekly-header-title-date"  href="#" onclick="(function(event){event.preventDefault();return false;})();return false;">Week 1-7</a></div><a class="weekly-prev" href="javascript:void(0);" onclick="(function(event){event.preventDefault();return false;})();return false;"></a><a class="weekly-next" href="javascript:void(0);" onclick="(function(event){event.preventDefault();return false;})();return false;"></a></div>')
+
                         }else{
                             // for today reset button
                             $('#mycalendar').append(`<div class="weekly-header" style="display:none;">
@@ -324,7 +335,10 @@
                                                         </div>
                                                             <a class="weekly-prev" href="javascript:void(0);" onclick="(function(event){event.preventDefault();return false;})();return false;"></a>
                                                             <a class="weekly-next" href="javascript:void(0);" onclick="(function(event){event.preventDefault();return false;})();return false;"></a>
-                                                    </div>`)
+                                                    </div>
+                                                    <div id="datepickerPlaceholder" class="datePickerDiv">`)
+
+                            // $('#mycalendar').append('<div class="weekly-header" style="display:none;"><div class="weekly-header-title"><a class="monthly-weekly-header-title-date"   style="pointer-events: none;" href="#" onclick="(function(event){event.preventDefault();return false;})();return false;">'+monthNamesList[viewDate.getMonth()]+'&nbsp;'+viewDate.getFullYear()+'</a><a class="weekly-header-title-date"  href="#" onclick="(function(event){event.preventDefault();return false;})();return false;">Week 1-7</a><a class="monthly-reset"  href="#" onclick="(function(event){event.preventDefault();return false;})();return false;"></a></div><a class="weekly-prev" href="javascript:void(0);" onclick="(function(event){event.preventDefault();return false;})();return false;"></a><a class="weekly-next" href="javascript:void(0);" onclick="(function(event){event.preventDefault();return false;})();return false;"></a></div>')
                         }
 
 

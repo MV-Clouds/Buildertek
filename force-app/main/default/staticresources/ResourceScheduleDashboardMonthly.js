@@ -95,7 +95,7 @@ Monthly 2.2.2 by Kevin Thornbloom is licensed under a Creative Commons Attributi
 		$(parent).addClass("monthly-locale-" + primaryLanguageCode + " monthly-locale-" + locale);
 
 		// Add Header & event list markup
-		$(parent).prepend('<div class="monthly-header"><div class="monthly-header-title"><a  class="monthly-header-title-date" href="javascript:void(0);" onclick="return false"></a></div><a class="monthly-prev"></a><a class="monthly-next"></a></div>').append('<div class="monthly-event-list"></div>');
+		$(parent).prepend('<div class="monthly-header"><div class="monthly-header-title"><a  class="monthly-header-title-date" href="javascript:void(0);" onclick="return false"></a></div><a class="monthly-prev"></a><a class="monthly-next"></a></div><div id="datepickerPlaceholder" class="datePickerDiv">').append('<div class="monthly-event-list"></div>');
 		$(parent+" .monthly-header .monthly-prev").attr("href","javascript:void(0);")
         $(parent+" .monthly-header .monthly-next").attr("href","javascript:void(0);")
         if(currentMonth == monthFromOptions && currentYear == yearFromOptions){
@@ -181,7 +181,9 @@ Monthly 2.2.2 by Kevin Thornbloom is licensed under a Creative Commons Attributi
 			//$(parent + " .monthly-header-title").html('<a href="#" class="monthly-header-title-date" onclick="return false">' + monthNames[month - 1] + " " + year + "</a>" + (settingCurrentMonth && $(parent + " .monthly-event-list").hide() ? "" : '<a href="#" class="monthly-reset"></a>'));
             
             if(month && year){
-                $(parent + " .monthly-header-title").html('<a class="monthly-header-title-date"  onclick="return false;">' + monthNames[month - 1] + " " + year + "</a>" + (settingCurrentMonth && $(parent + " .monthly-event-list").hide() ? "" : '<a class="monthly-reset" ></a>'));
+                $(parent + " .monthly-header-title").html('<a class="monthly-header-title-date"  onclick="return false;">' + monthNames[month - 1] + " " + year + "</a>"+
+				 '<a class="daily-header-title-datee" id="datepickerAnchor" style="position: relative !important;" onclick="(function(event){event.preventDefault();return false;})();return false;">Select Date</a>'
+				+ (settingCurrentMonth && $(parent + " .monthly-event-list").hide() ? "" : '<a class="monthly-reset" ></a>'));
             	$(parent + " .monthly-header-title .monthly-header-title-date").attr("href","javascript:void(0)")
                 $(parent + " .monthly-header-title .monthly-reset").attr("href","javascript:void(0)")
             }
@@ -600,6 +602,10 @@ Monthly 2.2.2 by Kevin Thornbloom is licensed under a Creative Commons Attributi
 		// Reset Month
 		$(document.body).on("click", parent + " .monthly-reset", function (event) {
 			$(this).remove();
+			$(document).ready(function() {
+				$("#datepickerPlaceholder").datepicker();
+				$("#datepickerPlaceholder").datepicker("setDate", new Date());
+			});
 			setMonthly(currentMonth, currentYear);
 			viewToggleButton();
 			event.preventDefault();

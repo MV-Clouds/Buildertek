@@ -355,13 +355,13 @@
                                         <a class="daily-prev" href="javascript:void(0);" onclick="{!c.prevDayDate}"></a>
                                         <a class="daily-next" href="javascript:void(0);" onclick="{!c.nextDayDate}"></a>
                                     </div>
-                                    <div id="datepickerPlaceholder" class="datePickerDiv">
-                                        <aura:if isTrue="{!v.isDisplayDatePicker}">
+                                    <div id="datepickerPlaceholder_day" aura:id="datepickerPlaceholder_day" class="datePickerDiv" data-name="name">
+                                        <!-- <aura:if isTrue="{!v.isDisplayDatePicker}">
                                             <div class="datePicker">
                                                 <lightning:input id="lightingDatePicker" class="lightning_datePicker" type="date" name="input2" variant="label-hidden" placeholder="Select date" value="{!v.SelectedDate}" onchange="{!c.handleDateChanged}">
                                                 </lightning:input>
                                             </div>
-                                        </aura:if>
+                                        </aura:if> -->
                                     </div>
                                     <aura:if isTrue="{!v.dateEventList.length > 0}" >
                                         <aura:iteration items="{!v.dateEventList}" var="eventItem" indexVar="" >

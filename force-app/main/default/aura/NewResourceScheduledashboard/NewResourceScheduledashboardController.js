@@ -2048,7 +2048,19 @@
         } 
 
         if(selectDateEle.length){
-            selectDateEle[0].addEventListener("click",callBack6)
+            selectDateEle[0].addEventListener("click",callBack6);
+            selectDateEle[0].style = `display: inline-block;
+                border: 1px solid #ccc;
+                color: #545454;
+                text-decoration: none;
+                height: 1.75em;
+                line-height: 1.65em;
+                padding: 0 0.65em 0 0.65em;
+                box-sizing: border-box;
+                transition: background .1s;
+                background: #eee!important;
+                cursor: default;
+            `;
         }
         
     },
@@ -2615,52 +2627,62 @@
             }
         });*/
     openDatePicker: function(component, event, helper) {
-    console.log("HIiiiiiiiiiii");
+        try{
 
-        if(!component.get("v.isDatePickerLoaded")){
-            console.log('Initialize the date picker');
-            // Initialize the date picker
-            $('#datepickerPlaceholder').datepicker({
-            changeMonth: true,
-            changeYear: true,
-            showOn: 'button',
-            buttonImageOnly: true,
-            buttonImage: 'images/calendar.gif',
-            dateFormat: 'yy-MM-dd',
-            yearRange: '-20:+20',
-            showAnim: 'fold',
-                onSelect: function(dateText, inst) {
-                    // Handle the selected date
-                    console.log('Selected date:', dateText);
-                    component.set("v.startDt" ,dateText);
+            console.log("HIiiiiiiiiiii");
+        
+            var PickerName = event.getSource().getLocalId();
+            console.log(' PickerName : ', PickerName);
+        
+        
+                if(!component.get("v.isDatePickerLoaded")){
+                    console.log('Initialize the date picker');
+                    // Initialize the date picker
+                    $('#datepickerPlaceholder').datepicker({
+                    changeMonth: true,
+                    changeYear: true,
+                    showOn: 'button',
+                    buttonImageOnly: true,
+                    buttonImage: 'images/calendar.gif',
+                    dateFormat: 'yy-MM-dd',
+                    yearRange: '-20:+20',
+                    showAnim: 'fold',
+                        onSelect: function(dateText, inst) {
+                            // Handle the selected date
+                            console.log('Selected date:', dateText);
+                            component.set("v.startDt" ,dateText);
+                            $('#datepickerPlaceholder').hide();
+                            helper.handleSaveDates(component,event,helper);
+                        }
+                    });
+            
+                //     // Hide the date picker initially
                     $('#datepickerPlaceholder').hide();
-                    helper.handleSaveDates(component,event,helper);
+        
+                    component.set("v.isDatePickerLoaded", true);
                 }
-            });
-    
-        //     // Hide the date picker initially
-            $('#datepickerPlaceholder').hide();
-
-            component.set("v.isDatePickerLoaded", true);
+        
+                // Toggle the visibility of the date picker
+                console.log('is date picker visible :  ', $('#datepickerPlaceholder').is(":visible"));
+                $('#datepickerPlaceholder').toggle();
+        
+                // component.set("v.isDisplayDatePicker", !component.get("v.isDisplayDatePicker"));
+                // console.log('isDisplayDatePicker', component.get("v.isDisplayDatePicker"));
+                // component.set("v.SelectedDate" ,component.get("v.SelectedDate"));
+        
+                // setTimeout(function(){
+                //     var datePIckerDiv = document.querySelector('.datePicker');
+                //     console.log('datePIckerDiv : ', datePIckerDiv);
+                //     var slds = datePIckerDiv.getElementsByClassName('slds-dropdown-trigger');
+                //     console.log('slds : ', slds);
+                //     slds.forEach(ele => {
+                //         ele.classList.add('slds-is-open');
+                //     })
+                // }, 1000)ßð
         }
-
-        // Toggle the visibility of the date picker
-        console.log('is date picker visible :  ', $('#datepickerPlaceholder').is(":visible"));
-        $('#datepickerPlaceholder').toggle();
-
-        // component.set("v.isDisplayDatePicker", !component.get("v.isDisplayDatePicker"));
-        // console.log('isDisplayDatePicker', component.get("v.isDisplayDatePicker"));
-        // component.set("v.SelectedDate" ,component.get("v.SelectedDate"));
-
-        // setTimeout(function(){
-        //     var datePIckerDiv = document.querySelector('.datePicker');
-        //     console.log('datePIckerDiv : ', datePIckerDiv);
-        //     var slds = datePIckerDiv.getElementsByClassName('slds-dropdown-trigger');
-        //     console.log('slds : ', slds);
-        //     slds.forEach(ele => {
-        //         ele.classList.add('slds-is-open');
-        //     })
-        // }, 1000)
+        catch(error){
+            console.log('error in openDatePicker : ', error.stack)
+        }
         
     },
 
