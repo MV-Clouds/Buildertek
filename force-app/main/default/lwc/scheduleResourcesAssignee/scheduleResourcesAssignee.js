@@ -166,8 +166,8 @@ export default class ScheduleResourcesAssignee extends NavigationMixin(Lightning
                                         return 1;
                                     }
                                     if(startDate_A == startDate_B){
-                                        const endDate_A = a.buildertek__Finish_Date__c;
-                                        const endDate_B = b.buildertek__Finish_Date__c;
+                                        const endDate_A = a.buildertek__Finish__c;
+                                        const endDate_B = b.buildertek__Finish__c;
                                         if(startDate_A < startDate_B){
                                             return -1;
                                         }
