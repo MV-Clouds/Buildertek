@@ -186,6 +186,23 @@
             }
         }
 
+        // Changes for BUIL-3936
+        // When date choosen from Week view set calander and heard according to week... 
+        // When date choosen from Day view set calander and heard according to Dat... 
+        // else by default it will set to month view...
+        if(component.get("v.currentCalendarView") == 'weekView'){
+            component.setWeekView();
+        }
+        else if(component.get("v.currentCalendarView") == 'dayView'){
+            // component.setDayView();
+            document.getElementById('mycalendar').style.display = 'none';
+
+            /*Show day view div*/
+            document.getElementById('mycalendar2').style.display = 'block';
+            /*show day view header*/
+            document.getElementsByClassName('daily-header')[0].style.display = 'block';
+        }
+
         console.log('addEventListener 2.0--> ');
 
         component.resetEventListeners();
