@@ -10,29 +10,15 @@
             console.log({error});
 
             if (state === "SUCCESS") {
-                var EmailTemplates = [];
-                console.log( response.getReturnValue());
-                var result= response.getReturnValue();
-                result.forEach(function(value){
-                    console.log(value);
-                    if(value.DeveloperName === 'Quote_Template_2'){
-                        EmailTemplates.push(value.Id);
-                        component.set("v.selectedTemplate" ,value.Id);
-                        helper.getTemplateBody(component, event, helper);
-                    }
-                })
-                if(EmailTemplates.length == 0) {
-                        var toastEvent = $A.get("e.force:showToast");
-                        toastEvent.setParams({
-                            type: 'ERROR',
-                            message: 'Something Went Wrong',
-                            duration: '5000',
-                        });
-                        toastEvent.fire();
-                        component.set("v.Spinner", false);
-                        $A.get("e.force:closeQuickAction").fire();
-                    }
-
+                var templates = response.getReturnValue();
+                console.log('templates : ', {templates});
+                if (templates.length === 1) {
+                    component.set("v.selectedTemplate", templates[0].Id);
+                    component.set("v.isTemplateSelected", true);
+                    $A.enqueueAction(component.get('c.preiewEmailTemplate'));
+                }
+                component.set("v.templates", templates);
+                component.set("v.Spinner", false);
             }
             else {
                 var toastEvent = $A.get("e.force:showToast");
@@ -106,5 +92,14 @@
             }
         });
         $A.enqueueAction(action);
+    },
+
+    preiewEmailTemplate: function(component, event, helper) {
+        var selectedTemplate = component.get("v.selectedTemplate");
+        console.log(selectedTemplate);
+        if (selectedTemplate != undefined) {
+            component.set("v.isTemplateSelected", true);
+            helper.getTemplateBody(component, event, helper);
+        }
     },
 })

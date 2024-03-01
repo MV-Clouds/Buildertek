@@ -1306,7 +1306,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           response,
         });
         console.log("response ", response);
-        debugger;
+        // debugger;
         if (response == "Success") {
           that.dispatchEvent(
             new ShowToastEvent({

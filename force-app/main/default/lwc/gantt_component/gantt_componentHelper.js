@@ -419,7 +419,7 @@ function mergeArrays(taskData, assignedResources) {
 function createAssignmentData(taskListForPhase, i) {
     let temp = taskListForPhase;
     console.log('taskListForPhase ',JSON.parse(JSON.stringify(temp)));
-    debugger
+    // debugger
     let assignmentRowCon1 = {}
     let assignmentRowCon2 = {}
     let assignmentRowCon3 = {}

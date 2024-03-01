@@ -60,6 +60,12 @@ trigger ProjectTaskTrigger on buildertek__Project_Task__c(after insert, after up
                 NewGanttChartTaskTriggerHandler.upsertMilestoneData(Trigger.new, Trigger.newMap);
             } else if(Trigger.isDelete && Trigger.isAfter){
                 NewGanttChartTaskTriggerHandler.upsertMilestoneData(Trigger.old, Trigger.oldMap);
+            } else if(Trigger.isBefore){
+                if (Trigger.isInsert){
+                    NewGanttChartTaskTriggerHandler.OnBeforeInsert(Trigger.new);
+                } else if (Trigger.isUpdate){
+                    NewGanttChartTaskTriggerHandler.OnBeforeUpdate(Trigger.old, Trigger.new, Trigger.newMap, trigger.oldMap);
+                }
             }
         }
     }
@@ -72,6 +78,7 @@ trigger ProjectTaskTrigger on buildertek__Project_Task__c(after insert, after up
         
         if(Trigger.isDelete){
             ProjectTaskTriggerHandler.removeCompletionOnPurchaseOrder(Trigger.old);
+            ProjectTaskTriggerHandler.removeCompletionOnBudgetLine(Trigger.old);
         }
     }
 
