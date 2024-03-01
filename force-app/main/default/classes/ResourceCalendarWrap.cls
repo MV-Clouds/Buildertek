@@ -9,6 +9,9 @@ public class ResourceCalendarWrap{
 	public String ContractresourceId{ get; set; }
 
 	@AuraEnabled
+	public String resourceType{ get; set; }
+
+	@AuraEnabled
 	public String tasks{ get; set; }
 
 	@AuraEnabled
