@@ -258,6 +258,8 @@
                     component.set("v.dateEventList",evetList);
                     component.set("v.standardEventList",evetList);
                     component.set("v.resourcesList",response.getReturnValue().calendarTaskList);
+                    component.set("v.areExternalResource", response.getReturnValue().areExternalResource);
+                    component.set("v.areInternalResource", response.getReturnValue().areInternalResource);
                     
                     var contractResourceIdList = [];
                     /*for(var i=0;i<response.getReturnValue().calendarTaskList.length;i++){
@@ -454,6 +456,8 @@
                         component.set("v.dateEventList",selectedResourceEventList);
                         //component.set("v.standardEventList",evetList);
                         component.set("v.resourcesList",response.getReturnValue().calendarTaskList);
+                        component.set("v.areExternalResource", response.getReturnValue().areExternalResource);
+                        component.set("v.areInternalResource", response.getReturnValue().areInternalResource);
                         
                         var contractResourceIdList = [];
                     /*for(var i=0;i<response.getReturnValue().calendarTaskList.length;i++){
@@ -2224,6 +2228,8 @@
                     component.set("v.dateEventList",evetList);
                     component.set("v.standardEventList",evetList);
                     component.set("v.resourcesList",response.getReturnValue().calendarTaskList);
+                    component.set("v.areExternalResource", response.getReturnValue().areExternalResource);
+                    component.set("v.areInternalResource", response.getReturnValue().areInternalResource);
                     
                     var contractResourceIdList = [];
                     /*for(var i=0;i<response.getReturnValue().calendarTaskList.length;i++){
@@ -2325,6 +2331,8 @@
                     component.set("v.dateEventList",evetList);
                     component.set("v.standardEventList",evetList);
                     component.set("v.resourcesList",response.getReturnValue().calendarTaskList);
+                    component.set("v.areExternalResource", response.getReturnValue().areExternalResource);
+                    component.set("v.areInternalResource", response.getReturnValue().areInternalResource);
                     
                     var contractResourceIdList = [];
                     /*for(var i=0;i<response.getReturnValue().calendarTaskList.length;i++){
@@ -2466,6 +2474,8 @@
                     component.set("v.dateEventList",evetList);
                     component.set("v.standardEventList",evetList);
                     component.set("v.resourcesList",response.getReturnValue().calendarTaskList);
+                    component.set("v.areExternalResource", response.getReturnValue().areExternalResource);
+                    component.set("v.areInternalResource", response.getReturnValue().areInternalResource);
                     
                     var contractResourceIdList = [];
                     /*for(var i=0;i<response.getReturnValue().calendarTaskList.length;i++){
@@ -2633,7 +2643,7 @@
                 elements[i].style.backgroundColor = randomColor();
             }
         });*/
-        
+
     // Changes for BUIL-3936
     openDatePicker: function(component, event, helper) {
         try{

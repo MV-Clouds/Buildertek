@@ -285,6 +285,8 @@
                 component.set("v.dateEventList",evetList);
                 component.set("v.standardEventList",evetList);
                 component.set("v.resourcesList",response.getReturnValue().calendarTaskList);
+                component.set("v.areExternalResource", response.getReturnValue().areExternalResource);
+                component.set("v.areInternalResource", response.getReturnValue().areInternalResource);
 
                 component.set("v.projectColorMap",projColorMap);
 

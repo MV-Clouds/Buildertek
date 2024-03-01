@@ -1202,3 +1202,9 @@ html {
     text-transform: uppercase;
     border-radius: 4px;
 }
+
+.THIS .nodata{
+    font-size: 0.9rem;
+    width: 100%;
+    text-align: center;
+}

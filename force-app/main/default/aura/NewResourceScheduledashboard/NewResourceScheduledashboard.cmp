@@ -26,6 +26,12 @@
     <aura:attribute name="SelectedDate" type="String" />
     <aura:attribute name="viewType" type="String" default="monthView" />
 
+        <!--  Changes for BUIL-3932 -->
+    <aura:attribute name="areInternalResource" type="Boolean" default="false" />
+    <aura:attribute name="areExternalResource" type="Boolean" default="false" />
+
+
+
     <lightning:workspaceAPI aura:id="workspace" />
     <aura:handler event="aura:locationChange" action="{!c.destoryCmp}"/>
    
@@ -255,26 +261,14 @@
                             <aura:if isTrue="{!v.resourcesList.length}" >
                                 <!-- External Reosurces View -->
                                 <div class="resourceHeader" style="margin-block: 0rem 0.25rem;"> External Resources</div>
-                                <aura:iteration items="{!v.resourcesList}" var="resourceListItem" indexVar="idx">
-                                    <aura:if isTrue="{!resourceListItem.resourceType == 'external'}">
-                                        <aura:if isTrue="{!resourceListItem.ContractresourceId == v.newContractResource}">
-                                            <a href="javascript:void(0);" class="list-group-item list-group-item-action py-2 lh-tight activeResource" aria-current="true" onclick="{!c.selectedResource}" data-contractresourceid="{!resourceListItem.ContractresourceId}"  data-resourceindex="{!idx}"> <!-- data-projindex="{!index}" -->
-                                                <div class="d-flex w-100 align-items-center">
-                                                    <div class="profile_name me-3" > <!-- prof_bg1 style="width: 3rem;text-align: center;" -->
-                                                        <span style="width: 5rem;text-align: center;">{!resourceListItem.FirstLetterofContractresourceName}</span>
-                                                    </div>
-                                                    <div> 
-                                                        <strong class="mb-1">{!resourceListItem.ContractresourceName}</strong> 
-                                                        <br/>
-                                                        <small>{!resourceListItem.Companyname} - {!resourceListItem.TradeType}</small> 
-                                                    </div>
-                                                </div>
-                                            </a>
-                                            <aura:set attribute="else" >
-                                                <a href="javascript:void(0);" class="list-group-item list-group-item-action py-2 lh-tight" aria-current="true" onclick="{!c.selectedResource}" data-contractresourceid="{!resourceListItem.ContractresourceId}"  data-resourceindex="{!idx}"> <!-- data-projindex="{!index}" -->
+                                <aura:if isTrue="{!v.areExternalResource}">
+                                    <aura:iteration items="{!v.resourcesList}" var="resourceListItem" indexVar="idx">
+                                        <aura:if isTrue="{!resourceListItem.resourceType == 'external'}">
+                                            <aura:if isTrue="{!resourceListItem.ContractresourceId == v.newContractResource}">
+                                                <a href="javascript:void(0);" class="list-group-item list-group-item-action py-2 lh-tight activeResource" aria-current="true" onclick="{!c.selectedResource}" data-contractresourceid="{!resourceListItem.ContractresourceId}"  data-resourceindex="{!idx}"> <!-- data-projindex="{!index}" -->
                                                     <div class="d-flex w-100 align-items-center">
-                                                        <div class="profile_name me-3"  > <!-- prof_bg1 -->
-                                                            <span style="width:5rem;text-align: center;" >{!resourceListItem.FirstLetterofContractresourceName}</span>
+                                                        <div class="profile_name me-3" > <!-- prof_bg1 style="width: 3rem;text-align: center;" -->
+                                                            <span style="width: 5rem;text-align: center;">{!resourceListItem.FirstLetterofContractresourceName}</span>
                                                         </div>
                                                         <div> 
                                                             <strong class="mb-1">{!resourceListItem.ContractresourceName}</strong> 
@@ -283,32 +277,37 @@
                                                         </div>
                                                     </div>
                                                 </a>
-                                            </aura:set>
+                                                <aura:set attribute="else" >
+                                                    <a href="javascript:void(0);" class="list-group-item list-group-item-action py-2 lh-tight" aria-current="true" onclick="{!c.selectedResource}" data-contractresourceid="{!resourceListItem.ContractresourceId}"  data-resourceindex="{!idx}"> <!-- data-projindex="{!index}" -->
+                                                        <div class="d-flex w-100 align-items-center">
+                                                            <div class="profile_name me-3"  > <!-- prof_bg1 -->
+                                                                <span style="width:5rem;text-align: center;" >{!resourceListItem.FirstLetterofContractresourceName}</span>
+                                                            </div>
+                                                            <div> 
+                                                                <strong class="mb-1">{!resourceListItem.ContractresourceName}</strong> 
+                                                                <br/>
+                                                                <small>{!resourceListItem.Companyname} - {!resourceListItem.TradeType}</small> 
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                </aura:set>
+                                            </aura:if>
                                         </aura:if>
-                                    </aura:if>
-                                </aura:iteration>
+                                    </aura:iteration>
+                                    <aura:set attribute="else">
+                                        <div class="nodata"> No External Resources Found</div>
+                                    </aura:set>
+                                </aura:if>
                                 <!-- Internal Reosurces View -->
                                 <div class="resourceHeader" style="margin-block: 0.5rem 0.25rem;"> Internal Resources</div>
-                                <aura:iteration items="{!v.resourcesList}" var="resourceListItem" indexVar="idx">
-                                    <aura:if isTrue="{!resourceListItem.resourceType == 'internal'}">
-                                        <aura:if isTrue="{!resourceListItem.ContractresourceId == v.newContractResource}">
-                                            <a href="javascript:void(0);" class="list-group-item list-group-item-action py-2 lh-tight activeResource" aria-current="true" onclick="{!c.selectedResource}" data-contractresourceid="{!resourceListItem.ContractresourceId}"  data-resourceindex="{!idx}"> <!-- data-projindex="{!index}" -->
-                                                <div class="d-flex w-100 align-items-center">
-                                                    <div class="profile_name me-3" > <!-- prof_bg1 style="width: 3rem;text-align: center;" -->
-                                                        <span style="width: 5rem;text-align: center;">{!resourceListItem.FirstLetterofContractresourceName}</span>
-                                                    </div>
-                                                    <div> 
-                                                        <strong class="mb-1">{!resourceListItem.ContractresourceName}</strong> 
-                                                        <br/>
-                                                        <small>{!resourceListItem.Companyname} - {!resourceListItem.TradeType}</small> 
-                                                    </div>
-                                                </div>
-                                            </a>
-                                            <aura:set attribute="else" >
-                                                <a href="javascript:void(0);" class="list-group-item list-group-item-action py-2 lh-tight" aria-current="true" onclick="{!c.selectedResource}" data-contractresourceid="{!resourceListItem.ContractresourceId}"  data-resourceindex="{!idx}"> <!-- data-projindex="{!index}" -->
+                                <aura:if isTrue="{!v.areInternalResource}">
+                                    <aura:iteration items="{!v.resourcesList}" var="resourceListItem" indexVar="idx">
+                                        <aura:if isTrue="{!resourceListItem.resourceType == 'internal'}">
+                                            <aura:if isTrue="{!resourceListItem.ContractresourceId == v.newContractResource}">
+                                                <a href="javascript:void(0);" class="list-group-item list-group-item-action py-2 lh-tight activeResource" aria-current="true" onclick="{!c.selectedResource}" data-contractresourceid="{!resourceListItem.ContractresourceId}"  data-resourceindex="{!idx}"> <!-- data-projindex="{!index}" -->
                                                     <div class="d-flex w-100 align-items-center">
-                                                        <div class="profile_name me-3"  > <!-- prof_bg1 -->
-                                                            <span style="width:5rem;text-align: center;" >{!resourceListItem.FirstLetterofContractresourceName}</span>
+                                                        <div class="profile_name me-3" > <!-- prof_bg1 style="width: 3rem;text-align: center;" -->
+                                                            <span style="width: 5rem;text-align: center;">{!resourceListItem.FirstLetterofContractresourceName}</span>
                                                         </div>
                                                         <div> 
                                                             <strong class="mb-1">{!resourceListItem.ContractresourceName}</strong> 
@@ -317,10 +316,27 @@
                                                         </div>
                                                     </div>
                                                 </a>
-                                            </aura:set>
+                                                <aura:set attribute="else" >
+                                                    <a href="javascript:void(0);" class="list-group-item list-group-item-action py-2 lh-tight" aria-current="true" onclick="{!c.selectedResource}" data-contractresourceid="{!resourceListItem.ContractresourceId}"  data-resourceindex="{!idx}"> <!-- data-projindex="{!index}" -->
+                                                        <div class="d-flex w-100 align-items-center">
+                                                            <div class="profile_name me-3"  > <!-- prof_bg1 -->
+                                                                <span style="width:5rem;text-align: center;" >{!resourceListItem.FirstLetterofContractresourceName}</span>
+                                                            </div>
+                                                            <div> 
+                                                                <strong class="mb-1">{!resourceListItem.ContractresourceName}</strong> 
+                                                                <br/>
+                                                                <small>{!resourceListItem.Companyname} - {!resourceListItem.TradeType}</small> 
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                </aura:set>
+                                            </aura:if>
                                         </aura:if>
-                                    </aura:if>
-                                </aura:iteration>
+                                    </aura:iteration>
+                                    <aura:set attribute="else">
+                                        <div class="nodata"> No Internal Resources Found</div>
+                                    </aura:set>
+                                </aura:if>
 
                                 <aura:set attribute="else" >
                                 	No Resources Found 
