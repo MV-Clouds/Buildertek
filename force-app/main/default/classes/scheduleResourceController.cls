@@ -4,7 +4,7 @@ public with sharing class scheduleResourceController {
         ScheduleDataWrapper wrapper = new ScheduleDataWrapper();
         
         try {
-            wrapper.scheduleList = [SELECT Id, Name, buildertek__Schedule__c, buildertek__Schedule__r.Name, buildertek__Schedule__r.buildertek__Description__c, buildertek__Schedule__r.buildertek__Project__r.Name, buildertek__Contractor__c, buildertek__Contractor__r.Name, buildertek__Contractor_Resource_1__c,buildertek__Contractor_Resource_1__r.Name,buildertek__Contractor_Resource_2__c,buildertek__Contractor_Resource_2__r.Name, buildertek__Contractor_Resource_3__c,buildertek__Contractor_Resource_3__r.Name, buildertek__Start__c, buildertek__Finish__c, buildertek__Schedule__r.buildertek__Start_Date__c, buildertek__Schedule__r.buildertek__End_Date__c FROM buildertek__Project_Task__c WHERE buildertek__Schedule__c = :scheduleId AND buildertek__Type__c = 'Task' ORDER BY Name ASC LIMIT 10000];
+            wrapper.scheduleList = [SELECT Id, Name, buildertek__Schedule__c, buildertek__Schedule__r.Name, buildertek__Schedule__r.buildertek__Description__c, buildertek__Schedule__r.buildertek__Project__r.Name, buildertek__Contractor__c, buildertek__Contractor__r.Name, buildertek__Contractor_Resource_1__c,buildertek__Contractor_Resource_1__r.Name,buildertek__Contractor_Resource_2__c,buildertek__Contractor_Resource_2__r.Name, buildertek__Contractor_Resource_3__c,buildertek__Contractor_Resource_3__r.Name, buildertek__Start__c, buildertek__Finish__c, buildertek__Schedule__r.buildertek__Start_Date__c, buildertek__Schedule__r.buildertek__End_Date__c FROM buildertek__Project_Task__c WHERE buildertek__Schedule__c = :scheduleId AND buildertek__Type__c = 'Task' Order By  buildertek__Phase__c, buildertek__BT_Grouping__c, buildertek__BT_Phase3__c, buildertek__Order__c NULLS LAST, CreatedDate ASC];
 
             Date scheduleStartDate = wrapper.scheduleList[0].buildertek__Schedule__r.buildertek__Start_Date__c;
             Date scheduleEndDate = wrapper.scheduleList[0].buildertek__Schedule__r.buildertek__End_Date__c;
@@ -44,22 +44,6 @@ public with sharing class scheduleResourceController {
                 BT_ExceptionHandler.Store_Exception(ex);
             }
             return 'Error';
-        }
-    }
-
-    @AuraEnabled
-    public static List<buildertek__Project_Task__c> checkForConflictingSchedules(Date startDate, Date endDate) {
-        try {
-            List<buildertek__Project_Task__c> conflictingSchedules = [SELECT Id, Name, buildertek__Start__c, buildertek__Finish__c, buildertek__Schedule__r.buildertek__Project__r.Name, buildertek__Schedule__r.buildertek__Description__c FROM buildertek__Project_Task__c WHERE buildertek__Type__c = 'Task' AND (buildertek__Start__c <= :endDate AND buildertek__Finish__c >= :startDate) AND buildertek__Schedule__r.buildertek__Active__c = TRUE];
-
-            return conflictingSchedules;
-        } catch (Exception ex) {
-            System.debug('Error: ' + ex.getMessage());
-            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
-            if (!storeExcCustomSetting.isEmpty() && storeExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
-                BT_ExceptionHandler.Store_Exception(ex);
-            }
-            return null;
         }
     }
 

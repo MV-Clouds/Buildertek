@@ -92,7 +92,7 @@
 
 .closeIcon {
     cursor: pointer;
-    --slds-c-icon-color-foreground-default : white !important;
+    --slds-c-icon-color-foreground-default: white !important;
 }
 
 @media only screen and (min-width: 1024px) {
@@ -104,18 +104,6 @@
     .header-row {
         padding: 1rem 0rem 1rem 0.1rem;
         gap: 0.1rem;
-    }
-
-    .picklistcombo {
-        width: 30%;
-    }
-
-    .picklist {
-        width: 30%;
-    }
-
-    .btnContainer {
-        width: 10%;
     }
 
     .fixed-width-dropdown {

@@ -4,7 +4,6 @@ import { NavigationMixin } from 'lightning/navigation';
 import { loadStyle } from 'lightning/platformResourceLoader';
 import myResource from '@salesforce/resourceUrl/ScheduleLWCCss';
 import fetchScheduleData from '@salesforce/apex/scheduleResourceController.fetchScheduleData';
-import checkConflict from "@salesforce/apex/scheduleResourceController.checkForConflictingSchedules";
 import updateResource from '@salesforce/apex/scheduleResourceController.updateScheduleItemResources';
 import getScheduleData from "@salesforce/apex/GetProjectAndScheduleForGanttCmp.getScheduleData";
 
