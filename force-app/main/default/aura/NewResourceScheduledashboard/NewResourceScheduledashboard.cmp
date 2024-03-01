@@ -19,9 +19,12 @@
                            $Resource.Jquery + '/jquery/lightning/js/jquery-3.7.1.min.js',
                            $Resource.Jquery + '/jquery/lightning/js/jquery-ui-1.12.1.min.js')}"
                            afterScriptsLoaded="{!c.handleAfterLoadscript}"/>
+        <!--  Changes for BUIL-3936 -->
     <aura:attribute name="isDatePickerLoaded" type="Boolean" default="false" />
     <aura:attribute name="isDisplayDatePicker" type="Boolean" default="false" />
+    <aura:attribute name="isBackShadow" type="Boolean" default="false" />
     <aura:attribute name="SelectedDate" type="String" />
+    <aura:attribute name="viewType" type="String" default="monthView" />
 
     <lightning:workspaceAPI aura:id="workspace" />
     <aura:handler event="aura:locationChange" action="{!c.destoryCmp}"/>
@@ -172,7 +175,10 @@
     <aura:method name="conflictData" action="{!c.setConflictData}" description="" >
     </aura:method>
 
-    <aura:method name="openDatePickerMethod" action="{!c.openDatePicker}" description="">
+    <aura:method name="setDayView" action="{!c.calendarDayView}" description="">
+    </aura:method>
+
+    <aura:method name="setWeekView" action="{!c.calendarWeekView}" description="">
     </aura:method>
     
      <aura:method name="monthlyFunMethod" action="{!c.getmonthlyfunc}">
@@ -318,13 +324,21 @@
                                 </div>
                                 <div class="col-md-6 col-xl-4">
                                     <ul class="cal_filt">
-                                        <li><a href="javascript:void(0);" class="viewChange" onclick="{!c.calendarDayView}">Day</a></li>
-                                        <li><a href="javascript:void(0);" class="viewChange"  onclick="{!c.calendarWeekView}">Week</a></li>
-                                        <li><a href="javascript:void(0);" class="viewChange active" onclick="{!c.calendarMonthView}">Month</a></li>
+                                        <li><a href="javascript:void(0);" class="viewChange" data-name="dayView" onclick="{!c.calendarDayView}">Day</a></li>
+                                        <li><a href="javascript:void(0);" class="viewChange" data-name="weekView"  onclick="{!c.calendarWeekView}">Week</a></li>
+                                        <li><a href="javascript:void(0);" class="viewChange active" data-name="monthView" onclick="{!c.calendarMonthView}">Month</a></li>
                                     </ul>
                                 </div>
                             </div>
                         </div>
+                        <div id="datepickerPlaceholder" class="datePickerDiv">
+                            <aura:if isTrue="{!v.isBackShadow}">
+                                <div class="backShadow" onclick="{!c.openDatePicker}"></div>
+                            </aura:if>
+                        </div>
+                        
+                        
+
                         <!-- <div style="display: flex;justify-content: flex-end;align-items: flex-end;">
                             <a class="daily-header-title-datee" id="datepickerAnchor"onclick="{!c.openDatePicker}" href="javascript:void(0);">Select Date</a> -->
                         <!-- </div> -->
@@ -344,7 +358,7 @@
                                     <div class="daily-header">
                                         <div class="daily-header-title">
                                             <a class="daily-header-title-date" href="javascript:void(0);">{!v.todayDateHeader}</a>
-                                            <a class="daily-header-title-datee" id="datepickerAnchor" style="position: relative !important;" onclick="{!c.openDatePicker}" href="javascript:void(0);">Select Date
+                                            <a class="daily-header-title-datee" id="datepickerAnchor" data-name="datepickerPlaceholder_day" style="position: relative !important;" href="javascript:void(0);">Select Date
                                                 <!-- <div id="datepickerPlaceholder" class="datePickerDiv"></div> -->
                                             </a>
                                             <aura:if isTrue="{!v.currentDateValString != v.todayDate}">
@@ -355,14 +369,14 @@
                                         <a class="daily-prev" href="javascript:void(0);" onclick="{!c.prevDayDate}"></a>
                                         <a class="daily-next" href="javascript:void(0);" onclick="{!c.nextDayDate}"></a>
                                     </div>
-                                    <div id="datepickerPlaceholder_day" aura:id="datepickerPlaceholder_day" class="datePickerDiv" data-name="name">
+                                    <!-- <div id="datepickerPlaceholder_day"  class="datePickerDiv" data-name="name"> -->
                                         <!-- <aura:if isTrue="{!v.isDisplayDatePicker}">
                                             <div class="datePicker">
                                                 <lightning:input id="lightingDatePicker" class="lightning_datePicker" type="date" name="input2" variant="label-hidden" placeholder="Select date" value="{!v.SelectedDate}" onchange="{!c.handleDateChanged}">
                                                 </lightning:input>
                                             </div>
                                         </aura:if> -->
-                                    </div>
+                                    <!-- </div> -->
                                     <aura:if isTrue="{!v.dateEventList.length > 0}" >
                                         <aura:iteration items="{!v.dateEventList}" var="eventItem" indexVar="" >
                                             <div class="d-flex mb-3" style="padding: 0 1rem 0 .3rem;">

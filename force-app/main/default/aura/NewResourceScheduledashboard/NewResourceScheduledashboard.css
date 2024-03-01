@@ -871,11 +871,11 @@
     border-top-right-radius: 1em;
 	border-bottom-right-radius: 1em;                                                                                                                    
 }                                                                                                                    
-.THIS .weekly-header-title a:hover, .THIS .daily-header-title a:hover{
+/* .THIS .weekly-header-title a:hover, .THIS .daily-header-title a:hover{
 	background: #8b8b8b;
 	border: 1px solid #8b8b8b;
 	color: #fff;
-}
+} */
 .THIS .weekly-header-title a:active,.THIS .daily-header-title a:active{
 	background: #222;
 	border: 1px solid #222;
@@ -891,10 +891,22 @@
 	cursor: default;
 }                                                                   
 .THIS .daily-header-title-datee, .THIS .daily-header-title-datee:hover{
-	background: #fff!important;
+	/* background: #fff!important;
 	border: 1px solid #ccc!important;
 	color: #545454!important;
-	cursor: pointer;
+	cursor: pointer; */
+
+    border: 1px solid #ccc;
+    color: #545454;
+    text-decoration: none;
+    height: 1.75em;
+    line-height: 1.65em;
+    padding: 0 0.65em 0 0.65em;
+    box-sizing: border-box;
+    transition: background .1s;
+    background: #eee!important;
+    cursor: default;
+    display: inline-block;
 }                                                                   
                                                                     
 /* wrapper for left/right buttons to make the clickable area bigger */
@@ -1154,10 +1166,10 @@ html {
     margin-right: 10px; /* Adjust margin as needed */
 }
 .THIS #datepickerPlaceholder {
-    display: flex;
+    /* display: flex;
     justify-content: center;
     align-items: center;
-    background-color: white;
+    background-color: white; */
 }
 
 .THIS .datePickerDiv{
@@ -1165,5 +1177,19 @@ html {
     top: 120%;
     left: 0px; */
 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+
     position: relative;
+}
+
+.THIS .backShadow{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9;
 }

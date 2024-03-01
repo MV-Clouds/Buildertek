@@ -563,15 +563,30 @@
     calendarDayView :  function (component, event, helper) {
         
         var currEle = event.currentTarget;
-        var activeEle = document.getElementsByClassName('viewChange active')[0]
-        if(activeEle){
-            activeEle.classList.remove('active');
-        }
-        if(!currEle.classList.contains('active')){
-            currEle.classList.add('active')
-        }
+        // var activeEle = document.getElementsByClassName('viewChange active')[0]
+        // if(activeEle){
+        //     activeEle.classList.remove('active');
+        // }
+        // if(!currEle.classList.contains('active')){
+        //     currEle.classList.add('active')
+        // }
         component.set("v.currentCalendarView","dayView");
-        
+
+        const activeEles = document.querySelectorAll(`.viewChange`);
+        if(activeEles.length){
+            for(var i=0; i< activeEles.length; i++){
+                if(activeEles[i].dataset.name == component.get('v.currentCalendarView')){
+                    if(!activeEles[i].classList.contains('active')){
+                        activeEles[i].classList.add('active');
+                    }
+                }
+                else{
+                    activeEles[i].classList.remove('active');
+                }
+            }
+
+        }
+         
         /*hide week header*/
         var weekHeader = document.getElementsByClassName('weekly-header');
         if(weekHeader.length){
@@ -631,14 +646,28 @@
     calendarWeekView :  function (component, event, helper) {
         
         var currEle = event.currentTarget;
-        var activeEle = document.getElementsByClassName('viewChange active')[0];
-        if(activeEle){
-            activeEle.classList.remove('active');
-        }
-        if(!currEle.classList.contains('active')){
-            currEle.classList.add('active')
-        }
+        // var activeEle = document.getElementsByClassName('viewChange active')[0];
+        // if(activeEle){
+        //     activeEle.classList.remove('active');
+        // }
+        // if(!currEle.classList.contains('active')){
+        //     currEle.classList.add('active')
+        // }
         component.set("v.currentCalendarView","weekView");
+
+        const activeEles = document.querySelectorAll(`.viewChange`);
+        if(activeEles.length){
+            for(var i=0; i< activeEles.length; i++){
+                if(activeEles[i].dataset.name == component.get('v.currentCalendarView')){
+                    if(!activeEles[i].classList.contains('active')){
+                        activeEles[i].classList.add('active');
+                    }
+                }
+                else{
+                    activeEles[i].classList.remove('active');
+                }
+            }
+        }
         
         /* Show Calendar view Div */
         document.getElementById('mycalendar').style.display = 'block';
@@ -692,14 +721,28 @@
     calendarMonthView  :  function (component, event, helper) {
          
         var currEle = event.currentTarget;
-        var activeEle = document.getElementsByClassName('viewChange active')[0]
-        if(activeEle){
-            activeEle.classList.remove('active');
-        }
-        if(!currEle.classList.contains('active')){
-            currEle.classList.add('active')
-        }
+        // var activeEle = document.getElementsByClassName('viewChange active')[0]
+        // if(activeEle){
+        //     activeEle.classList.remove('active');
+        // }
+        // if(!currEle.classList.contains('active')){
+        //     currEle.classList.add('active')
+        // }
         component.set("v.currentCalendarView","monthView");
+
+        const activeEles = document.querySelectorAll(`.viewChange`);
+        if(activeEles.length){
+            for(var i=0; i< activeEles.length; i++){
+                if(activeEles[i].dataset.name == component.get('v.currentCalendarView')){
+                    if(!activeEles[i].classList.contains('active')){
+                        activeEles[i].classList.add('active');
+                    }
+                }
+                else{
+                    activeEles[i].classList.remove('active');
+                }
+            }
+        }
         
         /*hide week header*/
         var weekHeader = document.getElementsByClassName('weekly-header');
@@ -807,10 +850,11 @@
         document.getElementById('selectedContractResource').innerText = 'Resource';
         document.getElementById('selectedContractResourceTradeType').innerText = 'Trade Type';
         
-        document.getElementById('mycalendar').style.display = 'block';
+        // Commented for BUIL-3936
+        // document.getElementById('mycalendar').style.display = 'block';
         /*hide day view div*/
-        document.getElementById('mycalendar2').style.display = 'none';
-        document.getElementsByClassName('daily-header')[0].style.display = 'none';
+        // document.getElementById('mycalendar2').style.display = 'none';
+        // document.getElementsByClassName('daily-header')[0].style.display = 'none';
         
         component.set("v.showSpinner", true);
         component.set("v.newContractResource","");
@@ -1892,7 +1936,8 @@
         var nextBtn = document.getElementsByClassName('monthly-next');
         var todayEle = document.getElementsByClassName('monthly-reset');
 
-        var selectDateEle = document.getElementsByClassName('daily-header-title-datee');
+        // var selectDateEle = document.getElementsByClassName('daily-header-title-datee');
+        // console.log('selectDateEle : ', selectDateEle);
         
         var weekPrevBtn = document.getElementsByClassName('weekly-prev');
         var weekNextBtn = document.getElementsByClassName('weekly-next');
@@ -1908,7 +1953,7 @@
             prevBtn[0].removeEventListener("click",callBack1);
             nextBtn[0].removeEventListener("click",callBack2);
             
-            selectDateEle[0].removeEventListener("click", callBack6);
+            // selectDateEle[0].removeEventListener("click", callBack6);
 
             weekPrevBtn[0].removeEventListener("click",callBack4);
 			weekNextBtn[0].removeEventListener("click",callBack5);
@@ -1928,7 +1973,7 @@
             nextBtn[0].removeEventListener("click",callBack2);
             prevBtn[0].removeEventListener("click",callBack1);
 
-            selectDateEle[0].removeEventListener("click", callBack6);
+            // selectDateEle[0].removeEventListener("click", callBack6);
             
             weekPrevBtn[0].removeEventListener("click",callBack4);
 			weekNextBtn[0].removeEventListener("click",callBack5);
@@ -1949,7 +1994,7 @@
             nextBtn[0].removeEventListener("click",callBack2);
             prevBtn[0].removeEventListener("click",callBack1);
 
-            selectDateEle[0].removeEventListener("click", callBack6);
+            // selectDateEle[0].removeEventListener("click", callBack6);
             
             weekPrevBtn[0].removeEventListener("click",callBack4);
 			weekNextBtn[0].removeEventListener("click",callBack5);
@@ -2003,28 +2048,6 @@
             document.body.click();
             
         }
-
-        var callBack6 = function(eve){
-            console.log('callback 6', eve);
-
-            if(todayEle.length){
-                for(var viewIndex=0; viewIndex< todayEle.length;viewIndex++){
-                    todayEle[viewIndex].removeEventListener("click",callBack3);
-                }
-                //todayEle[0].removeEventListener("click",callBack3);
-            }
-            prevBtn[0].removeEventListener("click",callBack1);
-            nextBtn[0].removeEventListener("click",callBack2);
-            
-            selectDateEle[0].removeEventListener("click", callBack6);
-
-            weekPrevBtn[0].removeEventListener("click",callBack4);
-			weekNextBtn[0].removeEventListener("click",callBack5);
-            
-            component.reloadPrevCalendar("");
-            component.openDatePickerMethod();
-            document.body.click();
-        }
         
         if(prevBtn.length){
             prevBtn[0].addEventListener("click",callBack1);
@@ -2046,22 +2069,6 @@
         if(weekNextBtn.length){
             weekNextBtn[0].addEventListener("click",callBack5);
         } 
-
-        if(selectDateEle.length){
-            selectDateEle[0].addEventListener("click",callBack6);
-            selectDateEle[0].style = `display: inline-block;
-                border: 1px solid #ccc;
-                color: #545454;
-                text-decoration: none;
-                height: 1.75em;
-                line-height: 1.65em;
-                padding: 0 0.65em 0 0.65em;
-                box-sizing: border-box;
-                transition: background .1s;
-                background: #eee!important;
-                cursor: default;
-            `;
-        }
         
     },
     
@@ -2626,59 +2633,12 @@
                 elements[i].style.backgroundColor = randomColor();
             }
         });*/
+        
+    // Changes for BUIL-3936
     openDatePicker: function(component, event, helper) {
         try{
-
             console.log("HIiiiiiiiiiii");
-        
-            var PickerName = event.getSource().getLocalId();
-            console.log(' PickerName : ', PickerName);
-        
-        
-                if(!component.get("v.isDatePickerLoaded")){
-                    console.log('Initialize the date picker');
-                    // Initialize the date picker
-                    $('#datepickerPlaceholder').datepicker({
-                    changeMonth: true,
-                    changeYear: true,
-                    showOn: 'button',
-                    buttonImageOnly: true,
-                    buttonImage: 'images/calendar.gif',
-                    dateFormat: 'yy-MM-dd',
-                    yearRange: '-20:+20',
-                    showAnim: 'fold',
-                        onSelect: function(dateText, inst) {
-                            // Handle the selected date
-                            console.log('Selected date:', dateText);
-                            component.set("v.startDt" ,dateText);
-                            $('#datepickerPlaceholder').hide();
-                            helper.handleSaveDates(component,event,helper);
-                        }
-                    });
-            
-                //     // Hide the date picker initially
-                    $('#datepickerPlaceholder').hide();
-        
-                    component.set("v.isDatePickerLoaded", true);
-                }
-        
-                // Toggle the visibility of the date picker
-                console.log('is date picker visible :  ', $('#datepickerPlaceholder').is(":visible"));
-                $('#datepickerPlaceholder').toggle();
-        
-                // component.set("v.isDisplayDatePicker", !component.get("v.isDisplayDatePicker"));
-                // console.log('isDisplayDatePicker', component.get("v.isDisplayDatePicker"));
-                // component.set("v.SelectedDate" ,component.get("v.SelectedDate"));
-        
-                // setTimeout(function(){
-                //     var datePIckerDiv = document.querySelector('.datePicker');
-                //     console.log('datePIckerDiv : ', datePIckerDiv);
-                //     var slds = datePIckerDiv.getElementsByClassName('slds-dropdown-trigger');
-                //     console.log('slds : ', slds);
-                //     slds.forEach(ele => {
-                //         ele.classList.add('slds-is-open');
-                //     })
-                // }, 1000)ßð
+            helper.openDatePickerHelper(component, event, helper);
         }
         catch(error){
             console.log('error in openDatePicker : ', error.stack)
@@ -2686,6 +2646,7 @@
         
     },
 
+    // Changes for BUIL-3936... [Need to remove.. unused]
     handleDateChanged: function(component, event, helper){
         try {
             console.log('datePicker handleDateChanged ');

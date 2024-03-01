@@ -95,7 +95,7 @@ Monthly 2.2.2 by Kevin Thornbloom is licensed under a Creative Commons Attributi
 		$(parent).addClass("monthly-locale-" + primaryLanguageCode + " monthly-locale-" + locale);
 
 		// Add Header & event list markup
-		$(parent).prepend('<div class="monthly-header"><div class="monthly-header-title"><a  class="monthly-header-title-date" href="javascript:void(0);" onclick="return false"></a></div><a class="monthly-prev"></a><a class="monthly-next"></a></div><div id="datepickerPlaceholder" class="datePickerDiv">').append('<div class="monthly-event-list"></div>');
+		$(parent).prepend('<div class="monthly-header"><div class="monthly-header-title"><a  class="monthly-header-title-date" href="javascript:void(0);" onclick="return false"></a></div><a class="monthly-prev"></a><a class="monthly-next"></a></div>').append('<div class="monthly-event-list"></div>');
 		$(parent+" .monthly-header .monthly-prev").attr("href","javascript:void(0);")
         $(parent+" .monthly-header .monthly-next").attr("href","javascript:void(0);")
         if(currentMonth == monthFromOptions && currentYear == yearFromOptions){
