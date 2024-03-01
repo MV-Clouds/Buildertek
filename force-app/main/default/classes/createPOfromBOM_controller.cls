@@ -6,7 +6,7 @@ public class createPOfromBOM_controller {
         responseWrapper returnValue = new responseWrapper();
         try {
             system.debug('BOMiD : ' + BOMiD);
-        List<buildertek__Select_Sheet__c> BOMLines = [SELECT Id, Name, buildertek__Selection_Sheet_Takeoff__c, buildertek__Vendor__c, buildertek__Vendor__r.Name, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.Name,buildertek__Purchase_Order_Line__c, buildertek__Quantity__c, buildertek__Total_Sales_Price__c, buildertek__Total_Costs__c, buildertek__BL_UNIT_COST__c, buildertek__BT_Price_Book__c, buildertek__BT_Price_Book__r.Name, buildertek__Product__c, buildertek__Product__r.Name
+        List<buildertek__Select_Sheet__c> BOMLines = [SELECT Id, Name, buildertek__Selection_Sheet_Takeoff__c, buildertek__Vendor__c, buildertek__Vendor__r.Name, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.Name,buildertek__Purchase_Order_Line__c, buildertek__Quantity__c, buildertek__Total_Sales_Price__c, buildertek__Total_Costs__c, buildertek__BL_UNIT_COST__c, buildertek__BT_Price_Book__c, buildertek__BT_Price_Book__r.Name, buildertek__Product__c, buildertek__Product__r.Name, buildertek__Category__c
                                                       FROM buildertek__Select_Sheet__c 
                                                       WHERE buildertek__Selection_Sheet_Takeoff__c =: BOMiD];
         Set<String> vendorList = new Set<String>();
@@ -57,10 +57,11 @@ public class createPOfromBOM_controller {
 						result += ',';
 					}
 					String jsonPart = '{';
-					jsonPart += '"label":"' + f.getLabel()+'",';
+					jsonPart += '"label":"' +( String.valueOf(f.getFieldPath()) == 'Name' ? 'BOM Line' : f.getLabel() )+'",'; // changes for BUIL-3953, to change field label...
 					jsonPart += '"required":"' + (f.getDBRequired() || f.getRequired())+'",';
 					jsonPart += '"type":"' + (f.getType())+'",';
 					jsonPart += '"name":"' + f.getFieldPath()+'"';
+                    
 					if (String.valueOf(f.getType()) == 'PICKLIST'){
 						pickListValuesList = getDropDown(ObjectName, String.valueOf(f.getFieldPath()));
 						jsonPart += ',"pickListValuesList":' + JSON.serialize(pickListValuesList);
@@ -188,7 +189,7 @@ public class createPOfromBOM_controller {
                     System.debug('matched schedule : ' + scheduleList[0].buildertek__Description__c);
                 }
                 
-                List<buildertek__Project_Task__c> ScheduleItems = [SELECT Id, Name, buildertek__Schedule__c,buildertek__Contractor__c, buildertek__Cost_Code__c,buildertek__Phase__c, buildertek__Completion__c,buildertek__Start__c,buildertek__Finish__c
+                List<buildertek__Project_Task__c> ScheduleItems = [SELECT Id, Name, buildertek__Schedule__c,buildertek__Contractor__c, buildertek__Cost_Code__c,buildertek__Phase__c, buildertek__Completion__c,buildertek__Start__c,buildertek__Finish__c,buildertek__BT_Category__c
                                                                     FROM buildertek__Project_Task__c WHERE buildertek__Schedule__c =: scheduleId ORDER BY CreatedDate DESC];
 
                                                                     
@@ -241,14 +242,26 @@ public class createPOfromBOM_controller {
             returnValue.POid = POtoCreate.Id;
             return returnValue;
         } catch (Exception e) {
-            System.debug('Error in getBOMlines ..' + e.getMessage() + '\n' + e +'\n Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
+            System.debug('Error in getBOMlines ..' + e.getMessage() + '\n' + e +'\n Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString() + ' getTypeName : ' + e.getTypeName());
+            if(e.getMessage().contains('FIELD_CUSTOM_VALIDATION_EXCEPTION')){
+                Integer occurence = e.getMessage().indexOf('FIELD_CUSTOM_VALIDATION_EXCEPTION,') + 34; // add 34 to remove 'FIELD_CUSTOM_VALIDATION_EXCEPTION' string...
+                String errorMessage = e.getMessage().mid(occurence, e.getMessage().length());
+                occurence = errorMessage.lastIndexOf(':');
+                errorMessage = errorMessage.mid(0, occurence);
+                returnValue.returnMessage = errorMessage;
+                returnValue.isCustomeValidation = true;
+            }
+            else{
+                returnValue.returnMessage = e.getMessage();
+                returnValue.isCustomeValidation = false;
+
+            }
 
             List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
             if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
                 BT_ExceptionHandler.Store_Exception(e);
             }
             returnValue.state = 'error';
-            returnValue.returnMessage = e.getMessage();
             return returnValue;
         }
     }
@@ -257,6 +270,7 @@ public class createPOfromBOM_controller {
     public class responseWrapper{
         @AuraEnabled Public string state;
         @AuraEnabled Public string returnMessage;
+        @AuraEnabled Public Boolean isCustomeValidation;
         @AuraEnabled public List<buildertek__Select_Sheet__c> BOMLines;
         @AuraEnabled public List<String> vendorList;
         @AuraEnabled public String FieldSetValues;
